@@ -229,6 +229,12 @@ Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
 <p>
 
+Hvis du har noget du søger efter, så skal du nok <a
+href="alle/bog/stikord.html">starte i vores samlede
+indeks-register.</a>
+
+
+<p>
 Har du fundet fejl i en bog, så send venligst dette til 
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.<br>
 Er du ikke medlem af SSLUG, så skriv til
