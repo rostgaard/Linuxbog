@@ -148,64 +148,887 @@ url="http://www.freedos.org">http://www.freedos.org</ulink>
 </FIGURE>
 </sect1>
 
+<!-- Skrevet af Mikkel Maastrup -->
 <sect1 id="WINE">
-<title>Windows-emulatoren WINE</title>
+<title>Kør Windows programmer med WINE</title>
 <indexterm><primary>Wine</primary></indexterm>
 <para>
-Der har længe været programmeret på WINE (<ulink
-url="http://www.winehq.com">http://www.winehq.com</ulink>) - et
-program til at kunne køre Windows-emulator under Linux - og projektet
-virker mere lovende nu efter lang tids stilstand. På grund af
-Microsofts lukkede politik er det ikke alt, teamet har kunnet få
-tekniske detaljer på, og derfor er det langtfra sikkert, at du kan få
-nyere Windows-programmer til at køre på denne måde under Linux. WINE står
-for Wine Is Not an Emulator!
+WINE står for "Wine Is Not an Emulator" og det er et program det
+tillader dig at køre MS-DOS- og Windows-programmer under X på enhver
+Linux-distribution (og andre UNIX-systemer som f.eks. FreeBSD og
+Solaris). Der er endda nogle som er gået i gang med at portere det til
+endnu flere operativ systemer som f.eks. BeOS. Som navnet siger er
+WINE ikke en emulator og kan derfor kun køre på de Intel x86-baserede
+computere (altså ikke på Linux-systemer til f.eks. Macintosh). Mange
+hundrede programmører har sørget for at WINE er blevet til. WINE
+sørger får at Windows-programmerne virker som om de var lavet til
+Linux. Man kan altså f.eks. klippe/klistre mellem et program der
+bliver kørt af WINE og så et "normalt" Linux program. WINE er skrevet
+i programmeringssproget C og har en frit tilgængelig kildekode (som så
+meget andet Linux-software), og det gør bl.a. at alle kan hjælpe til
+med at udvide og rette i programmet.  
 </para>
 
 <para>
-WINE er på ingen måder et færdigt produkt endnu, men det er muligt at
-finde "snapshots" af WINE rundt om på Internettet. Nedenfor viser vi,
-hvordan et "snapshot" fra  den 28. marts 1999 installeres (filen er
-fundet på <ulink
-url="ftp://sunsite.auc.dk">ftp://sunsite.auc.dk</ulink>). 
-
+WINE kan faktisk køre
+Windows-programmer på Linux uden at have Windows installeret på
+computeren. Hvis man har Windows vil WINE dog være i stand til benytte
+originale systemfiler og dermed give bedre ydelse. Med WINE følger der
+også noget som kaldes Winelib hvilket gør at man kan kompilere sine
+Windows- kildekoder til Linux- software. Altså, hvis man har lavet et
+Windows-program og har kildekoden, så kan man altså bare oversætte
+programmet med en Linux-compiler i stedet for en Windows-compiler (så
+softwaren dermed virker til Linux også). Det er der nogle store
+firmaer der har gjort. Bl.a. Corel. Alle Corels Linux produkter
+benyttede sig altså af WINE, og det gør de vist stadig. Det er dog
+ikke perfekt så der skal ofte ekstra arbejde til at tilpasse
+programmet før det kan lade gøre.
 </para>
 
+<sect2 id="hvordan-wine">
+<title>Hvordan virker WINE?</title>
+
+<para>
+Det sørger som sagt for at man kan køre Windows-programmer, og uden at
+have Windows på computeren. Inden vi fortsætter skal vi lige se lidt
+på de såkaldte API'er. API står for "Application Program
+Interface". Når et program kører sender det såkaldte "API calls" til
+det styrersystem det bliver kørt på. Et program kan altså gøre brug af
+af API'er på det operativ sytem det bliver kørt på. F.eks. kan et "API
+call" være at skrive en fil på en harddisk eller sende output til en
+printer. Hvert opereativ system har hver deres "API calls". Det som
+WINE gør er at gå ind og ændre Windows API'erne til Linux API'er. Så
+når et Windows-program sender en "Windows-API" gennem WINE, så modtager
+Linux en "Linux API" der har den samme funktion som det API'en burde
+have gjort på Windows. Programmet tror altså at det kører på Windows
+og Linux tror det modtager informationer fra et Linux-program. Det
+som WINE, meget enkelt forklaret, gør er at den starter to
+programmer. Det ene er et specielt program der gør at man kan starte
+Windows-programmet og det andet er et program som omdanner Windows
+API'erne til Linux API'er. Det er det WINE går ud på. Altså at omdanne
+Windows' API-sæt til Linux' API-sæt. Enhver som har prøvet WINE ved
+dog at det er langt fra alle programmer som kan kører via det. Og
+hvordan kan det være? Det er fordi Windows ikke er Open Source
+software og derfor kan ingen bare gå hen og finde Windows API'erne i
+kildekoden. Dokumentationen til Win32 API kald er heller ikke spor
+god og er blevet kritiseret for at være ikke-eksisterende, sparsom og
+endda vildledende. WINE-folkenes arbejde er derfor mest baseret på
+gæt. Win16 og DOS API kald skiftes ikke længere ud. Derfor vil
+langt de fleste af gamle Windows-programmer virke via WINE. Win32
+kald skifter dog stadigvæk og hvis Microsoft introducerer et nyt
+sæt API kald eller ændrer på dem som findes i forvejen så skal dette
+jo også tilføjes. Derfor bliver WINE formodentlig aldrig færdig. Selv
+om det startede i 1993 så er der ikke kommet en stabil version
+endnu.  
+</para>
+</sect2>
+
+<sect2 id="wine-historie">
+<title>Lidt historie</title>
+
+<para>
+WINE-projektet startede i 1993 på Usenet newsgroupen
+comp.os.linux. Det var en fyr der hed Eric Youngdale som startede
+det. I 1994 blev posten som koordinator for projektet overgivet fra
+Bob Amstadt til Alexandre Julliard (som stadig sidder på
+posten). Grunden til at WINE-projektet blev startet var (og er stadig)
+at langt det meste software bliver udviklet til Windows. Man ønskede
+altså at have adgang til den kæmpe mængde software som er blevet lavet
+til Windows og samtidig have glæde af Linux' fordele.
+</para>
+
+<para>
+WINE er stadig ikke færdig så det er ikke alle programmer som kan
+kører via WINE. De fleste ældre programmer burde dog virke.
+</para>
+</sect2>
+
+
+<sect2 id="wine-installation">
+<title>Installation af WINE</title>
+<para>
+For at installere det har jeg valgt at bruge WINE Preview 3 fra
+firmaet Codeweavers. Dette er en helt normal WINE udgave som blot er
+blevet pakket fint ind, så den nu har grafisk installation og
+konfiguration.
+</para>
+
+<para>
+Codeweavers WINE findes kun som .rpm-fil (på <ulink
+url="http://www.codeweavers.com">http://www.codeweavers.com</ulink>). Hvis
+du bruger bruger RedHat, Mandrake og SuSE (samt en del flere) kan du
+bruge denne udgave af WINE. Hvis du kører med en
+"ikke-rpm"-distribution, som f.eks. Debian, skal du dog prøve at se på
+<ulink url="http://www.winehq.com">http://www.winehq.com</ulink> efter
+en Debian version af WINE.
+</para>
+
+<para>
+Når du installerer Codeweavers WINE så burde den kunne bruge tidligere
+WINE-konfigurationer og installerede Windows-programmer. Jeg er dog
+ikke sikker på om det går lige godt hver gang, selvom der indtil
+videre ikke har været nogle problemer for mig (man ved jo aldrig hvad
+der kan ske). Derfor bør du passe ekstra godt på når du installerer
+(Codeweavers) WINE hvis du i forvejen bruger WINE. Du kan risikerer at
+bruge WINE uden at vide det. F.eks. bruger mange (hvis ikke alle) af
+Corels Linux-programmer WINE. Som sagt er dette blot en vejledning som
+følger den metode som jeg brugte. Jeg tager derfor intet ansvar hvis
+noget skulle gå galt på din maskine, der har dog ikke været nogle
+store problemer for mig indtil videre. Jeg vil i denne
+installationsvejledning fortælle hvordan du kan installere WINE. Jeg
+antager at du ikke tidligere har brugt WINE, at du er logget ind som
+brugeren anne (dette navn skal du bare erstatte med dit eget
+brugernavn), at du bruger en ".rpm-baseret" distribution og at du ikke
+har en Windows-partition på din computer. 
+</para>
+
+<para>
+Jeg har lavet denne vejledning på en Mandrake 8.0 distribution
+så hvis du bruger en anden distribution end den kan der godt være
+nogle ting som er lidt anderledes. Det skal jeg dog nok gøre dig
+opmærksom på når det kommer.
+</para>
+
+<sect3 id="wine-installation-krav">
+<title>Hvad kræver WINE af computeren?</title>
+
+<para>
+For at køre WINE skal duminimum have en computer med en
+386-processor. Det er som sagt kun muligt at køre WINE på Intel
+x86-processorer (altså normale PC'er) og dermed IKKE på computere som
+Macintosh.
+</para>
+
+<para>
+Et UNIX-operativ system som f.eks. Linux, FreeBSD, Solaris x86. Dog
+skal man huske på at Codeweavers WINE kun kommer som .rpm-fil.
+Minimum 16 MB ram. For virkelig at få noget ud af det anbefales
+minimum 64 MB ram.
+</para>
+
+<para>
+Et X11 window system (f.eks. XFree86). Hvis du benytter andet end
+XFree86 kan det være lidt problematisk. Hvis det er tilfældet så se på
+WINE's web-site.
+</para>
+</sect3>
+
+<sect3 id="wine-hent">
+<title>Få fat på programmet</title>
+
+<para>
+På <ulink url="http://www.codeweavers.com/technology/wine/download.php">http://www.codeweavers.com/technology/wine/download.php</ulink> henter du
+pakken med WINE Preview 3 (den på ca. 12 MB. Altså der der hedder
+"Installable Package") og lægger den ind i annes hjemmemappe
+(/home/anne).
+</para>
+</sect3>
+
+<sect3 id="wine-i-forvejen">
+<title>Er der WINE i forvejen?</title>
+<para>
+Først skal du finde ud af om der i forvejen ligger en version af WINE
+på din maskine. Det kan der godt gøre selv om du ikke ved det, for
+nogle distributioner installerer det automatisk sammen med alt det
+andet software. For at finde ud af det skal du skrive <command>rpm -qa
+| grep wine</command> (evt. også <command>rpm -qa | grep
+WINE</command>) i et terminalvindue. Hvis der er installeret en
+version af WINE i forvejen bør du få et svar som minder lidt om det
+her: <literal>wine-20010305-1mdk</literal>. Det er kun hvis du har en Mandrake
+distribution at der står "mdk" til sidst. Der kan være mere end en
+pakke hvis du f.eks. har en programmørudgave liggende også. Hvis du
+har det bør du dog overveje om det er værd at skifte WINE ud.
+</para>
+
+<para>
+WINE bliver opdateret utrolig tit og en version af WINE der følger med
+din distribution kan godt være lidt gammel. Hvis du støder ind i et
+problem med den version der ligger der i forvejen så kan det nogle
+gange betale sig at opdatere WINE til den nyeste version. Hvis WINE
+derimod virker fint til det formål du skal bruge det til, så er der jo
+ingen grund til at fjerne det.
+</para>
+
+<para>
+Hvis der intet står på skærmen efter et stykke tid så har du ikke WINE
+installeret. Hvis det ikke er installeret så spring videre til
+"Installation"-afsnittet.
+</para>
+</sect3>
+
+<sect3 id="wine-afinstallation">
+<title>Afinstallering</title>
+<para>
+Lad os se nærmere på hvordan man afinstaller WINE. Dette gøres ved at
+logge ind som root og åbne en xterm eller åbne en xterm som ens
+normale bruger og skrive su og trykke på enter-tasten og så skrive sit
+root-kodeord.
+</para>
+
+<para>
+Derefter skriver du <command>rpm -e programnavnet-fra-før</command> (i
+mit tilfælde <command>rpm -e wine-20010305-1mdk</command>). Hvis du
+har mere end en WINE-pakke så gør du bare det samme igen ved at skrive
+<command>rpm -e navnet-på-det-andet-program</command>. Nu kan du så
+igen skrive <command>rpm -qa | grep wine</command> (og <command>rpm
+-qa | grep WINE</command>) og hvis der ingen ting kommer frem på
+skærmen (udover en ny linie i konsollen) så er du WINE-fri.
+</para>
+</sect3>
+
+<sect3 id="wine-ny-installation">
+<title>Installation af ny WINE</title>
+<para>
+Det første du skal gøre er at (hvis du ikke længere har root-adgang så
+skriv <command>su</command>, og derefter dit root-kodeord, i en xterm)
+gå ind i mappen hvor WINE-pakken ligger med kommandoen <command>cd
+/home/anne</command>. Her skriver du så <command>rpm -i
+codeweavers-wine-20010305-1.i386.rpm</command>.
+</para>
+
+<para>
+Nu kan der ske to ting. Enten så installerer den perfekt eller også så
+fortæller den at den mangler nogle programmer for at kunne
+installere. Den kan f.eks. skrive at den mangler programmet iTcl ellel
+xmessage eller lignende. Det er så nødvendigt at skaffe pakkerne. Hvis
+du har Mandrake 8.0 så kan du bruge deres Software Manager eller kan
+du gå på Internettet og finde dem. iTcl pakkerne kan du finde på
+CodeWeavers web-site. Hvis WINE skriver at du har brug for xmessage så
+skal du installere pakken X11R6-contrib eller X11R6-contribs.
+</para>
+
+<para>
+Når det så er installeret skal du logge ud af root og logge ind som
+din normale wine-bruger. Nu skal du så konfigurere WINE. Det gøres via
+WineSetup. WineSetup kan enten startes fra system-menuen eller fra
+konsollen, det gør ingen forskel. Hvis du vil starte det fra konsollen
+skal du bare skrive winesetup i en xterm. Så kommer der et vindue frem
+hvor der er en tegning af Tux der prøver at åbne en vin. Her vælger du
+den øverste valgmulighed. Den der hedder
+<filename>~/.wine/config</filename> (new, writable). Tryk derefter på
+"Next &gt;&gt;".
+</para>
+
+<para>
+Nu kommer en ny ting i WINE-konfigurations processen
+frem. Indstillingen af Windows-mappen. Her skal du bare vælge den
+mulighed hvor der står (Create a new windows directory:
+<filename>/home/anne/.wine/fake_windows</filename>) være. Tryk
+derefter på "Next &gt;&gt;"
+</para>
+
+<para>
+Nu kommer der et nyt vindue op hvori du kan konfigurere WINE. Nu vil
+jeg systematisk gennemgå hver punkt i den venstre side af
+konfigurationsvinduet:
+</para>
+
+<sect4 id="wine-basic">
+<title>Basic</title>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<emphasis>Look & Feel</emphasis>
+Vælg hvilket styresystem dine Windows programmer skal have udseende
+efter. Du kan vælge mellem Windows 3.1, Windows 95 eller Windows 98.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  <emphasis>Window Mode</emphasis>
+ Her kan du vælge hvordan programmerne der bliver kørt med WINE skal
+optræde på dit skrivebord. Vælg mellem tre indstillinger.
+ </para>
+
+<para>
+<emphasis>Managed:</emphasis> De Windows applikationer som bliver
+kørt, bliver mere integrerede i din X opsætning, og kommer derfor til
+at se flottere og mere "Linux-agtige" ud. Nogle gange kan
+Windows-programmerne og X dog ikke helt finde ud af at køre rigtigt
+sammen, så nogle gange skaber det problemer, at køre med
+"managed". Problemer som man vil kunne undgå hvis man vælger en af de
+to andre indstillinger.  
+</para>
+
+<para>
+<emphasis>Unmanaged:</emphasis> Nu bliver programmet ikke integreret i
+din X opsætning og ser derfor ud som det ville have gjort under
+Windows. Her er der ingen problemer med at X kan få programmet til
+ikke at køre rigtigt og derfor vil programmer der ikke kan køre som
+managed, i nogle tilfælde godt køre som unmanaged. Hvis man vælger
+denne indstilling kan man godt køre programmerne som managed uden at
+skulle konfigurere WINE igen (læs senere i denne
+instruktionsvejledning). Dette virker ikke den modsatte vej. Altså
+hvis man har valgt managed kan man ikke køre programmet som unmanaged
+uden at skulle konfigurere WINE igen.
+</para>
+
+<para>
+<emphasis>Desktop:</emphasis> Her får du mulighed for at åbne dine Windows programmer i
+noget som ligner et Windows skrivebord samt den opløsning
+"skrivebordet" skal være. Dette skulle efter sigende være det
+uddseende som flest programmer virker med. Selve "skrivebordet" ser
+"managed" ud mens programmet der kører i skrivebordet ser "unmanaged"
+ud. Hver gang du åbner en ny applikation så åbnes der også et nyt
+skrivebord. Nogle mennesker foretrækker denne indstilling. Jeg synes
+også at den er nyttig til tider, men dog synes jeg at programmerne
+generelt kommer til at fylde for meget hvis man ser dem i
+"desktop-mode" og normalt virker programmer fint i både unmanaged og
+managed.
+</para>
+
+
+<para>
+På <xref linkend="gozdesktop-fig">, <xref linkend="gozmanaged-fig"> og
+<xref linkend="gozunmanaged-fig">,  kan du se tre forskellige screenshots
+hvor jeg har prøvet at køre Windows-programmet Go!Zilla via WINE under
+managed, unmanaged og desktop 640x480.
+</para>
+
+<para>
+Normalt kan man bare stoppe her ved at trykke på "Finish"-knappen. Så
+burde det være klart til brug. Hvis noget går galt, du er nørdet af
+natur eller du bare gerne vil rode lidt mere med WINE, så læs videre.
+</para>
+</listitem>
+</itemizedlist>
+
+<FIGURE ID="gozdesktop-fig" FLOAT="1">
+<TITLE>Gozilla desktop</TITLE>
+<GRAPHIC FILEREF="../images/gozdesktop.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="gozmanaged-fig" FLOAT="1">
+<TITLE>Gozilla managed</TITLE>
+<GRAPHIC FILEREF="../images/gozmanaged.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="gozunmanaged-fig" FLOAT="1">
+<TITLE>Gozilla unmanaged</TITLE>
+<GRAPHIC FILEREF="../images/gozunmanaged.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</sect4>
+
+<sect4 id="wine-advanced">
+<title>Advanced</title>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<emphasis>Drives</emphasis>  Her kan du indstille dine
+drev. F.eks. hvor dit CD-ROM-drev ligger og hvor dit C-drev ligger
+osv. F.eks. betyder denne linie: "A Floppy /mnt/floppy /dev/fd0" . A =
+Windows-drevbogtav. Floppy = type hardware. /mnt/floppy = hvor på
+Linux drevet befinder sig. <filename>/dev/fd0</filename> = hardware
+stien. Hvis du er i tvivl om dine hardwarestier er indstillet korrekt
+kan du åbne en konsol og skrive <command>emacs /etc/fstab</command>
+(du skal dog passe godt på ikke at ændre noget i denne fil da den er
+ret vigtig). F.eks. var D-drevet på min computer
+(<filename>/mnt/cdrom</filename>) automatisk indstillet til at have
+hardware adressen <filename>/dev/hdd</filename> og jeg skulle så selv
+ændre det til <filename></filename>/dev/cdrom. Dette gøres ved at
+trykke på linien for det stk. hardware man ønsker og derefter trykke
+på knappen "Edit". I det vindue som kommer frem kan man så indstille
+det stk. hardware man har valgt.
+ </para>
+
+<FIGURE ID="winedrives-fig" FLOAT="1">
+<TITLE>WINE drev</TITLE>
+<GRAPHIC FILEREF="../images/winedrives.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+</listitem>
+
+
+
+<listitem> 
+ <para>
+<emphasis>Paths</emphasis>
+Her kan du bare se hvor dine falske Windows-mapper (altså de mapper
+som WINE selv laver) bliver placeret.
+ </para>
+</listitem>
+
+
+<listitem> 
+<para>
+<emphasis>Look & Feel</emphasis>
+Her kan du vælge mellem fire indstillinger:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<emphasis>Use DGA</emphasis>
+Denne indstilling sørger for at det såkaldte DirectDraw arbejder bedre
+sammen med X og det kan derfor overtage hele skærmen og køre
+programmerne i "full screen" ved maximum hastighed. Dog har brugen af
+DGA også en mindre heldig side. Hvis WINE går ned (crasher) mens det
+bruger DGA så kan det ske at computeren fuldstændig standser og det
+bliver nødvendigt at skulle genstarte computeren for at få kontrol
+over den igen.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>Use X shared memory</emphasis>
+Denne indstilling tillader programmer, som bliver kørt i WINE, at køre
+hurtigere end de normalt ville gøre i X. Dog langt fra så hurtigt som
+hvis de brugte DGA.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>DX grab</emphasis>
+Hvis man ikke bruger DGA så sørger denne indstilling for at
+musemarkøren holder sig inde i WINE-vinduet. Hvis WINE chrasher mens
+man kører med DX grab så standser computeren ligesom med DGA (her kan
+man dog benytte keyboardet og derved få lukket X).
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>Double-buffered desktop.</emphasis> Dette har kun betydning
+hvis du bruger komandoen <command>wine --desktop</command> til at
+starte dine WINE-programmer i stedet for bare at skrive wine.    Det
+bestemmer om der skal bruges det såkaldte "double-buffered visual."
+Det er noget som de fleste OpenGL-spil skal bruge for at køre
+rigtigt. Codeweavers WINE understøtter dog ikke OpenGL, så hvis der
+skal spilles 3D-spil via WINE (f.eks. Half-Life) så skal du prøve at
+se på den "rigtige" WINE side.
+</para>
+
+<para>
+Jeg har kun valgt at have Use DGA og Use X shared memory slået til,
+men det er lidt en smagssag. 
+</para>
+</listitem>
+
+</itemizedlist>
+</listitem>
+
+
+<listitem> 
+ <para>
+<emphasis>DLLs</emphasis>
+.dll filer er Windows' systemfiler. I denne menu kan du vælge
+hvordan WINE skal forholde sig til de systemfiler som det
+understøtter. Der er tre muligheder for at vise WINE hvilke
+systemfiler der skal bruges fra de forskellige steder. Der er builtin,
+native og so. Hvis du ikke har Windows så bør alle filerne stå som
+"builtin" bortset fra nogle specielle filer. Bl.a dem der hedder noget
+med "glide", de bør stå som "so". Codeweavers WINE bør dog selv
+indstille dette korrekt. "Builtin" fortæller WINE at systemfilerne
+skal findes blandt WINEs "kunstige" .dll filer. Altså de systemfiler
+som følger med WINE. "So"-filer bruges til programmer som har de samme
+API calls under både Windows og Linux (som f.eks. Glide). Ved at vælge
+at filerne skal findes "native" kan man (hvis man har en version af
+Windows installeret) få WINE til at bruge Windows' systemfiler. På
+computeren hvor denne HOW-TO er lavet har jeg dog ikke installeret
+Windows og beskrivelsen af native-funktionen har jeg derfor valgt at
+udelade.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>Ports</emphasis>
+Her kan du indstille hardwareadresserne til dine porte bag på
+computeren. Disse porte burde være rigtigt indstillede og du bør
+derfor kun rette i dem hvis det ikke virker på din computer.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>Registry</emphasis>
+Her bør alle valgmulighederne bare være slåede til. De handler om
+hvor WINE kan hente og skrive sine informationer fra og til.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>Finish</emphasis>
+Her kan du se hvordan din WINE-konfigurationsfil kommer til at se ud.
+Så er der bare tilbage at trykke på "Finish"-knappen nede i højre hjørne.
+ </para>
+</listitem>
+
+
+</itemizedlist>
+
+<para>
+I denne vejledning valgte vi at bruge en personlig konfigurationsfil
+og personlig WINE-mappe. Derfor skal du konfigurere WINE for hver
+bruger inden du du kan benytte WINE, med den nye bruger.
+</para>
+
+<para>
+Når man skal åbne programmer med WINE kan man normalt bare skrive wine
+eksempel.exe i en xterm eller bare dobbeltklikke på ikonet i din
+filmanager. Dette er dog ikke det eneste mulighed. Man kan ændre WINEs
+indstillinger for hvert enkelt program bare ved hjælp af simple
+kommandoer. Nederunder vil jeg fortælle om nogle af de mest
+nødvendige.
+</para>
+
+
 <screen>
-<prompt>[anne@linus ~]$ </prompt> <userinput>su -</userinput>
-Password: 
-<prompt>[root@linus root]# </prompt> <userinput>rpm -i wine-990328-1.i386.rpm</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>wine --desktop YYYxZZZ eksempel.exe</userinput>
 </screen>
 
 <para>
-Inden du kan komme i gang med at bruge WINE, bør du se lidt på
-konfigurationen af WINE, som sker i filen
-<filename>/etc/wine.conf</filename>. Du skal først og fremmest
-tilrette filen, så stier til dine Microsoft Windows-kataloger er
-korrekte. Når du ønsker at køre et Windows-program, bruger du
-kommandoen <command>wine</command> (efterfulgt af navnet på det
-program, du ønsker at køre). Nedenfor ser du et eksempel på brugen af
-WINE - kabalespillet fra Windows kører, og <command>gtop</command> ses
-i baggrunden.
+Bemærk at der skal to minus-tegn foran "desktop".
 </para>
 
-<FIGURE ID="wine-fig" FLOAT="1">
-<TITLE>Windows-emulatoren WINE</TITLE>
-<GRAPHIC FILEREF="wine.&magic;"  SCALE="40"></GRAPHIC>
-</FIGURE>
+<para>
+Her er kan du fortælle WINE at det skal åbne Windows-programmet i sit
+eget lille skrivebord. I stedet for YYYxZZZ skal du indsætte pixlerne
+for den størelse du ønsker vinduet skal fylde. Det er dog ikke bare
+hvilke som helst tal, men skal være de normale
+skrivebordsstørelser. F.eks. <command>wine --desktop 800x600
+eksempel.exe</command> Dette er især smart hvis du vil køre programmer
+der normalt fylder hele skærmen. Du kan altså få et fuld-skærms
+program til at køre i et vindue. F.eks. hvis normalt bruger en
+skærmopløsning på 1024x768 pixels.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>wine --managed eksempel.exe</userinput>
+</screen>
+
+<para>
+Her er kan du fortælle WINE at det skal integrere programmet bedre i
+din window-manager. Dette gælder selvfølgelig kun hvis du har valgt at
+WINE normalt skal åbne programmer "unmanaged."
+</para>
+
+<para>
+Hvis du vil vide mere om hvordan man starter, installerer og kører
+programmer via WINE, så læs videre i næste afsnit.
+</para>
+</sect4>
+</sect3>
+</sect2>
+
+<sect2 id="installere-programmer-under-wine">
+<title>Installere programmer under WINE</title>
+<para>
+For at installere et program via WINE er der ikke mange ting der skal
+gøres (hvis det virker). Egentlig bør du bare kunne skrive <command>wine
+et-eller-andet-program</command> for at installere og køre det, men der er dog
+alligvel nogle små ting der skal/kan gøres udover det.
+</para>
+
+<para> 
+Her vil jeg vise hvordan man installerer spillet Caesar III via
+WINE. Det sker igennem en 13 skridts installationsprocedure som
+egentlig kun har betydning hvis du ejer spillet Caesar 3. Jeg har dog
+taget det med alligvel så folk se hvor meget WINE faktisk ligner det
+rigtige Windows. Du kan trykke på tallene ud for de fleste
+installations-skridt for at se et billede/screenshot af den procedure
+der står beskrvet i teksten.
+</para>
+
+<orderedlist>
+<listitem>
+ <para>
+Det første du skal gøre er at lægge din Caesar 3-CD-ROM i CD-ROM-drevet.
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Så skal du åbne en Xterm.
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Monter dit cdrom-drev ved at skrive <command>mount
+ /mnt/cdrom</command> (dette er lavet på en Linux Mandrake-maskine så
+ hvis du bruger en anden distribution skal du lige tage højde for at
+ dit cdrom-drev måske ligger i en anden mappe, f.eks. på SuSE).
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Gå ind i cdrom'en ved at skrive <command>cd /mnt/cdrom</command> og
+ skriv så <command>wine SETUP.EXE</command>
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Nu starter programmet med at vise et stort Sierra-logo og et lille
+vindue der indikerer hvor langt programmet er nået med at indlæse
+installations-proceduren.
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Herefter bliver hele skærmen sort, pånær en tekst i det øvre venstre
+ hjørne hvor der med hvide bogstaver står Caesar 3. Så kommer der et
+ nyt vindue frem. Det hedder "Welcome" og der står bare lidt
+ tekst. Tryk på knappen "Next>".
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Nu kommer der et vindue frem som hedder "Setup Type". Her kan du
+vælge hvor mange af filerne som skal ligge på computeren og hvor mange
+den skal hente fra cdrom'en. Du kan vælge mellem tre forskellige
+muligheder:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Full Install - Dette kræver 542 MB fri diskplads.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Minimum Install - Dette kræver 150 MB fri diskplads.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Standard Install - Dette kræver 330 MB fri diskplads.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Jeg synes at det er rarest med "Full Install", men der er jo lidt en
+smagssag. Vælg den type du gerne vil have og tryk så på knappen
+"Next>".
+</para>
+</listitem>
+
+<listitem>
+ <para>
+ Så kommer der et vindue der hedder "Choose Destination". Der er
+lidt text og nedenunder det er der en "kasse" hvori der står hvor
+Caesar3 vil blive installeret. Her plejer der at stå
+<filename>C:\SIERRA\Caesar3</filename>.
+</para>
+
+<para>
+Hvis du hellere vil installere det i en anden folder så tryk på
+knappen "Browse..." og vælg der hvor du gerne vil have det placeret
+istedet. Til sidst trykker du bare på knappen "Next >".
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+Så går installationen igang og du kan se nogle vinduer som viser
+hvor langt installationen er nået. Bagved dem er der flotte
+3D-billeder fra det gamle Rom og hvis du tænder for din højtalere kan
+du høre noget romer-musik.
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+Når filerne er installerede bliver skærmen igen sort med Caesar
+3-teksten i venstre hjørne. Så kommer der et vindue der hedder
+"Install". Her står lidt tekst og du skal bare trykke på knappen "Ok".
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+Der kommer så højst sandsynligt et vindue som også hedder
+"Install". Har står der at du ikke har DirectX installeret og der
+bliver spurgt om du vil installere det. Her skal du bare trykke på
+knappen "Nej".
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+Det næste vindue hedder "Display Read Me". Her kan du vælge at
+læse readme-filen for Caesar3. Jeg plejer dog bare at trykke på
+knappen "Nej".
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ Det sidste vindue hedder "Setup Complete". Der står nogle få
+ linier tekst og du skal bare trykke på knappen "Finish".   
+ </para>
+</listitem>
+</orderedlist>
 
 
 <para>
-Lad os bare indrømme det: vi har forsøgt med en del
-Windows-programmer, og kun få har virket i WINE. Men selvom WINE ikke
-virker helt endnu, er det nu alligevel værd at følge med i udviklingen 
-og prøve et "snapshot" i ny og næ.
+Så er programmet installeret og nu skal vi se om det virker. Åbn en
+xterm og skriv mount /mnt/cdrom (hvis du nu har haft din computer
+slukket eller brugt andre cdrom'er i mellemtiden (dette er lavet på
+en Linux Mandrake-maskine så hvis du bruger en anden distribution skal
+du lige tage højde for at dit cdrom-drev måske ligger i en anden
+mappe, f.eks. på SuSE)). Derefter cd
+/home/anne/.wine/fake_windows/SIERRA/Caesar3 Så langt så godt. Nu
+er det lidt forskelligt hvordan du kan starte programmet alt efter
+hvilken skærmstørelse du har. Som du læste tidligere kan du gøre
+forskellige ting. Hvis du har en skærmopløsning på 640x480 eller
+800x600 pixels, så skal du bare starte programmet ved at skrive wine
+c3.exe Nu burde Caesar 3 starte i full screen. Hvis du tilgengæld har
+en skærmopløsning større end det skal du skrive enten wine --desktop 
+640x480 c3.exe eller wine --desktop 800x600 c3.exe alt efter hvor stor
+en skærmstørelse du gerne vil have det i. Så starter Caesar 3 i et
+WINE-skrivebord som har størrelse efter de to tal du skrev før
+(f.eks. 640x480). Hvis du er i tvivl om hvad du skal vælge så kan du
+jo bare prøve begge to (dog ikke på samme tid :-).
 </para>
 
- <para>
-  Slutteligt bør det nævnes, at der også findes en kommerciel Windows-emulator
-  ved navn WABI.
- </para>
+<para>
+Her kunne denne vejledning vel godt ende, men det gør den ikke. For
+hvem gider egentlig skrive
+</para>
+
+<screen>
+ mount /mnt/cdrom
+ cd /home/anne/.wine/fake_windows/SIERRA/Caesar3
+ wine --desktop 800x600 c3.exe
+</screen>
+
+<para>
+hver gang hvis der er en nemmere metode. Faktisk kan du gøre sådan at
+Caesar 3 starter præcis som du vil have det bare ved at skrive
+<command>caesar3</command> i en xterm. Det er dog ikke noget som WINE
+på forhånd har gjort, næ det er noget vi selv skal til. Det vi skal
+lave hedder et shell-script.
+</para>
+
+<para>
+Lad os sige at vi står i vores hjemmemappe
+<filename>/home/anne</filename>. Det første du skal gøre er at åbne
+din foretrukne editor og lave en fil der hedder
+<filename>caesar3</filename>. Hvis du er i tvivl så åbn en xterm (og
+så sørg for at du står i din hjemmemappe) og skriv så <command>emacs
+caesar3</command>. Så kommer editoren Emacs frem og har både lavet og
+åbnet filen caesar3. Nu skal du så indtaste følgende i filen: 
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter Caesar III"
+mount /mnt/cdrom
+cd /home/anne/.wine/fake_windows/SIERRA/Caesar3
+wine --desktop 800x600 c3.exe
+</screen>
+
+<para>
+Forklaringen på hvad filen gør kommer her:
+</para>
+
+<para>
+<command>#!/bin/sh</command> - Her starter dit shell-script
+</para>
+
+<para>
+<command>echo "Starter Caesar III"</command> - Denne linie skriver
+Starter Caesar III i xtermen når den starter. Den er egentlig
+ligegyldig men det giver en flot "effekt" og så ved du også at
+shell-scriptet faktisk er igang.
+</para>
+
+<para>
+<command>mount /mnt/cdrom</command> - Her fortæller du dit cdrom-drev
+at Caesar 3 CD'en er i dit cdrom-drev (dette er lavet på en Linux
+Mandrake-maskine så hvis du bruger en anden distribution skal du lige
+tage højde for at dit cdrom-drev måske ligger i en anden mappe,
+f.eks. på SuSE).
+</para>
+
+<para>
+<command>cd /home/anne/.wine/fake_windows/SIERRA/Caesar3</command>
+- Dette fortæller Linux at den skal gå ind i mappen
+<filename>/home/anne/.wine/fake_windows/SIERRA/Caesar3</filename>
+</para>
+
+<para>
+Til sidst skal du indsætte den kode du bruger til at starte Caesar
+3. Hvis du bare plejer at skrive wine c3.exe så skriv det. Jeg bruger
+linien <command>wine --desktop 800x600 c3.exe</command>
+</para>
+
+<para>
+Nu skal du bare gemme filen og lukke editoren. Hvis du bruger Emacs
+kan du gøre det hele via keyboardet. Du trykker (og holder den nede)
+først på "Ctrl"-tasten og derefter en gang på x (eller skrevet kort
+Ctrl-x). Tryk så Ctrl-s Giv så slip fra "Ctrl"-tasten. Nu er
+dokumentet gemt. Tryk så først Ctrl-x og derefter Ctrl-c Så har du
+lukket det.
+</para>
+
+<para>
+Nu skal du have aktiveret dit shell-script, for Linux kan ikke bare
+starte en tekstfil. Dette gør du ved at åbne en xterm og gå ind i
+samme mappe som du har lavet caesar3-filen i (formodentlig i dit
+hjemmekatalog). Her skriver du så <command>chmod +x caesar3</command>
+Så er den gjort klar. Prøv nu at skrive <command>./caesar3</command> i
+en xterm og se om Caesar 3 starter (og om det står på skærmen). Hvis
+det gør det så virker scriptet. Hvis det ikke virker (og det virkede
+da du startede Caesar 3 "manuelt" så bør du lige kigge din kode og
+instruktionerne her igennem igen og lige tjekke at alt er stavet
+rigtigt. Husk at forskellen på store og små bogstaver har en
+betydning!)
+</para>
+
+<para>
+Nu skal det så gøres endnu nemmere. I en xterm skriver du følgende
+kommandoer:
+</para>
+
+<para>
+<command>cd /home/anne</command> - Dette sætter dig ind i Annes
+hjemmesmappe
+</para>
+
+<para>
+<command>su</command> (skriv derefter dit root-kodeord) - Dette giver
+dig root-rettigheder
+</para>
+
+<para>
+<command>cp caesar3 /bin</command> - Dette kopierer filen
+<filename>caesar3</filename> til mappen <filename>bin</filename>
+</para>
+
+<para> 
+<command>cd /bin</command> - Dette sætter dig ind i mappen
+<filename>/bin</filename>.  Det her her at mange af Linux' kommandoer
+ligger. Når filen bliver placeret her kan den eksekveres uden at
+fortælle filens sti. Altså kan man skrive <command>caesar3</command> 
+i stedet for at
+skulle skrive <command>/home/anne/caesar3</command>
+</para>
+
+<para>
+<command>chmod -R 777 caesar3</command> - Dette
+giver alle brugere fuld adgang til filen exit - Så vender du tilbage
+til din normale bruger
+</para>
+
+<para>
+Nu kan du så prøve at gå ind i en vilkårlig mappe og så skrive caesar3
+Så bør Caesar 3 starte, helt automatisk. 
+</para>
+</sect2>
 </sect1>
 
 <sect1 id="VICE">
@@ -235,11 +1058,11 @@ tjekke, hvilket navn <filename>libstdc++</filename> har i
 </para>
 
 <screen>
-<prompt>[anne@linus ~]$ </prompt> <userinput>su -</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>su -</userinput>
 Password: 
-<prompt>[root@linus root]# </prompt> <userinput>cd /usr/lib</userinput>
-<prompt>[root@linus root]# </prompt> <userinput>ln -s libstdc++-2-libc6.1-1-2.9.0.so libstdc++.so.2.9</userinput>
-<prompt>[root@linus root]# </prompt> <userinput>rpm -ivh --nodeps vice-1.0-1.i386.rpm</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>cd /usr/lib</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>ln -s libstdc++-2-libc6.1-1-2.9.0.so libstdc++.so.2.9</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>rpm -ivh --nodeps vice-1.0-1.i386.rpm</userinput>
 </screen>
 
 <para>
