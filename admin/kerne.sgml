@@ -1007,6 +1007,55 @@ kildeteksten og starte modulet på ny - uden at genstarte maskinen!
 
 </sect2>
 
+
+<sect2 id="kerne-opgradering">
+<title>Opgradering af kernen</title>
+<para>
+Hvis man har lavet en god opsætning af Linux-kernen og noget 
+tid senere får brug for at opgradere til en ny kerne-version, så 
+kan det være irriterende at skulle afkrydse eksakt de samme valg-muligheder
+igen med risiko for at noget bliver gjort forkert. En god procedure
+er er gemme den gamle <filename>.config</filename>-fil, som ligger 
+i <filename>/usr/src/linux</filename> til et sted du vælger - og det kan være
+klogt at gemme den under et navn som viser hvilken dato og kerneversion,
+den passer med. F.eks. kan man køre <command>cp /usr/src/linux/ /root/kerne.config-DATO-KERNEVERSION</command>.
+</para>
+
+<para>
+Start med at hente den nye kerne-kildekode hjem (bemærk at hvis du henter 
+et patch, så passer den typisk ikke til den Linux-version du fik med din 
+Linux-distribution). Hvis du hentede version 2.4.12, så lav kataloget
+<command>mkdir /usr/src/linux-2.4.12</command>, og kør følgende links i 
+stilling; <command>ln -sf /usr/src/linux-2.4.12 /usr/src/linux</command> og
+<command>ln -sf /usr/src/linux-2.4.12 /usr/src/linux-2.4</command>.
+</para>
+
+<para>
+Gå nu til <filename>/usr/src/linux</filename> og kør 
+<command>make mrproper</command>. 
+Hent derefter din gamle 
+<filename>.config-fil</filename>; 
+<command>cp /root/kerne.config-DATO-KERNEVERSION /usr/src/linux/.config</command> og kør følgende
+
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>cd /usr/src/linux</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>make mrproper</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>cp /root/kerne.config-DATO-KERNEVERSION .config</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>make oldconfig</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>make dep</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>make bzImage</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>make modules</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>make modules_install</userinput>
+<prompt>[root@linus linux]#</prompt> <userinput>cp arch/i386/boot/bzImage /boot/vmlinuz-x.y.z</userinput>
+</screen>
+
+<para>
+Endelig skal man rette <filename>/etc/lilo.conf</filename> til at pege på <filename>/boot/vmlinuz-x.y.z</filename> og køre <command>/sbin/lilo</command>.
+</para>
+</sect2>
+
 <sect2 id="rescuedisk">
 <title>Lav en redningsdiskette</title>
 <para>
