@@ -525,7 +525,7 @@ Se også vores konkurrenters bøger ;-)
 
 <ul>
 <li>"Linux i skolen" på <a href="http://www.gnuskole.dk">www.gnuskole.dk</a></li>
-<li>Bog om Debian <a href="http://www.razor.dk/debianguiden/">www.razor.dk/debianguiden/</a></li>
+<li>"Debianguiden" på <a href="http://www.debianguiden.dk/">www.debianguiden.dk/</a></li>
 </ul>
 
 <p>
