@@ -7,6 +7,13 @@ statusfiler:
 	make -C web statusfiler 
 	make -C sikkerhed statusfiler 
 
+sgml:
+	make -C friheden sgml
+	make -C admin sgml 
+	make -C program sgml
+	make -C web sgml 
+	make -C sikkerhed sgml 
+
 html:
 	make -C friheden html
 	make -C admin html 

@@ -3,7 +3,10 @@ targetname=linux-$(notdir $(locdirname))
 version=$(shell cat version.sgml)
 dato=$(shell cat dato.sgml)
 
-all:	statusfiler html pspdf palmpilot
+all:	statusfiler html pspdf palmpilot sgml
+
+sgml:
+	tar cvzf $(targetname)-$(version).sgml.tgz *.sgml Makefile
 
 palmpilot:
 	rm -f palm/*.prc palm/*.pdb
@@ -66,6 +69,6 @@ pspdf:
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz $(targetname)-*.palm.tgz
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz $(targetname)-*.palm.tgz $(targetname)-*.sgml.tgz
 
 
