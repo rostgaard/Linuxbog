@@ -33,38 +33,37 @@ Søg efter:
 <?php
 
 function htmllink( $sgmlfil ) {
-  //$link = preg_replace("|(\w+)/(\w+)\.sgml$|","\\1/bog/\\2.html", $sgmlfil);
-  $link = $sgmlfil;
-  $link = "<a href=\"$link\">$link</a>";
-  return $link;
+  return "<a href=\"$sgmlfil\">$sgmlfil</a>";
+}
+
+function searchinfile( $file, $q ) {
+  $count = 0;
+  $line = 0;
+  $fd = fopen($file, "r");
+  while (!feof($fd)) {
+    $str = fgets($fd, 1024);
+    $line++;
+    if (preg_match("|$q|i", $str)) {
+      if (!$count) echo "<p>\n";
+      $count++;
+      echo "<b>vi ".htmllink($file)." +$line</b>\n";
+      echo "<br>&nbsp;\n";
+      echo "<i>".htmlentities($str)."</i><br>\n";
+      flush();
+    }
+  }
+  fclose($fd);
+  if ($count) echo "</p>\n\n";
+  return $count;
 }
 
 function searchdir( $dir, $q ) {
   $count = 0;
   $d = dir($dir);
-  while ($fil = $d->read()) {
-    if (preg_match("|^[a-z0-9]+\.sgml$|", $fil)) {
-      $line = 0;
-      $fd = fopen("$dir/$fil", "r");
-      while (!feof($fd)) {
-        $str = fgets($fd, 1024);
-        $line++;
-        if (preg_match("|$q|i", $str)) {
-          if (!$count) echo "<p>\n";
-          $count++;
-          echo "<b>vi ".htmllink("$dir/$fil")." +$line</b><br>&nbsp;";
-          echo "<i>".htmlentities($str)."</i><br>\n";
-          flush();
-        }
-      }
-      fclose($fd);
-    }
-  }
+  while ($fil = $d->read())
+    if (is_file($dir."/".$fil) && preg_match("|^[a-z0-9-_]+.+\.sgml$|", $fil))
+      $count += searchinfile("$dir/$fil", $q);
   $d->close();
-  if ($count) {
-    echo "<font size=\"-1\">Fundet <b>$count</b> tilfælde i <b>$dir</b></font>\n";
-    echo "</p>\n";
-  }
   return $count;
 }
 
@@ -76,13 +75,9 @@ function searchdir( $dir, $q ) {
 if ($q) {
   flush();
   $d = dir(".");
-  while ($dir = $d->read()) {
-    if (is_dir($dir) && preg_match("|^[a-z0-9]+$|", $dir)) {
-      //echo "<b>$dir</b><br>";
-      $cnt = searchdir($dir, $q);
-      //exit;
-    }
-  }
+  while ($dir = $d->read())
+    if (is_dir($dir) && preg_match("|^[a-z0-9]+$|", $dir))
+      $count += searchdir($dir, $q);
   $d->close();
 }
 
