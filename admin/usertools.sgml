@@ -2173,7 +2173,7 @@ huske at "blanke" mediet inden det bruges næste gang:
 hvor <command>xxxx</command> udfyldes ud fra dette:
 </para>
 
-<itemizedlist mark="bullet">
+<itemizedlist mark="bullet"  spacing="compact">
 <listitem>
  <para>
   <emphasis>all</emphasis>             blank the entire disk
@@ -2468,6 +2468,380 @@ selv ved IDE diske.
 </para>
 
 </sect2>
+</sect1>
+
+<SECT1 ID="sikkopi">
+<!-- Skrevet af Claus Sørensen "cs@klid.dk" -->
+
+<TITLE>Sikkerhedskopiering</TITLE>
+<indexterm>
+ <primary>Sikkerhedkopiering</primary>
+</indexterm>
+<indexterm>
+ <primary>Backup</primary>
+</indexterm>
+
+<para>
+En vigtig del af systemadministration er sikkerhedskopiering, 
+så man i tilfælde af nedbrud, harddiskcrash, brand 
+eller andre uheld, kan fortsætte uden større tab af data.
+</para>
+
+<para>
+Sikring af sine data kan ske på flere måder, hvilket selvfølgelig 
+er afhængigt af den grad af sikkerhed man ønsker samt i hvilket 
+omfang af data, som skal sikres.
+</para>
+
+<SECT2 ID="sikkopi-metoder">
+<TITLE>Metoder for sikkerhedskopiering</TITLE>
+<para>
+Grundlæggende kan man dele sikkerhedskopiering op i lokal- 
+og fjernkopiering, hvilket bestemmes af det omfang af 
+sikring som ønskes samt de tekniske muligheder som 
+forelægger eller investering i samme.
+</para>
+
+<sect3 id="sikkopi-lokal">
+<TITLE>Lokal sikkerhedskopiering</TITLE>
+
+<para>
+Lokal sikkerhedkopiering sker ved at 
+gemme kopier af sine data på samme lokation, som dataene 
+er. Her benyttes oftest disketter, bånd, brændbare 
+cdrommer eller udskiftelige harddiske som lagringsmedier.
+</para>
+</sect3>
+
+<sect3 id="sikkopi-fjern">
+<TITLE>Sikkerhedskopiering via Internettet</TITLE>
+
+<para>
+Fjernkopiering sker ved, at man aftaler med andre, om 
+at de krypteret spejler ens data samtidig med, at man 
+gør det samme med deres. Det kræver selvfølgelig en 
+tro på dem, som man udveksler data med, selvom dataene 
+er krypterede.
+</para>
+
+<para>
+Fjernkopiering er blevet mere aktuel efter at 
+højhastighedsforbindelser (ADSL m.v.) er kommet ned i et 
+prisleje, hvor også private og mindre virksomheder kan 
+være med.
+</para>
+
+<para>
+Man nøjes med at kopiere de forskelle, som er sket siden 
+sidst, så man belaster forbindelsen mest muligt. Hvis 
+man ikke stoler blindt på den, som giver plads til ens 
+sikkerhedskopi, kan man altid kryptere dataene med 
+GnuPG eller lignende krypteringsværktøjer.
+</para>
+</sect3>
+
+<sect3 id="sikkopi-hvad">
+<TITLE>Hvad skal kopieres?</TITLE>
+
+
+<para>
+Generelt skal man gemme de data, som man ikke kan 
+undvære og er umulige at fremskaffe på anden vis f.eks. 
+via installation.
+</para>
+
+<para>
+Dette kan være en af baggrundene for at dele sit Linux-system 
+op i flere partitioner, da visse værktøjer netop 
+sikkerhedskopiere efter partitioner. De vigtigste 
+kataloger er 
+<filename>/home</filename> (brugerdata), 
+<filename>/var</filename> (serverdata)
+og <filename>/etc</filename> (konfigurationsdata), 
+som således også bør have sine egne partitioner.
+</para>
+
+</sect3>
+
+
+
+</SECT2>
+
+<SECT2 ID="sikkopiprog">
+<TITLE>Værktøjer til sikkerhedskopiering</TITLE>
+<indexterm>
+ <primary>Sikkerhedkopiering</primary>
+ <secondary>Værktøjer</secondary>
+</indexterm>
+
+<para>
+Valget af værktøj til sikkerhedskopiering er afhængig 
+af en lang række faktorer så som lagringsmedie, 
+type af adgang til systemet, graden af automation 
+og omfanget af data.
+</para>
+
+<para>
+I de næste afsnit vil forskellige værktøjer kort blive 
+gennemgået, hvor deres fordele og ulemper vil blive 
+belyst. Listen er på ingen måde udtømmende, men kan 
+benyttes som et meget hurtigt overblik over de muligheder, 
+som findes til sikkerhedskopiering i et Linux-miljø.
+</para>
+
+<sect3 id="sikkopi-tar">
+<TITLE>Sikkerhedskopiering med tar</TITLE>
+<indexterm>
+ <primary>tar</primary>
+</indexterm>
+<indexterm>
+ <primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>tar</secondary>
+</indexterm>
+<para>
+Den mest benyttede kommando til sikkerhedskopiering er 
+<command>tar</command>, som er en forkortelse for Tape 
+ARchive. <command>tar</command> samler blot filer og 
+deres data sammen i en enkelt fil, som så kan gemmes 
+på et medie til sikkerhedskopiering f.eks. et bånd.
+</para>
+
+<para>
+Hvis du vil tage en sikkerhedskopi på disketter af 
+alle filerne i kataloget <filename>/home</filename> 
+gøres det således:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>tar -cMf /dev/fd0H1440 /home</userinput>
+</screen>
+
+<para>Hvor <command>-cMf</command> står for henholdsvis 
+oprette (<command>c</command>reate), 
+på flere medier (<command>m</command>ultiple) 
+og viser hvilke filer (<command>f</command>iles).
+</para>
+
+<para> 
+Når der ikke er mere plads på den første diskette, 
+spørger den automatisk efter den næste.
+</para>
+
+<para>Hver gang man har fortaget en sikkerhedskopiering, 
+skal man huske at kontrollere den, så man er sikker på, 
+at man kan genskabe dataene fra sikkerhedskopien. Dette 
+gøres således:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>tar -compare -verbose -f /dev/fd0H1440</userinput>
+/home
+/home/alle
+/home/alle/annoncetekst.txt
+....
+</screen>
+
+<para>
+I stedet for de lange tilvalg kan benyttes de kortere
+udgaver, hvilket kan ses af man-siden for 
+<command>tar</command>.
+</para>
+
+<para>Skal man genskabe dataene igen, så er det lige 
+til:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>tar -extract -same-permissions -verbose -file /dev/fd0H1440</userinput>
+/home
+/home/alle
+/home/alle/annoncetekst.txt
+....
+</screen>
+
+
+<para>
+Se mere ved hjælp af man-siden 
+(<command>man tar</command>) eller i afsnittet om 
+sikkerhedskopiering i 
+"The Linux System Administrators' Guide":
+<ulink url="http://www.linuxdoc.org/LDP/sag/index.html">http://www.linuxdoc.org/LDP/sag/index.html</ulink>. 
+</para>
+
+</sect3>
+
+<sect3 id="sikkopi-dump">
+<TITLE>Sikkerhedskopiering med dump og restore</TITLE>
+<indexterm>
+ <primary>dump</primary>
+</indexterm>
+
+<indexterm>
+ <primary>restore</primary>
+</indexterm>
+
+<indexterm>
+<primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>dump</secondary>
+</indexterm>
+
+<indexterm>
+<primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>restore</secondary>
+</indexterm>
+
+<para>
+Hvis man benytter Linux-filsystemet ext2, kan man 
+benytte kommandoen <command>dump</command> til at 
+gemme sikkerhedskopier helt eller delvist af hele 
+filsystemet. De genskabes igen med kommandoen 
+<command>restore</command>.
+</para>
+
+<para>
+Som standard gemmer den kun de forskelle, som er 
+siden sidste sikkerhedskopiering, men kan sættes 
+til at tage en kopiering af det hele. 
+</para>
+
+<para>
+Første gang man gemmer (samt med betrykkende 
+mellemrum) tages en sikkerhedskopi af alle filerne i 
+en partition. Lad os sige at <filename>/home</filename> 
+ligger på partition <filename>/dev/hda6</filename>, så 
+ser det sådan ud:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>dump -u0 -f /dev/st0 /home</userinput>
+</screen>
+
+<para>
+Genskabelsen af data sker ved, at man først genskaber 
+filsystemet på den partition, som skal genskabes:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>mke2fs /dev/hda6</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>mount /dev/hda6 /mnt</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>cd /mnt</userinput>
+</screen>
+
+<para>
+Så den bliver klar til at ganskabe de data, som 
+ligger i sikkerhedskopien:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>restore rf /dev/st0</userinput>
+</screen>
+
+<para>
+Efter genskabelsen skal <filename>/home</filename> 
+mountes igen:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>mount /mnt/home</userinput>
+</screen>
+
+
+<para>
+Se mere om <command>dump</command> og 
+<command>restore</command> ved at bruge deres 
+man-side.
+</para>
+</sect3>
+
+<sect3 id="sikkopi-afio">
+<TITLE>Sikkerhedskopiering med afio</TITLE>
+<indexterm>
+ <primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>afio</secondary>
+</indexterm>
+
+<para>
+Hvis man gerne vil have adgang til filerne individuelt, 
+efter sikkerhedskopieringen kan man benytte værktøjet 
+<command>afio</command>, som blandt andet bliver 
+benyttet af KBackup.
+</para>
+
+<para>
+Læs mere med <command>man afio</command>.
+</para>
+
+</sect3>
+
+<sect3 id="sikkopi-kbackup">
+<TITLE>Sikkerhedskopiering med KBackup</TITLE>
+<indexterm>
+ <primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>KBackup</secondary>
+</indexterm>
+
+<para>
+KBackup en alsidig applikation til håndtering af 
+sikkerhedkopiering bygget oven på andre 
+værktøjer blandt andet <command>tar</command> og 
+<command>afio</command>.
+</para>
+
+<para>
+Den menubaserede grænseflade er meget intuitiv 
+at bruge, så man nemt for sat en god rutine op 
+for sikkerhedskopiering af de data, man selv 
+ønsker.
+</para>
+
+<para>
+Flere informationer kan findes på KBackups 
+hjemmeside: <ulink url="http://kbackup.sourceforge.net">http://kbackup.sourceforge.net</ulink>
+</para>
+
+</sect3>
+
+<sect3 id="sikkopi-arkeia">
+<TITLE>Sikkerhedskopiering med Arkeia</TITLE>
+<indexterm>
+ <primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>Arkeia</secondary>
+</indexterm>
+
+<para>
+Arkeia er et meget professionelt grafisk værktøj 
+til håndtering af sikkerhedskopiering. Det er 
+desværre closed sourced, men gratis også for 
+virksomheder at bruge til en server og to klienter.
+</para>
+
+<para>
+Hent vejledningen og programmet fra deres 
+hjemmeside:
+<ulink url="http://www.arkeia.com/">http://www.arkeia.com/</ulink>
+og installér det.
+</para>
+</sect3>
+
+<sect3 id="sikkopi-windows">
+<TITLE>Microsoft Windows-værktøjer via Samba</TITLE>
+<indexterm>
+ <primary>Sikkerhedkopieringsværktøjer</primary>
+ <secondary>Til Microsoft Windows</secondary>
+</indexterm>
+<para>
+Ligger ens data på en Samba-server, kan man i de fleste 
+tilfælde bruge de Microsoft Windows-værktøjer, som 
+følger med båndstation eller anden hardware til 
+sikkerhedskopiering. Man skal så blot huske at oprette 
+en sti til lagringsmediet i konfigurationsfilen til 
+Samba (<filename>/etc/smb.conf</filename>).
+</para>
+</sect3>
+
+</sect2>
+
+
 
 </sect1>
 
@@ -2488,6 +2862,13 @@ Administration" udgivet af O'Reilly, og "UNIX System Administration
 Handbook" (Evi Nemeth, Garth Snyder, Scott Seebass og Trent R. Hein) udgivet
 af Prentice Hall PTR.
 </PARA>
+
+<para>
+Vil du vide mere om sikkerhedskopiering 
+under Linux, så kig i 
+"The Linux System Administrators' Guide":
+<ulink url="http://www.linuxdoc.org/LDP/sag/index.html">http://www.linuxdoc.org/LDP/sag/index.html</ulink>. 
+</para>
 
 
 <sect2 id="dansk">
@@ -2512,7 +2893,7 @@ SYSFONTACM=iso15
 </screen>
 
 <para>
-I Red Hat 6.2 virker dette perfekt.
+I Red Hat 6.2 og senere virker dette perfekt.
 </para>
 </sect2>
 

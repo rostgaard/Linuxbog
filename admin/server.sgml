@@ -2168,6 +2168,153 @@ newsserver.
 </sect2>
 </sect1>
 
+<sect1 id="ring-ind-server">
+<!-- Skrevet af Claus Sørensen cs@klid.dk -->
+<title>Linux som ring-ind-server</title>
+<indexterm>
+ <primary>Ring-ind-server</primary>
+</indexterm>
+<indexterm>
+ <primary>Callback-server</primary>
+</indexterm>
+<indexterm>
+ <primary>Dial-in-server</primary>
+</indexterm>
+
+<para>
+Til fjernadministration kan man sætte sin maskine op, 
+så det er muligt at ringe ind til serveren og dermed 
+administrere den via sit modem.
+</para>
+
+<para>
+Programmerne <command>ppp</command> og 
+<command>mgetty</command> (eller lignende) skal være 
+installeret på den maskine, 
+som skal kunne ringes op.
+</para>
+
+<para>
+Find ud af på hvilken serielport dit modem sidder på. 
+Eksterne modem er typisk tilknyttet enheden 
+<filename>/dev/ttyS0</filename> 
+(COM1 under Windows) eller <filename>/dev/ttyS1</filename> 
+(COM2 under Windows). Interne modem er typisk tilknyttet enheden 
+<filename>/dev/ttyS2</filename>
+(COM3 under Windows) eller <filename>/dev/ttyS3</filename>
+(COM4 under Windows). 
+</para>
+
+<para>
+Den fundne enhed skal så lænkes til enheden 
+<filename>/dev/modem</filename> således:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>ln -s /dev/ttyS0 /dev/modem</userinput>
+</screen>
+
+<para>
+Tilføj nedenstående linie i konfigurationsfilen 
+<filename>/etc/inittab</filename>
+</para>
+
+<screen>
+<userinput>S0:2345:respawn:/usr/sbin/mgetty ttyS0 -D /dev/ttyS0</userinput>
+</screen>
+
+<para>
+Efter den er blevet gemt, så opdateres oplysningerne 
+med kommandoen <command>init q</command>.
+</para>
+
+<para>
+For at brugeren der kommer ind skal kunne køre 
+<command>pppd</command>, skal rettighederne lige 
+ændres, så den ændres til SUID:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>chmod u+s /usr/sbin/pppd</userinput>
+</screen>
+
+<para>
+Så er turen kommet til tilretning af 
+<command>mgetty</command> via dets konfigurationsfiler. 
+</para>
+
+<para>
+Opret en ny konfigurationsfil 
+<filename>/etc/ppp/options.server</filename>
+for <command>ppp</command>-serveren med følgende 
+indhold:
+</para>
+
+<screen>
+<userinput>-detach
+asyncmap 0
+modem
+crtscts
+lock
+proxyarp
+require-pap
+refuse-chap</userinput>
+</screen>
+
+<para>
+Tilføj de loginnavne (client), som skal have mulighed 
+for at få adgang til maskinen samt tilhørende 
+adgangskode (secret) i klartekst. Angiv stjerner for 
+tjeneste (server) og IP-adresse i filen 
+<filename>/etc/ppp/pap-secrets</filename>
+</para>
+
+<screen>
+# Secrets for authentication using PAP
+# client        server  secret                  IP addresses
+<userinput>  martin        *       nitram                  *</userinput>
+</screen>
+
+<para>
+Disse loginnavne og adgangskoder skal helst ikke være de samme som for
+selve systemet, da de jo står i klar tekst. De skal udelukkende bruges
+til at få forbindelse med maskinen, så man kan benytte IP-baserede
+tjenester på maskinen. Du bør nok ikke lade
+<filename>/etc/ppp/pap-secrets</filename> være læsbar for almindelige
+brugere. Kør derfor <command>chmod og-rw /etc/ppp/pap-secrets</command>.
+</para>
+
+<para>
+Til sidst skal angives i filen 
+<filename>/etc/ppp/options.ttyS0</filename> 
+henholdsvis IP-nummeret for værten og IP-nummeret 
+for den maskine der ringer ind:
+</para>
+
+<screen>
+<userinput>192.168.1.1:192.168.1.222</userinput>
+</screen>
+
+<para>
+Vær opmærksom på, at IP-nummeret for den maskine 
+som ringer ind, skal være en del af samme subnet 
+som værten.
+</para>
+
+<para>
+Så er det muligt at ringe ind til din maskine. 
+</para>
+
+<para>
+Denne vejledning er baseret på Linux Gazette #38's 
+vejledning "Linux Dialin Server Setup", som er 
+langt mere dybdegående: 
+<ulink url="http://www.linuxgazette.com/issue38/gentry.html">http://www.linuxgazette.com/issue38/gentry.html</ulink>
+</para>
+
+</sect1>
+
+
 <sect1 id="linux-x">
 <title>Linux som X-server og terminal</title>
 <para>
@@ -2249,6 +2396,7 @@ Linux-klient.
 
 <sect2 id="linux-xklient">
 <title>Linux som X-klient</title>
+
 <para>
 Du skal logge ind på din Linux-maskine i runlevel 3 og som root skrive 
 <command>/usr/X11R6/bin/X -query SERVER</command>, hvor
@@ -2539,9 +2687,10 @@ locate "*atalk*"
 </SCREEN>
 
 <PARA>
-(husk at køre updatedb som root efter installationen af
+(husk at køre <command>updatedb</command> som root efter 
+installationen af
 Netatalk, ellers vil den ikke kunne findes af databasen
-af locate kommandoen).
+af kommandoen <command>locate</command>).
 </PARA>
 
 <PARA>
