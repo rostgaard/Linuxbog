@@ -294,7 +294,7 @@ function vistype($type) {
     ),
     "PalmPilot" => array(
       first => "linux-",
-      last => ".palm.tar.gz"
+      last => ".palm.zip"
     ),
     "eksempler" => array(
       first => "linux-",

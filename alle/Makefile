@@ -42,14 +42,14 @@ sgml: $(targetname)-$(version).sgml.tar.gz
 $(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
 	tar cvzf $(targetname)-$(version).sgml.tar.gz *.sgml Makefile collateindex.pl
 
-palmpilot: $(targetname)-$(version).palm.tar.gz
+palmpilot: $(targetname)-$(version).palm.zip
 
-$(targetname)-$(version).palm.tar.gz: $(sgmlfiler)
+$(targetname)-$(version).palm.zip: $(sgmlfiler)
 	make html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
-	tar cvzf $(targetname)-$(version).palm.tar.gz palm/*.prc palm/*.pdb
+	zip $(targetname)-$(version).palm.zip palm/*.prc palm/*.pdb
 
 statusfiler:
 	@$(shell date +%d/%m-%Y> dato.sgml)
