@@ -92,15 +92,13 @@ else
 	echo "Du bør installere plucker for at kunne lave palm-udgaven"
 endif
 
-specfile:
+pakhtml: 
 	echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
 	echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
 	echo Version: `cat version.sgml` >> bog/$(targetname).spec
 	echo Release: 1mdk >>  bog/$(targetname).spec
 	cat ../linuxbog.spec >> bog/$(targetname).spec
-
-pakhtml: specfile
 	mv bog $(targetshortname)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html.tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-$(version)_html.zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
@@ -113,7 +111,7 @@ pakhtml: specfile
 	@echo ""
 
 # Build the html
-html: bog/index.html pakhtml
+html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
 	@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
@@ -138,6 +136,7 @@ else
 	@echo "Du bør installere tidy"
 endif
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
+	make pakhtml
 	@echo "Done HTML (html)"
 	@echo ""
 
@@ -168,8 +167,8 @@ endif
 	rm -rf bog1
 
 # Build pdf package.
-pspdf: $(targetname)-$(version).pdf
-$(targetname)-$(version).pdf: $(sgmlfiler)
+pspdf: $(targetname)-$(version)_pdf.zip
+$(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	rm -f $(targetname)-*.pdf*    
 	rm -f $(targetname)-*_pdf.zip
@@ -183,7 +182,7 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 
-	@echo "Target er" $(targetname).pdf
+	@echo "Target er" $(targetname)_pdf.zip
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
 	cp *.sgml bogpdf
@@ -232,7 +231,7 @@ ifneq    ("$(eksfiler)","")
 	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-$(version)_eksempler.tar =
 	gzip -9 $(targetname)-$(version)_eksempler.tar
 else
-	echo "Bogen" $(targetname) "har ikke nogen eksempler";
+	@echo "Bogen" $(targetname) "har ikke nogen eksempler";
 endif
 
 
