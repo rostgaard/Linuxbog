@@ -710,34 +710,45 @@ Læs mere om Python <!--i XREF LINKEND="python-sect1" og på--> hjemmesiden
 <!-- af Frank M.G. Jørgensen <gajda@iname.com> -->
 
 <PARA>
-MySQL er et stærk SQL-database program, som folkene bag ikke tøver
+MySQL er et stærkt SQL-database program, som folkene bag ikke tøver
 med at udråbe som "en af de hurtigste databaser, overhovedet"
 </PARA>
 
 <PARA>
-Tidligere var det sådan, at MySQL var gratis for langt de fleste, men
-under særlige forhold skulle der betales for en licens. I juli måned
-2000 besluttede TcX - der står bag MySQL - imidlertid, at alle
-fremtidige versioner af MySQL udgives under GPL-betingelser. Det har
-dog hele tiden været muligt at hente en GPL-udgave af MySQL, men der
-er tale om en ældre udgave, som - i sagens natur - ikke inkluderer de
-seneste forbedringer.
+Siden MySQL i sommeren 2000 ændrede sine licensbetingelser, sådan at alle
+fremtidige versioner af MySQL bliver udgivet under GPL-licensen,
+er MySQL efterhånden blevet et fast indslag i alle de store Linux-distributioner.
 </PARA>
 
 <!-- RPM-INSTALLATION -->
 <PARA>
-TcX anbefaler, at Linux-brugere installerer MySQL ved hjælp af
-rpm-pakker, og det er da også den nemmeste måde at installere
-programmet på. Disse pakker kan hentes fra MySQL's websted på
-adressen: <ULINK URL="http://www.mysql.com">www.mysql.com</ULINK>,
-eller fra sunsite.dk's danske afspejling, <ULINK
-URL="http://sunsite.dk/mysql/">sunsite.dk/mysql/</ULINK> Den
-nyeste version af MySQL er en udviklingsversion, og bør derfor
-undgås. Den version, der er benævnt "last stable", eller "recommended"
-(i skrivende stund version 3.22.32) er den du ønsker at hente. På
-MySQL's websted angives, hvilket versionsnummer der er det
-anbefalede. For at installere MySQL skal du som minimum hente følgende
-pakker
+Hos MySQL anbefaler man dog, at Mandrake-(8.x) og RedHat(7.x)-brugere installerer
+MySQL ved hjælp af rpm-pakker hentet fra MySQL's websted, da distributions-pakkerne
+er kompileret med en version af gcc, der er kendt for at være problematisk
+i forhold til MySQL. Det kan derfor have ført til fejlbehæftede rpm-pakker, og
+det sikreste er derfor at hente pakkerne hos MySQL.
+</PARA>
+
+<PARA> 
+Hvis formålet med øvelsen er at "prøvekøre" en MySQL-installation, kan der dog næppe
+ske noget ved at installere pakkerne fra distributions-cd-rommen..
+Hvis du vælger, at installere fra cd-rom'en - og har plads nok - så installér blot alle
+MySQL-pakkerne, så skulle du være kørende.
+</PARA>
+
+<PARA>
+Hvis du vælger at hente de anbefalede pakker fra nettet, kan de hentes på adressen:
+<ULINK URL="http://www.mysql.com">www.mysql.com</ULINK>,
+eller fra sunsite.dk's danske spejling, <ULINK
+URL="http://sunsite.dk/mysql/">sunsite.dk/mysql/</ULINK> De
+nyeste versioner af MySQL er udviklingsversionerne, og bør derfor
+undgås. Den version, der er benævnt "stable release", eller "recommended"
+(i skrivende stund version 3.23.49) er den du ønsker at hente.
+</PARA>
+
+
+<PARA>
+For at opnå en brugbar installation skal du som minimum hente og installere følgende pakker:
 </PARA>
 
 <ITEMIZEDLIST MARK="bullet" SPACING="compact">
@@ -746,12 +757,25 @@ pakker
 </ITEMIZEDLIST>
 
 <PARA>
+Når du nu er i gang, så vil følgende pakker sikkert gøre livet nemmere på lang sigt
+(de er for eksempel krævede i forbindelse med installationen af PHP med MySQL-understøttlse - læs herom senere)
+</PARA>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>MySQL-devel-X.XX.XX.i386.rpm</PARA></LISTITEM>
+<LISTITEM><PARA>MySQL-shared-X.XX.XX.i386.rpm</PARA></LISTITEM>
+</ITEMIZEDLIST>
+
+
+<PARA>
 Pakkerne installeres på følgende måde
 </PARA>
 
 <SCREEN>
 <PROMPT>[root@linus /downloads]# </PROMPT><USERINPUT>rpm -ivh MySQL-X.XX.XX.i386.rpm</USERINPUT>
 <PROMPT>[root@linus /downloads]# </PROMPT><USERINPUT>rpm -ivh MySQL-client-X.XX.XX.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /downloads]# </PROMPT><USERINPUT>rpm -ivh MySQL-devel-x.XX.XX.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /downloads]# </PROMPT><USERINPUT>rpm -ivh MySQL-shared-X.XX.XX.i386.rpm</USERINPUT>
 </SCREEN>
 
 <PARA>
@@ -782,7 +806,7 @@ Nu er du parat til at gå i gang. Der er allerede under installationen
  oprettet en bruger, "root"
 (denne "root" har ikke noget med maskinens "root" at
  gøre - der er tale om MySQL's "superbruger")
-som har adgang til at foretage ændringer i databaserne. 
+som har adgang til at foretage ændringer i databaserne.
 Denne bruger skal nu have et password:
 </PARA>
 
@@ -827,7 +851,7 @@ Hvorpå vi opretter en simpel tabel i basen
 </SCREEN>
 
 <PARA>
-En database uden indhold er der ikke meget sjov ved, 
+En database uden indhold er der ikke meget sjov ved,
 så vi fylder lidt data på tabellen
 </PARA>
 
@@ -837,7 +861,7 @@ så vi fylder lidt data på tabellen
 </SCREEN>
 
 <PARA>
-Der er ikke noget kapitel 0, så vi retter vores indtastning til "kapitel 1"
+Der er ikke noget "kapitel 0", så vi retter vores indtastning til "kapitel 1"
 </PARA>
 
 <SCREEN>
@@ -871,18 +895,19 @@ Og her sletter vi tabellen
 </SCREEN>
 
 <PARA>
-Hvis du synes, at kommandolinie-klienten er lidt tung at danse med fra
-tid til anden, findes der alternativer. Du kan skrive dit eget
-webprogram, for eksempel i PHP, hente et eksisterende webprogram fra
-nettet, eller du kan hente et af de grafiske
-værktøjer, der findes. MySQL er selv i gang med udviklingen af et
-sådant, MySQLGUI, men der er andre at vælge imellem f.eks KmySQL, der
-er en KDE front-end til MySQL (og via plug-ins til mange andre
-databaser, men indtil videre er MySQL bedst understøttet). Programmet
-fås som let installerbare rpm-pakker (to styk; program og
-plug-in). MySQL-GUI kan hentes fra MySQL's egne websider, og KMySQL
-kan hentes fra <ULINK
-URL="http://ksql.sourceforge.net">ksql.sourceforge.net </ULINK>
+Hvis du synes, at kommandolinie-klienten er lidt tung at danse med, så er du ikke den eneste.
+Heldigvis findes der flere alternativer. På MySQL's websted kan du
+under download-sektionen finde en lang liste over "contributed
+software", og på <ULINK URL="http://freshmeat.net">freshmeat.net</ULINK>
+kan du ligeledes finde mange forskellige grafiske klientprogrammer. Et 
+program, der ser meget lovende ud er MySQL's eget MyCC, som i 
+skrivende stund kan downloades i en alpha-test-udgave fra MySQL's 
+download-sektion. Har du mod på at installere apache webserveren og PHP (se nedenfor) kan du
+hente det glimrende webbaserede program, phpMyAdmin, som gør
+livet ikke så lidt nemmere for den nye bruger (også for den
+øvede - for den sags skyld). Pakken kan
+hentes i forskellige komprimerede formater hos<ULINK
+URL="http://www.phpwizard.net/projects/phpMyAdmin/">www.phpwizard.net/projects/phpMyAdmin/ </ULINK>
 </PARA>
 
 <!-- YDERLIGERE OPLYSNING -->
@@ -911,21 +936,20 @@ usædvanlig godt med MySQL.
 
 <PARA>
 Før du kan bruge PHP, skal din webserver understøtte sproget.
-På et RedHat-system opnås dette nemmest ved at
-installere følgende rpm-pakker. De to "mod_php.."-filer kan findes på
-<ULINK URL="ftp://ftp.redhat.com/pub/contrib/libc6/i386/">ftp://ftp.redhat.com/pub/contrib/libc6/i386/</ULINK>
+På et RedHat-system (7.x) opnås dette nemmest ved at installere
+følgende rpm-pakker fra distributions-cd-rommen:
 </PARA>
 
 <ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM><PARA>apache (fra din distributions cd-rom)</PARA></LISTITEM>
-<LISTITEM><PARA>mod_php3-3.0.12-1.i386.rpm</PARA></LISTITEM>
-<LISTITEM><PARA>mod_php-mysql-3.0.12-1.i386.rpm</PARA></LISTITEM>
+<LISTITEM><PARA>apache-1.3.xx</PARA></LISTITEM>
+<LISTITEM><PARA>php-4.0.x.i386.rpm</PARA></LISTITEM>
+<LISTITEM><PARA>php-mysql-4.0.x.i386.rpm</PARA></LISTITEM>
 </ITEMIZEDLIST>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh apache_1.3.XX.i386.rpm</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh mod_php3-3.0.12-1.i386.rpm</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh mod_php3-mysql-3.0.12-1.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh php-4.0.x.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh php-mysql-4.0.x.i386.rpm</USERINPUT>
 </SCREEN>
 
 <PARA>
@@ -951,50 +975,59 @@ Fjern #-symbolet, gem og start Apache igen.
 
 <!-- PHP-EKSEMPEL -->
 <PARA>
-Her er et lille eksempel på, hvorledes PHP og MySQL kan arbejde
- sammen om at hente data fra en
-database i MySQL og præsentere dem på en webside. 
+Her er et lille eksempel på, hvorledes Apache, PHP og MySQL kan arbejde
+sammen om at hente data fra en
+database i MySQL og præsentere dem på en webside.
 Databasen der bruges, er basen "bog", som blev
 oprettet i <XREF LINKEND="db-mysql">.
 </PARA>
 
 <SCREEN>
-&lt;HTML&gt;&lt;HEAD&gt;
-&lt;TITLE&gt;LinuxBog MySQL PHP&lt;/TITLE&gt;
-&lt;/HEAD&gt;&lt;BODY&gt;
-&lt;? // Her skiftes der fra HTML til PHP-kode
-// Åben en forbindelse til MySQL
-$conn = mysql_connect("localhost","root","hemmeligt");
-// Udfør en læsning fra tabellen linuxbog
-$sql="SELECT * FROM linuxbog ORDER BY kapitel";
+&lt;HTML&gt;
+	&lt;HEAD&gt;
+		&lt;TITLE&gt;LinuxBog MySQL PHP&lt;/TITLE&gt;	
+	&lt;/HEAD&gt;
+&lt;BODY&gt;
+&lt;?php  // Her skiftes der fra alm. HTML til PHP-kode
+
+$conn = mysql_connect("localhost","root","hemmeligt");  // Åben en forbindelse til MySQL
+
+$sql="SELECT * FROM linuxbog ORDER BY kapitel";  // Udfør en læsning fra tabellen linuxbog
+
 $res = mysql_db_query("bog",$sql);
-// For alle poster (linier), udskriv indholdet
-// i en lille tabel
-echo "&lt;TABLE BORDER=1&gt;&lt;TR&gt;&lt;TD COLSPAN=2 BGCOLOR=#CCCCCC&gt;&lt;CENTER&gt;Linuxbog&lt;/CENTER&gt;&lt;/TD&gt;&lt;/TR&gt;";
-  for ($n = 0; $n < mysql_numrows($res); $n++ ) {
+
+echo "&lt;TABLE BORDER=1&gt;&lt;TR&gt;&lt;TD COLSPAN=2 BGCOLOR=#CCCCCC&gt;";  //start en tabel
+echo "&lt;CENTER&gt;Linuxbog&lt;/CENTER&gt;&lt;/TD&gt;&lt;/TR&gt;";
+
+  for ($n = 0; $n < mysql_numrows($res); $n++ ) {  // For alle poster (linier), udskriv indholdet
+                                                                      // i en lille tabel
     $post = mysql_fetch_array($res);
+    
     echo "&lt;TR&gt;&lt;TD&gt;$post[kapitel]&lt;/TD&gt;&lt;TD&gt; $post[titel]&lt;/TD&gt;&lt;/TR&gt;\n";
   }
-echo "&lt;/TABLE>";
-// Frigiv hukommelse
-mysql_freeresult($res);
-// Luk forbindelsen
-mysql_close($conn);
-// Her skifter vi tilbage til HTML igen
-?&gt;
+  
+echo "&lt;/TABLE>";  // afslut tabel
+
+mysql_freeresult($res);  // Frigiv hukommelse
+
+mysql_close($conn);  // Luk forbindelsen
+
+?&gt;  <!--- // Her skifter vi tilbage til HTML igen -->
+
 &lt;/BODY&gt;&lt;/HTML&gt;
+
 </SCREEN>
 
 <PARA>
-Kopier eventuelt dette eksempel, og indsæt det i et tomt dokument, som du gemmer som "test.php3" i
-Apaches dokumentrod (/home/httpd/html/test.php3). Kald filen igennem en webbrowser, og se hvad der
-sker.
+Kopier eventuelt dette eksempel, og indsæt det i et tomt dokument, som du gemmer som "test.php" i
+Apaches dokumentrod (/home/httpd/html/test.php). Kald filen igennem en webbrowser (http://localhost/test.php), 
+og se hvad der sker.
 </PARA>
 
 <PARA>
 Du kan læse meget mere om PHP på <ULINK URL="http://www.php.net">www.php.net</ULINK>, og du kan
 finde tutorials og programmer på
-<ULINK URL="http://www.devshed.com">www.devshed.com</ULINK>, 
+<ULINK URL="http://www.devshed.com">www.devshed.com</ULINK>,
 <ULINK URL="http://www.hotwired.com">www.hotwired.com</ULINK>
 og mange, mange andre steder på nettet.
 </PARA>
@@ -1004,4 +1037,5 @@ og mange, mange andre steder på nettet.
 </SECT1><!-- db-mysql -->
 
 </CHAPTER><!-- databaser -->
+
 
