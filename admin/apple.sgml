@@ -1,0 +1,475 @@
+
+<CHAPTER ID="appletalk">
+<TITLE>AppleTalk</TITLE>
+<INDEXTERM><PRIMARY>Apple</PRIMARY><SECONDARY>AppleTalk</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Mac</PRIMARY><SECONDARY>AppleTalk</SECONDARY></INDEXTERM>
+
+<PARA>
+Linux kan ikke bare forbindes til Apple via ftp, men også via 
+almindelig fildeling.
+For brugerne af lokalnettet kommer Linux-serveren så til at optræde
+som en Mac-server.
+</PARA>
+
+<PARA>
+Okay, du har endelig fået installeret linuxmaskinen  og
+er nu parat til at netværke med den. 
+Dette er ikke så svært, hvis de andre klienter i
+netværket kører MS-Windows®, da Samba-protokollen (som
+får før nævnt) følger med stort set alle distributioner
+af Linux. Dette er ikke så  lige til med
+Mac-protokollen, da du selv må dowloade denne.
+Til at forbinde et Mac-netværk med en linuxmaskine
+bruges et program/protokol der hedder Netatalk. Dette
+program får på listig vis din linuxmaskine til at se ud
+som en Macintosh filserver. Programmet understøtter to
+typer af AppleTalk protokollen; nemlig Classic
+AppleTalk og AppleShareIP (sidst-nævnte TCP/IP til
+Mac). 
+</PARA>
+
+<PARA>
+Programmet blev oprindelig udviklet af University of
+Michigan's Research Systems Unix Group og understøttede
+oprindelig kun Classic AppleTalk. Sidenhen er det
+blevet udviklet og vedligeholdt af Adrian Sun, der
+udover at debugge programmet også har implementeret
+understøttelse af AppleShareIP og andre udvidelser. 
+</PARA>
+
+<PARA>
+Netatalk kan downloades fra:
+<ULINK URL="ftp://ftp.cobaltnet.com/pub/users/asun/release/netatalk-1.4b2+asun2.1.3.tar.gz">
+ftp://ftp.cobaltnet.com/pub/users/asun/release/netatalk-1.4b2+asun2.1.3.tar.gz</ULINK>
+</PARA>
+
+<PARA>
+og prekompileret fra:
+<ULINK URL="http://thehamptons.com/anders/netaltalk/mirror/netatalk-1.4b2+asun2.1.1.x86-shadow-linux.tar.gz">
+http://thehamptons.com/anders/netaltalk/mirror/netatalk-1.4b2+asun2.1.1.x86-shadow-linux.tar.gz</ULINK>
+</PARA>
+
+<PARA>
+Til Debian:
+<ULINK URL="http://cgi.debian.org/Packages/stable/net/netatalk.html">
+http://cgi.debian.org/Packages/stable/net/netatalk.html</ULINK>
+</PARA>
+
+<PARA>
+Til .rpm-baserede systemer (SuSE, RedHat, Mandrake):
+<ULINK URL="ftp://contrib.redhat.com/pub/contrib/libc6/SRPMS/netatalk-1.4b2+asun2.1.3-6.src.rpm">
+ftp://contrib.redhat.com/pub/contrib/libc6/SRPMS/netatalk-1.4b2+asun2.1.3-6.src.rpm</ULINK>
+(husk at køre rpm --rebuild -sti-til-source  for at
+kompile og installere den)
+</PARA>
+
+<PARA>
+Hvis du har downloadet en af .tar.gz filerne skal du
+gøre sådan her: 
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>tar -xvzf &lt;filnavn&gt;.tar.gz</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cd netatalk&lt;tab&lt;&gt;enter&gt;</USERINPUT>
+<PROMPT>[root@linus netatalk]# </PROMPT><USERINPUT>make install</USERINPUT>
+</SCREEN>
+
+<PARA>
+Netatalk bor i biblioteket /usr/local/atalk/. Server
+binaries og config-filer ligger i /usr/local/atalk/etc
+og userland binaries i /usr/local/atalk/bin. Hvis du
+ikke ikke kan finde netatalk efter du har installeret
+den, så gør følgende: find /* -name atalkd -print for
+at finde den. 
+</PARA>
+
+<PARA>
+For at kunne bruge Classic AppleTalk protokollen, skal
+understøttelsen af denne være slået til i kernen. For
+at finde ud af, om den er det, gør følgende: dmesg |
+grep -i apple  Hvis den ikke er der, skal du kompilere
+din kerne om, med denne option slået til. 
+</PARA>
+
+<PARA>
+Det program der gør AppleTalk shares tilgængelige i
+både Classic AppleTalk og AppleShareIP hedder afpd og
+får sin konfiguration fra en fil der hedder afpd.conf.
+</PARA>
+
+<PARA>
+Den simpleste afpd.conf file man kan lave indeholder
+kun én -, hvilket står "Denne Computer" med alle
+standard options koblet til. En lidt mere kompliceret
+konfiguration kunne være følgende:
+</PARA>
+
+<SCREEN>
+- 
+MinLinuxMac -port 12000
+"Denne Linux Leger Mac" -port 12001
+"Der Ude" -port 12000 -address 206.114.89.46
+
+"Guest Volume" -nocleartxt  -loginmesg "Vær venlig ved
+min gæsteserver !"
+"Boksen" -noguest -port 12000
+"Det Helligste" -notcp -defaultvol &lt;path&gt; -systemvol
+&lt;path&gt;
+</SCREEN>
+
+<PARA>
+Forklaring over konfigurationsfilen:
+</PARA>
+
+<PARA>
+Den første linie kun med en bindestreg gør at
+linuxmaskinen laver en server med sit hostnavn.
+Den anden linie laver en server ved navn MinLinuxMac på
+port 12000.
+Den tredje linie laver en server kaldet "Denne Linux
+Leger Mac" på port 12001.
+Den fjerde linie laver en server kaldet "Der Ude",
+bundet på port 12000 og med den virtuelle IP-adresse
+206.114.89.46.
+</PARA>
+
+<PARA>
+I næste sektion laver linien "Guest Volume" -nocleartxt
+-loginmesg "Vær venlig ved min gæsteserver !" en
+dedikeret gæsteserver, der ikke spørger om password og
+som giver loginbeskeden "Vær venlig...".
+Linien "Boksen" -noguest -port 12000 laver en volume på
+port 12000 der ikke tillader gæsteadgang.
+Linien "Det Helligste" -notcp -defaultvol &lt;path&gt;
+-systemvol &lt;path&gt; laver en server der ikke bruger
+TCP/IP (kun DDP) og som bruger to alternative
+konfigurationsfiler, i stedet for de to standardfiler
+AppleVolumes.default AppleVolumes.system. Husk at rette
+i &lt;path&gt; hvis du vil gøre dette.
+</PARA>
+
+<PARA>
+Lav et Classic AppleTalk share:
+</PARA>
+
+<PARA>
+For at lave et Classic AppleTalk share skal du editere
+filen /usr/local/atalk/etc/AppleVolumes.system
+Eks.vis hvis du indsætter linien /data/www
+"Webserver" laves der en volume kaldet Webserver, hvis
+indhold så vil kunne ses.
+</PARA>
+
+<PARA>
+Den anden ting denne  fil styrer er "type-creator
+mappings". På Macintosh består alle filer (ulige af på
+Unix) af to dele. En "resource  fork" og en "data
+fork". Resource forke'en gemmer på ting som ikoner,
+filtyper, og mapping til den applikation der i sin tid
+blev brugt til at lave filen. 
+Siden Linux filer generelt er en lang liste af
+bogstaver, i stedet for delt i to forke/forks, skriver
+netatalk resource forkene i filer i et bibliotek kaldet
+.AppleDouble. Derfor skabes én Macintosh fil af to
+filer på Linuxmaskinen; eks.vis <FILENAME>enfil.txt</FILENAME> og
+.AppleDouble/<FILENAME>enfil.txt</FILENAME>. 
+Denne fil ville så, hvis det var en tekstfil og Word
+havde lavet den, skullet have haft følgende
+type-creator mapping i afpd.conf: .txt  TEXT
+MSWD for at fortælle afpd at .txt filer er  TEXT filer
+og at det var MS-Word der  blev brugt til at fremstille
+filen med. Afpd vil så fortælle dette til Macintosh
+maskiner der støder på filer der ender på .txt og som
+ikke er blevet oprettet på en Macintosh maskine. 
+</PARA>
+
+<PARA>
+ATALKD daemonen:
+</PARA>
+
+<PARA>
+Atalkd er det kernel interface der bruges til Classic
+Appletalk. Det vil agere forbindelse mellem AppleTalk
+kernemodulet og resten af Classic AppleTalk's
+funktioner i netatalk. Den vil sågar også tage sig af
+AppleTalk routing mellem flere netkort. 
+</PARA>
+
+<PARA>
+Atalkd er styret af konfigurationsfilen
+atalkd.conf. Den enkleste form for konfigurationsfil
+(og også den enkleste måde at konfigurere atalkd på) er
+en tom fil. Denne fil vil atalkd så selv overskrive med
+nogle ganske fornuftge opsætninger. Det er tilrådeligt
+at specificere alle de netkort man har i atalkd.conf
+filen. Hvis man specificerer mere end et netkort vil
+atalkd selv route AppleTalk pakker mellem netkortene.
+</PARA>
+
+<PARA>
+Følgende konfiguration kunne overvejes:
+</PARA>
+
+<SCREEN>
+eth0 -net 153-174 -addr 154.212 -zone "Langt Ude"
+eth1 -net 175-200 \adr 182.318 -zone "På Landet" -seed  
+</SCREEN>
+
+<PARA>
+Nå - men hvad betyder så dette ? Forklaringen er ret
+simpel; hver linie i filen atald.conf specificerer ét
+netkort. I dette eksempel betyder det at eth0 (første
+netkort i linuxmaskinen) bruges på et netværk med
+AppleTalk addresser mellem 153 og 174 (se eventuelt
+afsnittet om TCP/IP for nærmere forklaring om
+netværksadressering). Dette netkort (eth0) er her
+konfigureret til at bruge AppleTalk adressen 154.212 og
+eksisterer i zonen "Langt Ude". Næste linie betyder at
+det sekundære (eth1; andet netkort på en
+linuxmaskine) eksisterer på et netværk mellem 175 og
+200 med adressen 182.318 og pakker til zonen "På
+Landet". Derfor vil atalkd agerer router mellem på
+dette netværk og bridge mellem de to netværk
+specificeret. Bemærk at netværksnumrene  ikke må
+overlappe hinanden; ej heller må der være andre routere
+på eth1 netværket. Hvis atalkd finder en anden router,
+end den specificeret i filen, vil programmet afslutte
+sig selv. Bemærk også at hvis du har flere end 5
+maskiner på netværket skal du angive dette overfor afpd
+(se nedenfor) - eller virker det bare ikke ! Derfor
+anbefales det at læse afsnittet om TCP/IP - det er ikke
+så svært som det umiddelbart ser ud til.
+</PARA>
+
+<PARA>
+Så kommer den sjove del af det hele - vi skal prøve at
+starte Netatalk-serveren op!
+</PARA>
+
+<PARA>
+Først skal du finde ud af hvor Netatalk's starup-script
+ligger, hvis du ikke allerede ved det.
+</PARA>
+
+<PARA>
+Dette kan du gøre sådan her: 
+</PARA>
+
+<SCREEN>
+find /* -name "*atalk* -print 
+</SCREEN>
+
+<PARA>
+eller med                       
+</PARA>
+
+<SCREEN>
+locate "*atalk*" 
+</SCREEN>
+
+<PARA>
+(husk at køre updatedb som root efter installationen af
+Netatalk, ellers vil den ikke kunne findes af databasen
+af locate kommandoen).
+</PARA>
+
+<PARA>
+ Når du så er i det bibliotek hvor scriptet er skriver
+du: 
+<COMMAND>./rc.atalk start</COMMAND> og venter et par sekunder på at
+Netatalk starter op.
+Dette vil så starte en filserver der kører Classic
+AppleTalk. Kun hvis du har specificeret nogle TCP/IP
+adresser i afpd.conf filen vil en tilsvarende Appletalk
+IP server blive startet også. Atalkd er den der tager
+længst tid at starte op, da den først checker netværket
+ud før den registrerer sig selv. 
+Alternativt kan du nøjes med kun at at starte en TCP
+server , hvis du på forhånd har konfigureret en i
+atalkd.conf filen. Dette gøres sådan her:
+</PARA>
+
+<SCREEN>
+/usr/local/atalk/etc/afpd -F
+/usr/local/atalk/etc/afpd.conf
+</SCREEN>
+
+<PARA>
+Bemærk ! Hvis du skal bruge flere end 5 connections til
+Netatalk-serveren  skal du angive et antal
+maximumforbindelser når du starter afpd. Dette gøres
+med -c argumentet, á là:
+<COMMAND>afpd -c 25</COMMAND>
+Dette vil så give mulighed for 25
+connections/forbindelser til Netatalk-serveren.   
+</PARA>
+
+<PARA>
+Hvis denne kommando lykkedes uden at brokke sig, så gå
+hen til en Mac og åben "Chooser" (under Applemenuen i
+venstre side). Klik på AppleShare og se om din
+Netatalk-server  er hjemme. Hvis du bruger AppleShareIP
+skal du klikke på AppleShareIP knappen og manuelt
+indtaste mskinens navn eller IP-nummer. Hvis alt så er
+lykkedes vel, vil du blive præsenteret for en password
+prompt. Husk at du af sikkerhedsmæssige årsager ikke
+kan logge ind på filserveren, som root og kun hvis dit
+brugernavn har 8 eller færre karakterer - så fortvivl
+ikke hvis du ikke kan logge ind som root. Guest
+(gæsteadgang) access til filserveren vil være tilladt,
+hvis det ikke er blevet forbudt i afpd.conf. Hvis det
+lykkedes dig at logge ind vil du blive præsenteret for
+en liste af volumes du så  kan vælge - og mounte. Det
+er tilrådeligt at bruge en af de starup-scripts der
+følger med Netatalk til at starte denne med når
+maskinen booter. Alt afhængig af hvilken distribution
+du bruger skal du følge fremgangsmåden for hvordan din
+maskine gør. På en RedHat skal du nok kigge på
+/etc/rc.d/rc.local. Ellers er et andet godt bud
+/etc/init.d, for at finde ud af hvor dine
+startup-scripts befinder sig.
+</PARA>
+
+<PARA>
+Andre ting man kan gøre med Netatalk: 
+</PARA>
+
+<PARA>
+Tovejs-krypteret password authentication er
+understøttet af Netatalk. Men for at dette skal kunne
+bruges må serveren nødvendigvis vide hvor
+cleartext-passwordene kan findes henne. Da
+systempasswordene er krypterede ved serveren ikke hvad
+cleartextpasswordene er, så det skal den have at
+vide. Ved at oprette en .passwd fil i brugerens
+hjemmebibliotek med cleartextpasswordet i kan
+tovejskryptering opnås (punktummet foran i filen
+betyder at den er skjult og ikke kan ses, hvis man ikke
+bruger ls -a). 
+</PARA>
+
+<PARA>
+Hvorom det hele er, så er det ganske usikkert at gemme
+sine passwords på et så forudsigeligt sted. Derfor
+kræver Netatalk at hver .passwd fil ejes af den
+pågældende bruger og dennes gruppe og kun og alene er
+læs -og skrivbar af denne bruger. I enkle ord skal du
+en gang for alle bare gøre sådan med .passwd filen:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chown bruger.gruppe /home/&lt;brugernavn&gt;/.passwd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chmod 600 /home/&lt;brugernavn&gt;/.passwd</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvor bruger er brugerens gruppe og gruppe er brugerens
+default gruppe.
+</PARA>
+
+
+<PARA>
+Udskrivning via Netatalk:
+</PARA>
+
+<PARA>
+Netatalk kan ikke bare agerer filserver for Mac's. Den
+kan også lave print spooling og endda printe til
+eksisterende AppleTalk spools. AppleTalk spooling opnås
+med et program der kaldes papd. Konceptet er at du
+allerede har en lokal (parralel eller seriel
+printer) der er sat op under Linux og som har Mac
+drivere installeret.  papd vil så annocere sig selv på
+netværket, som et print spool og acceptere jobs fra
+Mac-maskiner på netværket. Dette kan lade sig gøre, da
+printerjobs er Post Script filer, som papd så vil feede
+til Linux printsystem (lpd). Eksempler på hvordan papd
+sættes op kan findes på:
+</PARA>
+
+<PARA>
+<ULINK URL="http://www.giub.unibe.ch/~eugster/appleprint.html">
+http://www.giub.unibe.ch/~eugster/appleprint.html</ULINK>
+</PARA>
+
+<PARA>
+Det modsatte af dette - altså at printe fra en
+linuxmaskine til en Macintosh printer - kan opnås ved
+at bruge pap. Se hvordan med kommandoen man pap. 
+</PARA>
+
+<PARA>
+Andet nyttigt man skal vide:
+</PARA>
+
+<PARA>
+Just som på Linux og MS-Windows® er der værktøjer til
+at pinge maskiner med.  Over TCP/IP findes der
+"aecho" til AppleTalk, der virker ligesom
+ping. Kommandoen "getzones" vil returnere en liste over
+de Macintosh zoner der findes på netværket. Ydermere
+vil kommandoen "nbplkup" uden options returnere en
+uddybende liste over alle de AppleTalk services der
+findes på det lokale netværk. Der findes et varia af
+mange andre programmer til at bruge med Netatalk - så
+vær ikke bange for at gå i gang med at udforske området
+- held og lykke !
+</PARA>
+
+<PARA>
+Andre steder på nettet man bør besøge, hvis man bruger
+Netatalk:
+</PARA>
+
+<PARA>
+The Netatalk HOWTO:
+<ULINK URL="http://thehamptons.com/anders/netatalk/">
+http://thehamptons.com/anders/netatalk/</ULINK>
+</PARA>
+
+<PARA>
+The Netatalk Faq-O-Matic:
+<ULINK URL="http://www.zettabyte.net/fomserve/netatalk/cache/1.html">
+http://www.zettabyte.net/fomserve/netatalk/cache/1.html</ULINK>
+</PARA>
+
+<PARA>
+The Original Netatalk pages:
+<ULINK URL="http://www.umich.edu/~rsug/netatalk/">
+http://www.umich.edu/~rsug/netatalk/</ULINK>
+</PARA>
+
+<PARA>
+The Netatalk Admins list:
+<ULINK URL="mailto:netatalk-admins-request@umich.edu">
+netatalk-admins-request@umich.edu</ULINK>
+</PARA>
+
+<PARA>
+All registered trademarks and copyrighted names
+courtesy of their respective owners.
+The author of this article does not under any
+circumstances claim rigth over or use of the respective
+trademarks mentioned in this article.
+</PARA>
+
+<PARA>
+MS-Windows® is a trademark of Microsoft® Corporation
+Microsoft® is a trademark of Microsoft® Corporation
+Macintosh®, AppleTalk and AppleShareIP are trademarks
+of Apple® Corporation.
+</PARA>
+
+<!--
+Denne artikel er oversat fra engelsk af nedenstående
+person. Artiklen er taget fra Linux Format nr. 1, side
+67 - 70. 
+
+Written, altered and translated by / skrevet, ærndret
+og oversat af 
+Kim Futtrup Petersen, 
+wintersilence@hotmail.com
+Tuesday, 18.07.2000
+-->
+
+</CHAPTER><!-- appletalk -->
