@@ -98,6 +98,9 @@ version:
 ################################################################################
 
 stikord.sgml:	$(filter-out stikord.sgml,$(dep_sgml_filer))
+	if ! -e magic.sgml ; then \
+		echo '<!ENTITY magic "png">' > magic.sgml ; \
+	fi
 	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml && \
 	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o StikordBuildDir bog.sgml && \
 	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -o stikord.sgml StikordBuildDir/HTML.index
@@ -110,6 +113,9 @@ stikord.sgml.clean:
 ################################################################################
 # Versionsfilen "version.sgml"
 ################################################################################
+
+# NB: Hvis måden at trække versioner ud af apprevhist.sgml ændres, skal det
+# også ændres i toplevel Makefile.in....
 
 version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | grep Version | sed 's/.*Version//' | cut -d' ' -f2)
 version.sgml:	apprevhist.sgml
