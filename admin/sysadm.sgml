@@ -1,0 +1,784 @@
+<CHAPTER id="systemarbejde">
+<title>Systemarbejde</title>
+<indexterm><primary>linuxconf</primary></indexterm>
+<indexterm><primary>IP-adresser</primary><secondary>konfiguration</secondary></indexterm>
+<indexterm><primary>Brugere, oprettelse</primary></indexterm>
+
+<para>
+De fleste har nok lidt svært ved, at forstå og bruge Linux
+tekstkonfigurationsfiler lige når de er startet med at bruge Linux.
+Dette kan - som oftest - volde problemer, da mange mennesker jo netop
+installerer Linux for at bruge de medfølgende funktioner til fil- og
+printer-deling; eksempelvis på et kollegie, eller i en virksomhed.
+</para>
+
+<para>
+Dette kan imidlertid godt være svært, da funktionerne til
+brugerstyring, netværksopsætning, indstilling af tiden osv. ofte ikke
+er lige nemme at gå til. Men fortvivl ikke - der er flere grafiske
+programmer, der kan hjælpe hvis du ikke vil gøre det tekst-baseret. 
+</para>
+
+<para>
+I dette kapitel ser vi først nærmere på de pakke-formater, som mange
+programmer i. Dernæst ser vi nærmere på de grafiske værktøjer, der nu
+findes til at administrere brugere, diske, netværk, og program-pakker.
+</para>
+
+<sect1 id="pakker">
+<title>Pakker af data</title>
+
+<indexterm><primary>zip</primary></indexterm>
+<indexterm><primary>unzip</primary></indexterm>
+<indexterm><primary>compress</primary></indexterm>
+<indexterm><primary>uncompress</primary></indexterm>
+
+<para>Linux har glimrende muligheder for at pakke programmer og
+datafiler sammen svarende til zip-formatet kendt fra Windows-verdenen. 
+Faktisk kan du med <command>unzip</command> udpakke
+zip-filer. Du skal blot installere unzip-pakken først - se <xref
+linkend="RPM">. Tilsvarende kan du have brug for at kunne udpakke en
+selvudpakkende zip-fil (som kommer som en exe-fil fra Windows). Til
+dette kan du bruge <command>unzipsfx</command>.
+</para>
+
+<para>
+Du kan teoretisk set stadig komme ud for program-pakker i Z-format. De
+skal udpakkes med <command>uncompress</command> (og de laves med
+<command>compress</command>). På grund af bedre pakke-effektivitet
+anvendes combinationen af <command>tar</command> og
+<command>gzip</command> eller <command>bzip2</command>. Dette er
+nærmere omtalt i <xref linkend="tar">. Et andet alternativ som
+efterhånden er en stærk standard for udbredelse af Linux programmer i
+binær form er RPM, som er omtalt i <xref linkend="RPM">.
+</para>
+
+<para>
+Det kan nævnes, at <command>tar</command> historisk er et program, man
+bruger til at lime datafiler sammen så de kan ligges ud på bånd -
+deraf navnet tar som står for Tape ARchive.
+</para>
+
+<sect2 id="tar">
+<title>Pakning af data med tar og gzip/bzip2</title>
+
+<para>
+I Linux/UNIX verdenen anvendes oftest tar-formatet til at samle mange
+filer i én pakke-fil. Denne er ikke komprimeret, men alene en samling
+af filerne i én pakke-fil. Har du filerne
+<filename>oversigt.txt</filename>, <filename>tekstA.txt</filename> op
+til <filename>tekstD.txt</filename>, som du vil pakke sammen i filen
+<filename>tekster.tar</filename>, så gøres dette ved
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>tar cvf tekster.tar oversigt.txt tekst[A-D].txt</USERINPUT>
+oversigt.txt
+tekstA.txt
+tekstB.txt
+tekstC.txt
+tekstD.txt
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls -l oversigt.txt tekst[A-Z].txt tekster.tar</USERINPUT>
+-rw-r--r-- 1 anne anne  400   mar  3 17:41 oversigt.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstA.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstB.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstC.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstD.txt
+-rw-r--r-- 1 anne anne  10240 mar  3 17:41 tekster.tar
+</SCREEN>
+
+<para>
+Du kan således give alle de fil-navne, der skal pakkes som det sidste
+argument, og giver du et katalognavn i listen vil dette katalog - med
+alle underkataloger - også blive pakket med. Som det ses af eksemplet
+vil programmet <command>tar</command> vise filnavne på de filer, der
+pakkes. Ønsker du ikke at se dette, skal du blot udelade option
+<filename>v</filename>, dvs. brug <command>tar cf TARFILNAVN.tar
+LISTE_AF_FILER</command> i stedet.
+</para>
+
+<para>
+Hvis de filer du ville gemme er almindelige tekst-filer vil du i
+<filename>tekster.tar</filename> direkte kunne læse dig til de enkelte
+filer, som skulle lægges i pakken. Derfor vil tar-filen fylde lidt
+mere end summen af de filer, der skulle gemmes. For små filer vil der
+være en del ekstra fyld.
+</para>
+
+<para>
+Ofte ønsker man nu at komprimere tar-filen, så den fylder
+mindre. Oftest vinder man en faktor 2, men både langt mere eller noget
+mindre er set i praksis. Der er flere muligheder for at komprimere,
+hvor <command>gzip</command> er langt det mest udbredte.
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>gzip tekster.tar</USERINPUT>
+tekster.tar:               93.3% -- replaced with tekster.tar.gz     
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls -l tekster.tar.gz</USERINPUT>
+-rw-r--r-- 1 anne anne  706 mar  3 17:41 tekster.tar.gz
+</SCREEN>
+
+
+<para>
+Programmet <command>gzip</command> fortæller at filen
+<filename>tekster.tar.gz</filename> er komprimeret med 93.3% og vi ser
+at filen nu kun fylder 706 bytes. Ofte vil man se at gzippede
+tar-filer ikke hedder <filename>.tar.gz</filename> men den kortere
+form <filename>.tgz</filename>, og de to fil-endelser betyder det
+samme. 
+</para>
+
+<para>
+Bemærk at originalfilen <filename>tekster.tar</filename> nu er
+væk. Kun den pakkede fil er tilbage efter <command>gzip</command>.
+</para>
+
+
+<para>
+Ofte laver man ikke tar-filen, man springer direkte til
+<filename>.tgz</filename> formatet ved at danne pakke filen med 
+<command>z</command> (for zip) tilføjet optionerne
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>tar cvzf tekster.tgz oversigt.txt tekst[A-D].txt</USERINPUT>
+oversigt.txt
+tekstA.txt
+tekstB.txt
+tekstC.txt
+tekstD.txt
+93.3%
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls -l tekster.tgz</USERINPUT>
+-rw-r--r-- 1 anne anne  706 mar  3 17:41 tekster.tgz
+</SCREEN>
+
+<para>
+Vi skal nu se på hvordan du udpakker dine filer igen fra pakke-filen.
+Først ser vi hvad der er inde i pakken (t-option) , og når vi er sikre
+på hvad der vil ske bliver filerne udpakket (x-option). Antag er vi
+har placeret pakke-filen i et katalog, hvor der ikke er andre filer
+end pakke-filen.
+</para>
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>tar tvzf tekster.tgz </USERINPUT>
+-rw-r--r-- 1 anne anne  400   mar  3 17:41 oversigt.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstA.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstB.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstC.txt
+-rw-r--r-- 1 anne anne  1024  mar  3 17:41 tekstD.txt
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>tar xvzf tekster.tgz</USERINPUT>
+oversigt.txt
+tekstA.txt
+tekstB.txt
+tekstC.txt
+tekstD.txt
+</SCREEN>
+
+<para>
+Igen kan v-option udelades, hvis du ikke vil have helt så meget
+information præsenteret på skærmen. Det skal nævnes, at
+<command>tar</command> har en stor mænge options, som kan læres lidt
+efter lidt. Brug <command>man tar</command> til at komme videre. En
+option du måske allerede nu kan lære at <command>-C DIR</command> som
+bruges til at pakke pakke-filen ud svarende til at du står i kataloget 
+<filename>DIR</filename> og pakker ud.
+</para>
+
+
+<para>
+Du kan også komme ud for at folk bruger <command>bzip2</command> til
+at komprimere data med istedet for <command>gzip</command>. En fil der
+ender på <filename>.bz2</filename> kan du udpakke med <command>bunzip
+FILNAVN.bz2</command>. Er det en tar-fil som er pakket med
+<command>bzip2</command>, kan du med en nyere version af
+<command>tar</command> udpakke direkte med <command>tar xvIf
+FILNAVN.tar.bz2</command>, mens men med ældre version af
+<command>tar</command> må tage den i to omgange: <command>bunzip2
+FILNAVN.tar.bz2</command> og derefter <command>tar xvf FILNAVN.tar</command>.
+</para>
+
+
+<sect3 id="tar-flytning">
+<title>Flytning af data ved brug af tar</title>
+<indexterm><primary>mke2fs</primary></indexterm>
+<indexterm><primary>Formattere disk</primary></indexterm>
+<para>
+<emphasis>Tip:</emphasis> Lad os lige tage et avanceret eksempel. Det
+kan jo ske, at du løber tør for plads på din harddisk og køber en
+ekstra disk. Du beslutter nu at du vil flytte
+<filename>/home</filename> over på den nye disk
+(<filename>/dev/hdb1</filename>) og vil køre videre med Linux-systemet
+på den gamle disk. Lad os antage at du har partitioneret
+<filename>/dev/hdb</filename> med <command>fdisk /dev/hdb</command> og
+kørt <command>/sbin/mke2fs /dev/hdb1</command> for at formattere
+disken.
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# mkdir /mnt/nydisk</PROMPT>
+<PROMPT>[root@linus /root]# mount /dev/hdb1 /mnt/nydisk</PROMPT>
+<PROMPT>[root@linus /root]# cd /home</PROMPT>
+<PROMPT>[root@linus /root]# tar cvf - . | (cd /mnt/nydisk; tar xpf -)
+</PROMPT>
+</SCREEN>
+
+<para>
+De to første linier er blot forberedelse, så vi har den nye disk til
+rådighed på <filename>/mnt/nydisk</filename>. Dernæst stiller vi os
+der hvor backup skal startes fra (gør at dette er "."). I den sidste
+kommando laver vi en backup til "-" dvs. til stdout, som pipes til en
+modtage-tar-kommando, der startes under
+<filename>/mnt/nydisk</filename>. Denne gang tilføjes p-option for at
+filerne får samme rettigheder som originalerne.
+</para>
+
+<para>
+Først når du <emphasis>har</emphasis> checket at alle dine filer er
+genskabt under <filename>/mnt/nydisk</filename> kan du slette dine
+filer og skabe kontakt med den nye disk med
+<filename>/home</filename>-filerne. Rediger
+<filename>/etc/fstab</filename> så den nye disk er med
+</para>
+
+<SCREEN>
+/dev/hdb1  /home   ext2    defaults        1 1
+</SCREEN>
+
+<para>
+bruger du en anden partition end <filename>/dev/hdb1</filename> til
+den nye disk, så skal du naturligvis erstatte dette i
+<filename>/etc/fstab</filename>
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>mv /home /oldhome</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>umount /mnt/nydisk</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>mount /home</userinput>
+</SCREEN>
+
+<para>
+Hvis du kan se at alt fungerer, kan du slette den gamle
+<filename>/home</filename> som nu endte på
+<filename>/oldhome</filename>. Brug <command>rm -rf /oldhome</command>,
+når du er helt sikker.
+</para>
+
+<para>
+Det der kan gå galt her er at man har links, som ikke peger det
+rigtige sted efter flytningen. Med <filename>/home</filename> er dette
+normalt ikke tilfældet, men er det <filename>/usr</filename> du
+flytter, så skal du være meget forsigtig og altid lave disse
+operationer i single-user-mode (dvs. brug <command>init 1</command>).
+</para>
+</sect3>
+</sect2>
+
+
+<sect2 id="RPM">
+<title>Installation af RPM program pakker</title>
+<indexterm><primary>RPM</primary></indexterm>
+<para>
+Gennem mange år har UNIX systemadministratoren skullet hente nye
+programmer hjem med kildetekst og derefter oversætte og installere.
+Det gik oftest nemt, men kunne fra tid til anden være meget svært. 
+Hvad værre var, man kunne typisk ikke afinstallere programmer uden at
+have 100 pct. styr på installationsfasen og styr på at andre programmer ikke
+anvendte samme biblioteker. Alt i alt ganske problematisk og uden reel
+mulighed for at kunne opgradere systemet løbende.
+</para>
+
+<para>
+Firmaet Red Hat og andre er i de senere år gået over til at
+oversætte programmer en gang for alle og så distribuere
+programpakker, der indeholder binær kode, biblioteker, manualsider og
+andet. Fordelen ved disse programpakker er, at systemet kan holde
+eksakt styr på, hvad der er installeret.  Alle pakker undersøges for
+afhængigheder, og du kan afinstallere pakker igen, hvis andre pakker
+ikke påvirkes af det. Red Hats format for programpakker kaldes RPM,
+som er en forkortelse for "Red Hat Package Management", hvilket vil sige
+Red Hat's pakkehåndtering.
+</para>
+
+<table>
+<title>Miniguide i at anvende rpm-programmet.</title>
+<tgroup cols=2 align="char">
+<thead>
+<row>
+<entry>Kommando
+</entry>
+
+<entry>
+Forklaring
+</entry>
+
+</row>
+</thead>
+
+<tbody>
+
+<row>
+<entry> <userinput>rpm -i pakke_version.rpm</userinput> </entry>
+<entry> Installér pakken</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -ivh pakke_version.rpm</userinput> </entry>
+<entry>  Installér pakken med status vist. Tilføj option --nodeps hvis
+pakken skal installere uden at tjekke for manglende støtte pakker.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -qip pakke_version.rpm</userinput></entry>
+<entry> Viser information om den pakke, som kan installeres.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -e pakke</userinput> </entry>
+<entry> Afinstallér den installerede pakke.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -q PAKKE</userinput> </entry>
+<entry> Viser version af den installerede pakke.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -qi PAKKE</userinput> </entry>
+<entry> Viser information om den installerede pakke.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -qf filnavn</userinput> </entry>
+<entry> Viser hvilken RPM-pakke filnavnet kom fra.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -ql PAKKE</userinput> </entry>
+<entry> Viser hvilke filer der blev installeret med RPM-pakken.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -qlp PAKKE.rpm</userinput> </entry>
+<entry> Viser hvilke filer der er med i RPM-pakken.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -qa</userinput> </entry>
+<entry> Viser alle installerede RPM-pakker.</entry>
+</row>
+
+
+<row>
+<entry> <userinput>rpm -ql PAKKE</userinput> </entry>
+<entry> Viser alle filnavne indeholdt i pakken.</entry>
+</row>
+
+<row>
+<entry> <userinput>rpm -Va</userinput> </entry>
+<entry> Tjek alle RPM-installerede filer for ændringer siden
+installation af pakkerne.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+
+<para>
+Lad os illustrere styrken i RPM programmet: Du sidder på en maskine
+som systemadministrator og opdaterer alle Linux
+maskinerne i dit netværk med en kommando - og endda med krypteret
+transmission, så ingen kan lytte med. Det er simpelthen
+administratorens drøm af et system. Nemt, sikkert og stabilt. Hvis
+alle maskiner, der skal opgraderes, er nævnt i filen
+<filename>/etc/serverlist</filename>, vil nedenstående magiske linje
+(ja, det er avanceret - men sejt, ikke sandt) opgradere vim-pakken, som
+hentes fra ftp-serveren <filename>SERVER</filename>. Alle
+maskiner bliver lige opgraderet i et hug!
+
+<SCREEN>
+<PROMPT>[root@linux /root]# </PROMPT><USERINPUT>cat /etc/serverlist | \
+    xargs -l1 -i= -r ssh = rpm -U ftp://SERVER/vim-4.6-4.i386.rpm</USERINPUT>
+</SCREEN>
+
+</para>
+
+
+<para>
+<indexterm><primary>rpmfind</primary></indexterm>
+<indexterm><primary>Mangler filer</primary></indexterm>
+
+<emphasis>Tip:</emphasis> Under installationen eller upgraderingen af
+en RPM-pakke sker det at den klager over at man mangler nogle filer,
+dette skyldes at RPM-pakken som man er ved at installere afhænger af
+andre RPM pakker for at fungere, RPM pakker som man enten mangler
+eller hvor man har en for gammel version. Et godt trick er at gå ind
+på <ulink url="http://www.rpmfind.net/linux/RPM/">http://www.rpmfind.net/linux/RPM/</ulink>. Her
+kan man søge efter RPM-pakker, men også efter filnavne og derved
+oftest finde hvilke RPM-pakker du mangler.
+</para>
+
+<para>
+Er du mere interesseret i at kunne bruge RPM-programmet bedre så kan
+vi anbefale at læse 
+<ulink url="http://www.sslug.dk/rpm/">http://www.sslug.dk/rpm/</ulink>. 
+</para>
+</sect2>
+
+<sect2 id="chkconfig">
+<title>chkconfig</title>
+
+<indexterm><primary>chkconfig</primary></indexterm>
+
+<para>
+<command>chkconfig</command> er et nyttigt lille værktøj til ændringer i
+services i et runlevel. Værktøjet følger med Red Hat og Mandrake.
+</para>
+
+<para>
+Antag, at du har en service <command>foo</command>, som du ønsker at 
+tilføje til runlevel 3. Du har installeret (måske gennem 
+<command>rpm</command>) et script i kataloget 
+<filename>/etc/rc.d/init.d</filename>, som følger de gængse retningslinjer
+for service-scripts (dvs. at en service startes op vha. <command>foo start</command>
+og lukkes ned vha. <command>foo stop</command>). Nedenfor ser du hvordan
+den nye service tilføjes. Bemærk at der er to minus-tegn foran "level"
+</para>
+
+<screen>
+<prompt>[root@linus root]#</prompt> <userinput>chkconfig --level 3 foo on</userinput>
+</screen>
+
+
+
+<para>
+Bliver du træt af servicen <command>foo</command> kan du naturligvis
+fjerne den.  Du udskifter blot <emphasis>on</emphasis> med
+<emphasis>off</emphasis>. Du kan også bruge
+<command>chkconfig</command> til at tjekke hvilke runlevels en service
+bliver startet op under. Nedenfor checker vi <command>named</command>.
+Bemærk igen, at der er to minus-tegn foran "level"
+</para>
+
+<para>
+<screen>
+<prompt>[root@linus root]#</prompt> <userinput>chkconfig --list named</userinput>
+named 0:off 1:off 2:off 3:off 4:off 5:off 6:off
+</screen>
+</para>
+</sect2>
+
+<sect2 id="dpkg">
+<title>Installation af DEB program pakker</title>
+<indexterm><primary>dpkg</primary></indexterm>
+<indexterm><primary>DEB-pakker</primary></indexterm>
+
+<para>
+Skal du installere programmer på Debian eller Corel Linux, skal du
+være root. Med Corel Linux er det meningen at man skal anvende
+"Applications"-&gt;"System"-&gt;"update". Der anvendes et program der hedder
+<command>get_it</command>.  Her kan man sætte cdrom, ftp eller http
+adresser hvor updates hentes fra. Som standard er Corel's ftp-update
+adresse medtaget.  Man kan jo prøve at tilføje <ulink
+url="ftp://ftp.dk.debian.org/debian">ftp://ftp.dk.debian.org/debian</ulink>
+for at få adgang til alle debian pakkerne.
+</para>
+
+<para>
+Du kan dog også være interesseret i at kunne styre installation selv
+fra kommando-linien.  Nyttige kommandoer er
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+  <para><command>dpkg -i PAKKE.deb</command> - installerer pakken.
+ </para> 
+</listitem>
+<listitem>
+  <para><command>dpkg -r PAKKE</command> - fjerner pakken igen.
+ </para> 
+</listitem>
+<listitem>
+  <para><command>dpkg -s PAKKE</command> - viser status for pakken.
+ </para> 
+</listitem>
+<listitem>
+  <para><command>dpkg -L PAKKE</command> - viser hvilke filer, der er i pakken.
+ </para> 
+</listitem>
+<listitem>
+  <para><command>dpkg -S FILNAVN</command> - viser hvilke pakker, 
+                 som FILNAVN stammer fra.
+ </para> 
+</listitem>
+<listitem>
+  <para><command>dpkg --help</command> - viser hjælp.
+ </para> 
+</listitem>
+</itemizedlist>
+</para>
+
+<para>
+For at konfigurere pakker til dit system skal du køre kommandoen
+<command>dpkg --pending --configure</command>. Det gør, at man får sat
+de enkelte programmer op til maskinen efter, at pakkerne er blevet
+installeret.
+</para>
+
+</sect2>
+</sect1>
+
+
+<sect1 id="linuxconf">
+<title>Systemarbejde med linuxconf</title>
+<para>
+Det grafiske program <command>linuxconf</command> køres af
+<filename>root</filename>, og det bruges til at udføre 
+systemadministration på Linux-maskinen. Programmet er meget
+omfattende, men nemt at bruge. Du kan konfigurere brugerkonti, grupper,
+alt om netværk, e-post spam-filtrering, PPP og meget andet.
+</para>
+
+<FIGURE ID="linuxconf1-fig" FLOAT="1">
+<TITLE>Systemadministration med <command>linuxconf</command></TITLE>
+<GRAPHIC FILEREF="linuxconf.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Et smart trick med programmet er, at du kan køre det via en
+web-browser. Din systemadministrator kan således administrere din
+maskine fra en anden vilkårlig maskine, som måske kører et helt andet
+styresystem. Start <command>linuxconf</command> i en
+<command>xterm</command>, og vælg [Config] -> [Networking] -> [Misc]
+-> [Linuxconf network access], og "activate the changes". Nu kan du
+via <filename>http://DINMASKINE:98</filename> administrere maskinen
+(dette kræver ikke at Apache webserveren kører). Har du et lille
+lukket netværk, er det smart, men du skal vide, at netværkstrafikken
+kan aflyttes, og dine kodeord transmitteres i klar tekst via dit
+netværk. Du må <emphasis>aldrig</emphasis> sende adgangskoder i klar
+tekst for maskiner, der er direkte på Internettet. Det er alt for usikkert.
+</para>
+
+<FIGURE ID="linuxconf2-fig" FLOAT="1">
+<TITLE>Systemadministration med <command>linuxconf</command> i en web-browser.</TITLE>
+<GRAPHIC FILEREF="linuxconf-web.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</sect1>
+
+<sect1 id="kde-systemadm">
+<title>KDE værktøjer</title>
+<para>
+Med de nye KDE udgaver følger en del gode værktøjer med som en
+systemadministrator kan have glæde af. <command>kuser</command> er en
+af dem. KDE 2.1 har dette i Menuen [Start] -> [System] -> [User Manager].
+</para>
+
+<para>
+Med KDE User Manager har man et nemt grafisk program til opsætte,
+ændre og slette bruger-profiler på Linux-maskinen. Klikker man på en
+bruger kommer man direkte til brugeren opsætning. 
+</para>
+
+<FIGURE ID="kuser" FLOAT="1">
+<TITLE>Bruger-administration med KDE User Manager</TITLE>
+<GRAPHIC FILEREF="kuser.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Med KDE 2.1 følger også et godt værktøj til at holde styr på de RPM-,
+Slackware- og DEB-pakker, der er installeret. Find
+<command>kpackage</command> via [Start] -> [System] -> [Package
+Manager]. Til venstre på <xref linkend="kpackage-fig"> ses en del af
+oversigten over de pakker som er installeret. Vælges en pakke viser
+højresiden hvad pakken indeholder og man kan få en liste af filer
+pakken indeholder.
+</para>
+
+<FIGURE ID="kpackage-fig" FLOAT="1">
+<TITLE>Pakke-administration med KDE Package Manager</TITLE>
+<GRAPHIC FILEREF="kpackage.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</sect1>
+
+<sect1 id="ximian-sysadm">
+<title>Ximian setup tool</title>
+<para>
+Ximian Gnome (tidl. Helix Gnome, men har nu ændret navn,
+pga. uoverensstemmelser med varemærkerettighedder) har lavet et
+værktøj der - meget rammende - hedder Ximian Setup Tools. Dette
+værktøj er meget nemt, at bruge og giver grafisk styring af de fleste
+grundlæggende ting i Linux.
+</para>
+
+
+<FIGURE ID="ximianshares-fig" FLOAT="1">
+<TITLE>Ximian fil-deling</TITLE>
+<GRAPHIC FILEREF="ximianshares.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+På <xref linkend="ximianshares-fig"> er vist hvordan de
+mapper/kataloger og printere der deles, så andre kan se dem.  Som man
+kan se er det nemt indstille deling af filer mellem Linux og Windows
+maskiner, eller mellem Linuxmaskiner, via Samba eller NFS.
+</para>
+
+<para>
+Da værktøjet endnu ikke er helt færdigt (stadig beta-kode) skal du
+selv hente kildekoden/program-teksten og kompilere den. Dette gør du
+sådan her:
+</para>
+
+<para>
+Åbn din favoritbrowser og gå til adressen:
+<ulink url="http://www.ximian.com/desktop/setuptools.php3">http://www.ximian.com/desktop/setuptools.php3</ulink>.
+Gå ned midt på siden, indtil du kommer til afsnittet "The latest
+version of Ximian Setup Tools is" og tryk på versionsnummeret
+nedenunder for at downloade <filename>.tar.gz</filename>-filen.
+Når du har downloadet filen, skal du pakke den ud.
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>tar -xvzf helixcode-setup-tools*</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cd helixcode-setup-tools*</USERINPUT>
+<PROMPT>[root@linus /root/helixcode-setup-tools]# </PROMPT><USERINPUT>./configure --prefix=/usr --sysconfdir=/etc</USERINPUT>
+<PROMPT>[root@linus /root/helixcode-setup-tools]# </PROMPT><USERINPUT>make</USERINPUT>
+<PROMPT>[root@linus /root/helixcode-setup-tools]# </PROMPT><USERINPUT>make install</USERINPUT>
+</screen>
+
+<para>
+Ifølge Ximian er det VIGTIGT at huske parametrene til
+<command>./configure</command>-kommandoen, da programmet ellers ikke
+vil oversætte korrekt.
+</para>
+
+<para>
+Når du har gjort dette er programmet installeret og kan bruges enten
+enkeltvis startet via kommandolinien, eller ved at vælge Gnome
+konfigurationsværktøj (værktøjskassen på Gnome's menulinie). Du kan
+også trykke på Gnome-fodspor-menu, og vælge Opsætning-kontrolcenter.
+Værktøjer vil være at finde under punktet System. Programmerne også
+køres enkeltvis, hvis man vil det, med kommandoerne:
+<command>users-admin</command>, <command>shares-admin</command>,
+<command>disks-admin</command>, <command>memory-admin</command>,
+<command>networking-admin</command> og
+<command>nameresolution-admin</command>. Lad os se på netværkopsætningen:
+</para>
+
+<FIGURE ID="ximiannet-fig" FLOAT="1">
+<TITLE>Ximian netværksopsætning</TITLE>
+<GRAPHIC FILEREF="ximiannet.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Fordelen ved at kunne køre programmerne enkeltvis via en kommando, er
+at du ikke skal have startet Gnome, som root. Du kan enten logge ind
+som root i en terminal, eller bruge <command>sudo</command>, hvis du
+kører værktøjerne enkeltvis - de er nemlig deaktiveret i Gnome's
+kontrolcenter, hvis du ikke er root !
+</para>
+
+<para>
+I skrivende stund kan værktøjet - eller rettere de 7 programmer -
+bruges til, at indstille følgende på din Linux maskine:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Netværksopsætning: TCP/IP opsætning.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Name Resolution: hostnavn, domæne, DNS, WINS, statiske hosts,
+søgedomæner, arbejdsgruppe.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Hukommelse: Swap partitioner og filer.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Tid: Systemuret, tidszone, tidsserver synkronisering.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Brugere: Brugere og grupper.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Diske: Mounte lokale harddiske og partitioner.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Shares: NFS, SMB, eksport, detect og import.
+ </para>
+</listitem>
+</itemizedlist>
+
+
+<para>
+Her er et billede af <command>disks-admin</command>-værktøjet:
+</para>
+
+<FIGURE ID="ximiandisk-fig" FLOAT="1">
+<TITLE>Ximian diskstyring</TITLE>
+<GRAPHIC FILEREF="ximiandisk.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+I nær fremtid forventes det, at værktøjet vil blive udbygget med
+funktioner til konfiguration af printer, login manager, skærm, lydkort
+med mere.
+</para>
+
+<para>
+Ydermere er der planlagt CORBA-integration,
+således at fjernadministration af maskiner gennem
+værktøjet/værktøjerne vil være muligt. Cluster/klynge-konfiguration -
+dermed menes mulighed for at systemadministratorer kan konfigurere og
+rekonfigurere store antal af arbejdsstationer gennem fjernopkobling.
+</para>
+
+
+<para>
+Presets/Forudindstillinger: En anden smart (og meget relevant)
+funktion vil være muligheden for - via en applet - at kunne ændre éns
+netværksopsætning, defacto/default printer, alt efter hvor man fysisk
+set har koblet sin computer op.  Derved vil man kunne have forskellige
+"Presets" til forskellige fysiske placeringer (arbejde, hjemmenetværk,
+netparty, etc.) Denne funktion er nok i sig selv en god grund til, at
+holde et vågent øje med udviklingen af dette værktøj.
+</para>
+
+<para>
+Rollback/Baglæns: Alle værktøjerne/værktøjet vil kunne lave et
+periodisk snapshot af dit system, således at du vil kunne "rulle" din
+systemkonfiguration tilbage til der, hvor den sidst virkede - denne
+funktion kan sammenlignes med "Restore point" funktionen fra Microsoft
+Windows ME.
+</para>
+
+<para>
+Alt i alt tyder det på, at dette værktøj vil blive ganske uundværligt
+for Gnome og Linux brugere. Hvis man har både KDE og Gnome installeret
+på samme tid, kan man jo også køre værktøjerne indefra KDE af; dog vil
+man jo her - naturligt nok - ikke have den samme integration med
+brugergrænsefladen.
+</para>
+
+</sect1>
+
+
+
+</chapter>
+
+
