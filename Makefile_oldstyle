@@ -1,4 +1,11 @@
-all: clean statusfiler html palmpilot pspdf sgml cvs2html mail
+all: clean Makefiles statusfiler html palmpilot pspdf sgml cvs2html mail
+
+Makefiles:
+	cp Makefile.subdir friheden/Makefile
+	cp Makefile.subdir admin/Makefile
+	cp Makefile.subdir program/Makefile
+	cp Makefile.subdir web/Makefile
+	cp Makefile.subdir sikkerhed/Makefile
 
 statusfiler:
 	make -C friheden statusfiler
@@ -35,6 +42,11 @@ pspdf:
 	make -C program pspdf
 	make -C web pspdf 
 	make -C sikkerhed pspdf 
+	rm friheden/Makefile
+	rm admin/Makefile
+	rm web/Makefile
+	rm program/Makefile
+	rm sikkerhed/Makefile
 	       
 	       
 clean:	       
@@ -44,6 +56,12 @@ clean:
 	make -C web clean 
 	make -C sikkerhed clean 
 	rm -rf cvs2html
+	rm -f friheden/Makefile
+	rm -f admin/Makefile
+	rm -f program/Makefile
+	rm -f web/Makefile 
+	rm -f sikkerhed/Makefile
+
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
@@ -53,4 +71,4 @@ cvs2html:
 
 
 mail:
-	echo "Done bøger" | mail pto-mobil
+	echo "Done bøger" | mail $(USER)-mobil
