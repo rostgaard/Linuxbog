@@ -1,0 +1,237 @@
+<chapter id="distro-Onebase">
+<title>Onebase Linux</title>
+<para>
+Onebase holder til på <ulink url="http://www.onebase-linux.org/">http://www.onebase-linux.org</ulink>. Siden er lukket
+lige nu, men forventes at åbne igen den. 22. december 2003 hvor
+version 2.0.2 slippes fri.
+</para>
+<para>
+Jeg fandt den via distrowatch.com og ftp-serveren på ibiblio.org.
+</para>
+<para>
+<figure id="onebase-logo" float="1">
+<title>Onebase Logo</title>
+<graphic fileref="Onebase-logo.png"></graphic>
+</figure>
+
+Onebase er en ny source-distribution fra sommeren 2003 der
+åbenbart hovedsageligt holdes i hånden af P.B.Prabhuram. Det lader til
+at Onebase har en lille trofast skare der følger med i hvad der sker,
+men for udenforstående kan det være lidt svlrt at få overblik indtil
+websiden åbner igen.
+</para>
+
+<sect1 id="distro-onebase-maalgruppe">
+<title>Målgruppe</title>
+<para>
+Det er målet for Onebase at den skal stille en solid base til rådighed for en bred vifte af brugere, lige fra begynderen til udviklere der så selv kan installere netop de programmer der er brug for.
+</para>
+</sect1>
+
+<sect1 id="distro-onebase-installation">
+<title>Installation</title>
+<para>
+Cd'en booter på helt normal vis med isolinux, og kort tid efter
+præsenteres man for en menu tgil installation, upgrade, og
+redningsoperationer.
+Man logger ind som root og skriver "installos" og installationen går
+igang.
+</para>
+<para>
+De enkelte punkter i installationen er ganske simple. Disken skal
+identificeres, men der er ikke mulighed for at partitionere den.
+Som filsystem er der mulighed for at vælge mellem ReiserFS, Ext3 og
+XFS.
+</para>
+<para>
+Swap partition angives, og installationen går igang med at kopiere
+filer fra CD'en.
+</para>
+<para>
+Den største overraskelse under installationen er der skal kompileres
+en kerne. Meget smart egentlig - og knap så erfarne får da også råd om
+bare at acceptere default-indstillingerne, og lade være med at pille. 
+Jeg vil mene at andre også skal holde pilfingrene væk :)
+</para>
+<para>
+Efter kompilering af kernen er det tid til at finde på et godt root-password.
+</para>
+<para>
+Herefter dukker en optimerings-fil op i vi-editoren. Jeg valgte min processor og default optimeringslevel.
+</para>
+<para>
+Så er installationen færdig og man bliver bedt om at boote med ctrl-alt-delete.
+</para>
+<para>
+Jeg havde problemer med kernen og kunne ikke boote efter instalationen.
+Morale: Lad være med at lave den perfekte kerne under installationen - den
+bliver ikke perfekt alligevel. Gem det til senere.
+Heldigvis er der en fin rescue-mode på CD'en så jeg kunne boote den vej og
+bygge en brugbar kerne.
+</para>
+</sect1>
+
+<sect1 id="distro-onebase-postinstall">
+<title>Efter den grundlæggende installation</title>
+<para>
+<screen>
+<prompt>
+        --------------------------------------------------------
+                           Onebase Linux 2.0
+        --------------------------------------------------------
+
+        Type: ol-apps  # For network based OL-apps installation
+
+        (To clear this information, Type: mv /etc/OL/issue /etc)
+
+        --------------------------------------------------------
+
+
+coltrane login: 
+</prompt>
+</screen>
+</para>
+
+<para>
+Første problem: Det er ikke umiddelbart muligt at konfigurere dansk keyboard.
+Så det gælder om at kende det amerikanske keyboard layout:
+<screen>
+<prompt>
+
+- ligger på +
+_ ligger på ?
+; ligger på æ
+: ligger på Æ
+| ligger på *
+</prompt>
+</screen>
+</para>
+<para>
+Det burde være nok til at klare sig gennem vi-editoren.
+</para>
+<para>
+Da jeg så endelig fik maskinen i luften skrev jeg <prompt>modprobe 3c59x</prompt> for få gang i
+mit netkort. Herefter <prompt>ol-connect -y</prompt> for at få en tildelt en dhcpadresse.
+</para>
+<para>
+I <prompt>/etc/sysconfig/network</prompt> satte jeg hostnavn. Reboot!
+</para>
+<para>
+Andet problem: Jeg fil ikke mulighed for at konfigurere netkortet under
+installationen. Med den rette linie i /etc/modules.conf, kan jeg få gang i det
+ved at skrive "dhcpcd eth0", men det skal så gøres hver gang den booter.
+</para>
+<para>
+Det løstes dog hurtigt ved at tilføje tre filer: 
+<prompt>/etc/sysconfig/network-devices/ifconfig.eth0</prompt>:
+<screen><prompt>
+ONBOOT=yes
+DHCP_PROG=/usr/sbin/dhcpcd
+DHCP_START=
+DHCP_STOP=-k 
+</prompt></screen>
+</para>
+<para>
+<prompt>/etc/sysconfig/network-devices/ifup-eth0</prompt>:
+<screen><prompt>
+#!/bin/bash
+source /etc/sysconfig/rc
+source $rc_functions
+source $network_devices/ifconfig.eth0
+echo "Bringing up eth0"
+loadproc $DHCP_PROG $DHCP_START
+</prompt></screen>
+</para>
+<para>
+<prompt>/etc/sysconfig/network-devices/ifdown-eth0</prompt>:
+<screen><prompt>
+#!/bin/bash
+source /etc/sysconfig/rc
+source $rc_functions
+source $network_devices/ifconfig.eth0
+echo "Bringing down eth0"
+loadproc $DHCP_PROG $DHCP_STOP
+</prompt></screen>
+</para>
+</sect1>
+
+<sect1 id="distro-onebase-pakkesystem">
+<title>Pakkesystemet</title>
+<para>
+Installationen fylder omkring 800 mb og har rigeligt med programmer til at
+installere flere - og ikke meget andet.
+</para>
+<para>
+Pakker er kildekode og skal kompileres. Der findes vist prekompilerede
+pakker, men det lykkedes mig ikke at finde dem. Jeg har længe haft lyst at
+prøve en sourcebaseret distribution, så jeg brugte ikke lang tid på at lede.
+Man skal bare have for øje at det kan tage et stykke tid at kompilere X og tilhørende komponenter.
+</para>
+<para>
+Jeg skrev <prompt>olm -h</prompt> og fandt ud af at hente beskrivelsen af fluxbox
+windowmanageren med den tekstbaserede browser links. Herefter skrev jeg <prompt>olm -d fluxbox.olm</prompt>. OLM-systemet gav sig til at holde styr på afhængigheder og downloads. Efter download skrev jeg "olm -d fluxbox.olm" og den gik igang med at kompilere. Jeg konstaterede at den fulgte afhængigheder og gik i seng.
+</para>
+<para>
+Da jeg vågnde var den færdig, og jeg skrev xf86config for at konfigurere X.
+Den kender jeg, men jeg kunne nok have nået samme resultat med xf86cfg.
+</para>
+<para>
+
+<figure id="onebase-xfree-login" float="1">
+<title>Onebase XFree Login</title>
+<graphic fileref="onebase-xfree-login.png" scale="60"></graphic>
+</figure>
+
+Jeg brugte <prompt>ol-desk</prompt> til at vælge Fluxbox som default windowmanager.
+</para>
+<para>
+
+For at kunne vælge en xterm i menuen indsatte jeg følgende linie i
+<prompt>/root/.fluxbox/menu</prompt>:
+<screen><prompt>
+[exec] (xterm) {xterm -bg grey -sl 500 -ls}
+</prompt></screen>
+
+</para>
+<para>
+Jeg hentede olm-beskrivelsen af dillo-browseren vha. links og hentede koden med
+<prompt>olm -s dillo.olm</prompt> Efter download kompilerede jeg Dillo og afhængigheder med <prompt>olm- d dillo.olm</prompt>.
+</para>
+<para>
+Næste aften installerede jeg yderlige Secure Shell, Emacs og
+ImageMagick.
+<figure id="galeon-build" float="1">
+<title>Fluxbox med Dillo browser og xterm</title>
+<graphic fileref="galeon-build.png" scale="60"></graphic>
+</figure>
+
+</para>
+<para>
+Jeg ville have installeret Evolution og Mozilla også, men en afhængighedsfejl gjorde at jeg ikke kunne.
+</para>
+</sect1>
+
+<sect1 id="distro-onebase-killer-feature">
+<title>Killer-feature</title>
+<para>
+Onebase er nem at bruge. Meget nem. De specielle Onebase-kommandoer er nemme
+at bruge og der er ikke flere end at man kan huske dem i hovedet.
+</para>
+</sect1>
+
+<sect1 id="distro-onebase-vurdering">
+<title>Vurdering af Onebase</title>
+<para>
+Når der kommer helt styr på pakke-afhængigheder vil
+den være et logisk alternativ til Gentoo og andre sourcebaserede
+distributioner for knap så hærdede Linux-brugere.
+Der er ikke flere Onebase pakker (endnu) end at de er til at overskue, men
+selvfølgelig kan der kompileres egne pakker på normal vis.
+</para>
+<para>
+Som distribution der kan det nødvendige og ikke er fyldt med mere eller
+mindre uigennemskuelige programmer tror jeg den vil gøre lykke.
+</para>
+</sect1>
+</chapter>
+
