@@ -2,7 +2,399 @@
 <chapter id="ctwm">
 <title>CTWM</title>
 
+<!-- Originalfil http://www.sslug.dk/julekalender/10.php3 -->
+
+
 <para>
-X
+Ctwm (Claude's Tab Window Manager) er en viderebygning på twm som kan alt det man savner i twm.
 </para>
+
+<para>
+Sådan ser ctwm ud (klik for en større version):
+</para>
+
+
+<figure id="ctwm-fig" float="1">
+<title>ctwm</title>
+<graphic fileref="ctwm.&magic;" scale="60"></graphic>
+</figure>
+
+
+<sect1>
+  <title>Installation</title>
+<para>
+Man kan hente ctwm fra <ulink url="http://ctwm.dl.nu/">http://ctwm.dl.nu/</ulink>.
+Den nyeste version er 3.6. 
+Først forsøgte jeg mig med kildeteksten, men den gav lidt problemer, derfor
+anbefales det at bruge source RPM'en i stedet.  
+</para>
+
+<sect2>
+  <title>Source RPM</title>
+<para>
+Source RPM'en: <filename>ctwm-3.6-2jv.src.rpm</filename> kan på Red Hat bygges med
+</para>
+
+<screen>
+rpm --rebuild ctwm-3.6-2jv.src.rpm
+rpm -Uvh /usr/src/redhat/RPMS/i386/ctwm-3.6-2jv.i386.rpm
+</screen>
+
+
+<para>
+I <filename>.xsession</filename> indsættes 
+</para>
+
+<screen>
+exec /usr/X11R6/bin/ctwm
+</screen>
+</sect2>    <!--   Source RPM -->
+
+<sect2>
+  <title>Kildetekst</title>
+<para>
+Kildeteksten: ctwm-3.6.tar.gz
+</para>
+
+<screen>
+tar xvzf ctwm-3.6.tar.gz
+</screen>
+
+<para>
+Hvis man har hentet den oprindelige source, kan man ikke kompilere før man
+indsætter et manglende semikolon i filen <filename>gram.y</filename> i linie 686. 
+</para>
+
+<screen>
+wingeom_entry   : string string { AddToList (&amp;Scr->WindowGeometries, $1, $2) }
+</screen>
+
+<para>
+rettes til
+</para>
+
+<screen>
+wingeom_entry   : string string { AddToList (&amp;Scr->WindowGeometries, $1, $2); }
+</screen>
+
+<para>
+Herefter køres
+</para>
+
+<screen>
+cd ctwm-3.6
+xmkmf
+make
+</screen>
+
+<para>
+Køer man <command>make install</command> så er der brok over at
+<literal>No rule to make target `xpm'</literal>.  Der står heller ikke
+noget om <command>make install</command> i <filename>README filen</filename>.  Så jeg har valgt at beholde
+den i mit hjemmekatalog.
+</para>
+
+<para>
+Dvs. at der i .xsession kommer til at stå:
+</para>
+<screen>
+exec ctwm-3.6/ctwm
+</screen>
+</sect2>    <!--   Kildetekst -->
+</sect1>    <!--   Installation -->
+
+<sect1>
+  <title>Opsætningsfiler</title>
+
+
+<para>
+Filen <filename>$HOME/.ctwmrc</filename> styrer opsætningen
+</para>
+
+<para>
+Start med at kopiere systemopsætningsfilen til dit hjemmekatalog:
+</para>
+
+<screen>
+cp /usr/X11R6/lib/X11/twm/system.ctwmrc ~/.ctwmrc
+</screen>
+
+<para>
+(eller <command>cp ctwm-3.6/system.ctwmrc ~/.ctwmrc</command>, hvis du
+har installeret i dit hjemmekatalog).  
+Derefter kan du redigere i den.
+</para>
+</sect1>
+
+<sect1>
+  <title>Menu</title>
+<para>
+Ved at venstreklikke på baggrunden kommer der en menu. Med default
+konfigurationsfilen er der mulighed for at starte en <command>xterm</command>, genstarte
+<command>ctwm</command>, afslutte <command>ctwm</command>, og nogle få andre ting.
+</para>
+
+<para>
+Man kan indsætte ting i menuen i <filename>.ctwmrc</filename>:
+</para>
+
+<screen>
+menu "defops"
+{
+    "Min menu"          f.title
+    "Xterm"             !"xterm&amp;"
+    "Netscape"          !"/usr/bin/netscape&amp;"
+    "Xmag"              !"xmag&amp;"
+    ""                  f.nop
+    "Restart"           f.restart
+    "Exit"              f.quit
+}
+</screen>
+</sect1>    <!--   Menu -->
+
+<sect1>
+  <title>Genvejstaster</title>
+<para>
+Genvejstaster sætte let op i .ctwmrc:
+</para>
+
+<screen>
+"Insert"        = c | m : all           : f.exec "xterm&amp;"
+"n"             = c | m : all           : f.exec "netscape&amp;"
+</screen>
+
+<para>
+Her sættes <command>ctrl+alt+Insert</command> til at starte en <command>xterm</command> imens <command>ctrl+alt+n</command> sættes til at starte en netscape.
+</para>
+
+<para>
+Se i øvrigt <command>man ctwm</command>. Hvis <command>make install</command> ikke lykkes, så
+prøv 
+</para>
+
+<screen>
+man ./ctwm-3.6/ctwm._man
+</screen>
+
+<para>
+eller se <ulink url="http://ctwm.dl.nu/manpage.html">http://ctwm.dl.nu/manpage.html</ulink>.
+</para>
+</sect1>    <!--   Genvejstaster -->
+
+<sect1>
+  <title>Vindueshåndtering</title>
+<para>
+Som ved twm er default, at man placerer vinduerne selv med venstre
+museknap. Man kan med det samme ændre størrelse på et vindue, ved at
+holde midterste museknap nede og trække den udenfor vinduet, og
+derefter trække vinduet til den ønskede størrelse.
+</para>
+
+<para>
+Hvis man vil have vinduerne til at placere sig automatisk, sættes
+RandomPlacement
+</para>
+
+<para>
+Man kan default ikke skifte mellem vinduerne med <command>alt+tab</command>, men dette kan
+sættes op i <filename>.ctwmrc</filename> filen:
+</para>
+
+<screen>
+WindowRing
+WarpRingOnScreen
+"Tab"      = m   : all          : f.warpring "next"
+</screen>
+</sect1>    <!--   Vindueshåndtering -->
+
+<sect1>
+  <title>Fokus</title>
+<para>
+Default er <literal>Focus follows mouse</literal>. 
+<literal>Sloppy Focus</literal> - dvs. at fokus følger musen men at et vindue ikke mister
+fokus, når musen ryger ud på baggrunden - sættes med
+</para>
+
+<screen>
+SloppyFocus
+</screen>
+
+
+<para>
+Man kan tilsyneladende ikke sætte <literal>click to focus</literal>.
+</para>
+
+<para>
+Som default er der hverkan <literal>auto raise</literal> eller
+<literal>click to raise</literal>. Men man kan sænke et vindue ved at
+midterklikke på titelbaren.  Hvis et vindue automatisk skal komme
+forrest når det får fokus sættes <literal>AutoRaise</literal>.
+Og evt. 
+</para>
+
+<screen>
+RaiseDelay 100 #100 ms
+</screen>
+
+<para>
+Hvis man ikke bryder sig om auto raise kan man sætte
+</para>
+
+<screen>
+RaiseOnClick
+</screen>
+
+<para>
+i stedet for.
+</para>
+
+<para>
+Prøv også "AutoSqueeze":
+</para>
+
+<screen>
+AutoSqueeze                          # Auto Squeeze/Unsqueeze these wins
+{
+        "xterm" "emacs"
+}
+</screen>
+
+<para>
+Advarsel: Denne feature er rigtig irriterende :-)
+</para>
+</sect1>    <!--   Fokus -->
+
+<sect1>
+  <title>Workspaces/virtuelle skriveborde</title>
+<para>
+Der er per default 8 workspaces, som man skifter mellem ved at klikke i
+workspace manageren. Dette kan laves om i konfigurationsfilen, ligesom
+man kan sætte genvejstaster op til at skifte workspace.
+Desuden kan man kan stille på baggrundsfarver, farver i workspace
+manageren etc.
+</para>
+
+<para>
+Definition af antal workspaces og disses farver mm:
+</para>
+
+<screen>
+WorkSpaces {
+    "One"   {"white" "black" "DeepSkyBlue3" "white" "plaid"}
+    "Two"   {"white" "black" "firebrick"}
+    "Three" {"white" "black" "brown" "white" "xpm:~/horse_20l.xpm"}
+    "Four"  {"white" "black" "MidnightBlue"}
+    "Five"  {"white" "black" "firebrick"}
+    "Six"   {"white" "black" "DeepSkyBlue3"}
+    "Seven" {"white" "black" "chartreuse4"}
+    "Eight" {"white" "black" "MidnightBlue"}
+}
+</screen>
+
+<para>
+Genvejstaster til at skifte mellem workspaces:
+</para>
+
+<screen>
+"F1"            = m     : all           : f.gotoworkspace "One"
+"F2"            = m     : all           : f.gotoworkspace "Two"
+"F3"            = m     : all           : f.gotoworkspace "Three"
+"F4"            = m     : all           : f.gotoworkspace "Four"
+"F5"            = m     : all           : f.gotoworkspace "Five"
+"F6"            = m     : all           : f.gotoworkspace "Six"
+"F7"            = m     : all           : f.gotoworkspace "Seven"
+"F8"            = m     : all           : f.gotoworkspace "Eight"
+</screen>
+</sect1>    <!--   Workspaces/virtuelle skriveborde -->
+
+<sect1>
+  <title>Baggrundsfarver</title>
+
+<para>
+Lad os tage én linie fra forrige afsnit som eksempel:
+</para>
+
+<screen>
+"One"   {"white" "black" "DeepSkyBlue3" "white" "plaid"}
+</screen>
+
+<para>
+Det første "white" og "black" angiver at workspace "One" skal vises som
+hvid med sort tekst i workspace manageren.
+</para>
+
+<para>
+"DeepSkyBlue3" angiver baggrundsfarven i selve workspacet. Derefter kan
+man skrive en farve (e.g "white") efterfulgt af en mønster (e.g plaid)
+eller et billede (e.g. <filename>xpm:~/horse_20l.xpm</filename>). I tilfælde af et mønster
+bruges farven som den anden farve i mønsteret. 
+Hvad "white" gør i sammenhæng med et billede har jeg ikke forstået, men
+det skal være der.
+</para>
+</sect1>    <!--   Baggrundsfarver -->
+
+<sect1>
+  <title>Workspace manageren</title>
+<para>
+Størrelse og placering kan angives med
+</para>
+<screen>
+workspacemanagergeometry        "360x60+60-0" 4
+</screen>
+
+<para>
+"4" fortæller at der skal være 4 workspaces i hver række.
+</para>
+
+<figure id="workspacemanager-fig" float="1">
+<title>workspacemanager</title>
+<graphic fileref="workspacemanager.&magic;" scale="60"></graphic>
+</figure>
+
+<para>
+Workspace manageren kan sættes til at vise de vinduer der er i de
+forskellige workspaces, i stedet for at vise den farve og tekst de er
+defineret til. Prøv at trykke ctrl imens workspace manageren har fokus.
+Hvis man holder ctrl nede imens man trækker musen udenfor workspace
+manageren (helt over i et andet vindue hvis man bruger <literal>sloppy focus</literal>),
+så bliver det i "map state" som det kaldes. Gentag proceduren med ctrl
+for at få det tilbage til det oprindelige udseende.
+</para>
+
+<figure id="inmapstate-fig" float="1">
+<title>inmapstate</title>
+<graphic fileref="inmapstate.&magic;" scale="60"></graphic>
+</figure>
+
+
+<para> 
+Sæt <literal>StartInMapState</literal>
+ind i din <filename>.ctwmrc</filename> for at starte workspace manageren i <literal>map state</literal>.
+</para>
+
+<sect2>
+  <title>Temaer</title>
+<para>
+Der findes en håndfuld temaer til ctwm der kan downloades på:
+<ulink url="http://ctwm.dl.nu/#themes">http://ctwm.dl.nu/#themes</ulink>.
+</para>
+</sect2>    <!--   Temaer -->
+
+<sect2>
+  <title>Dokumentation</title>
+
+<para>
+Dokumentation kan findes på 
+<ulink url="http://ctwm.dl.nu/#docs<">http://ctwm.dl.nu/#docs</ulink>
+</para>
+</sect2>    <!--   Dokumentation -->
+</sect1>
+
+<sect1>
+  <title>Hvad er det fede ved ctwm?</title>
+<para>
+Det virker. Ikke så meget overflødig grafik. Det er twm plus alle de ting
+man savnede (undtagen click to focus.)
+</para>
+</sect1>
 </chapter>
