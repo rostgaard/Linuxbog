@@ -50,7 +50,7 @@ $indextag     = $setindex ? 'setindex' : 'index';
 if ($newindex) {
     safe_open(*OUT, $outfile);
     if ($indexid) {
-	print OUT "<$indextag ID='$indexid'>\n\n";
+	print OUT "<$indextag id='$indexid'>\n\n";
     } else {
 	print OUT "<$indextag>\n\n";
     }
@@ -223,7 +223,7 @@ safe_open(*OUT, $outfile);
 
 # Write the index...
 if ($indexid) {
-    print OUT "<$indextag ID='$indexid'>\n\n";
+    print OUT "<$indextag id='$indexid'>\n\n";
 } else {
     print OUT "<$indextag>\n\n";
 }

@@ -1,18 +1,24 @@
 all: html pdf
 
-html: dato
+html: stikord dato udgave
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir -p bog
 	xmlto -o bog html bog.sgml
 
-pdf: dato
+pdf: stikord dato udgave
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	mkdir -p pdf
 	xmlto -o pdf pdf bog.sgml
 
+stikord:
+	perl  ./collateindex.pl    -s Symboler -t Stikordsregister -g -i stikord    -o stikord.sgml -N
+
 dato:
 	date +%d/%m-%Y > dato.sgml
 
+udgave:
+	grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml
+
 clean:
 	rm -rf bog pdf
-	rm -f dato.sgml magic.sgml
+	rm -f dato.sgml magic.sgml stikord.sgml version.sgml
