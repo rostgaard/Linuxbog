@@ -2,1300 +2,2183 @@
 <title>Vinduer, knapper og meget mere</title>
 
 <para>
-GUI komponenter skal stilles på plads i en kontainer. Det sker primært
-med Pack metoden. Medmindre en programmør specificerer (angiver) en
-anden rækkefølge, vil Pack placere komponenterne i kontaineren fra
-skærmtop til -bund i den rækkefølge, hvori de er listede i programmet.
+GUI komponenter skal stilles på plads i en kontainer. Hvordan det gøres,
+vil vi se på nu:
 </para>
 
 <para>
-Du har en række valgmuligheder (options), når komponenterne
-(tekstboksene, menuerne, knapperne og de øvrige grafiske objekter) skal
-placeres i kontaineren (ofte Frame). Option "side" angiver, hvor i
-kontaineren, komponentet skal placeres. Sættes side = TOP (er forvalgt
-af Python) pakkes komponenterne lodret (vertically). Andre mulige side
-værdier er BOTTOM (bund), LEFT (venstre) og RIGHT (højre). Option "fill"
-kan være None (den forvalgte værdi), X, Y og BOTH sikrer at et komponent
-udfylder al den plads, der er afsat til den i den angivne retning.
-Option expand kan tildeles værdierne YES (1) og NO (0). Hvis expand er
-sat til YES udvides komponentet til at udfylde al ledig plads i
-kontaineren. Optionerne padx og pady indsætter tom plads rundt om
-komponentet. Metoden pack_forget fjerner et pakket komponent fra
-kontaineren.
+Tkinter modulet (Tk interfacet) er standard bindeledet mellem dit
+program og Tk GUI biblioteket. Tkinter modulet omfatter selv et større
+antal moduler. Tk interfacet (Tkinter) er kompileret til det binære
+modul  _tkinter, der omfatter et low-level interface til Tk, som du
+aldrig bør bruge direkte. Sædvanligvis er det et  shared library (eller
+DLL), men kan i nogle tilfælde ønskes benyttet statisk (integreres i
+programmet).
 </para>
 
 <para>
-Hvis Canvas komponentet bliver brugt alene som her, oprettes et fuld færdigt vindue:
+Ud over at være bindeled (interface) mellem dit program og Tk
+biblioteket omfatter Tkinter et antal Python moduler, hvoraf de to
+vigtigste er selve Tkinter og et modul kaldet Tkconstants. Sidstnænte
+ser vi normalt ikke meget til, så lad os lige se, hvad det indeholder:
 
 <screen>
-<prompt>>>></prompt> <userinput>from Tkinter import Canvas</userinput>
-<prompt>>>></prompt> <userinput>Canvas().pack()</userinput>
-<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
-<prompt>>>></prompt> <userinput>class Kanvas(Canvas):</userinput>
-<prompt>...</prompt>     <userinput>def _init_(self):</userinput>
-<prompt>...</prompt>         <userinput>Canvas._init_(self).pack()</userinput>
-<prompt>...</prompt>
+<prompt>>>></prompt> <userinput>import Tkconstants</userinput>
+<prompt>>>></prompt> <userinput>dir(Tkconstants)</userinput>
+<prompt>
+['ACTIVE', 'ALL', 'ANCHOR', 'ARC', 'BASELINE', 'BEVEL', 'BOTH', 'BOTTOM', 'BROWSE', 'BUTT', 'CASCADE', 'CENTER', 'CHAR', 'CHECKBUTTON', 'CHORD', 'COMMAND', 'CURRENT', 'DISABLED', 'E', 'END', 'EW', 'EXTENDED', 'FALSE', 'FIRST', 'FLAT', 'GROOVE', 'HIDDEN', 'HORIZONTAL', 'INSERT', 'INSIDE', 'LAST', 'LEFT', 'MITER', 'MOVETO', 'MULTIPLE', 'N', 'NE', 'NO', 'NONE', 'NORMAL', 'NS', 'NSEW', 'NUMERIC', 'NW', 'OFF', 'ON', 'OUTSIDE', 'PAGES', 'PIESLICE', 'PROJECTING', 'RADIOBUTTON', 'RAISED', 'RIDGE', 'RIGHT', 'ROUND', 'S', 'SCROLL', 'SE', 'SEL', 'SEL_FIRST', 'SEL_LAST', 'SEPARATOR', 'SINGLE', 'SOLID', 'SUNKEN', 'SW', 'TOP', 'TRUE', 'UNITS', 'VERTICAL', 'W', 'WORD', 'X', 'Y', 'YES', '__builtins__', '__doc__', '__file__', '__name__']</prompt>
 <prompt>>>></prompt>
 </screen>
 </para>
 
 <para>
-Der defineres en klasse, som benytter underklassen Canvas's kode. Denne
-klasse tildeles startværdier (initieres heraf forkortelsen init).
-Initieringen kaldes en konstruktør eller fuldt ud klassekonstruktøren.
-Både den programlinje, hvori klassen defineres (klassehovedet) og
-konstruktøren er blokke, så begge steder skal de efterfølgende
-programlinjer rykkes ind til højre. Da self først fungerer i og med
-initieringen, må det være klart, at self stammer fra selve klassen,
-hvorfor det viste eksempel også kunne skrives:
+At vi normalt ikke ser noget til Tkconstants skyldes, at Tkinter
+automatisk importerer modulet. Det eneste vi skal gøre er at eksekvere
+import Tkinter eller oftere from Tkinter import *
+</para>
+
+<para>Som tidligere nævnt er mainloop i konstant aktivitet, sådan er det
+i Python og andre GUI applikationsmiljøer. Men ikke nok med det Tkinter
+kan udstyre dit program med den mulighed, at du også selv kan aktive
+hændelser (events). For hver enkelt kan du sammenbinde funktioner og
+metoder med hændelserne:
 
 <screen>
-<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
-<prompt>>>></prompt> <userinput>class Kanvas(Canvas):</userinput>
-<prompt>...</prompt>     <userinput>def _init_(Kanvas):</userinput>
-<prompt>...</prompt>             <userinput>Canvas._init_(Kanvas).pack()</userinput>
-<prompt>...</prompt>
+<userinput>widget.bind(event, handler)</userinput>
+</screen>
+</para>
+
+<para>
+Her er et eksempel, der kan uddybe, hvad det er, der sker når du klikker
+(udsender events) ved at klikke med musen i et vindue (teksten udskrives
+med print og hermed i skal shell).I eksemplet bruges frames bind metode
+til at binde en såkaldt callback funktion til hændelsen fra
+&lt;Button-&gt;> (venstre museknap). Ordet callback er ikke så helt
+ueffen, for hvad er det, der sker, når der indtræder en hændelse? Jo,
+handle sender en melding tilbage til programmet, at der er indtrådt en
+hændelse f. eks. at der er blevet ændret størrelse på et vindue, eller
+klikket på en knap.Men nu til eksemplet:
+
+<screen>
+<userinput>from Tkinter import *</userinput>
+<userinput>root = Tk()</userinput>
+
+<userinput>def callback(event):</userinput>
+    <userinput>print "Du klikkede på position", event.x, event.y</userinput>
+
+<userinput>frame = Frame(root, width=200, height=200)</userinput>
+<userinput>frame.bind("&lt;Button-1&gt;", callback)</userinput>
+<userinput>frame.pack()</userinput>
+
+</userinput>root.mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+I eksemplet brugte jeg navnet callback på metode og kald, da callback
+er et ofte benyttet funktionsnavn i Python miljøet. Som antydet ovenfor
+kunne callback fuldstændig lige så godt hedde f.eks. Metode eller et
+hvilket som helst andet lovligt navn, så du kan også udmærket bruge.
+&lt;Button-1&gt; kan langt hen ad vejen sidestilles med et ganske
+almindeligt funktions- eller metodekald.
+
+<screen>
+<userinput>from Tkinter import *</userinput>
+
+<userinput>root = Tk()</userinput>
+
+<userinput>def Metode(event):</userinput>
+    <userinput>print "Du klikkede på position", event.x, event.y</userinput>
+
+<userinput>frame = Frame(root, width=200, height=200)</userinput>
+<userinput>frame.bind("&lt;Button-1&gt;", Metode)</userinput>
+<userinput>frame.pack()</userinput>
+<userinput>root.mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+Hvis du ændrer &lt;Button-1&gt; til &lt;Button-2&gt;, er det musens
+midterste tast, der aktiverer hændelserne. &lt;Button-3&gt; aktiverer
+hændelser fra højre museknap.
+</para>
+
+<para>
+Skriv nu følgende i en ganske almindelig teksteditor:
+
+<screen>
+<userinput>from Tkinter import *</userinput>
+<userinput>root = Tk()</userinput>
+<userinput>bindeled = Label(root, text="Kontainertekst")</userinput>
+<userinput>bindeled.pack()</userinput>
+<userinput>root.mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+Gem eksemplet som eks1.py. Skift til det bibliotek, hvori eks1.py er
+gemt, tast derfra:
+
+<screen>
+<prompt>tyge@hven ~</prompt><userinput>python eks1.py</userinput>
+</screen>
+</para>
+
+<para>
+<img src="tk1.png" alt="" style="border-style:outset;" />
+</para>
+
+<para>
+Programafviklingen stopper, når du lukker vinduet.
+</para>
+
+<para>
+Hvad var det dog, der skete?
+</para>
+
+<para>
+Vi begyndte med at importere Tkinter modulet. Det indeholder alle
+klasser, funktioner, konstante og andre ting, der er nødvendige for
+kommunikationen med Tk biblioteket (kaldes undertiden the Tk toolkit).
+I de fleste tilfælde kan du ganske enkelt importere alt fra Tkinter:
+
+<screen>
+<userinput>from Tkinter import *</userinput>
+</screen>
+</para>
+
+<para>
+Vi ville have opnået samme resultat (samme vindue med indhold med:
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>Label(text="Kontainertekst").pack()</userinput>
 <prompt>>>></prompt>
 </screen>
 </para>
 
 <para>
-Medmindre en programmør specificerer (angiver) en anden rækkefølge, vil
-Pack placere komponenterne i kontaineren fra skærmtop til -bund i den
-rækkefølge, hvori de er listede i programmet.
+Her nøjes vi med at importere det modul, der reelt er brug for lige her
+og nu, men som regel er der brug for mere, så  vi fortsæter med at se
+videre på det første eksempel ovenfor.
 </para>
 
 <para>
-<!-- Wange:
-     Hmmm hvordan laver man lige prompt/userinput her?
--->
-<screen>
-from Tkinter import *
-from tkMessageBox import askyesno, showerror
-
-class Dialog(Frame): # arver Frame
-    def __init__(self, master=None): #Dialogs konstruktør
-        Frame.__init__(self, master) # Frames konstruktør
-        Pack.config(self)
-        self.opretArvinger()
-
-    def Hilsen(self): # arver Dialog
-        print "En hilsen fra Bornholm til dig!" #sendes til skal, men kunne være til fil
-
-    def opretArvinger(self): # arver Dialog
-        Label(self,  text='Hej! jeg vil gerne i dialog med dig.').pack(side=TOP)
-        Button(self, text='Popup 1', command=self.dialog1).pack() # arver opretArvinger
-        Button(self, text='Popup 2', command=self.dialog2).pack()
-        Button(self, text='Noget til dig',  command=self.Hilsen  ).pack(side=LEFT)
-        Button(self, text='Afslut',  command=self.quit   ).pack(side=RIGHT)
-
-    def dialog1(self):  # arver Dialog
-        svar = askyesno("Vil du se tkMessageBox\ndialogen i funktion?")
-	if svar: self.dialog2()
-
-    def dialog2(self):  # arver Dialog
-        showerror("BESKYTTET AFSNIT", "\nHer har du vist ingen adgang min ven...")
-
-
-</screen>
-
+For at initialisere Tkinter (tildele Tkinter opstartsværdier) oprettede
+vi en Tk rod widget. Et typisk GUI bibliotek (toolkit) omfatter et antal
+brugsklare GUI byggeklodser sædvanligvis kaldet widgets. Almindeligt
+forekommende widgets omfatter tekst og image labels, knapper m.v. Dem
+ser vi eksempler på senere.
 </para>
 
-<figure id="gui1-billede" float="1">
-<title>GUI</title>
-<graphic fileref="gui_1.&magic;" scale="60"></graphic>
-</figure>
-
-<sect1 id="wid">
-<title>Widget klassen</title>
-
 <para>
-Et grafisk bruger interface (grafical user inteface heraf forkortelsen
-GUI) giver brugeren mulighed for at kommunikere interaktivt med et
-program. GUIs sammensættes af GUI komponenter (kaldet widgets - en
-forkortelse for finesser i vinduer). Et GUI komponent er et objekt
-hvormed en bruger som antydet kan kommunikere interaktivt med et program
-via mus og eller tastatur. Ved brug af Tool Command Language (forkortet
-TCL) og dets værktøjskit (Tool Kit forkortet Tk - et bibliotek af
-fordefinerede klasser, subklasser m.v.) kan Python programmører
-konstruere GUIs. Hvordan det gøres skal vi se på i en lang række
-eksempler.
-
-<screen>
-<prompt>>>></prompt> <userinput>from Tkinter import Frame</userinput>
-<prompt>>>></prompt> <userinput>Frame().pack()</userinput>
-<prompt>>>></prompt> <userinput># Her ses at Frame er en klasse tilhørende Tkinter:</userinput>
-<prompt>>>></prompt> <userinput>Frame</userinput>
-<userinput>&lt;class Tkinter.Frame at 0x405ecd4c></userinput>
-</screen>
-
-Vi får også at vide, at koden til Frame eller rettere indledningen til
-den er pladeret på den hexadecimale adresse \x405ecd4c.
+Det fra Tk biblioteket importerede rodmodul er en sådan widget. Det
+indeholder et ganske almindeligt, fuld færdigt vindue med hvad dertil
+hører.
 </para>
 
-<!-- Wange:
-     Jeg har udkommenteret følgende da det ikke lige giver mening her
-     i afsnittet ???
-
-para>
-<screen>
->>> frame
-&lt;Tkinter.Frame instance at 0x402e8b8c>
->>>
-</screen>
-</para -->
-
 <para>
-Det følgende kald til Tk (from Tkinter import *) kan være farligt, og
-bør absolut kun anvendes ved kald, hvor du er sikker, på at kaldet
-virkelig kan bruges. Det der er farligt, er at du ved at benytte navne
-f.eks. på variabler og funktioner, hvis navne også findes i det
-importerede modul, vil blive overstyret (på engelsk overrided). Det
-betyder, at det bliver de navne du har tilføjet, der vil fungere og
-dermed bestemme dit programs funktion. På den anden side, hvis du er
-sikker, på at du ikke vil komme til at overstyre navne i det eller de
-importerede modul/moduler, så er det stjernekaldet, du bør bruge. Lad os
-lige få en kvittering, på at det forholder sig som nævnt:
+root = Tk() alene opretter og viser vinduet med dets egne bestanddele -
+et tomt vindue. Et sådant er der normalt ikke det store brug for, der
+skal andre objekter i det. Tk root widget er altså kontainer for
+programmets øvrige elementer, hvorfor root skal oprettes før alt andet.
+Det nævnte trin er nu at integrere andre byggeklodser i programmet. I
+vort eksempel nøes vi med en Label widget. Den skal anbringes i root
+widgetten. Indledningsvis oprettede vi indterface mellem Tk biblioteket
+og vores program. Nu har vi brug for endnu et interface - det der skal
+danne kontakten mellem selve vinduet og det, der placeres på det. Denne
+kontakt oprettes her med:
 
 <screen>
-<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
-<prompt>>>></prompt> <userinput>dir(Tkinter)</userinput>
-<userinput>Traceback (most recent call last):</userinput>
-<userinput>  File "&lt;stdin&gt;", line 1, in ?</userinput>
-<userinput>NameError: name 'Tkinter' is not defined</userinput>
+<userinput>bindeled = Label(root)</userinput>
+</screen>
+
+For at være bindeled mellem Label modulets indhold og det øvrige program
+må bindeled omfatte en hel del kode, der nødvendigvis må komme et eller
+andet sted udefra, hvilket i det aktuelle tilfæde nødvendigvis vil sige
+fra Label selv. Hvis du har en ganske almindelig numerisk variabel a,
+kan du oprette en anden b med:
+
+<screen>
+<prompt>>>></prompt> <userinput>a = 25 </userinput>
+<prompt>>>></prompt> <userinput>b = a </userinput>
+<prompt>>>></prompt> <userinput>b</userinput>
+<userinput>25 </userinput>
+<prompt>>>></prompt>
+</screen>
+
+b er herved blevet en kopi af a - b har med andre ord arvet a variablens
+indhold. Det er et tilsvarende arveforhold vi finder i følgende:
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>bindeled = Label()</userinput>
+</screen>
+
+At bindeled virkelig har arvet Label og dermed altså er Labels kopi,
+arving eller barn fremgår af følgende:
+
+<screen>
+<prompt>>>></prompt> <userinput>bindeled</userinput>
+<userinput>&lt;Tkinter.Label instance at 0x81b6bec&gt;</userinput>
 <prompt>>>></prompt>
 </screen>
 </para>
 
 <para>
-Fortolkeren kender ikke Tkinter, hvorfor Tkinter ikke kan eksistere i
-dit program. Det er kun det for dit program nødvendige, der bliver
-hentet ind. Hvis vi var i tvivl, om hvorvidt Tkinter kan klare kaldet
-from Tkinter import *, så er det eneste rigtige, vi kan gøre, at benytte
-kaldet import Tkinter i stedet for from Tkinter import *.
+Hvad arven omfatter kan underøges med følgende eksempel:
 
 <screen>
-<prompt>>>></prompt> <userinput>import Tkinter</userinput>
-<prompt>>>></prompt> <userinput>Tkinter</userinput>
-<userinput>&lt;module 'Tkinter' from '/usr/local/lib/python2.3/lib-tk/Tkinter.pyc'></userinput>
-<prompt>>>></prompt> <userinput>'</userinput>
-</screen>
-</para>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>bindeled = Label()</userinput>
+<prompt>>>></prompt> <userinput>dir(bindeled)</userinput>
 
-<para>
-Funktionen dir kan vise indholdet i et modul. Benyttes det igen, får vi
-en udskrift af indholdet i modulet - nu kender fortolkeren Tkinter.
-Jeg har ikke taget ret meget af den lange udskrift med her, så lav lige
-kontrollen selv også.
-
-<screen>
-<prompt>>>></prompt> <userinput>import Tkinter</userinput>
-<prompt>>>></prompt> <userinput>dir(Tkinter)</userinput>
-<userinput>['ACTIVE', 'ALL', 'ANCHOR', 'ARC', 'At', 'AtEnd', 'AtInsert',.........']</userinput>
+<userinput>['__class__', '__delattr__', '__doc__', '__getattribute__', '__hash__', '__init__', '__new__', '__reduce__', '__repr__', '__setattr__', '__str__']</userinput>
 <prompt>>>></prompt>
 </screen>
 </para>
 
 <para>
-Et allerede vist eksempel ser således ud:
+Her foregår arven:
+
 <screen>
-<prompt>>>></prompt> <userinput>from Tkinter import Frame</userinput>
-<prompt>>>></prompt> <userinput>Frame().pack()</userinput>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>bindeled = Label(text = "bindeled arver mig")</userinput>
+</screen>
+
+men eksekverer du eksemplet, vil du opdage, at teksten "bindeled arver
+mig" ikke udskrives - bindeled er ejer af et antal ting, men har ikke
+fået at vide, hvor disse ting kan placeres. Den besked tilføres med
+pack() funktionen, men det kan ske på et par forskellige måder:
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>bindeled = Label(text = "bindeled arver mig")</userinput>
+<prompt>>>></prompt> <userinput>bindeled.pack()</userinput>
+</screen>
+
+eller:
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>bindeled = Label(text = "bindeled arver mig").pack()</userinput>
+</screen>
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import Label</userinput>
+<prompt>>>></prompt> <userinput>bindeled = Label(text = "Jeg kan indeholde tekst og ikoner.").pack()</userinput>
 <prompt>>>></prompt>
 </screen>
 </para>
 
 <para>
-Sublassen Frame blev importeret og derefter anvendt direkte. Da det var
-selve Frame, der blev importeret og brugt, må det være indlysende, at
-der i kaldet  Frame().pack() ikke bliver tilført nogen anden form for
-kode - Frames parameterliste er da også tom. Det behøver den ikke at
-være. Det følgende eksempel har nøjagtig samme funktion som det
-ovenstående. parent = None fortæller nøjagtig det samme, at der ikke
-kommer nogen form for kode til den, der er indeholdt i Frame - der er
-ingen parent (direkte oversat forældre på dansk mor).
+Vender vi nu tilbage til det indledende eksempel, finder vi kun 1
+programlinje, vi ikke har set i funktion:
 
 <screen>
-<prompt>>>></prompt> <userinput>from Tkinter import Frame</userinput>
-<prompt>>>></prompt> <userinput>Frame(parrent = None).pack()</userinput>
-<prompt>>>></prompt>
-</screen>
-</para>
-
-<para>
-Subklassen arver fra Frame, så subklassens self refererer til Frame som den kommer fra
-Tkinter. mor = None kan godt forvirre lidt på dette sted, for Klasse har jo Frame til mor, så reelt er der en mor, men Klasse er på arvetidspunktet  som alle andre klassearvinger en direkte kopi af moderen. De tre eksemplers første 4 linjer ændrer ikke noget som
-helst på arvegodset, så mor = None fortæller konkret, at Frame ingen mor har, og det er jo korrekt. Når det er fastslået, er det også
-klart, at self repræsenterer selve subklassen Klasse. Når det er tilfældet, vil det samme eksempel også kunne skrives således:
-</para>
-<para>
-<screen>
-from Tkinter import *
-class Klasse(Frame):                 # Opret subklasse
-    def __init__(Klasse, side=TOP):
-        Frame.__init__(Klasse)       # Subklassekonstruktor
-        Klasse.pack()
-        Klasse.make_widgets()        # metodekald
-    def make_widgets(Klasse):
-        Button(Klasse,
-            text="Klik her", command=Klasse.quit).pack(side=LEFT)
-if __name__ == '__main__': Klasse().mainloop()
-</screen>
-</para>
-<para>
-<screen>
-import tkSimpleDialog
-x = tkSimpleDialog.askinteger("Vælg et heltal",
-"mellem 1 og 6:",initialvalue = 1, minvalue = 1, maxvalue = 6)
-</screen>
-</para>
-
-<sect2 id="wid.rammen">
-<title>Frame underklasse i Widget</title>
-<para>
-Frame komponentets formål er at være kontainer for andre komponenter. Det før viste eksempel kunne bl.a. også skrives således:
-</para>
-<para>
-<screen>
-I dette dette eksempel udnyttes det importerede modul direkte.
-from Tkinter import Frame
-Frame().pack()
-</screen>
-</para>
-<para>
-<screen>
-Her oprettes og bruges en kopi af det importerede modul.
->>> from Tkinter import Frame
->>> frame = Frame()
->>> frame.pack()
->>>
->>> from Tkinter import *
->>> frame = Frame()
->>> frame.pack()
->>>
->>> from Tkinter import *
->>> frame = Frame().pack(expand = YES, fill = BOTH)
->>>
-</screen>
-</para>
-<para>
-Frame er subklasse i Widget klassen (barn af Widget). Frame arver dermed Widget klassens egenskaber. Det betyder imidlertid ikke, at alle egenskaber i fuldt omfang kan overføres til barnet - pack vil altid være knyttet til moderobjektet - i dette tilfælde til Frame. Derfor rykker pack()  op på den programlinje, hvori objektkopien (barnet) oprettes:
-</para>
-<para>
-<screen>
->>> # Her importeres hele Tkinter modulet:
->>> import Tkinter
->>> # Her ser vi, hvad Tkinter er for noget:
->>> Tkinter
-&lt;module 'Tkinter' from '/usr/local/lib/python2.3/lib-tk/Tkinter.pyc'>
->>>
-</screen>
-</para>
-<para>
-Svaret var, at Tkinter er et modul, at det blev importeret fra /usr/local/lib/python2.3/lib-tk/ biblioteket og at det var fra en kompileret
-fil Tkinter.pyc - det ses på at den sædvanlige filtype py er udvidet med et c. Det normale er, at en kompileret fil er væsentlig hurtigere, men sådan er det ikke i Python. Her kan der vindes ganske ubetydelig tid, lige i det øjeblik koden hentes ind i computeren ellers ikke.
-</para>
-<para>
-<screen>
->>> from Tkinter import Frame
->>> Her stilles Frames objekter på plads:
->>> Frame().pack()
-</screen>
-</para>
-<para>
-<screen>
->>> # Her ses at Frame er en klasse tilhørende Tkinter:
->>> Frame
-&lt;class Tkinter.Frame at 0x405ecd4c&gt;
-</screen>
-</para>
-<para>
-Vi får også at vide, at koden til Frame eller rettere indledningen til den er pladeret på den hexadecimale adresse 405ecd4c.
-</para>
-<para>
-<screen>
->>> frame
-&lt;Tkinter.Frame instance at 0x402e8b8c&gt;
->>>
-</screen>
-</para>
-<para>
->>> from Tkinter import *
->>> class vindue(Frame):
-...     def _init_(self):
-...             Frame._init_(self)
-...             self.pack(expand = YES, fill = BOTH)
-...
-</para>
-<para>
-<screen>
-Programlinjen
- Frame().pack(expand = YES, fill = BOTH)
-genkendes let i:
-Frame._init_(self)
-self.pack(expand = YES, fill = BOTH)
-</screen>
-</para>
-<figure id="widget1-billede" float="1">
-<title>Widget</title>
-<graphic fileref="w1.&magic;" scale="60"></graphic>
-</figure>
-</sect2>
-
-<sect2 id="wid.labelen">
-<title>Label underklasse i Widget</title>
-<para>
-En label kan vise ikke editerbar tekst plus ikoner.
-</para>
-
-<figure id="widget2-billede" float="1">
-<title>Widget</title>
-<graphic fileref="w2.&magic;" scale="60"></graphic>
-</figure>
-
-<para>
-Af fordefinerede ikoner er der følgende:
-</para>
-<para>
-ikoner = ["error","hourglass","info", "questhead","question",
-"warning", "gray75", "gray50", "gray25", "gray12"]
-</para>
-<para>
-from Tkinter import *
-win = Tk()
-ikoner = ["error","hourglass","info", "questhead","question",
-"warning", "gray75", "gray50", "gray25", "gray12"]
-ikon = []
-for i in range(0,len(ikoner)):
-	ikon = ikoner[i]
-	Label(win,bitmap = ikon).pack(expand = YES, fill= Y)
-</para>
-<para>
-</para>
-<para>
->>> from Tkinter import *
->>> win = Tk()
->>> Label(win,text = "Tekst kan skrives i label.").pack(expand = NO, fill = X)
->>>
-</para>
-<para>
->>> from Tkinter import *
->>> root = Tk()
->>> Label(root,text = "Men teksten kan ikke rettes.").pack(expand = YES, fill = X)
->>>
-</para>
-<para>
+<userinput>
 from Tkinter import *
 root = Tk()
-skrift = ("times", 20, "bold")
-label = Label(root, text="Der kan skrives paa en label.")
-label.config(bg="black", fg="white")
-label.config(font=skrift)
-label.config(height=4, width=30)  # plads til 4 linjer a 30 tegn
-label.pack(expand=YES, fill=BOTH)
+bindeled = Label(root, text="Kontainertekst")
+bindeled.pack()
 root.mainloop()
+</userinput>
+</screen>
 </para>
+
 <para>
-from Tkinter import *
-# label1, label2 og label3 arver Label klassen med dens pack funktion (metode)
-label1 = Label(text ="Enkelt, men omfattende.").pack(expand = NO, side = LEFT)
-label2 = Label(text ="Lige i centrum.").pack(expand = NO, side = TOP)
-label3 = Label(text ="Total trods enkel.").pack(expand = NO, side = RIGHT)
-mainloop()
+mainloop() metoden kaldes undertiden for hædelsesløkken. Det gør den,
+fordi den er en løkke, der holder kontrol med, om der indetræder en
+eller anden hændelse (event). Når den er startet op løber den i ring
+indtil vinduet lukkes.  Hændelserne kan være brugers klik på en
+musetast, tryk på en tast eller hvad nu brugeren kan finde på at
+foretage i og med programmet, men de holder også styr på hvad der sker
+fra programmets side f.eks. i forbindelse med at brugeren klikker på en
+af knapperne i vinduets øverste højre hjørne ligesom løkken også holder
+styr, på hvad der sker i selve Tkinter, hvordan Tkinter holder styr på
+brugen af de mange metoder, klasser m.v., der er i Tk biblioteket.
 </para>
+
 <para>
-eller f.eks. :
+Skriver du større programmer, er det sædvanligvis en god ide at dele dem
+op i et antal klasser. Hvordan det kan gøres, vil vi se på nu.
 </para>
+
 <para>
-from Tkinter import *
-label1 = Label(text ="Enkelt, men omfattende.").pack(expand = YES, side = LEFT)
-label2 = Label(text ="Lige i centrum.").pack(expand = YES, side = TOP)
-label3 = Label(text ="Total trods enkel.").pack(expand = YES, side = RIGHT)
-mainloop()
+Defineringen af en klasse indledes med nøgleordet class efterfulgt af et
+lovligt navn og et kolon. Klassen kan have en parameterliste eller som
+her være uden en sådan. Er der en parameterliste, kan den ikke være tom.
+
+I næste programlinje sker initialiseringen (den grundlæggende
+værditildeling). Denne linje kaldes også konstruktøen.  Den skal altid
+have en parameterliste, der som her kan være tom, men vil normalt
+indeholde et argument med klassens navn eller oftere et self, der
+repræenterer klassenavnet. Klassekonstruktøren skal afsluttes med et
+kolon.
+
+<screen>
+<prompt>>>></prompt> <userinput>class Klasse:</userinput>
+	<userinput>def _init_():</userinput>
+		<userinput>pass</userinput>
+</screen>
+
+pass er beregnet til at gøre ingenting. Her bruges pass til at komme
+rigtigt ud af programmet. I klassen anbringes alle de komponenter, der
+skal bruges  i programmet.
 </para>
-<para>
-from Tkinter import *
-root = Tk()
-skrift = ("times", 20, "bold")
-label = Label(root, text="Der kan skrives paa en label.")
-label.config(bg="black", fg="white")
-label.config(font=skrift)
-label.config(height=4, width=30)  # plads til 4 linjer a 30 tegn
-label.pack(expand=YES, fill=BOTH)
-root.mainloop()
-</para>
+
 <para>
 <screen>
-from Tkinter import *
-class LabelDemo( Frame ):
-   def __init__( self ):  # LabelDemos konstruktør
-      Frame.__init__( self )   # mor Frames konstruktør
-      self.pack( expand = YES, fill = BOTH )
-      self.master.title( "Labels" )
-      self.label1 = Label( self, text = "Label med tekst" )
-      self.label1.pack()
-      self.label2 = Label( self,
-         text = "Label med tekst og bitmap (ikon)" )
-      self.label2.pack( side = LEFT )
-      self.label3 = Label( self, bitmap = "questhead" )
-      self.label3.pack( side = LEFT )
+<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
+<prompt>>>></prompt> <userinput>class Klasse:</userinput>
+	<userinput>def _init_(Klasse):</userinput>
+		<userinput>pass</userinput>
+
+<prompt>>>></prompt> <userinput>Klasse</userinput>
+<prompt>&lt;class __main__.Klasse at 0x82c680c&gt;</prompt>
+<prompt>>>></prompt>
+</screen>
+</para>
+
+<para>
+Argumentet i _init_ metoden skrives normalt ikke som selve klassenavnet.
+Den normale måde at skrive det samme eksempel på er:
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
+<prompt>>>></prompt> <userinput>class Klasse:</userinput>
+	<userinput>def _init_(self):</userinput>
+		<userinput>pass</userinput>
+
+<prompt>>>></prompt> <userinput>Klasse</userinput>
+<prompt>&lt;class __main__.Klasse at 0x8263884&gt;</prompt>
+<prompt>>>></prompt>
+</screen>
+
+class viser, at Klasse er en klasse. En sådan eller rettere kroppen i en
+klasse er en namespace (en plads for navne som f.eks. variabler og
+funktioner).
+</para>
+
+<para>
+Helt på tilsvarende måde som vi har set, Label kan bruges, kan Frame og
+en masse andre komponenter anvendes:
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
+<prompt>>>></prompt> <userinput>Frame().pack()</userinput>
+<prompt>>>></prompt>
+</screen>
+</para>
+
+<para>
+Det er normalt Frame komponentet, der bruges som kontainer. Derfor skal
+Frame oprettes som første komponent. Der skal jo være et komponent til
+at anbringe de øvrige GUI objekter i.
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
+<prompt>>>></prompt> <userinput>class Klasse:</userinput>
+	<userinput>def __init__(self):</userinput>
+		<userinput>frame = Frame(self)</userinput>
+            	<userinput>frame.pack()</userinput>
+<prompt>>>></prompt> <userinput>Klasse() # klassekald</userinput>
+</screen>
+</para>
+
+<para>
+Som vi allerede har set på er det vigtigt at forstå at self er et
+synonym for navnet Klasse. Det er ikke bare her, men generelt, at det
+forholder sig således. 
+
+<screen>
+<prompt>>>></prompt> <userinput>from Tkinter import *</userinput>
+<prompt>>>></prompt> <userinput>class Klasse(Frame):</userinput>
+	<userinput>def _init_(self):</userinput>
+		<userinput>frame = Frame(self).pack(expand = YES, fill = both)</userinput>
+<prompt>>>></prompt> <userinput>Klasse()  # bevirker at vinduet vises.</userinput>
+</screen>
+</para>
+
+<para>
+I pack() metoden, kan der indsættes parametre for retten til at måtte
+udvide komponentet, hvor komponentet skal placeres og hvor lang og bred
+komponentet skal være. Som her frame = Frame er det en god skik at give
+barnet (the child) samme navn som moderen (the parent) blot skrevet med
+lille begyndelsesbogstav. Når jeg ikke har valgt at følge denne regel i
+denne bog er det alene for at åbne læserens øjne for, hvad det er, der
+reelt foregår og for at man ofte med fordel kan bruge danske navne. Hvad
+jeg konkret mener, vil jeg godt vise ved at udvide ovenstående eksempel
+med en knap. Da eksemplet herved bliver noget større, vil jeg gemme det
+som Tk1.py - kørslen sker jo så ved at du fra det aktuelle bibliotek,
+hvori filen er gemt skriver python Tk1.py og trykker på Enter-tasten.
+Ved skriveriet er der behov for at vende tilbage til root, for vi har
+brug for mainloop() metoden. Den kan ikke kaldes direkte fra Klasse, da
+root ikke er argument i Klassen (findes ikke i roots parameterliste).
+
+<screen>
+<userinput>from Tkinter import *
+root = Tk()
+class Klasse:
+	def _init_(Klasse):
+		frame = Frame(Klasse).pack(expand = YES, fill = both)
+
+  		Klasse.knap = Button(frame).pack()
+
+root.mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+Det helt samme eksempel i den normal sete version med self og med
+moderens navn skrevet med lille begyndelsesbogstav:
+
+<screen>
+<userinput>from Tkinter import *
+root = Tk()
+class Klasse:
+	def _init_(self):
+		frame = Frame(self).pack(expand = YES, fill = both)
+
+  		self.button = Button(frame).pack()
+
+root.mainloop()
+</screen>
+</para>
+
+<para>
+At knappen tilhører Klasse får fortolkeren at vide med self.button. Til
+konstruktion af knappen benyttes den i Python fordefinerede kode, der
+findes i Button objektet. Knappen skal ikke være frit svævende, men skal
+placeres et eller andet sted i frame. For at kunne gøre det kræves der
+1: interface. Det dannes med Button(frame) og 2: den velkendte pack()
+metode, der placerer knappen på den rette plads i Frame objektet. Fordi
+man kan ønske at stille tingene på plads på flere objekter objekt for
+objekt, kan pack() skulle bruges 2 gange i forbindelse med det enkelte
+objekt. Grundmodellen hertil kan se nogenlunde således ud:
+
+<screen>
+<userinput>from Tkinter import *
+root = Tk()
+class Klasse:
+	def _init_(self):
+		frame = Frame(self).pack(expand = YES, fill = BOTH)
+
+  		self.button = Button(frame).pack()
+
+root.mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+Du kan så vælge at flytte pakkefunktionen ned på dens egne programlinje
+som her:
+
+<screen>
+<userinput>from Tkinter import *
+root = Tk()
+class Klasse:
+	def _init_(self):
+		frame = Frame(self).pack(expand = YES, fill = BOTH)
+
+  		self.barn = Button(frame)
+		self.barn().pack(side = TOP)
+root.mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+frame har arvet egenskaben  at kunne udvides  og egenskaben at kunne
+lade udvidelsen ske i begge retninger - både vandret og lodret.
+Egenskaberne tilføres med pack metoden.  expand = YES betyder, at det
+objekt, der har fået egenskaben, kan lade sig udvide, men ikke at
+objektet skal udvides. I enkelte tilfælde kan man se YES erstattet med
+tallet 1. expand kan også tildeles vædien NO altså expand = NO eller
+tilsvarende expand = 0. fill kan også tildeles vædien NONE (den er
+forvalgt). side = TOP har ikke den store relevans i eksemplet ovenfor
+dels fordi side er forvalgt til TOP, men også og især fordi der kun er
+et objekt (den ene knap) placeret i frame. Havde der været flere, var de
+ved brug af side = TOP blevet placeret lodret under hinanden. Jeg har
+taget det med for at få lejlighed til at forklare, at side kan tildeles
+vædierne TOP, RIGHT og LEFT.
+</para>
+
+<para>
+I det følgende eksempel, der viser samtlige egenskaber er knap er i
+besiddelse af, vil vi begynde beskrivelsen bagfra med root.mainloop().
+Den er nødvendig for at få knappen vist og gjort aktiveringsklar.
+root = Tk() er nødvendig for at gøre root kendt i programmet og dermed
+gøre mainloop køreklar. Dens funktion er som beskrevet tidligere at
+opfange interne og eksterne hændelser (events). Pakkefunktionens kender
+du fra det allerede nævnte. command  kalder metoden Metode. bg står for
+baggrundsfarve og fg for forgrundsfarve (her for tekstfarven), text
+repræsenterer teksten på knappen, name er knappens navn. I større
+programmer kan der være henvist til knappen ligesom der tilsvarende kan
+henvises til andre objekter i programmet, da er der brug for navnet,
+hvad der ikke er i eksemplet her, det kunne udmærket udelades her. Det
+samme kunne farverne.
+
+<screen>
+<userinput>from Tkinter import *
+root = Tk()
+
+def Metode():
+	print "Hvem kalder?" # skriver i skal (shell)
+
+Button(root, name = "knappensNavn", text = "Klik her", fg = "red",bg = "white", command = Metode).pack(expand = 1, fill = BOTH)
+root.mainloop()
+</screen>
+</para>
+
+<para>
+Da pladsen i bogen er relativ knap, vil vi slutte af med knappen lige nu
+ved at integrere de to sidst viste eksempler i hinanden  (jeg viser også
+et par helt nye ting i eksemplet) og bemærke, at noget der kan sættes
+sammen ofte også kan skilles ad. Det kan vi bruge til noget i
+forbindelse med større programeksempler. Sidder du med sådanne og måske
+ikke har fuldt overblik over, hvordan en delkode virker, så pil den ud
+og skriv et kort eksempel i interaktiv mode.
+
+<screen>
+<userinput>from Tkinter import *
+root = Tk()
+
+def Metode():</userinput>
+</screen>
+
+mode, hvori delkoden f.eks, som her en knap indgår. 
+
+<screen>
+<userinput>from Tkinter import *
+win 	print "Sender hilsen til dig."
+class KnapDemo( Frame ):
+	def __init__( self ):
+		Frame.__init__( self )
+      		self.pack( expand = YES, fill = BOTH )
+      		self.master.title( "Knap demo" )
+
+  		self.knap = Button(win, name = "knappensNavn", text = "Klik her", fg = "red",bg = "white", command = Metode)
+		self.knap.pack( side = LEFT, padx = 5, pady = 5 )
+
 def main():
-   LabelDemo().mainloop()
+	KnapDemo().mainloop()
+
 if __name__ == "__main__":
-   main()
+	main()</userinput>
 </screen>
 </para>
 
-<figure id="widget3-billede" float="1">
-<title>Widget 3</title>
-<graphic fileref="w2_2.&magic;" scale="60"></graphic>
-</figure>
-</sect2>
+<para>
+Som afslutning på knapper i denne omgang skal vi se på et større
+eksempel:
 
-<sect2 id="wid.enLinjet">
-<title>Entry underklasse i Widget</title>
-<para>
-Entry er et en-linjes input område, der kan modtage input fra tastaturet eller vise information.
-</para>
-<para>
 <screen>
->>> from Tkinter import *
->>> Entry().pack()
->>> from Tkinter import *
->>> root = Tk()
->>> Entry(root).pack()
->>>
-from Tkinter import *
-root = Tk()
-Directions = Label(root, text ='Hvilken fil ønskes hentet?')
-Directions.config(anchor=W)
-inputBox = Entry(root, width=60)
-Directions.pack()
-inputBox.pack()
-mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{12cm}
-\includegraphics{w3_1.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-<screen>
-from Tkinter import *
+<userinput>from Tkinter import *
 from tkMessageBox import *
-class EntryDemo( Frame ):
+
+class KnapDemo(Frame):
    def __init__( self ):
-      Frame.__init__( self )
-      self.pack( expand = YES, fill = BOTH )
-      self.master.title( "Test datamodtagere" )
+	Frame.__init__( self )
+      	self.pack( expand = YES, fill = BOTH )
+      	self.master.title( "Knap demo" )
+
+      	self.tekstknap = Button( self, text = "Tekstknap",
+         command = self.TekstKlikket )
+      	self.tekstknap.bind( "&lt;Enter&gt;", self.rolloverEnter )
+      	self.tekstknap.bind( "&lt;Leave&gt;", self.rolloverLeave )
+      	self.tekstknap.pack( side = LEFT, padx = 5, pady = 5 )
+
+      	self.ikon = PhotoImage( file = "tkx.gif" )
+      	self.grafikknap = Button( self, image = self.ikon,
+         command = self.IkonKlikket )
+
+      	self.grafikknap.bind( "&lt;Enter&gt;", self.rolloverEnter )
+      	self.grafikknap.bind( "&lt;Leave&gt;", self.rolloverLeave )
+      	self.grafikknap.pack( side = LEFT, padx = 5, pady = 5 )
+
+   def TekstKlikket( self ):
+      showinfo( "Melding", "Du aktiverede Tekstknap" )
+
+   def IkonKlikket( self ):
+      showinfo( "Melding", "Du aktiverede Grafik knap" )
+
+   def rolloverEnter( self, event ):
+      event.widget.config( relief = GROOVE )
+
+   def rolloverLeave( self, event ):
+      event.widget.config( relief = RAISED )
+
+if __name__ == "__main__": KnapDemo().mainloop()</userinput>
+</screen>
+</para>
+
+<para>
+Her er det vist kun nødvendigt at se på relief = GROOVE og relief =
+RAISED, da det øvrige må være velkendt for dig nu. relief indstillingen
+har til formål at tegne kanten omkring objektet, her omkring knappen.
+De fleste widgets har en forvalgt kantbredde (borderwidth eller
+forkortelsen bd) på 1 eller 2 pixels. Der er sjældent brug for at ændre
+denne indstilling, selv om det er ganske enkelt. Derimod kan det være
+nyttigt at anvende relief, der tegner den 3-dimensionale kant (border).
+relief kan tildeles en af værdierne SUNKEN, RAISED, GROOVE, RIDGE eller
+FLAT.
+
+<!-- img src="Tkknap.png" alt=""/ -->
+</para>
+
+<sect1 id="python-gui-events">
+<title>Hændelser (events)</title>
+
+<para>
+Hændelse &lt;Button-1&gt;
+</para>
+
+<para>Beskrivelse:</para>
+
+<para>
+En museknap  blev aktiveret over et widget. Knap 1 er venstre museknap,
+2 den midterset og 3 den højre knap. Når en museknap aktiveres over en
+widget vil mainloop sende en melding om det til Tkinter, der vil "fange"
+meldingen og eksekvere den kommando f.eks. afvikle en metode indtil den
+via museknappen igangsatte aktivitet afsluttes efter veludført arbejde
+&lt;Button-1&gt;, &lt;ButtonPress-1&gt; og &lt;1&gt; er synonymer for
+det samme - klik på venstre museknap ligesom &lt;Button-2&gt;,
+&lt;ButtonPress-2&gt; og &lt;2&gt; er det for midterste museknap og
+&lt;Button-3&gt;, &lt;ButtonPress-3&gt; og &lt;3&gt; for højre. Hvilken
+af de givne muligheder du vælger er op til dig.
+</para>
+
+<para>Hændelse &lt;B1-Motion&gt;</para>
+
+<para>Beskrivelse:</para>
+
+<para>
+Musen blev flyttet over en widget, mens venstre museknap (knap 1) blev
+holdt nede. Tilsvarende for midtertasten er &lt;B2-Motion&gt; og for
+højre musetast &lt;B3-Motion&gt;
+</para>
+
+<para>Hændelse &lt;ButtonRelease-1&gt;</para>
+<para>Beskrivelse:</para>
+
+<para>
+Venstre museknap blev sluppet, mens den var over den valgte widget.
+Tilsvarende for midtertasten er &lt;ButtonRelease-2&gt; og for højre
+musetast %lt;ButtonRelease-3&gt;
+</para>
+
+<para>Hændelse &lt;Double-Button-1&gt;</para>
+
+<para>Beskrivelse:</para>
+
+<para>
+I Python kan du bruge såvel enkelt som dobbelt (double) og tre gange
+(triple) klik i Hændelser. &lt;Double-Button-1&gt; betyder dobbeltklik
+på venstre museknap og &lt;Triple-Button-1&gt; betyder klik 3 gange
+efter hinanden på samme musetast og på samme objekt. Som ved en gang
+klik på museknap kan også &lt;Double-Button-2&gt; og
+&lt;Triple-Button-2&gt; og &lt;Double-Button-3&gt; og
+&lt;Triple-Button-3&gt; benyttes her. Bemærk at såfremt du bind til både
+enkelt og dobbeltklik, så kan begge bindinger kaldes. Hvordan en binding
+foretages er vist tidligere i afsnittet om Hændelser.
+</para>
+
+<para>Hændelse &lt;Enter&gt;</para>
+<para>Beskrivelse:</para>
+
+<para>
+Musemarkøren kom ind i widgets område (Bemærk hændelsen må ikke
+forveksles med tryk på Enter tasten). Modsvarer &lt;Leave&gt;
+</para>
+
+<para>Hændelse &lt;Leave&gt;</para>
+<para>Beskrivelse:</para>
+
+<para>
+Musemarkøren forlod widgets område. Modsvarer &lt;Enter&gt;
+</para>
+
+<para>Hændelse &lt;Return&gt;</para>
+
+<para>Beskrivelse:</para>
+
+<para>
+Brugeren trykkede på Enter (Return) tasten. Du kan binde (bind) til
+stort set alle tastaturets taster. På det almindelige 102-tasters PC
+tastatur kan du således også bruge Cancel (Break tasten), BackSpace,
+Tab, Return, Shift_L (enhver Shift tast forbindelse), Control_L (enhver Control tast forbindelse), Alt_L (enhver Alt tast kombination), Pause, Caps_Lock, Escape, Forrige (Page Up), Næste (Page Down), End, Home, Left, Up, Right, Down, Print, Insert, Delete, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, Num_Lock og Scroll_Lock.
+
+</p><p>Hændelse  <Key>
+<br/>Beskrivelse:<br/>
+Brugeren trykkede på tast <Key>.
+
+</p><p>Hændelse  a
+<br/>Beskrivelse:<br/>
+Brugeren trykkede på a tasten. De fleste printbare karakterer kan anvendes tilsvarende - undtagelser er space
+(den største tast på tastaturet) og mindre end ">". Bemærk at 1 betyder binding til 1-tallet på tastaturet, mens
+<1> er binding til venstre museknap.
+
+</p><p>Hændelse  <Shift-Up>
+<br/>Beskrivelse:<br/>
+Brugeren trykkede på Pil op tasten, samtidig med at Shift tasten blev holdt nede. På samme måde kan Alt og
+Control tasterne anvendes.</p>
+
+<p>Hændelse  <Configure><br/>
+Beskrivelse:<br/>
+Det aktuelle widget ændrede størrelse (på nogle platforme beliggenhed). Widgets højde og bredde
+overføres til Tkinter ved hjælp af callback.
+
+
+<p>Musen i vinduet</p>
+<p>
+Da der er en del bindinger i det kommende afsnit om Widget klassen, vil vi slutte af her med et eksempel med musen og med bindinger mellem vindue og museknapper. Jeg kommer meget mere ind på musen og hvad dertil hører i det nævnte afsnit, så her vil jeg lade eksemplet stå nogenlunde alene og kommentere senere. Men lad os lige se på en enkelt programlinje:
+<p>
+self.bind( "<Button-1>", self.knapAktiveret )
+</p>
+<p>
+I stedet for at det er en ganske almindelig funktion, der kalder (afvikler) den funktion, der er bundet til klassen med self.knapAktiveret, skal der her bruges en fordefineret klasse indeholdende en lang række metoder, så der kan vises den virtuelle knap, du skal klikke på med venstre museknap, at det er venstre museknap, du skal bruge her fremgår af 1-tallet i "Button-1". Større end mindre end tegnene viser, at det er en museknap. Havde de ikke været med, så der alene stod "Button-1" var det en af knapperne på tastaturet, der skulle bruges. Metoden mainloop() skal køre hele tiden, mens programmet benyttes for blandt rigtig meget andet at kontrollere, om du klikker på "<Button-1>" eller en af de andre knapper, om brugeren flytter musen med venstre knap nedtrykket (sker med "<B1-Motion>") eller en af de mange andre ting en af de mange mange andre ting, bruger, computer, system eller program kan foretage. Klikker bruger på en tast, sender mainloop() besked til værkføreren Tkinter, der dels finder ud af, hvad der skal foretages og hvilke metoder m.v. der skal bruges for at udføre den kommando, der udgik via klikket på knappen. Sådan er det i Python og andre andre computersprog og styresystemer med grafisk brugerflade.
+</p>
+<p>
+from Tkinter import *
+</p>
+<p>
+class Musepositioner( Frame ):<br/>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      # rammens titel<br/>
+      self.master.title( "Demonstrerer musehændelser og bindinger" )<br/>
+      # Vinduet tegnes 275 pixels bredt og 200 pixels højt<br/>
+      self.master.geometry(  "275x200" )<br/>
+  </p>
+<p>
+      self.musePosition = StringVar()<br/>
+      self.musePosition.set( "Mus udenfor vinduet" )<br/>
+      self.positionLabel = Label( self,<br/>
+         textvariable = self.musePosition )<br/>
+      self.positionLabel.pack( side = BOTTOM )<br/>
+</p>
+<p>
+      # bind musehændelser fra venstre museknap til vindue<br/>
+      self.bind( "<Button-1>", self.knapAktiveret )<br/>
+      self.bind( "<ButtonRelease-1>", self.knapSluppet )<br/>
+      self.bind( "<Enter>", self.inde_i_vinduet )<br/>
+      self.bind( "<Leave>", self.ude_af_vinduet )<br/>
+      self.bind( "<B1-Motion>", self.mouseDragged )
+</p>
+<p>
+   def knapAktiveret( self, event ):<br/>
+      # event.x og event.y er koordinaterne altså heltal derfor konverteres de til streng<br/>
+      self.musePosition.set( "Du klikkede på position [ " + str( event.x ) +<br/>
+         ", " + str( event.y ) + " ]" )<br/>
+</p>
+<p>
+   def knapSluppet( self, event ):<br/>
+      self.musePosition.set( "Museknap sluppet på position [ " + str( event.x ) +<br/>
+         ", " + str( event.y ) + " ]" )
+</p>
+<p>
+   def inde_i_vinduet( self, event ):<br/>
+      self.musePosition.set( "Musen er i vinduet" )
+</p>
+<p>
+   def ude_af_vinduet( self, event ):<br/>
+      self.musePosition.set( "Musen er udenfor vinduet" )
+</p>
+<p>
+   def mouseDragged( self, event ):
+      self.musePosition.set( "Musetræk på [ " + str( event.x ) +<br/>
+         ", " + str( event.y ) + " ]" )
+</p>
+<p>
+def main():<br/>
+   Musepositioner().mainloop()
+</p>
+<p>
+if __name__ == "__main__":<br/>
+   main()
+</p>
+
+<p>Widget klassen</p>
+<p>
+Et grafisk bruger interface (grafical user inteface heraf forkortelsen GUI) giver brugeren mulighed for at kommunikere interaktivt med et program. GUIs sammensættes af GUI komponenter (kaldet widgets - en forkortelse for windows finesser). Et GUI komponent er et objekt hvormed en bruger som antydet kan kommunikere interaktivt med et program via mus og eller tastatur. Ved brug af Tool Command Language (forkortet TCL) og dets værktøjskit (Tool Kit forkortet Tk - et bibliotek af fordefinerede klasser, subklasser m.v.) kan Python programmører konstruere GUIs. Hvordan det gøres skal vi se på i en lang række eksempler.
+
+<p>Almindeligt forekommende egenskaber for widgets er:</p>
+<p>
+activebackground og activeforeground <br/>
+De farver der bruges, når knappen aktiveres.
+</p>
+<p>
+ANCHOR (eller anchor)<br/>
+Markerer starten på det valgte, hvis der et sådant. Kontrollerer hvor på widget tekst (eller grafik) skal placeres. Anvend en af N, NE, E, SE, S, SW, W, NW, eller CENTER. CENTER er forvalgt.Du kan bruge
+select_from metoden til at vælge en tekst.
+</p>
+<p>
+background (forkortelse bg)<br/>
+Baggrundsfarve. Forvalgt er system afhængig (sædvanligvis hvid - white). Hvis du ændrer baggrundsfarven, vil du som regel også skulle skifte forgrundsfarve (foreground). Farveegenskaben er kun anvendelig på text og bitmap widgets.
+</p>
+<p>
+Følgende bitmaps er tilgængelige på alle platforme:<br/>
+error, gray75, gray50, gray25, gray12, hourglass, info, questhead, question, og warning.
+</p>
+<p>
+borderwidth (forkortelse: bd)<br/>
+Kant bredde. Den forvalgte værdi er 0. borderwidth = 2 (pixels) vil ofte passe godt.
+</p>
+</p>
+command<br/>
+Når der kikkes på f.eks. en knap kaldes (køres/afvikles) command metoden, der selv kalder en såkaldt callback, der kan være en funktion, en bundet metode eller et hvilket som helst andet kaldbart Python objekt.
+<p>
+cursor<br/>
+Markør der vises, hvis musemarkøren befinder sig over widget.
+</p>
+<p>
+delete(indeks)<br/>
+Sletter karakteren på indeks's plads.
+</p>
+<p>
+delete(fra,til)<br/>
+Sletter teksten i det valgte område. delete(0, END) sletter hele tekste i widget.
+</p>
+<p>
+disabledforeground<br/>
+Farven, der bruges, når widget er inaktiv (disabled).Baggrunden vises i background color.
+</p>
+<p>
+END (eller  "end")<br/>
+Angiver positionen lige bag den sidste karakter i widget. Teksten i området  (0, END) er den fulde tekst i widget.
+</p>
+<p>
+exportselection<br/>
+Hvis sand (true), eksporteres den valgte tekst automatisk til clipboard (her er vist ingen klar dansk betegnelse - et sted udenfor Python miljøet er clipbord blevet kaldt udklipsholder). Forvalgt er sand (true).
+</p>
+<p>
+font<br/>
+Skriften/skrifterne der anvendes i widget. Den forvalgte skrift afhænger af widget og af styresystemet.
+</p>
+<p>
+foreground (fg)<br/>
+Forgrundsfarve især farven på tekst.
+</p>
+<p>
+geometry( "længde x bredde" )
+Metode der konfigurerer længde og bredde af moder komponentet målt i antal pixels. eks. self.master.geometry( "325x100" )
+</p>
+<p>
+get() => streng<br/>
+Returnerer streng, hvor streng er den aktuelle tekst i Entry.
+</p>
+<p>
+highlightbackground, highlightcolor<br/>
+Kontrollerer hvordan Entrys yderkant (border) skal tegnes. Når widget er valgt (has focus), tegnes yderkanten med highlightcolor farven. Ellers tegnes den med highlightbackground farven. Den forvalgte farve er systemafhængig.
+</p>
+<p>
+highlightthickness<br/>
+Kontrollerer bredden på et markeret (highlighted) område. Forvalgt er typisk en eller to pixels.Forvalgt er 0 pixels (ingen kant).
+</p>
+<p>
+icursor(indeks)<br/>
+flytter markøren (the insertion cursor) til det givne indeks. Dette sætter også INSERT indeks.
+</p>
+<p>
+image<br/>
+Egenskaben kan vise image i en label. Den har højere prioritet end text og bitmap egenskaberne, så de kan ikke vises, når image er valgt.
+</p>
+Index<br/>
+Indeks fungerer helt som i Python lister. Karaktererne i en tekststreng er nummererede fra 0 til og opad. Du specificerer ranges helt som du slice lister i Python (slicing er behandlet tidligere i bogen) f.eks. svarer (0, 5) til de første 5 karakterer i en widget.
+</p>
+<p>
+indicatoron<br/>
+Kontrollerer hvorvidt indikatoren skal tegnes eller ikke. Forvalgt er on. Hvis knappen vælges, tegnes den som
+SUNKEN (nedtrykt) ellers som RAISED.
+</p>
+<p>
+INSERT (eller "insert")<br/>
+Markeres ved tekstmarkørens blinken på stedet, Metoden icursor kan benyttes til fra programmet at ændre indsættelsespunktet.
+Endelig kan du bruge musemarkørens indeks position v.h.a. syntaksen: "@%d" % x, hvor x er angivet i antal pixels fra venstre side af entry widget.
+</p>
+<p>
+insertbackground<br/>
+Indsæt-markørens farvefarve.
+</p>
+<p>
+insertborderwidth<br/>
+Kantbredde på indsæt-markøren.
+</p>
+<p>
+insertofftime, insertontime<br/>
+Kontrollerer markørens blinke frekvens.
+</p>
+<p>
+insertwidth<br/>
+Indsæt-markørens bredde.
+</p>
+<p>
+justify<br/>
+Placerer en flerlinjet tekst venstrejusteret justify = LEFT, højrejusteret justify = RIGHT eller centreret  justify = CENTER.
+</p>
+<p>
+onvalue og offvalue, <br/>
+Værdierne betyder valgt og ikke valgt. De boolske værdier er 0 og 1.
+</p>
+<p>
+padx, pady<br/>
+Indrykning af tekst eller image i forhold til widgets ydre kant (border).
+</p>
+<p>
+relief<br/>
+Kant dekoration (Border decoration). Den forvalgte værdi er  FLAT.  Andre mulige værdier er SUNKEN, RAISED, GROOVE, and RIDGE. BEMÆRK: For at ændre kantdekorationen fra dets forvalgte værdi (FLAT), er det nødvendigt at ændre dens borderwidth fra dens forvalgte værdi 0 (ingen kantbredde). eks.  borderwidth = 2, relief = RIDGE
+</p>
+<p>
+Scan metoderne kan implementere hurtige museoperationer (de er tilknyttet midterste museknap, hvis en sådan er tilgængelig), hvor xview metoden anvendes sammen med en standard scrollbar widget.
+</p>
+<p>
+scan_mark(x)<br/>
+Sætter scanning anchor for hurtig vandret rulning til den givne muse koordinat.
+</p>
+<p>
+scan_mark(x, y)<br/>
+scan_mark sætter scanning anchor for hurtig vandret rulning til de givne musekoordinater.
+</p>
+<p>
+scan_dragto(x)<br/>
+Ruller Entrys indhold sidevis svarende til den givne muse koordinat, Teksten flyttes 10 gange afstanden mellem
+den givne afstand mellem scanning anchor og den nye position.
+</p>
+<p>
+select_adjust(indeks) og selection_adjust(indeks)<br/>
+Juster den aktuelle tekst til også at omfatte karakteren på plads indeks. Hvis det givne indeks allerede er valgt gøres ingen ting.
+</p>
+<p>
+selectbackground<br/>
+Vælg baggrundsfarve. Den forvalgte er skærmafhængig.
+</p>
+<p>
+selectborderwidth<br/>
+Vælg kantbredde. Den forvalgte er systemafhængig.
+</p>
+<p>
+selection_from(indeks), select_from(indeks)<br/>
+Indleder et nyt valg. Sætter også ANCHOR indeks.<br/>
+def selection_from(text, index):<br/>
+        text._anchor = index
+</p>
+<p>
+selection_present() => flag, select_present() => flag<br/>
+Returnerer sand (true (ikke nul)), hvis en del af en tekst er valgt.<br/>
+def selection_present(text):<br/>
+        return len(text.tag_ranges(SEL)) != 0
+</p>
+
+<p>
+selectcolor<br/>
+Farve til brug på selector f.eks. knap.
+</p>
+<p>
+selectforeground<br/>
+Vælg tekstfarve. Den forvalgte er system- og skærmafhængig.
+</p>
+<p>
+selection_clear(), select_clear()<br/>
+Slet den valgte tekst.<br/>
+def selection_clear(text):<br/>
+        text.tag_remove(SEL, 1.0, END)
+</p>
+<p>
+selectimage<br/>
+Image til brug sammen med selector.
+</p>
+<p>
+selection_range(start, slut), select_range(start,slut)<br/>
+Vælger tekst i Entry widget. start skal naturligvis være større end slut.
+</p>
+<p>
+selection_range(0, END)<br/>
+Vælger hele teksten.<br/>
+def selection_range(text, start, end):<br/>
+        text.tag_remove(SEL, 1.0, start)<br/>
+        text.tag_add(SEL, start, end)<br/>
+        text.tag_remove(SEL, end, END)
+</p>
+<p>
+select_to(indeks), selection_to(indeks)<br/>
+Vælger hele teksten mellem ANCHOR og det givne indeks.<br/>
+def selection_to(text, index):<br/>
+        if text.compare(index, "<", text._anchor):<br/>
+            selection_range(text, index, text._anchor)<br/>
+        else:<br/>
+            selection_range(text, text._anchor, index)
+</p>
+
+<p>
+setgrid <br/>
+Hvis sand (true) forsøger Tkinter at ændre størrelsen af vinduet med text widget i fulde karakter trin ud fra skriftens muligheder.
+</p>
+<p>
+spacing1<br/>
+Pladsen (afstanden) over den første linje i en tekstblok. Forvalgt er 0 (ingen ekstra plads).
+</p>
+<p>
+spacing2<br/>
+Pladsen (afstanden) mellem linjerne  i en tekstblok. Forvalgt er 0 (ingen ekstra plads).
+</p>
+<p>
+spacing3<br/>
+Pladsen (afstanden) efter den sidste linje i en tekstblok. Forvalgt er 0 (ingen ekstra plads).
+</p>
+<p>
+show<br/>
+Controls how to display the contents of the widget. If non-empty, the widget displays a string of characters instead of the actual contents. To get a password entry widget, use "*".
+</p>
+<p>
+state<br/>
+Bestemmer hvorvidt bruger skal kunne ændre indholdet i widget eller ikke. Mulighederne er NORMAL (bruger har fuld adgang til at ændre indholdet i widget) og DISABLED (bruger kan ikke ændre indholdet i widget). NORMAL er forvalgt. Eks. entry.config(state = DISABLED )
+</p>
+<p>
+tag_bind binder en hændelse (event) til en given funktion.<br/>
+tag_bind(tag, sekvens, funktion) og tag_bind(tag, sekvens, funktion, "+")<br/>
+Tag bindinger kan anvende muse- og tastatur-relaterede hændelser plus
+<Enter> og <Leave>. Hvis ikke styrekoden eksisterer, oprettes den. Sædvanligvis vil en ny binding erstatte alle bindinger for den samme hændelses frekvens. Den sidste form kan anvendes for at føje en ny callback til den eksisterende binding.
+</p>
+<p>
+tag_cget(tag, option)<br/>
+Henter den aktuelle værdi for den givne option (egenskab).
+</p>
+<p>
+tag_config()<br/>
+Egenskaber (options) kan indsættes med tag_config:<br/>
+tag_config() udstyrer widget med en eller flere egenskaber eks. text.config(bg="red", fg="white") her tildeles text egenskaben at kunne skrive tekst med rød baggrund og hvid skrift.
+</p>
+<p>
+tag_delete(tag)<br/>
+Tags kan fjernes med:<br/>
+tag_delete(tag), tag_delete(tags...). eks. text.tag_delete(bg)
+</p>
+<p>
+tag_names()<br/>
+Returnerer en tuple indeholdende  alle tags, der anvendes i widget.
+</p>
+<p>
+tag_names(index)<br/>
+Returnerer en tuple indeholdende alle tags anvendt af karakteren på den givne position.
+</p>
+<p>
+tag_nextrange(tag, index), tag_nextrange(tag, start, stop)<br/>
+Finder den næste af en given tag startende fra det givne index. Hvis 2 indekser er givet eks. start, stop søges kun fra start til stop.
+</p>
+<p>
+tag_prevrange(tag, index), tag_prevrange(tag, start, stop)<br/>
+Som tag_nextrange, men søger tilbage i teksten.
+</p>
+<p>
+tag_remove og tag_unbind kan fjerne bindinger:<br/>
+tag_unbind(tag, sekvens). Fjerner bindingen, hvis der er en sådan.
+</p>
+<p>
+takefocus<br/>
+Giver brugeren mulighed for at anvende tabulatortasten for at vælge widget. En tom streng er forvalgt.
+</p>
+<p>
+text <br/>
+Egenskaben kan vise tekst i widget. Teksten kan omfatte "\n" ny linje. Hvis bitmap eller image egenskaben bruges ignoreres text egenskaben.
+</p>
+<p>
+textvariable<br/>
+Forbinder en Tkinter variabel (sædvanligvis en StringVar) med labelen. Hvis variablen ændres opdates teksten i label. Eks. textvariable = self.entry(fg = "green")
+</p>
+<p>
+toggle()<br/>
+Fastholder den valgte state (vedr. state se under generelle egenskaber i indledningen til Widget klassen).
+</p>
+<p>
+underline<br/>
+Understreg tekst forvalgt er -1, der betyder at ingen tekst er understreget.
+</p>
+<p>
+width og height<br/>
+Bredde og højde egenskaberne kan initialiseres, men de behøver det ikke nødvendigvis. Hvis ikke egenskaberne
+tildeles direkte,  tildeles de automatisk efter indholdet i label.
+</p>
+<p>
+wraplength<br/>
+Holder styr på hvornår der skal indsætte linjeskifte i en tekst. Forvalgt er ingen linjeskifte.wraplength sættes til screen units - normalt antal pixels.
+</p>
+<p>
+xscrollcommand<br/>
+Kommando for rulning af selve widget.
+</p>
+<p>
+xview(), yview()<br/>
+Returnerer en tuple indeholdende 2 værdier. Den første værdi svarer til den relative offset (startpunktet)
+for den første synlige linje (søjle/column), og den anden værdi svarer til til den relative offset for linjen lige efter deb sidste synlige linje på skærmen. Offset 0.0 begyndelsen af linjen, 1.0 slutningen.
+</p>
+<p>
+xview(indeks)<br/>
+Kontroller om den givne indeks er synlig. Widget rulles om nødvendigt.
+</p>
+<p>
+xview(MOVETO, offset) og yview(MOVETO, offset)<br/>
+Flytter text widget, således at det givne udgangspunkt (offset) er i øverste venstre  hjørne.
+Offset 0.0 markerer tekstens begyndelse, 1.0 slutningen. Metoderne her bruges af
+Scrollbar bindinger, når brugeren  flytter knappen i rulleskakten.
+</p>
+<p>
+xview(SCROLL, trin, emne), yview(SCROLL, trin, emne)<br/>
+Ruller widget vandret i det givne trin. Emnet, der skal flyttes,kan være UNITS (linjer og karakterer) eller PAGES (sider). Metoderne her bruges af Scrollbar bindinger, når brugeren flytter rulleskaktens skyder.scan metoderne er bundet til midterste museknap, mens xview og yview metoderne bruges sammen med standard scrollbars.
+</p>
+
+<p>Label underklasse i Widget</p>
+from Tkinter import *<br/>
+root = Tk()<br/>
+skrift = ("times", 20, "bold")<br/>
+label = Label(root, text="Der kan skrives paa en label.")<br/>
+label.config(bg="black", fg="white")<br/>
+label.config(font=skrift)<br/>
+label.config(height=4, width=30)  # plads til 4 linjer a 30 tegn<br/>
+label.pack(expand=YES, fill=BOTH)<br/>
+root.mainloop()
+</p>
+
+<p>
+from Tkinter import *<br/>
+# label1, label2 og label3 arver Label klassen med dens pack funktion (metode)
+label1 = Label(text ="Enkelt, men omfattende.").pack(expand = NO, side = LEFT)<br/>
+label2 = Label(text ="Lige i centrum.").pack(expand = NO, side = TOP)<br/>
+label3 = Label(text ="Total trods enkel.").pack(expand = NO, side = RIGHT)<br/>
+mainloop()
+</p>
+<p>
+eller f.eks. :
+</p>
+<p>
+from Tkinter import *<br/>
+class LabelDemo( Frame ):<br/>
+
+   def __init__( self ):  # LabelDemos konstruktør<br/>
+
+      Frame.__init__( self )   # mor Frames konstruktør<br/>
+
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Labels" )<br/>
+
+      self.label1 = Label( self, text = "Label med tekst" )<br/>
+      self.label1.pack()<br/>
+
+      self.label2 = Label( self,
+         text = "Label med tekst og bitmap" )<br/>
+      self.label2.pack( side = LEFT )<br/>
+      self.label3 = Label( self, bitmap = "questhead" )<br/>
+      self.label3.pack( side = LEFT )
+</p>
+<p>
+def main():<br/>
+   LabelDemo().mainloop()<br/>
+
+if __name__ == "__main__": main()<br/>
+</p>
+
+<img src="w2_2.png" alt=""/>
+
+
+<p>Entry underklasse i Widget</p>
+Entry er et en-linjes input område, der kan modtage input fra tastaturet eller vise information.
+Entry widgetten giver dig mulighed for at placere karakterer på en række forskellige måder.
+<p>
+from Tkinter import *<br/>
+root = Tk()<br/>
+class SkriftKontrol( Frame ):<br/>
+   def __init__( self ):
+</p>
+<p>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Entry og Checkbutton demo" )
+</p>
+<p>
+      self.frame1 = Frame( self )<br/>
+      self.frame1.pack()
+</p>
+<p>
+      self.entry = Entry( self.frame1, width = 40,
+         font = "Times 12" )<br/>
+      self.entry.insert( INSERT, "Bemærk hvordan skriften ændres" )<br/>
+      self.entry.pack( padx = 5, pady = 5 )
+</p>
+<p>
+      self.frame2 = Frame( self )<br/>
+      self.frame2.pack()
+</p>
+<p>
+      # opret boolsk variable til fed skrift<br/>
+      self.fedValgt = BooleanVar()
+</p>
+<p>
+      self.kontrolFed = Checkbutton( self.frame2, text = "Bold",
+         variable = self.fedValgt, command = self.skiftSkrift )<br/>
+      self.kontrolFed.pack( side = LEFT, padx = 5, pady = 5 )
+</p>
+<p>
+      # opret boolsk variable til skråskrift<br/>
+      self.skraaValgt = BooleanVar()
+</p>
+<p>
+      self.kontrolSkraa = Checkbutton( self.frame2,
+         text = "Italic", variable = self.skraaValgt,
+         command = self.skiftSkrift )<br/>
+      self.kontrolSkraa.pack( side = LEFT, padx = 5, pady = 5 )
+</p>
+<p>
+   def skiftSkrift( self ):<br/>
+	valgteSkrift = "Times 12"
+</p>
+<p>
+      	if self.fedValgt.get():<br/>
+         	valgteSkrift += " bold"
+</p>
+<p>
+      	if self.skraaValgt.get():<br/>
+         	valgteSkrift += " italic"<br/>
+
+      	self.entry.config( font = valgteSkrift )
+</p>
+<p>
+def main():<br/>
+   SkriftKontrol().mainloop()
+</p>
+<p>
+if __name__ == "__main__": main()
+</p>
+
+<img src="w3_1.png" alt=""/>
+
+<p>
+from Tkinter import *<br/>
+from tkMessageBox import *
+</p>
+<p>
+class EntryDemo( Frame ):<br/>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Test datamodtagere" )<br/>
       self.master.geometry( "325x100" )
-      self.frame1 = Frame( self )
-      self.frame1.pack( pady = 5 )
-      # text1 oprettes som barnebarn af Frame
-      # entry er endnu en underklasse i Widget klassen (læs barn af)
-      self.text1 = Entry( self.frame1, name = "tekst1" )
-      self.text1.bind( "&lt;Return&gt;", self.visIndhold )
+</p>
+<p>
+      self.frame1 = Frame( self )<br/>
+      self.frame1.pack( pady = 5 )<br/>
+      # text1 oprettes som barnebarn af Frame<br/>
+      # entry er endnu en underklasse i Widget klassen (læs barn af)<br/>
+      self.text1 = Entry( self.frame1, name = "tekst1" )<br/>
+      self.text1.bind( "<Return>", self.visIndhold )<br/>
       self.text1.pack( side = LEFT, padx = 5 )
-      self.text2 = Entry( self.frame1, name = "tekst2" )
-      self.text2.insert( INSERT, "Skriv tekst her" )
-      self.text2.bind( "&lt;Return&gt;", self.visIndhold )
+</p>
+<p>
+      self.text2 = Entry( self.frame1, name = "tekst2" )<br/>
+      self.text2.insert( INSERT, "Skriv tekst her" )<br/>
+      self.text2.bind( "<Return>", self.visIndhold )<br/>
       self.text2.pack( side = LEFT, padx = 5 )
-      self.frame2 = Frame( self )
+</p>
+<p>
+      self.frame2 = Frame( self )<br/>
       self.frame2.pack( pady = 5 )
-      self.text3 = Entry( self.frame2, name = "tekst3" )
-      self.text3.insert( INSERT, "Ikke editerbar tekstboks" )
-      self.text3.config( state = DISABLED )
-      self.text3.bind( "&lt;Return&gt;", self.visIndhold )
+</p>
+<p>
+      self.text3 = Entry( self.frame2, name = "tekst3" )<br/>
+      self.text3.insert( INSERT, "Ikke editerbar tekstboks" )<br/>
+      self.text3.config( state = DISABLED )<br/>
+      self.text3.bind( "<Return>", self.visIndhold )<br/>
       self.text3.pack( side = LEFT, padx = 5 )
-      self.text4 = Entry( self.frame2, name = "tekst4",
-                          show = "*" )
-      self.text4.insert( INSERT, "Hemmelig tekst" )
-      self.text4.bind( "&lt;Return&gt;", self.visIndhold )
+</p>
+<p>
+      self.text4 = Entry( self.frame2, name = "tekst4",show = "*" )<br/>
+      self.text4.insert( INSERT, "Hemmelig tekst" )<br/>
+      self.text4.bind( "<Return>", self.visIndhold )<br/>
       self.text4.pack( side = LEFT, padx = 5 )
-   def visIndhold( self, event ):
-      navn = event.widget.winfo_name()
-      indhold = event.widget.get()
+</p>
+<p>
+   def visIndhold( self, event ):<br/>
+      navn = event.widget.winfo_name()<br/>
+      indhold = event.widget.get()<br/>
       showinfo( "Melding", navn + ": " + indhold )
+</p>
+<p>
 def main():
    EntryDemo().mainloop()
-if __name__ == "__main__":
-   main()
-</screen>
-</para>
-<para>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{15cm}
-\includegraphics{w3.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-</para>
-</sect2>
+</p>
+<p>
+if __name__ == "__main__":main()
+</p>
 
-<sect2 id="wid.tekstboks">
-<title>Text underklasse i Widget</title>
-<para>
-Text modtager input fra tastaturet eller viser information. I modsætning til Entry komponentet er Text et areal, der kan
-modtage mange tekstlinjer.
-</para>
-<para>
-<screen>
-from Tkinter import *
-class tekstFunktioner(Frame):
-    def __init__(self, parent=None, tekst='', indfil=None):
-        Frame.__init__(self, parent)
-        self.pack(expand=YES, fill=BOTH)
-        self.opretArvinger()
-        self.tekstvalg(tekst, indfil)
-    
-    def opretArvinger(self):
-        rulleskakt = Scrollbar(self)
-        tekst = Text(self, relief=SUNKEN)
-        rulleskakt.config(command=tekst.yview)      # xlink rulleskakt og tekst
-        tekst.config(yscrollcommand=rulleskakt.set)    # flyttes en flyttes alle
-        rulleskakt.pack(side=RIGHT, fill=Y)            # pack først = clip sidst
-        tekst.pack(side=LEFT, expand=YES, fill=BOTH)   # tekst clipped først
-        self.tekst = tekst
+<img src="w3_2.png" alt=""/>
 
-    def tekstvalg(self, tekst='', indfil=None):
-        if indfil:
-            tekst = open(indfil, 'r').read()
-        self.tekst.delete('1.0', END)                       # slet hele teksten
-        self.tekst.insert('1.0', tekst)                       # tekst ind linje 1 pos 0
-        self.tekst.mark_set(INSERT, '1.0')     # set insert cursor
-        self.tekst.focus()                                            # gem brugervalg
+<img src="w4.png" alt=""/>
 
-    def hentTekst(self):                                        # returner streng
-        return self.tekst.get('1.0', END+'-1c')  # hele teksten
+<p>Text underklasse i Widget<br/>
+Område til flerlinjet input.Accepterer input fra tastatur og viser informationen. *
+</p>
+<p>
+from Tkinter import *<br/>
 
-if __name__ == '__main__':
-    root = Tk()
-    try:
-        streng = tekstFunktioner(indfil=sys.argv[1])  # filnavn på kommandolinje
-    except IndexError:
-        streng = tekstFunktioner(tekst='Tekst\nindsættes her')
-</screen>
-</para>
-<para>
-    def visTekst(event): print repr(streng.hentTekst())     # vis tekst i skal
-    root.bind('&lt;Key-Escape&gt;', visTekst)      # klik escape tast = dump tekst
-    root.mainloop()
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{15cm}
-\includegraphics{w4.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-</para>
-<para>
-<screen>
-from Tkinter import *
-</screen>
-</para>
-<para>
-<screen>
-# Trin 1: Opret den applikations-klasse (program-klasse), hvori GUI
-# og haendelses-metoder (event handling methods) defineres
-class Klasse(Frame):
-	def __init__(self):
-		Frame.__init__(self)
-		self.tekstboks = Text(self)
-		self.tekstboks.bind("&lt;space&gt;", self.Afslut)
-		self.tekstboks.bind("&lt;Key&gt;", self.modtagTastensNummer)
-		self.tekstboks.pack()
+# Trin 1: Opret den applikations-klasse (program-klasse), hvori GUI<br/>
+# og hændelses-metoder (event handling methods) defineres<br/>
+class Klasse(Frame):<br/>
+	def __init__(self):<br/>
+		Frame.__init__(self)<br/>
+		self.tekstboks = Text(self)<br/>
+		self.tekstboks.bind("<space>", self.Afslut)<br/>
+		self.tekstboks.bind("<Key>", self.modtagTastensNummer)<br/>
+		self.tekstboks.pack()<br/>
 		self.pack()
-	def Afslut(self,event):
-		import sys
+</p>
+<p>
+	def Afslut(self,event):<br/>
+		import sys<br/>
 		sys.exit()
-	def modtagTastensNummer(self,event):
-		str = "%d\n" % event.keycode
-		self.tekstboks.insert(END, str)
+</p>
+<p>
+	def modtagTastensNummer(self,event):<br/>
+		str = "%d\n" % event.keycode<br/>
+		self.tekstboks.insert(END, str)<br/>
 		return "break"
-# Opret arving og start haendelsesloekken
-barn = Klasse()
+<p>
+# Opret arving og start hændelsesløkken<br/>
+barn = Klasse()<br/>
 barn.mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{15cm}
-\includegraphics{w4_2.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-<screen>
-from Tkinter import *
-root = Tk()
-def melding(event): print "Modtog melding om klik på knap"
-text = Text()
-text.config(font=("times", 18, "normal"))    # skrift 18 punkts normal
-text.config(height=40, width=60)            # plads til 40 linjer a 60 tegn
-text.pack(expand=YES, fill=BOTH)
-text.insert(END, "Dette er\n\nmeningen\n\nmed livet.\n\n")   # indsaetter 6 linjer
-#linje 1  sender "Modtog melding om klik på knap" til skal (shell)
-knap = Button(text, text="Python er andet end slanger.", command=lambda:melding(1))
-knap.pack()
-text.window_create(END, window=knap)    # indsaetter foto
-text.insert(END, "\n\n")
-foto  = PhotoImage(file="skyer.gif")
-text.image_create(END, image=foto)
-# udvider de 6 tekststrenge ovenfor
-text.tag_add("udskrift", "1.6", "1.8")
-text.tag_add("udskrift", "3.0", "3.8")
-text.tag_add("udskrift", "5.4", "5.9")
-text.tag_config("udskrift", background="light green")
-text.tag_config("udskrift", foreground="red")
-text.tag_config("udskrift", font=("helvetica", 24, "underline italic bold"))
-text.tag_bind("udskrift", "&lt;Double-1&gt;", melding)
-root.mainloop()
-</screen>
-</para>
-<para>
-<screen>
-from Tkinter import *
-root = Tk()
-def melding(event): print "Modtog melding om klik på knap"
-text = Text()
-text.config(font=("times", 18, "normal"))    # skrift 18 punkts normal
-text.config(height=40, width=60)            # plads til 40 linjer a 60 tegn
-text.pack(expand=YES, fill=BOTH)
-text.insert(END, "Dette er\n\nmeningen\n\nmed livet.\n\n")   # indsaetter 6 linjer
-#linje 1  sender "Modtog melding om klik på knap" til skal (shell)
-knap = Button(text, text="Python er andet end slanger.", command=lambda:melding(1))
-knap.pack()
-text.window_create(END, window=knap)                          # indsaetter foto
-text.insert(END, "\n\n")
-foto = PhotoImage(file="skyer2.gif")
-text.image_create(END, image=foto)
-# udvider de 6 tekststrenge ovenfor
-text.tag_add("udskrift", "1.6", "1.8")
-text.tag_add("udskrift", "3.0", "3.8")
-text.tag_add("udskrift", "5.4", "5.9")
-text.tag_config("udskrift", background="light green")
-text.tag_config("udskrift", foreground="red")
-text.tag_config("udskrift", font=("helvetica", 24, "underline italic bold"))
-text.tag_bind("udskrift", "&lt;Double-1&gt;", melding)
-root.mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{20cm}
-\includegraphics{w4_3.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
 
-<sect2 id="wid.knap">
-<title>Button underklasse i Widget</title>
-<para>
-Button  er fordefineret som et komponent tilhørende Widget modulet.
-Ved klik med musens markør på knap kan funktion (metode) kaldes.
-</para>
-<para>
-<screen>
-from Tkinter import *
-class Arving(Frame):   # Klassehovede Arving er barn af  Frame
-    def __init__(Arving, mor=None):
-        Frame.__init__(Arving, mor)   # initialiser superklasse (superclass)
-        Arving.pack()
-        Arving.data = 10
-        Arving.opret_arvinger()             # forener arvinger med mor
-    def opret_arvinger(Arving):
-        widget = Button(Arving, text='Knaptekst!', command=Arving.message)
-        widget.pack(side=LEFT)
-    def message(Arving):
-        Arving.data = Arving.data + 1
-        print 'Sum %s' % Arving.data # udskriver på skal (kunne være til fil)
-if __name__ == '__main__': Arving().mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{12cm}
-\includegraphics{w5_3.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-<screen>
+<img src="w4_2.png" alt=""/>
+
+<p>
+from Tkinter import *<br/>
+root = Tk()<br/>
+def melding(event): print "Modtog melding om klik på knap"
+</p>
+<p>
+text = Text()<br/>
+text.config(font=("times", 18, "normal"))    # skrift 18 punkts normal<br/>
+text.config(height=40, width=60)            # plads til 40 linjer a 60 tegn<br/>
+text.pack(expand=YES, fill=BOTH)<br/>
+text.insert(END, "Dette er\n\nmeningen\n\nmed livet.\n\n")   # indsætter 6 linjer
+</p>
+<p>
+#linje 1  sender "Modtog melding om klik på knap" til skal (shell)<br/>
+knap = Button(text, text="Python er andet end slanger.", command=lambda:melding(1))<br/>
+knap.pack()<br/>
+text.window_create(END, window=knap)    # indsætter foto<br/>
+text.insert(END, "\n\n")
+</p>
+<p>
+foto  = PhotoImage(file="skyer.gif")<br/>
+text.image_create(END, image=foto)<br/>
+root.mainloop()
+<p>
+
+<img src="w4_3.png" alt=""/>
+
+<p>Button underklasse i Widget</p>
+<p>
+Button (knap) er fordefineret som et komponent tilhørende Widget.
+Ved klik på knappen med musens markør kan f.eks. funktion (metode) kaldes.</p>
+</p>
+<p>
+from Tkinter import *<br/>
+def f(): print "Hej! Jeg er her."<br/>
+Button(text = "Funktionskald", command = f()).pack( pady = 5 )<br/>
+Hej! Jeg er her. udskrives i skal (shell)
+</p>
+
+<p>
 import sys
 from Tkinter import *
 widget = Button(None, text='Afslut', command=sys.exit)
 widget.pack()
 widget.mainloop()
->>> # Eksemplet viser funktionskald fra knap
->>> from Tkinter import *
->>> def f(): print "Hej! Jeg er her."
-...
->>> Button(text = "Funktionskald", command = f()).pack( pady = 5 )
-Hej! Jeg er her.
->>>
-</screen>
-</para>
-<para>
-I Python bruger man ofte en såkaldt callback handler. Herved forstår
-man en funktion, som den i det følgende eksempel. En callback handler
-er en ganske normal metode (funktion) alene med den forskel, at modulet
-sys importeres direkte i den, og den i modulet fordefinerede metode
-exit() kaldes. Dens eneste formål er at gøre en udgang af en løkke her
-mainloop() mulig.
-</para>
-<para>
-<screen>
+</p>
+<p>
 from Tkinter import *
-def quit():                      # en bruger callback handler
-    print 'Afslut'       	 # skriver til skal (shell)
-    import sys; sys.exit()
-knapBarn = Button(None, text='Afslut', command=quit) # command=quit funktionskald
-knapBarn.pack()
-knapBarn.mainloop()
-from Tkinter import *
-Button(text='Klik her', padx=10, pady=10).pack(expand = NO, fill = X)
->>> from Tkinter import *
->>> root = Tk()
->>> def Funktion(navn) : print "Hej", navn
-...
->>> Button(root,text = "Klik her", command = lambda navn =
-"Olsen": Funktion(navn)).pack()
->>> Hej Olsen
-from Tkinter import *
-knap = Button(text='Klik her', padx=10, pady=10)
-knap.pack(padx=20, pady=20)
-knap.config(cursor='gumby')
-knap.config(bd=8, relief=RAISED)
-knap.config(bg='dark green', fg='white')
-knap.config(font=('times', 20, 'underline bold italic'))
-mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{6cm}
-\includegraphics{w5.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-<screen>
-from Tkinter import *
-class Arving(Frame):   # Klassehovede Arving er barn af  Frame
-    def __init__(Arving, mor=None):
-        Frame.__init__(Arving, mor)   # initialiser superklasse (superclass)
-        Arving.pack()
-        Arving.data = 10
-        Arving.opret_arvinger()             # forener arvinger med mor
-    def opret_arvinger(Arving):
-        widget = Button(Arving, text='Knaptekst!', command=Arving.message)
+</p>
+<p>
+class Arving(Frame):   # Klassehovede Arving er barn af  Frame<br/>
+    def __init__(Arving, mor=None):<br/>
+        Frame.__init__(Arving, mor)   # initialiser superklasse (superclass)<br/>
+        Arving.pack()<br/>
+        Arving.data = 10<br/>
+        Arving.opret_arvinger() # Forener barn med mor
+</p>
+<p>
+    def opret_arvinger(Arving):<br/>
+        widget = Button(Arving, text='Knaptekst!', command=Arving.message)<br/>
         widget.pack(side=LEFT)
-    def message(Arving):
-        Arving.data = Arving.data + 1
+</p>
+<p>
+    def message(Arving):<br/>
+        Arving.data = Arving.data + 1<br/>
         print 'Sum %s' % Arving.data # udskriver på skal (kunne være til fil)
+</p>
+<p>
 if __name__ == '__main__': Arving().mainloop()
-</screen>
-</para>
-<para>
-<screen>
+</p>
+
+<img src="w5_3.png" alt=""/>
+
+<p>
 from Tkinter import *
-class knapRamme( Frame ):
-   def __init__( self ):
-      Frame.__init__( self )
-      self.master.title( "Knap oprettelse" )
-      self.master.geometry( "400x150" )
+</p>
+<p>
+def quit():             # callback handler<br/>
+    print 'Afslut'      # skriver til skal (shell)<br/>
+    import sys; sys.exit()
+</p>
+<p>
+knapBarn = Button(None, text='Afslut', command=quit)<br/>
+knapBarn.pack()<br/>
+knapBarn.mainloop()
+</p>
+
+<img src="w5.png" alt=""/>
+
+<p>
+from Tkinter import *
+</p>
+<p>
+class Arving(Frame):   # Klassehovede Arving er barn af  Frame<br/>
+    def __init__(Arving, mor=None):<br/>
+        Frame.__init__(Arving, mor)   # initialiser superklasse (superclass)<br/>
+        Arving.pack()<br/>
+        Arving.data = 10<br/>
+        Arving.opret_arvinger()             # forener arvinger med mor<br/>
+    def opret_arvinger(Arving):<br/>
+        widget = Button(Arving, text='Knaptekst!', command=Arving.message)<br/>
+        widget.pack(side=LEFT)<br/>
+    def message(Arving):<br/>
+        Arving.data = Arving.data + 1<br/>
+        print 'Sum %s' % Arving.data # udskriver på skal (kunne være til fil)
+</p>
+<p>
+if __name__ == '__main__': Arving().mainloop()
+</p>
+<p>Eksempel på brugerdialog/p>
+<p>
+from Tkinter import *
+</p>
+<p>
+class dialog:<br/>
+    def __init__(self, parent):<br/>
+        top = self.top = Toplevel(parent)<br/>
+        Label(top, text="Indskriv").pack()<br/>
+        self.e = Entry(top)<br/>
+        self.e.pack(padx=5)
+</p>
+<p>
+        b = Button(top, text="OK", command=self.ok)<br/>
+        b.pack(pady=5)
+</p>
+<p>
+    def ok(self):<br/>
+	# Value er fordefineret<br/>
+        print "Value er", self.e.get()
+</p>
+<p>
+        self.top.destroy()
+</p>
+<p>
+root = Tk()<br/>
+Button(root, text="Hej!").pack()<br/>
+root.update()
+</p>
+<p>
+d = dialog(root)
+</p>
+<p>
+root.wait_window(d.top)
+</p>
+
+<img src="w5_5.png" alt=""/>
+
+<p>
+from Tkinter import *
+</p>
+<p>
+class knapRamme( Frame ):<br/>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.master.title( "Knap oprettelse" )<br/>
+      self.master.geometry( "400x150" )<br/>
       self.pack( expand= YES, fill = BOTH )
-      self.knap1 = Button( self, text = "Opret ny knap",
-         command = self.opretNyKnap ) # funktions kald
+</p>
+<p>
+      self.knap1 = Button( self, text = "Opret ny knap",<br/>
+         command = self.opretNyKnap ) # funktions kald<br/>
       self.knap1.pack( side = TOP )
-      self.knap2 = Button( self,
-         text = "expand= NO, fill = BOTH" )
+</p>
+<p>
+      self.knap2 = Button( self,text = "expand= NO, fill = BOTH" )<br/>
       self.knap2.pack( side = BOTTOM, fill = BOTH )
-      self.knap3 = Button( self,
-         text = "expand= YES, fill = X" )
+</p>
+<p>
+      self.knap3 = Button( self,text = "expand= YES, fill = X" )<br/>
       self.knap3.pack( side = LEFT, expand= YES, fill = X )
-      self.knap4 = Button( self,
-         text = "expand= YES, fill = Y" )
+</p>
+<p>
+      self.knap4 = Button( self,text = "expand= YES, fill = Y" )<br/>
       self.knap4.pack( side = RIGHT, expand= YES, fill = Y )
-   def opretNyKnap( self ):
-      Button( self, text = "Ny knap" ).pack( pady = 5 )
-def main():
-   knapRamme().mainloop()
-if __name__ == "__main__":
-   main()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{12cm}
-\includegraphics{w5_2.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
+<p>
+   def opretNyKnap( self ):<br/>
+      Button( self, text = "Ny knap" ,bg = "green", fg = "red" ).pack( pady = 5 )
+<p>
+def main():knapRamme().mainloop()
+</p>
+<p>
+if __name__ == "__main__": main()
+</p>
 
-<sect2 id="wid.radioknap">
-<title>Radiobutton underklasse i Widget</title>
-<para>
-<screen>
-from Tkinter import *
-root = Tk()
-var  = IntVar()
-for i in range(10):
-    radioknap= Radiobutton(root, text=str(i), value=i, variable=var)
-    radioknap.pack(side=LEFT)
-root.mainloop()
-print var.get()
-</screen>
-</para>
-<para>
-<screen>
-from Tkinter import *
-root = Tk()
-var = StringVar()
-for i in range(6):
-    radioknap= Radiobutton(root, text=str(i), value=i, variable=var)
-    radioknap.pack(side = RIGTH)
-root.mainloop()
-print var.get()
-</screen>
-</para>
-</sect2>
+<img src= "w5_6.png" alt=""/>
 
-<sect2 id="wid.valgmenu">
-<title>Menu underklasse i Widget</title>
-<para>
+<p>Checkbutton underklasse i Widget</p>
+<p>
+Kontrolknap der kan være til- eller fravalgt.<br/>
+For at kunne bruge en Checkbutton, må du oprette en Tkinter variabel:<br/>
+var = IntVar()<br/>
+kontrolknap = Checkbutton(master, text="Udvid", v = var)
+</p>
+<p>
+var er forvalgt tildelt værdien 1, hvis knappen er valgt ellers 0. Du kan om ønsket ændre disse værdier. I så fald skal du bruge onvalue og offvalue egenskaberne. Variablen behøver ikkke være en heltals variabel.
+</p>
+<p>
+    var = StringVar()<br/>
+    kontrolknap = Checkbutton(
+        master, text="Jeg er til farve", variable= var,
+        onvalue="RGB", offvalue="L"
+        )
+</p>
+<p>
+Hvis du har brug for at holde styr på både variabel og widget, kan du simplificere koden noget ved at knytte
+variablen til arvingen (the widget reference object).
+</p>
+<p>
+    v = IntVar()<br/>
+    kontrolknap = Checkbutton(master, text="Vis ikke denne igen", variable=v)<br/>
+    kontrolknap.var = v
+</p>
+<p>
+Hvis den Tkinter kode allerede befinder sig i en klasse (hvad den bør gøre), så er det ligesom renere at
+placere variablen i en attribut og anvende en bundet metode som callback (i eksemplet forkortet til cb):
+</p>
+<p>
+    def __init__(self, master):<br/>
+        self.var = IntVar()<br/>
+        kontrolknap = Checkbutton(master, text="Enable Tab",
+                        variable=self.var, command=self.cb)
+        kontrolknap.pack()
+
+    def cb(self, event):<br/>
+        print "variablen er", self.var.get()
+</p>
+<p>
+from Tkinter import *<br/>
+def f(): print "Hej! her går det godt!"<br/>
+Checkbutton(text = "Klik på mig", command = f())
+</p>
+<p>
+python test.py<br/>
+Hej! her går det godt!
+</p>
+<p>
+Se også det ret store eksempel på brugen af Entry og Checkbutton, som tidligere er benyttet.
+</p>
+
+<p>Radiobutton underklasse i Widget</p>
+<p>
+En Radiobutton widget ligner langt hen ad vejen en Checkbutton widget. For at få radioknappen til at opføre sig
+ordentlig, må du lade alle knapper i en gruppe pege til den samme variabel og bruge den samme value egenskab til specifikation af hvad den enkelte knap repræsenterer.
+</p>
+<p>
+ v = IntVar()<br/>
+    Radiobutton(master, text="En", variable=v, value=1).pack(anchor=W)<br/>
+    Radiobutton(master, text="To", variable=v, value=2).pack(anchor=W)
+</p>
+<p>
+Hvis du har brug for en tydeliggørelse af hvad det medfører, når en value ændres, kan der indsættes en command callback til den enkelte knap
+</p>
+<p>
+ Radiobutton(master, text="En", variable=v, value=1, command = funktionskald).pack(anchor=W)
+</p>
+<p>
+For at oprette et stort antal knapper kan der anvendes en loop
+</p>
+<p>
+    MODES = [
+        ("Monochrome", "1"),<br/>
+        ("Grayscale", "L"),<br/>
+        ("True color", "RGB"),<br/>
+        ("Color separation", "CMYK"),
+    ]
+ </p>
+<p>
+    v = StringVar()<br/>
+    v.set("L") # initialiser
+  </p>
+<p>
+    for text, mode in MODES:<br/>
+        b = Radiobutton(master, text=text,variable=v, value=mode)<br/>
+        b.pack(anchor=W)
+</p>
+<p>
+For at ændre det ovenståenede eksempel til en "button box", skal v.set("L") ændres til v.set("O").
+</p>
+
+<p>
+from Tkinter import *<br/>
+root = Tk()<br/>
+var  = IntVar()<br/>
+for i in range(10):<br/>
+    radioknap= Radiobutton(root, text=str(i), value=i, variable=var)<br/>
+    radioknap.pack(side=LEFT)<br/>
+root.mainloop()<br/>
+print var.get()
+</p>
+<p>
+from Tkinter import *<br/>
+root = Tk()<br/>
+</p>
+<p>
+def funktion():<br/>
+	return 12 ** 2 # returnerer til skal (shell)
+</p>
+<p>
+var = StringVar()<br/>
+for i in range(6):<br/>
+    radioknap= Radiobutton(root, text= "Knap " + str(i),bg = "blue", fg = "yellow", <br/>		value=i, variable=var, command = funktion)<br/>
+    radioknap.pack(side = TOP)<br/>
+root.mainloop()<br/>
+print var.get()
+</p>
+
+<img src= "w7_5.png" alt=""/>
+
+<p>Menu underklasse i Widget~\label{wid.valgmenu<br/>
 Menu komponentet kan vise en liste af værdier, hvorfra brugeren kan vælge.
-</para>
-<para>
-<screen>
-*+
-import sys
-from Tkinter import *
-win = Tk()
-menulinje = Menu(win)
-win.config(menu = menulinje)
-filmenu = Menu(menulinje)
-menulinje.add_cascade(label = "Filer", menu = filmenu)
-def udskriv(): print "Udskriv data"
-def gem(): print "Gem fil"
-filmenu.add_command(label = "Udskriv", command = udskriv)
-filmenu.add_command(label = "Gem", command = gem)
-filmenu.add_separator()
-filmenu.add_command(label = "Afslut", command = sys.exit)
-win.mainloop()
-v = IntVar()
-filmenu.add_radiobutton(label = "Udskriv", var = v, value = 1
-filmenu.add_radiobutton(label = "Gem", var = v, value = 2
-filmenu.add_radiobutton(label = "Afslut", var = v, value = 3
-v = IntVar()
-filmenu.add_checkbutton(label = "Hent", var = v, command = hent)
-</screen>
-</para>
-<para>
-<screen>
-from Tkinter import *
-import sys
+I Tkinter er der en fordefineret widget for menuer. Når du ønsker at oprette en menu, begynder du med at
+oprette en arving til Menu klassen, hvorefter du anvender add metoder for at tilføje indgange (entries) til den.
+</p>
+<p>
+add_command(label=streng, command=callback) indsætter en almindelig menu indgang.
+add_separator() indsætter separator linje. Den benyttes til at adskille indgange, så oversigten forbedres.
+add_cascade(label=streng, menu=menu instance) tilføjer endnu en menu, der enten kan være en
+pull-down menu eller en  fold-out menu.
+</p>
+<p>
+import sys<br/>
+from Tkinter import *<br/>
+win = Tk()<br/>
+menulinje = Menu(win)<br/>
+win.config(menu = menulinje)<br/>
+filmenu = Menu(menulinje)<br/>
+menulinje.add_cascade(label = "Filer", menu = filmenu)<br/>
+</p>
+<p>
+def udskriv(): print "Udskriv data"<br/>
+def gem(): print "Gem fil"<br/>
+</p>
+<p>
+filmenu.add_command(label = "Udskriv", command = udskriv)<br/>
+filmenu.add_command(label = "Gem", command = gem)<br/>
+filmenu.add_separator()<br/>
+filmenu.add_command(label = "Afslut", command = sys.exit)<br/>
+win.mainloop()<br/>
+</p>
+<p>
+v = IntVar()<br/>
+filmenu.add_radiobutton(label = "Udskriv", var = v, value = 1<br/>
+filmenu.add_radiobutton(label = "Gem", var = v, value = 2<br/>
+filmenu.add_radiobutton(label = "Afslut", var = v, value = 3<br/>
+</p>
+<p>
+v = IntVar()<br/>
+filmenu.add_checkbutton(label = "Hent", var = v, command = hent)<br/>
+</p>
+<p>
+I det følgende eksempel skal vi se på en pupop menu og på, hvordan vi kan vælge farve fra den som baggrundsfarve til vinduet.
+</p>
+<p>
+from Tkinter import *<br/>
+class PopupMenuDemo( Frame ):<br/>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Popup menu demo" )<br/>
+      self.master.geometry( "350x250" )<br/
+      self.frame = Frame( self, bg = "green" )<br/>
+      self.frame.pack( expand= YES, fill = BOTH )<br/>
+</p>
+<p>
+      self.menu = Menu( self.frame, tearoff = 0 )<br/>
+	# De engelske farvenavne her bruges til farveskifte<br/>
+      farver = [ "yellow", "green", "red", "blue", "grey" ]<br/>
+      self.selectedColor = StringVar()<br/>
+      self.selectedColor.set( farver[ 0 ] )
+</p>
+<p>
+      for item in farver:<br/
+         self.menu.add_radiobutton( label = item,<br/>
+            variable = self.selectedColor,<br/
+            command = self.skiftBaggrundsfarve )<br/>
+      # BEMÆRK her bruges midterste museknap<br/
+      self.frame.bind( "<Button-2>", self.popUpMenu )
+</p>
+<p>
+   def popUpMenu( self, event ):<br/>
+      self.menu.post( event.x_root, event.y_root )
+</p>
+<p>
+   def skiftBaggrundsfarve( self ):<br/>
+      self.frame.config( bg = self.selectedColor.get() )
+</p>
+<p>
+def main():<br/>
+   PopupMenuDemo().mainloop()
+</p>
+<p>
+if __name__ == "__main__":<br/>
+   main()
+</p>
+<img src= "w8_5.png" alt=""/>
+<p>
+I det følgende eksempel skal vi bl.a. se på integreringen af en hjælpemenu. Vi begynder med at oprette en
+arving til Menu,hvorefter vi benytter config metoden til at knytte den til root vinduet. Indholdet af den menu bruges til oprettelse af en menulinje øverst i root vinduet. Det er unødvendigt at pakke menuen, da den styres automatisk af Tkinter.
+</p>
+<p>
+Det næste trin er oprettelse af en ny Menu arving. Hertil benyttes menulinjen som widget mor og add_cascade metoden gør den til en pulldown menu. Nu er vi klar til at kalde
+add_command og tilføje kommandoer til menuen og slutte af med at kalde
+add_separator for at adskille filkommandoerne og Afslut kommandoen og endelig at indsætte en hjælpemenu. Metoden Python kan naturligvis udskiftes med relevante metoder. Her benyttes den alene for at kunne få command i funktion.
+</p>
+<p>
+from Tkinter import *<br/>
 root = Tk()
-menubar = Menu(root)
-root.config(menu = menubar)
-filmenu = Menu(menubar)
-menubar.add_cascade(label = "Filer", menu = filmenu)
-def Hent(): print "Hent fil procedurekald ind her"
-def Gem(): print "Gem fil procedurekald ind her"
-filmenu.add_command(label = "Hent fil", command = Hent)
-filmenu.add_command(label = "Gem fil", command = Gem)
-filmenu.add_separator()
-filmenu.add_command(label = "Luk ned",
-command = sys.exit)
-root.mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{10cm}
-\includegraphics{w8.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
+<p>
+def Python():<br/>
+    print "Jeg er Mr Python!"<br/>
+</p>
+<p>
+menu = Menu(root)<br/>
+root.config(menu=menu)
+</p>
+<p>
+filmenu = Menu(menu)<br/>
+menu.add_cascade(label="Filer", menu=filmenu)<br/>
+filmenu.add_command(label="Ny", command=Python)<br/>
+filmenu.add_command(label="Åbn...", command=Python)<br/>
+filmenu.add_separator()<br/>
+filmenu.add_command(label="Afbryd", command=Python)<br/>
+</p>
+<p>
+helpmenu = Menu(menu)<br/>
+menu.add_cascade(label="Hjælp", menu=helpmenu)<br/>
+helpmenu.add_command(label="Om projektet...", command=Python)<br/>
+</p>
+<p>
+mainloop()<br/>
+</p>
 
-<sect2 id="wid.tegneflade">
-<title>Canvas underklasse i Widget</title>
-<para>
-</para>
-<para>
-<screen>
->>> from Tkinter import *
->>> canvas = Tk()
->>> Canvas(canvas,bg = "light green").pack(expand = YES, fill = BOTH)
-</screen>
-</para>
-<para>
-<screen>
-from Tkinter import *
+<img src="w8.png" alt=""/>
+
+<p>Canvas underklasse i Widget</p>
+<p>
+Her er for en gang skyld en widget med et navn, der staves ens på engelsk og på dansk. Begrebet canvas findes i flere computersprog, men hvad dækker det over? Ganske enkelt det, det hedder. Canvas er noget meget groft lærred,
+som bl.a. bruges til at udføre malerier på - altså noget til at tegne og male på. Sådan er det i virkeligheden og sådan er det, når begrebet overflyttes til et computersprog også Python.
+</p>
+<p>
+from Tkinter import *<br/>
+root = Tk()<br/>
+Canvas(root,bg = "light green").pack(expand = YES, fill = BOTH)<br/>
+root.mainloop()
+</p>
+<p>
+from Tkinter import *<br/>
+class klatmaleren( Frame ):
+</p>
+<p>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Et meget simpelt maleprogram" )<br/>
+      self.master.geometry( "350x250" )
+</p>
+<p>
+      self.message = Label( self, text = "Flyt musen og tegn" )<br/>
+      self.message.pack( side = BOTTOM )
+</p>
+<p>
+      self.canvas = Canvas( self )<br/>
+      self.canvas.pack( expand = YES, fill = BOTH )
+</p>
+<p>
+      # bind flyt mus til Canvas<br/>
+      self.canvas.bind( "<B1-Motion>", self.paint )
+</p>
+<p>
+   def paint( self, event ):<br/>
+      """Tegn en oval med radius 1  den er stregtykkelsen"""
+</p>
+<p>
+      x1, y1 = ( event.x - 1 ), ( event.y - 1 )<br/>
+      x2, y2 = ( event.x + 1 ), ( event.y + 1 )<br/>
+      self.canvas.create_oval( x1, y1, x2, y2, fill = "red" )
+ </p>
+<p>
+def main():<br/>
+   klatmaleren().mainloop()
+</p>
+<p>
+if __name__ == "__main__": main()
+</p>
+<img src="w9_5.png" alt=""/>
+<p>
+from Tkinter import *<br/>
 spor = 0
-class KanvasEvents:
-    def __init__(self, parent=None):
-        canvasArving = Canvas(width=300, height=300, bg="light green")
-        canvasArving.pack()
-        canvasArving.bind("&lt;ButtonPress-1&gt;", self.Opstart)
-        canvasArving.bind("&lt;B1-Motion&gt;",     self.slet_og_gentegn)
-        canvasArving.bind("&lt;Double-1&gt;",      self.slet)
-        canvasArving.bind("&lt;ButtonPress-3&gt;", self.flyt)
-        self.canvasArving = canvasArving
-        self.drawn  = None
+</p>
+<p>
+class KanvasEvents:<br/>
+    def __init__(self, parent=None):<br/>
+        canvasArving = Canvas(width=300, height=300, bg="light green")<br/>
+        canvasArving.pack()<br/>
+        canvasArving.bind("<ButtonPress-1>", self.Opstart)<br/>
+        canvasArving.bind("<B1-Motion>",     self.slet_og_gentegn)<br/>
+        canvasArving.bind("<Double-1>",      self.slet)<br/>
+        canvasArving.bind("<ButtonPress-3>", self.flyt)<br/>
+        self.canvasArving = canvasArving<br/>
+        self.drawn  = None<br/>
         self.kinds = [canvasArving.create_oval, canvasArving.create_rectangle]
-    def Opstart(self, event):
-        self.shape = self.kinds[0]
-        self.kinds = self.kinds[1:] + self.kinds[:1]
-        self.start = event
+</p>
+<p>
+    def Opstart(self, event):<br/>
+        self.shape = self.kinds[0]<br/>
+        self.kinds = self.kinds[1:] + self.kinds[:1]<br/>
+        self.start = event<br/>
         self.drawn = None
-    def slet_og_gentegn(self, event):
-        canvasArving = event.widget
-        if self.drawn: canvasArving.delete(self.drawn)
-        objectId = self.shape(self.start.x, self.start.y, event.x, event.y)
-        if spor: print objectId
+</p>
+<p>
+    def slet_og_gentegn(self, event):<br/>
+        canvasArving = event.widget<br/>
+        if self.drawn: canvasArving.delete(self.drawn)<br/>
+        objectId = self.shape(self.start.x, self.start.y, event.x, event.y)<br/>
+        if spor: print objectId<br/>
         self.drawn = objectId
-    def slet(self, event):
+</p>
+<p>
+    def slet(self, event):<br/>
         event.widget.delete("all")
-    def flyt(self, event):
-        if self.drawn:
-            if spor: print self.drawn
-            canvasArving = event.widget
-            diffX, diffY = (event.x - self.start.x), (event.y - self.start.y)
-            canvasArving.move(self.drawn, diffX, diffY)
+</p>
+<p>
+    def flyt(self, event):<br/>
+        if self.drawn:<br/>
+            if spor: print self.drawn<br/>
+            canvasArving = event.widget<br/>
+            diffX, diffY = (event.x - self.start.x), (event.y - self.start.y)<br/>
+            canvasArving.move(self.drawn, diffX, diffY)<br/>
             self.start = event
-if __name__ == "__main__":
-    KanvasEvents()
+
+</p>
+<p>
+if __name__ == "__main__":<br/>
+    KanvasEvents()<br/>
     mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{15cm}
-\includegraphics{w9_1.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
-<screen>
+</p>
+
+<img src="w9_1.png" alt=""/>
+
+<p>
 from Tkinter import *
-trace = 0
-class KanvasEvents:
-    def __init__(self, parent=None):
-        canvasArving = Canvas(width=300, height=300,
-	 bg="light green")
-        canvasArving.pack()
-        canvasArving.bind("&lt;ButtonPress-1&gt;", self.Opstart)
-        canvasArving.bind("&lt;B1-Motion&gt;",     self.slet_og_gentegn)
-        canvasArving.bind("&lt;Double-1&gt;",      self.slet)
-        canvasArving.bind("&lt;ButtonPress-3&gt;", self.flyt)
-        self.canvasArving = canvasArving
-        self.drawn  = None
-        self.kinds = [canvasArving.create_oval, canvasArving.create_rectangle]
-    def Opstart(self, event):
-        self.shape = self.kinds[0]
-        self.kinds = self.kinds[1:] + self.kinds[:1]
-        self.start = event
-        self.drawn = None
-    def slet_og_gentegn(self, event):
-        canvasArving = event.widget
-        if self.drawn: canvasArving.delete(self.drawn)
-        objectId = self.shape(self.start.x, self.start.y, event.x, event.y)
-        if trace: print objectId
-        self.drawn = objectId
-    def slet(self, event):
-        event.widget.delete("all")
-    def flyt(self, event):
-        if self.drawn:
-            if trace: print self.drawn
-            canvasArving = event.widget
-            diffX, diffY = (event.x - self.start.x), (event.y - self.start.y)
-            canvasArving.move(self.drawn, diffX, diffY)
-            self.start = event
-if __name__ == "__main__":
-    KanvasEvents()
-    mainloop()
-</screen>
-</para>
-<para>
-<screen>
-from Tkinter import *
-canvas = Canvas(width=500, height=500, bg="light green")
+</p>
+<p>
+canvas = Canvas(width=500, height=500, bg="light green")<br/>
 canvas.pack(expand=YES, fill=BOTH)
-canvas.create_line(100, 100, 200, 200)      # fraX, fraY, tilX, tilY
-canvas.create_line(100, 200, 200, 300)      # tegn  geometr.  former
-for i in range(1, 20, 2):
+</p>
+<p>
+canvas.create_line(100, 100, 200, 200)      # fraX, fraY, tilX, tilY<br/>
+canvas.create_line(100, 200, 200, 300)      # tegn  geometr.  former<br/>
+for i in range(1, 20, 2):<br/>
     canvas.create_line(0, i, 50, i)
-canvas.create_oval(50, 50, 200, 200, width=2, fill="blue")
-canvas.create_arc(200, 200, 300, 100)
-canvas.create_rectangle(200, 200, 300, 300, width=5, fill="red")
+</p>
+<p>
+canvas.create_oval(50, 50, 200, 200, width=2, fill="blue") # fraX, fraY, tilX, tilY<br/>
+canvas.create_arc(200, 200, 300, 100) # fraX, fraY, tilX, tilY # fraX, fraY, tilX, tilY<br/>
+canvas.create_rectangle(200, 200, 300, 300, width=5, fill="red") # fraX, fraY, tilX, tilY<br/>
 canvas.create_line(50, 300, 150, 150, width=10, fill="grey")
+</p>
+<p>
 foto=PhotoImage(file="skyer.gif")
-canvas.create_image(350, 300, image=foto, anchor=NW)  # indsaet foto
-label = Label(canvas, text="Python er for dig", fg="white", bg="black")
+canvas.create_image(350, 300, image=foto, anchor=NW)  # indsæt foto
+</p>
+<p>
+label = Label(canvas, text="Python er for dig", fg="white", bg="black")<br/>
 label.pack()
-canvas.create_window(100, 100, window=label)        # indsaet en label
-canvas.create_text(100, 280, text="og for mig")     # tegn noget tekst
+</p>
+<p>
+canvas.create_window(100, 100, window=label)        # indsæt en label<br/>
+canvas.create_text(100, 280, text="og for mig")     # tegn noget tekst<br/>
 mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{25cm}
-\includegraphics{w9.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
 
-<sect2 id="wid.skala">
-<title>Scale underklasse i Widget</title>
-<para>
-<screen>
-from Tkinter import *
+<img src="w9.png" alt=""/>
+
+
+<p>Scale underklasse i Widget</p>
+<p>
+from Tkinter import *<br/>
 root = Tk()
-skala = Scale(root, from_=-100, to=100, tickinterval=50, resolution=10)
+</p>
+<p>
+def Metode():
+	return "Metodekald"
+</p>
+<p>
+skala = Scale(root, from_=-100, to=100, tickinterval=50, resolution=10)<br/>
 skala.pack(expand=YES, fill=Y)
+</p>
+<p>
 def metode(): print skala.get() #udskriver i skal (shell)
-Button(root, text='status', command= metode).pack(side=RIGHT)
+</p>
+<p>
+Button(root, text='status', command= Metode).pack(side=RIGHT)<br/>
 root.mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{8cm}
-\includegraphics{w10.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
 
-<sect2 id="wid.listeboks">
-<title>Listbox underklasse i Widget</title>
-<para>
-<screen>
-Eksemplet viser en udvidet listeboks:
+<img src="w10_5.png" alt=""/>
+
+<p>
 from Tkinter import *
-class Listeboks(Frame):
-    def __init__(self, mor,elementer):
-        Frame.__init__(self,mor)
-        self.elementer = []
-        for element,w in elementer:
-            frame = Frame(self); frame.pack(side=LEFT, expand=YES, fill=BOTH)
-            Label(frame, text=element, borderwidth=1, relief=RAISED).pack(fill=X)
-            label = Listbox(frame, width=w, borderwidth=0, selectborderwidth=0,
-                         relief=FLAT, exportselection=FALSE)
-            label.pack(expand=YES, fill=BOTH)
-            self.elementer.append(label)
-            label.bind('&lt;B1-Motion&gt;', lambda e, s=self: s._select(e.y))
-            label.bind('&lt;Button-1&gt;', lambda e, s=self: s._select(e.y))
-            label.bind('&lt;Leave&gt;', lambda e: 'break')
-            label.bind('&lt;B2-Motion&gt;', lambda e, s=self: s._b2motion(e.x, e.y))
-            label.bind('&lt;Button-2&gt;', lambda e, s=self: s._button2(e.x, e.y))
-        frame = Frame(self); frame.pack(side=LEFT, fill=Y)
-        Label(frame, borderwidth=1, relief=RAISED).pack(fill=X)
-        rulleskakt = Scrollbar(frame, orient=VERTICAL, command=self._scroll)
-        rulleskakt.pack(expand=YES, fill=Y)
-        self.elementer[0]['yscrollcommand']=rulleskakt.set
-    def _select(self, y):
-        row = self.elementer[0].nearest(y)
-        self.selection_clear(0, END)
-        self.selection_set(row)
+</p>
+<p>
+class ScaleCanvasDemo( Frame ):<br/>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Canvas og Scale widget demo" )<br/>
+      self.master.geometry( "280x350" )
+</p>
+<p>
+      # Opret Scale<br/>
+      self.scale = Scale( self, from_ = 0, to = 300,<br/>
+         orient = HORIZONTAL, command = self.opdaterCirkel )<br/>
+      self.scale.pack( side = BOTTOM, fill = X )<br/>
+      self.scale.set( 10 )
+</p>
+<p>
+      # opret canvas og tegn cirkel<br/>
+      self.canvas = Canvas( self, bg = "green" )<br/>
+      self.canvas.pack( expand = YES, fill = BOTH )
+</p>
+<p>
+   def opdaterCirkel( self, scaleValue ):<br/>
+      """Slet cirklen, beregn ny størrelse og gentegn cirkel"""
+</p>
+<p>
+      end = int( scaleValue ) + 10<br/>
+      self.canvas.delete( "circle" )<br/>
+      self.canvas.create_oval( 10, 10, end, end,<br/>
+         fill = "blue", tags = "circle" )
+</p>
+<p>
+def main():<br/>
+   ScaleCanvasDemo().mainloop()
+</p>
+<p>
+if __name__ == "__main__": main()
+</p>
+
+<img src="w10.png" alt=""/>
+
+<p>Listbox underklasse i Widget</p>
+<p>Listboksen kan vise en liste af tekststrenge,hvorfra der kan vælges.</p>
+
+Eksemplet viser en udvidet listeboks:<br/>
+from Tkinter import *
+</p>
+<p>
+class Listeboks(Frame):<br/>
+    def __init__(self, mor,elementer):<br/>
+        Frame.__init__(self,mor)<br/>
+        self.elementer = []<br/>
+        for element,w in elementer:<br/>
+            frame = Frame(self); frame.pack(side=LEFT, expand=YES, fill=BOTH)<br/>
+            Label(frame, text=element, borderwidth=1, relief=RAISED).pack(fill=X)<br/>
+            label = Listbox(frame, width=w, borderwidth=0, selectborderwidth=0,<br/>
+                         relief=FLAT, exportselection=FALSE)<br/>
+            label.pack(expand=YES, fill=BOTH)<br/>
+            self.elementer.append(label)<br/>
+            label.bind('<B1-Motion>', lambda e, s=self: s._select(e.y))<br/>
+            label.bind('<Button-1>', lambda e, s=self: s._select(e.y))<br/>
+            label.bind('<Leave>', lambda e: 'break')<br/>
+            label.bind('<B2-Motion>', lambda e, s=self: s._b2motion(e.x, e.y))<br/>
+            label.bind('<Button-2>', lambda e, s=self: s._button2(e.x, e.y))<br/>
+        frame = Frame(self); frame.pack(side=LEFT, fill=Y)<br/>
+        Label(frame, borderwidth=1, relief=RAISED).pack(fill=X)<br/>
+        rulleskakt = Scrollbar(frame, orient=VERTICAL, command=self._scroll)<br/>
+        rulleskakt.pack(expand=YES, fill=Y)<br/>
+        self.elementer[0]['yscrollcommand']=rulleskakt.set<br/>
+</p>
+<p>
+    def _select(self, y):<br/>
+        row = self.elementer[0].nearest(y)<br/>
+        self.selection_clear(0, END)<br/>
+        self.selection_set(row)<br/>
         return 'break'
-    def _button2(self, x, y):
-        for element in self.elementer: element.scan_mark(x, y)
+</p>
+<p>
+    def _button2(self, x, y):<br/>
+        for element in self.elementer: element.scan_mark(x, y)<br/>
         return 'break'
-    def _b2motion(self, x, y):
-        for element in self.elementer: element.scan_dragto(x, y)
+</p>
+<p>
+    def _b2motion(self, x, y):<br/>
+        for element in self.elementer: element.scan_dragto(x, y)<br/>
         return 'break'
-    def _scroll(self, *args):
-        for element in self.elementer:
+</p>
+<p>
+    def _scroll(self, *args):<br/>
+        for element in self.elementer:<br/>
             apply(element.yview, args)
-    def curselection(self):
+</p>
+<p>
+    def curselection(self):<br/>
         return self.elementer[0].curselection()
-    def slet(self, begynd, slut=None):
-        for element in self.elementer:
+</p>
+<p>
+    def slet(self, begynd, slut=None):<br/>
+        for element in self.elementer:<br/>
             element.slet(begynd, slut)
-    def hent(self, begynd, slut=None):
-        result = []
-        for element in self.elementer:
-            result.append(element.hent(begynd,slut))
-        if slut: return apply(map, [None] + result)
+</p>
+<p>
+    def hent(self, begynd, slut=None):<br/>
+        result = []<br/>
+        for element in self.elementer:<br/>
+            result.append(element.hent(begynd,slut))<br/>
+        if slut: return apply(map, [None] + result)<br/>
         return result
-    def indeks(self, indeks):
+</p>
+<p>
+    def indeks(self, indeks):<br/>
         self.elementer[0].indeks(indeks)
-    def insert(self, indeks, *elements):
-        for e in elements:
-            i = 0
-            for element in self.elementer:
-                element.insert(indeks, e[i])
+</p>
+<p>
+    def insert(self, indeks, *elements):<br/>
+        for e in elements:<br/>
+            i = 0<br/>
+            for element in self.elementer:<br/>
+                element.insert(indeks, e[i])<br/>
                 i = i + 1
-    def size(self):
+</p>
+<p>
+    def size(self):<br/>
         return self.elementer[0].size()
-    def see(self, indeks):
-        for element in self.elementer:
+</p>
+<p>
+    def see(self, indeks):<br/>
+        for element in self.elementer:<br/>
             element.see(indeks)
-    def selection_anchor(self, indeks):
-        for element in self.elementer:
+</p>
+<p>
+    def selection_anchor(self, indeks):<br/>
+        for element in self.elementer:<br/>
             element.selection_anchor(indeks)
-    def selection_clear(self, begynd, slut=None):
-        for element in self.elementer:
+</p>
+<p>
+    def selection_clear(self, begynd, slut=None):<br/>
+        for element in self.elementer:<br/>
             element.selection_clear(begynd, slut)
-    def selection_includes(self, indeks):
+</p>
+<p>
+    def selection_includes(self, indeks):<br/>
         return self.elementer[0].selection_includes(indeks)
-    def selection_set(self, begynd, slut=None):
-        for element in self.elementer:
+</p>
+
+    def selection_set(self, begynd, slut=None):<br/>
+        for element in self.elementer:<br/>
             element.selection_set(begynd, slut)
-if __name__ == '__main__':
-    win = Tk()
-    Label(win, text='Listeboks').pack()
-    listeboks = Listeboks(win, (("Overskrift 1", 20), ("Overskrift  2", 10),
+<p>
+if __name__ == '__main__':<br/>
+    win = Tk()<br/>
+    Label(win, text='Listeboks').pack()<br/>
+    listeboks = Listeboks(win, (("Overskrift 1", 20), ("Overskrift  2", 10),<br/>
     ("Overskrift  3", 10)))
-    listeboks.insert(END,("del 1", "del 2", "del 3"))
-    listeboks.insert(END,("del 4", "del 5", "del 6"))
-    listeboks.insert(END,("del 7", "del 8", "del 9"))
+</p>
+<p>
+    listeboks.insert(END,("del 1", "del 2", "del 3"))<br/>
+    listeboks.insert(END,("del 4", "del 5", "del 6"))<br/>
+    listeboks.insert(END,("del 7", "del 8", "del 9"))<br/>
     listeboks.pack(expand=YES,fill=BOTH)
     win.mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{15cm}
-\includegraphics{w11.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
 
-<sect2 id="wid.rulleskakt">
-<title>Scrollbar underklasse i Widget</title>
-<para>
-Kan vise rulleskakt i canvas, text og list elementer. Eksemplet er vist udfyldeligt under beskrivelsen af Listbox underklassen se evt. der også, men først lige et par eksempler her:
-</para>
-<para>
-<screen>
+<img src="w11.png" alt=""/>
+
+<p>Scrollbar underklasse i Widget</p>
+<p>Viser en rullemenu for canvasser, tekstbokse og lister</p>
+<p>
 from Tkinter import *
-root = Tk()
-class Rulleskakten(Frame):
-    def __init__(self, master, **kw):
-        apply(Frame.__init__, (self, master), kw)
-        vscrollbar = Scrollbar(self, orient=VERTICAL)
-        self.canvas = Canvas(self)
-        vscrollbar.config(command=self._vscroll)
-        vscrollbar.pack(fill=Y, side=RIGHT)
-        self.canvas.pack(expand=1, fill=BOTH, side=LEFT)
-    def _vscroll(self, type, *arg):
-        print type
-        if type == 'moveto':
-            for i in arg:
-                print i
-f = Rulleskakten(root)
-f.pack(expand=1, fill=BOTH)
-root.mainloop()
-</screen>
-</para>
-<para>
-<screen>
-Eks. 2
-import Tkinter
-class AutoRulleskakt(Tkinter.Scrollbar):
-    def set(self, lo, hi):
-	self.after(100,lambda s=self,l=lo,h=hi: s._set(l,h))
-    def _set(self,lo,hi):
-        print lo, hi
-        if float(lo) <= 0.0 and float(hi) >= 1.0:
-            self.tk.call("grid", "remove", self)
-        else:
-            self.grid()
-        Tkinter.Scrollbar.set(self, lo, hi)
-root = Tkinter.Tk()
-frame = Tkinter.Frame(root)
-frame.grid()
-frame.columnconfigure(0, weight=1)
-frame.rowconfigure(0, weight=1)
-scrollFrame = Tkinter.Frame(frame)
-scrollFrame.columnconfigure(1, weight=1)
-scrollFrame.rowconfigure(1, weight=1)
-scrollFrame.grid(sticky='news')
-vscrollbar = AutoRulleskakt(scrollFrame)
-vscrollbar.grid(row=1, column=2, sticky='ns')
-hscrollbar = AutoRulleskakt(scrollFrame, orient='horizontal')
-hscrollbar.grid(row=2, column=1, sticky='ew')
-borderframe = Tkinter.Frame(scrollFrame)
-borderframe.rowconfigure(0, weight=1)
-borderframe.columnconfigure(0, weight=1)
-borderframe.grid(row=1, column=1, sticky='news')
-canvas = Tkinter.Canvas(borderframe,
-        highlightthickness=0,
-        borderwidth=0,
-        background = 'green',
-        width = 300,
-        height = 200,
-        scrollregion = (0, 0, 301, 200),
-        yscrollcommand=vscrollbar.set,
-        xscrollcommand=hscrollbar.set)
-canvas.grid(sticky='news')
-vscrollbar.config(command=canvas.yview)
-hscrollbar.config(command=canvas.xview)
-root.mainloop()
-</screen>
-</para>
-<!-- para>
-<figure>
-\begin{minipage}{15cm}
-\includegraphics{w12.jpg}
-\end{minipage}
-</figure>
-</para -->
-</sect2>
+</p>
+<p>
+class ScaleCanvasDemo( Frame ):<br/>
+   def __init__( self ):<br/>
+      Frame.__init__( self )<br/>
+      self.pack( expand = YES, fill = BOTH )<br/>
+      self.master.title( "Scale og Canvas demo" )<br/>
+      self.master.geometry( "300x270" )
+</p>
+<p>
+      self.control = Scale( self, from_ = 0, to = 300,<br/>
+         orient = HORIZONTAL, command = self.updateCircle )<br/>
+      self.control.pack( side = BOTTOM, fill = X )
+      self.control.set( 10 )
+</p>
+<p>
+      self.display = Canvas( self, bg = "navy" )<br/>
+      self.display.pack( expand = YES, fill = BOTH )
+</p>
+<p>
+   def updateCircle( self, scaleValue ):<br/>
+      end = int( scaleValue ) + 10<br/>
+      self.display.delete( "circle" )<br/>
+      self.display.create_oval( 10, 10, end, end,<br/>
+         fill = "red", tags = "circle" )
+</p>
+<p>
+def main():<br/>
+   ScaleCanvasDemo().mainloop()
+</p>
+<p>
+if __name__ == "__main__":<br/>
+   main()
+</p>
 
-<sect2 id="wid.menuknap">
-<title>Menubutton underklasse i Widget</title>
-<para>
+<img src="w12_5.png" alt=""/>
+
+<p>
+Menubutton underklasse i Widget<br/>
 Menubutton viser popup eller pull-down menu.
-</para>
-<para>
-<screen>
+</p>
+<p>
 from Tkinter import *
 root    = Tk()
-menuknap = Menubutton(root, text='Byer')
-picks   = Menu(menuknap)
-menuknap.config(menu=picks)
-picks.add_command(label='Hasle',  command=root.quit)
-picks.add_command(label='Aakirkeby',  command=root.quit)
-picks.add_command(label='Gudhjem', command=root.quit)
-menuknap.pack()
-menuknap.config(bg='white', bd=4, relief=RAISED)
+menuknap = Menubutton(root, text='Byer')<br/>
+picks   = Menu(menuknap)<br/>
+menuknap.config(menu=picks)<br/>
+picks.add_command(label='Hasle',  command=root.quit)<br/>
+picks.add_command(label='Aakirkeby',  command=root.quit)<br/>
+picks.add_command(label='Gudhjem', command=root.quit)<br/>
+menuknap.pack()<br/>
+menuknap.config(bg='white', bd=4, relief=RAISED)<br/>
 root.mainloop()
-</screen>
-</para>
-</sect2>
+</p>
 
-<sect2 id="wid.optmenuknap">
-<title>OptionMenu underklasse i Widget</title>
-<!-- para>
-<figure>
-\begin{minipage}{10cm}
-\includegraphics{w14.jpg}
-\end{minipage}
-</figure>
-</para -->
-<para>
+<p>
+Optionmenu underklasse i Widget<br/>
 som menuknap, men viser valgmenu.
-</para>
-<para>
-<screen>
+</p>
+<p>
 from Tkinter import *
 win = Tk()
 var1 = StringVar()
@@ -1309,116 +2192,4 @@ var2.set('erhverv')
 def state(): print var1.get(), var2.get()
 Button(win, command=state, text='Valgmenu').pack()
 win.mainloop()
-</screen>
-</para>
-</sect2>
-
-<sect2 id="python-bibfunk">
- <title>Biblioteksfunktioner</title>
- <para>
-<screen>
-eks. 1
->>> # Opret et bibliotek (en folder):
->>> import os
->>> os.mkdir("bibliotek")
-eks. 2
->>> # Opret bibliotek i bibliotek:
->>> import os
->>> os.mkdir("bibliotek/bib2")
-</screen>
-<!-- figure>
-\begin{minipage}{10cm}
-\includegraphics{biblioteker.jpg}
-\end{minipage}
-</figure -->
-</para>
-<para>
-<screen>
-eks. 3
-Eller naturligvis som:
->>> import os
->>> os.mkdir("bibliotek")
->>> os.mkdir("bibliotek/bib1")
->>> os.mkdir("bibliotek/bib2")
-</screen>
-</para>
-<para>
-eks. 4
-Alternativ opret bibliotek i bibliotek:
->>> import os
->>> os.mkdir("/home/bruger/bibliotek/bib1/bib2")
-</para>
-<para>
-<screen>
-eks. 5
->>> # Skift til bibliotek og
->>> # opret bibliotek i det:
->>> import os
->>> os.chdir("bibliotek")
->>> os.mkdir("bib1")
-</screen>
-</para>
-<para>
-Ser du på Pythons faq (kan findes på www.python.org), vil du konstatere, at der
-er lavet en lang række mere eller mindre kunstfærdige
-løsninger på netop et eksempel som eks. 5 Udviklingen
-af sådanne ting kan måske være meget interessante, men
-skal tingene være praktisk anvendelige, er der nok ofte
-mere konstruktive løsninger. Hvis man som her ønsker at
-oprette et bibliotek i et bibliotek, må man kunne skifte
-til sidstnævnte som eks. os.chdir("bibliotek"). I dette 
-tilfælde, er det nødvendigt at befinde sig det sted,
-hvor bibliotek eksisterer.
-</para>
-<para>
-<screen>
->>> import os
->>> os.chdir("bibliotek")
-Traceback (most recent call last):
-  File "&lt;pyshell\#4&gt;", line 1, in -toplevel-
-    os.chdir("bibliotek")
-OSError: [Errno 2] No such file or directory: 'bibliotek'
->>> 
-</screen>
-</para>
-<para>
-Da det seneste kald var os.chdir("bibliotek"), og dette 
-bibliotek ikke findes får vi en af Pythons normalt fremragende 
-fejlmeldinger, hvad den også er denne gang. Den er virkelig god,
-men gamle Comal 80 har mig bekendt været det eneste computersprog,
-der nogensinde har eksisteret på dansk og dermed i stand til at 
-give danske fejlmeldinger, så computersprog og engelsk er det 
-normale.
-</para>
-<para>
-Men selvom fejlmeldingen er fremragende, så er vi ligesom nødt til 
-at bruge den konstruktivt, hvad vi har mulighed for med try..except,
-som jeg også er inde på flere andre steder i bogen.
-</para>
-<para>
-<screen>
-eks. 6//
-skift biblioteksnavn:
->>> import os
->>> os.rename("/home/bruger/bibliotek","/home/bruger/folder")
-</screen>
-</para>
-<para>
-eks. 7//
-Fjern bibliotek:
->>> import os
->>> os.chdir("bibliotek")
->>> os.rmdir("bib1")
-</para>
-<para>
-<screen>
-eks. 8//
-Alternativ fjern bibliotek:
->>> import os
->>> os.chdir("bibliotek")
->>> os.rmdir("/home/bruger/bibliotek/bib1")
-</screen>
-</para>
-</sect2>
-</sect1>
-</chapter>
+</p>
