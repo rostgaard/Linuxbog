@@ -2032,19 +2032,38 @@ kun holder et mindre port-interval åbent for bestemte protokoller.
 </para>
 
 <para>
-DNS forespørgsler kan bruges som eksempel. Vi ønsker at tillade
-forespørgsler til en remote DNS server men ellers ikke noget på
-vores server. Det kunne gøres ved at køre en DNS caching server
-(en hjælpeserver, som husker nyligt brugte adresser, så alle
-maskinerne på vores lille netværk ikke behøver at spørge igen og
-igen ud over det overbelastede ISP link). Når hjælpeserveren så
-skal foretage forespørgsel bruger den som afsenderport et nummer
-som den får tildelt lidt tilfældigt. De eksterne DNS servere
-svarer med adresse/port til dette høje portnummer.  Det forbedrer
-selvfølgelig sikkerheden at køre en DNS caching server på en
-maskine for sig selv. De andre maskiner må så kun lave UDP til
-denne specifikke IP-adresse. Her kommer kommandoen, som kan gøre
-det:
+DNS forespørgsler kan bruges som eksempel.  Vi vil sætte en
+intern DNS server op, en hjælpeserver, som husker nyligt brugte
+adresser, så alle maskinerne på vores lille netværk ikke behøver
+at spørge igen og igen ud over det overbelastede ISP link. Alle
+på det interne net kan spørge denne maskine, men den skal være
+fuldstændig lukket udadtil, bortset fra, at den skal kunne spørge
+en remote DNS server. Det kaldes en DNS caching server. Til DNS
+benyttes User Datagram Protokol, UDP, som let kan udsættes for
+spoofing. Det ønsker vi at gøre alt for at forhindre. Det
+forbedrer selvfølgelig sikkerheden at køre en DNS caching server
+på en maskine for sig selv. 
+</para>
+
+<para>
+Når hjælpeserveren skal foretage en forespørgsel, bruger den som
+afsenderport et nummer som den får tildelt lidt tilfældigt, men
+det vil ligge i intervallet 1024 - 65535. Det kaldes de
+ikke-priviligerede porte. Netfilter skelner mellem 1-511, som er
+såkaldt privilegerede, velkendte portnumre, som kun kræver root
+privilegier, og som typisk bruges af specielle serverprogrammer
+som fx. httpd, 512-1023, som også er priviligerede, og så 1024 -
+65535, der kan anvendes til alt. Man vil kunne begrænse
+DNS-klienten til at bruge ganske få portnumre for forespørgsler,
+og derved yderligere skærpe sikkerheden, men det er ikke
+netfilters område. De eksterne DNS servere svarer til dette høje
+portnummer. 
+</para>
+
+<para>
+Her kommer kommandoen, som tillader alle remote DNS servere at
+svare til vores maskines eksterne netkort på en ikke-priviligeret
+port:
 </para>
 
 <screen>
@@ -2052,14 +2071,39 @@ det:
 </screen>
 
 <para>
+Det ville være væsentligt bedre, hvis vi kun brugte en enkelt
+server udenfor firewallen, men så begynder det at blive et stort
+setup. Med den foreslåede lokale caching server kan anvendelsen
+af udp på alle lokale maskiner begrænses til, at de kun må lave
+UDP til denne specifikke IP-adresse. Her kommer kommandoerne, som
+kan gøre det, idet vi antager, at caching serveren har
+lokalnummeret 192.168.1.2:
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -A INPUT -p udp -s 192.168.0.0/16 --destination-port 53 -d 192.168.136.144 -j ACCEPT</userinput>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -A INPUT -p udp -s 192.168.1.2/16 --source-port 53 -d 192.168.0.0/16 1024:65535 -j ACCEPT</userinput>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -A INPUT -p udp -j DROP</userinput>
+</screen>
+
+<para>
+Som man kan se er det lidt mere besværligt at kontrollere UDP,
+fordi man ikke kan regne med connections - alle pakker er som en
+enkeltstående begivenhed. Det er en statusløs protokol.
+Rækkefølgen er kritisk. Det ville være en god ide at bruge -i for
+interface specifikation, så firewallen styrer på IP nummer og
+hardware.
+</para>
+
+<para>
 Ligesom for tcp protokollen loades der et extension modul, når vi
-specificerer -p udp. De kriterier, som -p udp giver, er dog kun
-portnumre for hhv. source og destination. Det ovenstående
-eksempel specificerer, at alle inputporte over 1023 må bruges.
-Det ville være meget bedre at sige til DNS-forwarder programmet
-at det kun må bruge fx. port 32109. Ved at bruge fast portnummer
-for hjælpeserverens udgående trafik kan antallet af åbne porte
-begrænses meget.
+specificerer -p udp. De ekstra kriterier, som dette modul giver
+mulighed for, er dog kun portnumre for hhv. source og
+destination. Det ovenstående eksempel specificerer, at alle
+inputporte over 1023 må bruges.  Det ville være meget bedre at
+sige til DNS-forwarder programmet at det kun må bruge fx. port
+32109. Ved at bruge fast portnummer for hjælpeserverens udgående
+trafik kan antallet af åbne porte begrænses meget.
 </para>
 
 <screen>
@@ -2118,6 +2162,9 @@ en HTML proxy.
 
 <sect2 id="proxy-server">
 <title>Linux som proxy server</title>
+
+<!-- TODO flyt rundt så avanceret NAT kommer herop og bliver en
+selvstændig section2 /-->
 
 <itemizedlist mark="bullet">
 <listitem><para>Squid</para></listitem>
@@ -2340,6 +2387,9 @@ proxy-programmet godt kan hente data fra internettet, men at brugere
 ikke kan - hvis man virkelig ønsker, at folk skal bruge
 proxy-serveren.
 </para>
+
+<!--TODO Her skal man forklare om redirection med iptables /-->
+
 </sect4>
 </sect3>
 
