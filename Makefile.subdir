@@ -95,7 +95,10 @@ $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile)
 	(cd ..;ln -sf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/$(targetname).sgml.tar.gz)
 	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile)
-endif BUILD_SGML
+else !BUILD_SGML
+sgml:	
+	@echo "Overspringer sgml"
+endif !BUILD_SGML
 
 ################################################################################
 # Byg Palm Pilot udgaven
@@ -149,7 +152,10 @@ $(targetshortname)/$(targetname)-html-$(version).tar.gz: bog/index.html
 	@@echo "Done HTML pakning (pakhtml)"
 	@echo ""
 	@echo ""
-endif BUILD_PAKHTML
+else !BUILD_PAKHTML
+pakhtml:
+	@echo "Overspringer pakhtml"
+endif !BUILD_PAKHTML
 
 ################################################################################
 # Byg HTML-filerne
@@ -172,7 +178,11 @@ bog/index.html: $(sgmlfiler)
 	mkdir bog
 	db2html  -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
 	cp linuxbog.css bog
+if USE_SOFTLINKS
+	(cd bog && ln -s ../images/*.png .)
+else !USE_SOFTLINKS
 	cp images/*.png bog
+endif !USE_SOFTLINKS
 if HAVE_PERL_IMAGE_SIZE
 	(cd bog;perl ../misc/insertimagesize)
 else !HAVE_PERL_IMAGE_SIZE
@@ -187,7 +197,10 @@ endif !HAVE_TIDY
 	rm -rf tempdir 
 	@echo "Done HTML (html)"
 	@echo ""
-endif BUILD_HTML
+else !BUILD_HTML
+html:	
+	@echo "Overspringer html"
+endif !BUILD_HTML
 
 ################################################################################
 # Byg PDF filen

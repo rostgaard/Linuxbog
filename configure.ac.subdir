@@ -5,13 +5,20 @@ AC_INIT(ophavsret.sgml)
 AM_INIT_AUTOMAKE(linuxbog,1)
 
 dnl ======================================================================
+dnl Options
+dnl ======================================================================
+
+dnl Om der skal anvendes links til f.eks. html udgaven. (pdf anvender
+dnl altid links nu).
+
+AC_ARG_ENABLE(softlink,  [  --enable-softlink       Bruger softlinks til html formatet],
+                         [enable_softlink=ja], [enable_softlink=nej])
+
+
+
+dnl ======================================================================
 dnl Check for programmer, mv, der skal bruges
 dnl ======================================================================
-
-dnl ======================================================================
-dnl
-dnl ======================================================================
-
 
 dnl Vi skal lede efter de programmer og filer, vi skal bruge under oversættelsen
 AC_MSG_NOTICE([checker helt nødvendige programmer og filer])
@@ -27,7 +34,8 @@ dnl Vi har i den grad brug for jade
 AC_CHECK_PROG(JADE, jade, ja, nej)
 if test "xja" != "x$JADE" ; then
   FATALE_MANGLER="$FATALE_MANGLER jade/openjade"
-  AC_MSG_NOTICE([jade blev ikke fundet. jade eller openjade er krævet for at lave bøgerne og et af disse programmer skal installeres])
+  AC_MSG_NOTICE([jade blev ikke fundet. jade eller openjade er krævet for at lave bøg
+erne og et af disse programmer skal installeres])
 fi
 
 dnl Vi bruger jw til at kalde jade
@@ -113,6 +121,10 @@ fi
 dnl ======================================================================
 dnl Check krav til PAKHTML udgaven
 dnl ======================================================================
+if test "xja" = "x$enable_softlink" ; then
+   TARGET_PAKHTML=nej
+   AC_MSG_WARN(PAKHTML kan ikke laves med --enable-softlink)
+fi
 if test "xja" != "x$TARGET_HTML" ; then
   TARGET_PAKHTML=nej
   AC_MSG_WARN(HTML ikke muligt - det er ikke muligt at lave PAKHTML udgaven)
@@ -183,11 +195,12 @@ AC_MSG_NOTICE([=================================================================
 
 dnl Sæt nogen conditionals der bestemmer hvilke muligheder vi har for at bygge 
 dnl de forskellige typer af bogen.
-AM_CONDITIONAL(BUILD_SGML,    test "x$TARGET_SGML"    = "xja")
-AM_CONDITIONAL(BUILD_PALM,    test "x$TARGET_PALM"    = "xja")
-AM_CONDITIONAL(BUILD_PDF,     test "x$TARGET_PDF"     = "xja")
-AM_CONDITIONAL(BUILD_HTML,    test "x$TARGET_HTML"    = "xja")
-AM_CONDITIONAL(BUILD_PAKHTML, test "x$TARGET_PAKHTML" = "xja")
+AM_CONDITIONAL(USE_SOFTLINKS, test "x$enable_softlink" = "xja")
+AM_CONDITIONAL(BUILD_SGML,    test "x$TARGET_SGML"     = "xja")
+AM_CONDITIONAL(BUILD_PALM,    test "x$TARGET_PALM"     = "xja")
+AM_CONDITIONAL(BUILD_PDF,     test "x$TARGET_PDF"      = "xja")
+AM_CONDITIONAL(BUILD_HTML,    test "x$TARGET_HTML"     = "xja")
+AM_CONDITIONAL(BUILD_PAKHTML, test "x$TARGET_PAKHTML"  = "xja" -a "x$enable_softlink" = "xnej")
 
 AM_CONDITIONAL(HAVE_TIDY,     test "x$TIDY" = "xja")
 AM_CONDITIONAL(HAVE_PERL_IMAGE_SIZE, test "x$HAVE_PERL_IMAGE_SIZE" = "xja")
