@@ -59,9 +59,18 @@ function searchdir( $dir, $q ) {
       fclose($fd);
     }
   }
-  if ($count) echo "</p>\n";
+  $d->close();
+  if ($count) {
+    echo "<font size=\"-1\">Fundet <b>$count</b> tilfælde i <b>$dir</b></font>\n";
+    echo "</p>\n";
+  }
   return $count;
 }
+
+/*
+ Man er doven. Vi gider kun at søge i de filer der
+ ligger i de sub-dir der i dette sub-dir.
+*/
 
 if ($q) {
   flush();
@@ -69,7 +78,7 @@ if ($q) {
   while ($dir = $d->read()) {
     if (is_dir($dir) && preg_match("|^[a-z0-9]+$|", $dir)) {
       //echo "<b>$dir</b><br>";
-      searchdir($dir, $q);
+      $cnt = searchdir($dir, $q);
       //exit;
     }
   }
