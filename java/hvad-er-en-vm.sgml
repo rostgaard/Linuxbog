@@ -4,26 +4,25 @@
 <indexterm><primary>Hvad er en VM</primary></indexterm>
  
 <para>
-Java afvikles igennem en virtuel maskine. En virtuel maskine er som navnet 
-antyder virtuel - dvs. ikke eksisterende. Det som SUN har gjort er at definere
-et afviklingsmiljø som passer godt på hvordan Java er skruet sammen. 
+Java afvikles igennem en virtuel maskine. En virtuel maskine er, som navnet
+antyder, virtuel - dvs. ikke eksisterende. Det, SUN har gjort, er at definere
+et afviklingsmiljø, som passer godt med den måde, Java er skruet sammen.
 Afviklingsmiljøet skjuler den underliggende platform (både hvad angår hardware
 og operativ system).
 </para>
 
 <para>
-Når man oversætter et Java program sker der to ting: Programmet syntaks tjekkes
-og der generes såkaldt mellemkode (byte-code). Mellemkoden er en mellemting 
-mellem maskinekode (også kaldt assemblerkode). Når man oversætter et program
-i et "normalt" programmeringssprog genereres der normalt maskinekode, som kan 
-afvikles af den processor som er valgt som destination. Typisk den samme processor 
-som man afvikler oversætteren under, men ikke nødvendigvis. Dette gør at kode kun 
-kan afvikles på den valgte processor og ikke andre. Man kan fx. heller ikke få 
-glæde af senere generationer af processoren som har fået nye features.
+Når man oversætter et Java program sker der to ting: Programmets syntaks tjekkes,
+og der generes såkaldt mellemkode (byte-code). Mellemkoden er en mellemting
+mellem kildetekst og maskinekode (også kaldt assemblerkode). Når man oversætter et 
+program i et "normalt" programmeringssprog, genereres der normalt maskinekode. Denne maskinkode kan direkte afvikles af den processor, man har valgt at oversætte til.
+Typisk den samme processor man afvikler oversætteren under, men ikke nødvendigvis.
+Dette gør at kode kun kan afvikles på den valgte processor og ikke andre.
+Man kan fx. ikke få glæde nye features i senere generationer af processoren.
 </para>
 
 <para>
-Det som den virtuelle maskine gør er, at den fortolker den mellemkode, som er 
+Det den virtuelle maskine gør, er, at den fortolker den mellemkode, som er
 genereret af oversætteren. Ofte er der ikke særlig langt imellem mellemkode
 og den pågældende platforms arkitektur, dvs. for hver mellemkode instruktion
 er der meget få, eller bare en enkelt maskinekode instruktion.
@@ -32,57 +31,60 @@ er der meget få, eller bare en enkelt maskinekode instruktion.
 <para>
 Spørgsmål - "Hvorfor er der ikke nogen der har lavet en processor der kan
 forstå Java mellemkode direkte?". Der er der faktisk også nogen der har,
-men processoren har ikke kunnet hamle op med mere og mere avancerede 
+men processoren har ikke kunnet hamle op med mere og mere avancerede
 virtuelle maskiner som bl.a. SUN og IBM har lavet.
 </para>
 
 <para>
 Selvom der ikke er særlig langt mellem mellemkode og maskinekode, skal
-den virtuelle maskine mere end bare at oversætte mellem de to typer af kode.
-Den virtuelle maskine er også ansvarlig for styring af hukommelse samt
+den virtuelle maskine gøre mere end bare at oversætte mellem de to typer af kode.
+Den virtuelle maskine er også ansvarlig for styring af hukommelse samt for
 grænsefladen mod det underliggende operativsystem.
 </para>
 
 <para>
 For at få det hele til at køre lidt hurtigere har mange leverandører af
-virtuelle maskiner udviklet en teknologi der hedder JIT - Just In Time.
-Tanken bag denne teknologi er at, lige inden kode skal afvikles bliver det
+virtuelle maskiner udviklet en teknologi kaldet JIT - Just In Time.
+Tanken bag denne teknologi er, at lige inden kode skal afvikles, bliver det
 oversat til maskinekode på den aktuelle platform, og gemt til næste gang
-denne samme kode skal oversættes. Disse oversatte dele bliver ikke gemt
+den samme kode skal oversættes. Disse oversatte dele bliver ikke gemt
 efter at den virtuelle maskine er afsluttet.
 </para>
 
 <para>
 Den seneste generation af virtuelle maskiner fra SUN har kodenavnet HotSpot.
-Dette navn er meget velvalgt, da det som denne type af virtuelle maskine
-koncentrerer sig om de dele af koden som bliver afvikles oftes - og derfor
-også bør være dem der bliver oversat først og bedst. Den virtuelle maskine
+Dette navn er meget velvalgt, da det, denne type af virtuelle maskine
+koncentrerer sig om, er de dele af koden som bliver afvikles oftes - og derfor
+også bør være dem, der bliver oversat først og bedst. Den virtuelle maskine
 foretager en såkaldt profilering af kode, hvor den gemmer information om
-hvor ofte en given metode bliver kaldt, hvor lang tid den tager og afvikle
+hvor ofte en given metode bliver kaldt, hvor lang tid den tager at afvikle
 mv. Efter at den virtuelle maskine har været startet i en periode har den
 indsamlet information nok til at begynde at genere maskinekode. I og med den
-sidder med alle kort på hånden mht. det øjeblik hvor kode afvikles kan den
-udvælge de / den funktion som der bruges oftes og derfor bør oversættes
-først. Hvis der er tale om en simpel kort metode kan den virtuelle maskine
-vælge om indlejre kode fra funktion de steder hvor den kaldes, hvilket
-gør at man sparer en del kostbare processor trin ved ikke at skulle udføre
-et kalde samt overføre parametre til funktion. I følge SUN er ydelsen fra
-en HotSpot virtuel maskinen meget tæt på den ydelse man kan få fra det
-tilsvarende C++ program, fordi at den optimering som den virtuelle maskine
-kan lave er væsentlig bedre end den som C++ oversætteren kan foretage på
-oversættelsestidspunktet. Hvis man endividere implementere nogle af de
+sidder med alle kort på hånden mht. det øjeblik hvor kode afvikles, kan den
+udvælge den / de funktioner, der bruges oftes, og som derfor bør oversættes
+først. Er der tale om en simpel kort metode, kan den virtuelle maskine
+vælge at indlejre kode fra funktion de steder, hvor den kaldes. Regulære funktionskald
+med overførsel af parametre erstattes således af kopier af funktionens kode.
+Dette sparer en del kostbare processor trin. Ifølge SUN er ydelsen fra
+en HotSpot virtuel maskinen meget tæt på den ydelse, man kan få fra det
+tilsvarende C++ program, fordi den optimering, den virtuelle maskine
+kan lave, er væsentlig bedre end den, C++ oversætteren kan foretage på
+oversættelsestidspunktet. Hvis man endvidere implementere nogle af de
 avancerede ting fra Java (fx. garbage collector, sikre referencer mv), som
-påvirker ydelsen negativt, ud konkurerer Java med HotSpot teknologien C++
+påvirker ydelsen negativt, udkonkurerer Java med HotSpot teknologien C++
 fuldstændigt (jf. SUN).
 </para>
 
 <para>
-Man kan få Java virtuelle maskiner til næsten alle platforme, lige fra de
-store IBM mainframe systemer (OS 390) og ned til den et smartcard (fx. Danmønt
-kortet). Det som er den store forskel mellem implementeringen af Java på
-de forskellige platforme er de runtime-bibliotek der medfølger - selve 
-mellemkoden er nøjagtig den samme. På nuværende tidspunkt findes der 
-følgende forskellige opdelinger:
+Man kan få virtuelle Javamaskiner til næsten alle platforme, lige fra de
+store IBM mainframe systemer (OS 390), og ned til et smartcard (fx. Danmønt
+kortet). Det, som er den store forskel mellem implementeringen af Java på
+de forskellige platforme, er de runtime-biblioteker, der medfølger - selve
+mellemkoden er nøjagtig den samme.
+</para>
+
+<para>
+På nuværende tidspunkt findes der:
 </para>
 
 <itemizedlist>
@@ -92,3 +94,4 @@ følgende forskellige opdelinger:
 </itemizedlist>
 
 </chapter>
+
