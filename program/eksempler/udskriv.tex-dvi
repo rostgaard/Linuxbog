@@ -1,0 +1,36 @@
+% udskriv.tex-dvi
+% Af Henrik Grove <grove@sslug.dk>
+%
+% TeX med uddata i DVI
+%
+% Afvikles med: tex udskriv.tex-dvi
+% Uddata kan findes i udskriv.dvi
+
+\newread\indfil
+\newcount\linienummer
+\newif\ifneof
+
+\message{Indtast filnavn: }
+\read16 to \filnavn
+\openin\indfil = \filnavn
+
+\linienummer=0
+
+\raggedright
+\obeylines
+
+\loop
+  \ifeof\indfil
+    \neoffalse 
+  \else
+    \neoftrue
+  \fi
+\ifneof
+  \read\indfil to \linie
+  \advance\linienummer by 1
+  \noindent\the\linienummer\ \linie
+\repeat
+
+\closein\indfil
+
+\bye
