@@ -317,13 +317,13 @@ function vistype($type) {
 #        "Peter Toft" => "pto@linuxbog.dk"
 #     )
 #    ),
-#    "ooo" => array(
-#      title => "Linux - Friheden til at vælge OpenOffice.org",
-#      comment => "Kontorpakken OpenOffice.org",
-#      auth => array(
-#        "linuxbog" => "linuxbog@sslug.dk"
-#     )
-#    ),
+    "ooo" => array(
+      title => "Linux - Friheden til at vælge OpenOffice.org",
+      comment => "Kontorpakken OpenOffice.org",
+      auth => array(
+        "linuxbog" => "linuxbog@sslug.dk"
+     )
+    ),
    "samling" => array(
      /* UNDTAGELSE: søg efter "samling" */
      title => "Linux - Friheden til at skrive bøger",
