@@ -2,7 +2,7 @@
 
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
-all: filer
+all: cvs2html filer
 
 release: cvs2html filer 
 
