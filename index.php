@@ -170,7 +170,7 @@ function vistype($type) {
     ),
     "wm" => array(
       title => "Linux - Friheden til at vælge grafisk brugergrænseflade",
-      comment => "Lær hvilken grafisk brugergrænseflade som passer dig bedst",
+      comment => "Lær hvilken window manager som passer dig bedst",
       auth => array(
         "Peter Toft" => "pto@linuxbog.dk"
       )
