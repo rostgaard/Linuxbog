@@ -5,21 +5,38 @@
 
 <para>
 Vis mig dine data, og jeg skal sige dig, hvad dit program vil
-kunne gøre. Repræsentation af det problem, som man ønsker at
-arbejde med, er altid et valg; der vil være flere oplysninger om
-de enkelte ting, som vi repræsenterer i programmerne, end vi
-bryder os om at have med i vores datastrukturer.
+kunne gøre (det ligner et citat :-) Når man arbejder med et
+problem, udvælger man mere eller mindre automatisk de
+oplysninger, som man mener er relevante for at løse opgaven.
+Omvendt er betingelsen for, at en operation eller beregning er
+mulig, den, at man har tilstrækkelig mange oplysninger til
+rådighed.
 </para>
+
+<para>
+Som regel kan vi registrere flere oplysninger om vores
+problemstilling, end vi bryder os om at repræsentere i
+programmet. Ved at vælge fra og ved at anbringe oplysninger i en
+klar struktur kan vi opnå at programmerne bliver lettere at
+skrive og læse.
+</para>
+
+<para>
+Sammenstilling og strukturering af operationelle data er langt
+den vigtigste disciplin for en programmør.
+</para>
+
 
 <sect1>
 <title>Sammensætning af flere oplysninger til en enhed</title>
 
 <para>
 Når man sammensætter forskellige oplysninger i en klump, kalder
-man resultatet en struct (en.: structure, struktur) - men gennem
+man resultatet en struct (struktur, engelsk: structure). Gennem
 tiderne har denne gruppering af oplysninger fået mange
-betegnelser: node, record, entitet, genstand (en.: item),
-element.
+betegnelser: node, record, entitet, genstand (engelsk: item),
+element. Den mest generelle engelske betegnelse er <emphasis>
+aggregate data types. </emphasis>
 </para>
 
 <para>
@@ -27,6 +44,300 @@ Da sådan en struct som regel forekommer som et element i en
 tabel, er der ifølge Knuth også forfattere, som har brugt
 betegnelsen "perler" om structs. De kan jo så trækkes på en snor.
 </para>
+
+<para>
+Det er en af de vigtigste metoder til at opnå god
+programstruktur.
+</para>
+
+
+
+<sect2 id="sect-sammensatte-datatyper">
+<title>En <emphasis>struct</emphasis></title>
+
+<para>
+Sammensatte datatyper er nyttige, når vi i et program har brug
+for at samle informationer om et "objekt i den virkelige verden".
+</para>
+
+<example id="ex-aggregate">
+<title>En struct</title>
+<programlisting role="C">
+struct tomat_t {
+   int typenummer;
+   char artsnavn[80];
+   int goedningsforbrug;
+   int pladskrav;
+   int temperaturkrav;
+   int saesonpris[24];
+};
+
+</programlisting>
+</example>
+
+<para>
+Her har jeg forsøgt at beskrive en tomat, sådan som en
+handelsgartner ville gøre det. Han ville være interesseret i
+omkostningerne, som er sammensat af gødningsforbrug, udgifter til
+vanding og opvarmning, forrentning af drivhuse med videre, alt
+sammen ganget med varigheden af dyrkningsperioden.
+</para>
+
+<para>
+Når man erklærer en struct efter ovenstående mønster, indsættes
+en oplysning i compilerens symboltabel om typens navn, størrelse
+samt offset og type på de enkelte elementer.
+</para>
+
+<para>
+"tomat_t" kaldes en type tag, og den tjener to formål
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem> <para>
+dels kan vi senere erklære flere variable af denne type;
+</para> </listitem>
+<listitem> <para>
+dels kan vi erklære en pointer til samme type inden i vores struct.
+Derved kan vi "trække dem som perler på en snor". <!-- (se <xref
+LinkEnd="sect-linked-list">) -->
+</para> </listitem>
+</itemizedlist>
+
+<para>
+Ovenstående tomat_t kan altså fungere som typen på en variabel.
+Når man definerer en variabel, reserveres der noget hukommelse i
+det færdige program, en plads til denne variabel.
+</para>
+
+<example id="ex-definition">
+<title>Definition af en tomat-variabel</title>
+<programlisting role="C">
+struct tomat_t sunglow;
+</programlisting>
+</example>
+
+<para>
+Det er ikke alle programmører, som kan lide denne notation.
+Der er der nogle, som benytter sig af <emphasis> typedef
+</emphasis> til at danne nye typebetegnelser, på den måde slipper
+man for hele tiden at skrive ordet <emphasis> struct </emphasis>.
+</para>
+
+<example id="ex-typedef">
+<title>Struct type ved hjælp af typedef</title>
+<programlisting role="C">
+typedef struct tomat_tag {   /* taggen er ikke nødvendig i dette eks. */
+    int ident;
+    char name[80];
+    int spacing;
+    /* etc - etc. */
+} tomat_type, *tomat_ptr;
+
+tomat_type softball;
+tomat_ptr current_tomat;
+
+</programlisting>
+</example>
+
+<para>
+Det er meget rart, at man kan se på ordet tomat_type, at det ikke
+er en variabel, men er en type. Ellers må man huske, at et ord
+foran et andet <emphasis> skal </emphasis> være en
+typebetegnelse. Til gengæld kan det være sværere for compileren
+at finde ud af at diagnosticere fejl. I C++ er det altid tilladt
+at udelade nøgleordene struct og class, undtagen i erklæringen af
+typen.
+</para>
+
+<programlisting id="proglist-cplusplus-struct">
+tomat_type red_sun;
+</programlisting>
+
+<para>
+I parentes bemærket er der danske virksomheder, som har haft
+enorme ekstraudgifter på at bruge danske betegnelser i
+programmer, som skulle eksporteres, så det er nok klogt ved alle
+større projekter at erkende babelstårn problematikken og benytte
+engelsk, latin eller esperanto.
+</para>
+
+<example id="ex-declaration-and-definition">
+<title>Erklæring og definition</title>
+<programlisting role="C">
+struct tomat_ty {
+   int identifikation;
+   char art[80];
+   int goedningsforbrug;
+   int pladskrav;
+   int temperaturkrav;
+   int saesonpris[24];
+} sungold;
+
+</programlisting>
+</example>
+
+<para>
+I eksempel <xref LinkEnd="ex-declaration-and-definition"> er der
+både erklæret en type, nemlig <emphasis>tomat_ty</emphasis>, og
+en variabel, <emphasis>sungold</emphasis>. Bør kun anvendes i
+ultrakorte programmer (stenografi-orienterede;-).
+</para>
+
+<para>
+Her er et eksempel på et andet udvalg af
+informationer om tomater. Det er tænkt som registrering af
+tomater, der skal deltage i en udstilling, hvor der uddeles
+præmier for bedste sort, og hvor måske journalister skal have
+adgang til billedmateriale.
+</para>
+
+<example id="ex-anderledes-tomat">
+<title>Udvælgelse af oplysninger</title>
+<programlisting role="C">
+struct tomat {
+   int loebenummer;
+   int udstiller_nr;
+   char navn[80];
+   char beskrivelse[280];
+   enum billedtype;
+   char fotograf[80];
+   enum karakter[MAXK];
+};
+
+</programlisting>
+</example>
+
+<para>
+Man må forestille sig, at udstillingsledelsen har et ekstra
+kartotek over udstillere, og heri kan de finde navn og adresse ud
+fra udstiller_nr. Desuden har jeg forestillet mig, at man
+registrerer tidligere karakterer (bedømmelser) for den pågældende
+tomat. Der er jo forskellige udstillinger, eller det kunne være,
+at samme tomat-sort deltog for anden gang.
+</para>
+
+<para>
+Som regel er der langt flere oplysninger, end vi er interesseret
+i, sådan rent programmeringsmæssigt. Det er en disciplin for sig
+selv at udvælge og vurdere informationernes anvendelighed.
+</para>
+
+</sect2>
+
+<sect2 id="sect-interface">
+<title>Interface til datatype</title>
+
+<para>
+Sæt nu, at vi ikke rigtigt vidste, om vores tomat-beskrivelse
+ville kunne holde i hele programmets levetid. Der er flere måder
+at håndtere behov for ændringer.
+</para>
+
+<para>
+Den mest anvendte metode går ud på at isolere repræsentationen af
+tomaten fra de dele af programmet, som anvender
+tomat-informationer. Det siger sig selv, at dette kræver ekstra
+kode. Det er imidlertid med de nye C compilere muligt at optimere
+den ekstra kode på samme måde som i C++ - nemlig ved at erklære
+en funktion for <emphasis>inline</emphasis>.
+</para>
+
+<programlisting>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+
+struct tomat_t {
+   int typenummer;
+   char artsnavn[80];
+   int goedningsforbrug;
+   int pladskrav;
+   int temperaturkrav;
+   int saesonpris[24];
+};
+
+struct tomat_t *create_tomat(int ident, char *name,
+			     int goedningsforbrug, int pladskrav,
+			     int temperaturkrav, int *saesonpris)
+{
+    struct tomat_t *temp;
+    if (!(temp = malloc(sizeof(struct tomat_t)))) {
+        fprintf(stderr,"Not enough memory\n");
+	exit(255);
+    }
+    memset(*temp,0,sizeof(struct tomat_t));
+    temp->typenummer = ident;
+    strncpy(temp->artsnavn,name,79);
+    temp->goedningsforbrug = goedningsforbrug;
+    temp->pladskrav = pladskrav;
+    temp->temperaturkrav = temperaturkrav;
+    if (saesonpris)
+        memcpy(temp->saesonpris,saesonpris,sizeof(temp->saesonpris));
+    return temp;
+}
+
+main()
+{
+    struct tomat_t *tomat;
+    int dyrkning_dage;
+    tomat = create_tomat(1012, "sungold", 450, 30, 27, NULL);
+    dyrkning_dage = beregn_periode("2001-08-29", tomat);
+    return 0;
+}
+</programlisting>
+
+<para>
+Læg især mærke til main funktionen. Der oprettes en pointer til
+tomat-typen. Denne pointer får noget at pege på ved at kalde
+create_tomat-funktionen med tilhørende initialiseringsparametre.
+Vi snyder med pris-tabellen, som skulle være initialiseret med
+fx. gennemsnitspriser for hver uge.
+</para>
+
+<para>
+Hvis man nu ændrer struct tomat_t, sådan at pladskrav ændres fra
+rækkeafstand til arealforbrug, og hvis der yderligere tilføjes
+oplysninger om optimale dag/nat-temperaturer for den pågældene
+plantesort, så skulle vi ændre vores initialiserings-funktion.
+Men hvis der var gammel kode (fx. den main, som er med i
+eksemplet) der stadig skulle kunne fungere, så ville det være
+muligt at skrive initialiseringen sådan, at man stadig kunne
+bruge denne "gamle" main(). Det skulle blot være muligt at
+beregne (eller anslå) værdien af pladsforbrug ud fra den gamle
+type oplysninger.
+</para>
+
+<para>
+Der er ikke noget i vejen for, at oplysningen om gødningsforbrug,
+der her afleveres som gram, i stedet kunne gemmes som kilo i en
+float-variabel. Et kendt eksempel på en lignende
+programmeringsmetode er FILE typen, som beskrives i <xref
+LinkEnd="sect-abstract-datatypes">.
+</para>
+
+<para>
+Ved at anvende interface operationer i stedet for at tilgå
+tomat-struct'ens data direkte, bliver det muligt at ændre
+detailler i tomat-struct'en uden at ændre programkode ret mange
+steder. Får man behov for at konvertere datatyper eller for at
+dele repræsentationen af informationer op på en anden måde, så
+vil man slippe godt afsted med det uden større problemer.
+</para>
+
+<para>
+Hvis et nye behov <emphasis> kun </emphasis> består i at have flere data
+til denne struct, fx. af hensyn til nye beregningsprogrammer, så
+er det ikke så vanskeligt at udvide en struct selv om
+programkoden tilgår de enkelte felter direkte.  Problemer med
+ændringer bliver først alvorlige, når programmernes størrelse og
+kompleksitet bevirker, at ingen længere har det fulde overblik
+over flow. Hvilket forekommer :-((
+</para>
+
+</sect2>
+
+
 
 <sect2>
 <title>Tabel, array, liste, sekvens, bunke ...</title>
@@ -43,9 +354,10 @@ ud:
 
 <programlisting>
 /* der benyttes <EMPHASIS>bitfields</EMPHASIS> for at vise denne
- * feature. I stærkt memory kritiske applikationer kan dette
- * nogen gange betale sig. Kode til manipulation af bitfelterne
- * vil imidlertid gøre koden langsommere og større.
+ * feature. I stærkt memory kritiske applikationer kan det
+ * nogen gange betale sig at anvende bitfields. Kode til
+ * manipulation af bitfelterne vil imidlertid gøre koden
+ * langsommere og større.
  */
 
 struct kort_t {
@@ -102,7 +414,7 @@ på bits, så er det en helt almindelig fremgangsmåde.
 <programlisting>
 struct kort_t {
     unsigned tag:1;        /* bagsiden op = 1 */
-    unsigned farve:2;      /* 0 klør, 1 ruder, 2 hjerter, 3 spar */
+    enum farve_t farve:2;  /* variabel af enumeration type */
     unsigned rang:4;       /* 1 = es, 2 = toer, 13 = konge */
     struct kort_t *next;   /* kort nedenunder */
     char titel[11];        /* forkortet navnebetegnelse */
@@ -174,20 +486,28 @@ variabelen.
 <para>
 Det siger sig selv, at når man afrefererer pointeren, d.v.s.
 henter eller kopierer det objekt, som den peger på, så skal
-objektets størrelse være kendt.
+objektets størrelse være kendt. Denne størrelse kaldes også en
+skaleringsfaktor. Når man lægger j til en pointer, bliver j
+ganget med skaleringsfaktoren og resultatet lagt til pointeren.
 </para>
 
 <indexterm><primary>pointer</primary>
            <secondary>skalering</secondary></indexterm>
 
 <para>
-Når det er nødvendigt, kan man erklære en pointer til et eller
-andet ukendt objekt. Det er faktisk det, som vi gør med feltet
+Når det er nødvendigt, kan man erklære en pointer til et objekt
+af ukendt størrelse. Det er faktisk det, som vi gør med feltet
 next. Mens oversætteren arbejder på opbygningen af struct kort_t,
 er størrelsen på selvsamme struct ikke kendt endnu. Derfor bliver
 next-pointeren først endeligt tildelt sin skalerings-faktor
 (størrelsen af det objekt, den peger på) i det øjeblik, at
 oversætteren er færdig med struct kort_t.
+</para>
+
+<para>
+Når vi anvender next feltet til at fortælle, hvilket kort, der
+ligger nedenunder, så vil vi kunne repræsentere en lille bunke
+kort på denne måde:
 </para>
 
 <GRAPHIC FILEREF="kort1.&magic;"  SCALE="70"></GRAPHIC>
@@ -204,7 +524,8 @@ struct kort_t kort[53];    /* husk: fra 0 til og med 52. */
 <para>
 Hvis vi erklærer et "helt kortspil" og initialiserer alle
 kortenes felter, vil de 4 farvers kort kunne initialiseres på
-følgende måde (hele kildeteksten i filen kort02.c):
+følgende måde (hele kildeteksten i filen kort02.c); vi burde give
+andre navne til 11,12 og 13, altså knægt, dame og konge:
 </para>
 
 <programlisting>
@@ -222,11 +543,14 @@ følgende måde (hele kildeteksten i filen kort02.c):
 <para>
 Kortspils-farverne bruges som om de var heltal (det er de jo
 også) og kan endog bruges til at specificere stop og start i
-for-løkken, som styrer initialisering. g++ vil dog klage over
-operationen ++kuloer, men i øvrigt hjælpe med at checke, at vi
-bruger enumerationen uden at tildele den forkerte værdier (som
-fx. kuloer = 17). gcc vil end ikke nævne, at vi tildeler en
-variabel af typen farve_t en værdi, der ligger udenfor grænserne.
+for-løkken, som styrer initialisering. Hvis man kompilerer med
+C++ compileren, altså g++, så vil den dog klage over operationen
+++kuloer, men i øvrigt hjælpe med at checke, at vi bruger
+enumerationen uden at tildele den forkerte værdier (som fx.
+kuloer = 17). gcc vil end ikke nævne, at vi tildeler en variabel
+af typen farve_t en værdi, der ligger udenfor grænserne. Det gør
+vi i den funktion, som returnerer en string variabel for farvens
+navn.
 </para>
 
 <para>
@@ -252,18 +576,20 @@ at gøre det - det er en god øvelse.)
 </para>
 
 <para>
-Den anden ting, som kunne påkalde sig opmærksomhed er, at vi ikke
+Den anden ting, som kunne påkalde sig en kommentar er, at vi ikke
 anvender et multi-dimensionalt array og at vi i øvrigt bare
 forlænger i den anden ende for at få plads til en joker. Læg
 mærke til hvor vanskeligt det er at håndtere jokeren i
 kildeteksten kort02.c! Skal den have en rang? Skal den have en
 farve, og i så fald hvilken? Skal vi ændre vores
-farve/rang-system, således at man kan håndtere en ekstra farve,
-nemlig joker-farven? Skal man have flere jokere og skelne mellem
-rød joker og sort joker? I første omgang lader vi jokeren flyde
-udenfor almindelig nummerorden, og hvis vi vil bruge den i et
+farve/rang-system, således at man kan håndtere en ekstra farve for
+jokeren? Skal man have flere jokere og skelne mellem rød joker og
+sort joker? I kort02.c lader vi jokeren være af typen kloer (0),
+og giver den blot en højere rang. Hvis den skal bruges i et
 kortspil eller en kabale af en slags, så må vi sørge for at
 programkoden tager højde for, at der kan være et ekstra kort.
+Det er ikke så væsentligt for eksemplet her, så vi lader den ude
+af betragtning i de følgende eksempler.
 </para>
 
 <para>
@@ -304,8 +630,7 @@ adresse:
 <para>
 Ovenstående skitse er imidlertid ikke den mest læselige måde at
 beskrive forbindelsen mellem de tre kort, så man benytter som
-regel pile i stedet for; adresserne på hver struct er ikke vist
-i denne illustration, og de er jo også helt irrelevante:
+regel pile i stedet for som på næste illustration.
 </para>
 <example id="ex-kort-bunke"><title>Kort-bunke</title>
 <programlisting>
@@ -319,6 +644,15 @@ i denne illustration, og de er jo også helt irrelevante:
                                                                     ~ 
 </programlisting>
 </example>
+<para>
+Her er adresserne på hver struct er ikke vist;
+de er jo også helt irrelevante.
+</para>
+
+<para>
+Den anvendte struktur kaldes en linket liste (eller linked
+liste). Det betyder simpelt hen en sammenkædet liste.
+</para>
 
 <para>
 Når en pointer ikke peger på en adresse, sætter man den pr.
@@ -336,6 +670,15 @@ hvert kort.
 </para>
 
 <para>
+Man kan sætte hvad som helst sammen efter det princip, at et
+element peger på det næste. Det er en af de væsentligste
+programmeringsteknikker, og den har derfor fået mange navne:
+Linket liste eller bare liste, sekvens, tabel. Man kunne sagtens
+udelade arrayet og blot have to - tre variable af typen kort_t,
+som man satte sammen i en liste.
+</para>
+
+<para>
 Imidlertid er arrayet en udmærket løsning for et kortspil.
 Kortene er jo til stede alle sammen hele tiden, med mindre vi
 skal tage højde for en haj, der har kort i ærmet. Man har
@@ -347,43 +690,179 @@ sætte dem øverst i bunken. Prøv det som en programmeringsøvelse
 </para>
 
 <para>
-Hver gang vi vil lave en bunke, skal vi have et startkort.
-Adressen på dette start - kort må vi gemme <emphasis> uden for
-kort-arrayet. </emphasis> Alternativet er at finde alle de kort,
-der har NULL i next-feltet og så følge deres pointer-kæde. Det er
-noget mere besværligt, rent programmeringsmæssigt, at holde styr
-på kortbunkerne på denne måde. På en moderne, hurtig maskine
-ville man nok ikke kunne opfatte forskellen i hastighed ved de to
-metoder.
+Hver gang vi vil lave en bunke, skal vi have et startkort. Det
+vil sige, at man skal have en variabel, som kan huske, hvor vi
+starter henne. Et minimalt eksempel kan se ud som her:
 </para>
+
+<example id="ex-bunkestart">
+<title>Start punkt for kortbunke</title>
+<programlisting>
+/* kortspillet forudsættes initialiseret.
+ * Hvis kildeteksten anvendes uden en initialiseringsloop som i
+ * kort02.c, vil alle k->navn felterne være tomme.
+ */
+
+
+struct kort_t k[53];
+
+struct kort_t *kort_bunke_demo()
+{
+    struct kort_t *start, *temp;
+    temp = start = k;               /* starten af vores bunke 
+                                     * er første element i array k.
+                                     */
+    temp->next = k[1+rand()%52];    /* vi plukker et tilfældigt kort
+                                     * værdien af 1+rand()%52 ligger
+                                     * mellem minimum 1 og max 52 
+                                     */
+    temp = temp->next;              /* ændring af temp,
+                                     * men start er stadig 
+                                     * adressen på det første kort
+                                     */
+    temp->next = NULL;              /* temp peger på de plukkede kort,
+                                     * vi nulstiller next feltet på det
+                                     * nye kort */
+    return start;                   /* returnerer adressen på det første */
+}
+
+void bunke-og-vis()
+{
+    struct kort_t * kp;             /* her får vi start-kortet */
+    int nk = 0;
+    kp = kort_bunke_demo();
+    do {
+        printf("Kort nr. %d er %s\n", nk++, kp->knavn);
+    } while ( (kp = kp->next) != NULL);
+}
+
+</programlisting>
+</example>
+
+<para>
+Adressen på dette start - kort gemmes <emphasis> uden for
+kort-arrayet. </emphasis> (Alternativt kan man bruge
+dobbelt-linkede lister og finde startpunkter som de kort, der har
+en NULL-pointer. Derfra kan man følge en anden pointerkæde til
+man igen havner på en NULL pointer - men alt i alt kræver det
+meget mere programmering.) <!-- TODO henvisning -->
+</para>
+
+<para>
+I eksemplet kort04.c, som blander kortene og skriver resultatet
+ud, anvendes variabelen struct kort_t *oeverst som den, der
+husker starten af bunken.
+</para>
+
+<programlisting>
+    /* uddrag af kort04.c */
+    {
+        struct kort_t *oeverst;
+        bland(kort, MAXK, &amp;oeverst);
+        show_kortbunke(bunke);
+    }
+</programlisting>
 
 <para>
 En anden morsom ting ved denne repræsentation er, at kortene kun
 kan indgå i én bunke. Meget realistisk!
 </para>
 
+<sect3 id="sect-udvaelgelse">
+<title>Udvælgelse af oplysninger</title>
+
 <para>
-De ting, vi ikke har interesseret os for: Kortenes størrelse,
-vægt, placering på bordpladen (eller andre steder), slitage,
-ejermand, design af bagsiden, temperatur, molekylernes beskaffenhed ...
+Vi har i disse eksempler udvalgt nogle oplysninger, som vi syntes
+var relevante for at repræsentere et kortspil. Man skal
+imidlertid gøre sig klart, at man foretager et valg. 
 </para>
 
+<para>
+Vi kan med <emphasis> next feltet </emphasis> fortælle, hvilket
+kort, der ligger nedenunder, men vi har ikke et felt for kortet
+ovenover, hvis der er noget. Det kunne man jo godt ønske sig i
+nogle situationer.
+</para>
+
+<para>
+Her er en liste over nogle andre ting, vi ikke har interesseret
+os for: Kortenes størrelse, vægt, placering på bordpladen (eller
+andre steder), slitage, ejermand, design af bagsiden, temperatur,
+molekylernes beskaffenhed ...
+</para>
+
+<para>
+Prøv at tænke efter, om der er flere oplysninger om et kortspil,
+som man kunne repræsentere og find ud af, hvornår man ville bruge
+de oplysninger. For eksempel ville en kortspilsfabrikant måske
+være interesseret i "molekylernes beskaffenhed", fordi han gerne
+ville vide noget om kartonens kvalitet og holdbarhed.  Find flere
+egenskaber, som kan omsættes til tal eller tekst.
+</para>
+</sect3>
 </sect2>
+
 
 <sect2><title>Operationer på datatypen</title>
 
 <para>
-Ud fra foregående afsnit er det vist tydeligt, at det er
-nødvendigt at gøre sig klart, hvad man vil med sin datamodel.
-Hvilke operationer er vi interesserede i at kunne udføre?
+Det er forhåbentlig blevet klart, at det kan betale sig at
+spørge, hvilke informationer, som er væsentlige, og hvilke
+operationer, som skal kunne udføres på disse informationer.
+Ud fra dette vælger man metoden til at strukturere sine data.
 </para>
 
 <para>
-Hvis vi er interesserede i at vide, hvilket kort, der er øverst i
-en bestemt bunke, så må vi kunne svare på spørgsmålet: Hvilket
-kort er det første. Det er nødvendigt i mange situationer, for
-eksempel ved kortgivning. (Se eksemplet kort04.c).
+Datastrukturer som lister, array'er, kø og stak (som vi ikke har
+set eksempler på endnu) og lignende strukturer har hver især
+deres fordele.
 </para>
+
+<para>
+Med den struktur, som vi har valgt i eksempel kort04.c,
+kunne vi let "se", hvilket kort, der lå øverst. Hvis vi skal
+lægge et kort ovenpå, så er det nemt nok. Operationerne til at
+blande dem og gennemløbe (og udskrive) den blandede bunke går
+helt fint, og kan pakkes ind i funktioner, som gør programmet let
+at læse.
+</para>
+
+<para>
+Men hvis vi vil lægge kort ind midt i bunken, så er denne
+repræsentation måske ikke den bedste, men den kan dog bruges: Man
+<emphasis> kan </emphasis> bladre sig frem til den position, man
+ønsker at indsætte på.
+</para>
+
+<para>
+Hvis man anvender et binært træ, kan man indsætte et element
+i en ordnet sekvens, uden at det koster meget ekstra tid for
+algoritmen.
+</para>
+
+<GRAPHIC FILEREF="bintrae.&magic;"  SCALE="100"></GRAPHIC>
+
+<para>
+Nu er kort-spils arrayet i forvejen sorteret på grund af måden,
+det er initialiseret, så vi har ikke brug for en sortering af
+hele kortspillet som sådan.  Hvis vi derimod ønsker at
+programmere en omgang whist eller bridge, skal der først blandes
+kort og derefter deles ud til fire bunker (spillere). Man ville
+sikkert foretrække at udskrive spillernes bunker (hænder) ordnet
+efter kortenes rang. Dér burde vi overveje at repræsentere
+bunkerne som 4 binære træer.
+</para>
+
+<!--
+<para>
+Hvis en datastruktur indeholder elementer,
+der skal sorteres, så er den mest effektive struktur et array.
+ANSI C standard library qsort sorterer et array (kaldes somme
+tider en vector). Qsort forventer adressen på det første element,
+antal og størrelsen af elementer samt en sammenligningsfunktion.
+Det er, hvad der skal til for at kunne sortere effektivt.
+</para>
+-->
 
 <para>
 Dette afsnit er - sammen med de næste afsnit om konkrete og
@@ -397,7 +876,7 @@ regner med at få skrevet en hel del i løbet af perioden 24. juni -
 </sect1>
 
 <sect1 id="sect-oo-metoder">
-<title>C og objekt-orienterede metoder</title>
+<title>Konkrete og abstrakte datatyper</title>
 
 <para>
 Bemærk at dette afsnit er under omredigering, og at der er
@@ -406,6 +885,12 @@ kommentarer, ris eller ros eller forslag, så er du velkommen til
 at kontakte mig (eller andre SSLUG'er). Min email adresse har
 tidligere været vist lidt forkert, derfor en gentagelse:
 donald_j_axel@get2net.dk
+</para>
+
+<para>
+Konkrete og abstrakte datatyper nævnes ofte i samme åndedrag som
+objekt-orienterede sprog, men man har også stor glæde af at vide
+noget om disse emner, når man programmerer i C.
 </para>
 
 <para>
@@ -696,28 +1181,35 @@ kode.
 </sect1>
 
 <sect1 id="sect-abstract-datatypes">
-<title>Abstrakte datatyper</title>
+<title>FILE: En abstrakt type</title>
 
 <indexterm><primary>abstrakte datatyper</primary></indexterm>
+<indexterm><primary>FILE typen</primary></indexterm>
 
 <para>
 For at programmere på højt niveau i C sproget skabes
-abstraktioner, som kan bruges til noget nyttigt. Fx. er en fil
-en abstraktion, som operativsystemet leverer. <footnote> <para>
-En fil er en ordnet sekvens af bytes. </para>
-</footnote> Ved hjælp af fil abstraktionen kan vi hente data fra
-eksterne kilder, så som diske, netforbindelser eller tastaturet.
+abstraktioner, som kan bruges til noget nyttigt. Fx. er en fil en
+abstraktion, som operativsystemet leverer.  En fil er en ordnet
+sekvens af bytes. En disk-fils bytes ligger ikke altid i en pæn,
+ordnet rækkefølge på disken.  Operativ-systemet får det
+imidlertid til at se sådan ud.
 </para>
 
 <para>
-Grundlaget for en sådan abstraktion er som regel structures, de
-sammensatte datatyper, som deklareres med nøgleordet <emphasis>
-struct </emphasis>. For at bevare overblikket, for ikke at blande
-detaillerne ind i den abstraktion, som vi ønsker at skabe,
-indkapsles sådanne data ofte, således at al tilgang sker gennem
-funktionskald. Derved bliver det lettere at anvende den
-pågældende abstraktion, man skal blot udstede en "kommando": Læs,
-skriv, luk, flyt o.s.v.
+Endvidere sørger Linux for, at fx. en seriel port ser ud som en fil,
+selv om den ikke er det. Man kan skrive til et serielt interface,
+som om det var en fil, og læse fra den på samme måde.  Ved hjælp
+af fil abstraktionen kan vi hente data fra eksterne kilder, så
+som diske, netforbindelser og tastaturet.
+</para>
+
+<para>
+Grundlaget for en sådan abstraktion er som regel en structure. For
+at bevare overblikket, for ikke at blande detaljerne ind i den
+abstraktion, som vi ønsker at skabe, indkapsles sådanne data
+ofte, således at al tilgang sker gennem funktionskald. Derved
+bliver det lettere at anvende den pågældende abstraktion, man
+skal blot udstede en "kommando": Læs, skriv, luk, flyt o.s.v.
 </para>
 
 <para>
@@ -786,195 +1278,6 @@ til funktions-interfacet og de andre teknikker til at indkapsle
 de data, der naturligt hører sammen. 
 </para>
 
-<sect2 id="sect-sammensatte-datatyper">
-<title>Sammensatte datatyper</title>
-
-<para>
-Sammensatte datatyper er nyttige, når vi i et program har brug
-for at samle informationer om et "objekt i den virkelige verden".
-Den engelske betegnelse er <emphasis>aggregate data
-types</emphasis>, men det giver også mening at kalde dem for
-brugerdefinerede datatyper.
-</para>
-
-<para>
-Sammensatte datatyper er, som ordet siger, en sammensætning af
-forskellige typer data. I C sproget erklæres en sådan datatype
-ved hjælp af nøgleordet <emphasis> struct </emphasis>. Det er
-selvfølgelig en forkortelse for structure. I andre sprog hedder
-det en "record".
-</para>
-
-<example id="ex-aggregate">
-<title>En struct</title>
-<programlisting role="C">
-struct tomat_t {
-   int typenummer;
-   char artsnavn[80];
-   int goedningsforbrug;
-   int pladskrav;
-   int temperaturkrav;
-   int saesonpris[24];
-};
-
-</programlisting>
-</example>
-
-<para>
-Når man erklærer en struct efter ovenstående mønster, indsættes
-en oplysning i compilerens symboltabel om typens navn, størrelse
-samt offset og type på de enkelte elementer.
-</para>
-
-<para>
-"tomat_t" kaldes en type tag, og den tjener to formål - dels
-kan vi senere erklære flere variable af denne type, dels kan vi
-erklære en pointer til samme type inden i vores struct. Derved
-kan vi opbygge en kæde af elementer. En sådan kæde kaldes en
-linked liste på engelsk (se <xref LinkEnd="sect-linked-list">)
-</para>
-
-<para>
-Derefter kan man definere variable af den pågældende type med
-syntaksen:
-</para>
-
-<example id="ex-definition">
-<title>Definition af en variabel</title>
-<programlisting role="C">
-struct tomat_t sunglow;
-</programlisting>
-</example>
-
-<para>
-Det er ikke alle programmører, som kan lide denne notation.
-Derfor er der mange, som benytter sig af <emphasis> typedef
-</emphasis> til at danne nye typebetegnelser.
-</para>
-
-<example id="ex-typedef">
-<title>Struct type ved hjælp af typedef</title>
-<programlisting role="C">
-typedef struct tomat_tag {
-    int ident;
-    char name[80];
-    int spacing;
-    /* etc - etc. */
-} tomat_type, *tomat_ptr;
-
-tomat_type softball;
-tomat_ptr current_tomat;
-
-</programlisting>
-</example>
-
-<para>
-Det er meget rart, at man kan se på ordet tomat_type, at det ikke
-er en variabel, men er en type. Ellers må man huske, at et ord
-foran et andet <emphasis> skal </emphasis> være en
-typebetegnelse. Til gengæld kan det være sværere for compileren
-at finde ud af at diagnosticere fejl. I C++ er det altid tilladt
-at udelade nøgleordene struct og class, undtagen i erklæringen af
-typen.
-</para>
-
-<programlisting id="proglist-cplusplus-struct">
-tomat_type red_sun;
-</programlisting>
-
-<para>
-I parentes bemærket er der danske virksomheder, som har haft
-enorme ekstraudgifter på at bruge danske betegnelser i
-programmer, som skulle eksporteres, så det er nok klogt ved alle
-større projekter at erkende babelstårn problematikken og benytte
-engelsk, latin eller esperanto.
-</para>
-
-<example id="ex-declaration-and-definition">
-<title>Erklæring og definition</title>
-<programlisting role="C">
-struct tomat_ty {
-   int identifikation;
-   char art[80];
-   int goedningsforbrug;
-   int pladskrav;
-   int temperaturkrav;
-   int saesonpris[24];
-} sungold;
-
-</programlisting>
-</example>
-
-<para>
-I eksempel <xref LinkEnd="ex-declaration-and-definition"> er der
-både erklæret en type, nemlig <emphasis>tomat_ty</emphasis>, og
-en variabel, <emphasis>sungold</emphasis>. Bør kun anvendes i
-ultrakorte programmer (stenografi-orienterede;-).
-</para>
-
-<para>
-Til slut at give et eksempel på et andet udvalg af
-informationer om tomater, som fx. kunne være interessant i
-tilfælde af at man samlede på tomatbilleder:
-</para>
-
-<example id="ex-anderledes-tomat">
-<title>Udvælgelse af oplysninger</title>
-<programlisting role="C">
-struct tomat {
-   int loebenummer;
-   char beskrivelse[280];
-   enum billedtype;
-   char fotograf[80];
-   enum karakter;
-};
-
-</programlisting>
-</example>
-
-<para>
-Som regel er der langt flere oplysninger, end vi er interesseret
-i, sådan rent programmeringsmæssigt. Det er en disciplin for sig
-selv at udvælge og vurdere informationernes anvendelighed.
-</para>
-
-</sect2>
-
-<sect2 id="sect-interface">
-<title>Interface til datatype</title>
-
-<para>
-Sæt nu, at vi ikke rigtigt vidste, om vores tomat-beskrivelse
-ville kunne holde i hele programmets levetid. Der er flere måder
-at håndtere behov for ændringer.
-</para>
-
-<para>
-Den mest anvendte metode går ud på at isolere repræsentationen af
-tomaten fra de dele af programmet, som anvender
-tomat-informationer. Det siger sig selv, at dette kræver ekstra
-kode. Det er imidlertid med de nye C compilere muligt at optimere
-den ekstra kode på samme måde som i C++ - nemlig ved at erklære
-en funktion for <emphasis>inline</emphasis>.
-</para>
-
-<para>
-Derved bliver det muligt at ændre tomat-struct'en uden at ændre
-programkode ret mange steder. Får man behov for at konvertere
-datatyper eller for at dele repræsentationen af informationer op
-på en anden måde, så vil man som regel kunne slippe godt afsted
-med det uden større problemer, hvis man anvender denne metode.
-</para>
-
-<para>
-Hvis behovet <emphasis>kun</emphasis> består i at have flere data
-til denne struct, så er det ikke så vanskeligt at udvide en
-struct selv om programkoden tilgår de enkelte felter direkte.
-Problemer med ændringer bliver først alvorlige, når programmernes
-størrelse og kompleksitet bevirker, at ingen længere har det
-fulde overblik over flow. Hvilket forekommer.
-</para>
-
-</sect2>
-<!-- her følger afsnittet om linkede lister -->
+</sect1>
+</chapter>
 

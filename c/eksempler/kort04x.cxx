@@ -1,5 +1,5 @@
 
-/* kort04.c kortspil repræsentation, kortene blandes */
+/* kort04x.cxx kortspil repræsentation, kortene blandes */
 /* ved at anbringe dem i en liste (linked liste)     */
 /* blande - rutinen laves som en service funktion    */
 /* display rutinen skilles ud fra main.              */
@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
+#include <list>
 
 
 enum farve_t { kloer, ruder, hjerter, spar };
@@ -21,9 +22,15 @@ char *farve(enum farve_t kk)
 	"klør", "ruder", "hjerter", "spar", "forkert kuloer"
     };
 
+    int xk = kk;
     if (kk > spar || kk < kloer)
-	kk = 4;
-    return names[kk];
+	xk = 4;
+    return names[xk];
+}
+
+enum farve_t& operator++(enum farve_t& f)
+{
+    return f = farve_t(f+1);
 }
 
 struct kort_t {
@@ -36,11 +43,17 @@ struct kort_t {
 
 #define MAXK 52
 
+/* global list */
+using namespace std;
+list <kort_t> kortbunke;
+
 /* prototyper på vores to service funktioner */
 
 void show_all(struct kort_t *k);
-void bland(struct kort_t *k, int lim, struct kort_t **first);
+void bland(struct kort_t *k, int lim, list<kort_t> bunke);
 void show_kortbunke(struct kort_t *k);
+void show_kortliste();
+
 
 int main(int argc, char *argv[])
 {
@@ -62,9 +75,9 @@ int main(int argc, char *argv[])
     /* test om vi kan skrive dem ud! */
     // show_all(kort);
     {
-	struct kort_t *oeverst;
-	bland(kort, MAXK, &oeverst);
-	show_kortbunke(oeverst);
+	bland(kort, MAXK, kortbunke);
+	// show_kortbunke(bunke);
+	show_kortliste();
     }
     return 0;
 }
@@ -83,30 +96,26 @@ void show_all(struct kort_t *k)
 	       (k + 39 + j)->knavn);
 }
 
-void bland(struct kort_t *k, int lim, struct kort_t **first)
+void bland(struct kort_t *k, int lim, list<kort_t> kl )
 {
     int j, count;
-    struct kort_t *prev;
+    int seen_last;
 
     for (j = 0; j < lim; ++j)
-        (k+j)->next = 0;
+        (k+j)->tag = 0;
     srand(time(NULL));
-    j = rand() % MAXK;
-    prev = *first = k+j;
     count = 0;
-    while (count < MAXK - 1) {             /* note 1 */
+    while (count < MAXK) {
         j = rand() % MAXK;
-        if ((k+j)->next || k+j==prev)
+        if ((k+j)->tag || j==seen_last)
 	    continue;
 	++count;
-	prev->next = k+j;
-	prev = prev->next;
+	seen_last = j;
+	(k+j)->tag = 1;
+        kortbunke.push_front(k[j]);
     }
 }
 
-/* note 1:  Det sidste kort er "jordet", så vi skal kun anbringe
- * links på MAXK - 1 kort.
- */
 
 void show_kortbunke(struct kort_t *k)
 {
@@ -116,5 +125,16 @@ void show_kortbunke(struct kort_t *k)
     }
 }
 
-/* End of kort04.c */
+void show_kortliste()
+{
+    list<kort_t>::const_iterator kl;
+    kl = kortbunke.begin();
+    while (kl != kortbunke.end()) {
+        printf("%s\n", kl->knavn);
+	++kl;
+    }
+}
+
+
+/* End of kort04x.cxx */
 
