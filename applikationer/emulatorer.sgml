@@ -246,10 +246,11 @@ liggende.
 
 <!-- Dette afsnit er skrevet af Bent Pedersen bentriloquist@my-deja.com -->
 <para>
-Hvad er VNC? VNC står for Virtual Network Computing. Kender du
+VNC står for Virtual Network Computing. Kender du
 programmer som PC Anywhere eller NetOp, som begge kører på
 Windows-platformen, så har du en god idé om hvad VNC er: et program
-til fjernstyring af en anden PC. Dog kører VNC over TCP/IP, og ikke
+til fjernstyring af en anden PC med grafisk brugerflade. 
+Dog kører VNC over TCP/IP, og ikke
 andet. VNC består af en server-del, som kører på den maskine du ønsker
 at fjernstyre, samt en klient-del, som kører på den maskine du sidder
 foran.
@@ -260,7 +261,7 @@ foran.
 <title>Installation af VNC</title>
 
 <para>
-For eksemplets skyld antager jeg, at du ønsker at fjernstyre din
+For eksemplets skyld antages, at du ønsker at fjernstyre din
 Linux-maskine fra en Windows-maskine. Du skal altså hente en
 Linux-server og en Windows-klient.
 </para>
@@ -268,15 +269,15 @@ Linux-server og en Windows-klient.
 <para>
 Først skal VNC-serveren hentes. Det kan gøres fra
 <ulink url="http://www.uk.research.att.com/vnc">http://www.uk.research.att.com/vnc</ulink>, som er det sted hvor udviklerne
-lægger kildekoden. Desværre kan man derfra ikke hente RPM-pakker, og
-eftersom jeg kører Red Hat 7.0 (RPM-baseret), så foretrak jeg at gå på
-jagt efter en RPM-pakke andetsteds. På <ulink
-url="http://www.rpmfind.net">http://www.rpmfind.net</ulink> fandt jeg
-den nyeste version: 3.3.3r2, ved at søge efter "vnc-server".
+lægger kildekoden. Desværre kan man derfra ikke hente RPM-pakker,
+men gå til 
+<ulink url="http://www.rpmfind.net">http://www.rpmfind.net</ulink>
+og søg efter <EMPHASIS>vnc-server</EMPHASIS>.
+Version 3.3.3r2 eller nyere kan findes der.
 </para>
 
 <para>
-Så skal VNC-serveren installeres, og det gøres som root:
+VNC-serveren skal installeres som root:
 </para>
 
 <screen>
@@ -300,7 +301,7 @@ Der er altså mange options, men du behøver kun ganske få for at komme igang.
 </para>
 
 <para>
-Jeg starter min VNC-server således:
+Et eksempel på start af VNC-server:
 </para>
 
 <screen>
@@ -318,10 +319,18 @@ port-nummer.
 Du kan bruge en hvilket som helst størrelse du ønsker, også skæve
 størrelser som f.eks. 200x500, hvis du ønsker det. Vær opmærksom på,
 at jo større desktop du bruger, desto mere skal der sendes på nettet,
-og det giver reduceret hastighed. Når jeg sidder foran min maskine
+og det giver reduceret hastighed. 
+<!-- Hmm, jeg har ikke helt skrevet det samme /chlor
+Når jeg sidder foran min maskine
 derhjemme, så bruger jeg ikke 800x600x8bpp, men hvis jeg brugte mine
 normale dekstop-indstillinger (1024x800x16bpp), så ville det alt andet
-lige give ca. 3,5 gange mere traffik. Desuden er et baggrundsbillede
+lige give ca. 3,5 gange mere traffik.
+-->
+En mulig opløsning kunne være 800x600x8bpp til VNC-serveren, selv om
+den fysiske desktop kører 1024x800x16bpp. Ved at vælge denne mindre
+opløsning giver det 3,5 gange mindre trafik.
+
+Desuden er et baggrundsbillede
 også vejen til langsom hastighed, så brug en ensfarvet baggrund i
 stedet for dine feriebilleder.
 </para>
@@ -353,17 +362,17 @@ huske nedlukning af <command>vncserver</command>, når den ikke skal bruges.
 <title>Opsætning</title>
 
 <para>
-Når jeg sidder foran min server, så bruger jeg GNOME. Men når jeg
-bruger VNC til at koble op til min maskine, så foretrækker jeg at
-bruge IceWM, af den årsag at IceWM føles en smule hurtigere og hver
-lille smule hastighed tæller.
+Bruger du fx GNOME <!-- er det med versaler? /chlor --> som dekstop,
+er det en fordel at bruge en anden Window Manager når kobler op til VNC.
+Et valg kunne være IceWM der føles en lille smule hurtigere,
+og hver lille smule hastighed tæller.
 </para>
 
 <para>
 Af dokumentationen fremgår det at <command>vncserver</command> bruger
 <filename>$HOME/.vnc/xstartup</filename> som startfil. Det er altså
-stedet, hvor sådanne ændringer skal laves. Min xstartup har jeg ændret
-så den ser således ud:
+stedet, hvor sådanne ændringer skal laves. 
+En eksempel på en ændret xstartup kan se således ud:
 </para>
 
 <screen>
@@ -373,7 +382,7 @@ exec icewm
 </screen>
 
 <para>
-Hvis jeg i stedet ønskede at bruge GNOME, så skulle linien med exec
+Hvis du i stedet ønskede at bruge GNOME, så skulle linien med exec
 icewm ændres til <command>exec gnome-session</command>. Dette kræver
 selvfølgelig, at IceWM og GNOME er installeret i forvejen.
 </para>
@@ -387,11 +396,10 @@ Bemærk i øvrigt at standard window manager for VNC er
 <sect2 id="vnc-klienten">
 <title>Klienten</title>
 <para>
-I dette eksempel er klienten en Windows-maskine, så jeg henter
-programmet fra 
-<ulink url="http://www.uk.research.att.com/vnc">http://www.uk.research.att.com/vnc</ulink>,
-og kører Setup-programmet og følger instruktionerne på
-skærmen. Dernæst startes programmet.
+I dette eksempel er klienten en Windows-maskine, 
+og programmet kan hentes fra
+<ulink url="http://www.uk.research.att.com/vnc">http://www.uk.research.att.com/vnc</ulink>.
+Dernæst køres Setup-programmet, instruktionerne følges og programmet startes.
 </para>
 
 <para>
@@ -403,7 +411,8 @@ foresøge at kontakte port 5901 på maskine x.x.x.x (husk at VNC lægger
 </para>
 
 <para>
-Hvis der er forbindelse, så skal du også indtaste det password, som du angav, da du startede serveren første gang, og voila! så kan du fjernstyre din maskine.
+Hvis der er forbindelse, så skal du også indtaste det password, som du angav, 
+da du startede serveren første gang, og voila! så kan du fjernstyre din maskine.
 </para>
 
 <FIGURE ID="vnc1-fig" FLOAT="1">
