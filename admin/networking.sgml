@@ -998,4 +998,195 @@ brugervejledning. Den finder du på
 
 
 </sect1>
+
+<sect1 id="news-reader">
+<title>News</title>
+<indexterm><primary>News</primary></indexterm>
+<indexterm><primary>Nyhedsgrupper</primary></indexterm>
+
+<para>
+At læse nyhedsgrupper (news groups) på nettet er meget anvendeligt.
+Mange anvender f.eks. Netscape til dette, men der er alternativer,
+såsom <command>pine</command> og <command>slrn</command>.
+</para>
+
+<sect2 id="slrn">
+<title>Newsreaderen slrn</title>
+<para>
+Der er mange forskellige newsreadere. En af dem er slrn og den kommer
+med med så godt som alle Linux-distributioner. Den startes ved at
+skrive <command>slrn</command> på kommandolinien og er en ikke grafisk
+newsreader, men det gør den nu ikke dårligere, snarere tværtimod. Den
+er nemlig lynhurtig.
+</para>
+
+<sect3 id="slrn-config">
+<title>Opsætning af slrn</title>
+
+<para>
+For at kunne starte slrn skal den vide hvilken NNTP-server den skal gå
+op imod, dette sætte med environment variablen NNTPSERVER derfor i
+bash-shellen:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>export NNTPSERVER=localhost</userinput>
+</screen>
+
+<para>
+Hvis man kører egen NNTPSERVER ellers den man ellers kører op mod.
+Dette ved jeg faktisk ikke om det er rigtigt, men for at starte slrn
+skal den bruge en scorefil, denne laver jeg med:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>touch News/Score</userinput>
+</screen>
+
+
+<para>
+hvorefter slrn startes første gang:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>slrn -create</userinput>
+</screen>
+
+<para>
+Dette giver en rigtig uindbydende newsreader, men grupper strøet efter
+for godt befindende.
+</para>
+
+<FIGURE ID="slrn1-fig" FLOAT="1">
+<TITLE>slrn newsreader
+</TITLE>
+<GRAPHIC FILEREF="slrn1.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Men fortvivl ikke den skal vi nok få sat lidt skik på, dette gøres ved
+at lave en "god" konfigurationsfil til slrn. Denne skal ligge i
+<filename>~/.slrnrn</filename> og kunne se sådan ud:
+</para>
+
+<screen>
+% Konfigurationsfil til slrn - gemmes i ~/.slrnrn
+% sørger for at poste med rigtig emailadresse. 
+% Username og hostname bliver sat sammen til afsender adressse.
+
+set username "jekr"
+set hostname "get2net.dk"
+set realname "Jesper Krogh"
+
+% replies skal også se ordentligt ud.
+
+set quote_string "&gt; "
+
+% Headers to show when viewing an articles.  This is a comma-separated
+% list of strings that specify what headers to show.  Note that these
+% strings are not regular expressions.  However, one may use, e.g.,
+% "X-" to match any header beginning with "X-".  Similarly, "F" will
+% match "From:" and "Followup".
+
+visible_headers "From:,Subject:,Followup-To:,Reply-To:,Date:"
+
+
+% Sortering
+set sorting_method 9
+set new_subject_breaks_threads 0
+
+%Definere "gode" farver.
+
+color article           "blue"          "white"
+color author            "magenta"       "white"
+color boldtext          "brightblue"    "white"
+color box               "black"         "white"
+color cursor            "brightgreen"   "black"
+color description       "brightmagenta" "white"
+color error             "red"           "white"
+color frame             "yellow"        "blue"
+color group             "blue"          "white"
+color grouplens_display "blue"          "white"
+color header_name       "green"         "white"
+color header_number     "green"         "white"
+color headers           "blue"          "white"
+color high_score        "red"           "black"
+color italicstext       "magenta"       "white"
+color menu              "yellow"        "blue"
+color menu_press        "blue"          "yellow"
+color normal            "blue"          "white"
+color pgpsignature      "blue"          "white"
+color quotes            "red"           "white"
+color quotes1           "magenta"       "white"
+color quotes2           "magenta"       "white"
+color quotes3           "magenta"       "white"
+color quotes4           "magenta"       "white"
+color quotes5           "magenta"       "white"
+color quotes6           "magenta"       "white"
+color quotes7           "magenta"       "white"
+color response_char     "green"         "white"
+color signature         "red"           "white"
+color selection         "yellow"        "blue"
+color status            "yellow"        "blue"
+color subject           "red"           "white"
+color thread_number     "blue"          "white"
+color tilde             "green"         "white"
+color tree              "red"           "white"
+color underlinetext     "cyan"          "white"
+color verbatum          "green"         "white"
+
+% Mime support
+%------------------------------------------------
+set use_mime 1
+% set mime_charset "iso-8859-1"
+% If non-zero, call metamail for mime formats 
+% that slrn does not handle
+set use_metamail 1
+
+% En sidste ting der kunne være interessant er:
+editor_command    "jed %s -g %d -tmp"
+% Denne sætter slrn til at bruge jed som editor i 
+% stedet for default (vi). Her putter man så bare 
+% sin favorit editor ind i stedet for.
+</screen>
+
+
+<para>
+Alle disse parametre er fint beskrevet i man slrn. Men det mest
+interessante er resultatet at dette:
+</para>
+
+<FIGURE ID="slrn2-fig" FLOAT="1">
+<TITLE>slrn newsreader efter konfiguration
+</TITLE>
+<GRAPHIC FILEREF="slrn2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Lidt mere brugervenlig. Derefter unsubscribes de grupper man ikke
+ønsker af de viste. Dette sker ved at trykke "u" og afslutte med
+<command>&lt;shift&gt;"G"</command>. Så giver man sig til at subscribe
+grupper. Dette sker enten ved <command>"a" + gruppens navn</command>,
+men da man ikke lige kender den altid, ville det være skønnere med en
+liste. Dette gøres med <command>"L" + sslug*</command> og så trykkes
+der bare <command>"s"</command> ud for de gruppe man ønsker at
+abonnere på. Når man så læser et indlæg så farver slrn efter alle de
+ting, der er markeret for i teksten:
+</para>
+
+<FIGURE ID="slrn3-fig" FLOAT="1">
+<TITLE>slrn newsreader
+</TITLE>
+<GRAPHIC FILEREF="slrn3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Ydermere så er alle basis kommandoerne lagt på "?", så de er lige ved
+hånden hvis der er noget man ikke lige kan få slrn til. Derudover, så
+god fornøjelse med slrn.
+</para>
+</sect3>
+</sect2>
+</sect1>
+
 </chapter>
