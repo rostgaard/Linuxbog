@@ -1,0 +1,1395 @@
+<!-- $Id$ -->
+<chapter id="services">
+<title>Netværkssikkerhed - Services</title>
+
+<sect1>
+<title>TCP/IP-services</title>
+<para>
+En Linux-maskine er bygget til netværksbrug. Hvis der ikke er
+noget netværk, laver den bare et for sig selv. Uanset om din 
+Linux-maskine er på et netværk eller ej, tilbyder den en række 
+netværksservices.
+</para>
+
+<para>
+Er din computer koblet til netværk, er den udsat for
+misbrug udefra. Derfor er det vigtigt, at du forstår, 
+hvilke services din maskine tilbyder, hvad disse services gør, hvem de 
+tilbydes til, og at du i øvrigt har så få services kørende som muligt. 
+Services, du ikke bruger, bør slås fra, idet de kan give andre adgang til
+maskinen. Hvis din Linux-maskine ikke er på et netværk, kan du egentlig være 
+ligeglad med, hvilke services den tilbyder. Og dog - imorgen kommer den 
+måske på lokalnet, og i overmorgen bliver lokalnettet sluttet til 
+Internettet. 
+Denne kendsgerning kommer bag på de fleste, og det er en god ide at gøre 
+sig nogle sikkerhedsovervejelser på forhånd.
+Desuden har IBM foretaget en undersøgelse der viser, at over 40% af alle 
+sikkerhedsangreb sker internt, hvilket også skal med i overvejelserne 
+ved sikring af Linux-maskine. 
+</para>
+
+<para>
+Hvad er en service? Det er et program, der kører på din computer, som
+er beregnet til at andre kan koble sig til din computer og udveksle data. 
+Det kan f.eks. være ftp, telnet, finger, pop-2, pop-3, rpc (herunder NFS), 
+nntp og talk. Det kan også være http, smtp eller linuxconf.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Netværksprotokoller og porte</title>
+
+<para>
+Før vi ser nærmere på, hvad Linux-maskinen kan servicere for et
+netværk, så lad os lige træde et skridt tilbage og se på, hvordan
+systemet er bygget op. 
+</para>
+
+<para>
+En Linux-maskine vil normalt foretage en masse ting samtidig, f.eks. 
+håndtere emails, login-brugere som kører programmer, samt have en 
+web-server kørende. Derfor har man ikke bare kunnet nøjes med at 
+hver enkelt computer har en IP-adresse. De forskellige services
+lytter på hver sin port, som har sit eget nummer. F.eks. bruges 
+port 21 til ftp,
+port 22 til ssh (secure shell), port 23 til telnet, port 25 til 
+smtp og port 80 til http. De mest kendte 
+(well-known) portnumre, er tildelt af organisationen IANA
+(Internet Assigned Numbers Authority).
+I TCP/IP protokollen er det i TCP-datapakkerne, man finder information 
+om afsender port og modtager port, imens IP-adressen på afsender og 
+modtager er indeholdt i IP-transportlaget. 
+</para>
+
+<para>
+Porte er ikke fysiske men logiske konstruktioner, som anvendes i den måde,
+man sender data over netværket. Man skelner imellem TCP- og UDP-porte, som 
+bruges til to forskellige typer dataoverførsler. TCP er 
+forbindelsesorienteret. Den sender hele tiden kvitteringer frem og 
+tilbage (handshakes), og når det 
+går godt, behøver den ikke at få kvittering
+for sine data så tit. Hvis en datapakke går tabt, vil den blive 
+gentransmitteret af protokollen. Der findes også en anden 
+type IP-pakker med betegnelsen UDP. 
+UDP anvendes oftest til hurtig letvægtsinformation, som kan accepteres at 
+gå tabt i netværket såsom f.eks. NFS-forespørgsler.
+UDP-pakker, der går tabt 
+vil kun blive retransmitteret, hvis applikationen sørger for det
+(typisk NFS).
+</para>
+
+<para>
+Ofte tildeles en service både TCP og UDP porten med et givet nummer, 
+selvom den kun bruger den ene.
+</para>
+
+<para>
+User Friendly <ulink url="http://www.userfriendly.org/static">http://www.userfriendly.org/static</ulink> ser på IP-pakker...</para>
+
+<FIGURE ID="uf000405-fig" FLOAT="1">
+<TITLE>User Friendly</TITLE>
+<GRAPHIC FILEREF="uf000405.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+
+<para>
+Porte vælges ikke tilfældigt, men mange er standardiserede, så
+maskiner kan koble sig til en given port og dermed vide hvilken
+service, der kan findes. Hvis du læser filen
+<FILENAME>/etc/services</FILENAME> på en vilkårlig UNIX-maskine såsom
+Linux, kan du se hvilke porte, der bruges til hvad. Udsnit af en
+<FILENAME>/etc/services</FILENAME>:
+</para>
+
+<SCREEN>
+ftp-data        20/tcp
+ftp             21/tcp
+telnet          23/tcp
+smtp            25/tcp          mail
+</SCREEN>
+
+<para>
+Først står navnet på servicen, derefter portnummeret og om det er tcp 
+eller udp. Det sidste felt er til et evt. alias for denne service - i
+eksemplet er <FILENAME>mail</FILENAME> et alias for <FILENAME>smtp</FILENAME>.
+</para>
+
+<para>
+Portnumre under 1024 kaldes priviligerede porte, og man skal være root for
+at kunne lytte på dem. Dette er lavet, så en klient, der kontakter en
+fremmed maskine på en port under 1024, kan regne med at få fat i en standard 
+service og ikke et eller andet tilfældigt bruger-program. Se 
+<COMMAND>man services</COMMAND>.
+</para>
+
+<para>
+IP (Internet Protocol) er den netværksprotokol, man bruger på 
+Internet-baserede netværk.
+Der findes mange andre. - Apple har deres egen AppleTalk-protokol,
+og Novell har IPX/SPX. UNIX-maskiner bruger normalt IP, men har
+historisk også gjort brug af andre protokoller, f.eks. Digital's
+DECNET og Regnecentralens IMC. Linux-maskiner kan forstå mange
+af disse andre protokoller.
+</para>
+
+<sect2 id="daemons">
+<title>Daemons</title>
+<para>
+En service kan enten køres som en selvstændig daemon, eller den kan 
+styres af inetd. En daemon er en proces, som kører i baggrunden hele 
+tiden, og venter på forespørgsler. Nogle services skal køre hele 
+tiden og altid være klar, fordi det er nødvendigt med en hurtig responstid,
+eller at de ikke må være nede. Et eksempel er named, som laver navneoplag via 
+DNS, og som skal være hurtigt. Andre eksempler på daemons er lpd 
+(printer daemon), syslogd (logger system events) og sendmail. 
+Vi kigger nærmere på sendmail i et senere afsnit. 
+En anden daemon, som vi skal se på om lidt, er inetd, der bruges til at
+starte andre services efter behov.
+Prøv at køre kommandoen
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ps aux |more
+</SCREEN>
+
+<para>
+Denne kommando viser alle de kørende processer på systemet, og du vil
+kunne genkende processer som lpd, syslogd og inetd.
+</para>
+
+</sect2>
+
+<sect2 id="inetd">
+<title>Inetd</title>
+<para>
+En del services har kun brug for at køre relativt sjældent. Disse 
+services er i Linux styret af inetd-programmet. I stedet for at have
+f.eks. in.telnetd kørende hele tiden, sættes inetd daemonen til at
+lytte efter, om der er telnet forespørgsler, og starter in.telnetd 
+efter behov.
+</para>
+
+<para>
+Hvilke services, der skal startes, bestemmes af filen
+<FILENAME>/etc/inetd.conf</FILENAME>. Eks.:
+</para>
+
+<SCREEN>
+# These are standard services.
+#
+ftp    stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
+telnet stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd
+gopher stream  tcp     nowait  root    /usr/sbin/tcpd  gn
+
+...
+</SCREEN>
+
+<para>
+En service kan slås fra ved at udkommentere den linie, der starter
+den pågældende service.
+Eks.:
+</para>
+
+<SCREEN>
+ftp     stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
+</SCREEN>
+
+<para>
+bliver efter udkommentering til
+</para>
+
+<SCREEN>
+#ftp    stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
+</SCREEN>
+
+<para>
+dvs. du indsætter et # foran den linie, der styrer den enkelte
+service.  Dette gør, at denne service ikke bliver startet, og dermed
+vil din maskine ikke længere stille ftp-servicen til rådighed for
+andre maskiner på nettet.  Når du alligevel retter i
+<FILENAME>/etc/inetd.conf</FILENAME>, så udkommenter også linien med
+gopher, som er en ældre service, der i dag er helt erstattet af http.
+</para>
+
+<para>
+For at ændringerne i <FILENAME>/etc/inetd.conf</FILENAME> skal træde i
+kraft, er det nødvendigt at genstarte inetd processen. Dette kan gøres
+på flere måder.  Nogle distributioner har en struktur med startup
+scripts, der bruges til dette formål. Under Red Hat og Debian ligger
+de under <FILENAME>/etc/rc.d/init.d</FILENAME>
+hhv. <FILENAME>/etc/init.d</FILENAME>. Så kan man bruge startup
+scriptet til at genstarte inetd med.
+</para>
+
+<para>
+Red Hat:
+</para>
+
+<SCREEN>
+[root@sherwood robin]# /etc/rc.d/init.d/inet reload 
+</SCREEN>
+
+<para>
+Debian:
+</para>
+
+<SCREEN>
+[root@locksley robin]# /etc/init.d/netbase restart 
+</SCREEN>
+
+<para>
+Der er dog også nogle Linux-distributioner, der ikke benytter denne struktur
+herunder Slackware, så vi har brug for en mere generel løsning. For en 
+vilkårlig distribution kan man genstarte inetd ved at skrive:
+</para>
+<SCREEN>
+[root@sherwood robin]# killall -1 inetd
+</SCREEN>
+
+<para>
+Bemærk, at du i eksemplet kun slår din ftp-<emphasis>server</emphasis>
+fra. Du kan stadig bruge ftp fra maskinen til andre maskiner. Man kan
+bare ikke længere bruge ftp udefra og ind til din maskine.
+</para>
+
+<para>
+Inetd har den sikring, at en service bliver lukket ned i 10 minutter, 
+hvis der kommer mere end 20 forespørgsler i sekundet. For nogle services
+er dette ikke acceptabelt. Det er derfor, programmer som named og syslogd
+kører udenom inetd som daemons.  
+</para>
+
+<para>
+Gennemgå de andre services i <FILENAME>/etc/inetd.conf</FILENAME> på
+samme måde som vist ovenfor.  Undersøg, hvad der kører på din maskine,
+og find ud af om det er nødvendigt at de enkelte services kører. Hvis
+ikke, så slå det fra.  En gylden regel er, at du hellere må køre for
+få end for mange services.  Vi kommer senere til en gennemgang af de
+services, der findes i <FILENAME>/etc/inetd.conf</FILENAME>.
+</para>
+</sect2>
+
+<sect2 id="TCP-wrappers">
+<title>TCP-wrappere</title> 
+<para>
+Adgangen til de services, der styres af inetd, kan på en nem
+måde konfigureres, så der er kontrol over hvem, der har adgang til
+at bruge de forskellige services, maskinen tilbyder.
+</para>
+
+<para>
+Dette gøres ved at anvende en TCP-wrapper (tcpd), som er en
+agent, der bliver eksekveret i stedet for din normale server
+applikation. Den sørger for at requests om service bliver logget 
+til syslogd, og den giver en stærk og fleksibel adgangskontrol.
+Man kan f.eks. også få den til at sende sig en email, hvis nogen
+udefra forsøger at få adgang via telnet til maskinen.
+</para>
+
+<para>
+Tcpd virker sådan, at hver gang, der kommer en forespørgsel til
+inetd om at starte en service, er det tcpd, der får lov at starte den.
+Tcpd rapporterer til syslogd, hvad der sker, så det bliver skrevet 
+i logfiler, og kontrollerer, om den kaldende
+host har adgang til den pågældende service. Hvis alt er i orden,
+starter tcpd servicen, og afslutter sig selv. Simpelt og elegant.
+Tcpd skal sættes ind i <FILENAME>/etc/inetd.conf</FILENAME>-filen i stedet 
+for navnet på den service, der skal udføres. 
+Navnet på serviceprogrammet gives som parameter til tcpd. I de viste linier 
+fra <FILENAME>/etc/inetd.conf</FILENAME> ovenfor er tcpd allerede sat ind.
+</para>
+</sect2>
+
+<sect2 id="Adgang-til-din-maskine">
+<title>Adgang til din maskine</title> 
+<para>
+Adgangskontrol sker via filerne <FILENAME>/etc/hosts.allow</FILENAME> og 
+<FILENAME>/etc/hosts.deny</FILENAME>.
+</para>
+
+<para>
+Når tcpd skal finde ud af, om der er adgang til en service, checker 
+den først <FILENAME>/etc/hosts.allow</FILENAME>. Hvis der her er givet explicit adgang, 
+godkendes forsøget, og servicen bliver startet. Hvis der ikke står
+noget om den pågældene service i <FILENAME>/etc/hosts.allow</FILENAME>,
+læses nu <FILENAME>/etc/hosts.deny</FILENAME>.
+Hvis <FILENAME>/etc/hosts.deny</FILENAME> ikke indeholder noget, der forbyder 
+den forsøgte adgang, vil forsøget blive godkendt. Det kan altså 
+være en god ide at sætte sin <FILENAME>/etc/hosts.deny</FILENAME> op til at 
+slutte med at afvise alt og alle. På den måde er man sikker på, 
+at hvis der er noget, man ikke explicit har givet adgang til, så 
+er der ikke adgang. På den anden side må man så sikre sig, at alle 
+services, der skal kunne anvendes, er sat op i <FILENAME>/etc/hosts.allow</FILENAME>.
+</para>
+
+<para>
+Filerne har det følgende format. Eks. på en linie:
+</para>
+
+<SCREEN>
+in.telnetd: 192.168.0.0/255.255.255.0
+</SCREEN>
+
+<para>
+I <FILENAME>/etc/hosts.allow</FILENAME> ville denne linie tillade alle på lokalnettet 
+192.168.0.* at benytte telnet servicen. Stod linien i <FILENAME>/etc/hosts.deny</FILENAME>,
+ville det betyde, at de ikke kunne.
+</para>
+
+<para>
+Eksempel på <FILENAME>/etc/hosts.allow</FILENAME> fil:
+</para>
+
+<SCREEN>
+in.ftpd: 0.0.0.0/0.0.0.0
+ALL: 192.168.0.2
+ipop3d: 192.168.0.0/255.255.255.0
+</SCREEN>
+
+<para>
+Denne <FILENAME>/etc/hosts.allow</FILENAME> vil tillade hele verden adgang til ftp, og 
+giver host 192.168.0.2 lov til alt. Hosts på netværket 192.168.0.*
+har desuden adgang til pop3.
+</para>
+
+<para>
+Eksempel på <FILENAME>/etc/hosts.deny</FILENAME> fil:
+</para>
+
+<SCREEN>
+in.telnetd: 0.0.0.0/0.0.0.0
+</SCREEN>
+
+<para>
+Denne <FILENAME>/etc/hosts.deny</FILENAME> fil sørger for, at ingen har adgang til 
+telnet servicen. Dette gælder dog ikke for 192.168.0.2, da den 
+allerede i <FILENAME>/etc/hosts.allow</FILENAME> har fået lov til alt herunder telnet.
+</para>
+
+<para>
+En mere sikker <FILENAME>/etc/hosts.deny</FILENAME> ville være denne:
+</para>
+
+<SCREEN>
+ALL: 0.0.0.0/0.0.0.0
+</SCREEN>
+
+<para>
+Denne linie nægter alle adgang til alt, medmindre der specifikt er
+givet lov i filen <FILENAME>/etc/hosts.allow</FILENAME>. Bemærk dog,
+at du kan blive overrasket over ting, der ikke virker, hvis du har sat
+den restriktive <FILENAME>/etc/hosts.deny</FILENAME>-fil op.  Vær
+omhyggelig med at sætte de nødvendige tilladelser op i
+<FILENAME>/etc/hosts.allow</FILENAME>. Hvis du har glemt at give
+adgang til noget, opdager du det sikkert, når du skal bruge det, eller
+når nogen brokker sig.  Har du derimod glemt at spærre for noget,
+opdager du det måske først den dag, det bliver brugt til at bryde ind
+på dit system.  Med sikkerhed og paranoia i højsædet er det smart at
+have ovenstående linie i sin <FILENAME>/etc/hosts.deny</FILENAME>. Så
+bliver forespørgsler afvist, hvis du ikke har sat dem ind i
+<FILENAME>/etc/hosts.allow</FILENAME>. HUSK at en forespørgsel bliver
+godkendt, hvis du ikke har angivet andet.
+</para>
+
+<para>
+Se i øvrigt <COMMAND>man tcpd</COMMAND>, og <COMMAND>man
+hosts.allow</COMMAND> eller <COMMAND>man hosts.deny</COMMAND> (de to
+sidste er samme fil).
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="inetd-slaa-fra">
+<title>Hvilke inetd services skal jeg slå fra?</title>
+<para>
+Hvilke services, der kan undværes på dit system, afhænger af hvad
+det skal bruges til, og det er dig selv der må afgøre det. Men vi
+vil gennemgå de mest almindelige services, hvad de gør, om de er 
+usikre, og hvad de evt. kan erstattes af.  
+</para>
+
+<sect2 id="telnet">
+<title>Telnet</title>
+<para>
+Telnet (telnetd) er en service der gør, at folk kan logge ind på maskinen
+ved hjælp af en telnet-klient. For at det er muligt at logge ind,
+skal man have et brugernavn og tilhørende password, som findes på
+maskinen. Når man er logget ind, kan man så udføre de tekstkommandoer, 
+man plejer at kunne udføre, når man sidder foran maskinen. Telnet
+kører normalt på port 23, men kan sættes op til en anden port.
+</para>
+
+<para>
+Telnet er en gammel sag, fra dengang i begyndelsen af Internets 
+historie, hvor der kun var venner og ingen fjender på nettet. Det var 
+mest forskere på universiteter, der havde adgang, og de ville ikke 
+hinanden noget ondt. Alle kendte mere eller mindre hinanden, så hvis 
+man lavede ballade var man hurtigt upopulær blandt ligesindede. 
+Den slags moral kan vi ikke regne med mere.
+</para>
+
+<para>
+Mange af de "gamle" services er usikre i dag, fordi de slet ikke er 
+designet med sikkerhed i tankerne men alene stabilitet og fornuftig ydelse.
+</para>
+
+<para>
+Telnet er først og fremmest usikker, fordi den sender brugernavn og 
+password som klar ukrypteret tekst over nettet. Dvs., at det er lige til
+at læse for enhver, der måtte sidde og kigge på nettrafikken et sted
+imellem dig selv og den maskine, du logger ind på. Det er særdeles 
+risikabelt at bruge telnet over Internet, hvor alle i princippet kan
+sidde og lytte med. 
+</para>
+
+<para>
+På en maskine, der har adgang til Internet, bør telnet slås fra, og 
+<ulink url="netvaerk.html#ssh">erstattes med ssh</ulink>. En grund til at beholde 
+telnet kan dog være, at der findes telnet-klienter til stort set alle
+systemer. Hvis man har brug for at logge ind fra et system, hvortil der
+ikke findes en ssh-klient, kan det være nødvendigt at bruge telnet. Men 
+det er risikabelt at lade en telnet service køre, hvis maskinen er på
+Internet. Så overvej, om der ikke er andre muligheder for at løse dine behov.
+</para>
+
+<para>
+Hvis telnet skal køre, kan man sikre sig bedre med adgangskontrol
+(<FILENAME>/etc/hosts.allow</FILENAME>), ved at skifte password hver gang og
+ved ikke at have det samme password på andre maskiner i lokalnettet, 
+så skaden ved indbrud trods alt begrænses.
+</para>
+</sect2>
+
+<sect2 id="ftp">
+<title>Ftp</title>
+<para>
+FTP (File Transfer Protocol) bruges, når man vil kopiere filer fra
+en maskine til en anden.
+FTP er ligesom telnet en af de gamle services, som er meget
+stabil men slet ikke sikker, idet login navn og password
+sendes i klar tekst. FTP er imidlertid ofte mindre farlig end
+telnet, da det meste ftp-trafik foregår som "anonymous ftp".
+</para>
+
+<para>
+Når man skal ftp'e til en maskine, skriver man ftp maskinnavn 
+(evt portnavn). 
+F.eks.:
+</para>
+
+<SCREEN>
+ftp locksley 37067
+</SCREEN>
+
+<para>
+Ovenstående kommando vil forsøge at åbne en ftp forbindelse til
+host "locksley" port 37067. Så bliver man spurgt om loginnavn og derefter
+password. Går det godt, er man inde, og man kan downloade filer med
+kommandoen "get" og uploade med "put". Man kan desuden vælge, om det
+skal være binær eller ascii overførsel, skrive "ls" for at se
+indhold af katalog eller skifte katalog med "cd" mm.
+</para>
+
+<para>
+Har man en rigtig bruger konto på maskinen, og er ftp sat op til det, 
+kan man logge ind med sit normale brugernavn og password.
+Dette kan være relevant på f.eks. et lokalnet, hvor brugerne har behov 
+for at flytte filer. Faren er her den samme som ved brug af telnet, nemlig at 
+brugernavn og password sendes i klar tekst over nettet. Foregår dette over det
+usikre Internet, må vi bestemt anbefale at man bruger scp
+(<ulink url="netvaerk.html#ssh">secure copy fra ssh-pakken</ulink>), 
+hvis det er muligt. Alternativet er en speciel
+krypteret udgave af ftp, men dette kræver, at klienten kan
+tale samme sprog. Ftp kører normalt på port 20 (data) og 21
+(kommandoer).
+</para>
+
+<para>
+Det er imidlertid meget almindeligt, at en ftp server er sat op til at i
+acceptere brugernavnet "anonymous" eller "ftp". En del ftp servere er 
+beregnet til kun
+at understøtte denne type login. Det kaldes anonymous ftp, og bruges
+ved "offentlige" ftp servere, hvor enhver kan hente de filer der er 
+lagt frem. Her bruger man sin email adresse som password. Ved 
+anonymous ftp kan alle logge ind, og det lyder måske farligt, men det er 
+det kun, hvis man har sat sin ftp server forkert op. 
+</para>
+
+<para>
+Der sendes ikke brugernavne og passwords over nettet. Der sendes kun 
+brugernavnet "anonymous", samt en email adresse, og det gør ingenting for
+serverens sikkerhed, at det bliver opsnappet.
+</para>
+
+<para>
+Ved anonymous ftp har folk ikke brug for at kunne ret meget.  De har
+brug for at kunne downloade og måske uploade. Og for at kunne gå hen i
+det katalog de skal uploade i og tilsvarende downloade fra, men stort
+set har de ikke brug for mere. De har ikke brug for at kunne bevæge
+sig rundt på hele maskinen, og det bør de ikke i have lov til. Dette
+undgås ved, at man "chroot'er" dem, dvs., at man f.eks. får kataloget
+<FILENAME>/home/ftp</FILENAME> til at se ud som roden af filsystemet
+(dvs. /). Brugeren kan ikke se resten af filsystemet og kun få ordrer
+kan anvendes.  Dermed er serveren ikke nær så udsat, som hvis alle og
+enhver kunne logge "rigtigt" ind. Det er kun lidt, der skal sættes op,
+før et chroot'et environment virker (så bla. "ls" og "cd" virker) -
+nogle filer skal kopieres til <FILENAME>/home/ftp/lib</FILENAME>,
+<FILENAME>/home/ftp/bin</FILENAME> og
+<FILENAME>/home/ftp/etc</FILENAME> filer. Dette er gjort for dig i
+alle de store Linuxdistributioner.
+</para>
+
+<para>
+Endelig bør man huske, at <FILENAME>/home/ftp</FILENAME> ikke bør
+været ejet af den bruger, folk logger ind som, dvs. anonymous eller
+ftp. Så kan de ændre environment, lave .rhosts-filer og andet, som kan
+bringe net-sikkerheden i fare.
+</para>
+
+<para>
+Der er et par ting mere, man bør tænke på. For det første bør der ikke
+være læse og skriverettigheder på det samme katalog. Folk skal uploade
+et sted og download'e et andet, og serverens administrator skal så
+sørge for at uploadede ting evt. bliver tilgængelige til
+download. Dette skyldes, at hvis man bare lader sin server stå åben
+for up - og downloads uden kontrol, vil folk bruge den til
+piratsoftware, porno etc. Derfor er det smart først at lade det folk
+uploader være tilgængeligt for download, efter at man har kigget det
+igennem.
+</para>
+
+<para>
+Der er en sidste ting, man skal være opmærksom på med en ftp
+server. Folk kan med vilje eller ved et uheld uploade så meget, at
+harddisken løber fuld. Det kan give Linuxsystemet problemer, så det
+skal man undgå.  Det kan styres ved at lade uploadkataloget ligge på
+en partition (eller disk) for sig selv, eller ved i opsætningen af ftp
+serveren at lave begrænsninger for størrelsen af den uploadede mængde.
+Hvis folk med vilje fylder ens disk op, for at systemet skal holde op
+med at fungere, kaldes det et "denial of service attack" ("ude af
+drift angreb", også kendt som DOS attack) - maskinen nægter brugerene
+den service, som skulle leveres, fordi den er sat ud af drift af
+angrebet. Der findes også sikkerhedshuller til andre slags DOS attacks
+i nogle ftp-servere.  Hvis du ikke skal bruge ftp, bør du slå den fra
+i /etc/inetd.conf.
+</para>
+
+<SCREEN>
+ftp    stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
+</SCREEN>
+
+<para>
+bliver til
+</para>
+
+<SCREEN>
+#ftp    stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
+</SCREEN>
+
+<para>
+Husk at "reloade" inetd.
+</para>
+</sect2>
+
+<sect2 id="finger">
+<title>Finger</title>
+
+<para>
+Finger er et program, som viser hvem, der er logget på maskinen lige nu,
+hvornår de sidst var logget ind og hvor længe:
+</para>
+
+<SCREEN>
+[robin@sherwood]$ finger robin
+Login: robin                             Name:
+Directory: /home/robin                   Shell: /bin/bash
+On since Fri Jul  9 10:18 (CEST) on tty1    1 hour 14 minutes idle
+     (messages off)
+On since Sat Jul 10 01:13 (CEST) on tty2    1 hour 14 minutes idle
+     (messages off)
+On since Sat Jul 10 01:14 (CEST) on pts/0   1 hour 15 minutes idle
+     (messages off)
+On since Sat Jul 10 01:14 (CEST) on pts/2   26 minutes 11 seconds idle
+     (messages off)
+No mail.
+No Plan.                    
+</SCREEN>
+
+<para>
+Denne kommando kan køres fra andre maskiner mod din maskine, og kan 
+anvendes af folk udefra til f.eks. at finde frem til en brugerkonto,
+der ikke har været brugt længe. Denne information bør du ikke give 
+videre ud over maskinen selv.
+Derfor bør du i <FILENAME>/etc/inetd.conf</FILENAME> tilføje et "#" foran linien
+</para>
+
+<SCREEN>
+finger  stream  tcp     nowait  root    /usr/sbin/tcpd  in.fingerd      
+</SCREEN>
+
+<para>
+Finger er for de fleste fuldstændig unødvendig og en dum
+sikkerhedsrisiko at lade stå åben.  Hvis du kan finde en undskyldning
+for, at du har brug for finger, så skal den i hvert fald
+<emphasis>kun</emphasis> være tilgængelig internt. Dvs., at adgang fra
+andre maskiner skal være spærret f.eks. med tcp-wrappers.
+</para>
+</sect2>
+
+<sect2 id="pop">
+<title>POP</title>
+
+<para>
+Hvis din maskine ikke skal være mailserver, så udkommenter pop-2,
+pop-3 og imap i <FILENAME>/etc/inetd.conf</FILENAME>.
+</para>
+
+<para>
+POP står for Post Office Protocol, og man bruger POP til at
+hente mail fra en mailserver og lægge i sin inbox på ens egen maskine. 
+Bemærk, at selvom man slår POP-serveren fra lokalt, forhindrer det ikke,
+at man kan hente mail via sin udbyders POP-server.
+Da POP-daemonen skal skrive i brugernes hjemmekataloger,
+er den nødt til at køre som root. Dette er et sikkerhedsproblem.
+Ligesom med telnetd og ftpd er det desuden et stort problem, 
+at POP kører med ukrypteret transmission af brugernavn og password.
+</para>
+
+<para>
+Afhængig af hvad man skal bruge POP til, kan man sikre den. Hvis den 
+kun skal bruges internt i ens firma, kan man enten
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem><para>
+   sørge for, at der ikke kan checkes mail udefra ved opsætning
+   TCP-wrappers og/eller firewall.
+  </para></listitem>
+  <listitem><para>
+    bruge krypteret overførsel, hvis man kun har mailklienter,
+    man selv bestemmer over.
+  </para></listitem>
+</itemizedlist>
+
+<para>
+Man kan kryptere POP, men igen er dette en udvidelse, som kræver at
+alle klienter understøtter det. Det er ikke altid tilfældet. Der
+findes også en metode, der hedder APOP, som de fleste POP-programmer
+understøtter. Med APOP sendes passwordet krypteret. Dette er baseret
+på MD5-kodning, hvor der også er et time stamp involveret. Mere
+information kan findes i RFC 1725.
+</para>
+   
+<para>
+IMAP er en udvidet version af POP. Den kan sætte sig selv til at køre 
+med brugerens privilegier noget af tiden i stedet for root, og man
+kan meget mere med den end med POP. F.eks. kan man med IMAP være 
+flere brugere om én account, nøjes med at downloade
+headerene fra sine mails og lade resten ligge på serveren, etc.
+</para>
+
+<para>
+For at slå POP og IMAP fra i <FILENAME>/etc/inetd</FILENAME> skal
+følgende linier udkommenteres:
+</para>
+
+<SCREEN>
+pop-2   stream  tcp     nowait  root    /usr/sbin/tcpd ipop2d
+pop-3   stream  tcp     nowait  root    /usr/sbin/tcpd ipop3d
+imap    stream  tcp     nowait  root    /usr/sbin/tcpd  imapd
+</SCREEN>
+
+<para>
+bliver til
+</para>
+
+<SCREEN>
+#pop-2   stream  tcp     nowait  root    /usr/sbin/tcpd ipop2d
+#pop-3   stream  tcp     nowait  root    /usr/sbin/tcpd ipop3d
+#imap    stream  tcp     nowait  root    /usr/sbin/tcpd  imapd
+</SCREEN>
+</sect2>
+
+<sect2 id="linuxconf">
+<title>Linuxconf</title>
+
+<para>
+Anvender du en nyere Linux distribution, kan det være, at du har 
+programmet linuxconf kørende på din maskine på port 98. Du kan 
+i <FILENAME>/etc/initd.conf</FILENAME> se, om du har linuxconf kørende ved 
+at lede efter en linie, der indeholder ordet <COMMAND>linuxconf</COMMAND>. Den kan
+f.eks. se sådan ud:
+</para>
+
+<SCREEN>
+linuxconf stream tcp wait root /bin/linuxconf linuxconf --http
+</SCREEN>
+
+<para>
+Ganske vist kan linuxconf umiddelbart kun tilgås fra den lokale
+maskine og ikke fra netværket, men programmets egen usikrede webserver
+bør man ikke stole blindt på. Luk det, hvis du har et usikkert
+net. Tilsvarende argumenter kan anvendes overfor programmer såsom
+webmin, som giver et webinterface til systemadministration. Webmin er
+normalt ikke installeret, men skal hentes som særskilt pakke. For at
+værktøjet til webadministration kan accepteres på et usikkert net, skal
+SSL eller bedre kryptering indbygges i server og klient.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="rpc-og-portmap">
+<title>RPC og portmap</title>
+<para>
+Ud over services, som konfigureres via
+<FILENAME>/etc/inetd.conf</FILENAME>, er der en klasse af services,
+som anvender RPC - Remote Procedure call. Vi vil se lidt på RPC og de
+mest kendte RPC-baserede services.
+</para>
+
+<para>
+RPC går ud på, at man har et netværk af computere og kan få dem til at
+arbejde sammen som et system. Altså en slags "distributed
+computing". Man kan driste sig til at kalde det en tidlig forgænger
+for <ulink url="http://www.omg.org">CORBA</ulink>. Det overordnede princip
+er, at man kalder en funktion, som enten udføres af den lokale maskine
+eller en anden maskine i netværket.
+</para>
+
+<para>
+I praksis betyder det, at der kan køre en række RPC services på
+din maskine. I stedet for at RPC services kører på et bestemt portnummer,
+får de tildelt et portnummer ved opstart. De registrerer sig hos portmapper 
+daemonen, når de bliver startet. Portmapper daemon'en holder styr på 
+hvilken RPC services der kører på hvilket portnummer, og videresender 
+forespørgsler fra klienter til den rette service. RPC services
+behøver altså ikke køre på et bestemt portnummer, som klienten kender i 
+forvejen. Klienten henvender sig til portmap på serveren og bliver
+"stillet igennem" til den rigtige service. 
+</para>
+
+<para>
+Dette er meget smart, men det komplicerer opsætningen af firewalls, da
+man ikke på forhånd ved, hvilken port den RPC service vil
+benytte. Prøv at skrive
+</para>
+
+
+<SCREEN>
+[robin@sherwood robin]$ /usr/sbin/rpcinfo -p localhost
+   program vers proto   port
+    100000    2   tcp    111  rpcbind
+    100000    2   udp    111  rpcbind
+    100005    1   udp    635  mountd
+    100005    2   udp    635  mountd
+    100005    1   tcp    635  mountd
+    100005    2   tcp    635  mountd
+    100003    2   udp   2049  nfs
+    100003    2   tcp   2049  nfs
+[robin@sherwood robin]$
+</SCREEN>
+
+<para>
+(Dette er fra et Red Hat system. På Debian står der portmapper i
+stedet for rpcbind). Man kan se at NFS og mountd (NFS mount) kører, 
+men ikke NIS.
+</para>
+
+
+<para>
+Portmapperen kører normalt på port 111. Hvis man ikke har brug for, at nogle
+RPC services er tilgængelige udefra, kan man i sin firewall blokere port 111.
+Hvis ikke du ved, om du bruger RPC, så gør du det ikke. Fjern det, og stop
+portmapper servicen.
+</para>
+
+<para>
+Det er i øvrigt ikke nok at stoppe portmapperen. Der findes værktøjer
+til at sniffe på alle åbne porte og dermed afsløre kendte RPC-services uden
+at spørge portmapperen.
+</para>
+
+<para>
+Udefra  kan man spørge maskinen hvilke netværksprocesser, som
+tilbydes. Et program, som er velegnet til dette, er "nmap", som kan
+download'es fra 
+<ulink url="http://www.insecure.org/nmap">http://www.insecure.org/nmap</ulink>.
+Prøv at køre nmap på din egen maskine:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ nmap localhost
+
+Starting nmap V. 2.2-BETA4 by Fyodor (fyodor@dhp.com, www.insecure.org/nmap/)
+Interesting ports on localhost (127.0.0.1):
+Port    State       Protocol  Service
+25      open        tcp       smtp
+37      open        tcp       time
+53      open        tcp       domain
+70      open        tcp       gopher
+80      open        tcp       http
+98      open        tcp       linuxconf
+111     open        tcp       sunrpc
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+113     open        tcp       auth
+139     open        tcp       netbios-ssn
+143     open        tcp       imap2
+513     open        tcp       login
+514     open        tcp       shell
+515     open        tcp       printer
+635     open        tcp       unknown
+2049    open        tcp       nfs
+6000    open        tcp       X11
+
+Nmap run completed -- 1 IP address (1 host up) scanned in 0 seconds
+</SCREEN>
+
+<para>
+Man kan således udefra se, at sherwood har sunrpc til at lytte på
+port 111 - sunrpc er det samme som portmapperen. Processen - det
+kørende program - hedder portmap, men servicen hedder sunrpc. Bliv
+ikke forvirret, kært barn har mange navne. Kør <COMMAND>ps -aux |grep
+portmap</COMMAND> på dit system, og du kan indefra se, at portmapper daemonen
+kører.
+</para>
+
+<para>
+Portmapper daemonen er et program, der hedder portmap (på nogle systemer
+hedder det rpcbind). Den bliver startet op i dine startup scripts
+(Red Hat: <FILENAME>/etc/rc.d/init.d/portmap</FILENAME>, Debian: 
+<FILENAME>/etc/init.d/netbase)</FILENAME>.
+</para>
+
+<para>
+RPC er rent sikkerhedsmæssigt noget skidt.  RPC er, som
+alt muligt andet fra dengang, designet med henblik på funktionalitet
+og stabilitet fremfor sikkerhed. RPC blev i sin tid lavet af Sun, men det blev
+hurtigt efterlignet af andre og vandt stor udbredelse. Problemet med
+RPC er, at metoden til autentifikation er baseret alene på brugerens UID
+og GID (User/Gruppe ID). RPC serveren tror på, at man er den, man giver
+sig ud for at være - uden yderligere validering af identitet.
+Udgiver man sig for at være en bruger med adgang, så bliver man lukket ind.
+</para>
+
+<para>
+Sun kom senere med en mere sikker version, secure RPC, som bruger en
+kryptering baseret på DES. Secure RPC vandt aldrig den samme udbredelse,
+fordi den ikke blev efterlignet af andre (noget med at den anvendte
+krypteringsmetode var patenteret, og man skulle købe en licens for at
+bruge den).
+</para>
+
+<para>
+Det er en dårlig ide at slå portmapper daemonen fra, før du har
+undersøgt hvilke programmer, der bruger den. NFS kører f.eks. via RPC,
+hvilket vi allerede så, da vi kørte rpcinfo programmet. Vi så faktisk
+alle de services, der har registreret sig hos portmapperen. Portmap er
+selv en af dem (kan hedde rpcbind). Alt efter hvor mange services, du
+har startet op, så kan du se, at services som nfs, mountd, nis,
+automounteren amd m.fl.kører på dit system via RPC.
+</para>
+
+<para>
+Du er nødt til at tage stilling til, om du har brug for disse
+services, hvis ikke skal de slås fra. Hvis <COMMAND>rpcinfo -p
+localhost</COMMAND> kun viser portmapperen selv, evt fordi du har
+slået de andre services fra, så kan du godt slå portmap fra også.  Men
+bemærk, at den skal slås til igen, hvis du vil anvende en af de
+services, der benytter RPC.
+</para>
+
+
+<sect2 id="nis-og-nis-plus">
+<title>NIS og NIS+</title>
+<para>
+NIS (Network Information Service) er en måde, hvorpå man kan nøjes med
+at have sin <FILENAME>/etc/passwd</FILENAME> fil og andre konfigurationsfiler
+(typisk en del filer fra <FILENAME>/etc/</FILENAME>) på én server.  Klienterne
+får de nødvendige oplysninger af serveren via NIS. NIS er baseret på
+RPC. Med NIS slipper man for at vedligeholde sine konfigurationsfiler 
+på en masse maskiner. Det gør det lettere at holde styr på sine brugere,
+grupper og hvem, der har lov
+til hvad. NIS er mere komplekst end UNIX bruger og gruppe
+rettighedssystemet og gearet til at holde styr på et stort netværk,
+hvor en bruger ikke må det samme på alle maskiner. NIS+ er en mere
+sikker version med lettere administration af store systemer (lettere
+opdatering af serveren etc).
+</para>
+
+<para>
+Klient daemonen til NIS hedder
+ypbind, server daemonen ypserv og kommandoerne starter med yp (et
+levn fra dengang NIS hed yellow pages).  Se i øvrigt 
+<ulink url="http://www.sunsite.auc.dk/ldp/HOWTO/NIS-HOWTO-6.html">http://www.sunsite.auc.dk/ldp/HOWTO/NIS-HOWTO-6.html</ulink>.
+</para>
+</sect2>
+
+<sect2 id="nfs">
+<title>NFS</title>
+<para>
+NFS (Network File System) er et netværksfilsystem, som muliggør
+af flere maskiner kan dele den samme disk via netværket. Med NFS 
+kan man eksportere hele eller dele af sit lokale filsystem, så en
+bruger kan mounte det fra andre maskiner over nettet. Det er dumt 
+og unødvendigt at eksportere hele sin systemdisk - man bør nøjes med
+at eksportere de dele af filsystemet, der er behov for NFS-adgang til. 
+NFS kører normalt på port 2049.
+</para>
+
+<para>
+NFS er en RPC baseret service og er afhængig af at portmapperen kører.
+NFS startes af et startupscript (Red Hat:
+<FILENAME>/etc/rc.d/init.d/nfs</FILENAME>, Debian:
+<FILENAME>/etc/init.d/nfs-server</FILENAME>.  Daemonerne hedder
+<COMMAND>rpc.mountd</COMMAND> og <COMMAND>rpc.nfsd</COMMAND>. mountd
+daemonen tager sig af selve mount processen, imens NFS daemonen tager
+sig af at åbne, lukke, læse og skrive filer etc.
+</para>
+
+<para>
+Filsystemer, der skal være tilgængelige via NFS, angives i
+<FILENAME>/etc/exports</FILENAME>, f.eks.
+</para>
+
+<SCREEN>
+/home/robin     192.168.0.0/255.255.255.252(rw)  
+</SCREEN>
+
+<para>
+Denne linje eksporterer kataloget <FILENAME>/home/robin/</FILENAME>
+med adgang for maskinerne 192.168.0.1, 192.168.0.2 og 192.168.0.3. Den
+eneste option, der er sat i ovenstående linie, er "rw" (read
+write). Der findes desuden nogle sikkerhedsrelaterede options til
+<FILENAME>/etc/exports</FILENAME>, men angiver du ingen, er de sat til
+det sikreste. Du skal således manuelt slå dem til for at få den mere
+usikre version.  F.eks. "secure" option, som betyder at en
+forespørgsel skal komme fra en port mindre end 1024. Den er default
+slået til - vil man slå den fra, må man specificere
+"insecure". Beskrivelse af yderligere options findes i <COMMAND>man
+exports</COMMAND>.
+</para>
+
+<para>
+Lad ikke dette forlede dig til at tro, at NFS er sikkert. Det er
+grundlæggende usikkert, da det kører via RPC, som du ikke kan betragte
+som sikker. Selve datatrafikken er heller ikke krypteret. 
+Begræns din filsystemexport til det, du rent faktisk har
+brug for, og mount kun de drev du har brug for. Lad være med at mounte
+alle eksporterede drev på alle klientmaskiner, hvis der ikke er behov
+for det. Dette er i øvrigt klogt af hensyn til den almindelige
+driftstabilitet, idet du kun bliver afhængig af de maskiner, du skal bruge.
+</para>
+
+<para>
+Hvis du ikke bruger NFS, så slå den fra. I Red Hat, Debian eller SuSE
+gøres det ved at fjerne symlinkene til startup scriptet i de
+forskellige runlevel kataloger <FILENAME>/etc/rc.d/rcN.d</FILENAME> eller
+<FILENAME>/etc/rcN.d</FILENAME>, hvor N er runlevel (0-6). I nogle
+distributioner er det i stedet nødvendigt at fjerne de linier, der har
+med NFS opstart at gøre, i et større script, der køres, når maskinen
+startes, og som starter mange andre ting end NFS. Kører du Red hat, så
+kig på programmet <COMMAND>chkconfig</COMMAND>, som er et nemt og
+overskueligt værktøj til at styre, hvad der startes ved de forskellige
+runlevels.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="apache">
+<title>Apache webserveren</title>
+
+<para>
+Apache er verdens mest anvendte webserver. Den følger standard med
+Linux, og findes desuden til alle andre UNIX systemer. Ofte sker det 
+under installationen af Linux, at Apache er installeret uden, at du
+har lagt mærke til det. Hvis din maskine ikke skal fungere som webserver,
+har du kun brug for Apache, hvis du vil lege med CGI-scripts,
+PHP eller andre smarte ting (hvor du for alvor skal passe på din sikkerhed).
+Check om du kører Apache eller en anden webserver på port 80
+(kan være andre steder såsom port 8080) ved at skrive
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ telnet MASKINNAVN 80
+</SCREEN>
+
+<para>
+og så skriv f.eks. "?" og tryk retur. Ser du noget HTML kode, så 
+er der en webserver. Apache er meget stabil og gennemtestet, men 
+tænk over, om du behøver den.
+</para>
+</sect1>
+
+<sect1 id="sendmail">
+<title>Sendmail</title> 
+<para>
+Sendmail er en MTA (Mail Transfer Agent). Den bruges til at dirigere 
+email rundt på systemet og lytter normalt også på smtp porten.
+Sendmail er et meget komplekst program at sætte op og meget
+komplekst at forstå. Hvis du er begynder, vil vi anbefale, at du ikke
+begynder at sætte dig dybdegående ind i sendmail lige nu, medmindre
+du har brug for det. Vi vil her kort forsøge at forklare, hvornår
+dit system anvender sendmail, hvorfor/hvornår det er farligt, og
+hvilke alternativer, der er.
+</para>
+
+<sect2 id="hvorfor-ikke-sendmail">
+<title>Hvorfor er sendmail farlig?</title>
+<para>
+Sendmail er en meget gammel sag, og den har et ret dårligt rygte, 
+hvad sikkerhed angår, men er uhyre anvendt. Den har eksisteret i mange år og
+har i tidens løb haft mange slemme sikkerhedshuller.  Se 
+<ulink url="ftp://koobera.math.uic.edu/www/maildisasters/sendmail.html">
+ftp://koobera.math.uic.edu/www/maildisasters/sendmail.html</ulink>. 
+Disse er dog blevet rettet efterhånden - men der kan komme nye. Da
+sendmail er et meget komplekst program, kan der også godt være nogle
+fejl, som der går lang tid, før nogen opdager. Sendmail kører med
+root-privilegier, d.v.s., den har adgang til hele systemet og kan gøre
+alt, hvad en administrator også kan gøre. Den fungerer på de fleste
+systemer som daemon, dvs., at den kører hele tiden og lytter på sin
+port (sendmail kører default på port 25), om der er noget mail, den
+skal tage imod. Hvis sendmail kører som daemon, og der er et
+sikkerhedshul i den, kan enhver ude fra nettet sende en forespørgsel
+til dens port og udnytte sikkerhedshullet. En af grundene til, at man
+ofte hører skrækhistorier om sendmail, er at den kører på langt de
+fleste maskiner, der håndterer email på Internet.  Fordi den kører på
+så mange systemer, er det let nok at finde et system at udnytte, hvis
+man har fundet et sikkerhedshul. Det er dog ofte folk, der kører gamle
+versioner af sendmail, der er udsat. Hvis man hele tiden holder sin
+sendmail opdateret, er risikoen ikke så stor. Hent den nyeste version
+på <ULINK
+URL="http://www.sendmail.org/">http://www.sendmail.org/</ulink>.
+</para>
+</sect2>
+
+<sect2 id="slaa-sendmail-fra">
+<title>Skal jeg slå sendmail fra?</title>
+<para>
+Det er desværre ikke så smart at slå sendmail helt fra - med mindre
+man i stedet installerer et sikrere alternativ som qmail eller postfix - 
+da flere dele af systemet skal kunne levere mails internt på maskinen. 
+Skal maskinen imidlertid ikke acceptere mail udefra, men kun fordele
+mail lokalt, kan man lade være med at lade sendmail køre i "daemon mode", 
+hvor den lytter på en port. Man kan i stedet starte den i "queue mode". 
+Sendmail kører stadig som en baggrundsproces, som med jævne mellemrum 
+kommer frem og tømmer mailkøen. F.eks. en gang i timen, eller en 
+gang hvert kvarter. Men den lytter ikke længere efter forespørgsler på
+port 25. Sendmail startes i "daemon mode", der tømmer mailkøen en gang 
+i timen, ved at starte den med parametrene
+</para>
+
+<SCREEN>
+sendmail -q1h
+</SCREEN>
+
+<para>
+i stedet for 
+</para>
+
+<SCREEN>
+sendmail -bd -q1h
+</SCREEN>
+
+<para>
+hvor <FILENAME>-q1h</FILENAME> betyder at køen tømmes en gang hver
+time, og <COMMAND>bd</COMMAND> betyder, at den startes i "daemon
+mode". Sendmail startes normalt fra et startup script. I Red Hat er
+det <FILENAME>/etc/rc.d/init.d/sendmail</FILENAME>. I SuSE skal man i
+<FILENAME>/etc/rc.config</FILENAME> ændre linien
+</para>
+
+<SCREEN>
+SENDMAIL_ARGS="-bd -q30m -om"
+</SCREEN>
+
+<para>
+til
+</para>
+<SCREEN>
+SENDMAIL_ARGS="-q30m -om"
+</SCREEN>
+
+<para>
+Parameteren -q30m betyder, at mail-køen tømmes hver 30. minut.  Hvis
+man ikke vil køre sendmail i "daemon mode", kan man ændre i startup
+scriptet. Hvis man slet ikke vil køre sendmail, skal man fjerne det
+symlink, der er til sendmail startup scriptet under de forskellige
+runlevels kataloger. I Red Hat er det
+<FILENAME>/etc/rc.d/rcN.d</FILENAME>, hvor N er runlevel nummeret. På
+Debian hedder det <FILENAME>/etc/rcN.d</FILENAME>.  Red Hat eksempel:
+Prøv at skrive
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ls -l /etc/rc.d/rc3.d |grep sendmail
+lrwxrwxrwx   1 root     root           18 Oct  3  1998 S80sendmail -> ../init.d/sendmail
+</SCREEN>
+
+<para>
+Der kan man se at sendmail bliver startet i runlevel 3. Hvis sendmail ikke
+skal startes, skal dette symlink slettes. Ligeså under de andre runlevels,
+og husk også at slette shutdown symlinkene til sendmail (dem der starter
+med K).
+</para>
+
+<para>
+Man kan også vælge at køre sendmail i "queue mode", selvom man har
+brug for, at maskinen tager imod mails udefra. Dette kræver, at man
+anvender en anden smpt-daemon, f.eks. optuse smtpd (<ulink
+url="http://www.optuse.com">http://www.optuse.com</ulink>). Den tager
+sig af indgående smtp og lægger posten over i sendmails kø, hvor
+sendmail så kan overtage.  Vi kan også nævne smap/smapd, som er en del
+af TIS Internet i Firewall Toolkit (<ulink
+url="http://www.tis.com/research/software/fwtk/fwtk_over.html">http://www.tis.com/research/software/fwtk/fwtk_over.html</ulink>).
+</para>
+</sect2>
+
+<sect2 id="sikring-af-sendmail">
+<title>Sikring af sendmail</title>
+<para>
+Hvis du kører sendmail som i "dameon mode", kan du sikre den. Du
+kan bl.a enable nogle security options i <FILENAME>/etc/sendmail.cf</FILENAME> - som 
+er en ret forvirrende fil ved første blik. Man kan f.eks. sætte linien 
+</para>
+
+<SCREEN>
+O PrivacyOptions=authwarnings,needmailhelo, noexpn, novrfy
+</SCREEN>
+
+<para>
+ind i sin
+<FILENAME>/etc/sendmail.cf</FILENAME>. <FILENAME>authwarnings</FILENAME>
+enabler email authentication warnings, så man får
+x-authentication-warning beskeder i sine mail headers, som f.eks.
+</para>
+
+<SCREEN>
+X-Authentication-Warning: sherif.nottingham.dk: sherif owned process doing -bs.</SCREEN>
+
+<para>
+<FILENAME>authwarnings</FILENAME> er pr. default slået
+til. <FILENAME>needmailhelo</FILENAME> gør, at den maskine, der vil
+sende mail til sendmail, skal identificere sig før den får lov.
+<FILENAME>novrfy</FILENAME> forhindrer <FILENAME>VRFY</FILENAME>
+kommandoen, som bruges til at bekræfte, om et bestemt brugernavn
+findes på maskinen.  <FILENAME>noexpn</FILENAME> forhindrer
+<FILENAME>EXPN</FILENAME>, som er en kommando, der bruges til at finde
+ud af hvilken bruger/program på systemet en email adresse reelt peger
+på, dvs., hvem et mail alias dækker over, hvem der modtager root mails
+på systemet etc.
+</para>
+
+<para>
+Prøv at skrive <COMMAND>telnet hostname 25</COMMAND>, hvor hostname er
+navnet på en maskine, der har sendmail (evt. din egen linux box - du
+behøver ikke 2 forskellige maskiner til dette). Sendmail bruger
+normalt port nummer 25. Så du kan faktisk kommunikere direkte med
+sendmail på maskinen ved at bruge telnet:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ telnet locksley 25
+Trying 192.168.0.1...
+Connected to locksley.herne.dk.
+Escape character is '^]'.
+220 sherwood.dk ESMTP Sendmail 8.9.3/8.9.3; Mon, 19 Jul 1999 22:47:59 +0200
+VRFY robin
+250 &lt;robin@sherwood.dk>
+EXPN robin
+250 &lt;robin@sherwood.dk> 
+</SCREEN>
+
+<para>
+Vi fik at vide at maskinen kører sendmail version 8.9.3, at robin fandtes
+på maskinen, og at mail til robin går til robin. Skal andre også have 
+dette - og måske mere følsomme ting - at vide? Hvad nu hvis robin bare 
+var et mail alias for brugeren marion - kommer det andre ved? Skal andre 
+kunne se, at roots mail også går til marion? Vi prøver samme kommando,
+når VRFY og EXPN er slået fra.
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ telnet locksley 25
+Trying 192.168.0.1...
+Connected to locksley.herne.dk.
+Escape character is '^]'.
+220 sherwood.dk ESMTP Sendmail 8.9.3/8.9.3; Mon, 19 Jul 1999 22:53:17 +0200
+VRFY robin
+252 Cannot VRFY user; try RCPT to attempt delivery (or try finger)
+EXPN robin
+502 Sorry, we do not allow this operation
+</SCREEN>
+
+<para>
+Der er flere muligheder. Man kan nøjes med at slå <FILENAME>expn</FILENAME> og 
+<FILENAME>vrfy</FILENAME> fra, indtil
+den fremmede maskinen har identificeret sig selv. Se 
+<ULINK URL="http://hoth.stsci.edu/man/man1m/sendmail.html">http://hoth.stsci.edu/man/man1m/sendmail.html</ulink>.
+</para>
+</sect2>
+
+<sect2 id="mail-relay">
+<title>Mail relaying</title>
+<para>
+Derudover skal man slå mail relaying fra. Det gøres i accessfilen -
+<FILENAME>/etc/sendmail.cf</FILENAME> indeholder oplysningerne om,
+hvor den ligger.  På Red Hat hedder den
+<FILENAME>/etc/mail/access</FILENAME>.  Der må gerne stå f.eks.
+</para>
+
+<SCREEN>
+localhost.localdomain           RELAY
+localhost                       RELAY
+</SCREEN>
+
+<para>
+- dette tillader relaying for den lokale maskine. Men der må ikke stå 
+andre linier med RELAY. (Man kan f.eks. også bruge IP-adressen på sit interne
+netværk og tillade intern mail relaying). Hvis man tillader
+extern mail relaying - dvs. at folk, der logger ind udefra, kan sende
+mails, så det ser ud som om, de er sendt indefra - så kan man risikere,
+at spammere bruger en som afsender for deres spam. Så selvom det til 
+tider kunne være praktisk at logge ind på sin computer, når man er ude,
+og sende email med sin "hjemmeadresse" som afsender, så tillader 
+Internetsikkerheden i dag ikke dette. Man bliver <emphasis>meget</emphasis> upopulær,
+hvis nogle garvede internet folk opdager, at man har mail relaying slået
+til. Man kan komme på deres sortlister, så en masse folk ikke kan modtage
+mail fra ens domæne etc. Man kan dog også træffe andre foranstaltninger
+imod mail relaying end at slå det fra i sendmail.
+</para>
+
+<para>
+Mere om sendmail kan læses på
+<ulink url="http://www.kom.id.ethz.ch/sendmail.html">http://www.kom.id.ethz.ch/sendmail.html</ulink>.
+Læs desuden <COMMAND>man sendmail</COMMAND>. 
+</para>
+
+<para>
+Der skal også nævnes, at der findes interessante alternativer til 
+sendmail: qmail 
+(<ulink url="http://www.qmail.org">http://www.qmail.org</ulink>) 
+og postfix 
+(<ulink url="http://www.porcupine.org/postfix-mirror/start.html">http://www.porcupine.org/postfix-mirror/start.html</ulink>). 
+Begge er fra begyndelsen designet med tanke 
+på sikkerhed. De er bl.a.sikrere, fordi smtpd her er en selvstændig 
+proces, som ikke kan skrive til nogen filer. Hver lille delopgave
+foretages af et separat program, som kun har en snæver, veldefineret funktion.
+Sendmail er derimod designet som et enkelt do-it-all program. Det er en 
+grundlæggende i designfejl, som gør den håbløs i sikkerhedssammenhæng.
+</para>
+
+<para>
+Vi kommer ikke her nærmere ind på qmail og postfix, men har man et i
+seriøst mailserver behov, kan det godt anbefales at kigge nærmere på disse
+to programmer. 
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="andre-services">
+<title>Andre services</title>
+<para>
+Udenfor de forrige kategorier falder XDM og DNS:
+</para>
+
+<sect2 id="xdm">
+<title>Xdm-lignende login</title>
+<para>
+En service man ikke må overse, er XDM, som er en X-login daemon, der
+normalt kører på UDP port 177. Det er muligt at forbinde sig til en kørende
+XDM-server, dvs. direkte til X-systemet, ved at skrive "X -query SERVER". 
+Alt efter Linux distribution, kan du have xdm, kdm (KDE's XDM) eller
+gdm (GNOME XDM) kørende. Hvis XDM kører, starter maskinen op med en grafisk
+login menu i stedet for den almindelige konsol mode login prompt. Hvis du
+er i konsol mode, kan du se, om du har en X-login daemon kørende, ved at
+trykke Alt-F7. Er der en menu, hvor du kan skrive loginnavn og
+password ind, så kører du en XDM-lignende service.
+</para>
+
+<para>
+På din hjemmecomputer kan det grafiske login være meget rart, men hvis du
+administrerer en server, er det en uacceptabel sikkerhedsrisiko. Luk den 
+ned og sørg for, at dette ikke automatisk startes op fra startupscriptet i
+<filename>/etc/rc.d</filename>:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>SuSE 6.1: slet /etc/rc.d/rc3.d/*xdm</para></listitem>
+<listitem><para>Red Hat 6.0: Udkommenter sidste linien i <filename>/etc/inittab</filename></para>
+<screen>
+x:5:respawn:/etc/X11/prefdm -nodaemon   
+</screen>
+<para>
+så den ser ud som 
+</para>
+<screen>
+#x:5:respawn:/etc/X11/prefdm -nodaemon   
+</screen>
+</listitem>
+</itemizedlist>
+
+<para>
+I øvrigt bør man slet ikke køre X på en server, hvis det kan undgås.
+Kan du af en eller anden grund ikke undgå at have XDM kørende, så bør
+du som minimum læse 
+<ulink url="http://metalab.unc.edu/LDP/HOWTO/mini/Remote-X-Apps.html">http://metalab.unc.edu/LDP/HOWTO/mini/Remote-X-Apps.html</ulink>.
+Dette sted beskriver, hvordan du med "magic cookies" kan gardere dig
+mod sådan noget som spoofingangreb, hvor andre på nettet prøver at tage din
+identitet. Det kan nævnes, at vi i <ulink url="netvaerk.html">Artikel
+4. Remote login og netværksaflytning</ulink> ser nærmere på, hvordan
+du kan transmittere X-programmer fuldt krypteret. Denne løsning er
+klart at foretrække, hvis man ser på netværks-sikkerheden.
+</para>
+
+</sect2>
+
+<sect2 id="dns">
+<title>DNS</title>
+
+<para>
+DNS (Domain Name System) er navne service, som anvendes til at få
+oversat et hostnavn f.eks. sunsite.auc.dk til dets IP-nummer.
+DNS er en af de 
+store grundpiller i Internet og derfor også meget gennemprøvet
+men ret komplekst. Der er blevet fundet sikkerhedshuller i
+DNS-programmerne, f.eks. var der en fejl i Red Hat 4.2, hvor man kunne
+sende en meget stor datamængde til en nameserver, hvilket medførte,
+at den blev "overrasket" (buffer overflow problem) og fejlede. 
+Man kunne derefter mirakuløst udføre rootkommandoer på systemet!
+Resultatet var fatalt. Det er nok ikke sandsynligt, at du
+kører en nameserver (på port 53) uden at vide dette, men du kan
+verificere dette ved at skrive.
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ps aux |grep named
+</SCREEN>
+
+<para>
+Du skal kun køre et nameserverprogram, hvis maskinen reelt skal bruges
+som nameserver.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="epilog">
+<title>Epilog</title>
+
+<para>
+Selvom vi har været inde på mange services her, har vi ikke været inde
+på alle. Programmer som <COMMAND>nmap</COMMAND> og kommandoer som
+<COMMAND>rpcinfo</COMMAND> og <COMMAND>netstat</COMMAND> kan vise dig
+hvilke porte, der benyttes, hvilke services, der kører, og hvilke
+netværksforbindelser, der er etableret. Brug også <COMMAND>ps
+aux</COMMAND> flittigt og se hvilke processer, der rent faktisk kører
+på dit system. Sørg for at alle unødvendige services i
+<FILENAME>/etc/inetd.conf</FILENAME> er kommenteret ud, og check dine
+runlevel kataloger. Læs manualsiderne til de services, du vælger at
+køre. Følg med på sikkerhedslister på Internet, og følg med i
+fejlrapportet for din Linuxdistribution.  Tænk dig om, og hold øje med
+dine logfiler.  Og læs de resterende artikler i denne serie.
+</para>
+</sect1>
+</chapter>
+

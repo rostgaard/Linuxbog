@@ -1,0 +1,986 @@
+<!-- $Id$ -->
+<chapter id="remote-login">
+<title>Remote login og netværksaflytning</title>
+
+<para>
+En af de store styrker ved en Linux (UNIX) maskine er, at
+man kan administrere den fra en anden maskine via netværk. For at være
+kompatibel med alle andre UNIX varianter følger de gode gamle værktøjer 
+telnet og ftp med i Linux distributionerne, og de er meget anvendte 
+til fjernadministration. Vi vil i denne artikel se på, hvorfor 
+værktøjer som telnet og ftp ikke bør anvendes, hvis maskinen er koblet til 
+Internet eller et andet usikkert netværk. Vi skal se på, hvordan 
+netværkstrafik kan aflyttes. Derefter skal vi se nærmere på alternativer 
+til telnet og ftp, hvor datastrømmen bliver krypteret. Specielt 
+fokuserer vi på ssh (secure shell) og viser installation og anvendelse.
+Meget af det, der beskrives i artiklen, gælder ikke blot for Linux, men
+også for andre UNIX'er.
+</para>
+
+<sect1 id="usikker-nettrafik">
+<title>Nem men usikker netværkstrafik</title>
+<para>
+Fra en Linux maskine kan man nemt logge ind på en anden Linux maskine
+og køre programmer, endog grafiske programmer. Dermed kan man køre
+tunge programmer på en stærk server og få vist resultater på en anden 
+(måske langsommere) maskine. 
+</para>
+
+<para>
+Antag, at vi har et lokalnet bestående af tre maskiner. Vi anvender
+maskinen "sherwood" (IP adresse 192.168.0.1) med brugernavnet robin, men vi
+vil køre programmer fra maskinen "locksley" (192.168.0.2). I netværket 
+finder vi desuden maskinen "nottingham" (192.168.0.3), som vi leger er 
+en ondsindet maskine, der ønsker at bryde vores sikkerhed. I praksis 
+kunne det være tre maskiner på Internet, hvor netværkstrafik mellem 
+"sherwood" og "locksley" tilfældigvis også kommer forbi "nottingham".
+</para>
+
+<para>
+Resten af artiklen vil handle om programmer til remote login, som telnet, 
+rlogin og ssh, samt programmer til filoverførsel (ftp og scp). Men hvad
+bruges det til? Med remote login kan man udføre tekstkommandoer på den
+maskine, man er logget ind på, men man kan også køre X-programmer over
+nettet.
+</para>
+
+<sect2 id="telnet-og-xhost">
+<title>telnet og xhost</title>
+
+<para>
+Hvis du på sherwood kører en X-baseret grafisk brugergrænseflade, og du vil køre
+X-programmer (grafiske programmer) fra maskinen locksley, skal du starte med at
+fortælle sherwood, at det er i orden, at locksley benytter dens display. 
+Dette gøres ved at føje locksley til listen over godkendte hosts med 
+kommandoen xhost:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ xhost + locksley
+locksley being added to access control list 
+</SCREEN>
+
+<para>Dermed vil grafiske programmer fra locksley vil blive accepteret af
+sherwood. Udelades maskinnavnet, betyder det, at alle maskiner kan vise
+grafik på din skærm. Lad være med det, da det sikkerhedsmæssigt er
+en dårlig ide. 
+</para>
+
+<para>
+Lad os nu logge ind på locksley med telnet,
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ telnet locksley
+Trying 192.168.0.2...
+Connected to locksley.herne.dk.
+Escape character is '^]'.
+Debian GNU/Linux 2.1 locksley.herne.dk
+
+locksley login: robin
+Password:
+</SCREEN>
+
+<para>
+Efter at have skrevet loginnavn og password på locksley maskinen får
+du en kommandolinie, og du kan udføre programmer på maskinen, som om du
+var logget ind lokalt. 
+</para>
+
+<para>
+For at kunne få de grafiske programmer, du starter på locksley, til at
+vise sig på sherwoods skærm er det nødvendigt at sætte DISPLAY
+environment variablen:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ export DISPLAY=sherwood:0.0
+</SCREEN>
+
+<para>
+Mange X-programmer kan dog også kaldes med "-display" som option. 
+</para>
+
+<para>
+Nu kan du køre dit X-program, f.eks. "xload", som om du sad på 
+locksley. Programmet kører på locksley, men
+alt grafik vises på sherwood, og programmet styres fra sherwood. 
+</para>
+
+<SCREEN>
+[robin@locksley robin]$ xload -display sherwood:0.0 -geometry 60x60 -nolabel &
+</SCREEN>
+
+<FIGURE ID="xload-fig" FLOAT="1">
+<TITLE>xload</TITLE>
+<GRAPHIC FILEREF="xload.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+<para>
+Det er nemt, og allerede ved disse enkle operationer kan du have
+mistet hele din password-sikkerhed. Sagen er, at da man i sin tid
+designede telnet tænkte man ikke så meget på sikkerhed, men mere på
+driftstabilitet.  Når man laver telnet fra en maskine til en anden,
+sender man først sit brugernavn og derefter password. <emphasis>Begge sendes
+klar tekst</emphasis>. Det kan selvfølgelig udnyttes til at stjæle passwords
+på Internet - og det gøres!
+</para>
+</sect2>
+
+<sect2 id="sende-passwords-over-net">
+<title>Pas på passwords sendt over netværk</title>
+<para>
+For at aflytte netværkstrafikken kan man downloade programmet sniffit
+til Linux. Når det startes op vises alle kommunikationslinier,
+såsom telnet- og ftp-forbindelser, mellem maskinerne på netværket. Det
+kommer an på konfiguration af routere, firewalls, switche og hubs,
+hvor meget man reelt får at se.  Sniffit kan downloades fra 
+<ulink url="http://reptile.rug.ac.be/~coder/sniffit/sniffit.html">http://reptile.rug.ac.be/~coder/sniffit/sniffit.html</ulink>. 
+Sniffit skal køres som root.
+</para>
+
+<para>
+Lad os antage, at den ondsindede "nottingham" (192.168.0.3) lytter med på, 
+hvad vi laver mellem "sherwood" (192.168.0.1) og "locksley" (192.168.0.2).
+Programmet sniffit startes  i interactive mode med angivelse af
+hvilket netværks-interface, der skal lyttes på: 
+</para>
+
+<SCREEN>
+[root@nottingham root]# sniffit -F eth0 -i 
+</SCREEN>
+
+<para>
+hvor eth0 betyder første ethernet kort i maskinen, og i betyder
+interactive mode. Ud kommer nedenstående billede, hvor man ser, at
+maskinen med netværksadresse 192.168.0.1 (sherwood) har oprettet en
+forbindelse til port 23 på maskinen med netværksadresse 192.168.0.2
+(locksley). Port 23 er den port, telnet lytter på. Port 3211, som man
+sender fra, er valgt blandt maskinens ledige porte, dvs. de porte, der
+ikke er nogen service, der lytter på.  Der er valgt et portnummer, som
+er større end 1024, dvs. en ikke priviligeret port.
+</para>
+
+<para>
+Trykkes return på en linie vil den blive markeret med "*LOGGED*",
+og det mindre vindue mod højre vil vise trafikken på den forbindelse. 
+Først kommer login navn: "robin", og efter to punktummer kommer passwordet 
+i klar tekst: "qwe123". Der skal ikke stor fantasi til at forestille sig, 
+at dette program nemt kan sættes til at dumpe samhørende loginnavne og 
+passwords ned i en fil over en periode, indtil der er gevinst. 
+</para>
+
+<FIGURE ID="sniffit2-fig" FLOAT="1">
+<TITLE>Sniffit</TITLE>
+<GRAPHIC FILEREF="sniffit2.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+
+<para>
+Vi har vist, at man ikke skal bruge telnet til at kommunikere mellem
+to maskiner, hvis der er risiko for, at nogen lytter med, og slet ikke
+hvis man skal logge ind som root på maskinen. Det er simpelthen for
+nemt at lede efter loginnavn root og derefter få passwordet. Derfor
+har mange Linux distributioner per default forhindret, at root logger
+ind via netværket. Red Hat 6.0, Debian 1.3 og SuSE 6.2 har filen
+"/etc/securetty", der indeholder de konsoller, hvor root må logge ind.
+Dette kan være "tty1" til "tty6", som er de tekst login konsoller, der
+normalt er på selve Linux maskinen - dvs. ikke via netværket. Hvis man
+absolut vil tillade root login via netværk, kan man tilføje "0", "1"
+og opefter (for Linux kerne 2.2.X) svarende til hvor mange logins, du
+forventer på maskinen fra netværket. Normalt er det
+<emphasis>ikke</emphasis> klogt at tillade direkte root login via
+netværk.
+</para>
+</sect2>
+
+<sect2 id="ftp-sniffit">
+<title>ftp</title>
+<para>
+Hvis vi vil overføre filer fra "sherwood" (192.168.0.1) til
+"locksley" (192.168.0.2), er ftp et af de gennemprøvede og gamle 
+værktøjer. Også her er der sikkerhedsproblemer.
+Vi sætter igen "nottingham" (192.168.0.3) til at køre sniffit som vist 
+nedenfor. Denne gang sætter vi sniffit op til at vise alle pakker som 
+ankommer til "locksley" (192.168.0.2), og man kan nemt se, 
+hvad der sker.
+</para>
+
+<SCREEN>
+[root@nottingham root]# sniffit -t192.168.0.2 -a -F eth0  
+</SCREEN>
+
+<SCREEN>
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1299-192.168.0.2.21
+ E . . 4 . . @ . @ . . . . . . . . . . . . . . . . . b . . . . . P . } x i !
+ . . U S E R   r o b i n . .
+
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1299-192.168.0.2.21
+ E . . ( . . @ . @ . . . . . . . . . . . . . . . . . b ( . . . . P . } x . .
+ . .
+
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1299-192.168.0.2.21
+ E . . 5 . . @ . @ . . . . . . . . . . . . . . . . . b ( . . . . P . } x N D
+ . . P A S S   q w e 1 2 3 . .
+</SCREEN>
+
+<para>
+På den første af de tre data-linier kan man se login navn (robin), og som 
+vist på den sidste data-linie, vil man direkte kunne læse passwordet (qwe123). 
+Ser man lidt nøjere efter, vises også ftp-porten, port 21. Port 
+1299 er ligesom ved telnet en ledig port, der vælges til denne session.
+</para>
+
+<para>
+Som vi ser, er ftp også et meget usikkert program, hvor andre kan lytte med.
+Så brug det med omtanke.
+For en systemadministrator er paranoia ikke en sygdom, men en kvalifikation...
+</para>
+
+<para>
+Det skal nævnes, at også resten af den nettrafik, du laver med telnet og
+ftp, kan læses i klar tekst via f.eks. sniffit. Starter du andre
+programmer, kan man se det. Laver du "su - root" og skriver root-passwordet, 
+er sikkerheden på den maskine væk, for root passwordet er ude, hvis du
+bliver aflyttet.
+</para>
+</sect2>
+
+<sect2 id="remote-shell">
+<title>Remote login, remote shell og remote copy</title>
+
+<para>
+To andre velkendte programmer i samme kategori er "rlogin" og "rsh".
+Programmerne virker næsten ens. Begge 
+giver interaktivt login på maskinen, men rsh kan udføre en kommando 
+samtidig med, at man logger ind. F.eks. vil den følgende kommando logge 
+ind direkte fra sherwood til locksley og køre kommandoen "df" (som viser 
+hvor fyldte dine diske er).
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ rsh locksley df
+</SCREEN>
+
+<para>
+Nu prøver vi at køre sniffit på en rlogin session for at se, hvad man kan se.
+På maskinen "nottingham" kører vi sniffit:
+</para>
+
+<SCREEN>
+[root@nottingham root]# sniffit -x -s192.168.0.1 -a -F eth0
+</SCREEN>
+
+<para>
+Vi logger ind fra sherwood til locksley med kommandoen:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ rlogin locksley
+Password: qwe123
+$ 
+</SCREEN>
+
+<para>
+hvor password'et naturligvis ikke kan ses på skærmen, når man taster det ind.
+Udklip fra sniffit's output:
+</para>
+
+<SCREEN>
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA41   ACK (hex): 105DA03F
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ? s . @ . @ . F Q . . . . . . . . . . . . . . . A . ] . ? P . } x C .
+ . . r o b i n . r o b i n . x t e r m / 9 6 0 0 .     
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA58   ACK (hex): 105DA040
+   FLAGS: -A----   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ( s . @ . @ . F g . . . . . . . . . . . . . . . X . ] . @ P . } x } A
+ . .
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA58   ACK (hex): 105DA041
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . 4 s . @ . @ . F J . . . . . . . . . . . . . . . X . ] . A P . } x . .
+ . . . . s s . . . P . . . l
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA64   ACK (hex): 105DA04B
+   FLAGS: -A----   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ( s . @ . @ . F U . . . . . . . . . . . . . . . d . ] . K P . } x } *
+ . .
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA64   ACK (hex): 105DA04B
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ) s . @ . @ . F S . . . . . . . . . . . . . . . d . ] . K P . } x . !
+ . . q
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA65   ACK (hex): 105DA04B
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ) s . @ . @ . F R . . . . . . . . . . . . . . . e . ] . K P . } x .
+ . . w
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA66   ACK (hex): 105DA04B
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ) s . @ . @ . F Q . . . . . . . . . . . . . . . f . ] . K P . } x . .
+ . . e
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA67   ACK (hex): 105DA04B
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ) s . @ . @ . F P . . . . . . . . . . . . . . . g . ] . K P . } x L .
+ . . 1
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA68   ACK (hex): 105DA04B
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ) s . @ . @ . F O . . . . . . . . . . . . . . . h . ] . K P . } x K .
+ . . 2
+
+
+TCP Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+   SEQ (hex): C2D0BA69   ACK (hex): 105DA04B
+   FLAGS: -AP---   Window: 7D78
+Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
+ E . . ) s . @ . @ . F N . . . . . . . . . . . . . . . i . ] . K P . } x J .
+ . . 3
+</SCREEN>
+
+<para>
+Igen ser man tydeligt brugernavn og password blive sendt ukrypteret
+over nettet (se sidste tegn på hver linie).  Man kan se, at rlogin på
+locksley bruger port 513, og at der på sherwood sendes fra port 1023.
+</para>
+
+<para>
+Skal du kopiere filer mellem to maskiner, så er ftp som tidligere
+skrevet meget anvendt. Alternativt kan remote copy
+<command>rcp</command> anvendes.  Skal du kopiere filen
+<filename>.emacs</filename> fra sherwood til locksley, sker dette med
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ rcp .emacs locksley:
+</SCREEN>
+
+<para>
+Sikkerhedsmæssigt er <command>rcp</command> på linie med
+<command>rlogin</command> og <command>rsh</command>. Vi skal senere i
+artiklen vende tilbage til et fuldt krypteret alternativ til
+<command>rcp</command>.
+</para>
+
+<para>
+Med rlogin, rsh og rcp kan man vælge, at login kan ske uden
+password. Dette gøres ved at sætte sit hostnavn og evt. brugernavn ind
+i filen <filename>~/.rhosts</filename> i sit hjemmekatalog på den
+maskine, der skal logges ind på. Hvis du gerne vil kunne logge ind fra
+sherwood til locksley uden password, som brugeren robin, kan
+<filename>.rhosts</filename>-filen i dit hjemmekatalog på locksley se
+sådan ud:
+</para>
+
+<SCREEN>
+sherwood robin
+</SCREEN>
+
+<para>
+Der kan godt stå mange flere linier med andre hostnavne. Brugernavnet
+kan udelades, idet brugeren sættes til den, hvis hjemmekatalog filen
+ligger i.  Hvis filen er læsbar for alle, er det kun en bruger med
+samme brugernavn som sit eget, der kan logge ind fra en anden
+maskine. Er filen ikke læsbar for andre, kan man anføre linier i
+<filename>.rhosts</filename>-filen med først maskinnavn og dernæst det
+brugernavn, som anvendes på den anden maskine. For at "marian" skal
+logge på ind på "sherwoord" som "robin", kan man således bruge
+<command>rlogin sherwood -l robin</command>.
+</para>
+
+<para>
+Den viste <filename>.rhosts</filename>-fil vil betyde, at du fra
+maskinen sherwood som brugeren robin, godt må komme ind på locksley
+som robin, uden password. Det kræver, at brugeren findes på begge
+maskiner, og ".rhosts" filen skal ligge i brugerens hjemmekatalog på
+den maskine, man prøver at logge ind på. Det er nemt og giver
+lynhurtig adgang til, at man hopper fra maskine til maskine og laver
+meget effektive arbejdsgange. Det lyder smart, men medaljen har en
+bagside. En med root-adgang på maskinen "nottingham" (eller andre
+maskiner i netværket) kan aflytte rsh/rlogin netværkstrafik et stykke
+tid, og derved finde ud af fra hvilken maskine og med hvilket bruger
+navn, man kan logge ind direkte.  Derefter kan man med lidt snilde
+sætte maskinen "nottingham" lidt anderledes op, så "locksley" tror, at
+den er "sherwood".
+</para>
+
+<para>
+Der kan imidlertid være situationer, hvor det kan virke mere sikkert
+at lade en bruger logge ind uden password fra en kendt host end at
+lade brugeren have et password. Har man tillid til sit interne
+netværk, og er det nødvendigt, at nogle brugere kan logge på en udsat
+maskine, kan man vælge, at disse brugere ikke har noget password på
+den udsatte maskine.  I stedet får de en stjerne ("*") i
+<filename>/etc/passwd</filename>, der hvor passwordet normalt ville
+stå.  Dette vil forhindre dem i at logge ind fra andre maskiner end
+dem, der er angivet i deres <filename>~/.rhosts</filename> fil i deres
+hjemmekatalog på den udsatte maskine. Når en bruger ikke har et
+password, kan man ikke bryde ind på den udefra ved at gætte eller
+knække passwordet. Men kan kun logge ind som denne bruger, hvis man
+kan overbevise maskinen om, at man logger ind fra en betroet
+maskine. Der kan i øvrigt læses mere om passwords beskyttelse og
+håndtering i <ulink url="rootaccess.html">Artikel 3 - Root access -
+hvem, hvordan og hvorfor ikke?</ulink>.
+</para>
+
+<para>
+Hvis man ikke tillader <filename>.rhosts</filename>-filer, vil der ved
+hver login sendes passwords i klar tekst over nettet. Hvis der er
+<filename>.rhosts</filename>-filer, bliver der slet ikke sendt
+passwords over nettet - i stedet for at give sit password skal man
+logge ind fra en betroet host. Ingen kan nu opsnappe passwords - til
+gengæld kan de udgive sig for at være den betroede host.  Stoler man
+ikke på sit interne netværk, eller er nogen <emphasis>sluppet
+ind</emphasis>, er begge dele nok lige dårligt.
+</para>
+
+<para>
+Vi vil anbefale, at man i stedet for rlogin bruger et program, der 
+krypterer login såvel som selve dataoverførslen, som f.eks. ssh giver
+mulighed for.
+</para>
+
+<para>
+Som systemadministrator kan du se om dine brugere har
+<FILENAME>.rhosts</FILENAME> filer, og hvis det ikke er ønsket, kan du
+slette dem (og skælde brugeren ud).  Hvis brugerne har hjemmekataloger
+under <FILENAME>/home/</FILENAME>, så kan dette gøres med
+</para>
+
+<SCREEN>
+[root@sherwood root]# find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print;
+</SCREEN>
+
+<para>
+Hvis man samtidigt vil slette de fundne .rhosts filer kan man anvende
+</para>
+
+<SCREEN>
+[root@sherwood root]# find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print -exec rm {} \;
+</SCREEN>
+
+
+<para>
+Det er enklere at disable brugernes egne
+<FILENAME>.rhosts</FILENAME>-filer ved, at man tilføjer parameteren
+<FILENAME>-l</FILENAME> efter <FILENAME>in.rshd</FILENAME> i filen
+<FILENAME>/etc/inetd.conf</FILENAME> og genstarter inetd-dæmonen. 
+</para>
+
+<para>
+Et andet argument imod at tillade ".rhosts"-filer er, at brugeren kan
+komme til at køre et program, som skriver til en fil uden hans viden.
+Filen kunne "~/.rhosts" og dermed give adgang til en
+ekstern bruger, som ikke behøver at have en konto på maskinen.
+</para>
+
+
+<para>
+Et alternativ til "~/.rhosts" metoden er "hosts level
+equivalence" via filen "/etc/hosts.equiv". Dine brugere har
+ikke adgang til denne fil, og kun root kan rette i den. Root kan
+vælge at sætte en række hostnavne ind i denne fil eller evt. bare et
+plus. Det betyder, at disse hosts (+ betyder alle maskiner)
+har adgang til at udføre rlogin og rsh kommandoer uden password. Dette
+gælder alle brugere (dog ikke root) - brugeren skal dog findes på
+begge maskiner. Filen "/etc/hosts.equiv" kan være en bekvem løsning,
+men den er en bombe under systemsikkerheden - find en anden løsning,
+hvis du har et åbent eller halvåbent netværk.
+</para>
+
+<para>
+Her i <ulink url="http://www.userfriendly.org/cartoons/archives/97dec/19971212.html">User Friendly fra den 12. december 1997</ulink> kan Greg fra Columbia Internet 
+aflytte netværkstrafikken i forsvarsministeriet...
+</para>
+
+<FIGURE ID="uf16x122-fig" FLOAT="1">
+<TITLE>User Friendly</TITLE>
+<GRAPHIC FILEREF="uf16x122.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+<para>
+Fortsættelsen kan findes på <ulink url="http://www.userfriendly.org/cartoons/archives/97dec/19971216.html">http://www.userfriendly.org/cartoons/archives/97dec/19971216.html</ulink> :-)
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="sikker-net-trafik">
+<title>Nem og sikker netværkstrafik</title>
+<para>
+Hvis der er risiko for, at andre lytter med på netværkstrafikken,
+er der behov for erstatningsprogrammer for telnet,
+ftp og rlogin. Samtidig ønsker vi stadig at kunne afvikle programmer fra en
+maskine og se resultater på en anden, naturligvis også de grafiske
+programmer. Med andre ord ønsker vi samme funktionalitet - men med sikkerheden
+i orden.
+</para>
+
+<para>
+Der findes flere sikre alternativer til de gamle, ukrypterede protokoller.
+Vi vil mest beskæftige os med ssh, men der findes også andre muligheder.
+Et alternativ til telnet er stelnet, som står for secure telnet. Programmet 
+baserer sig på SSL (Secure Sockets Layer), som er en måde at lave 
+krypterering af datatrafikken. Kombinationen af stelnet og SSL er ikke så 
+udbredt som ssh, og det er ikke så nemt at sætte op som ssh. 
+Programmet stelnet kan findes på <ulink url="http://www.quick.com.au/ftp/pub/sjg">http://www.quick.com.au/ftp/pub/sjg</ulink>,
+og selve krypteringslaget SSL til Linux kan findes på <ulink
+url="http://www.psy.uq.oz.au/~ftp/Crypto/">http://www.psy.uq.oz.au/~ftp/Crypto/</ulink>. Denne sidste URL har også en hel del dokumentation.
+</para>
+
+<para>
+Et andet alternativ til telnet og ftp, som er på vej, er SRP. Se mere
+om SRP på <ulink url="http://srp.stanford.edu/srp">http://srp.stanford.edu/srp</ulink>.</para>
+
+<para>
+Det, der umiddelbart i dag er det bedste valg som erstatning for telnet
+og rlogin, er ssh (Secure SHell). Programmet er lavet af et finsk firma
+med navn SSH Communications Security med hjemmesiden 
+<ulink url="http://www.ssh.fi">http://www.ssh.fi</ulink>.
+Ssh har bl.a. den store fordel fremfor stelnet, at grafiske vinduer (XWindow) 
+kan sendes over kryptererede linier. 
+</para>
+
+<para>
+Programmet ssh er komplet, gennemprøvet og veldokumenteret, og der er
+kildekode til det. Programmet må anvendes gratis til 
+ikke-kommercielle formål, ellers skal der købes en licens. 
+</para>
+
+<para>
+Det er et reelt problem, at ssh ikke er 
+<ulink url="http://www.opensource.org">Open Source</ulink>, og derfor er der et
+frit GNU program igang med at reimplementere koden under navnet
+PSST. Du kan finde mere information om dette på 
+<ulink url="http://www.net.lut.ac.uk/psst">http://www.net.lut.ac.uk/psst</ulink>. 
+Hjemmesiden
+for PSST bør følges fra tid til anden, men status i øjeblikket
+(september 1999) er, at man er igang med at implementere, og derfor
+ikke kan garantere for at koden virker, eller at den er sikker. 
+</para>
+
+<para>
+En anden, forholdsvis ny implementering af ssh-protokollen er
+OpenSSH, som er Open Source og er lavet af OpenBSD folkene.
+implementering af SSH. Den er allerede er lagt ind i OpenBSD 
+distributionen, der har ry for at være
+særdeles sikker. OpenSSH er ligeledes på vej ind i Debian
+distributionen. 
+Hjemmesiden for OpenSSH er 
+<ulink url="http://www.openssh.com/">http://www.openssh.com/</ulink>.
+OpenSSH er baseret på OpenSSL, som kan downloades under support samme
+sted, som OpenSSH findes. Man kan enten compile programmerne selv eller
+installere de RPM-pakker, som findes præ-compilerede. 
+</para>
+
+<para>
+Vi vælger i det følgende at koncentere os om ssh, men OpenSSH virker
+helt på samme måde som ssh, så reelt er det op til dig, hvad du vælger
+at prøve. OpenSSH i den nyeste version har dog en stor fordel: Den
+implementerer også ssh2 protokollen, så man kan snakke med både
+ssh1 og ssh2 klienter,
+</para>
+
+
+<sect2 id="installation-af-ssh">
+<title>Installation af ssh</title>
+
+<para>
+Start med at downloade 
+<ulink url="ftp://sunsite.auc.dk/pub/security/ssh/ssh-1.2.27.tar.gz">ftp://sunsite.auc.dk/pub/security/ssh/ssh-1.2.27.tar.gz</ulink>,
+eller en evt. nyere 1.2 version, hvis dette findes. Tag dog ikke en
+ældre version, idet der er konstateret sikkerhedsbrister i disse.
+</para>
+
+<SCREEN>
+[root@sherwood root]# tar xvzf ssh-1.2.27.tar.gz
+[root@sherwood root]# cd ssh-1.2.27
+[root@sherwood ssh-1.2.27]# ./configure
+[root@sherwood ssh-1.2.27]# make
+[root@sherwood ssh-1.2.27]# make install
+</SCREEN>
+
+<para>
+Det er kun nødvendigt at være root under "make install".
+Under installationen (make install) genereres nøgler til at
+identificere maskinen, derefter skal du selv til at lave dine
+hemmelige nøgler. Dine personlige nøgler bruges til at kryptere
+login-proceduren. Den efterfølgende datatrafik krypteres ud fra de to
+maskiners nøgler. Alle disse nøgler 
+er reelt filer på harddisken, men terminologien "nøgler"
+skyldes, at nøgle-filerne skal bruges til at låse og låse op for den
+krypterede datatrafik.
+</para>
+
+<para>
+Lad os først se på, hvad der blev installeret. Der er kommet filer
+tre steder, som vi nu vil se nærmere på. 
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ls -al /etc/ssh*
+-rw-r--r--   1 root     root          880 jul 11 10:05 /etc/ssh_config
+-rw-------   1 root     root          526 jul 11 10:05 /etc/ssh_host_key
+-rw-r--r--   1 root     root          330 jul 11 10:05 /etc/ssh_host_key.pub
+-rw-r--r--   1 root     root          683 jul 11 10:05 /etc/sshd_config
+</SCREEN>
+
+<para>
+Filerne "/etc/ssh*" er konfigurationsfiler, der styrer
+ssh opsætningen. Det er kun "/etc/sshd_config",
+du evt. skal rette i. F.eks. kan du ændre "PermitRootLogin yes"
+til "PermitRootLogin no", hvis du mener, at root ikke må logge ind via
+ssh. Det kan være en god ide at forbyde root remote login i det hele taget.
+Tilsvarende kan du forbyde tomme passwords ved at ændre
+"PermitEmptyPasswords yes" til "PermitEmptyPasswords no" - vent lige
+med at lave disse ændringer til du har fået ssh til at virke.
+</para>
+
+<para>
+I "/usr/local/sbin/" er der installeret et vigtigt program.
+Programmet sshd er ssh-daemonen, som skal være startet op af root, for
+at du kan anvende ssh til login på maskinen. Dette gøres ved at sætte
+programmet ind i maskinens startup scripts.
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ls -al /usr/local/sbin/ssh*
+lrwxrwxrwx   1 root     root            5 jul 11 10:05 /usr/local/sbin/sshd -> sshd1
+-rwxr-xr-x   1 root     root       623527 jul 11 10:05 /usr/local/sbin/sshd1
+</SCREEN>
+
+
+<para>
+I Red Hat er det nemmeste, at server-daemonen programmet startes fra
+"/etc/rc.d/rc.local" filen, som køres under system-opstart. Dette
+gøres som root én gang for alle. 
+</para>
+
+<SCREEN>
+[root@sherwood root]# echo "/usr/local/sbin/sshd" >> /etc/rc.d/rc.local
+</SCREEN>
+
+<para>
+I SuSE Linux skal man i stedet tilføje til filen  "/sbin/init.d/boot.local"
+</para>
+
+<SCREEN>
+[root@sherwood root]# echo "/usr/local/sbin/sshd" >> /sbin/init.d/boot.local
+</SCREEN>
+
+<para>
+Hvis du ønsker mere kontrol med at kunne starte, stoppe, og checke
+status på ssh-daemonen, bør du i stedet lave en rigtig start-fil
+svarende til dem du i SuSE finder i "/etc/rc.d/" og for Red Hat i
+"/etc/rc.d/init.d".  Vi kan nævne, at hvis du installerer OpenSSH som
+RPM-pakke, så er alt dette lavet ordentligt med start script-filer,
+som du finder i "/etc/rc.d/init.d/sshd".
+</para>
+
+<para>
+Vi skal også lige nævne, at ssh forbindelser normalt ikke styres via
+initd-systemet, som du i øvrigt kan finde beskrevet i
+<ulink url="services.html">Artikel 2 - Services - at slå services fra og
+begrænse adgang</ulink>. Grunden er, at det ville være for langsomt, idet
+der ved opstart af sshd skal genereres en server-nøgle. Dette kan
+tage flere sekunder for hver opstart.
+</para>
+
+<para>
+Lad os nu gå videre op se på de programmer, som brugeren kommer til at
+anvende. I "/usr/local/bin/" er der installeret en stribe brugerprogrammer:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ls -al /usr/local/bin/ssh*
+lrwxrwxrwx   1 root     root            4 jul 11 10:05 /usr/local/bin/ssh -> ssh1
+lrwxrwxrwx   1 root     root            8 jul 11 10:05 /usr/local/bin/ssh-add -> ssh-add1
+-rwxr-xr-x   1 root     root       321326 jul 11 10:05 /usr/local/bin/ssh-add1
+lrwxrwxrwx   1 root     root           10 jul 11 10:05 /usr/local/bin/ssh-agent -> ssh-agent1
+-rwxr-xr-x   1 root     root       328445 jul 11 10:05 /usr/local/bin/ssh-agent1
+lrwxrwxrwx   1 root     root           12 jul 11 10:05 /usr/local/bin/ssh-askpass -> ssh-askpass1
+-rwxr-xr-x   1 root     root        87725 jul 11 10:05 /usr/local/bin/ssh-askpass1
+lrwxrwxrwx   1 root     root           11 jul 11 10:05 /usr/local/bin/ssh-keygen -> ssh-keygen1
+-rwxr-xr-x   1 root     root       311029 jul 11 10:05 /usr/local/bin/ssh-keygen1
+-rws--x--x   1 root     root       589457 jul 11 10:05 /usr/local/bin/ssh1
+</SCREEN>
+
+<para>
+Der er links til version-1 programmer (f.eks. /usr/local/bin/ssh
+-> ssh1), da der er lavet en version 2 af ssh, kaldet ssh2. Den
+frigives under en mere restriktiv licens, men den må stadig anvendes
+gratis til ikke-kommercielle formål. Indtil videre er ssh1, dvs. version 
+1.2.27, dog den mest gennemprøvede. Version 1.2.28 er nu på vej pga. 
+en identificeret svaghed i den nuværende version.
+</para>
+</sect2>
+
+<sect2 id="Opsaetning-af-ssh">
+<title>Opsætning af ssh</title>
+
+<para>
+For at kunne tilgå de nye programmer skal du sørge for at have
+"/usr/local/bin/" med i din PATH, som du sikkert sætter
+i din "~/.profile" eller din "~/.bashrc". Derefter skal du til at lave 
+din hemmelige nøgle, hvilket du kun skal gøre den første gang.
+</para> 
+
+<para>
+Kør programmet "ssh-keygen" - ikke som root men under din
+almindelige brugerkonto. 
+Først vælges nogle kæmpe primtal automatisk, som
+anvendes til at generere dine nøgler (keys). Programmet spørger dig, 
+om der skal gemmes nøgler i "~/.ssh/identity",
+hvilket du bare skal acceptere. Dernæst skal du skrive en
+"passphrase", som er et udvidet password. Skriv her en lang
+sætning, som du skal anvende hver gang du logger ind via ssh. Din
+passphrase skal naturligvis ikke komme fra en kendt remse, eller andet sted,
+som andre har en chance for at kende. 
+Erstat eller tilføj også et par specialtegn og
+numre nogle steder, du vil kunne huske. Programmet gemmer en lang
+offentlig nøgle (public key), der er over 300 tegn lang. Vi har
+dog kortet denne linie ned i det næste eksempel. Kører du selv
+programmet, vil din passphrase ikke vises på skærmen.
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ssh-keygen
+Initializing random number generator...
+Generating p:  .................................++ (distance 514)
+Generating q:  ............++ (distance 234)
+Computing the keys...
+Testing the keys...
+Key generation complete.
+Enter file in which to save the key (/home/robin/.ssh/identity): 
+Enter passphrase: V1 hANDLER me spaghett1
+Enter the same passphrase again: V1 hANDLER me spaghett1
+Your identification has been saved in /home/robin/.ssh/identity.
+Your public key is:
+1024 33 122323...923 robin@sherwood
+Your public key has been saved in /home/robin/.ssh/identity.pub             
+</SCREEN>
+
+<para>
+Hvis sshd er startet op, er alt klar til at kommunikere sikkert, 
+også over usikre netværk. Start med at skrive
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ssh locksley
+Host key not found from the list of known hosts.
+Are you sure you want to continue connecting (yes/no)?          
+</SCREEN>
+
+<para>
+Første gang du kobler til en fremmed maskine, der ligeledes har fået
+installeret ssh, skal ssh acceptere at udveksle nøgler med en
+ukendt maskine. Dette spørgsmål skal du således acceptere, og næste
+gang du anvender samme fremmede maskine, skal du ikke igennem dette
+spørgsmål. Efter at have svaret "yes" skal du aflevere dit
+almindelige password, og du er så logget ind på maskinen. Dette kan du
+fortsætte med, men hvis du vil højne sikkerheden yderligere, bør du
+gemme din offentlige nøgle på fjernmaskinen. Har du denne nøgle gemt, 
+kan man ikke logge ind med dit password men kun med din lange og 
+kryptiske passphrase.
+</para>
+
+<para>
+Log ud ved at skrive exit (eller trykke Ctrl-D) for at komme tilbage 
+til din egen maskine. Kopier nu din public key fra
+din egen maskine (sherwood) til fjern maskinen og gem
+den under "~/.ssh/authorized_keys", som ingen andre end
+dig skal kunne læse. Denne kopiering laver vi med en ny kommando
+"scp" (secure copy).
+</para>
+<SCREEN>
+[robin@sherwood robin]$ cd ~/.ssh
+[robin@sherwood .ssh]$ scp identity.pub locksley:authorized_keys
+</SCREEN>
+
+<para>
+Nu skal du lave den sidste opsætning på locksley. Du laver kataloget
+"~/.ssh", hvor du gemmer din offentlige nøgle, og sikrer, at andre ikke
+kan læse denne. Dit hjemmekatalog skal andre heller ikke have lov til
+at skrive i - denne foranstantning er altid klog, men det er også
+nødvendig for at din offentlige nøgle "identity.pub" virker efter, at
+den er kopieret til fjernmaskinens "authorized_keys". Det er en
+egenskab ved ssh.
+</para>
+
+
+<SCREEN>
+[robin@sherwood robin]$ ssh locksley
+[robin@locksley robin]$ mkdir ~/.ssh
+[robin@locksley robin]$ mv authorized_keys ~/.ssh
+[robin@locksley robin]$ chmod go-w ~
+[robin@locksley robin]$ chmod -R go-rwx .ssh
+[robin@locksley robin]$ exit
+</SCREEN>
+</sect2>
+
+<sect2 id="krypteret-data">
+<title>Krypteret dataoverførsel</title>
+<para>
+Nu kan du slappe af. Alt er sat op, og du kan uden at skulle
+frygte for netværkssikkerheden logge ind på locksley. F.eks. kan du
+starte et grafik program såsom "xload" ved at skrive
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ssh locksley xload
+Enter passphrase for RSA key 'robin@locksley': V1 hANDLER me spaghett1
+</SCREEN>
+
+
+
+<para>
+Du blev nu mødt af noget nyt igen, idet du skulle skrive din
+passphrase og ikke dit password. Bemærk, at i virkeligheden vises din
+passphrase naturligvis ikke på skærmen.
+xload vil nu køre fra locksley og vises på din egen maskine (sherwood). 
+Skal du logge ind på locksley, så skriver du blot "ssh locksley", og skal 
+du have udført et program derfra, tilføjer du blot programnavnet til denne
+ordre. 
+</para>
+
+
+<para>
+Skal du kopiere en fil fra sherwood til locksley, skriver du
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ scp LOKALT_FILNAVN locksley:FJERN_FILNAVN
+</SCREEN>
+
+<para>
+Du har altså ikke en fuld erstatning for ftp, men scp erstatter rcp
+(remote copy), som arbejder med samme syntaks.
+</para>
+
+<para>
+Hvis du ikke frygter, hvem der kan tilgå din egen maskine, kan du
+få endnu nemmere adgang til de andre maskiner ved, at du en
+gang for alle i den X session, du har igang, giver din passphrase.
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ ssh-agent bash
+[robin@sherwood robin]$ ssh-add
+Need passphrase for /home/robin/.ssh/identity (robin@sherwood).
+Enter passphrase:         
+</SCREEN>
+
+<para>
+Derefter kan du med ssh fra den terminal logge ind og ud af "locksley" 
+og andre ssh maskiner uden at skulle bruge passphrase. Vil du
+have at alle terminal-vinduer skal kunne dette, skal du rette i din 
+"~/.xsessionrc", "~/.xinitrc" eller
+lignende, hvor din window manager startes op. Er det f.eks. KDE,
+skal du ændre "startkde" til "ssh-agent startkde" og kun en
+enkelt gang køre "ssh-add". Derefter kan du slippe for at indtaste din 
+passphrase i resten af den X session. Brug "ssh-agent" med omtanke.
+</para>
+
+<para>
+Anvender du ssh, kan andre med sniffit se, at der laves kommunikation
+på port 22, men prøver de at følge netværkstrafikken, kommer der
+ikke login navne, passwords, eller efterfølgende kommandoer i klar
+tekst - alt er krypteret. Den lille boks i sniffit, som for telnet
+viste login sekvensen med passwords osv., vil med ssh være fyldt med en
+bunke tilfældige tegn uden sammenhæng - kun ssh selv kan i praksis
+afkode kommunikationen. 
+</para>
+
+<para>
+Lad os vende tilbage til sniffit og se, hvad der med ssh kommer over
+netværket under login via ssh. På næste billede kan vi se, at port 22
+på locksley modtager tekst, der er krypteret og dermed ikke læseligt
+for andre. Igen er det "sniffit -F eth0 -i", som køres. Derefter
+har vi valgt at følge den linie fra 192.168.0.1, som kommer
+ind via port 22 til 192.168.0.2. I det lille vindue kan du se resultatet
+af vilkårlige og almindelige Linux kommandoer - i dette tilfælde "ls
+-al /home".
+</para>
+
+<FIGURE ID="sniffit3-fig" FLOAT="1">
+<TITLE>Sniffit</TITLE>
+<GRAPHIC FILEREF="sniffit3.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+</sect2>
+
+<sect2 id="epilog2">
+<title>Epilog</title>
+<para>
+Der er mange forskellige smarte features i
+ssh, såsom at maskinerne skal acceptere hinandens identitet, brugeres
+skal accepteres via en passphrase, og en gang hver time vil maskiner
+endda skifte nøgler, så en eventuel ondsindet person, som vil lytte
+med skal begynde forfra i dekodning af krypterings-nøgler.
+</para>
+
+<para>
+Vi skal også nævne, at ssh kan anvendes til at lave VPN løsninger
+(Virtual Private network) mellem to lokale netværk, der forbindes via
+et usikkert net. Skal man køre revisionssystemer på Linux, kan vi
+anbefale CVS, som drager nytte af ssh til at skabe krypteret tilgang
+til ens server. Det er kun en environment variabel (sæt $CVS_RSH=ssh), så
+kører det. Tilsvarende kan rsync kobles med ssh (sæt $RSYNC_RSH=ssh)
+for at lave synkroniseret data mellem flere maskiner, hvor
+dataudveksling sker med secure shell.
+</para>
+
+<para>
+Ud over Linux (UNIX) server og klient programmer, som er
+indeholdt i ssh-pakken, så kan du måske også have glæde af klienter
+til Windows.  
+
+Med en af disse kan du fra en Windows maskine logge sikkert ind på
+din Linux maskine. Du kan på hhv.
+<ulink url="ftp://ftp.replay.com/pub/crypto/crypto/SSH/3rd_party/putty">ftp://ftp.replay.com/pub/crypto/crypto/SSH/3rd_party/putty</ulink>,
+<ulink url="http://www.mindbright.se/mindterm">http://www.mindbright.se/mindterm</ulink>
+og <ulink url="http://guardian.htu.tuwien.ac.at/therapy/ssh/">http://guardian.htu.tuwien.ac.at/therapy/ssh/</ulink>
+finde ssh-klienter til Windows - som vi dog ikke kan garantere for.
+Der findes også en kommerciel Windows ssh-version, som kan købes fra 
+<ulink url="http://www.datafellows.com">http://www.datafellows.com</ulink>.
+</para>
+
+<para>
+Endelig så skal du vide, at ssh koster ekstra belastning af din CPU,
+idet data krypteres og dekrypteres. Performance tabet afhænger af
+maskinerne som anvendes. For moderne PC'ere (Pentium 120 Mhz eller
+nyere) er det dog ikke mærkbart.
+</para>
+</sect2>
+</sect1>
+
+</chapter>
+

@@ -1,0 +1,777 @@
+<!-- $Id$ -->
+<chapter id="root-access">
+<title>Root access - hvem, hvordan og hvorfor ikke?</title>
+
+<para>
+Når en bruger for første gang skal til at anvende Linux (eller en anden
+UNIX), så det kan måske være svært at forstå, hvorfor man ikke skal 
+være logget ind som systemadministrator - dvs. brugeren root - hele
+tiden. Dette vil vi starte denne artikel med at diskutere. Derefter
+vil vi se på fornuftig håndtering af root rettigheder.
+</para>
+
+<para>
+Der er flere sikkerhedsaspekter forbundet med root-adgang. Ud over risikoen 
+for selv at komme til at ødelægge noget på sit system, er der spørgsmålet om
+hvilke personer ud over systemadministratoren, der skal have root 
+privilegier - om nogen. I den
+forbindelse vil vi også se på nogle af de elementære forholdsregler, man 
+bør tage for at forhindre, at uautoriserede personer får root adgang.
+Desuden vil vi se på valg af passwords. Det er meget vigtigt - 
+specielt for root-kontoen - at der vælges passwords, der ikke kan gættes.
+Som det sidste i artiklen ser vi på SUDO  og suid programmer, 
+dvs. programmer, der kører med rettigheder, som om de var startet af
+root. Dette kan naturligvis være et sikkerhedsmæssigt problem. Disse lokale
+problemer bliver til netværksproblemer i det øjeblik, nogen trænger ind
+på systemet via netværket. Er en cracker inde som almindelig bruger, er
+det endnu begrænset, hvor meget skade han kan gøre. 
+Det er nok desværre sandsynligt, at crackeren vil gå efter at 
+få root-rettigheder for at have fuld kontrol over din computer.
+</para>
+
+<para>
+Det ville også være slemt, hvis nogen fra
+<emphasis>salgsafdelingen</emphasis> fik fat i dit root
+password... Fra <ulink url="http://www.userfriendly.org/static">http://www.userfriendly.org/static</ulink>
+</para>
+
+<FIGURE ID="uf000955-fig" FLOAT="1">
+<TITLE>User Friendly</TITLE>
+<GRAPHIC FILEREF="uf000955.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+<sect1 id="hvem-er-root">
+<title>Hvem er root?</title>
+<para>
+På et Linuxsystem er der som regel et antal brugere med forskellige
+rettigheder. Linux er grundlæggende et fler-bruger system. Hvis man
+f.eks. bruger Linux i en virksomhed, eller på en skole, er der forskel
+på, hvad folk skal have lov til at gøre på maskinen. Hvor nogle brugere
+kun kan hente deres email fra maskinen, kan andre betroede brugere
+have lov til at logge ind på maskinen og køre programmer. De
+forskellige brugere har et brugernavn og et password, som de logger
+ind på systemet med. Ud fra bruger-ID nummeret (fås ud fra
+brugernavnet) afgør systemet, hvilke handlinger man har lov til at
+udføre. Passwordet sikrer, at man er den man giver sig ud for at være.
+Ingen af de "almindelige" brugere kan ændre systemfiler, konfigurere
+ny hardware eller re-installere software. Derfor har Linux brugeren
+root, som kan alt dette. Er man root, så har man total kontrol over
+maskinen. At være root kan du blive ved at logge ind med brugernavnet
+root, og det dertil hørende password. Brugerkontoen root er en
+systemadministratorkonto, som du også kan skifte til og fra ved brug
+af <COMMAND>su</COMMAND> kommandoen. Det skal nævnes, at det er bruger-ID
+0, som giver root-rettigheder, egentlig ikke alene navnet root. Hvis
+du derfor finder flere brugere med bruger-ID 0 (nul), så skal du være meget
+opmærksom på, hvad der er sket.
+</para>
+
+<para>
+Hvis du er systemadministrator for en Linux maskine og kender root 
+passwordet, er det stadig vigtigt, at du har en almindelig bruger konto, 
+som du bruger til daglig. Man bør kun være root, når det er nødvendigt,
+for at udføre opgaver, hvor root rettigheder er nødvendige. Lad os illustrere 
+hvorfor.
+</para>
+
+<para>
+Antag som første eksempel, at du arbejder i et lokale, hvortil andre
+har adgang, og at du altid logger ind som root. Du skal i løbet af
+dagen forlade din maskine et antal gange f.eks. til frokost eller
+møder. Hvis du bare en gang glemmer at sætte en password-beskyttet
+screensaver på (denne må ikke kunne afbrydes med
+<command>Ctrl-Alt-Backspace</command>) eller logge helt ud, kan
+enhver, som kommer forbi dit kontor ødelægge hele din
+maskine. F.eks. ved at skrive <COMMAND>rm -rf /</COMMAND> som vil
+slette <emphasis>alle</emphasis> filer på din harddisk uden at spørge,
+om du mener det - og der er ingen fortrydelsesmulighed.  Eksemplet er
+naturligvis grelt og ren sabotage, men det er faktisk sket, at andre
+<emphasis>lige</emphasis> skulle rette noget på et tidspunkt, hvor
+systemadministratoren lige var ude, og med root-login forvoldte stor
+skade, fordi vedkommende overvurderede sine evner som
+UNIX-administrator. Andre uheldige hændelser sker ved, at en root
+glemmer at logge ud, og andre ser dette. For at drille skiver de så
+<COMMAND>rm -rf /</COMMAND> men uden at trykke retur - dvs. ordren er
+ikke udført endnu. Hvis den rigtige root så kommer tilbage og ved et
+uheld trykker retur, er alt tabt, og han har selv udført
+handlingen. Det, som var en sjov spøg, blev pludselig til et sort
+uheld. Desværre er uheld, som disse set før.
+</para>
+
+<para>
+Lad os som det næste eksempel se på de uheld, man selv kan komme til at
+lave, når man er logget ind som root. Den hyppigste grund til fejl og 
+ulykker er nok slåfejl eller rettere sløseri. 
+På en Linux-maskine vil du normalt altid få 
+udført den ordre, du skriver, og du må selv garantere for fornuften i 
+dette. Linux har den fordel, at du som almindelig bruger ikke kan slette 
+systemfiler, såsom den meget vigtige fil <FILENAME>/etc/passwd</FILENAME>, der
+indeholder information om brugerne og deres passwords. Prøver du, som
+almindelig bruger at slette password-filen, vil blot blot få en besked 
+med "Permission denied" - og det skal du faktisk være glad for. Sker
+det samme, imens du er root, vil du få lov til at slette filen. Styrer 
+maskinen emails for 500 brugere, så går der sikkert mellem 10 og 20 
+sekunder før at din telefon er rødglødende af sure folk, som ikke længere 
+kan hente emails eller logge ind på maskinen.
+</para>
+
+<para>
+Selvom man bare har sin Linux-maskine derhjemme, og der ikke er andre, der 
+bruger den, er det stadig vigtigt at have mindst én almindelig konto ud over 
+root kontoen.
+</para>
+
+<para>
+Når du skal lave systemarbejde, så kan følgende fremgangsmåde være 
+anvendelig: Tag en speciel rød kasket på hovedet,
+som tegn på at du nu vil være root :-) Skift nu til root arbejde ved
+at skrive <COMMAND>su - root</COMMAND>. Bemærk at nogle gange udelades
+minustegnet. Det kommer vi tilbage til. Og før du skriver den mindste
+ordre, så placer begge hænder under din bagdel. I den tilstand tænker
+du dig så grundigt om, før du skriver og udfører ordrer - for du kan
+ALT som root. Det lyder nok lidt komisk, men der er alvor i noget af
+det. Skil dit normale arbejde på maskinen, såsom at læse din egne
+emails og programmere, fra root arbejdet. Vær kun root, når det er
+nødvendigt og brug root kontoen med stor varsomhed. Sørg bl.a. for at
+videresende emails til root til en almindelig brugerkonto (din egen),
+idet du <emphasis>ikke</emphasis> bør læse emails, når du er logget ind som root.  
+
+Hvis du hører til dem, der tror, at de sagtens kan
+administrere at være root hele tiden, så kan vi kun sige, at du ikke
+er den første. Det er noget man typisk hører fra begyndere, der endnu
+ikke har oplevet, hvor let det er som root at ødelægge meget med en
+lillebitte forkert kommando. 
+Hvis du vil være root hele tiden, så kræver det stor disciplin. Du bør
+overveje, om du vil udsætte dig selv for de risici, det indebærer at
+være root hele tiden.
+</para>
+
+<para>
+Vi vil gerne sige det en gang for meget, så det er helt klart: En god
+administrator giver altid så få rettigheder som muligt til
+brugerne og tilsvarende til sig selv. Kun når det er nødvendigt, 
+skifter systemadministratoren fra sin egen personlige konto til root
+kontoen, og man låner ikke sit root password ud. I praksis vil man mange
+steder synes, at denne meget restriktive måde at administrere sikkerhed
+er unødigt streng og ofte fører til alt for langsomme ændringer af systemet,
+men det er den afvejning man altid skal lave mellem kontrol, sikkerhed og
+fleksibel brug af et computersystem. 
+</para>
+
+<sect2 id="su-root">
+<title>su root</title>
+<para>
+Så hvad er forskellen på <COMMAND>su root</COMMAND> og <COMMAND>su -
+root</COMMAND>?  Minus-tegnet betyder at root brugerens environment
+(miljø-variable) bliver brugt. Hvis minus-tegnet udelades, beholder
+root de miljø-variable, som brugeren der skrev <COMMAND>su</COMMAND>
+kommandoen havde.  Dette kan være et sikkerhedsaspekt. En brugers
+miljø-variable indeholder bl.a. hans personlige sti til de programmer,
+han vil køre, gemt i variablen PATH. Forrest i en brugers PATH kan man
+ofte finde ".", som betyder "det aktuelle katalog". Det betyder, at
+når man skriver en kommando, vil maskinen først lede efter programmet
+i det aktuelle katalog. Det kan være meget praktisk, men som root er
+det farligt. Vi antager, at en bruger har skrevet et program og kaldt
+det <COMMAND>ls</COMMAND>, og lagt det i sit hjemmekatalog. Root står
+tilfældigvis i denne brugers hjemmekatalog, og skriver
+<COMMAND>ls</COMMAND>. Hvis root har "." forrest i sin PATH, hvad sker
+der så? I stedet for at <COMMAND>ls</COMMAND> kommandoen bliver kørt,
+bliver brugerens eget program kørt - som root! Root bør
+<emphasis>ikke</emphasis> have "." i sin egen PATH - og slet ikke
+forrest.  Dette er bare et eksempel. Brugeren kan også have aliaser i
+sine opstartsfiler, så kommandoer ikke gør det, man forventer, og der
+kan ske uheld - selvom man som regel bruger "su" fra sin egen bruger
+konto, hvor man kender opsætningen.  Desuden har root ofte
+<FILENAME>/sbin</FILENAME> og måske <FILENAME>/usr/sbin</FILENAME> i
+sin PATH, hvor der ligger en række systemkommandoer. Det er en god ide
+altid at bruge minus-tegnet.
+</para>
+</sect2>
+
+<sect2 id="root-rettigheder">
+<title>Uddeling af root rettigheder</title>
+<para>
+Som systemadministrator vil du komme ud for, at nogle
+brugere har behov for at kunne lave noget "specielt" systemarbejde, og 
+derfor mener de skal have root passwordet. Det kunne f.eks. være selv 
+at kunne genstarte en webserver, måske stoppe/genstarte maskinen eller 
+dræbe processer efter programmer, som ikke fungerer.
+Disse ting kræver at root passwordet anvendes på tidspunkter, som
+ikke kan forudsiges. Du kan bevare root passwordet på 
+få hænder og alligevel give nogle brugere de
+tilstrækkelige systemrettigheder ved at installere programmet "sudo".
+</para>
+
+<para>
+Programmet sudo følger ikke med alle Linux distributioner, men kan
+downloades fra 
+<ulink url="http://www.courtesan.com/sudo">http://www.courtesan.com/sudo</ulink>.
+Programmet er nemt at oversætte og installere - gør følgende som root:
+</para>
+
+<SCREEN>
+[root@sherwood robin]# tar xvzf cu-sudo.v1.5.9p2.tar.gz 
+[root@sherwood robin]# cd cu-sudo.v1.5.9p2
+[root@sherwood sudo.v1.5.9p2]# ./configure; make; make install
+[root@sherwood sudo.v1.5.9p2]# exit
+</SCREEN>
+
+<para>
+Derefter skal du lære at konfigurere sudo rigtigt. Dette afgør,
+hvilke programmer bestemte personer kan tilgå. 
+Du bør også følge med i hvilke sikkerhedsfejl, der bliver fundet i sudo 
+(følg med på deres hjemmeside).
+Der er på sudo-hjemmesiden en kortfattet eksempelfil. Læs desuden
+man-sider for
+<COMMAND>sudo</COMMAND>, <COMMAND>sudoers</COMMAND> og
+<COMMAND>visudo</COMMAND>.
+</para>
+
+<para>
+Konfigurationen startes som root ved at skrive
+</para>
+
+<SCREEN>
+[root@sherwood robin]# /usr/local/sbin/visudo
+</SCREEN>
+
+<para>
+Nu kommer editoren vi frem med den konfigurationsfil, du skal udfylde.
+Som et eksempel lader vi brugeren robin kunne genstarte
+NFS-serveren.
+Find linien med 
+</para>
+
+<SCREEN>
+root    ALL=(ALL) ALL 
+</SCREEN>
+
+<para>
+Under denne tilføjer du, at brugeren robin på maskinen sherwood må køre
+kommandoen <command>/etc/rc.d/init.d/nfs restart</command>.
+</para>
+
+<SCREEN>
+robin     sherwood=/etc/rc.d/init.d/nfs restart
+</SCREEN>
+
+<para>
+Gem filen og prøv nu som brugeren robin at genstarte nfs.
+</para>
+
+<para>
+Det eneste trick er, at du, som almindelig bruger, skal skrive sudo
+foran den kommando, du skal kunne køre med root-rettigheder. Efter en
+lille formaning om at passe på skal robin som almindelig bruger skrive
+sit <emphasis>eget</emphasis> passsword. Derefter udføres kommandoen,
+som om det var root, der gjorde det. Man skal skrive sit password
+som en sikkerhedsforanstaltning, der beskytter imod, at andre brugere
+kan udnytte ens sudo rettigheder. Hvis du f.eks. er gået til frokost
+uden at logge ud, så kan kollegaen ikke gå over og lave sudo
+kommandoer fra din maskine, da han stadig ikke kender dit password.
+</para>
+
+<SCREEN>
+[robin@ sherwood]$ sudo /etc/rc.d/init.d/sendmail restart
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these two things:
+
+        #1) Respect the privacy of others.
+        #2) Think before you type.
+
+Password:
+Shutting down sendmail:                                    [  OK  ]
+Starting sendmail:                                         [  OK  ]           
+</SCREEN>
+
+<para>
+Eksemplet er fra Red Hat 6.0, men kan være taget med en vilkårlig
+Linuxdistribution.
+</para>
+
+<para>
+<command>super</command> er et andet program, som kan meget af det
+samme som sudo, og som kan downloades fra 
+<ulink url="ftp://ftp.ucolick.org/pub/users/will">ftp://ftp.ucolick.org/pub/users/will</ulink>.
+Umiddelbart har <command>super</command> flere muligheder, 
+men det er sværere at anvende end <command>sudo</command>.
+</para>
+
+<para>
+Endelig skal det siges, at programmet <command>sudo</command> også er
+smart, selvom du har spredt root password på flere hænder, idet det
+tvinger brugeren til at være lidt forsigtig med root-kontoen. Som
+afslutning vil vi dog påpege, at hvis du tildeler personer rettigheder
+via <command>sudo</command>, så bør det ikke være ene generelt
+blankocheck til at kunne køre alt som root. Istedet bør du anføre hver
+af de services, der skal kunne startes og stoppes via
+<command>sudo</command>. En god grund til dette er, at du så ikke
+havner i en sitation, hvor dine basale binære programmer eller
+bibioteker er bliver udskiftet pga. misforståelser eller destruktiv
+handling. Hvis en person virkelig skal være root ofte, så er det måske
+klogere, at personen også har root-password og et tilsvarende ansvar.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="password-valg">
+<title>Valg af password</title>
+<para>
+Det er vigtigt at hemmeligholde sine passwords - især sit root password.
+
+På en Linux-maskine logger man ind med et bruger-id såsom 
+"robin" og et tilhørende password. Vi vil se på, hvorfor det 
+er vigtigt, at du beskytter dit password, og hvordan du kan beskytte 
+det. Vi vil se nærmere på, hvad der sker med dit password på Linux-maskinen,
+og på nogle af de værktøjer, du kan bruge til at højne 
+sikkerheden omkring passwords.
+</para>
+
+<sect2 id="gem-password">
+<title>Skriv ikke dit password, hvor andre kan se det</title>
+<para>
+Styrer du en Linux-maskine med et antal brugere, der har hver sin
+login-konto, så er det vigtigt, at de alle forstår, at de hver især er
+ansvarlige for deres password. Hvis de skriver det på en lap papir og
+sætter den på opslagstavlen eller på skærmen, er de med til at
+bryde sikkerheden. Man kan grine af dette, men det er langt mere
+udbredt, end man skulle tro. Sagen er, at en vilkårlig anden person, som
+kender din kombination af login-navn og password, kan logge
+ind som <emphasis>dig</emphasis> og arbejde som dig, misbruge, ødelægge eller
+spionere i dit navn. Det skal selvfølgelig undgås.
+</para>
+</sect2>
+
+<sect2 id="valg-af-password">
+<title>Hvordan vælger man passwords ?</title>
+
+<para>
+Ud over at password ikke må skrives, hvor andre kan se det, så er det 
+ikke lige meget, hvordan du vælger dit password
+og specielt ikke dit root password. Desuden bør man skifte password
+med passende mellemrum. Passwords kan knækkes ved en
+kombination af gode gæt og rå beregningskraft. Før vi ser på dette, så
+lad os se på, hvordan dit password er gemt på på din Linux-maskine.
+</para>
+
+<para>
+Dit password og information om dit login-navn og gruppe gemmes i filen
+<FILENAME>/etc/passwd</FILENAME>. Hvis du ikke anvender <emphasis>shadow
+passwords</emphasis> (hvad det er kommer vi ind på senere), så kan en linie
+i passwd-filen ligne følgende:
+</para>
+
+<SCREEN>
+robin:A1$HN1r2zxs$A2rmawluybzv8hkf4Hpzz0:501:501::/home/robin:/bin/bash
+</SCREEN>
+
+<para>
+De første to felter er dit login-navn og dit krypterede password.
+Når du ændrer password (med kommandoen passwd), så vil
+Linux-maskinen kryptere dit password til noget meget ukendeligt og
+gemme dette i <FILENAME>/etc/passwd</FILENAME>. Ideen bag dette er, at man
+har en algoritme, som hurtigt kan generere noget unikt krypteret 
+tekst ud fra en anden tekst såsom dit password, men at det i praksis 
+er umuligt at gå den anden vej. Det vil sige at der ikke findes en metode, 
+hvor man finde det originale password ud fra det krypterede password. Som et
+lille matematisk eksempel kan vi nævne, at man nemt kan finde y hvis man 
+kender x, ud fra y = x^3+2*x^2-3*x+2, mens det er langt mere besværligt 
+at finde x ud fra y - i dette eksempel skal man løse en tredie grads 
+ligning. De metoder, man anvender til at kryptere passwords, er meget 
+smartere end bare en trediegradsligning. Metoderne er udviklet, således 
+at man garanterer, at der kun er et password, som svarer til det krypterede 
+password.
+</para>
+
+<para>
+Fra den mere muntre afdeling kan vi lige igen vise en stribe fra 
+<ulink url="http://www.userfriendly.org/static">http://www.userfriendly.org/static</ulink>
+</para>
+
+<FIGURE ID="uf000933-fig" FLOAT="1">
+<TITLE>User Friendly</TITLE>
+<GRAPHIC FILEREF="uf000933.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+</sect2>
+
+
+<sect2 id="DES-kryptering">
+<title>DES kryptering af passwords</title>
+<para>
+På det fleste UNIX systemer har det i mange år været standard, at et 
+password måtte være op til otte tegn langt, og ud fra dette blev der gemt 13
+krypterede tegn i din password-fil. På Linux har man længe anvendt
+crypt, som benytter sig af DES (Data Encryption Standard). Læs mere 
+om DES på
+ <ulink url="http://csrc.ncsl.nist.gov/cryptval/des/des.txt">http://csrc.ncsl.nist.gov/cryptval/des/des.txt</ulink>.
+</para>
+<para>
+Funktionen crypt bruger det indtastede password som krypteringsnøgle. Den
+tekst, der krypteres, er blot en række nuller. Men det er ikke hele 
+passwordet, der bruges som DES-nøgle, den sidste bit i hvert tegn smides 
+væk. Desuden sættes 2 tilfældige tegn ind, det såkaldte "salt", der blot 
+er beregnet til at gøre det sværere at rekonstruere passwordet. Se i 
+øvrigt<COMMAND> man crypt</COMMAND>.
+</para>
+</sect2>
+
+<sect2 id="MD5">
+<title>MD5</title>
+<para>
+I gamle dage, hvor man ikke havde så store computere, var crypt en god
+løsning til passwords, da den er nærmest umulig at bryde på kort tid.
+Men i dag har man rå computerkraft nok til, at man ikke behøver at
+bryde krypteringen. Man kan i stedet sætte sine computere til at prøve
+sig frem fra en ende af. Derfor er der i dag brug for længere passwords,
+som er sværere at bryde.
+</para>
+
+<para>
+Linux Red Hat 6.0 har en langt mere veludviklet håndtering af
+passwords end tidligere UNIX systemer, hvis man har valgt at kryptere med 
+MD5 checksums. Man kan nu med MD5 vælge passwords, der har mere end
+otte tegn, og uanset længden af det man taster ind, gemmes der altid
+34 krypterede tegn i password-filen. Det er langt sværere at knække de
+lange passwords.
+</para>
+
+<para>
+Det, vi ønsker med vores avancerede kryptering, er, at der kun er en
+måde, hvorpå du kan få det ukrypterede password ud fra det krypterede -
+ved at indtaste det korrekte password. Er du cracker, må du prøve at 
+gætte på passwordet, kryptere alle disse passwords og sammenligne 
+det krypterede gæt med det rigtige krypterede password. Er
+de to krypterede passwords ens, så er gættet og det rigtige ukrypterede
+password ens - du kender nu passwordet og kan logge ind på systemet som
+den pågældende bruger. Derfor bør man vælge et password, der er svært at
+gætte. Ydermere kan vi igen anbefale, at du bruger shadow passwords,
+for så har man ikke adgang til det krypterede password.
+</para>
+</sect2>
+
+<sect2 id="knaekke-passwords">
+<title>Jeg knækker dit password</title>
+<para>
+Der findes programmer, som kan bruges til at knække passwords
+effektivt. Man kan måske mene, at det er med til at svække sikkerhed
+generelt, at der ligger programmer frit tilgængeligt på Internet, som
+gør det nemt at cracke passwords. Vi mener, at det er for enkelt at 
+tænke sådan. Enhver kan i princippet skrive et program til at knække 
+passwords, og derfor bør man måske selv lade sit password komme 
+igennem sådan et program. Hvis det ikke er knækket indenfor en måned, 
+er det ikke så ringe... Men så er det alligevel på tide at skifte det 
+ud. Et udbredt program til at knække passwords er <emphasis>John the Ripper</emphasis>, 
+der kan findes på 
+<ulink url="http://www.openwall.com/john/">http://www.false.com/security/john/</ulink>.
+Man kan finde programmer, som er en del hurtigere til blindt at knække 
+passwords fra en ende af, men John the Ripper har nogle spændende aspekter. 
+Nedenfor er vist, hvordan programmet knækker passwords for brugeren robin i
+med tre forskellige passwords, hhv. "a", "ab" og "qsw". Udskriften stammer fra
+en 300 MHz PII, og det viser, at et bogstav knækkes på få sekunder,
+mens to og tre tilfældige bogstaver kan knækkes på 5 hhv. 8 minutter.
+Generelt så bliver det meget langsommere at knække et passwords for
+hver gang at der kommer et tegn mere i passwordet. Derfor bør man altid 
+vælge passwords med mere end syv tegn.
+</para>
+
+<SCREEN>
+Loaded 1 password (FreeBSD MD5 [32/32])
+a                (robin)
+guesses: 1  time: 0:00:00:06 100% (2)  c/s: 746  trying: a
+
+Loaded 1 password (FreeBSD MD5 [32/32])
+ab               (robin)
+guesses: 1  time: 0:00:05:12 (3)  c/s: 665  trying: ab
+
+Loaded 1 password (FreeBSD MD5 [32/32])
+qsw              (robin)
+guesses: 1  time: 0:00:08:08 (3)  c/s: 669  trying: qsw
+</SCREEN>
+
+<para>
+John the Ripper er lidt langsom til de "tilfældige" passwords ovenfor,
+fordi det er programmeret ud fra, hvordan mange brugere i praksis vælger
+password. Man vælger ofte kærestens navn, måske koblet med en
+fødselsdag, et sted man er glad for, eller andre ting man kan
+huske. Det er ikke klogt, fordi det er for nemt at gætte, hvilket følgende 
+viser. Først har vi ladet brugeren robin have password "abc" som står 
+i alle ordbøger. Det koster kun 4 sekunder, før det er fundet. Dernæst 
+er vist, at fem bogstaver som i ordet "apple" findes på 3 sekunder, og 
+endelig gentagelsen "appleapple" med 10 bogstaver som kun tager 19 
+sekunder at knække - skræmmende, ikke sandt? Ordbøger findes til alle 
+sprog, så vælg altid passwords som <emphasis>ikke</emphasis> står i en ordbog - bland 
+tal ind i ord og lav et underligt system, andre ikke har en 
+chance for at gætte. Brug f.eks. forbogstaver fra en sætning eller 
+en sang, og flet specialtegn og numre med ind. Vær dog lidt varsom med
+specialtegn i passwords - specialtegnenes placering på tastaturet kan 
+variere alt efter hvilket land, tastaturet er sat op til. Man kan f.eks. 
+komme ud for et dansk tastatur, som er sat op som et amerikansk,  hvor 
+det kan det være ret svært at finde specialtegnene. Jo længere password du
+vælger des bedre - og altid på mere end syv tegn. Root passwordet skal
+helst være endnu længere og vælges med særlig omhu. I øvrigt bør du med 
+jævne mellemrum ændre password, men sørg for at dette sker enten på selve 
+maskinen eller via en krypteret adgang til maskinen såsom ssh (secure shell).
+</para>
+
+<SCREEN>
+Loaded 1 password (FreeBSD MD5 [32/32])
+abc              (robin)
+guesses: 1  time: 0:00:00:04 100% (2)  c/s: 837  trying: abc
+
+Loaded 1 password (FreeBSD MD5 [32/32])
+apple            (robin)
+guesses: 1  time: 0:00:00:03 100% (2)  c/s: 891  trying: apple
+
+Loaded 1 password (FreeBSD MD5 [32/32])
+appleapple       (robin)
+guesses: 1  time: 0:00:00:19 100% (2)  c/s: 710  trying: appleapple
+</SCREEN>
+</sect2>
+
+<sect2 id="shadow-files">
+<title>Shadow files</title>
+<para>
+Den almindelige password-fil, <FILENAME>/etc/passwd</FILENAME>, kan
+læses af alle. Dette er nødvendigt, da en del programmer bruger filen
+til at koble en brugers bruger-id (tredie felt i password-filen) med
+det tilhørende brugernavn. At alle kan læse filen betyder imidlertid
+også, at alle kan se dit krypterede password. Derfra kan man cracke
+dit password, og som vi har beskrevet, så kan det gøres hurtigt, hvis
+du har valgt et svagt password. Med flere Linux distributioner
+bl.a. Red Hat 6.2 bliver du ved installationen spurgt, om du vil
+anvende shadow passwords, hvilket du bør svare ja til. Når du har
+installeret dette, så vil du se, at der står et "x" i
+<FILENAME>/etc/passwd</FILENAME>, hvor dit krypterede password før
+ville have stået:
+</para>
+
+<SCREEN>
+robin:x:501:501::/home/robin:/bin/bash
+</SCREEN>
+
+<para>
+Dit krypterede password er nu flyttet til <FILENAME>/etc/shadow</FILENAME>,
+som kun kan læses af root - dvs., ingen almindelig bruger på maskinen
+nu kan læse dit krypterede password. Hvis du har installeret
+Linux, men ikke har shadow passwords slået til, kan det gøres med kommandoen
+<COMMAND>/usr/sbin/pwconv</COMMAND>, som skal køres som root. Den
+laver shadow filen ud fra password filen og tilsvarende laves en shadow 
+gruppe-fil <FILENAME>/etc/gshadow</FILENAME> ud fra  
+<FILENAME>/etc/group</FILENAME> med
+programmet <COMMAND>/usr/sbin/grpconv</COMMAND>. For at dette virker, skal 
+dine Linuxprogrammer være oversat til at kunne håndtere dette - tidligere var
+dette ikke altid tilfældet. Læs manualsiden for pwconv for detaljer.
+</para>
+
+<para>
+I det ovenstående, hvor vi skriver, at alle kan læse password-filen,
+går vi ud fra, at det er brugere med lokal adgang. Hvordan får en
+cracker udefra adgang til min password-fil, så han kan se mit krypterede 
+password? Ofte er det CGI-scripts på en web-server, som pga. simple
+programmeringsfejl eller pga. fejl i de anvendte programmeringsssprog
+kan lokkes til at vise de krypterede passwords fra
+password-filen. Dygtige crackere finder fra tid til anden nye metoder 
+til at gøre dette. Normalt findes tilsvarende rettelser til 
+disse huller - hold derfor altid din maskine opdateret.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="suid">
+<title>SUID root programmer</title>
+
+<para>
+SUID betyder, at et program kører "som sin ejer", og ikke "som" den
+bruger, der udfører det. Dvs. at det kører med ejerens rettigheder.
+Et program, som robin ejer, og som er SUID, har f.eks. ret til at
+skrive i robins hjemmekatalog, selvom det er en anden bruger, der
+eksekverer det. Et SGID program er det samme bare med gruppe
+rettigheder i stedet.
+</para>
+
+<para>
+Hvorfor er det farligt? SUID er specielt farligt, når det er et 
+SUID-program som root ejer. Så længe programmet opfører sig pænt,
+er det ikke noget problem. Men hvis der er fejl eller sikkerhedshuller
+i programmet, kan det være en trussel mod sikkerheden. Man kan
+forestille sig, at et program har et sikkerhedshul, som gør det
+muligt for en almindelig bruger at gå ind og overskrive noget af
+programmets hukommelse, imens det kører, og få det til at gøre noget 
+andet, end det skal. Så har denne bruger faktisk root adgang til
+systemet. Man har set eksempler på dette med efterfølgende 
+sikkerhedsopdateringer til følge.
+</para>
+
+<para>
+Lad os nu se på hvilke programmer, der på en normal Linux maskine er 
+SUID programmer.
+
+<SCREEN>
+[robin@sherwood robin]$ su - root
+[root@sherwood root]$ find / -perm +4000
+</SCREEN>
+
+Sådan finder du alle SUID programmer. Men det er kun SUID root 
+programmer, som vi vil være bange for i dag. Hvis andre brugere selv
+laver SUID programmer så lad os antage, at de ved, hvad de laver
+og selv tager eventuelle konsekvenser.
+Vi går nu efter de programmer, hvor root er ejeren og som er SUID. Så vi tager 
+parametrene "-user root" med til find kommandoen:
+</para>
+
+<SCREEN>
+[robin@sherwood robin]$ su - root
+Password:
+[root@sherwood robin]# find / -perm +4000 -user root
+/bin/ping
+/bin/mount
+/bin/umount
+/bin/su
+/bin/login
+/sbin/dump
+/sbin/restore
+/sbin/pwdb_chkpwd
+/sbin/cardctl
+/usr/bin/rcp
+/usr/bin/rlogin
+/usr/bin/rsh
+/usr/bin/at
+/usr/bin/dos
+/usr/bin/chage
+/usr/bin/lpq
+/usr/bin/lpr
+/usr/bin/lprm
+/usr/bin/passwd
+/usr/bin/suidperl                                                           
+/usr/bin/procmail
+/usr/bin/screen
+/usr/bin/nwsfind
+/usr/bin/chfn
+/usr/bin/chsh
+/usr/bin/newgrp
+/usr/bin/crontab
+/usr/bin/zgv
+/usr/bin/gpasswd
+/usr/bin/sperl5.00405
+/usr/X11R6/bin/xterm
+/usr/X11R6/bin/XConsole
+/usr/X11R6/bin/nxterm
+/usr/X11R6/bin/xscreensaver
+/usr/X11R6/bin/Xwrapper
+/usr/lib/news/bin/startinnfeed
+/usr/local/bin/ssh1
+/usr/sbin/usernetctl
+/usr/sbin/inndstart
+/usr/sbin/sendmail
+/usr/sbin/traceroute
+/usr/libexec/pt_chown
+find: /proc/1144/fd: Permission denied
+find: /proc/1145/fd: Permission denied
+find: /proc/6286/fd/4: No such file or directory
+/opt/kde/bin/kvt
+/opt/kde/bin/kppp
+</SCREEN>
+
+<para>
+Outputtet er de SUID root programmer, der findes på systemet. Der er
+også et par fejl fra find nede fra /proc kataloget. Det skal du ikke
+tage dig af, /proc er et interface til den kørende kerne, og der ligger 
+ikke almindelige filer (f.eks. SUID root programmer) der.
+Det er <emphasis>mange</emphasis> programmer at passe på, måske er der et sikkerhedshul 
+i nogle af dem. Har du brug for alle disse programmer? Er der mon 
+nogle af dem, der kan køre uden SUID root eller helt fjernes? Check 
+programmernes man page, check om andre programmer er afhængige af 
+SUID-programmet, som det f.eks. er tilfældet med 
+<COMMAND>/bin/su</COMMAND>.
+Det kan ofte undersøges med systemets pakkemanager. Er der 
+sikkerhedsopdateringer til nogle af programmerne, du burde installere?
+Kan du overskue at følge med i sikkerhedsopdateringer for alle disse
+programmer? 
+Konklusionen er, at du aldrig skal installere flere programmer, end
+der skal bruges. 
+</para>
+
+
+<para>
+SGID - set group ID - er også farligt, hvis gruppen er root. Det er
+ikke så almindeligt at anvende SGID
+</para>
+
+<SCREEN>
+[root@sherwood robin]# find / -perm +2000 -group root
+/sbin/netreport
+/usr/sbin/sendmail
+find: /proc/1144/fd: Permission denied
+find: /proc/1145/fd: Permission denied
+find: /proc/6296/fd/4: No such file or directory
+</SCREEN>
+
+<para>
+Der var ikke så mange, men dem skal man også være opmærksom på.
+</para>
+
+<para>
+Lad os som et eksperiment prøve at lade <COMMAND>/bin/ping</COMMAND> være ejet 
+af robin i stedet for root, og lad os se om den stadig virker:
+</para>
+
+<SCREEN>
+[root@sherwood robin]# ls -l /bin/ping
+-rwsr-xr-x   1 root     root        14116 Jun 18  1998 /bin/ping
+[root@sherwood robin]# chown robin /bin/ping
+[root@sherwood robin]# ls -l /bin/ping
+-rwsr-xr-x   1 robin     root        14116 Jun 18  1998 /bin/ping
+[root@sherwood robin]# ping 10.10.10.3
+ping: ping must run as root
+[root@sherwood robin]#
+</SCREEN>
+
+<para>
+Ups, det kunne man ikke. Vi må hellere skifte tilbage:
+</para>
+
+<SCREEN>
+[root@sherwood robin]# chown root /bin/ping
+</SCREEN> 
+
+<para>
+Programmet ping er svært at undvære og er nødt til at køre som SUID
+root. Du kan i øvrigt se, at det er SUID ved det "s" som kommer frem,
+når du kører <COMMAND>ls -al</COMMAND> på filen.  Programmet
+<COMMAND>/usr/bin/passwd</COMMAND> er svært at undvære, og det er nødt til
+at køre som root for at kunne ændre i /etc/passwd filen.
+Et program som kppp kunne derimod afinstalleres, hvis du ikke bruger
+det. Kppp er et KDE program, der bruges til at koble sig til Internet
+via modem. Tilsvarende kan du afinstallere <COMMAND>/sbin/cardctl</COMMAND>, 
+hvis du ikke har PCMCIA kort i din maskine. Anvender du en RPM baseret 
+Linuxdistribution såsom Mandrake, SuSE eller Red Hat, kan du have 
+glæde af at finde ud af fra hvilken pakke, et givent SUID program kommer
+fra.
+</para>
+
+<SCREEN>
+[root@sherwood root]# rpm -qf /sbin/cardctl
+kernel-pcmcia-cs-2.2.5-15
+</SCREEN>
+
+<para>
+Så kan du checke hvilke filer, pakken indeholder. Når du frem til,
+at pakken ikke bruges, så afinstaller den:
+</para>
+
+<SCREEN>
+[root@sherwood root]# rpm -ql kernel-pcmcia-cs-2.2.5-15
+...klip mange linier
+[root@sherwood root]# rpm -e kernel-pcmcia-cs-2.2.5-15
+</SCREEN>
+
+<para>
+SUID root programmer er en alvorlig sikkerhedsrisiko, og man bør i
+hvert fald ikke lave SUID root programmer selv for at løse en given
+opgave.  Der er ting man ikke har fundet smartere løsninger på endnu,
+men de fleste ting kan gøres uden. I Linux har man som en
+sikkerhedsforanstaltning overfor SUID root programmer indbygget, at et
+script (tekstfil med kommandoer) ikke kan køres som SUID root.
+</para>
+</sect1>
+</chapter>
