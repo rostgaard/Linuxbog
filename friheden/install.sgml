@@ -157,11 +157,19 @@ harddisken op i to dele - en til hvert styresystem.
 <para>
 Har du Windows 2000 fyldt op på harddisken og kun en harddisk, så kan
 du <emphasis>IKKE</emphasis> efterfølgende lave nye partitioner til
-Linux. Du skal enten afinstallere Windows 2000 og installere Linux
-først, og derefter Windows 2000 igen - eller købe en ekstra hardisk
-til Linux.
+Linux hvis Windows 2000 bruger NTFS fil systemet. Du skal så
+afinstallere Windows 2000, repartitionere harddisken og installere
+Windows 2000 igen, eller købe en ekstra hardisk til Linux.
 <indexterm><primary>Windows 2000</primary></indexterm>
 <indexterm><primary>Partitionering</primary><secondary>Windows 2000</secondary></indexterm>
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Hvis du selv installerer Windows så 
+vælg at installere det på en FAT formateret harddisk og undgå
+NTFS fil systems. På den måde kan filer direkte kopieres fra
+Linux til Windows. Og du kan altid gøre Windows partitionen
+mindre med DOS/Windows-programmet Fips. (Se <xref linkend="opdelharddisk">)
 </para>
 
 <para>
@@ -239,6 +247,7 @@ om-partitionering af harddisken:
 </para>
 
 </sect2>
+
 
 <sect2 id="opdelharddisk">
 <title>Opdele en DOS/Windows harddisk til Linux</title>
@@ -442,12 +451,14 @@ program, som styrer dette (update-rpm pakken), som skal opdateres.
 
 <para>
 For dem som ønsker at være med på den absolutte forkant, så er 
-Red Hat 7.0 klar med præ-udgaver af kerne 2.4, KDE 2.0, Mozilla M17
+Red Hat 7.0 klar med præ-udgaver af kerne 2.4 og KDE 2.0, samt
+mange andre programmer.
 </para>
 
 <para>
 Der er mulighed for at prøve Red Hat 7.0 ved at installere den på en
-eksisterende FAT partition - dette er dog ikke beskrevet i det følgende.
+eksisterende FAT partition - dette er dog ikke beskrevet i det følgende,
+da det generelt ikke er hensigtsmæssig.
 </para>
 
 <para>
@@ -509,30 +520,32 @@ på langt de fleste moderne pc'ere.
 
 <para>
 Hvis din maskine er af ny dato, kan den starte direkte fra
-cdrom'en. Du skal så ind og vælge cdrom-drevet som første "boot drive" i BIOS-
-opsætningen. Ved samme lejlighed kan du i øvrigt slå en eventuel
-virus-beskyttelse fra. Den forhindrer skrivning i boot-sektoren og er
-en udmærket sikkerhedsforanstaltning i det daglige, men hvis vi skal
-installere LILO (se nedenfor), er vi faktisk nødt til at have lov til
-dette. Skal du opgradere så er det uhyre nemt i grafisk mode - du
-vælger tastatur og enkelte andre ting, og så kører det. Vi ser dog
-her på installation.
+cdrom'en. Du skal så ind og vælge cdrom-drevet som første "boot drive"
+i BIOS-opsætningen. Typisk kommer du ind i BIOS-opsætningen ved at
+trykke en taste-kombination når du tænder for computeren, 
+taste-kombinationen varierer fra computer-mærke til computer-mærke og står
+sikkert i manualen eller på skærmen under opstarten.
+</para>
+
+<para>
+Når du alligevel er inde i BIOS-opsætningen kan du checke om 
+virus-beskyttelse er slået til. Virus-beskyttelsen forhindrer
+skrivning i boot-sektoren og er en udmærket sikkerhedsforanstaltning
+i det daglige, men hvis vi skal installere LILO (se nedenfor), er
+vi faktisk nødt til at have lov til dette. Skal du opgradere så er
+det uhyre nemt i grafisk mode - du vælger tastatur og enkelte andre
+ting, og så kører det. Vi ser dog her på installation.
 </para>
 
 <para>
 Hvis du ikke kan starte fra cdrom-drevet, må du i stedet bruge en
 opstartsdiskette.  Den kan laves i DOS ud fra programmet
-<command>RAWRITE.EXE</command> (der sikkert ligger under
-<filename>/DOSUTILS</filename> på din cdrom) og filen
-<filename>boot.img</filename> (der ligger under
-<filename>/images</filename>).
-</para>
-
-<para>
-Image-filen overføres til disketten ved hjælp af DOS-programmet
-<command>RAWRITE.EXE</command>, der også ligger på cdrom'en i
-<filename>/dosutils</filename>. Læs <filename>RAWRITE3.DOC</filename> for
-nærmere detaljer.
+<command>RAWRITE.EXE</command>. Dette program ligger normalt 
+i <filename>/DOSUTILS</filename> kataloget på din Linux installations-cdrom.
+Filen <filename>boot.img</filename> skal også bruges og er selve
+boot-disken, der normalt ligger i kataloget <filename>/images/</filename>.
+Tekstfilen <filename>RAWRITE3.DOC</filename> forklarer i nærmere detaljer
+hvordan programmet skal anvendes.
 </para>
 
 <para>
@@ -548,17 +561,43 @@ have en eventuel defekt bootdisk senere).
 </screen>
 
 <para>
-Dernæst fremstilles opstartsdisketten til Linux med kommandoen,
+Dernæst fremstilles opstartsdisketten med kommandoen,
 </para>
 
 <screen>
 <prompt>C:\WINDOWS\></prompt> <userinput>E:\DOSUTILS\RAWRITE -f E:\images\BOOT.IMG -d a</userinput>
 </screen>
 
+<para>
+Derefter kan Windows genstartes. Computeren vil nu boote på
+opstartsdisketten og fortsætte Linux installationen fra installations
+cdrom'en.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Før du genstarter computeren, og påbegynder
+Linux installationen er det smart at lave en boot disk til Windows,
+hvis der skulle gå noget galt med LILO installationen. På Windows 95
+og 98 kan en boot-disk laves ved at indsætte en tom floppy-disk og skrive
+<command>format a: /s</command> på kommando linien eller ved at
+højreklikke på disk drevet og vælge format og klikke i system feltet.
+Når computeren booter på disketten vil du ende i DOS, og kan starte
+Windows ved at udføre programmet <command>win</command> i
+<filename>c:\windows</filename>. Under Windows NT og 2000 kan man
+lave en boot disk ved at formatere en tom diskette (dette er vigtigt
+da der oprettes en NT/2000 boot sektor på disketten) og så kopiere
+følgende tre filer <filename>ntldr</filename>, 
+<filename>ntdetect.com</filename> og <filename>boot.ini</filename> 
+fra roden af <filename>C:</filename>-drevet til disketten.
+Disse filer er normalt både skjulte og system mærkede og bliver
+normalt ikke vist i Microsoft Explorer med mindre man ændrer dens 
+konfiguration.
+</para>
+
 <sect3 id="rhinstall">
 <title>Installation</title>
 <para>
-Når systemet er startet op, og Linux er indlæst, vises en
+Når systemet er startet op igen, og Linux er indlæst, vises en
 velkomstmeddelelse og en <filename>boot:</filename> prompt nederst i
 skærmbilledet. De allerfleste kan her nøjes med at trykke
 <command>Enter</command> for at fortsætte installationen i grafisk
@@ -649,8 +688,8 @@ diske og der skal bruges mindst 1.7 GB diskplads.</para>
 
 <listitem>
 <para>"Egendefineret system"</para>
-<para>Denne mulighed er sværere, men giver dig fuld kontrol med
-installationen.
+<para>Denne mulighed er for de avancerede brugere, og giver dig
+fuld kontrol over hvilke programmer du vil have installeret.
 </para>
 </listitem>
 
@@ -798,29 +837,36 @@ linkend="Linux-netvaerk-server".-->
 <title>LILO bootmanager</title>
 <indexterm><primary>LILO</primary></indexterm>
 <para>
-Du kan nu installere LILO, som er et program, som kan starte
-DOS/Windows såvel som Linux. 
-<!-- Hvis du skal køre Linux og NT på samme maskine, bør du læse
-xref linkend="NTogLinux".-->
+Du kan nu installere LILO. LILO er et program, der ved opstart af din
+computer giver en menu, hvor du kan vælge at starte DOS/Windows hhv.
+i Linux.
 </para>
 
 <para>
-Vil du ikke ændre på din nuværende boot-metode, så lad være - sæt
-kryds i "Installér ikke LILO". DOS programmet
-<command>loadlin</command> kan senere installeres til at lave en
-bootmenu i starten af Windows opstarts sekvensen. Du kan indtil da
-starte på den bootdisk, du kan lave i det vindue du kan se på <xref
-linkend="rh70lilo-fig"> - <emphasis>vælg dette</emphasis>.  Du bør vælge
-at lave en bootdisk på en tom diskette. Gør dette, og gem den et
-sikkert sted. Så kan du altid få kontakt med Linux partitionen hvis
-du kommer til at lave fejl i opstartssystemet. Disketten skal først
-indsættes efter størstedelen af installationen er færdig.
+Hvis du altid vil boote til DOS/Windows og kun vil boote Linux 
+med en boot diskette eller loadlin så skal du ikke installere LILO.
+Hvis du kun booter Linux, eller vil have valget mellem at boote
+Linux eller DOS/Windows når du starter computeren, så skal du 
+installere LILO.
 </para>
 
 <para>
-MBR er det første
-boot-spor af din harddisk - hvor du måske ønsker at kunne starte andre
-styresystemer. Læs evt. først <xref linkend="friheden-Opstart">.
+Du kan bruge DOS programmet <command>loadlin</command>, der ligger
+i <filename>\DOSUTILS</filename> kataloget på Linux 
+installations-cdrom'en til at starte Linux fra et DOS kommando-linien.
+Du kan indtil da starte på den bootdisk, du kan lave i det vindue
+du kan se på <xref linkend="rh70lilo-fig"> - <emphasis>vælg dette</emphasis>.
+Du bør vælge at lave en Linux bootdisk på en tom diskette. Gør dette,
+og gem den et sikkert sted. Så kan du altid få kontakt med Linux
+partitionen hvis du kommer til at lave fejl i opstartssystemet.
+Disketten skal først indsættes efter størstedelen af installationen
+er færdig.
+</para>
+
+<para>
+MBR er det første boot-spor af din harddisk (Master Boot Record)
+- hvor du måske ønsker at kunne starte andre styresystemer.
+Læs evt. først <xref linkend="friheden-Opstart">.
 </para>
 
 <FIGURE ID="rh70lilo-fig" FLOAT="1">
@@ -831,11 +877,10 @@ styresystemer. Læs evt. først <xref linkend="friheden-Opstart">.
 
 
 <para>
-Modsat er LILO et godt og lille program med mange
-opsætningsmuligheder. Vælg at installere i Master Boot Record,
-hvis LILO skal styre alt boot fra nu af.
-Du kan slutteligt tilføje parametre til boot, så Linux nemmere kan
-finde hardware. Normalt er dette ikke nødvendigt.
+LILO et godt lille program med mange opsætningsmuligheder. Vælg
+at installere i Master Boot Record, hvis LILO skal styre alt boot
+fra nu af. Du kan slutteligt tilføje parametre til boot, så
+Linux nemmere kan finde hardware. Normalt er dette ikke nødvendigt.
 </para>
 
 <para>
