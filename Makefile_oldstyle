@@ -3,7 +3,7 @@
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
 # version - skal bruges til samlingerne (i øjeblikket kun palm)
-version:=$(shell (cd friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml))
+version:=$(shell (cd friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > ../samling/version.sgml; cat ../samling/version.sgml))
 
 all: cvs2htmlweb filer palmpilot-samling
 
