@@ -186,5 +186,99 @@ Hej SSLUG
 
  <!-- "Hej internet" - Applet -->
  <!-- "Hej X"        - Gtkada og gettext -->
-</sect1>
 
+ <example id="sprog-ada-flaskesang">
+  <title>»99 bottles of beer on the wall«</title>
+
+  <para>
+   Som et eksempel på hvordan man bruger forskellige kontrolstrukturer i Ada,
+   kan vi se på dette lille program der udskriver teksten til sangen
+   »99 bottles of beer on the wall«:
+<programlisting>
+&eksempler-flaskesang-ada;
+</programlisting>
+  </para>
+
+  <itemizedlist>
+   <listitem>
+    <para>
+     Den første linje i kildeteksten (<keyword>with</keyword> ...) importerer
+     de pakker vi skal bruge i programmet.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     Selve programmet er en procedure, <literal>Bottles</literal>, der er delt
+     op i deklarationer (fra <literal><keyword>procedure</keyword> Bottles
+     <keyword>is</keyword></literal> til <keyword>begin</keyword>) og ordrer
+     (fra <keyword>begin</keyword> til <literal><keyword>end</keyword>
+     Bottles</literal>).
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     I dette tilfælde er der to deklarationer; en procedure til at skrive
+     antallet af flasker pænt med korrekte entals- og flertalsformer, og en
+     <keyword>use</keyword>-deklaration der gør de nævnte pakkers indhold
+     direkte synligt i resten af proceduren (så man ikke behøver at foranstille
+     pakkernes navn).
+    </para>
+   </listitem>
+  </itemizedlist>
+
+  <para>
+   Hvis du gemmer <ulink
+   url="http://&linuxbogurl;/program/eksempler/bottles.ada">programmets
+   kildetekst</ulink> i filen <filename>bottles.adb</filename> og i øvrigt
+   har installeret GCC's Ada-oversætter, så kan du oversætte det med
+   kommandoen:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>gnatmake bottles.ada -cargs -gnati1 -gnatf -gnato -fstack-check</userinput>
+</screen>
+   og dernæst udføre det med kommandoen:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>./bottles</userinput>
+99 bottles
+[...]
+No bottles of beer on the wall.
+</screen>
+  </para>
+ </example>
+
+ <example id="sprog-ada-gnatmake">
+  <title>Kommandolinjetilvalg til GCC</title>
+
+  <para>
+   I eksemplet <xref linkend="sprog-ada-flaskesang"> bruger vi kommandoen
+   <command>gnatmake</command> med en lang række tilvalg der er nødvendige
+   for at få GCC's Ada-oversætter til at opføre sig korrekt (som der står i
+   Ada-standarden).  Dem er der ikke nogen grund til selv at skulle skrive
+   hver gang man skal oversætte et program.  Hvis man indsætter koden:
+<programlisting>
+function gm () {
+   gnatmake ${*} -cargs -gnati1 -gnatf -gnato -fstack-check
+}
+</programlisting>
+   i <filename>${HOME}/.zshrc</filename>, vil man i Zsh kunne nøjes med at
+   skrive:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>gm bottles.ada</userinput>
+</screen>
+   når man skal oversætte programmet fra eksemplet <xref
+   linkend="sprog-ada-flaskesang">.
+  </para>
+
+  <para>
+   Det kan være nyttigt med lidt mere detaljerede fejlmeddelelser end »der er
+   en fejl på linje 17«.  Derfor bør man udvide definitionen ovenfor med
+   tilvalget <literal>-gnatv</literal>:
+<programlisting>
+function gm () {
+   gnatmake ${*} -cargs -gnatv -gnati1 -gnatf -gnato -fstack-check
+}
+</programlisting>
+  </para>
+ </example>
+</sect1>

@@ -665,20 +665,22 @@ til <filename>/dev</filename>-katalog-systemet.
 </para>
 
 <sect2 id="hvad-er-dev">
-<title>Hvad er /dev</title>
+ <title>Hvad er /dev</title>
 
-<indexterm><primary>ls -la</primary></indexterm> 
+ <indexterm>
+  <primary>/dev</primary>
+ </indexterm>
+
+ <indexterm><primary>ls -la</primary></indexterm> 
 <para>
 <filename>/dev</filename>'s funktion er at strukturere
-alle mulige (og umulige) devices, som <emphasis>filer</emphasis>. Hver
-enkelt <emphasis>fil</emphasis> definerer et enkelt device vha. 2
-pointere (også kaldet major & minor number). Major angiver type af
-device (f.eks: disk-, terminal-, seriel-enhed), minor angiver det
-enkelte device, indenfor den enkelte type (f.eks: tty1, tty2,..., hda1,
+alle mulige (og umulige) enheder, som <emphasis>filer</emphasis>. Hver
+enkelt <emphasis>fil</emphasis> definerer en enkelt enhed vha. 2
+pointere (også kaldet major & minor number). Major angiver enhedens type
+(f.eks: disk-, terminal-, seriel-enhed), minor angiver den
+enkelte enhed indenfor den enkelte type (f.eks: tty1, tty2,..., hda1,
 hda2). Disse 2 pointere benytter kernen til at "slå op" i en
-device-driver-tabel, for at finde den rigtige driver til et givet
-device.
-</para>
+drivertabel, for at finde den rigtige driver til en given enhed:
 
 <screen>
 <prompt>[root@linus /root]#</prompt> <userinput>ls -la /dev/hda*</userinput>
@@ -693,22 +695,21 @@ crw------- 1 root root 4, 2 maj 24 05:38 tty1
 .
 </screen>
 
-<para>
 Hvor 1. nummer efter gruppe er Major og 2. nummer er Minor.
 </para>
 
 <para>
-For at være sikker på at et givet device vil virke, skal der altså
-være en device-fil i <filename>/dev</filename>. Da der
-er mange forskellige (typer) devices, skal der også være mange
+For at være sikker på at en given enhed vil virke, skal der altså
+være en enhedsfil i <filename>/dev</filename>. Da der
+er mange forskellige (typer) enheder, skal der også være mange
 filer. Og for at mindske administrationen, er de oprettet på forhånd.
 I et typisk system, som f.eks. Red Hat 7.0, er der godt 12000 filer. Og
 det er nok de færreste filer, det enkelte system har brug for. Det er
 ikke fordi de fylder noget (omkring 300 kb i alt), men de optager hver
 en inode (se f.eks. <ulink url="http://e2fsprogs.sourceforge.net/ext2intro.html">http://e2fsprogs.sourceforge.net/ext2intro.html</ulink>).
-Hvis device-filen for et bestemt device nu ikke lige er oprettet, kan
+Hvis enhedsfilen for en bestemt enhed nu ikke lige er oprettet, kan
 man benytte programmet <command>/dev/MAKEDEV</command> som kender til
-(næsten) alle devices og deres respektive major- og minor-numre.
+(næsten) alle enheder og deres respektive major- og minor-numre.
 </para>
 
 <para>
@@ -716,7 +717,7 @@ Hvorfor denne redundans, kan man så spørge? At både
 <filename>/dev</filename>, <command>MAKEDEV</command>-programmet
 og kernen skal have alle disse informationer? Det har nok været den
 mest indlysende og overskuelige måde at designe det på i tidernes
-morgen. Men som antallet af devices stiger, bliver det mere og mere
+morgen. Men som antallet af enheder stiger, bliver det mere og mere
 uoverskueligt og tidskrævende at administrere, og det kan Devfs gøre
 noget ved.
 </para>
@@ -727,12 +728,12 @@ noget ved.
 <para>
 Devfs er et virtuelt filsystem, som har
 samme funktion som <filename>/dev</filename>, men som
-ikke ligger fysisk på harddisken. Umiddelbart vil det ligne <filename>/dev</filename>, da man tilgår device-filer igennem
+ikke ligger fysisk på harddisken. Umiddelbart vil det ligne <filename>/dev</filename>, da man tilgår enhederfiler igennem
 kataloget <filename>/dev</filename>. Linket går bare
 ikke ned på disken, men direkte ind i kernen (efter samme princip som 
 <filename>/proc</filename>).
 Dermed er man fri for administrationen og redundans, da filerne altid
-svarer til de devices som kernen har fundet.
+svarer til de enheder som kernen har fundet.
 </para>
 
 <sect3 id="installation-af-devfs">
@@ -825,29 +826,29 @@ Og så er det bare at reboote. Så enkelt er det.
 Forhåbentlig skulle der ikke opstå problemer, men det kan være at der
 i enkelte tilfælde er device-drivere som ikke er understøttet af Devfs
 endnu. Her er der 2 løsninger. Den ene er at hvis det kun drejer sig om
-nogle få device-filer, kan de oprettes under opstart
+nogle få enhedsfiler, kan de oprettes under opstart
 vha. <command>mknod</command>-programmet. Den anden er at pakke alle
-de ikke-devfs-kompatible device-filer ind i en tar-fil, som pakkes ud
+de ikke-devfs-kompatible enhedsfiler ind i en tar-fil, som pakkes ud
 i <filename>/dev</filename> under opstart.
 </para>
 
 <para>
 Man kan også komme ud for at programmer benytter
-<emphasis>letforståelige</emphasis> links til device-filer. Som
+<emphasis>letforståelige</emphasis> links til enhedsfiler. Som
 f.eks. museprogrammet <command>gpm</command>. <command>gpm</command>
-benytter som default device-filen <filename>/dev/mouse</filename>. I
+benytter som standard enhedsfilen <filename>/dev/mouse</filename>. I
 dette tilfælde vil det være en god idé at sørge for at
 <command>gpm</command> gør brug af <filename>/dev/psaux</filename>
-direkte (eller en anden "rigtig" device-fil for mus). Da der ikke er en
+direkte (eller en anden "rigtig" enhedsfil for mus). Da der ikke er en
 konfigurationsfil til <command>gpm</command> bliver man nødt til at gå
 direkte ind i scriptet for startup-scriptet til <command>gpm</command>
 (se <xref linkend="etcrcdfilen"/>) og tilføje parameteren:
 "<parameter>-m /dev/psaux</parameter>". Red Hat 7.1 og senere versioner 
 har forbedret det
-lidt, ved at man kan specificere et device i
+lidt, ved at man kan specificere en enhed i
 <filename>/etc/sysconfig/gpm</filename>. Opstartsprogrammet
 <filename>/etc/rc.d/init/gpm</filename> indeholder dog en fejl som
-gør at devicet altid vil være <filename>/dev/mouse</filename>. Ændr
+gør at enheden altid vil være <filename>/dev/mouse</filename>. Ændr
 derfor følgende i <filename>/etc/rc.d/init/gpm</filename>:
 </para>
 
@@ -869,7 +870,7 @@ fi
 
 <para>
 som tester om miljøvariablen "DEVICE" er tom. Hvis den er det,
-er der ikke angivet noget device i
+er der ikke angivet nogen enhed i
 <filename>/etc/sysconfig/gpm</filename>, og "DEVICE" sættes til
 <filename>/dev/mouse</filename>.
 </para>
