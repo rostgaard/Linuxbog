@@ -4948,15 +4948,6 @@ Ovenstående eksempel er inspireret af shell-scriptet
 
 </sect2><!-- shell-while -->
 
-<!--
-<sect2 id="shell-read">
-<title>read, input fra bruger</title>
-<indexterm><primary>Shell script</primary><secondary>read</secondary></indexterm>
-<para>
-Mumle read VAR
-</para>
-</sect2>--><!-- shell-read -->
-
 <sect2 id="shell-let">
 <title>Regne, heltal</title>
 <indexterm><primary>Shell script</primary><secondary>regne</secondary></indexterm>
@@ -5001,6 +4992,144 @@ function skriv {
 skriv "Hello"
 </programlisting>
 </sect2>--><!-- shell-function -->
+
+<sect2 id="shell-read">
+<title>read, input fra bruger</title>
+<indexterm><primary>Shell script</primary><secondary>read</secondary></indexterm>
+<indexterm><primary>read</primary></indexterm>
+<para>
+En nem måde at lave interaktive programmer er ved hjælp af 
+shell-kommandoen <command>read</command>.
+Med <command>read</command> kan man indlæse input fra brugeren
+i en variabel, der så efterfølgende kan bruges i scriptet.
+En simpel måde at bruge <command>read</command> er ved
+at lave et ophold i et script, hvor brugeren så enten kan
+vælge at taste Enter eller Ctrl-C.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Tast Enter for at slette filen"
+read
+rm -f hello.world
+</programlisting>
+
+<para>
+<command>read</command> har mulighed for selv at skrive
+en ledetekst, og så bliver scriptet lige en linie mindre:
+</para>
+
+<programlisting>
+#! /bin/sh
+read -p "Tast Enter for at slette filen"
+rm -f hello.world
+</programlisting>
+
+<para>
+<command>read</command> er nok mest brugt til at indlæse
+input fra brugeren, og det kan gøres så simpelt på en 
+kommando-linie hvor der indlæses til variablen "NAVN":
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>read -p "Navn: " NAVN</userinput>
+Navn: Tycho
+<prompt>[tyge@hven ~]$ </prompt> <userinput>echo $NAVN</userinput>
+Tycho
+</screen>
+
+<para>
+Ovenstående ser ud på samme måde i et script:
+</para>
+
+<programlisting>
+#! /bin/sh
+read -p "Navn: " NAVN
+echo "Navnet er: $NAVN"
+</programlisting>
+
+<para>
+En anden parameter man kan give <command>read</command> er hvor
+mange tegn der skal indlæses.
+Det gøres med parametren <command>-n #</command>.
+Det kunne fx. bruges på følgende simple måde:
+</para>
+
+<programlisting>
+#! /bin/sh
+read -n 1 -p "Tast en vilkårlig tast for at forsætte"
+</programlisting>
+
+<para>
+<command>read</command> giver en returkode ved kørsel.
+Hvis man afslutter indtastning med Enter er returkoden
+"0" og afslutter man med Ctrl-D er den "1".
+"0" svarer til "true" og "1" til false, og det kan kombineres 
+med fx while. Se følgende eksempel:
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Indtast navne. Tast Ctrl-D for at afslutte."
+while read NAVN; do
+	echo $NAVN
+done
+</programlisting>
+
+<para>
+I ovenstående eksempel er det reelt EOF (End-Of-File) der
+får løkken til at stoppe.
+Dette kan også bruges hvis input kommer fra et andet
+program. I eksemplet kommer input fra <command>ls</command>
+og pipes så over til <command>read</command>.
+Det ser nok ud til at det er <command>while</command> der
+modtager input, men det er altså <command>read</command>
+der udføre indlæsningen.
+</para>
+
+<programlisting>
+#! /bin/sh
+ls | while read FILNAVN; do
+	echo "Filens navn er: $FILNAVN"
+done
+</programlisting>
+
+<para>
+<command>read</command> kan også indlæse data fra
+første linie i en fil.
+</para>
+
+<programlisting>
+#! /bin/sh
+read FIRSTLINE &lt; foo.bar
+echo $FIRSTLINE
+</programlisting>
+
+<para>
+Her har nu været gennemgået eksempler som har beskrevet
+hvordan <command>read</command> kan bruges til de mest
+almindelige ting.
+Skal det være mere "poppet" med farver og styring
+af skærmposition, så kan det gøres med ANSI-koder.
+For at bruge ANSI-koder skal man sende en ESCAPE til
+terminalen. Det er vist herunder med <emphasis>^[</emphasis>,
+hvilket kan fås i editoren <command>vi</command> ved først
+at tast Ctrl-V og så Esc.
+</para>
+
+<programlisting>
+#! /bin/sh
+read -p "<emphasis>^[</emphasis>[41mDit navn: " NAVN
+echo "<emphasis>^[</emphasis>[0mNavn er: $NAVN"
+</programlisting>
+
+<para>
+Inden du kaster dig ud i at bruge ANSI-koder er det
+nok klogest at se på programmet <command>dialog</command>
+som nok kan bruges til mange af de ting du gerne vil.
+</para>
+
+</sect2><!-- shell-read -->
 
 </sect1><!-- shell-script -->
 
