@@ -70,18 +70,280 @@ System V familien, men låner lidt fra BSD.
 <SECT1 ID="Mount">
 <TITLE>Få adgang til andre diskdrev, cdrom og diskettedrev</TITLE>
 <indexterm><primary>mount</primary></indexterm>
+
+<sect2 id="mounte-filsystemer">
+<title>Mount af filsystemer</title>
+
 <para>
-Linux er lidt anderledet bygget op end Windows med hensyn til at læse og
-skrive fra de eksterne enheder (devices), såsom cdrom og diskettedrev. Af
-sikkerhedshensyn kan du ikke få adgang til noget, uden at root har
-hjulpet dig. I Linux vil man <emphasis>montere</emphasis> (eng. Mount) et drev 
-for så derefter at kunne læse og skrive fra det. Dit cd-drev vil det
-selvfølgelig kun være muligt at læse fra.
+For at kunne tilgå et filsystem under Linux skal det monteres
+(eng. mountes) til et defineret katalog i det filtræ, som er blevet
+genereret af init-processen under opstarten.
 </para>
 
+<para>
+<indexterm><primary>/etc/fstab</primary></indexterm>
+Root-filsystemet monteres direkte under opstarten (boot) af
+kernen. Herefter vil systemet automatisk montere de filsystemer, der
+er angivet i filen <filename>/etc/fstab</filename>, og som har en
+parameter, der fortæller at filsystemet skal monteres under opstarten.
+<indexterm><primary>mount</primary></indexterm>
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -a</USERINPUT>
+</SCREEN>
+
+<para> 
+vil montere de relevante filsystemer i
+<filename>/etc/fstab</filename>, og denne ommando udføres under
+opstarten (boot) af et af de scripts, der findes i filen
+<filename>/etc/rc.d/</filename> , hvorfor disse filsystemer vil være
+tilgængelige fra starten. Senere kan man så manuelt montere de ekstra
+filsystemer, der skal være tilgængelige.
+</para>
+
+<para>
+Eksempel på <filename>/etc/fstab</filename>:
+</para>
+
+<screen>
+#device mountpoint(dir) type   option dump fsck
+/dev/hda2  /           ext2    default             1 1
+/dev/hda3  /usr        ext2    default             1 2
+/dev/hda4  /home       ext2    default             1 2
+/dev/fdO   /mnt/floppy ext2    noauto,rw,user,exec 0 0
+/dev/cdrom /mnt/cdrom  iso9660 noauto,ro,user,exec 0 0
+none       /proc       proc    default             0 0
+</screen>
+
+<para>
+Parameterforklaring:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  -defaults(rw, suid, dev, exec, auto, nouser, asunc)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  -rw(read -write)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  -ro(read -only)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  -user(tillader en alm. bruger at mounte filsystemet -forudsætter no exec, nosuid, nodev)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  -noauto(kan kun mountes eksplicit, d.v.s. "mount -a" vil ikke mounte filsystemet).
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+<indexterm><primary>fsck</primary></indexterm>
+<indexterm><primary>dump</primary></indexterm>
+De to sidste tal på linien henviser dels til dumpkommandoen, der
+benytter tallet til at sammenligne med antallet af dage, siden der
+sidst blev taget backup af filsystemet, således at systemadministrator
+kan informeres. Se iøvrigt on-line manualen for kommandoen
+<command>dump</command>. Den sidste parameter på linien benyttes af
+kommandoen <command>fsck</command> til at afgøre, om filsystemer kan
+checkes parallelt under opstarten (boot). Root filsystemet (
+dvs. <filename>/</filename> ) checkes altid først. De andre
+filsystemer kan checkes parallelt (multitasking er jo understøttet i
+Linux), men der er ingen fordel i at checke filsystemer på samme
+harddrive samtidigt, fordi det vil resultere i overflødig flytning af
+disk hoved og dermed spild af tid. En parameter på nul (0) eller igen
+parameter (eks. floppy og cdrom) betyder at filsystem ikke checkes. 
+Se i øvrigt online manualen for kommandoerne <command>fsck</command>,
+<command>dump</command> og <command>mount</command> (brug
+<command>man fsck</command> osv.)
+</para>
+
+<para>
+Mount-kommandoen generelt er beregnet for systemadministratoren root,
+med mindre der står "user" som parameter i filen
+<filename>/etc/fstab</filename> i device-feltet.
+</para>
+
+<para>
+Formatet for mount-kommandoen er:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t type device mount-point</USERINPUT>
+</SCREEN>
+
+<para>
+Eksempler:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  1) Mount af harddisk
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/hda2  /mnt </USERINPUT>
+</SCREEN>
+
+<para>
+monterer partitionen <filename>/dev/hdal</filename> på kataloget <filename>/mnt</filename>.
+</para>
+</listitem>
+
+<listitem> 
+ <para>
+2) Mount af floppy til linux-filer (ext2)
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/dev0 /mnt/floppy</USERINPUT>
+</SCREEN>
+
+<para>
+alternativt1:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/dev0</USERINPUT>
+</SCREEN>
+
+<para>
+henter ext2 samt resten af oplysningerne fra <filename>/etc/fstab</filename>.
+</para>
+
+<para>
+alternativ2:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /mnt/floppy</USERINPUT>
+</SCREEN>
+
+<para>
+henter ext2 samt resten af oplysningerne fra <filename>/etc/fstab</filename>.
+</para>
+</listitem>
+
+<listitem> 
+ <para>
+3) Mount af floppy til DOS-filer (msdos)
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t msdos /dev/dev0 /mnt/floppy</USERINPUT>
+</SCREEN>
+</listitem>
+
+<listitem> 
+ <para>
+4) Mount af floppy til Windows-filer (vfat)
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t vfat /dev/dev0 /mnt/floppy</USERINPUT>
+</SCREEN>
+
+</listitem>
+
+<listitem> 
+ <para>
+5) Mount af CD-rom
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t iso9660 /dev/cdrom /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+<para>
+alternativt 1: 
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom</USERINPUT>
+</SCREEN>
+
+<para>
+henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
+</para>
+
+<para>
+altemativ 2: 
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+<para>
+henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
+ </para>
+</listitem>
+</itemizedlist>
+<para>
+Det omvendte af at montere et filsystem, er at afmontere
+(eng. unmounte) filsystemet igen. At afmontere et filsystem har to
+virkninger: a) Det synkroniserer systembufferne med det aktuelle
+indhold af filsystemet på disken, og b) det gør at filsystemet ikke
+længere er til rådighed fra dets <emphasis>mount point</emphasis>, og
+man kan så evt. montere et andet filsystem på monterings-stedet.
+</para>
+
+<para>
+"Unmounting" af et filsystem gøres med kommandoen "umount" (bemærk
+uden bogstavet "n").
+</para>
+
+<para>
+Eksempel:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount/dev/fd0 #(afmonterer disketten)</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount/mnt/floppy #(afmonterer disketten)</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount/dev/cdrom #(afmonterer disketten)</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount/mnt/cdrom #(afmonterer cdrom)</USERINPUT>
+</SCREEN>
+
+<para>
+<indexterm><primary>sync</primary></indexterm>
+<emphasis>Vigtigt!</emphasis> Det er vigtigt at bemærke, at man ikke
+kan/skal fjerne diskette eller cdrom, før der er foretaget en
+<command>umount</command>, idet der så ikke vil være synkronisering
+mellem mediets indhold, og det kan medføre store problemer. Man kan
+tvinge systemet til at foretage en synkronisering v.h.a. kommandoen
+<command>sync</command>, idet alle filsystembuffere så skrives tilbage
+på disketten. Kommandoen <command>umount</command> vil gøre det samme.
+</para>
+
+<para>
+Kommandoen <command>umount</command> kræver, at der p.t. ikke er
+nogen, der arbejder på filsystemet man vil afmontere,
+d.v.s. hvis du står i <filename>/mnt/cdrom</filename> hvor din cdrom
+er monteret, så kan du ikke afmontere den. Se også 
+</para>
+
+<para>
+På samme måde vil kommandoen <command>mount</command> give
+fejlmeddelelsen "device already mounted", hvis man ikke har husket at
+afmontere et filsystem før, der forsøges med et nyt filsystem.
+</para>
+</sect2>
+
 <sect2 id="mount-CDROM">
-<TITLE>Cdrom</TITLE>
-<indexterm><primary>Cdrom</primary></indexterm>
+<TITLE>cdrom</TITLE>
+<indexterm><primary>cdrom</primary></indexterm>
 <para>
 Først en gang Linux-gymnastik, som kun skal gøres en gang på din
 maskine. Skift til root ved at skrive <command>su -
@@ -97,7 +359,7 @@ lrwxrwxrwx   1 root  root  3 Sep  4 14:31 /dev/cdrom -> hdd
 
 <para>
 I eksemplet er <filename>/dev/cdrom</filename> en lænke til
-<filename>/dev/hdd</filename>, dvs. at cd-rom-drevet sidder på den
+<filename>/dev/hdd</filename>, dvs. at cdrom-drevet sidder på den
 sekundære IDE-bus som slave (typisk situation). Se også <xref
 linkend="redhatpartitioner">. Du skal ændre chmod-kommandoen alt
 efter, hvor dit cd-rom-drev sidder.
