@@ -142,6 +142,7 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	(cd bogpdf; db2pdf bog.sgml)
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
+	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
 	@echo "Done PDF (pspdf)"
 	@echo ""
 
