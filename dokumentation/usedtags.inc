@@ -1,3 +1,17 @@
+<<<<<<< usedtags.inc
+354 para
+149 command
+114 title
+98 programlisting
+97 indexterm
+90 listitem
+46 emphasis
+42 filename
+39 primary
+27 ulink
+27 screen
+26 sect2
+=======
 356 para
 150 command
 125 ulink
@@ -14,11 +28,16 @@
 27 sect2
 27 screen
 25 secondary
+>>>>>>> 1.4
 25 prompt
 24 sect3
 24 entry
 23 sect1
+<<<<<<< usedtags.inc
+23 secondary
+=======
 17 indexdiv
+>>>>>>> 1.4
 15 example
 14 itemizedlist
 13 graphic
@@ -44,7 +63,6 @@
 1 subtitle
 1 sidebar
 1 preface
-1 index
 1 holder
 1 footnote
 1 copyright

@@ -1,0 +1,90 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings qw(syntax);
+use File::Find;
+
+my ($lang, $encoding, $name) = (undef,undef,"");
+my $copyright = "This script is copyrigt 2003, by Michael Rasmussen, mir\@datanom.net.
+The script is licensed under GPL.\n";
+
+if (!@ARGV || $ARGV[0] eq "-u" || $ARGV[0] eq "--usage") {
+	print $copyright;
+	print "Usage:\n";
+	if (substr($0,0,1) eq ".") {
+		$name = substr($0,2);
+	}
+	else {
+		$name = "$0";
+	}
+	print "\t",$name;
+	print " [ [-h | --help] | [-u | --usage] ]\n";
+	print "or\n";
+	print "\t",$name," files...\n\n";
+	print "\t-h  [ --help ]\n\t\tShow extended help.\n";
+	print "\t-u  [ --usage ]\n\t\tShow briefe help (this text).\n";
+	exit(0);
+}
+
+if ($ARGV[0] eq "-h" || $ARGV[0] eq "--help") {
+	print $copyright;
+	print "This script is intended to help people who wants to use OpenOffice\n";
+	print "to write DocBook-XML source files. The purpose for this script is to\n";
+	print "make it easy for people to correct the Openoffice files for known errors,\n";
+	print "of which the most important ones is the wrong attribut value for the language\n";
+	print "attribut <lang>, and that the encoding option for XML does not reflect the chosen\n";
+	print "language format for the output.\n";
+	print "\nFor this transition to happen smoothly, you need to suply input to the script for\n";
+	print "the desired language and encoding style. The default is:\n";
+	print "lang = da\n";
+	print "encoding = iso-8859-1\n";
+	print "\nIf you find any bugs or have any comments, you are most welcome to send me\n";
+	print "an email. My email address is: mir\@datanom.net.\n";
+	exit(0);
+}
+
+my @files = @ARGV;
+my ($filename,@temp,$name,$ext);
+my $first = 1;
+
+while (<>) {
+	if ($first) {
+		$filename = shift @files;
+		($name,my $dummy,$ext) = File::Basename::fileparse($filename,qr{\.xml});
+		if (!defined $lang) {
+			print "Input desired language for DocBook output[da]: ";
+			chomp ($lang = <STDIN>);
+			if ($lang =~ /^\s*$/) {
+				$lang = "da";
+			}
+		}
+		if (!defined $encoding) {
+			print "Input desired encoding style for DocBook output[iso-8859-1]: ";
+			chomp ($encoding = <STDIN>);
+			if ($encoding =~ /^\s*$/) {
+				$encoding = "iso-8859-1";
+			}
+		}
+		$first = 0;
+	}
+	if (/^\<\?xml/) {
+		$_ =~ s/encoding=['|"](.*)['|"]/encoding="$encoding"/g;
+	}
+	if (/(^<book|^<article)/) {
+		$_ =~ s/lang=['|"](.*)['|"]/lang="$lang"/g;
+	}
+	push (@temp,$_);
+	if (eof(ARGV)) {
+		close ARGV;
+		$filename = "temp".$$;
+		open (OUTPUT,">$filename") or die "Error: $!";
+		print OUTPUT @temp;
+		close OUTPUT;
+		system "iconv -f utf-8 -t $encoding -o $name.iso$ext $filename";
+		$first = 1;
+		@temp = ();
+		system "rm -f $filename";
+	}
+}
+
+exit(0);
