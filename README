@@ -150,7 +150,7 @@ Gør følgende (Linier med * udføres kun første gang)
   cd public_html
 * cvs -d /usr/local/CVSROOT checkout linuxbog
   cd linuxbog
-  ./configure
+  ./configure               <<--- NB, se afsnit længere ned om byggesystemet.
   cd BOGNAVN
   make html
 
@@ -330,9 +330,18 @@ hele lidt nemmere.
 -------------------------------------------------------------------------------
 4) Mere om bygning af bøgerne fra CVS
 
+Dette afsnit er til dig der har fået CVS adgang, eller dig der har
+haft det igennem et stykke tid, men gerne vil vide hvordan
+byggesystemet fungerer (eller forsøger at fungere).
+
+Først beskrives hensigten med det nuværende system, derefter beskrives
+hvordan det virker, og hvilke muligheder man har med det.
+
 Når man checker bøgerne ud fra CVS, vil jeg referere til det katalog
 der hedder "linuxbog" som "toplevel" og de enkelte bøgers kataloger
 (f.eks. applikationer, sikkerhed, mv) som subdir.
+
+* Hensigten med byggesystemet.
 
 Hensigten med det byggesystem vi bruger i CVS og i de enkelte subdirs,
 er at 
@@ -340,15 +349,14 @@ er at
 a) Det skal være nemt for folk at bidrage til de enkelte bøger, _uden_
    at have skriveadgang til CVS.
 
-b) Alle bøger skal kunne bygges til html, palmpilot, mv.
+b) Alle bøger skal kunne bygges til html, palmpilot, mv, afhængigheder
+   skal fungere korrekt
 
 c) Alle bogen skal kunne bygges
 
-d) Afhængigheder skal fungere
+d) Der skal være install, uninstall, mv, targets
 
-e) Der skal være install, uninstall, mv, targets
-
-f) På sigt skal man kunne bygge bøgerne under andre platforme end Linux
+e) På sigt skal man kunne bygge bøgerne under andre platforme end Linux
    (f.eks. FreeBSD)
 
 Motivation og uddybning af disse punkter:
@@ -357,4 +365,100 @@ a) Tidligere har det været vanskeligt at bidrage til bøgerne af to
    hovedårsager: Den eneste måde at få adgang til _alle_ de nødvendige
    filer, var ved at få adgang til CVS udgaven af bøgerne & tests for
    de nødvendige værktøjer var uigennemskuelig og flettet ind i
-   makefilerne. Det første 
+   makefilerne. 
+   At få adgang via CVS var problematisk af to årsager. For det første
+   skulle der skriveadgang til, samt login på CVS serveren. For det
+   andet er det ikke alle der er fortrolige med CVS.
+   De tests der har været for de forskellige værktøjer var tidligere
+   dels inkomplette, dels lagt ind i selve makefilerne. Det betød at
+   det var vanskeligt for brugeren at finde ud af hvorfor
+   oversættelsen gav problemer. I praksis var det en langvarig
+   "trial-and-error" proces, indtil man opnåede det ønskede
+   resultat.
+   Med autotools udgaven af bøgerne (hvor autotools bruges til at lave
+   de nødvendige makefiler, mv) forsøges disse problemer
+   løst. Problemet med tests er løst ved at lade autotools (autoconf)
+   håndtere nødvendige tests. Det har den fordel at brugeren kan køre
+   ./configure og få en oversigt over hvilke værktøjer der
+   mangler. Når disse er installeret burde brugeren have en høj grad
+   af sikkerhed for at testene virke. Test gennemføres kun i subdirs,
+   da det er disse der skal bygges (som de enkelte bøger). Problemet
+   med distribution af kildekoden er klaret ved at lave et nyt
+   toplevel target "dist", der laver distributioner af de enkelte
+   bøger. De pakker man får ud af dette, er i princippet "stand-alone"
+   og har ikke nogen afhængigheder til resten af kildekoden.
+
+b) Ikke noget overraskende i dette. Imidlertid vil det nye system (når
+   det er færdigt) forhåbentligt have mere orthogonale afhængigheder,
+   og de problemer der pt. er med at f.eks. html og pdf rører ved
+   "hinandens" filer, vil være fjernet. Der mangler en del her.
+
+c) Det nye i forhold til det eksisterende system vil være at man kan
+   lave en "personlig" alleudgave af bøgerne, der indeholder præcist
+   de bøger man er interesseret i. Dette fungerer stort set - dog er
+   der problemer med ps udgaven i øjeblikket.
+
+d) På sigt skal der implementeres install og uninstall targets, så en
+   systemadministrator f.eks. kan vælge at installere bøgerne for en
+   større gruppe af brugere på en struktureret måde.
+
+e) Med udgangspunkt i autotools, skal der findes alternativer til de
+   platforme der ikke har f.eks. jw i en tilstrækkelig ny
+   udgave. (pto?)
+
+* Hvordan virker byggesystemet
+
+Byggesystemet er (pt) en blanding af autotools til subdirs, og
+håndskrevne scripts til toplevel. 
+
+Den ultrakorte udgave af "hvordan man gør", efter udcheck fra CVS for
+at bygge bogen "BOGNAVN" som html er som følger:
+
+./configure <options>
+cd BOGNAVN
+make html
+
+Men, det er langt fra hele historien.
+
+Ideen med configure scriptet i toplevel er at det skal anvendes til at
+opsætte hvilke (og eventuelt hvordan) bøger man ønsker bygget på sin
+maskine. Dette bestemmes ved at give en række argumenter til
+configure. Hvis du kører ./configure --help, vil du se følgende:
+
+----------------------------------
+`configure' opsætter hvilke af "Linux - friheden til at vælge bøgerne" der skal
+laves på dit system.
+
+Brug: ./configure [OPTIONS] [-- SUBDIROPTIONS]
+
+Hvor OPTIONS kan være een eller flere af
+  -h, --help             Viser denne hjælp og afslutter
+  -m, --med "BØGER"      Bestemmer hvilke bøger der medtages, hvor BØGER
+                         er en liste af bøger. Kombiner:
+                         "itplatform friheden unix kontorbruger applikationer wm signatur admin sikkerhed program web c java dokumentation forsker"
+  -a, --med-alle         Medtag alle (een stor bog) bogen
+  -u, --bogurl URL       Hvilken url bøgerne skal bruge. [cvs.linuxbog.dk]
+
+Hvor SUBDIROPTIONS kan være
+      --enable-softlink  Bruger softlinks for HTML targets
+Eksempel: ./configure --med "friheden applikationer" -- --enable-softlink
+----------------------------------
+
+I det følgende vil disse argumenter blive uddybet.
+
+--med "BØGER" argumentet, bruges til at fortælle _hvilke_ bøger du
+gerne vil have bygget på dit system. ./configure --help vil udskrive
+en liste af dem der mulige (se ovenfor). Så, hvis du f.eks. gerne vil
+have bygget de bøger der anbefales når du vil lære hvordan man bruger
+en Linux maskine til at programmere med, kan du give configure
+argumentet --med "friheden unix program c java". Så vil configure
+sørge for at opsætte systemet, således at disse bøger vil blive
+oversat.
+
+--med-alle argumentet bruges til at angive at man vil have bygget den
+særlige "alle" bog.
+
+
+Her er en liste af filer der anvendes direkte af byggeprocessen i toplevel.
+
+
