@@ -55,7 +55,7 @@ statusfiles:
 		(cd ../$$dir;date +%d/%m-%Y> dato.sgml; echo " (`cat dato.sgml`)"); \
 	done;
 
-sgml: $(sgmlfiler) $(targetname)-$(version).sgml.tar.gz $(targetname)-$(version).sgml.zip
+sgml: $(sgmlfiler) $(targetname)-sgml-$(version).tar.gz $(targetname)-sgml-$(version).zip
 
 
 $(targetname)-sgml-$(version).tar.gz:
