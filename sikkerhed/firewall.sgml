@@ -257,7 +257,9 @@ udtales på engelsk rauter, man danskere har for vane at sige
 ruter, (hvilket er ok). En router forbinder to eller flere
 netværk med hinanden. Det kan være lokalnetværk, eller det kan
 være større netværk - pakkerne skal igennem routeren for at kunne
-komme videre.
+komme videre<footnote><para>Der findes bokse med et stik, som
+leverandøren kalder router. Den foretager kun "NATting".
+</para></footnote>
 </para>
 
 <para>
@@ -291,13 +293,13 @@ router. (se nedenfor<!-- TODO xref linkend="si-NATting" /-->)
 </para>
 
 <para>
-Som sagt kan Linux fungere som router m.v. men en router kan også
-være en dedikeret, flad boks, som egentlig er et diskløst system,
-der kan fjernstyres fra en anden computer. Der fås billige
-routere til mindre virksomheder og private net, og der fås også
-store routere med mange stik, som kan håndtere meget store
-trafikmængder. Der er Linux inde i mange af den slags dedikerede
-routere.
+Som sagt kan en Linux-PC fungere som router, men en router
+kan også være en dedikeret, flad boks, som egentlig er et
+diskløst system, der kan fjernstyres fra en anden computer. Der
+fås billige routere til mindre virksomheder og private net, og
+der fås også store routere med mange stik, som kan håndtere meget
+store trafikmængder. Der er en Linux-kerne inde i mange af den
+slags dedikerede routere.
 </para>
 
 <para>
@@ -313,8 +315,8 @@ En af de vigtigste ting for en firewall til et privat netværk er,
 at man kan tillade brugerne indenfor at have FTP, web, ssh,
 mail og sågar telnet og så videre udadtil, selv om man lukker for
 alle, der udefra forsøger at komme ind på systemet. Hvis man
-forestiller sig et lokalnet, hvor alle maskinerne på denne måde
-var sikret mod uvedkommende, så kan man forstå, hvorfor
+forestiller sig et lokalnet, hvor hver enkelt maskine på denne
+måde var sikret mod uvedkommende, så kan man forstå, hvorfor
 Linux/GNU/BSD anses for at være sikre systemer.
 </para>
 
@@ -324,6 +326,23 @@ man firewallen for bestemte typer trafik med kommandoer, som vi
 skal se på straks.  Dette kan bruges til at tillade bestemte
 protokoller, som vi ved benytter netop disse porte. 
 </para>
+</sect2>
+
+
+<sect2 id="kontrol-af-forbindelser">
+<title>Kontrol med oprettelse af forbindelser</title>
+
+<para>
+Indtil videre har vi hovedsageligt talt om data på pakkeniveau.
+Hvis man vil hindre den eksterne verden i at lave forbindelser
+til en bestemt maskine på lokalnettet, så taler vi om afspærring
+på pakkeniveau.
+</para>
+
+<para>
+Hvis man laver sådan en afspærring, hvad vil der så ske, hvis en
+intern maskine sender en web request ud og får svar udefra? Hvis
+vi blokerer alt udefra, vil svarpakker også blive blokeret.
 
 <para>
 At åbne for alle forbindelser, som startes indefra, kræver, at
@@ -331,16 +350,11 @@ firewallen holder styr på, hvilke forbindelser, der er oprettet;
 for at gøre det, skal firewallen have inkluderet et modul, der
 kaldes "connection tracking".
 </para>
-</sect2>
 
-<!--ææ;;/-->
-
-<sect2 id="kontrol-af-forbindelser">
-<title>Kontrol med oprettelse af forbindelser</title>
 <para>
-En firewall kan altså styre hvilke forbindelser, der må oprettes
-imellem de to adskilte netværk. Den kan også logge, hvad der sker
-på disse forbindelser.
+En Linux kerne kan altså styre hvilke forbindelser, der må
+oprettes imellem de to adskilte netværk. Den kan også logge, hvad
+der sker på disse forbindelser.
 </para>
 
 <sect3 id="proxy">
@@ -420,20 +434,24 @@ det blot videre til den ventende forbindelse fra "myhost".
 <indexterm><primary>Masquerading</primary></indexterm>
 <emphasis>Masquerading/NAT</emphasis> 
 Masquerading er <emphasis>ikke</emphasis> proxy, og det
-giver ikke den sikkerhed, en proxy gør. Vi har det med her alligevel, fordi
-mange bruger det på Linux, og vi gerne vil forklare, hvad det er.
-Masquerading er en form for NAT - <emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress 
-<emphasis>T</emphasis>ranslation - som Linux kernen tilbyder, hvor man 
-omskriver pakkerne, når de kommer igennem masquerading maskinen. For nemheds
-skyld kalder vi den stadig "myproxy". Ved masquerading ser det stadig
-ud for internettet, som om alting kommer fra "myproxy". Men forbindelsen
-til internet er faktisk direkte, bortset fra at pakkerne bliver
-omskrevet i "myproxy". "Myproxy" skal igen være default gateway. De
-udgående pakker bliver omskrevet med "myproxy" som afsenderadresse i
-stedet for "myhost". De indgående pakker er naturligvis adresseret til
-"myproxy", men masquerading systemet holder styr på, hvem der er den
-rigtige modtager, og når pakkerne kommer forbi, bliver de omskrevet
-med "myhost" som modtager.
+giver ikke den sikkerhed, en proxy kan give. Proxyen kan cache
+og inspicere pakker på http-plan og dermed filtrere på indhold og
+type og website navne. Masquerading er en form for NAT -
+<emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress
+<emphasis>T</emphasis>ranslation - hvor man omskriver pakkerne,
+når de kommer igennem masquerading maskinen.  For nemheds skyld
+kalder vi den stadig "myproxy". Ved masquerading ser det stadig
+ud for internettet, som om alting kommer fra "myproxy". Men
+forbindelsen til internet er faktisk direkte, bortset fra at
+pakkerne bliver omskrevet i "myproxy".  "Myproxy" skal være
+default gateway, d.v.s at al trafik skal igennem myproxy. De
+udgående pakker bliver omskrevet med "myproxy" som
+afsenderadresse i stedet for "myhost". De indgående pakker er
+naturligvis adresseret til "myproxy", men masquerading systemet
+holder styr på, hvem der er den rigtige modtager, og når pakkerne
+kommer forbi på tilbagevejen, bliver de omskrevet med "myhost"
+som modtager. For at det skal fungere for fx. ftp kræves også
+connection tracking.
 </para></listitem>
 </itemizedlist>
 
