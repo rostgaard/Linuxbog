@@ -494,10 +494,6 @@ Bøgerne er udgivet under
 hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
 </p>
 
-<p>
-Værktøj til konvertering af bøgerne til Word 95 format kan findes her.
-<a href="http://www.klid.dk/~cs/proj/">www.klid.dk/~csi/proj/</a>.
-</p>
 
 <FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
 Vil du modtage E-post om nye versioner af bogen?
