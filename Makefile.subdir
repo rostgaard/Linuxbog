@@ -5,6 +5,7 @@
 ##
 #
 # Peter Toft <pto@sslug.dk> 
+# Mads Bondo Dydensborg <madsdyd@challenge.dk>
 # $Id$
 
 ################################################################################
@@ -103,7 +104,7 @@ endif !BUILD_SGML
 ################################################################################
 # Byg Palm Pilot udgaven
 ################################################################################
-
+# Laver en zip fil, kræver html target
 if BUILD_PALM
 palmpilot: $(targetname)-$(version).palm.zip
 $(targetname)-$(version).palm.zip: $(sgmlfiler) html
@@ -120,14 +121,13 @@ $(targetname)-$(version).palm.zip: $(sgmlfiler) html
 	(zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb palm/*txt )
 else !BUILD_PALM
 palmpilot:	
-	@echo "Overspringer palmpilot target"
+	@echo "Overspringer palmpilot"
 endif !BUILD_PALM
 
 
 ################################################################################
-# pak HTML-filer ned
+# Pak HTML-filer ned
 ################################################################################
-
 if BUILD_PAKHTML
 pakhtml: $(targetshortname)/$(targetname)-html-$(version).tar.gz
 
@@ -157,10 +157,10 @@ pakhtml:
 	@echo "Overspringer pakhtml"
 endif !BUILD_PAKHTML
 
+
 ################################################################################
 # Byg HTML-filerne
 ################################################################################
-
 if BUILD_HTML
 html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
@@ -172,7 +172,7 @@ bog/index.html: $(sgmlfiler)
 	rm -rf stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	@echo '<!ENTITY magic "png">' > magic.sgml
 	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	jw -V html-index -f docbook -b html -o bog bog.sgml
+	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml
 	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
 	rm -rf bog/
 	mkdir bog

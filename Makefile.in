@@ -39,6 +39,7 @@ faelles:
 		      > $$dir/linuxbogurl.sgml || exit; \
 	done
 	@if test "x$(ALLE)" != "x" ; then \
+		echo "*** Installerer fælles filer i $(ALLE)" && \
                 cp --update faelles-filer/*.sgml $(ALLE) && \
 		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
 		      > $(ALLE)/linuxbogurl.sgml || exit; \
@@ -53,7 +54,7 @@ faelles:
 .PHONY: bootstrap
 bootstrap:	faelles
 	@echo "TODO: Ville være rart om bootstrap kunne afhænge af tidsstempler, noget"
-	@for dir in $(SUBDIRS) $(ALLE); do \
+	@for dir in $(SUBDIRS); do \
 		echo "*** Kører bootstrap i $$dir" && \
 		cp --update bootstrap.subdir $$dir/bootstrap && \
 		cp --update Makefile.subdir $$dir/Makefile.am && \
@@ -63,6 +64,16 @@ bootstrap:	faelles
 		cp --update misc/insertimagesize $$dir/misc/ && \
 		cd $$dir && ./bootstrap && cd .. || exit ;\
 	done ;
+	@if test "x$(ALLE)" != "x" ; then \
+		echo "*** Kører bootstrap i $(ALLE)" && \
+		cp --update bootstrap.subdir $(ALLE)/bootstrap && \
+		sed "s/@SUBDIRSALLE@/$(SUBDIRS)/" < Makefile.alle > $(ALLE)/Makefile.am && \
+		cp --update configure.ac.subdir $(ALLE)/configure.ac && \
+		cp --update linuxbog.spec $(ALLE)/linuxbog.spec && \
+		mkdir -p $(ALLE)/misc && \
+		cp --update misc/insertimagesize $(ALLE)/misc/ && \
+		cd $(ALLE) && ./bootstrap && cd .. || exit ;\
+	fi
 #		cp --update faelles-filer/*.sgml $$dir && \
 #		cp --update faelles-filer/*.css $$dir && \
 
