@@ -149,11 +149,17 @@ function vistype($type) {
   $books = array(
     // Bognavn, forkortet
     "friheden" => array(
-      title => "Linux - Friheden til at vælge",
+      title => "Linux - Friheden til at vælge installation",
       comment => "En god begynderbog",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk",
-        "Hans Schou" => "chlor@sslug.dk"
+        "Peter Toft" => "pto@sslug.dk"
+      )
+    ),
+    "unix" => array(
+      title => "Linux - Friheden til at lære Unix",
+      comment => "Lær elementær Unix og de første dele af hvordan Linux er sat sammen",
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk"
       )
     ),
     "applikationer" => array(
@@ -497,7 +503,7 @@ indeks-register.</a>
 
 <p>
 Se også vores konkurrenters bog ;-) "Linux i skolen" på 
-<a href="http://www.gnuskole.dk">http://www.gnuskole.dk</a> 
+<a href="http://www.gnuskole.dk">http://www.gnuskole.dk</a>
 </p>
 
 <p>
