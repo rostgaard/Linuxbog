@@ -41,7 +41,7 @@ $proglang = array(
     navn => "C KDE",
     link => "kde.html"
   ),
-  "cbl" => array(
+  "cod" => array(
     navn => "Cobol",
     link => "cobol.html"
   ),
