@@ -1334,9 +1334,10 @@ se på hvordan man administrerer hele kæder.
 
 
 <para>
-Der er været vist nogle eksempler ovenfor, her er et til, som
-nulstiller tællerne i INPUT kæden. Prøv at liste før og efter med
-<command> iptables -L INPUT -v </command>:
+Brugerdefinerede kæder bruges til at strukturere filtreringen og
+demonstreres senere. Her er et simpelt eksempel på en
+kæde-kommando, som nulstiller tællerne i INPUT kæden. Prøv at
+liste før og efter med <command> iptables -L INPUT -v </command>:
 </para>
 
 <screen>
@@ -1344,37 +1345,131 @@ nulstiller tællerne i INPUT kæden. Prøv at liste før og efter med
 </screen>
 
 <para>
-Der er mange kommandoer til at manipulere reglerne i en kæde.
+Der er fire kommandoer til at manipulere reglerne i en kæde:
 </para>
 
 <itemizedlist mark="bullet">
-<listitem><para>-A &lt;kæde&gt; Tilføj (append) regel</para></listitem>
-<listitem><para>-D &lt;kæde&gt; [nummer] Slet (delete) regel</para></listitem>
-<listitem><para>-R &lt;kæde&gt; [nummer] Erstat (replace) regel</para></listitem>
-<listitem><para>-I &lt;kæde&gt; [nummer] Indsæt (insert) regel</para></listitem>
+<listitem><para><command> -A &lt;kæde&gt; </command> Tilføj (append) regel</para></listitem>
+<listitem><para><command> -D &lt;kæde&gt; [nummer] </command> Slet (delete) regel</para></listitem>
+<listitem><para><command> -R &lt;kæde&gt; [nummer] </command> Erstat (replace) regel</para></listitem>
+<listitem><para><command> -I &lt;kæde&gt; [nummer] </command> Indsæt (insert) regel</para></listitem>
 </itemizedlist>
 
 
 <para>
-En regel består af en eller flere kommandoparametre, som
-beskriver en egenskab ved en netværkspakke, samt (som regel) en
-besked om, hvad der skal ske med pakker, som beskrivelsen passer på.
-Hvis en beskrivelse passer, siger man at pakken matcher.
+En regel er en beskrivelse plus en handling. 
 </para>
 
 <para>
-Kommandoparameteren -j står for jump. Det, man hopper til, kaldes
-mål eller target, og to af de indbyggede targes er de samme som de
-policy, vi tidligere har set, DROP, ACCEPT; endvidere kan man
-hoppe til en anden, brugeroprettet kæde, eller man kan returnere
-fra en kæde (med RETURN). Desuden er der et REJECT target, som
-dog kræver at kernen er kompileret med support for det. Der er
-mange andre inbyggede targets, som kræver tilvalg i kernen: QUEUE
-beder kernen om at sende pakkerne til en pseudo-device, som et
-program i userspace kan lytte på, og så er der bl.a. også
-REDIRECT, SNAT, DNAT og LOG targets. Se manual page for komplet
-listning. Lige nu er de vigtigste ACCEPT, DROP og SNAT, som kun
-kan bruges i nat-tabellens POSTROUTING chain.
+Beskrivelsen er et match-udtryk og kan være sammensat af mange
+del-udtryk: <emphasis>Hvis pakken kommer fra adresse 44.55.66.77
+og skal videre gennem interface eth1 ... </emphasis> Det ville
+man skrive sådan: <command> --source 44.55.66.77 --out-interface
+eth1 </command>. 
+</para>
+
+<para>
+En handling er et "jump", og det svarer til at tage en
+bestemmelse om, hvad der skal ske med pakken. Det, man hopper
+til, kaldes et mål eller target, og to af de indbyggede targes
+er de samme som de policy, vi tidligere har set, DROP, ACCEPT.
+At tage beslutning om at droppe en pakke skrives <command> -j
+DROP </command>
+</para>
+
+<para>
+Endvidere kan man hoppe til en anden, brugeroprettet kæde,
+eller man kan returnere fra en kæde (med <command> -j RETURN
+</command>). Der er et REJECT target, som dog kræver at
+kernen er kompileret med support for det. Der er andre inbyggede
+targets, som kræver tilvalg i kernen: QUEUE beder kernen om at
+sende pakkerne til en pseudo-device, som et program i userspace
+kan lytte på, og så er der bl.a. også REDIRECT, SNAT, DNAT og LOG
+targets. (Lad være med at studere listen i detailler! Bladr frem.)
+</para>
+
+<orderedlist>
+<listitem><para>ACCEPT</para>
+          <para>Pakken sendes videre uden yderligere
+          test og dermed uden yderligere tidsforbrug.</para></listitem>
+<listitem><para>DROP</para>
+          <para>Pakken ignoreres ("smides væk").
+          </para></listitem>
+<listitem><para>RETURN</para>
+          <para>Der hoppes tilbage til den kæde, man kom fra
+          eller for indbyggede kæder til default policy.
+          </para></listitem>
+<listitem><para>REJECT</para>
+          <para>Pakken droppes men der sendes en ICMP pakke til
+          modtageren med besked.
+          </para></listitem>
+<listitem><para>QUEUE</para>
+          <para>Pakken lægges i kø til pseudodevice der tillader
+          data at blive hentet til userspace.
+          </para></listitem>
+<listitem><para>REDIRECT</para>
+          <para>En -t nat funktion. Modtageradressen ændres, så
+          pakken sendes til maskinen selv (lokalhost); for tcp/udp 
+          kan portnummer ændres. Bruges til proxy-funktionalitet.
+          </para></listitem>
+<listitem><para>SNAT</para>
+          <para>Kun for nat-tabellen, POSTROUTING kæden,
+          specificerer at afsenderadresse skal ændres for denne
+          og alle fremtidige pakker i denne forbindelse.
+          </para></listitem>
+<listitem><para>DNAT</para>
+          <para>Modtager adressen ændres for denne og følgende
+          pakker i samme forbindelse.
+          </para></listitem>
+<listitem><para>LOG</para>
+          <para>Begynd kernel-logging for matchende pakker.
+          Reglen behøver ikke at have noget target. Netfilter
+          fortsætter med næste regel. Bruges til at analysere.
+          </para></listitem>
+<listitem><para>MARK</para>
+          <para>Bruges i mangle tabellen i forbindelse med iproute2.
+          </para></listitem>
+<listitem><para>MASQUERADE</para>
+          <para>Bruges til NAT-ing med dynamiske adresser.
+          </para></listitem>
+<listitem><para>TCPMSS</para>
+          <para>En speciel funktionalitet for fragmentering af
+          ICMP pakker, som ens ISP ellers kasserer.
+          </para></listitem>
+<listitem><para>TOS</para>
+          <para>For mangle tabellen, ændring af Type Of Service (TOS)
+          feltet i TCP headeren.
+          </para></listitem>
+<listitem><para>ULOG</para>
+          <para>Pakken multicastes til userspace for logging/analyse.
+          </para></listitem>
+<listitem><para>DSCP</para>
+          <para>Nyere version TOS mangling.
+          </para></listitem>
+<listitem><para>ECN</para>
+          <para>For løsning af problem med Explicit Congestion
+          Notification.
+          </para></listitem>
+<listitem><para>MIRROR</para>
+          <para>Kun for forsøg, bytter om på afsender/modtager adresserne.
+          </para></listitem>
+</orderedlist>
+
+<para>
+Listen er ordnet efter hvad jeg synes er vigtigst. Se manual page
+for nærmere detailler om targets. Lige nu er de vigtigste ACCEPT,
+DROP og SNAT, som kun kan bruges i nat-tabellens POSTROUTING chain.
+</para>
+
+<para>
+</para>
+
+<para>
+Opsummerende kan vi sige, at en regel består af består af en
+eller flere kommandoparametre, som beskriver en egenskab ved en
+netværkspakke, samt (som regel) en besked om, hvad der skal ske
+med pakker, som beskrivelsen passer på. Hvis en beskrivelse
+passer, siger man at pakken matcher.
 </para>
 
 <para>
