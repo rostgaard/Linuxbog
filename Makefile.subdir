@@ -184,64 +184,22 @@ endif
 	rm -rf bog1
 
 # Build pdf package.
-pspdf: $(targetname)-$(version)_pdf.zip
+pdf: $(targetname)-$(version)_pdf.zip
 $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
-	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
-	rm -f $(targetname)-*.pdf*    
-	rm -f $(targetname)-*_pdf.zip
-	rm -f $(targetname)-*.ps.gz              
-	rm -f $(targetname)-*.ps              
-	mkdir tempdir
-
-	@echo '<!ENTITY magic "eps">' > magic.sgml
-	/usr/bin/collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	touch test.inc
-	cp *.{sgml,xml} tempdir
-	cp *.inc tempdir
-	rm -f test.inc
-	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
-	/usr/bin/collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-
-	@echo "Target er" $(targetname)_pdf.zip
 	@echo '<!ENTITY magic "png">' > magic.sgml
-	mkdir bogpdf
-	touch test.inc
-	cp *.inc bogpdf
-	cp *.{sgml,xml} bogpdf
-	rm -f test.inc
-	rm -f $(targetname)-*.pdf
-	cp images/*.png bogpdf
-	(cd bogpdf; perl ../../httpsplit.pl *.{sgml,xml})
-#	(cd bogpdf; jade -t tex -d $(cygnus)\#print -o bogpre.tex bog.sgml )
-#	(cd bogpdf; cat bogpre.tex | sed 's#--#-{}-{}#g' > bog.tex)
-#	(cd bogpdf; cat bogpre.tex > bog.tex)
-#	(cd bogpdf; pdfjadetex bog;pdfjadetex bog;pdfjadetex bog ) > /dev/null
-	(cd bogpdf; docbook2pdf bog.sgml )
-	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
+	/usr/bin/collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	rm -rf tempdir
+	mkdir tempdir
+	cp *.{sgml,xml} tempdir
+	cp images/*png tempdir
+	(cd tempdir; db2pdf bog.sgml)
+
+	mv tempdir/bog.pdf $(targetname)-$(version).pdf
+	rm -rf tempdir
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
-	@echo "Done PDF (pspdf)"
+	@echo "Done PDF (pdf)"
 	@echo ""
-
-	@echo '<!ENTITY magic "eps">' > magic.sgml
-	mkdir bogps
-	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
-	@echo '<!ENTITY magic "eps">' > magic.sgml
-	touch test.inc	
-	cp *.inc bogps
-	cp *.{sgml,xml} bogps
-	rm -f test.inc
-	(cd bogps; perl ../../httpsplit.pl *.{sgml,xml})
-	(cd bogps; docbook2ps bog.sgml )
-	mv bogps/bog.ps $(targetname)-$(version).ps
-	gzip -9 $(targetname)-$(version).ps
-	@echo "Done PS (pspdf)"
-	@echo ""
-
-	rm -f $(targetname)-$(version).pdf
-#	rm -f $(targetname)-*.ps              
-	rm -rf bogps bogpdf tempdir
-
 
 test:
 	@echo $(eksfiler)
