@@ -112,7 +112,7 @@ function fsize_text( $filename ) {
     ),
     "PalmPilot" => array(
       first => "linux-",
-      last => ".palm.gz"
+      last => ".palm.tgz"
     ),
     "SGML" => array(
       first => "linux-",
