@@ -32,7 +32,7 @@ require("proglang.inc");
  Programeksempler til "Linux - Friheden til at programmere".
 </h2>
 Download tar-ball
-<a href="linuxbog-prog-eksempler.tgz">linuxbog-prog-eksempler.tgz</a>
+<a href="linuxbog-program-eksempler.tgz">linuxbog-program-eksempler.tgz</a>
 med alle eksempler.
 <p>
 Der findes mange flere sprog til Linux end de viste,
