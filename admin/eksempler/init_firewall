@@ -1,0 +1,117 @@
+#!/bin/sh
+# chkconfig: 35 20 80
+# description: Firewall init script til at starte 
+#	       og stoppe firewall script fra linux bog
+# Lavet af:    Peter Enoch
+export PATH=/sbin:/bin:/usr/bin
+
+FW=`cat /proc/net/ip_fwchains`
+
+. /etc/rc.d/init.d/functions
+
+if ! [ -f /etc/firewall ]; then
+     echo "Kan ikke finde firewall script i /etc !!"
+     exit 0
+fi
+
+case "$1" in
+ start)
+            action "Firewall startes: " /etc/firewall
+    ;;
+
+ stop)
+         if ! [ "$FW" = "" ]; then
+    	    action "Firewall stoppes: " \
+	      ipchains -F; \
+	      ipchains -P input ACCEPT; \
+	      ipchains -P forward ACCEPT; \
+	      ipchains -P output ACCEPT; \
+	      ipchains -X; \
+	      rmmod ip_masq_ftp 2>/dev/null; \
+	      rmmod ip_masq_icq 2>/dev/null; \
+	      rmmod ip_masq_raudio 2>/dev/null; \
+	      rmmod ip_masq_vdolive 2>/dev/null; \
+	      rmmod ip_masq_quake 2>/dev/null; \
+	      rmmod ip_masq_irc 2>/dev/null; \
+	      rmmod ip_masq_cuseeme 2>/dev/null
+	else
+	    echo -n "Firewall script er ikke startet !!"
+	    failure "Firewall script er ikke startet !!"
+	    echo
+    fi
+    ;;
+
+ restart)
+        if ! [ "$FW" = "" ]; then
+	    $0 stop
+	    $0 start
+	else
+	    echo -n "Firewall stoppes: "
+	    failure "Firewall stoppes: "
+	    echo
+	    $0 start
+    fi
+    ;;
+
+ gem)
+	 rm -f /etc/firewall.bak        
+	 echo -n "Firewall gemmes i /etc/firewall.bak"
+	 ipchains-save > /etc/firewall.bak 2>/dev/null && \
+	   success "Firewall gemmes i /etc/firewall.bak" || \
+	   failure "Firewall gemmes i /etc/firewall.bak"
+	   echo
+    ;;
+        
+ status)
+	ipchains -L -n --line-numbers | less
+    ;;
+
+ masq)
+	ipchains -L -M -n --line-numbers | less
+    ;;
+
+ panic)
+	 action "INPUT,FORWARD og OUTPUT kæden sættes til DENY: " \
+	   ipchains -F; \
+	   ipchains -P input DENY; \
+	   ipchains -P forward DENY; \
+	   ipchains -P output DENY
+    ;;
+
+ debug)
+            echo > /etc/firewall.debug
+            /etc/firewall
+	    rm -f /etc/firewall.debug
+    ;;
+
+ *)
+	 clear
+         echo "Start:   med firewall start, startes firewall scriptet" \
+	   "i /etc."
+	 echo "Stop:    med firewall stop, stoppes firewall scriptet" \
+	   "i /etc."
+	 echo "Restart: med firewall restart, stoppes firewall scriptet" \
+	   "først, derefter bliver"
+	 echo "         det startet igen."
+	 echo "Gem:     med firewall gem, gemmes alle regler i firewall'en" \
+	   "i /etc/firewall.bak."
+	 echo "         Bemærk at /etc/firewall.bak bliver" \
+	   "slettet hver gang denne køres."
+	 echo "Status:  med firewall status, vises alle firewall regler der" \
+	   "er på maskinen."
+	 echo "Masq:    med firewall masq, vises alle masquerading forbindelser." \
+	   "Dvs. man kan "
+	 echo "         se hvor ens lokale maskiner har oprettet en forbindelse til."
+	 echo "Panic:   med firewall panic, sættes alle standarts kæderne," \
+	   "dvs. input, forward"
+	 echo "	 og output til deny og alle nuværende regler bliver slettet."
+	 echo "Debug:   med firewall debug, startes firewall scriptet og man får" \
+	   "status"
+	 echo "         over hvad de forskellige variabler er sat til og hvad scriptet"
+	 echo "         har fundet af informationer."
+
+	 echo "/etc/rc.d/init.d/firewall { start|stop|restart|gem|status|masq|panic|debug }"
+	exit 1
+esac
+
+exit 0
