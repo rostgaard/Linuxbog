@@ -1287,27 +1287,56 @@ int main()
 </example>
 
 <para>
-Dette program er så dejligt at eksperimentere med. For det første
-skal det nævnes, at getchar slet ikke er så dårlig en løsning,
-den er faktisk ret effektiv. Det er en <emphasis> macro </emphasis>,
-hvilket er inline kode i C udgaven. Det bliver formentlig sådan,
-at ANSI/ISO kommisionen medtager inline direktivet (kendt fra
-C++) i ANSI specifikationen af C sproget næste gang.
+Dette program er så dejligt at eksperimentere med. Når vi har
+læst vores char med getchar, så kan vi gøre med den hvad vi vil,
+f.eks. konvertere den fra DOS-tegnsæt til ISO-8859-1 tegnsæt. (Se
+nedenfor.) Men i første omgang, som her, skriver vi blot vores
+char ud nøjagtig som vi fik den ind. Hvis nu vi bruger en
+kommandolinie som nedenfor, kan vi kontrollere, at programmet
+faktisk kopierer nøjagtigt, d.v.s. at library funktionerne bag
+vores getchar() og putchar() er ok.
+</para>
+
+<programlisting>
+MITPROMPT$ filter0 < /usr/dict/words > words.cpy
+MITPROMPT$ cmp /usr/dict/words words.cpy
+MITPROMPT$ echo $?
+           0
+MITPROMPT$ 
+# $? er statuskode eller exitcode, som indikerer om
+# der er fejl eller ej. 0 betyder ingen fejl, ingen forskelle.
+</programlisting>
+
+<para>
+Man kunne tro, at det er uhyre ineffektivt at læse en stor fil
+et bogstav af gangen, men det er det ikke, hvis vores run-time
+library ellers er blot nogenlunde godt skrevet. For det første
+skal det nævnes at getchar og putchar er <emphasis> macroer </emphasis>,
+derved spares et funktionskald.
 </para>
 
 <para>
 For det andet kan man med omdirigering på kommandolinien bruge
-sådanne simple programmer til at behandle rigtige tekst-  og
-datafiler.
+sådanne simple programmer til at behandle filer. Det er altså
+ikke nødvendigt at sidde og taste data ind til sine eksempler.
 </para>
 
 <para>
 For at forstå den klassiske konstruktion ((c=getchar()) != EOF)
 er det en god ide at erstatte (c=getchar()) med c, variabelen,
-som indeholder det læste bogstav. Et assignment (en tilskrivning,
-på lokalsproget) har en værdi, nemlig værdien af den sidst
-foretagne tildeling. Her er der kun en tildeling i udtrykket, så
-det er meget nemt. Værdien af (c=getchar()) er c.
+som indeholder det læste bogstav. Så står der:
+</para>
+
+<programlisting>
+    while (c != EOF) {
+       ...
+</programlisting>
+
+<para>
+Et assignment (en tilskrivning, på lokalsproget) har en værdi,
+nemlig værdien af den sidst foretagne tildeling. Her er der kun
+en tildeling i udtrykket, så det er meget nemt. Værdien af
+(c=getchar()) er c.
 </para>
 
 <para>
@@ -1319,8 +1348,72 @@ indsætter, når der ikke er mere input. Det er som regel -1, og
 EOF skal være defineret i stdin.
 </para>
 
+<sect2 id="tegn-og-tal">
+<title>Tegn og talværdier</title>
+<indexterm><primary>filter</primary></indexterm>
 <para>
-Lad os først bruge programmet til at tælle characters.
+Lad os først bruge programmet til at skrive bogstavernes talværdi
+ud i både almindelige titals - notation, i hexadecimal notation,
+og, hvis bogstavet er udskrivbart, som glyf, eller
+tegn-repræsentation.
+</para>
+
+<example id="hex-filter">
+<title>Filter, som skriver ascii ordinal value.</title>
+<programlisting role="C">
+/* char2tal.c */
+
+#include &lt;stdio.h>
+
+int main()
+{
+    int c;
+    while ( (c=getchar()) != EOF) {
+      printf("Decimal-værdi %3d, hexadecimal værdi 0x%2x ", c, c);
+      if (c > 31 && c < 127)
+          printf("%c\n", c);
+      else
+          printf(".\n");
+    }
+    return 0;
+}
+</programlisting>
+</example>
+
+<para>
+Dette program producerer noget output, som indeholde alle de
+samme informationer som den oprindelige fil. Den indeholder endda
+flere informationer, skønt ikke så mange som den kunne.
+</para>
+
+<para>
+Vi har med dette program <emphasis> mappet </emphasis> input til
+output på en måde, så vi ikke har tabt data. Vi kan skrive et
+program, som ud fra outputfilen rekonstruerer den oprindelige
+fil.
+</para>
+
+<para>
+Der er også en anden sjov ting ved programmet: Hvis vi skulle
+sende data over et ustabilt transmissionsmedium, så ville det
+være nemt at finde de linier, hvor data var gået tabt. I mange
+tilfælde ville man ved mindre fejl endda kunne regne det rigtige
+input ud. Denne form for overskud af bits til at repræsentere
+data kalde redundans. "Redundancy" oversættes i ordbogen til
+overflødighed, men vi kunne også oversætte det til "rigelighed",
+"med ekstrareservebits som forsikring ..." (Bedre forslag
+modtages med glæde!)
+</para>
+
+<para>
+Som en biting til C++ interesserede kan det tilføjes, at man i
+C++ nok også ville slippe nemmere afsted i dette tilfælde ved at
+bruge printf. C++ cout() er ikke så nem at bruge til formatering
+af kolonner og lignende.
+</para>
+
+<para>
+Lad os dernæst bruge programmet til at tælle characters.
 </para>
 
 <example id="ex-char-count">
@@ -1360,16 +1453,18 @@ Et eksempel på en kørsel af programmet:
 <programlisting>
 MITPROMPT $ time charcount &lt; /usr/dict/words
 409048
-    0.40s real     0.30s user     0.01s system
+    0.32s real     0.27s user     0.04s system
 </programlisting>
 
 <para>
 På min gamle maskine, 3/10 sekunder til at læse 400KB! Det er
-hurtigt (i forhold til maskinens formåen).
+pænt (i forhold til maskinens formåen). Den "officielle"
+wordcount, wc &lt; /usr/dict/words er dog 10 gange hurtigere!
 </para>
 
 <para>
-Husk at denne charcount ikke tæller bytes. På en MicroSoft
+Husk at denne charcount ikke tæller bytes, men bogstaver. På en
+linux maskine er dette normalt det samme. På en MicroSoft
 maskine vil længden af filen ikke svare til antal characters talt
 på denne metode, fordi MS-OS'er (og før dem CP/M, RX11 etc.)
 benytter carriage-return line-feed sekvenser til linieskift.
@@ -1402,6 +1497,7 @@ Desuden er det min plan at vise, hvordan et sådant filter
 kan udstrækkes til at checke nesting af tags. Det kan gøres
 v.hj.a recursive descent parsning.
 </para>
+</sect2>
 
 <sect2 id="s3-file-adder">
 <title>Summering af tal i en fil.</title>
