@@ -24,7 +24,7 @@ badfiles = $(badfiles1) $(badfiles2) $(badfiles3) $(badfiles4)
 
 # Her er en liste af sgml-filer der skal checkes
 totalsgmlfiler=$(wildcard ../alle/*.sgml) \
-	$(wildcard ../friheden/*.sgml) \
+	$(wildcard ../program/*.sgml) \
 	$(wildcard ../admin/*.sgml) \
 	$(wildcard ../web/*.sgml) \
 	$(wildcard ../applikationer/*.sgml) \
@@ -32,14 +32,22 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
 	$(wildcard ../dokumentation/*.sgml) \
 	$(wildcard ../kontorbruger/*.sgml) \
 	$(wildcard ../itplatform/*.sgml) \
-	$(wildcard ../program/*.sgml)
+	$(wildcard ../friheden/*.sgml)
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
-SUBDIRS = friheden applikationer admin program web sikkerhed c dokumentation kontorbruger itplatform
+SUBDIRS = applikationer admin program web sikkerhed c dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html palmpilot sgml
+all: html palmpilot sgml flytalle
+
+
+flytalle:
+	@mv alle/ bog/
+
+versionfil:
+	@cp ../friheden/version.sgml .
+	@cp ../friheden/dato.sgml .
 
 statusfiles:
 	@for dir in $(SUBDIRS); do \
@@ -64,7 +72,7 @@ $(targetname)-$(version).palm.zip: html
 	cp ../misc/*.prc palm
 	zip $(targetname)-$(version).palm.zip palm/*.prc palm/*.pdb
 
-html: statusfiles $(targetshortname) pakhtml
+html: statusfiles  versionfil $(targetshortname) pakhtml
 $(targetshortname): $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz $(targetshortname)
