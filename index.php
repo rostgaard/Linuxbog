@@ -369,11 +369,11 @@ function vistype($type) {
       form => "-pdf-",
       last => ".zip"
     ),
-//    "PalmPilot" => array(
-//      first => "linuxbog-",
-//      form => "-palm-",
-//      last => ".zip"
-//    ),
+    "PalmPilot" => array(
+      first => "linuxbog-",
+      form => "-palm-",
+      last => ".zip"
+    ),
     "eksempler" => array(
       first => "linuxbog-",
       form => "-eksempler-",
