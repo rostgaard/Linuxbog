@@ -27,7 +27,7 @@ filer:  Makefiler
 	$(MAKE) -C docbook
 	$(MAKE) -C kontorbruger
 	$(MAKE) -C itplatform
-	$(MAKE) -C alle 
+	#$(MAKE) -C alle 
 
 statusfiler:  Makefiler
 	$(MAKE) -C friheden statusfiler
