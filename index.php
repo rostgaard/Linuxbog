@@ -205,7 +205,7 @@ eller køb en indbundet udgave hos følgende forretninger:
 <li><a href="http://www.sc-birkeroed.dk/htm-sider/Linux.htm">SC-Birkerød</a></li>
 </ul>
 Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
-hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
+hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
 <p>
 
 Bøgerne kan også fås i
@@ -228,7 +228,7 @@ Bøgerne redigeres af Peter Toft og Hans Schou
 Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
 <p>
-Der er altid ting vi gerne vil have skrevet om, eller skrevet mere på.
+Der er altid ting vi gerne vil have skrevet om, eller skrevet mere på.<br>
 Du er meget velkommen til at komme med forslag. 
 <a href="todo.html">Vi efterlyser bla. disse ting</a>.
 
@@ -381,6 +381,8 @@ foretages.
   }
 
 ?>
+
+<p>
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
