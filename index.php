@@ -479,6 +479,7 @@ Se også vores konkurrenters bøger ;-)
 <ul>
 <li>"Linux i skolen" på <a href="http://www.gnuskole.dk">www.gnuskole.dk</a></li>
 <li>"Debianguiden" på <a href="http://www.debianguiden.dk/">www.debianguiden.dk/</a></li>
+<li><a href="http://www.skibhist.dk/download/download.html">Håndbog i OpenOffice.org</a></li>
 </ul>
 
 <p>
