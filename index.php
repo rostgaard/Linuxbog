@@ -374,8 +374,8 @@ function vistype($type) {
     // Eks: linuxbog-frihed-pdf.zip
     "PDF" => array(
       first => "linuxbog-",
-      form => "-pdf-",
-      last => ".zip"
+      form => "",
+      last => ".pdf"
     ),
     "PalmPilot" => array(
       first => "linuxbog-",
