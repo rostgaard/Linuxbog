@@ -196,10 +196,10 @@ function form_filename( $bookname, $format ) {
       first => "linux-",
       last => ".html-ub.tar.gz"
     ),
-//    "PostScript" => array(
-//      first => "linux-",
-//      last => ".ps.gz"
-//    ),
+    "PostScript" => array(
+      first => "linux-",
+      last => ".ps.gz"
+    ),
     // Eks: linux-frihed-pdf.zip
     "PDF" => array(
       first => "linux-",
