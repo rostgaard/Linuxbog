@@ -366,6 +366,140 @@ leveret som normalt.
 </para>
 </sect3>
 
+<SECT3 ID="htaccess">
+<TITLE>Kodeord på websider</TITLE>
+<INDEXTERM><PRIMARY>Apache</PRIMARY><SECONDARY>Kodeord på websider</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>.htaccess</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>htaccess</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>kodeord</PRIMARY><SECONDARY>htaccess</SECONDARY</INDEXTERM>
+<INDEXTERM><PRIMARY>password</PRIMARY><SECONDARY>htaccess</SECONDARY</INDEXTERM>
+
+<PARA>
+Med Apache er det muligt at sætte kodeord på udvalgte dele af et website
+hvis modulet <filename>mod_access</filename> er installeret.
+Dette kan bruges til at sikre at kun familie, venner og kollegaer får adgang
+til nogle bestemt sider på dit web-site.
+Første gang kodeord skal sættes op er det lidt besværligt at få overblikket.
+Derfor har vi sat en realistisk side op og taget filerne direkte der fra.
+Følgende filer indgår i opsætningen af kodeord.
+</PARA>
+
+<ITEMIZEDLIST MARK="BULLET">
+<LISTITEM><PARA><FILENAME>.htaccess</FILENAME> - denne fil ligger i det sub-dir der skal beskyttes</PARA></LISTITEM>
+<LISTITEM><PARA><FILENAME>/home/chlor/htuser</FILENAME> - filen med brugernavne</PARA></LISTITEM>
+<LISTITEM><PARA><FILENAME>/home/chlor/htgroup</FILENAME> - eventuelt en fil med grupper</PARA></LISTITEM>
+</ITEMIZEDLIST>
+
+<PARA>
+Først skal der oprettes en fil med få brugere.
+For nemheds skyld kaldes den ene bruger for 'demo' med kodeordet 'demo'.
+Man kan selv vælge hvad filen skal hedde og hvor den skal ligge.
+Her hedder bruger-filen <filename>/home/chlor/htuser</filename>.
+Ved første bruger skal filen oprettes med <COMMAND>-c</COMMAND>.
+Herunder oprettes brugeren 'demo' og 'john'.
+</PARA>
+
+<SCREEN>
+<PROMPT>[chlor@sslug]$</PROMPT> <USERINPUT>htpasswd -c /home/chlor/htuser demo</USERINPUT>
+<PROMPT>[chlor@sslug]$</PROMPT> <USERINPUT>htpasswd /home/chlor/htuser john</USERINPUT>
+</SCREEN>
+
+<PARA>
+Pas på ikke at bruge kommandoen <COMMAND>-c</COMMAND> anden gang, for
+så slettes filen.
+Filen med de to brugere ser nu således ud:
+</PARA>
+
+<SCREEN>
+demo:2iYw72d6bnpxg
+john:..HEJdavUser2
+</SCREEN>
+
+<PARA>
+Begge kodeord er krypteret med 'crypt', så de kan ikke læses.
+Bruger 'john's kodeord er ikke det du ser, men noget meget kryptisk.
+Med brugerfilen oprettet, kan den første <FILENAME>.htaccess</FILENAME>
+oprettes. I dette eksempel ligger filen her:
+<FILENAME>/home/chlor/public_html/htaccess/.htaccess</FILENAME>
+og den ser således ud:
+</PARA>
+
+<SCREEN>
+AuthType Basic
+AuthName "Beskyttet web-side"
+AuthUserFile /home/chlor/htuser
+Require valid-user
+</SCREEN>
+
+<PARA>
+<COMMAND>AuthType</COMMAND> er sat til <COMMAND>Basic</COMMAND> da det er det mest simple.
+<COMMAND>AuthName</COMMAND> er den tekst der vises når man skal logge ind på siden.
+Det nemmeste er at se eksempel på det her:
+<ULINK URL="http://www.sslug.dk/~chlor/htaccess/">http://www.sslug.dk/~chlor/htaccess/</ULINK>
+hvor du samtidigt kan prøve at logge ind.
+Alle brugere der er nævnt i <FILENAME>/home/chlor/htuser</FILENAME> har adgang
+ved at bruge kommandoen <COMMAND>Require valid-user</COMMAND>.
+</PARA>
+
+<PARA>
+Dernæst ønsker vi et andet subdir hvor kun 'demo' og 'john' har adgang.
+Dette kan gøres enten ved at skrive alle de brugere der har adgang,
+eller ved at oprette en gruppe fil.
+Det nemmeste er at skrive navnene, og så ser filen
+<FILENAME>/home/chlor/public_html/htaccess/demojohn/.htaccess</FILENAME>
+således ud:
+</PARA>
+
+<SCREEN>
+AuthType Basic
+AuthName "Beskyttet demojohn"
+AuthUserFile /home/chlor/htuser
+Require user john demo
+</SCREEN>
+
+<PARA>
+Har man mange forskellige sub-dir der nemmest administreres gruppevis,
+oprettes en gruppefil med navnet
+<FILENAME>/home/chlor/htgroup</FILENAME> 
+hvor gruppen hedder <COMMAND>fortrolig</COMMAND>
+med følgende indhold:
+</PARA>
+
+<SCREEN>
+fortrolig: john demo
+</SCREEN>
+
+<PARA>
+Et nyt sub-dir oprettes hvor kun denne gruppe har adgang, i dette
+eksempel <FILENAME>/hemmelig/</FILENAME>.
+En ny <FILENAME>.htaccess</FILENAME> oprettes i
+<FILENAME>/home/chlor/public_html/htaccess/hemmelig/.htaccess</FILENAME>
+med følgende indhold:
+</PARA>
+
+<SCREEN>
+AuthType Basic
+AuthName "Beskyttet gruppe"
+AuthUserFile /home/chlor/htuser
+AuthGroupFile /home/chlor/htgroup
+Require group fortrolig
+</SCREEN>
+
+<PARA>
+Ovenstående kan afprøves her: 
+<ULINK URL="http://www.sslug.dk/~chlor/htaccess/hemmelig/">http://www.sslug.dk/~chlor/htaccess/hemmelig/</ULINK>.
+Er du allerede logget ind på siden med 'demo', må du enten prøve med programmet
+<COMMAND>lynx</COMMAND> eller lukke din browser ned og starte den igen for at blive
+spurgt om kodeord igen, samt se teksten "Beskyttet gruppe".
+</PARA>
+
+<PARA>
+Læs mere om adgangskontrol her:
+<ULINK URL="http://sunsite.dk/apache/docs/mod/core.html#require">http://sunsite.dk/apache/docs/mod/core.html#require</ULINK>
+</PARA>
+
+</SECT3>
+
 <sect3 id="apache-virtuelle-hosts">
 <title>Virtuelle hosts med Apache</title>
 <indexterm><primary>Apache</primary>
