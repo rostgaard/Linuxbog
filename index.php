@@ -458,7 +458,7 @@ Filtyper:
     echo href("?b=$raw","<b>$desc[title]</b>");
     echo "<br> $desc[comment]";
     if ($desc[sideantal])
-      echo "<br>$desc[sideantal] sider.";
+      echo ", $desc[sideantal] sider.";
     echo "</li>\n";
   }
 ?>
