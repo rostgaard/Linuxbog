@@ -413,7 +413,7 @@ selv ved IDE-diske.
 
 <sect1 id="harddisk-tuning">
 <title>Harddisk-tuning</title>
-<indexterm><primary>Harddisk tuning</primary></indexterm>
+<indexterm><primary>Harddisk</primary><secondary>tuning af hastighed</secondary></indexterm>
 <indexterm><primary>hdparm</primary></indexterm>
 <indexterm><primary>/sbin/hdparm</primary></indexterm>
 <para>
@@ -432,15 +432,48 @@ køres når systemet startes op. I Red Hat f.eks. i bunden af
 
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -d1 -A1 /dev/hda</userinput>
+ 
+/dev/hda:
+ Timing buffer-cache reads:   128 MB in  3.35 seconds = 38.21 MB/sec
+ Timing buffered disk reads:  64 MB in  7.56 seconds =  8.47 MB/sec
+
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -u1 -m16 -c3 -d1 -X66 /dev/hda</userinput>
+
+/dev/hda:
+ setting 32-bit I/O support flag to 3
+ setting multcount to 16
+ setting unmaskirq to 1 (on)
+ setting using_dma to 1 (on)
+ setting xfermode to 66 (UltraDMA mode2)
+ multcount    = 16 (on)
+ I/O support  =  3 (32-bit w/sync)
+ unmaskirq    =  1 (on)
+ using_dma    =  1 (on)
+
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -k 1 /dev/hda</userinput>
+/dev/hda:
+ Timing buffer-cache reads:   128 MB in  3.41 seconds = 37.54 MB/sec
+ Timing buffered disk reads:  64 MB in  6.80 seconds =  9.41 MB/sec
 </screen>
 
 <para>
-Samme program kan bruges til at få harddisken til at spinne ned i
-hastighed - f.eks. efter 5 sekunder. Dette betyder mere slid på
-harddisken, men din maskine bliver stille.
+Den første og sidste kommando måler hastigheden på harddisken. Der kommer to 
+tal. Det første "byffer-cache" er reelt et mål for processor og bushastighed, 
+mens det andet tal angiver I/O fra disken. I eksemplet giver jeg kommandoer
+som passer til de nyere Ultra DMA 66-controllere, og få lidt højere hastighed.
+Målefunktionen bør dog køres en del gange før man kan få en statistisk korrekt
+vurdering af ydelsen. Du skal være opmærksom på at du kan låse din maskine, 
+hvis du angiver mere end hvad din maskine kan yde. I praksis ser du nok 
+et reboot hvis du går for langt. Tilføj den endelige optimale opsætning til 
+<filename>/etc/rc.local</filename> eller tilsvarende opstartsfil, når du er 
+sikker på maskinen kører godt.
+</para>
+
+<para>
+Samme program, <command>hdparm</command>, kan bruges til at få
+harddisken til at spinne ned i hastighed - f.eks. efter 5
+sekunder. Dette betyder mere slid på harddisken, men din maskine
+bliver stille.  
 </para>
 
 <screen>
