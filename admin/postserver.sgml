@@ -356,6 +356,210 @@ linux.dk anything
 
 </sect1><!-- postfix -->
 
+<sect1 id="mailman">
+<title>Mailman</title>
+<indexterm><primary>mailman</primary></indexterm>
+<indexterm><primary>postlister</primary><secondary>mailman</secondary></indexterm>
+
+<para>
+En af de rigtig gode programmer til håndtering af postlister
+er Mailman. Det kommer med grafisk administration via en webbrowser,
+kan lave mail&lt;-%gt;news gateway automatisk, email-arkiv og meget andet.
+</para>
+
+<sect2 id="mailman-installation">
+<title>Installation af Mailman</title>
+<para>
+Installation af mailman fra RPM er ikke nødvendigvis det nemmeste. 
+Man kan hente kildekoden og oversætte denne med standard udpak (tar xvzf), 
+<command>./configure</command>, <command>make</command> og <command>make install</command>.
+</para>
+
+<para>
+Herved kommer man igennem et par skridt med at lave en "mailman"
+bruger og gruppe, lave kataloget
+<filename>/usr/local/mailman</filename> ejet af mailman:mailman, og det går ret nemt.
+</para>
+
+<para>
+På Mandrake skal mailman-pakken installeres og så er man ret tæt på at være klar. 
+Red Hat er ikke helt så nem - man de hemmelige tricks er forklaret i det følgende :)
+</para>
+
+</sect2>
+
+<sect2 id="mailman-init">
+<title>Opsætning af Mailman</title>
+
+<para>
+Følgende ting skal køres en gang for alle.
+</para>
+
+<para>
+Find først programmet <command>mmsitepass</command>.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>rpm -ql mailman | grep mmsitepass</userinput>
+/var/mailman/bin/mmsitepass
+</screen>
+
+<para>
+Installerede du fra kildekode, så brug <command>find / -name mmsitepass</command>.
+</para>
+
+<para>
+I dette tilfælde er det <filename>/var/mailman/bin/mmsitepass</filename> som skal køres som root for at sættes post-liste serverens password.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/var/mailman/bin/mmsitepass</userinput>
+New site password:
+</screen>
+
+<para>
+Angiv et godt password som skal anvendes når der skal laves nye lister i det følgende!
+</para>
+
+<para>
+Hernæst skal man finde den standard opsætningsfil som mailman anvender
+til bla. at sætte Internet-information.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>rpm -ql mailman | grep mm_cfg.py</userinput>
+/var/mailman/Mailman/mm_cfg.py
+</screen>
+
+<para>
+Indsæt i denne fil URL-adressen på maskinens webserver 
+som <literal>DEFAULT_URL_HOST</literal> og 
+domænenavnet for postserveren 
+står i <literal>DEFAULT_EMAIL_HOST</literal>. I eksemplet
+sættes lister op for LISTENAVN@hven.dk, hvor LISTENAVN kommer
+senere og www.hven.dk skal passe med at der er en web-server på
+http://www.hven.dk.
+</para>
+
+<screen>
+DEFAULT_EMAIL_HOST = 'hven.dk'
+DEFAULT_URL_HOST = 'www.hven.dk'
+</screen>
+
+<para>
+Det kan også være man bliver nødt til (nogle gange hos Red Hat), at
+eksplicit anføre brugerid og gruppe på mailman-brugeren. Er det bruger-ID nr 41
+og gruppe 42 (se <filename>/etc/passwd</filename>) så tilføj til <filename>mm_cfg.py</filename>.
+</para>
+
+<screen>
+MAILMAN_UID = 41
+MAILMAN_GID = 42
+</screen>
+
+
+<para>
+Anvender man postfix som MTA, så skriv også i <filename>mm_cfg.py</filename>
+</para>
+
+<screen>
+MTA = 'Postfix'
+unknown_local_recipient_reject_code = 550
+POSTFIX_ALIAS_CMD = '/usr/sbin/postalias'
+POSTFIX_MAP_CMD = '/usr/sbin/postmap'
+</screen>
+
+<para>
+Check at <command>/usr/sbin/postalias</command> og <command>/usr/sbin/postmap</command> eksisterer.
+</para>
+
+<para>
+Der er masser af gode forklaringer på hvordan mailman fungerer internt
+i filen <filename>Defaults.py</filename> som ligger samme sted som
+<filename>mm_cfg_py</filename>, dvs. det kan være interessant at læse
+den igennem på et tidspunkt. Generelle opsætninger for alle lister på
+maskinen bør ske igennem denne fil.  
+</para>
+
+<para>
+På Red Hat skal man nu checke at <filename>mailman</filename>-scriptet kan startes.
+Kør <command>/etc/init.d/mailman start</command> og se om det går godt. Mandrake har
+ikke dette script. 
+</para>
+
+<para>
+På Red Hat skal man køre følgende en gang for alle for at mailman startes sammen med maskinen
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/sbin/chkconfig --level 35 mailman on</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>/sbin/chkconfig --list mailman</userinput>
+mailman         0:off   1:off   2:off   3:on    4:off   5:on   6:off
+</screen>
+
+<para>
+Dette starter mailman (kun nødvendigt på Red Hat) i runlevel 3 og 5 (se <xref linkend="runlevel">).
+</para>
+
+</sect2>
+<sect2 id="mailman-liste-opret">
+<title>Oprette postlister i Mailman</title>
+<para>
+For at oprette en enkelt post-liste så kan man enten lade mailman
+automatisk generere nye post-aliaser eller man kan køre det mere 
+manuelt. I det følgende er det vist manuelt.
+</para>
+
+<para>
+Find først kommandoen til at lave en ny liste <command>newlist</command>.
+</para>
+
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>rpm -ql mailman | grep newlist</userinput>
+/var/mailman/bin/newlist
+</screen>
+
+<para>
+(samme sted ligger kommandoen til at slette en liste <command>rmlist</command>).
+</para>
+
+<indexterm><primary>newlist</primary><secondary>mailman</secondary></indexterm>
+<indexterm><primary>mailman</primary><secondary>newlist</secondary></indexterm>
+
+<para>
+Find herefter kommandoerne til at oprette en liste <command>newlist</command>
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/var/mailman/bin/newlist LISTENAVN admin@hven.dk MIT_HEMMELIGE_PASSWORD_FOR_DENNE_LISTE</userinput>
+</screen>
+
+<para>
+Vil man senere slette en liste helt (inkl. mailarkiv)
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/var/mailman/bin/rmlist -a LISTENAVN</userinput>
+</screen>
+
+<para>
+Den første liste man skal oprette er listen "mailman", der muligvis allerede optræder i 
+<filename>/etc/aliases</filename> - slet dette og lav en "mailman"-liste i stedet. Erstat
+admin@hven.dk med systemadministratorernes post-konto.
+</para>
+
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/var/mailman/bin/newlist mailman admin@hven.dk MIT_HEMMELIGE_PASSWORD_FOR_DENNE_LISTE</userinput>
+</screen>
+
+
+
+</sect2>
+</sect1>
+
+
 <!-- Afsnittet om exim er skrevet af Morten Liljeberg ml@dsfnet.dk -->
 <sect1 id="exim">
 <title>Exim</title>
@@ -373,8 +577,7 @@ vacation-program. Og så skulle den iøvrigt være sendmail-kompatibel.
 Man finder den her: <ulink
 url="http://www.exim.org">http://www.exim.org</ulink>. Her er der dog
 ingen rpm-filer, men dem kan man finde på <ulink
-url="http://rpmfind.net">http://rpmfind.net</ulink>. Desuden ligger
-den på RedHat 7.1 Powertools CD'en.  
+url="http://rpmfind.net">http://rpmfind.net</ulink>. 
 </para>
 
 <para>
