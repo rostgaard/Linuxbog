@@ -256,8 +256,8 @@ hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
 </p>
 
 <p>
-Bøgerne kan også fås i
-<a href="http://www.klid.dk/~cs">Microsoft Word format</a>.
+Værktøj til konvertering af bøgerne til Word 95 format kan findes her.
+<a href="http://www.klid.dk/~cs">www.klid.dk/~cs</a>.
 </p>
 
 <p>
