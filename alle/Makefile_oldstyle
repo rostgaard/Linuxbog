@@ -28,6 +28,7 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
 	$(wildcard ../admin/*.sgml) \
 	$(wildcard ../web/*.sgml) \
 	$(wildcard ../applikationer/*.sgml) \
+	$(wildcard ../unix/*.sgml) \
 	$(wildcard ../c/*.sgml) \
 	$(wildcard ../java/*.sgml) \
 	$(wildcard ../dokumentation/*.sgml) \
@@ -37,7 +38,7 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
-SUBDIRS = applikationer admin program web sikkerhed c java dokumentation kontorbruger itplatform friheden
+SUBDIRS = applikationer admin program unix web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
 all: html  pakhtml palmpilot sgml flytalle
