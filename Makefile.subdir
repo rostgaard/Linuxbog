@@ -19,8 +19,11 @@ badsgmlfiles=dato.sgml magic.sgml stikord.sgml
 # Her er  en liste af alle sgml
 allesgmlfiles=$(wildcard *.sgml)
 
+# Her er  en liste af alle eksempler
+alleeksfiles=$(wildcard eksempler/*)
+
 # Her er en liste af sgml-filer der skal checkes
-sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+eksfiler=$(filter-out eksempler/CVS,$(alleeksfiles))
 
 # her er det der skal laves
 all:	html pspdf palmpilot sgml eksempelbackup exit
@@ -133,9 +136,11 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	@echo ""
 
 test:
-	echo $(sgmlfiler)
+	echo $(eksfiler)
 
-eksempelbackup:
+
+eksempelbackup: statusfiler
+ifneq    ("$(eksfiler)","")
 	rm -f $(targetname)-$(version)_eksempler.tar.gz  
 	touch $(targetname)-$(version)_eksempler.tar
 	cat dato.sgml > eksempler/BACKUPDATO
@@ -144,6 +149,9 @@ eksempelbackup:
 	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-$(version)_eksempler.tar =
 	gzip -9 $(targetname)-$(version)_eksempler.tar
 	mv $(targetname)-$(version)_eksempler.tar.gz $(targetname)-$(version)_eksempler.tgz
+else
+	echo "Bogen" $(targetname) "har ikke nogen eksempler";
+endif
 
 
 clean:
