@@ -2089,6 +2089,44 @@ hvor SERVER byttes ud med navnet på den maskine der er X-server.
 
 </sect1>
 
+<sect1 id="admin-cups">
+<title>Printserver med CUPS</title>
+
+<para>
+En af de virkelig gode ting ved CUPS er at det er rigtig nemt at bruge
+i et netværk.
+</para>
+
+<para>Du skal sætte alle printerne op på en maskine (serveren), som
+beskrevet i "Friheden til at vælge". På den maskine skal du desuden i
+<filename>/etc/cups/cupsd.conf</filename> sørge for at der er adgang
+til printerne, ved at tilføje linier a la:
+<programlisting>
+Allow From 192.168.42.0/24  # Erstat med de IP-numre du bruger
+</programlisting>
+til <command>&lt;Location /&gt;</command>-afsnittet. 
+</para>
+
+<para>
+På de andre maskiner skal du så installere klientdelen af CUPS (hvis
+det er muligt at nøjes med den) på Debian hedder den nødvendige pakke
+    <filename>cupsys-client</filename>. Herudover skal du så i
+    <filename>/etc/cups/client.conf</filename> tilføje linien
+<programlisting>
+ServerName server.domæne
+</programlisting>
+og skulle det spille. For at tjekke om det virker kan du prøve at køre
+    <command>lpstat -p</command>, den skulle gerne give dig en liste
+    over de tilgængelige printere, der skulle ligne hvad samme
+    kommando giver på serveren.
+</para>
+
+<para>
+Bemærk at CUPS-dæmonen (cupsd) ikke behøver at køre på klienterne!
+</para>
+
+</sect1>
+
 <sect1 id="high-availability">
 <title>High Availability</title>
 <indexterm>
