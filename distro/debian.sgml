@@ -2,7 +2,8 @@
 <chapter id="distro-Debian">
 <title>Om Debian</title>
 <para>
-Lad mig starte med en indrømmelse: Jeg har aldrig forsøgt mig med <indexterm><primary>Debian</primary></indexterm>.<!-- br / -->
+
+Lad mig starte med en indrømmelse: Jeg har aldrig forsøgt mig med <indexterm><primary>Debian</primary></indexterm>.
 Jeg bruger Mandrake til daglig og er godt tilfreds med det.<!-- br / -->
 Men nogle gange skal man prøve noget nyt, og hvad er en bedre grund end når man skal lave en julekalender til glæde for en masse mennesker :-)
 </para>
@@ -25,34 +26,99 @@ Altså dem der har prøvet at installere forskellige distributioner og er holdt op
 <sect1 id="distro-debian-installation">
 <title>Installation</title>
 <para>
-Jeg hader cdrom'er (især fordi de skal brændes) så jeg er stor tilhænger af net-installationer.
-Fra forsiden af debian.org fandt jeg et link til http://www.debian.org/CD/netinst/ hvor man kan finde mange forskellige bootimages til netinstallationer. Nogle af dem er iso-filer der skal brændes på CD.</para>
-<para>I med imaget og igang med installationen.</para>
-<para>Jeg blev budt velkommen af en lille tekst <!-- GITTE (se <xref linkend="debian-install-intro"></xref> -->). 
-<command>&lt;ENTER&gt;</command> og så er man igang.</para>
+Jeg hader cdrom'er (især fordi de skal brændes) så jeg er stor tilhænger
+af net-installationer. Hvis man sidder på en lidt langsom netforbindelse,
+er det også rart ikke at skulle hente en hel distribution, men kan nøjes
+med de pakker man finder væsentlige.
+</para>
 
-<!-- GITTE
-<figure id="debian-install-intro" float="1">
-<title>Intro til Debian installation</title>
-<graphic fileref="debian-install-intro.&magic;"></graphic>
-</figure>
--->
+<sect2 id="distro-debian-netinstall">
+<title>Installation via netværk</title>
+Efter lidt søgen fandt jeg ud af, at man kan boote Debian på en
+rescue-diskette og så derfra installere via netværk. For at gøre dette
+skal man bruge rescue.bin og root.bin. Dem fandt jeg på
+http://ftp.se.debian.org/debian/dists/woody/main/disks-i386/current/images-1.44/bf2.4/
+Først ind med rescue.bin og derefter blev jeg bedt om at putte root
+disketten i. Så startede installationen.
+</para>
 
 <para>
-Herefter blev der valgt keyboard (satte jeg til dansk) og så skulle der partitioneres harddisk til den store guldmedalje.
+Hvis man er vant til at installere Redhat, Mandrake eller en af de andre
+distrobutioner med et grafisk installations-interface, vil det være en
+noget anderledes oplevelse at installere Debian. Det er et traditionelt
+ncurses-interface hvor man har en oversigt over de forskellige menuer
+man skal igennem og man så kan hoppe lidt mellem dem.
 </para>
+
 <para>
-Hvis man er vant til de noget mere grafiske installationsværktøjer, er det lidt af en omvæltning pludselig at befinde sig i Debians <command>cfdisk</command>. Men jeg fandt det hurtigt en del mere overskueligt end de grafiske værktøjer og fik let partitioneret min disk med en swap partition og en alm. Linux (ext2) partition. Herefter var det bare at initialisere swap partitionen, den alm. ext2 partition og mounte min ext2 partition som root-partition.
+Partitionering af disken er lidt af en udfordring hvis man er vant til
+de grafiske hjælpemidler. Der er ingen hjælp så man skal have styr på
+de forskellige partitionstyper. Efter at have valgt en swap-partition og
+en Linux-partition og få dem formateret, kom turen til kerne-moduler.
+Da jeg ikke er en haj ud i det, lod jeg det simpelthen være.
 </para>
+
 <para>
-Jeg valgte at beholde mit installations-medie som det primære pakke-medie. Istedet kunne jeg vælge at hente alle pakke online via et Debian-mirror. Dem kan jeg nu hente bagefter.
+Så kom turen til netkortet. Der er 2 PCMCIA-controllere at vælge mellem,
+så det er ikke så svært at prøve sig frem hvis man ikke lige har tjek på
+det. Efter at have fundet den rigtige og sat netværket op, er det bare
+igang med at installere base-systemet. Jeg valgte det foreslåede
+US-mirror, men det er lige til at ændre hvis man f.eks. har et lokalt
+Debian-mirror. Herefter installeres boot-loader og systemet genstartes.
 </para>
+</sect2>
+
+<sect2 id="distro-debian-aptsetup">
+<title>Opsætning af apt</title>
 <para>
-At vælge drivere er strakt en anden ting. Hvis man er vant til at ens devices automatisk bliver detekteret kan mna let ende på herrens mark. Jeg havde problemer med at finde en passende driver til mit netkort, men efter et par forsøg med forskellige drivere fandt jeg en Debian kunne li'.
+Apt er det pakke-system Debian bruger. Det er lidt det samme princip som
+RPM-pakker, der er bare knap så meget rod med pakke-afhængigheder. For
+at kunne bruge apt skal man tilføje nogle apt-kilder. Dette kan være en
+http-sti, en ftp-sti, et mounted drev eller en cd'rom. Første gang
+maskinen starter efter installationen, kører den en lille intro hvor man
+bl.a. sætter tidszone op og tilføjer brugere. Og så er det igang med at
+lege med apt. Først startede tasksel hvor man udvælger de
+"program-grupper" man vil have pakker fra, og til sidst kan man køre
+dselect. Her vælger man de enkelte pakker man vil have installeret.
 </para>
+</sect2>
+
+<sect2 id="distro-debian-xsetup">
+<title>Opsætning af X</title>
 <para>
-Herefter vælger man hvorfra man vil installere (CD-ROM, floppy, netværk eller et sted på ens harddisk) og base systemet bliver rullet ind.
+Jeg valgte ikke at installere X under installationen, for at se
+hvorledes dette gøres på Debian. Man skal hente pakkerne discover,
+mdetect og read-edid. Dette gøres således:
+
+<screen>
+<prompt>greenland:~#</prompt> <userinput>apt-get install discover mdetect read-edid</userinput>
+</screen>
+
+Så er det lettere at opsætte grafikkort, mus og skærm. Herefter installeres selve X med:
+
+<screen>
+<prompt>greenland:~#</prompt> <userinput>apt-get install x-window-system</userinput>
+</screen>
+
+Dette vil starte installationen af X. Der bliver hentet en masse pakker
+og under installationen vil der starte en lille guide hvor du kan sætte
+din X-server op. Når X er installeret er det nok en god ting at
+installere en window manager. For testes skyld installerede jeg icewm:
+
+<screen>
+<prompt>greenland:~#</prompt> <userinput>apt-get install icewm</userinput>
+</screen>
+
+Ganske nemt og smertefrit - og det virkede!
+
+<screen>
+<prompt>greenland:~#</prompt> <userinput>startx</userinput>
+</screen>
+
+og du er kørende.
 </para>
+
+</sect2>
 
 </sect1>
 
