@@ -93,11 +93,6 @@ bog/index.html: $(sgmlfiler)
 	mkdir bog
 	db2html  -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
 	cp images/*.png bog
-ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
-	(cd bog;perl ../../misc/insertimagesize)
-else
-	@echo "Du bør installere Perl-modulet Image:Size"
-endif
 ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
 	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
 else
