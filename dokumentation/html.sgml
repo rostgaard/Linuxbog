@@ -1,25 +1,57 @@
+<?xml encoding="ISO-8859-1" ?>
+
 <chapter id="html">
  <title>HTML</title>
 
  <para>
   Det er ofte smart at skrive dokumentation i HTML, fordi HTML forstås
   på alle platforme. Ideen med HTML er, at man skriver en fil i ren
-  tekst og tilføjer nogle mærker, ganske som når man skriver
-  SGML/DocBook.  Mærkerne afgrænser elementer i teksten med bestemte
-  typer oplysninger. Det kan for eksempel være overskrifter eller
-  henvisninger til illustrationer.
+  tekst og tilføjer nogle mærker der afgrænser elementer i teksten med
+  bestemte typer oplysninger. Det kan for eksempel være overskrifter
+  eller henvisninger til illustrationer.  Det er vigtigt at bemærke at
+  HTML principielt slet ikke beskriver <emphasis>hvordan</emphasis>
+  teksten skal vises, men kun hvilken slags tekst der er tale om.
+  Hvis du vil styre hvordan dine HTML-dokumenter skal vises, skal du
+  bruge CSS (stilark).  Det kan du læse om i <xref linkend="css">.
  </para>
 
  <para>
-  Der findes to typer mærker; startmærker og slutmærker. Startmærker
-  skrives med et "&lt;" efterfulgt af elementets navn, eventuelle
-  atributter til elementet og et "&gt;". For eksempel:
-  <programlisting>&lt;p&gt;</programlisting> eller
-  <programlisting>&lt;html lang="da"&gt;</programlisting> Slutmærker
-  består blot af "&lt;/", elementets navn og "&gt;". For eksempel:
-  <programlisting>&lt;/p&gt;</programlisting> eller
-  <programlisting>&lt;/html&gt;</programlisting> Elementernes navne er
-  ikke versalfølsomme, men de bør generelt skrives med småt.
+  Da de fleste programmer der viser HTML (primært netlæsere) på hver
+  deres måde forsøger at kompensere for eventuelle fejl i et
+  HTML-dokument, er det vigtigt at man &mdash; inden offentliggørelsen
+  &mdash; kører sine HTML-filer gennem en egentlig HTML-syntakstjekker
+  for at sikre sig at syntaksen er korrekt og at de forskellige
+  programmer dermed ikke kommer med forskellig gæt på hvad du egentlig
+  mente.  "HTML Tidy" er en praktisk HTML-syntakstjekker og
+  -kodepynter.  Hvis du ikke allerede har "HTML Tidy" på dit system
+  (det kan du undersøge med kommandoen <command>tidy -v</command>) bør
+  du installere det inden du fortsætter.  Se <xref
+  linkend="installation-tidy"> for en vejledning.
+ </para>
+
+ <para>
+  Der findes to typer mærker; startmærker og slutmærker.  Sammen med
+  teksten mellem mærkerne udgør et start- og et slutmærke et element.
+  Startmærker skrives med et "&lt;" efterfulgt af elementets navn,
+  eventuelle atributter til elementet og et "&gt;". For eksempel:
+<programlisting>
+&lt;p&gt;
+</programlisting>
+  eller
+<programlisting>
+&lt;html lang="da"&gt;
+</programlisting>
+  Slutmærker består blot af "&lt;/", elementets navn og "&gt;". For
+  eksempel:
+<programlisting>
+&lt;/p&gt;
+</programlisting>
+  eller
+<programlisting>
+&lt;/html&gt;
+</programlisting>
+  Elementernes navne er ikke versalfølsomme, men de bør generelt
+  skrives med småt.
  </para>
 
  <para>
@@ -52,42 +84,47 @@
    Det første basale HTML-dokument (resultatet kan ses på <xref
    linkend="mozilla-edit-fig">) man kan skrive kan se således ud:
 <programlisting>
-&lt;HTML&gt;
-&lt;HEAD&gt;
-   &lt;TITLE&gt;Titel på siden skrives her&lt;/TITLE&gt;
-&lt;/HEAD&gt;
-&lt;BODY&gt;
-&lt;H1&gt;Overskrift på siden&lt;/H1&gt;
-Almindelig tekst skrives efter man har afsluttet overskriften
-&lt;H2&gt;En mindre overskrift på siden&lt;/H2&gt;
-Almindelig tekst skrives efter man har afsluttet overskriften
-&lt;/BODY&gt;
-&lt;/HTML&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+	"http://www.w3.org/TR/REC-html40/loose.dtd"&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Titel på siden skrives her&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Overskrift på siden&lt;/h1&gt;
+&lt;p&gt;Almindelig tekst skrives efter man har afsluttet overskriften&lt;/p&gt;
+&lt;h2&gt;En sekundær overskrift på siden&lt;/h2&gt;
+&lt;p&gt;Almindelig tekst skrives efter man har afsluttet overskriften&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
 </programlisting>
-   (dette dokument er strengt taget mangelfuldt, da det ikke starter
-   med en dokumenttypehenvisning - mere om dette om et øjeblik)
   </para>
 
   <para>
-   Der er således en markering af et dokumenthoved:
+   Det starter med en markering af dokumenttypen:
 <programlisting>
-&lt;HEAD&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+	"http://www.w3.org/TR/REC-html40/loose.dtd"&gt;
+<programlisting>
+   Dernæst kommer dokumenthovedet:
+<programlisting>
+&lt;head&gt;
 ...
-&lt;/HEAD&gt;
+&lt;/head&gt;
 </programlisting>
    hvor man kan sætte information om f.eks.  titel på
    dokumentet. Selve indholdet af siden sættes i "body"-elementet
    mellem
 <programlisting>
-&lt;BODY&gt;
+&lt;body&gt;
 </programlisting>
    og
 <programlisting>
-&lt;/BODY&gt;
+&lt;/body&gt;
 </programlisting>
    hvor man med 
 <programlisting>
-&lt;H1&gt;OVERSKRIFT&lt;/H1&gt;
+&lt;h1&gt;OVERSKRIFT&lt;/h1&gt;
 </programlisting>
    kan sætte en overskrift ind.  Typisk vises denne overskrift med en
    stor skrifttype. Der findes yderligere fem niveauer overskrifter,
@@ -130,7 +167,7 @@ Almindelig tekst skrives efter man har afsluttet overskriften
    <para>
     Hvis man ønsker at lave en henvisning (eng. "a link") til et
     dokument, som ligger på en anden server, bruger man "a"-elementet
-    ("a" står for "anker"). Man kan for eksempel skrive:
+    ("a" står for "anchor"). Man kan for eksempel skrive:
 <programlisting>
 Se mere på &lt;a href="http://www.sslug.dk/"&gt;SSLUG's hjemmeside&lt;/a&gt;
 </programlisting>
@@ -194,7 +231,7 @@ Læs mere om &lt;a href="#cirkus"&gt;cirkusteltet&lt;/a&gt; senere.
 </programlisting>
     Og man laver et sted der kan henvises til med:
 <programlisting>
-&lt;a name="#cirkus"&gt;Da vi endelig kom i cirkus var teltet væltet&lt;/a&gt;
+&lt;a name="cirkus"&gt;Da vi endelig kom i cirkus var teltet væltet&lt;/a&gt;
 </programlisting>
    </para>
 
@@ -906,30 +943,30 @@ Eks.:
 </para>
 
 <screen>
-&lt;a href="andet dokument" target="navn på vindue"&gt;Titel på andet dokument&lt;/A&gt;
+&lt;a href="andet dokument" target="navn på vindue"&gt;Titel på andet dokument&lt;/a&gt;
 &lt;a name="ankernavn"&gt;&lt;/a&gt;
 </screen>
 </sect2>
 
 <sect2 id="html-lister">
-<title>Lister</title>
+ <title>Lister</title>
 
-<screen>
+<programlisting>
 &lt;ol&gt;...&lt;/ol&gt;   Ordnet liste
 &lt;ul&gt;...&lt;/ul&gt;   Uordnet liste
-&lt;li&gt;                 Indhold i list
-</screen>
+&lt;li&gt;                 Punkt på liste
+</programlisting>
 
-<para>
-Eks.:
-</para>
+ <para>
+  Eksempel:
 
-<screen>
+<programlisting>
 &lt;ol&gt;
  &lt;li&gt;Punkt 1
  &lt;li&gt;Punkt 2
 &lt;/ol&gt;
-</screen>
+</programlisting>
+ </para>
 </sect2>
 
 <sect2 id="html-formattering">
@@ -953,20 +990,8 @@ Eks.:
 &lt;hr&gt;                               Vandret linie
 &lt;br&gt;                               Ombryd linie
 &lt;blockqoute&gt;...&lt;blockqoute&gt;  Længere citat
-<!-- &lt;font&gt;...&lt;/font&gt;             Fontstørrelse (1-7) -->
-<!-- &lt;basefont&gt;                         Grundstørrelse på font -->
 </screen>
 
-<!--
-<para>
-Eks.:
-</para>
-
-<screen>
-&lt;font size="2"&gt;Teksten ændres til fontstørrelse 2&lt;/font&gt;
-&lt;basefont &lt;size="5"&gt;  Grundfonten sættes til størrelse 5
-</screen>
--->
 </sect2>
 
 <sect2 id="html-billeder">
@@ -1019,7 +1044,6 @@ Eks.:
 &lt;/tr&gt;
 &lt;/table&gt;
 </screen>
-</sect2>
-</sect1>
-
+  </sect2>
+ </sect1>
 </chapter>
