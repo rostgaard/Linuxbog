@@ -1,0 +1,1840 @@
+<chapter id="tcp-ip-dns">
+<title>TCP/IP og DNS</title>
+<!-- Skrevet af Christian Rasmussen "chr@egebjerg.com" -->
+
+<para>
+Det er i dag blevet meget almindeligt, også for privatbrugere, at
+koble flere computere sammen i et netværk. For at computerne kan
+"tale" sammen kræves en standard for hvorledes kommunikationen skal
+foregå, en sådan standard kaldes en protokol.
+</para>
+
+<para>
+En protokol består basalt set af nogle regler som blandt andet
+forhindrer computerne i at "snakke i munden på hinanden". Samtidig er
+der defineret hvor store portioner data som skal sendes af gangen,
+hvor lang tid computeren skal vente på at modparten svarer og
+lignende.
+</para>
+
+<para> 
+Gennem tiden er forskellige standarder indenfor
+datakommunikation blevet udviklet. En dominerende teknologi,
+kompatibel med flertallet af computersystemer, har ikke eksisteret før
+Internettet for alvor brød igennem i 90'erne.  
+</para>
+
+<para>
+For at muliggøre kommunikation mellem vidt forskellige
+computersystemer er talrige standarder blevet vedtaget - og bliver
+løbende vedtaget. Kommunikation over Internet er bygget op om
+protokollen "TCP/IP", Transmission Control Protocol/Internet
+Protocol. Linux har i modsætning til andre styresystemer altid
+indeholdt denne protokol, hvilket betyder at Linux er meget overlegent
+til Internet kommunikation.
+</para>
+
+<para> 
+TCP/IP har rødder helt tilbage til slutningen af 60'erne, hvor
+den amerikanske militær organisation DARPA (Defense Advanced Research
+Projects Agency) startede et forskningsprojekt. Målet var at udvikle
+en teknologi til sikker datakommunikation, som ikke var afhængig af en
+central enhed, og kunne fungere selvom en stor del af netværket var
+destrueret af fjender. Samtidig skulle teknologien kunne fungere på
+vidt forskellige computersystemer og styresystemer. Teknologien kom
+til at hedde ARPANET.  
+</para>
+
+<para>
+ARPANET ekspanderede kraftigt, og delte sig i flere uafhængige men
+forbundne netværk. Inden længe havde ARPANET bredt sig til mange
+amerikanske universiteter og senere ud over USA's grænser, det blev
+herefter til det som vi i dag kalder "Internet".
+</para>
+
+<para>
+For at få alt sammen til at snakke sammen, eksisterer forskellige
+organisationer, som har hvert sit ansvarsområde. Disse består af
+frivillige teknikere/ingeniører, som tager stilling til forskellige
+forslag og diskuterer fremtiden for Internettet. Debatten er meget
+åben, før en standard bliver vedtaget kommer den ud til "Internet
+befolkningen" hvor enhver har mulighed for at kommentere. Herefter
+vil forslaget blive vedtaget og gjort til en endelig standard som de
+individuelle firmaer kan implementere i deres systemer.
+</para>
+
+<para>
+Internettets historie er der skrevet mange bøger om, stort set hver
+bog har sin egen version af historien. Der er ikke altid enighed om
+hvornår hvilken begivenhed indtraf eller hvem der stod bag. Men rent
+faktisk er det kun filosofien datidens "Internet" har til fælles med
+nutidens Internet.
+</para>
+
+<sect1 id="laernetvaerk">
+<title>En lille formaning</title>
+
+<para>
+Fordi du nu bruger Linux, kommer du til at have fingrene lidt
+længere nede i netværksmaskineriet end med andre styresystemer. Derfor
+bliver du nødt til at lære lidt mere om, hvordan det hele er skruet sammen
+i stedet for bare at skrive en stribe magiske tal i nogle dialogbokse.
+</para>
+
+<para>
+Du kan i mange tilfælde teste tingene på din egen maskine uden at være
+forbundet til et eksternt netværk og dermed undgå at genere andre. Vær
+frem for alt ikke bange for at lege med tingene - du kan kun blive klogere af
+det!
+</para>
+</sect1>
+</chapter>
+
+
+
+<chapter id="ip-adresser">
+<title>IP-adresser</title>
+<indexterm><primary>IP-adresser</primary></indexterm>
+
+<para>
+Kommunikation på Internet foregår ved at hver enkel computer
+tilkoblet Internettet, har et unikt nummer, kaldet en IP adresse. IP
+adresser ses i det daglige som decimal tal, eksempelvis:
+195.249.116.158.
+</para>
+
+<para>
+Men rent faktisk behandler computere dem ikke i decimal talsystemet
+men derimod i  det binære talsystem. Det binære talsystem består af
+bit, dem skal der bruges 32 af for at have en IP adresse. Hver bit
+kan enten have værdien 1 eller 0, på hardware niveau behandles 1 som
+forbindelse mellem 2 kredsløb og 0 som ikke forbindelse.
+</para>
+
+<para>
+I decimal tal er en IP adresse delt ind i 4 felter adskilt af
+punktum. For at sammenligne binært og decimal skal den binære version
+derfor også deles op i 4 felter; vi deler derfor de 32 bit med de 4
+felter, og kan derved udlede at hvert felt skal bestå af 8 bit.
+</para>
+
+<para>
+I binært talformat vil det første felt i ovenstående IP adresse (195)
+hedde: 11000011. Følgende metode benyttes for at omregne feltet til
+decimal tal:
+</para>
+
+<table id="netv1">
+<title> Omregn binær til decimal </title>
+<tgroup cols=3 align="char">
+
+<thead><row>
+ <entry>Bit nr:</entry>
+ <entry>Repræsenteret værdi:</entry>
+ <entry>Bit-værdi:</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>1</entry> 
+ <entry>1</entry>
+ <entry>1</entry> 
+</row>
+
+<row>
+ <entry>2</entry> 
+ <entry>2</entry>
+ <entry>1</entry> 
+</row>
+
+<row>
+ <entry>3</entry> 
+ <entry>4</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>4</entry> 
+ <entry>8</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>5</entry> 
+ <entry>16</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>6</entry> 
+ <entry>32</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>7</entry> 
+ <entry>64</entry>
+ <entry>1</entry> 
+</row>
+
+<row>
+ <entry>8</entry> 
+ <entry>128</entry>
+ <entry>1</entry> 
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Hvis bit værdien er 1 betyder det blot at den repræsenterede værdi
+skal medregnes, hvis den er 0 skal den springes over, det giver
+følgende regnestykke: 1+2+64+128 = 195
+</para>
+
+<para>
+Dette regnestykke bruges for hvert af de 4 felter, og man kan på den
+måde omregne en IP adresse fra binært til decimal. Hvert felt kan
+således antage en værdi mellem 0 og 255 (begge inklusiv).
+</para>
+
+
+<para>
+Har du brug for at regne om fra binært, decimalt og til hexadecimalt,
+så har KDE er god lommeregner, <command>kcalc</command>, som gør dette nemt.
+</para>
+
+<sect1 id="netklasser">
+<title>Netklasser</title>
+
+<para>
+For at kunne opdele IP adresserne i portioner som kan delegeres til
+firmaer/institutioner er et system defineret til at inddele IP
+adresserne i net, også kaldet net klasser. 3 net klasser eksisterer:
+A, B og C, hver klasse har et specifikt adresseområde. Derudover
+afgør netklassen, hvor mange af felterne som er variable, følgende
+skema giver en oversigt over de omtalte netklasser:
+</para>
+
+<table id="tab-netklasser">
+<title>Netklasser</title>
+<tgroup cols=4 align="char">
+
+<thead><row>
+ <entry>Netklasse:</entry>
+ <entry>A</entry>
+ <entry>B</entry>
+ <entry>C</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>Adresseområde:</entry> 
+ <entry>0.*.*.* - 126.*.*.*</entry>
+ <entry>128.*.*.* - 191.*.*.*</entry> 
+ <entry>192.*.*.* - 223.*.*.*</entry> 
+</row>
+
+<row>
+ <entry>Fast/Variabel:</entry> 
+ <entry>Fast.*.*.*</entry>
+ <entry>Fast.fast.*.*</entry> 
+ <entry>Fast.fast.fast.*</entry> 
+</row>
+
+<row>
+ <entry>Mulige klasser:</entry> 
+ <entry>127</entry>
+ <entry>16.383</entry>
+ <entry>2.097.151</entry> 
+</row>
+
+<row>
+ <entry>Mulige IP adresser:</entry> 
+ <entry>16.777.214</entry>
+ <entry>65.534</entry> 
+ <entry>254</entry> 
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+
+<para>
+(* (Stjerne) angiver at værdien kan være mellem 0 og 255 (begge
+inklusiv)).
+</para>
+
+<para>
+Som det kan ses i "adresseområde" feltet er det udelukkende det
+første felt i IP adressen som afgører hvilken netklasse en IP adresse
+tilhører. Feltet "Fast/Variabel" viser hvilken del af IP adressen man
+selv kan bestemme når man får delegeret et net af den pågældende
+klasse. Den faste del kaldes også for netværksnummeret mens den
+variable del kaldes værtsnummer eller host-id. "Mulige klasser"
+fortæller hvor mange klasser af de forskellige typer som kan
+eksistere med de gældende standarder. Feltet "Mulige IP adresser"
+illustrerer hvor mange IP adresser hver klasse kan indeholde.
+</para>
+
+<para>
+Hvis man sammenligner vores test IP adresse: 195.249.116.158 med
+ovenstående skema fremgår følgende: Det første felt i IP adressen,
+"195" fortæller at IP adressen tilhører et C-klasse net, da tallet
+"195" ligger i området 192-223. For C-klasse net gælder det at de
+første 3 felter er faste, det er således kun det sidste felt man selv
+kan råde over. Samtidig kan det ses at der i alt kan eksistere
+2.097.151 C-klasse net, hver C-klasse net kan indeholde 254 IP
+adresser.
+</para>
+
+
+<sect2 id="subnet-maske">
+<title>Subnet maske</title>
+<indexterm>
+ <primary>Subnet maske</primary>
+</indexterm>
+
+<para>
+Når et IP net bliver delegeret til et firma/en institution får
+firmaet tildelt et netværksnummer og skal derfra selv tildele
+værtsnumre til de enkelte computere. Eftersom computerne sidder i et
+lokalnetværk og derfor er fysisk koblet sammen skal de formentlig
+primært udveksle data indbyrdes. For at muliggøre dette kræves det at
+en specifik subnet maske konfigureres samtidig med den individuelle
+IP adresse.
+</para>
+
+<para>
+Subnet masker består ligesom IP adresser af 32 bit, til et
+C-klassenet hedder subnetmasken i decimalt tal 255.255.255.0. De
+første 3 felter af en C-klasse IP adresse er som bekendt faste. I
+subnetmasken vises det ved at feltet har den maksimale værdi; 255.
+Mens det sidste felt som er variabelt har værdien 0, hvilket betyder
+at dette felt i IP adressen kan antage en hvilken som helst værdi
+mellem 0 og 255 og stadig være indenfor det givne IP net. Med en
+C-klasse net subnet maske skal de 3 første felter i en IP adresse
+altså være ens før 2 IP adresser stammer fra samme IP net.
+</para>
+
+<table id="test-ip">
+<title>Test af IP net</title>
+<tgroup cols=2 align="char">
+
+<thead><row>
+ <entry>IP Adresse:</entry>
+ <entry>Samme IP net som 195.249.116.158?</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>212.112.128.10</entry> 
+ <entry>Nej</entry> 
+</row>
+
+<row>
+ <entry>195.125.13.2</entry> 
+ <entry>Nej</entry>
+</row>
+
+<row>
+ <entry>195.249.116.15</entry> 
+ <entry>Ja!</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Ovenstående skema viser med nogle eksempler hvordan man ser om
+C-klasse IP adressen 195.249.116.158 er i samme IP net som en anden
+adresse. Kriteriet er at de 3 første felter skal være ens, da vi har
+at gøre med en C-klasse subnet maske (255.255.255.0).
+</para>
+
+<para>
+Det første felt i den første adresse (212) er ikke lig 195, og derfor
+er de 2 adresser ikke i samme net. Ved den næste adresse matcher det
+første felt, men det andet felt (125), er ikke lig det andet felt i
+test adressen (249). Den sidste adresse er på samme IP net fordi de 3
+første felter matcher.
+</para>
+
+<para>
+Du kan også på <ulink
+url="http://www.ko.sdu.dk/~pen/netmasker/ip-net.htmlx">http://www.ko.sdu.dk/~pen/netmasker/ip-net.htmlx</ulink>
+læse mere om IP adresser.
+</para>
+
+</sect2>
+</sect1>
+
+
+<sect1 id="netsammenkobling">
+<title>Sammenkobling af flere netværk</title>
+
+<para>
+En computer i et TCP/IP netværk benytter altså subnet masken til at
+verificere om en anden computer som den skal kommunikere med er på det
+samme IP net. Hvis det ikke skulle være tilfældet skal computeren
+bruge en "gateway". En gateway er en slags mellemled som fysisk er
+tilkoblet flere netværk og samtidig har en IP adresse for hvert
+netværk, på denne måde kan data komme fra et netværk, passere igennem
+gateway'en, og ud på et andet netværk til sin destination. Gatewayen
+er nærmere en funktion end en enhed, denne "funktion" kaldes routning
+og kan udføres af en computer, en router eller en lignende hardware
+enhed.
+</para>
+
+<para>
+Et elementært eksempel kunne være en virksomhed bestående af en
+salgsafdeling og en regnskabsafdeling, med hver deres lokalnetværk:
+</para>
+
+<FIGURE ID="net1" FLOAT="1">
+<TITLE>Netværks eksempel</TITLE>
+<GRAPHIC FILEREF="net1.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<indexterm><primary>Gateway</primary></indexterm>
+
+
+
+<para>
+Disse PC'er har hidtil kørt i 2 seperate netværk, men skal nu forenes
+således at PC'erne kan kommunikere på tværs af hinandens netværk.
+</para>
+
+<para>
+Vi starter med at udnævne salgsafdelingens PC1 til at være gateway. Denne
+skal have et ekstra netkort installeret som fysisk skal tilkobles
+regnskabsafdelingens netværk. Dette ekstra netkort skal konfigureres til at
+kommunikere med de øvrige PC'er på regnskabsafdelingens netværk, derfor
+tildeles dette netkort IP adressen 192.168.20.10. Netværket ser herefter
+således ud:
+</para>
+
+
+<FIGURE ID="net2" FLOAT="1">
+<TITLE>Netværk med gateway</TITLE>
+<GRAPHIC FILEREF="net2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Gateway er nu mellemledet som direkte kan kommunikere med samtlige
+PC'er i virksomheden. De øvrige PC'er har fået en gateway konfigureret
+(angivet som GW), for PC2 og PC3's vedkommende er denne adresse
+gateway's IP 1, mens de øvrige har gateway's IP 2.
+</para>
+
+<para> 
+Udfra ovenstående kan det konkluderes at en gateway er
+nødvendig når en computer skal kommunikere med en anden computer som
+ikke er indenfor det samme IP net. Det er derfor logisk at en gateway
+vil være påkrævet når man eksempelvis skal benytte internettet, da
+størstedelen af adresserne ligger udenfor ens eget IP net.
+</para>
+</sect1>
+
+
+
+
+<sect1 id="Klasseloest-internet">
+<title>Klasseløst internet</title>
+<indexterm><primary>Klasseløst internet</primary></indexterm>
+
+<para>
+Igennem 90'erne er antallet af brugere på internet mildest talt
+eksploderet, hvilket har udløst en akut mangel på IP adresser. Som
+følge deraf er internettet i dag rent faktisk blevet klasseløst, idet
+man ikke længere har nok adresser tilbage til at delegere A, B eller
+C-net til firmaer/institutioner. Man bliver derfor nødt til at uddele
+IP adresserne i meget mindre portioner. Følgende er en oversigt over
+de nye og langt mindre net:
+</para>
+
+
+<table id="ip-nets">
+<title>IP net oversigt</title>
+<tgroup cols=4 align="char">
+
+<thead><row>
+ <entry>Antal adresser:</entry>
+ <entry>Netklasse:</entry>
+ <entry>Subnet Maske:</entry>
+ <entry>Bit:</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>1</entry> 
+ <entry></entry>
+ <entry>255.255.255.255</entry> 
+ <entry>32</entry> 
+</row>
+
+<row>
+ <entry>2</entry> 
+ <entry></entry>
+ <entry>255.255.255.254</entry> 
+ <entry>31</entry> 
+</row>
+
+<row>
+ <entry>4</entry> 
+ <entry></entry>
+ <entry>255.255.255.252</entry> 
+ <entry>30</entry> 
+</row>
+
+<row>
+ <entry>8</entry> 
+ <entry></entry>
+ <entry>255.255.255.248</entry> 
+ <entry>29</entry> 
+</row>
+
+<row>
+ <entry>16</entry> 
+ <entry></entry>
+ <entry>255.255.255.240</entry> 
+ <entry>28</entry> 
+</row>
+
+<row>
+ <entry>32</entry> 
+ <entry></entry>
+ <entry>255.255.255.224</entry> 
+ <entry>27</entry> 
+</row>
+
+<row>
+ <entry>64</entry> 
+ <entry></entry>
+ <entry>255.255.255.192</entry> 
+ <entry>26</entry> 
+</row>
+
+<row>
+ <entry>128</entry> 
+ <entry></entry>
+ <entry>255.255.255.128</entry> 
+ <entry>25</entry> 
+</row>
+
+<row>
+ <entry>256</entry> 
+ <entry>C-Net</entry>
+ <entry>255.255.255.0</entry> 
+ <entry>24</entry> 
+</row>
+
+<row>
+ <entry>65536</entry> 
+ <entry>B-Net</entry>
+ <entry>255.255.0.0</entry> 
+ <entry>16</entry> 
+</row>
+
+<row>
+ <entry>16777216</entry> 
+ <entry>A-Net</entry>
+ <entry>255.0.0.0</entry> 
+ <entry>8</entry> 
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+(Nettene mellem A, B og C klasserne er ikke medtaget!)
+</para>
+
+<para>
+Nettene benævnes på deres subnet maske, eller subnet maskens
+bit. Tallet i kolonnen "Bit" fortæller hvor mange af de 32 bit som er
+sat, det første net med subnet masken 255.255.255.255 har 32 bit sat
+og kaldes derfor et "32 net".
+</para>
+
+<para>
+Hvert IP net indeholder en netværksadresse og en broadcast
+adresse. Netværksadressen er den første adresse i IP nettet og bruges
+til at definere nettet. Broadcast adressen er den sidste adresse, og
+benyttes til at kontakte samtlige andre adresser i IP nettet på en
+gang. Broadcast adressen kan være nyttig hvis man eksempelvis vil
+pinge (se om en computer er aktiv) samtlige computere på et IP net, i
+stedet for at pinge hver enkel kan man blot pinge broadcast adressen.
+</para>
+
+<para>
+Den første og sidste adresse i et IP net er derfor altid reserveret og
+kan ikke tildeles andre enheder. Det mindste IP net som kan bruges til
+at tildele IP adresser fra er derfor et 32 bit net som indeholder 4 IP
+adresser. Efter netværksadressen og broadcast adressen er talt fra, er
+2 adresser i overskud som kan tildeles computere.
+</para>
+
+<para>
+IP nettet som vores test IP adresse, 195.249.116.158 tilhører vil man
+umiddelbart kalde 195.249.116.0/24, da IP adressen tilhører et
+C-klassenet som jo netop består af 24 bit. Netværksadressen vil i
+dette IP net hedde 195.249.116.0, broadcast adressen 195.249.116.255.
+</para>
+</sect1>
+
+<sect1 id="eks-net">
+<title>Eksempel på netværk tilkoblet Internet</title>
+<indexterm><primary> Eksempel på netværk tilkoblet Internet </primary></indexterm>
+
+<para>
+Hvis man forestiller sig et firma som netop er blevet forbundet til
+Internet via en fast forbindelse, og som af deres Internet udbyder er
+blevet tildelt IP nettet 195.249.116.144/28, vil følgende
+informationer gøre sig gældende:
+</para>
+
+<table id="ip-net-eksempel">
+<title>IP net eksempel</title>
+<tgroup cols=2 align="char">
+
+<tbody>
+
+<row>
+ <entry>Subnetmaske</entry> <entry>255.255.255.240</entry>
+</row>
+<row>
+ <entry>Antal IP adresser</entry> <entry>16</entry>
+</row>
+<row>
+ <entry>Netværksadresse</entry> <entry>195.249.116.144</entry>
+</row>
+<row>
+ <entry>Broadcast adresse</entry> <entry>195.249.116.160</entry>
+</row>
+<row>
+ <entry>Første tilgængelige adresse</entry> <entry>195.249.116.145</entry>
+</row>
+<row>
+ <entry>Sidste tilgængelige adresse</entry> <entry>195.249.116.159</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Internet udbyderen har samtidig leveret en router, som er blevet
+fysisk tilkoblet netværket. Hensigten med denne er at den skal fungere
+som gateway, den har derfor fået tildelt den første af de tilgængelige
+adresser.
+</para>
+
+<para>
+Firmaet har 10 computere som er tilkoblet netværket, TCP/IP skal på
+hver af disse konfigureres til at bruge Internettet udfra ovenstående
+oplysninger:
+</para>
+
+<FIGURE ID="net3" FLOAT="1">
+<TITLE>Netværk med Internet</TITLE>
+<GRAPHIC FILEREF="net3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Ovenstående eksempel viser hvorledes de første 3 PC'er skal
+konfigureres, de resterende konfigureres på samme måde.
+</para>
+
+<para>
+Computerne vil nu være fuldt ud i stand til at kommunikere med hele
+Internettet, ligeså gælder den anden vej, hele Internettet kan nu
+kommunikere med hver af computerne.
+</para>
+
+</sect1>
+
+<sect1 id="private-ip">
+<title>Private IP adresser</title>
+<indexterm><primary>Private IP adresser</primary></indexterm>
+
+<para>
+Eftersom alle IP adresser på internettet er unikke og alle
+internet-brugere derfor kan kommunikere med samtlige adresser
+direkte, er det umiddelbart et rent slaraffenland for hackere.
+</para>
+
+<para>
+Der er fordele ved at gøre sine computere direkte tilgængelige over
+Internet, men der bestemt også ulemper! For hackere er det et rent
+slaraffenland, eftersom de kan kommunikere med samtlige adresser
+direkte, er der ingen mellemled til at bremse deres indbrudsforsøg.
+</para>
+
+<para>
+For at hindre direkte kommunikation mellem Internettet og lokalnettet
+benytter man såkaldte private IP adresser som ikke kan nås fra
+Internettet.
+</para>
+
+<para>
+Private IP adresser er specielle adresseområder som man har valgt at
+"frede", netop med det formål at firmaer/institutioner kan vælge et af
+disse og benytte det på deres lokalnetværk. Private IP adresser er
+altså derfor modsætningen til offentlige IP adresser, da private
+adresser ikke er brugbar på internet, de bliver simpelthen sorteret
+fra når de forsøger at komme igennem en gateway. Følgende oversigt
+viser de private IP adresse områder:
+</para>
+
+<table id="private-ip-adresser">
+<title>Private IP-adresser</title>
+<tgroup cols=3 align="char">
+
+<thead><row>
+ <entry>Netklasse:</entry>
+ <entry>Antal klasser:</entry>
+ <entry>IP adresser:</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>A</entry>
+ <entry>1</entry> 
+ <entry>10.*.*.*</entry> 
+</row>
+
+<row>
+ <entry>B</entry>
+ <entry>15</entry> 
+ <entry>172.16.*.* op til 172.31.*.*</entry> 
+</row>
+
+<row>
+ <entry>C</entry>
+ <entry>255</entry> 
+ <entry>192.168.*.*</entry> 
+</row>
+
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+I praksis fungere et netværk med private adresser ikke meget
+anderledes end et netværk med officielle adresser. Når de enkelte
+computere skal kommunikere med en IP adresse som er udenfor deres eget
+IP net, og derfor kommunikerer via deres gateway, er denne
+konfigureret til at "oversætte" deres adresse til en officiel adresse.
+</para>
+
+<para>
+Basalt set fungere det på den måde at de beder gatewayen om at
+kommunikere med en given internet-computer på deres
+vegne. Internet-computeren "tror" den udelukkende kommunikere med
+gatewayen - og kender derfor ikke til computerne bagved gatewayen. Man
+kan derfor også kalde det en slags "envejs-kommunikation", da det kun
+er computeren med den private adresse der kan kontakte en computer på
+Internettet og ikke omvendt.
+</para>
+
+<para>
+Basalt set fungerer det på den måde at de beder gatewayen om at
+kommunikere med en given internet-computer på deres vegne.
+Internet-computeren "tror" den udelukkende kommunikerer med gatewayen
+- og kender derfor ikke til computerne bagved gatewayen. Man kan
+derfor også kalde det en slags "envejs-kommunikation", da det kun er
+computeren med den private adresse der kan kontakte en computer på
+internettet og ikke omvendt.
+</para>
+
+<para>
+Denne form for adresse oversættelse kaldes også NAT, Network Address
+Translation, hvilket er en slags udvidet routnings funktion. Mange
+routere kan udføre denne funktion, for at konfigurere linux til det
+skal programmet ipchains benyttes.
+</para>
+
+<para>
+Det er meget vigtigt, at man sørger for at vælge private IP adresser
+når man kører med NAT som er inde for det tilladte område. Hvis man i
+stedet vælger at benytte et IP net som i forvejen er i brug, vil
+konsekvensen være at man ikke kan kommunikere med de enheder som
+retmæssigt har fået tildelt IP adresserne.
+</para>
+
+<para>
+Det skyldes, at ens computere er konfigureret til at benytte en gateway,
+når de skal kommunikere med enheder UDENFOR det lokale IP net. Hvis IP
+adressen derimod er indenfor det lokale IP net vil de forsøge at
+kommunikere med den PC som har den aktuelle IP adresse, eftersom det
+er den forkert PC vil det naturligvis mislykkes.
+</para>
+
+<para>
+Hvis man alligevel forestillede sig at computerne kommunikerede via
+gatewayen og kunne kontakte de rigtige enheder ville der opstå en
+konflikt idet der nu eksisterede flere enheder med samme IP adresser,
+dette er ikke tilladt og styresystemet vil straks advare om
+problemet. Hvis IP adresser ikke er unikke kan computere ikke finde ud
+af at bruge dem.
+</para>
+
+</sect1>
+
+<sect1 id="eks-nat">
+<title>Eksempel på netværk med NAT</title>
+<indexterm><primary>Eksempel på netværk med NAT</primary></indexterm>
+<indexterm><primary>NAT</primary></indexterm>
+
+<para>
+Vi bygger videre på det foregående eksempel, og benytter derfor
+informationerne fra <xref linkend="privat-ip-net-eksempel"> igen, men
+denne gang vil vi benytte NAT. Primært for at øge sikkerheden, men
+også for at øge fleksibiliteten, i og med vi ikke behøver at kontakte
+vores Internet udbyder og ansøge om flere IP adresser, hvis de 16
+viser sig at være for få.
+</para>
+
+<para>
+Der skal tages stilling til 2 ting, hvilken enhed skal udføre
+NAT-oversættelsen, og hvilket privat IP net skal benyttes. Enten
+vælger man at købe en Internet løsning med NAT, hvilket vil sige den
+router Internet udbyderen leverer allerede er konfigureret med
+NAT. Eller også konfigurere man en computer til at køre NAT.
+</para>
+
+<para>
+Valget af det private IP net afhænger meget af ens behov, og hvor
+stort antal computere man regner med at have på sit netværk indenfor
+en overskuelig årrække. I vores eksempel vælger vi 192.168.1.0/24:
+</para>
+
+
+
+<table id="privat-ip-net-eksempel">
+<title>Privat IP net eksempel</title>
+<tgroup cols=2 align="char">
+
+<tbody>
+
+<row>
+ <entry>Subnetmaske</entry> <entry>255.255.255.0</entry>
+</row>
+<row>
+ <entry>Antal IP adresser</entry> <entry>255</entry>
+</row>
+<row>
+ <entry>Netværksadresse</entry> <entry>192.168.1.0</entry>
+</row>
+<row>
+ <entry>Broadcast adresse</entry> <entry>192.168.1.255</entry>
+</row>
+<row>
+ <entry>Første tilgængelige adresse</entry> <entry>192.168.1.1</entry>
+</row>
+<row>
+ <entry>Sidste tilgængelige adresse</entry> <entry>192.168.1.254</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Routeren skal bibeholde IP adressen 195.249.116.145, mens der i næste
+led skal placeres en enhed til at udføre NAT oversættelsen. Denne skal
+på "ydersiden" (mod routeren) have tildelt en officiel IP adresse, her
+vælger vi den næste ledige, 195.249.116.146. Desuden skal den have
+tildelt en private IP adresse på indersiden, her vælger vi den først
+tilgængelige adresse, 192.168.1.1.
+</para>
+
+
+<FIGURE ID="net4" FLOAT="1">
+<TITLE>Netværk med NAT</TITLE>
+<GRAPHIC FILEREF="net4.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Ovenstående eksempel illustrer hvorledes netværket skal sammenkobles
+hvis man vælger selv at konfigurer en enhed til at udføre NAT
+oversættelsen. Routeren bliver fysisk tilkoblet NAT enheden, som
+samtidig via et sekundært netkort er tilkoblet det eksisterende
+netværk, denne vil herefter fungere som gateway for PC1-PC3.
+</para>
+
+<para>
+Alternativt kan man, som omtalt, købe en løsning hvor routeren
+indeholder NAT konfigurationen, i dette tilfælde vil Internet
+udbyderen foretage den nødvendige konfiguration. I forhold til
+ovenstående figur vil man kunne skippe NAT enheden idet routeren selv
+klarer opgaven, routeren vil i så fald få tildelt både en extern og
+intern IP adresse.
+</para>
+
+<para>
+Hvis man senere ønsker at tilføje yderligere PC'er til denne opsætning
+kan dette gøres problemfrit, indtil man har opbrugt de resterende
+adresser i IP nettet. Herefter vil det være nødvendigt at skifte IP
+net, en simpel løsning vil være blot at skifte subnet maske,
+eksempelvis til /16, hvilket vil betyde 255 flere IP adresser.
+</para>
+
+</sect1>
+
+
+<sect1 id="om-dns">
+<title>Domain Name Service (DNS)</title>
+<indexterm><primary>Domain Name Service</primary></indexterm>
+<indexterm><primary>DNS</primary></indexterm>
+
+
+<para>
+På internettet ser man ofte adresser, som hedder noget i retning af
+WWW.SMARTNAVN.DK. De 3 W'er står for World Wide Web. Internettet er
+verdensomspændende og nogle betragter det som værende et stort
+spindelvæv.
+</para>
+
+
+<para>
+Men faktisk gemmer der sig en IP-adresse bag hver enkelt af disse web
+adresser. Dette er dog ikke noget den normale bruger lægger mærke
+til. Men faktisk er det således, at der slet ikke eksisterer
+egentlige web adresser. Det er udelukkende IP-adresser.
+</para>
+
+<para>
+Når en bruger skriver en web adresse i sin browser, anmoder hans
+computer en DNS server om IP-adressen på den pågældende web adresse.
+Det er kun IP-adresser, som er brugbare på et TCP/IP netværk.
+</para>
+
+<para>
+En DNS server er en service en server kan køre ved siden af de
+almindelige services. Hvis der er meget belastning, kan man vælge at
+have en DNS server, som udelukkende kører DNS service.
+</para>
+
+<para>
+Hver gang DNS serveren får en anmodning om en web adresse, slår den
+web adressen op i sin database, og finder den tilhørende IP-adresse.
+</para>
+
+<para>
+For at dette kan virke over hele verden er der et vist system i det.
+Det går ud på, at hvert land har et domæne. Ligesom institutioner og
+firmaer i det pågældende land har et "under-domæne/subdomæne". For
+eksempel hedder SSLUG's domæne sslug.dk, hvilket er et subdomæne til
+.dk domænet, dk angiver Danmark.
+</para>
+
+<para>
+Hos SSLUG har man så tilføjet et yderligere subdomæne, www. Den
+komplette adresse hedder således www.sslug.dk. Hvis man skriver denne
+adresse i sin browser vil computeren automatisk spørge sin DNS server
+om IP adressen på domænet og herefter lave en web forespørgsel til IP
+adressen.
+</para>
+
+<para>
+Det vil sige at domæne navne er hierarkisk opbygget. Landet er
+øverst, derefter navnet på firmaet/institutionen (eventuelt i en
+forkortet udgave), og til sidst subdomænet som "peger" på serveren
+for domænet.
+</para>
+
+<para>
+De øverste domæner i hierarkiet kaldes også TLD (Top Level Domains =
+Øverste niveau domæner), disse administreres af de såkaldte
+root-servere. En root server besvarer kun forespørgsler på TLD
+niveau. I dag eksisterer der på verdensplan 13 root-servere, som hver
+besvarer cirka 200 millioner forespørgsler om dagen.
+</para>
+
+<para>
+Almindelige computere kommunikerer ikke direkte med root-serverne, de
+sender i stedet en web-adresse forespørgsel til enten en lokal DNS
+server, eller DNS serveren hos deres internet udbyder.
+</para>
+
+<para>
+Hvis vi forestiller os at DNS serveren ns.sslug.dk som er ansvarlig
+for domænet sslug.dk, modtager en forespørgsel på subdomænet
+www.sslug.dk ser serveren med det samme at det er det domæne som den
+selv er ansvarlig for, og kan derfor besvare denne forespørgsel uden
+at skulle kontakte andre DNS servere.
+</para>
+
+<para>
+Hvis serveren i stedet modtog en forespørgsel på subdomænet
+www.linux.dk ville den straks kunne se at det ikke var et domæne den
+selv var ansvarlig for. Den ville derfor være nødt til at starte med
+det øverste rent hierakisk set. Serveren vil derfor indlede med at
+spørge en root-server om TLD domænet .dk, den vil af root-serveren
+blive bedt om at kontakte DK-Hostmasters server, som er ansvarlig for
+det domæne. DK-Hostmasters server vil henvise til serveren ns.linux.dk
+som er ansvarlig for domænet linux.dk. Serveren vil derfor ende med at
+få besvaret sit spørgsmål når den spørger ns.linux.dk. 
+</para>
+
+<para>
+Man kan betragte en DNS server som en telefonbog, hvor personerne er
+web adresser. Begge steder får man et nummer (telefonnummer/IP
+adresse), som systemet kan bruge til at lokalisere
+informationen/personen.
+</para>
+
+<para>
+For at begrænse DNS trafikken benytter DNS servere sig af DNS cache.
+Her bliver de svar serveren har fået fra øvrige DNS servere gemt.
+Hvis man gentog ovenstående eksempel ville serveren derfor ikke
+starte forfra med at spørge alle serverne, men i stedet blot kigge på
+det foregående svar.
+</para>
+
+<para>
+Eftersom der dagligt bliver lavet ændringer på mange servere er det
+vigtigt at en DNS server ikke tror den bare kan gemme sin cache
+evigt. Hvis eksempelvis www.sslug.dk bliver ændret til at pege på en
+anden web server vil det ikke være meget værd hvis vores DNS server
+stadig fortæller alle og enhver hvad den hed førhen! Derfor har DNS
+servere det man kalder en TTL (Time To Live), hvilket simpelthen
+definerer hvor lang tid et svar må leve. Hvis vores server igen
+modtager forespørgslen på www.sslug.dk, og TTL'en er udløbet vil
+serveren være nødt til at starte forfra med at spørge de forskellige
+DNS servere.
+</para>
+
+<sect2 id="dns-opslag-eksempel">
+<title>Eksempel på DNS-opslag</title>
+<para>
+Når en pc skal finde ud af IP-adressen på www.uni-c.dk, spørger den sin lokale
+navneserver (Følg med på fig 2). Denne navneserver ved, hvilke navneservere der
+bestyrer domænet [+(rod)]. Den spørger så navneserverne for (rod): "Hvad er
+IP-adressen på www.uni-c.dk?". (Rod)-serverne svarer: "Det ved jeg ikke, men
+jeg ved hvem, der bestyrer .dk". Den lokale navneserver spørger nu
+.dk-serverne: "Hvad er IP-adressen på www.uni-c.dk?". .dk-serverne svarer:
+"Det ved jeg ikke, men jeg ved, hvem der bestyrer uni-c.dk". Den lokale
+nameserver spørger nu .uni-c.dk-serverne: "Hvad er IP-adressen på
+www.uni-c.dk?". .uni-c.dk-serverne svarer: "Adressen på www.uni-c.dk er ...". 
+Til slut svarer den lokale navneserver PCen: "Adressen på www.uni-c.dk er ...".
+</para>
+
+<screen>
+Fig. 2
+
+[PC]       --> [Lokal NS]     <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] --> [(rod) NS]     <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] <-- [(rod) NS]     <userinput>NS for .dk er .dk-NS</userinput>
+[Lokal NS] --> [.dk-NS]       <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] <-- [.dk-NS]       <userinput>NS for .uni-c.dk er .uni-c.dk-NS</userinput>
+[Lokal NS] --> [.uni-c.dk-NS] <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] <-- [.uni-c.dk-NS] <userinput>Adressen på www.uni-c.dk er ...</userinput>
+[PC]       <-- [Lokal NS]     <userinput>Adressen på www.uni-c.dk er ...</userinput>
+</screen>
+
+<para>
+Da ovenstående procedure kan tage lang tid, bliver alle resultater cachet af 
+din lokale navneserver. Næste gang, den bliver spurgt om www.uni-c.dk, behøver 
+den altså ikke at kontakte alle de andre navneservere igen, men kan give
+svaret omgående:
+</para>
+
+<screen>
+[PC]       --> [Lokal NS]     <userinput>www.uni-c.dk?</userinput>
+[PC]       <-- [Lokal NS]     <userinput>Adressen på www.uni-c.dk</userinput>
+</screen>
+
+<para>
+Som et konkret eksempel på et DNS opslag kan vi f.eks. bede om SSLUG's
+IP-adresse. Til dette bruger vi kommandoen <command>nslookup</command>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>nslookup www.sslug.dk</userinput>
+Server:  danpost.uni-c.dk
+Address:  129.142.6.64
+
+Non-authoritative answer:
+Name:    sslug.sslug.dk
+Address:  192.38.71.98
+Aliases:  www.sslug.dk
+</screen>
+
+<para>
+Vi kan i eksemplet se, at vi beder
+<filename>danpost.uni-c.dk</filename> med IP-adresse 129.142.6.64 om
+adressen på SSLUGs webserver. SSLUG har IP-adressen 192.38.71.98, og maskinen
+er åbenbart også kendt som <filename>sslug.sslug.dk</filename>. Svaret er
+"Non-authoritative", idet danpost-DNS serveren ikke er herre over
+sslug-domænet, men har fået informationen fra en anden navneserver.
+</para>
+
+<para>
+DNS indeholder også andre informationer end IP-adresser. I DNS-sprog
+sætter man et punktum bag navnene for at angive, at disse er
+absolutte. Normalt kan man dog ignorere det sidste punktum.
+</para>
+
+</sect2>
+
+<sect2 id="dns-zoner">
+<title>DNS-zoner</title>
+<para>
+DNS er baseret på filer. Disse filer indeholder zone-data. I mange
+tilfælde indeholder hver fil/zone ét domæne, i det følgende kan man
+derfor blot betragte "zone" som et synonym for "domæne".
+</para>
+
+<para>
+Nameserverne for en zone listes ved:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t ns sslug.dk</userinput>
+sslug.dk name server ns-soa.darenet.dk
+sslug.dk name server ns.sslug.dk
+sslug.dk name server ptah.dkuug.dk
+</screen>
+
+<para>
+For at finde post-serverne for et domæne skal man kende en af
+navneserverne for domænet. Derefter spørger man denne navneserver:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t mx domæne.dk navneserver.for.domæne.dk</userinput>
+</screen>
+
+<para>
+Den ansvarlige administrator for en zone findes i zonens SOA-record
+(eng. Start Of Authority). SOA-recorden findes med:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t soa domæne.dk navneserver.for.domæne.dk</userinput>
+</screen>
+
+<para>
+Hvis SOA starter med:
+<filename>sslug.dk.      IN      SOA     ns.sslug.dk. root.sslug.dk.  (</filename>
+så er zonen <filename>sslug.dk</filename>, den primære navneserver <filename>ns.sslug.dk</filename> og den
+ansvarlige administrators epost-adresse <filename>root@sslug.dk</filename> (udskift første . med @).
+</para>
+
+<para>
+Nogle navne er blot et alias for et andet navn: de har et kanonisk navn 
+(eng: "canonical name"). Dette kan ses ved at spørge navneserveren for 
+domænet om alt, hvad den ved om et givent navn:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t any dette.navn.domæne.dk nameserver.for.domæne.dk</userinput>
+</screen>
+
+<para>
+Til nogle domæner er knyttet tekstinformation. Denne kan kaldes frem med:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t txt navn.med.info.domæne.dk</userinput>
+</screen>
+
+<para>
+Hvis informationen er til stede, indeholder den ofte information om,
+hvem der bestyrer navn.med.info.domæne.dk
+</para>
+
+<para>
+Da DNS ikke er helt simpelt at sætte op korrekt, kan de ovenstående
+eksempler bruges, hvis du skal fejlfinde din egen DNS. De kan også
+bruges til at finde ud af, hvorfor netværksfejl opstår eller til
+at finde en ansvarlig for et domæne, som man har modtaget
+reklamer fra.
+</para>
+
+<para>
+I forbindelse med installationen af Red Hat Linux (eller senere) kan
+du vælge pakken "caching-nameserver". Pakken foretager en simpel
+opsætning af navneserveren <command>bind</command>. Fra starten kender
+den ikke selv svaret på navneopslag, men sender blot spørgsmålet
+videre og husker svaret (som beskrevet ovenfor). Den glemmer desværre
+alt, hvad den har lært, når maskinen lukkes ned, så du får mest glæde af
+en caching navneserver, hvis den kører på en maskine, der er i gang altid -
+f.eks. en server på et lille lokalnetværk. Den kan selvfølgelig
+sagtens bruges som navneserver for Windows pc'er på netværket.
+</para>
+
+<para>
+Hvis du vil bruge Linux på en server i et mindre netværk, kan du have
+glæde af at lade den fungere som navneserver for et lokalt domæne.
+Opsætningen af dette er ikke det første Linux-eksperiment, du skal
+starte med, så eventuelle interesserede henvises til den detaljerede
+beskrivelse i DNS-HOWTO (under Red Hat, se
+<filename>/usr/doc/HOWTO/DNS-HOWTO</filename>) og <ulink
+url="http://www.sslug.dk/artikler/dnsbind.shtml">http://www.sslug.dk/artikler/dnsbind.shtml</ulink>
+er sikkert også af interesse.
+</para>
+</sect2>
+</sect1>
+</chapter>
+
+<chapter id="dns-opsaetning">
+<title>DNS opsætning</title>
+<indexterm><primary>DNS</primary>
+<secondary>Opsætning af</secondary></indexterm>
+
+<para>
+DNS er interessant, når man har flere end f.eks. 5 maskiner på
+netværket og hvis man ikke længere ønsker at kopiere
+<filename>/etc/hosts</filename> (Se <xref linkend="etc-hosts-filen">)
+filer rundt til alle maskiner. Har du mange maskiner på netværket kan
+du istedet have en fælles navne-server (eng. nameserver) til at kunne
+håndtere navneopslag.
+</para>
+
+<para>
+Som gennemgående eksempel antager vi her at vi har domænet "intranet"
+med følgende maskiner. IP-adresserne her er private,
+dvs. maskinerne er ikke på Internet. Vi vælger derfor adresser fra
+<xref linkend="private-ip-adresser"> i <xref linkend="private-ip">.
+</para>
+
+<screen>
+192.168.0.1      linus.intranet     linus
+192.168.0.2      alan.intranet     alan
+192.168.0.3      richard.intranet    richard
+192.168.0.4      eric.intranet  eric
+</screen>
+
+<para>
+Vi vedtager også at maskinen "linus" skal være DNS-server, og at samme
+maskine også skal være kendt som "ns.intranet" eller i kort form blot "ns".
+</para>
+
+<sect1 id="Bind">
+<title>Bind</title>
+<indexterm><primary>DNS</primary>
+<secondary>Bind</secondary></indexterm>
+<para>
+Dette afsnit vil gennemgå opsætningen af et registreret domæne på en
+DNS server. Strukturen fra BIND 8.x er benyttet, da dette er den
+version de fleste DNS servere anvender, modsætningen er den noget
+ældre BIND 4.x. De følgende eksempler kører på BIND 8.1.2, men nye
+versioner udvikles hele tiden, opgraderinger kan hentes fra
+<ulink url="http://www.isc.org">http://www.isc.org</ulink>.
+</para>
+
+
+<para>
+Den overordnede konfigurationsfil er
+<filename>/etc/named.conf</filename>. I denne defineres hvilke zoner
+(domæner) DNS serveren administrerer og i hvilke filer de enkelte
+zoner er defineret.
+</para>
+
+<para>
+<indexterm><primary>DNS</primary>
+<secondary>zone</secondary></indexterm>
+Som standard vil man skulle definere 4 zoner for domænet "intranet"
+med IP-adresser i itervallet 192.168.0.1-192.168.0.254 (ikke 255, da
+dette er broadcast-adressen).
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM>
+<para>
+<filename>.</filename> (punktum) : Først og fremmest root,
+denne zone henviser til root serverne således at DNS serveren kan
+spørge disse om domæner den ikke selv er ansvarlig for. Hvilket vil
+sige at det er denne zone DNS serveren benytter når den modtager
+forespørgsler om IP adresser på et domæne den ikke selv er ansvarlig
+for. Nedenfor er dette angivet i filen <filename>/var/named/root.cache</filename>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<filename>0.0.127.in-addr.arpa</filename>: Reverse lookup betyder, at
+man har en IP adresse og gerne vil vide hvilket domæne denne
+tilhører. For at DNS serveren kan besvare denne slags forespørgsler
+kræves det at reverse zonerne bliver defineret.  Reverse zonen 127.0.0
+referere blot til DNS serveren selv (filen
+<filename>/var/named/127.0.0.rev</filename>), TCP/IP software kræver i
+nogle tilfælde at denne IP adresse henviser til DNS serveren selv,
+derfor skal denne zone altid medtages.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<filename>0.168.192.in-addr.arpa</filename>: Den anden (eller de
+andre) reverse zoner er de 'rigtige' IP adresser.  Hvis man for
+eksempel råder over adresserne 192.168.0.1-192.168.0.254 laver man en
+reverse zone fil til disse IP numre. (De nævnte adresser er kun et
+eksempel, de eksisterer ikke på Internettet da de er nogle af de
+"private" adresser). Denne zone gemmes i <filename>/var/named/192.168.0.rev</filename>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<filename>intranet</filename>: Du skal også lave en fil, der kan
+"mappe" fra navn til IP-nummer for det domæne, du sætter op. I filen
+<filename>/var/named/intranet</filename> kan du erklære navne og
+aliases for alle maskiner.
+</para>
+</listitem>
+</itemizedlist>
+
+<sect2 id="DNS-eks-etc-name-conf">
+<title>/etc/named.conf</title>
+
+<para>
+Følgende er et eksempel på en
+<filename>/etc/named.conf</filename> fil som indeholder ovenstående
+grundlæggende opsætning:
+</para>
+
+<screen>   
+options {
+  /* Hvor er filerne med DNS opsætning */
+  directory "/var/named";
+
+  /* Indsaet 1-3 forwarder nameservere */
+  /* Brug dem fra den ISP og indsaet IP adresserne */
+  /* i stedet for NNN.NNN.NNN.NNN og MMM.MMM.MMM.MMM */
+  forwarders {
+          NNN.NNN.NNN.NNN;
+          MMM.MMM.MMM.MMM;
+  };
+
+  /* Lyt på DNS forespørgsler til to IP adresser */
+  listen-on { 192.168.0.1; 127.0.0.1 ; };
+
+  /* Udkommenter følgende linie hvis dit domæne 
+     er kendt på Internet */
+  notify no;
+  
+};
+
+logging {
+  category lame-servers { null; };
+  category cname { null; };
+};
+
+zone "." in {
+  type hint;
+  file "root.cache";
+};
+
+zone "0.0.127.in-addr.arpa" in {
+  type master;
+  file "127.0.0.rev";
+};
+
+zone "0.168.192.in-addr.arpa" in {
+  type master;
+  file "192.168.0.rev";
+};
+
+zone "intranet" in {
+  type master;
+  file "intranet";
+};
+</screen>
+
+<para>
+De første linjer definer i hvilket bibliotek de senere omtalte filer
+skal placeres. Standard er: <filename>/var/named</filename>, men du
+kan også anvende f.eks. <filename>/etc/named</filename> eller andre steder.
+</para>
+
+<para>
+Logging linjen forhindrer at man får en masse unødigt i sin syslog.
+(Log funktionen er meget avanceret, en masse forskellige kriterier
+kan defineres).
+</para>
+
+<para>
+Næste linje er en zone definition. Her gælder det root zonen, selve
+filen hentes fra 
+<ulink url="ftp://ftp.internic.net">ftp://ftp.internic.net</ulink>. De
+resterende linjer fortæller først hvilket domæne det handler om, og
+derefter i hvilken fil selve domænet er defineret. Samtidig får
+serveren af vide om den er 'master' eller 'slave' for det pågældende
+domæne. I ovenstående tilfælde er DNS serveren master for alle
+zoner. For at kunne registrere et domæne kræves det at man har 2 DNS
+servere til domænet, master og slave, eller primær og
+sekundær. Følgende er et eksempel på en slave zone:
+</para>
+
+<screen>   
+zone "intranet" in {
+  type slave;
+  file "intranet";
+  masters { 192.168.0.1; };
+};
+</screen>
+
+<para>
+Udover at der nu står slave i stedet for master, er en linje tilføjet
+som fortæller hvilken server som er master. Grunden til at slave
+serveren skal kende master serveren er, at slave serveren henter zone
+filerne fra master serveren. Dette betyder at ændringer i et domæne
+på master serveren automatisk vil blive overført til slave serveren.
+</para>
+
+</sect2>
+
+<sect2 id="DNS-eks-root-cache">
+<title>/var/named/root.cache</title>
+<para>
+Vi kan f.eks. bruge følgende udgangspunkt for
+<filename>/var/named/root.cache</filename> - dvs. root-zonen.
+</para>
+
+<screen>
+;       This file holds the information on root name servers needed to
+;       initialize cache of Internet domain name servers
+;       (e.g. reference this file in the "cache  .  &lt;file&gt;"
+;       configuration file of BIND domain name servers).
+;
+;       This file is made available by InterNIC registration services
+;       under anonymous FTP as
+;           file                /domain/named.root
+;           on server           FTP.RS.INTERNIC.NET
+;       -OR- under Gopher at    RS.INTERNIC.NET
+;           under menu          InterNIC Registration Services (NSI)
+;              submenu          InterNIC Registration Archives
+;           file                named.root
+;
+;       last update:    Feb 28, 1997
+;       related version of root zone:   1997022800
+;
+;
+; formerly NS.INTERNIC.NET
+;
+.                        3600000  IN  NS    A.ROOT-SERVERS.NET.
+A.ROOT-SERVERS.NET.      3600000      A     198.41.0.4
+;
+; formerly NS1.ISI.EDU
+;
+.                        3600000      NS    B.ROOT-SERVERS.NET.
+B.ROOT-SERVERS.NET.      3600000      A     128.9.0.107
+;
+; formerly C.PSI.NET
+;
+.                        3600000      NS    C.ROOT-SERVERS.NET.
+C.ROOT-SERVERS.NET.      3600000      A     192.33.4.12
+;
+; formerly TERP.UMD.EDU
+;
+.                        3600000      NS    D.ROOT-SERVERS.NET.
+D.ROOT-SERVERS.NET.      3600000      A     128.8.10.90
+;
+; formerly NS.NASA.GOV
+;
+.                        3600000      NS    E.ROOT-SERVERS.NET.
+E.ROOT-SERVERS.NET.      3600000      A     192.203.230.10
+;
+; formerly NS.ISC.ORG
+;
+.                        3600000      NS    F.ROOT-SERVERS.NET.
+F.ROOT-SERVERS.NET.      3600000      A     192.5.5.241
+;
+; formerly NS.NIC.DDN.MIL
+;
+.                        3600000      NS    G.ROOT-SERVERS.NET.
+G.ROOT-SERVERS.NET.      3600000      A     192.112.36.4
+;
+; formerly AOS.ARL.ARMY.MIL
+;
+.                        3600000      NS    H.ROOT-SERVERS.NET.
+H.ROOT-SERVERS.NET.      3600000      A     128.63.2.53
+;
+; formerly NIC.NORDU.NET
+;
+.                        3600000      NS    I.ROOT-SERVERS.NET.
+I.ROOT-SERVERS.NET.      3600000      A     192.36.148.17
+;
+; temporarily housed at NSI (InterNIC)
+;
+.                        3600000      NS    J.ROOT-SERVERS.NET.
+J.ROOT-SERVERS.NET.      3600000      A     198.41.0.10
+;
+; temporarily housed at NSI (InterNIC)
+;
+.                        3600000      NS    K.ROOT-SERVERS.NET.
+;K.ROOT-SERVERS.NET.      3600000      A     198.41.0.11
+K.ROOT-SERVERS.NET.      3600000      A     193.0.14.129
+;
+; temporarily housed at ISI (IANA)
+;
+.                        3600000      NS    L.ROOT-SERVERS.NET.
+L.ROOT-SERVERS.NET.      3600000      A     198.32.64.12
+;
+; temporarily housed at ISI (IANA)
+;
+.                        3600000      NS    M.ROOT-SERVERS.NET.
+;M.ROOT-SERVERS.NET.      3600000      A     198.32.65.12
+M.ROOT-SERVERS.NET.      3600000      A     202.12.27.33
+; End of File
+</screen>
+</sect2>
+
+
+<sect2 id="DNS-eks-kongeh-dk">
+<title>/var/named/intranet</title>
+<para>
+Den næste "reverse"-fil er for maskinerne i 192.168.0.* området:
+</para>
+
+<screen>
+$TTL	1D
+@	IN SOA ns.intranet. hostmaster.intranet. (
+                                      1999102400 ; serial number
+                                      60000      ; refresh (1 day)
+                                      3600       ; retry (1 hour)
+                                      2600000    ; expire (1 month)
+                                      60000      ; minimum (1 day)
+)
+
+
+;
+; Dette domænes DNS servere:
+;
+		IN	NS	ns.intranet.
+
+;
+; Mailserveren for dette domæne:
+;
+		IN	MX	0	mail.intranet.
+
+;
+;  Standard hostnavne mappet til IP adresser:
+;
+localhost	IN	A	127.0.0.1
+linus		IN	A	192.168.0.1
+
+;
+; Øvrige hostnavne mappet til IP adresser:
+;
+alan		IN	A	192.168.0.2
+richard		IN	A	192.168.0.3
+eric	IN	A	192.168.0.4
+
+;
+; Alias adresser:
+;
+ns	IN	CNAME	linus.intranet.
+mail	IN	CNAME	linus.intranet.
+</screen>
+
+<para>
+Huske den første linie $TTL - "Time to live"
+skal med og der anvendes tabulator til at adskille hvert felt og der
+må ikke anvendes mellemrum. 
+Bemærk specielt at der er punktum efter hvert maskin-navn i CNAME-linierne
+</para>
+
+<para>
+Linie to til syv angiver diverse parametre for selve domænet, det
+er ikke så vigtigt at forstå ordenen i disse linjer, derimod er det
+vigtigt at forstå betydningen. Det første tegn, @, er en variabel for
+selve domænet, her kunne altså istedet stå 'intranet.'. Grunden til
+at man istedet sætter en variabel er at man på den måde ikke behøver
+ændre dette felt hvis man bruger denne zone fil til at lave en anden
+zone fil.
+</para>
+
+<para>
+'IN' står for 'INTERNET' og angiver den klasse data man benytter, idag
+bliver der meget sjældent benyttet andre klasser, derfor er IN
+default, og man behøver derfor ikke angive dette. SOA står som
+tidligere skrevet for 'Start Of Authority' og fortæller efterfølgende
+hvilken name server som er ansvarlig for denne zone.
+</para>
+
+<para>
+'ns.intranet.' fortæller hvilket domæne name serveren er ansvarlig
+for, 'hostmaster.intranet' er epost-adressen til vedkommende som er
+ansvarlig for domænet. Bemærk at det første . (punktum) skal læses
+som et @.
+</para>
+
+<para>
+'Serial' er seriel nummeret for zonen. Hver gang man laver en ændring
+skal seriel nummeret opdateres, eneste regel er at tallet skal blive
+mindst en højere (inkrementeres). De fleste vælger at bruge dags dato
+sammen med et 2 cifret tal, det gør det muligt at vide hvornår sidste
+opdatering blev foretaget. Grunden til seriel nummeret, er at man kun
+opdaterer sine zone filer på sin master server, slave serveren vil
+derefter selv hente ændringerne, men den ved kun der er foretaget
+ændringer <emphasis>hvis</emphasis> seriel nummeret er blevet inkrementeret.
+</para>
+
+<para>
+'Refresh' fortæller hvor tit slave serveren skal spørge master
+serveren om seriel nummeret på det pågældende domæne og herved
+beslutte om der skal foretages en overførsel.
+</para>
+
+<para>
+Hvis slave serveren ikke er i stand til at skabe kontakt til master
+serveren i første forsøg definere man med 'Retry' hvor lang tid den
+skal vente før den igen prøver.
+</para>
+
+<para>
+I tilfælde af at slave serveren slet ikke kan få kontakt til master
+serveren vil det efter nogle dage kunne være sandsynligt at der er
+foretaget ændringer på master serveren som slave serveren derfor ikke
+har. Hvilket vil sige at den primære og den sekundære server giver
+modstridende oplysninger til deres klienter! For at undgå dette kan
+man define hvor lang tid slave serveren skal tro på at dens
+zone-data er god nok, dette gøres med 'expire' parameteren. Dette
+skal forstås således at når slave serveren ikke kan kontakte master
+serveren og det angivne tidrum er udløbet, vil slave serveren smide
+sine data om den pågældende zone ud, og altså ikke besvare
+forespørgsler omkring denne zone.
+</para>
+
+<para>
+Når en computer ude på nettet har spurgt vores server om noget på
+vores zone vil den have modtaget noget data. Efter et par dage vil
+det være muligt, at disse data er forældet, derfor kan man med 'TTL'
+parameteren angive hvor lang tid en klient må beholde data den har
+fået fra en DNS server.
+</para>
+
+<para>
+Ovenstående parametre som angives i tidsrum kan skrives i S, M, H, D
+(Sekunder, Minutter, Timer, Dage). De fleste vælger at angive dem
+alle i sekunder, det gør dog ingen forskel, og det er rimelig
+besværligt at skulle omregne eksempelvis 86400 sekunder (1 dag).
+</para>
+
+<para>
+Der findes mange meninger om hvorledes ovenstående parametre skal
+sættes. De 4 første handler udelukkende om DNS serverne, derfor, hvis
+man selv administrerer både master og slave er det yderst begrænset
+hvor store fejl, der kan opstå ved at lave nogle af disse 4 parametre
+'forkerte'. Derimod er det mindre hensigtsmæssigt at lave TTL helt
+forkert. Resultatet kan eksempelvis blive at man ikke kan modtage
+post i en uges tid, hvis man er kommet til at angive en forkert IP
+adresse til Mail serveren og TTL er sat til en uge.
+</para>
+
+<para>
+Resten af zone filen er selve 'records'. Den første kolonne fortæller
+hvilket navn man vil omsætte. Eksempelvis kunne der stå
+'mail.intranet' for at fortælle hvad 'mail.intranet' skulle
+referere til. Hvis man ikke angiver noget i den første kolonne vil
+selve zonen være default, altså 'intranet.'
+</para>
+
+<para>
+En vigtig ting som altid gælder når man angiver navne, hvis man ikke
+afslutter med et . (punktum) vil serveren automatisk tilføje det
+pågældende domæne til navnet. 'mail.intranet' vil derfor blive til
+'mail.intranet.intranet'
+</para>
+
+<para>
+Herefter skal angives hvilken klasse man arbejder med, her er 'IN'
+igen default. Derpå skal man fortælle hvilken type record man vil
+angive (de mest brugte vil blive gennemgået i det efterfølgende). Det
+sidste der skal angives er hvilket navn eller hvilken IP adresse DNS
+serveren skal svare tilbage med når den bliver spurgt om denne
+record.
+</para>
+
+<para>
+Den først record er af typen 'NS' (Name Server), her angiver man
+navnet på DNS serveren, først den primære, herefter den sekundære.
+</para>
+
+<para>
+Den næste record er af typen 'MX' (Mail eXchanger), her angives
+navnet på post-serveren.
+</para>
+
+<para>
+Herefter kommer en stribe standard 'A' records (A = Address). Denne
+record angiver hvilket IP nummer den omtalte host har.
+</para>
+
+<para>
+'CNAME' står for Canonical name og betyder alias. Denne record type
+bruges til at have flere navne til at referere til en IP adresse.
+</para>
+</sect2>
+
+
+<sect2 id="DNS-eks-127-0-0-rev">
+<title>/var/named/127.0.0.rev</title>
+<para>
+Den første "reverse"-fil er for "localhost", som vi i
+<filename>/etc/named.conf</filename> valgte at gemme i
+<filename>/var/named/127.0.0.rev</filename>.
+</para>
+
+<screen>
+$TTL    1D
+@	IN	SOA	ns.intranet. hostmaster.intranet. (
+                                      1999102400 ; serial number
+                                      60000     ; refresh (1 day)
+                                      3600       ; retry (1 hour)
+                                      2600000    ; expire (1 month)
+                                      60000     ; minimum (1 day)
+)
+
+;
+; DNS serveren for denne zone:
+;
+	IN	NS	ns.intranet.
+
+;
+; Reverse mappings:
+;
+1	IN	PTR	localhost.
+</screen>
+
+<para>
+Husk den første linie $TTL - "Time to live" skal med og der anvendes
+tabulator til at adskille hvert felt.
+Bemærk specielt at der er punktum efter hvert maskin-navn.
+</para>
+
+<para>
+Igen har vi SOA recorden (fra linie 2 til 7), det er en fordel at
+have en generel SOA record for alle sine zoner, dog kan man
+naturligvis have behov for forskelle nogle steder, men rent
+administrativt er det langt mere overskueligt med samme parametre.
+</para>
+
+<para>
+Grunden til at der kun er angivet en DNS server er at denne zone
+udelukkende er for 127.0.0 som altså kun kan være den lokale server,
+hvilket ikke har noget at gøre med den/de andre DNS servere.
+</para>
+
+<para>
+Reverse records er af typen PTR. Da forespørgsler til reverse zoner
+skal besvares med et navn i stedet for en IP adresse er strukturen i
+disse zoner også anderledes, der er simpelthen byttet om på navnet og
+IP adressen. Derfor står IP adressen først, i det her tilfælde 1 (1 +
+zonenavnet (127.0.0) = 127.0.0.1), herefter klassen (IN), record
+typen (PTR) og til sidst navnet (localhost).
+</para>
+</sect2>
+
+
+<sect2 id="DNS-eks-192-168-0-rev">
+<title>/var/named/192.168.0.rev</title>
+<para>
+Den næste "reverse"-fil er for maskinerne i 192.168.0.* området:
+</para>
+
+<screen>
+$TTL	1D
+@	IN	SOA	ns.intranet. hostmaster.intranet. (
+                                      1999102400 ; serial number
+                                      60000      ; refresh (1 day)
+                                      3600       ; retry (1 hour)
+                                      2600000    ; expire (1 month)
+                                      60000      ; minimum (1 day)
+)
+
+;
+; Name Servers for this reverse zone:
+;
+	IN	NS	ns.intranet.
+
+;
+; Reverse mappings:
+;
+1	IN	PTR	linus.intranet.
+2	IN	PTR	alan.intranet.
+3	IN	PTR	richard.intranet.
+4	IN	PTR	eric.intranet.
+</screen>
+
+<para>
+Ovenstående er reverse zone filen for zonen 192.168.0.*.  Nok en gang
+- den første linie $TTL - "Time to live" skal med og der anvendes
+tabulator til at adskille hvert felt.  Bemærk igen, at der er punktum
+efter hvert maskin-navn.
+</para>
+
+<para>   
+Her gælder de samme regler som for 127.0.0 zonen. 4 reverse records
+er defineret, fra 1 til 4 svarende til 192.168.0.1-192.168.0.4, dvs. 
+vores fire maskiner. Har du brug for et andet eksempel på opsætning af
+DNS, så kan du se i <ulink url="http://www.sslug.dk/artikler/dnsbind.shtml">http://www.sslug.dk/artikler/dnsbind.shtml</ulink>.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="start-named">
+<title>Start named</title>
+<para>
+Efter at have redigeret name-server filerne færdig er du klar til
+at starte <command>named</command>. Kører du Red Hat, er det nemt. Du
+skal installere <command>bind</command>-pakken og køre
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>/sbin/chkconfig --level 345 named on</userinput>
+</screen>
+
+<para>
+Dette er en smart måde at få startet
+<filename>/etc/rc.d/init.d/named</filename> i run-levels 3, 4 og 5. 
+Du kan nu eksperimentere og se om din opsætning er i orden. 
+Start en xterm og skriv <command>tail -f
+/var/log/messages</command>. I en anden xterm skriver du 
+<command>/etc/rc.d/init.d/named start</command>. Kommer der ikke fejl
+ud er du igennem første syntakscheck. Dernæst kan du starte med at
+spørge din lokale DNS, f.eks.
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup linus linus</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup alan linus</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup 192.168.0.3 linus</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup localhost localhost</userinput>
+</screen>
+
+<para>
+Check både på IP-numre og maskin-navne. Går alt glat, skal dine UNIX
+maskiner nu have <filename>/etc/resolv.conf</filename> med indhold:
+</para>
+
+<screen>
+search intranet
+nameserver 192.168.0.1
+</screen>
+
+<para>
+for bruge din nye DNS.
+</para>
+</sect1>
+</chapter>
+
