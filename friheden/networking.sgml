@@ -567,8 +567,7 @@ Til at læse e-breve kan du næsten på alle Unix-systemer finde
 programmet <command>mail</command>, som er meget simpelt. Skrives f.eks.
 
 <screen>
-<prompt>[anne@linus ~]$ </prompt> <userinput>mail BRUGERNAVN@MASKINE.DOMÆNE</userinput>
-<userinput>help</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>mail BRUGERNAVN@MASKINE.DOMÆNE</userinput> <userinput>help</userinput>
 </screen>
 
 og afsluttes med <filename>Ctrl-D</filename>. Der er så sendt en
@@ -801,7 +800,7 @@ bruges.
 <para>
 En metode til at give Linux-brugeren adgang til epost som ligger i
 Outlook koblet til en Exchange server er følgende. Det kræver dog en
-exchange-server med imap enablet.
+exchange-server med imap-understøttelse.
 </para>
 
 <itemizedlist mark="bullet">
@@ -825,21 +824,107 @@ Kopier foldere fra exchange serveren til local mail.
 </listitem>
 </itemizedlist>
 
+
 <para>
-En anden metode, er at konvertér din *.pst fil til *.mbx (eller *.dbx)
+En anden måde er at benytte KDEs program <command>kmailcvt</command>, som
+kan oversætte dine gamle Outlook 4 og 5 postbokse til Unix-postfiler. Efter
+sigende skulle dette være uden problemer, dog kan adressebøger stadig give
+problemer.
+</para>
+
+<sect3 id="micropop">
+<title>Outlook express til mbox konvertering</title>
+
+<para>
+En tredie metode, er at konvertér din *.pst fil til *.mbx (eller *.dbx)
 format, som Outlook Express bruger.  Derefter brug <command>oe2mbx</command>
 (<ulink
 url="http://www.micropop.com/code/">http://www.micropop.com/code/</ulink>)
-til at konvertere til noget der kan læses på Linux-boksen.
+til at konvertere til mbox-format, der kan læses af de fleste
+post-programmer på Linux-boksen.
 </para>
 
-  <para>
-   En tredie måde er at benytte KDEs program <command>kmailcvt</command>, som
-   kan oversætte dine gamle Outlook 4 og 5 postbokse til Unix-postfiler. Efter
-   sigende skulle dette være uden problemer, dog kan adressebøger stadig give
-   problemer.
-  </para>
- </sect2>
+<para>
+Du skal hente Linux versionen af oe2mbx på adressen:
+<ulink url="http://www.sslug.dk/misc/oe2mbx-1.21.tar.gz">http://www.sslug.dk/misc/oe2mbx-1.21.tar.gz</ulink>.
+Den officielle side er lukket, men prøv at søg på <ulink url="http://www.google.com">http://google.com</ulink>.
+</para>
+
+<para>
+Det skal lige siges, at under konvertering fra MS Exchange til MS
+Outlook Express mister man alle "mail headers".  Dvs. information om
+hvordan e-posten kom til din maskine går tabt. Dette kan være et
+Exchange bug, eller at der er overset en konfigurationsmulighed.
+</para>
+
+<para>
+Før vi går i gang, så afsæt tiden til dette projekt - det tager mange
+timer at komme igennem. Det kan også anbefales at have ca. 3 gange så
+meget ledig diskplads som den post-mængde man har i Outlook Express.
+</para>
+
+<para>
+<emphasis>Fra Exchange til Outlook express.</emphasis>
+</para>
+
+
+<para>
+Konvertering fra Exchange kræver at du går via MS Outlook
+Express. Hvis du ikke bruger Exchange kan du hoppe dette skridt over.
+Du kan importere din post direkte fra Exchange til Outlook express via
+en Wizzard.  Start Outlook Express, vælg [File] -> [Import] ->
+[Microsoft Exchange].  Derefter vælger du Profil og siger Næste -
+venter - OK.
+</para>
+
+<para>
+Hvis du har lavet en <filename>.pst</filename> fil i Exchange til
+offline læsning kan du skabe en ny profil når du kommer til det punkt.
+Du skal så vælge manuel opsætning og tilføj <filename>*.pst</filename>
+fil. (Dette kan gøres uden kontakt til Exchange serveren).
+Resten er som beskrevet ovenfor.
+</para>
+
+<para>
+<emphasis>Fra Outlook Express til Linux mbox</emphasis>
+</para>
+
+<para>
+<emphasis>Windows:</emphasis>
+Læg <command>oe2mbx.exe</command> i roden (c:\) og kopier eller flyt alle <filename>*.dbx</filename>
+filer til mappen <filename>c:\mail</filename>
+Åben en MS-DOS prompt og skriv: <command>c:\oe2mbx c:\mail*.dbx</command>.
+Voila, du har nu en eller flere mbox filer, klar til at kopieres
+over på min Linux maskine.
+</para>
+
+<para>
+<emphasis>Linux:</emphasis>
+Start med at kopiere alle <filename>.dbx</filename> filer til
+<filename>$HOME/mail/</filename>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>tar -zxvf oe2mbx-1.21.tar.gz</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cd oe2mbx-1.21</userinput>
+<prompt>[anne@linus ~/oe2mbx-1.21]$ </prompt> <userinput>make</userinput>
+<prompt>[anne@linus ~/oe2mbx-1.21]$ </prompt> <userinput>./bin/oe2mbx ~/mail/*.dbx</userinput>
+</screen>
+
+<para>
+<emphasis>Fra mbox til maildir (qmail)</emphasis>
+Hvis du bruger qmail og maildir kan du til slut hente et program (perl
+script) som hedder <command>mbox2maildir</command> fra
+<ulink url="http://www.qmail.org/mbox2maildir">http://www.qmail.org/mbox2maildir</ulink>.
+</para>
+
+<para>
+Tak til: "Outlook -> Netscape" tråden på sslug-teknik den 21 dec. 2000.
+Se:     <ulink url="http://www.sslug.dk/emailarkiv/teknik/2000_12/msg00776.html">http://www.sslug.dk/emailarkiv/teknik/2000_12/msg00776.html</ulink> og
+<ulink url="http://www.sslug.dk/emailarkiv/teknik/2000_12/msg00779.html">http://www.sslug.dk/emailarkiv/teknik/2000_12/msg00779.html</ulink>.
+</para>
+</sect3>
+</sect2>
 </sect1>
 
 
