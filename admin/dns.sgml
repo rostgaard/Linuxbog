@@ -1860,12 +1860,6 @@ følge sikkerhedslisterne på internettet.
 </para>
 
 
-<para>
-Du kan finde et mindre eksempel på DNS-filerne under 'Eksempler' til
-denne bog på hjemmesiden <ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
-</para>
-
-
 <itemizedlist mark="bullet">
     <listitem><para>Bugtraq <ulink url="http://www.securityfocus.com">http://www.securityfocus.com</ulink>
       bør du følge med på for at læse om de nyeste afsløringer af 
@@ -1887,6 +1881,352 @@ denne bog på hjemmesiden <ulink url="http://www.sslug.dk/linuxbog">http://www.ss
     </para></listitem>
   </itemizedlist>
 
+<para>
+Du kan finde et mindre eksempel på DNS-filerne under 'Eksempler' til
+denne bog på hjemmesiden <ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
+</para>
+
+
 </sect1>
+
+
+<!-- skrevet af Anne Jonna Armannsdottir -->
+<sect1 id="chroot-dns">
+<title>Chroot-DNS</title>
+
+<indexterm><primary>BIND</primary></indexterm>
+<indexterm><primary>BIND9</primary></indexterm>
+<indexterm>
+ <primary>chroot</primary>
+ <secondary>DNS</secondary>
+</indexterm>
+<indexterm>
+ <primary>DNS</primary>
+ <secondary>chroot</secondary>
+</indexterm>
+<indexterm>
+ <primary>DNS</primary>
+ <secondary>dørvogter</secondary>
+</indexterm>
+
+<para>
+Hvis en angriber har held med et angreb på en DNS server og 
+kan udføre root kommandoer på systemet, kan konsekvenserne 
+blive uoverskuelige. 
+Der findes en sikkerhedsteknik til begrænsning af de skader 
+en angriber kan forvolde. Teknikken går ud på, at smide 
+angriberen i en isoleret del af filsystemet, det såkaldte 
+"chroot-jail". 
+Der oprettes en  mappestruktur, som DNS-serveren skal 
+køre isoleret i. Set fra DNS-serveren vil denne mappestruktur udgøre 
+hele serverens filsystem, og den vil således ikke kunne se 
+den resterende del af filsystemet. Dette vil således også 
+gælde for en angriber.  
+</para>
+<para>
+Tidligere versioner af DNS-serveren, måtte oversættes 
+til formålet, men BIND version 9 , kan nøjes 
+med nogle parametre på kommandolinien. De følgende 
+instruktioner gælder kun for BIND version 9 og opefter. 
+</para>
+<para>
+I nedenstående eksempel oprettes mappestrukturen med roden 
+<COMMAND>/chroot/named</COMMAND>. Hvis man ønsker en anden 
+rod kan man blot ændre variablen JAIL. 
+</para>
+<para>
+I disse afsnit bruges variablen JAIL hyppigt. F.eks. skal 
+kommandoen <COMMAND>echo $JAIL</COMMAND> bogstaveligt skrives 
+sådan. 
+</para>
+<para>
+De følgende kommandoer køres som root: 
+</para>
+
+<SCREEN>
+<userinput>
+export JAIL=/chroot/named
+
+mkdir -p $JAIL &&
+cd $JAIL &&
+mkdir -p dev var/cache/bind etc/bind/slave  &&
+cd $JAIL/dev &&
+touch log null random &&
+cd $JAIL/etc &&
+cp /etc/localtime . &&
+cd /etc/bind &&
+find . | cpio -pm  $JAIL/etc/bind 
+</userinput>
+</SCREEN>
+
+<para>
+Kommandoen i den nederste linie, kopierer hele DNS-serverens 
+opsætning til mappen $JAIL/etc/bind . 
+</para>
+
+<para>
+DNS-serveren bruger 3 /dev filer. Disse er <COMMAND>log</COMMAND>, 
+<COMMAND>null</COMMAND>, og <COMMAND>random</COMMAND>. 
+Tidligere er der lavet forskellige krumspring for at DNS-serveren 
+kan skrive til syslog. Dette kan dog løses let og elegant med 
+en <COMMAND>mount --bind</COMMAND> kommando for hver af disse 
+/dev filer. 
+</para>
+
+<SCREEN>
+mount --bind /dev/log $JAIL/dev/log
+mount --bind /dev/random $JAIL/dev/random
+mount --bind /dev/null $JAIL/dev/null
+/userinput>
+</SCREEN>
+
+<para>
+Når <COMMAND>mount --bind</COMMAND> kommandoen er blevet udført, 
+sker der forandringer med filernes dato, som ses med kommandoen 
+<COMMAND>ls -l $JAIL/dev</COMMAND> 
+</para>
+
+<SCREEN>
+srw-rw-rw-    1 root     root            0 Apr 12 16:29 log
+crw-rw-rw-    1 root     root       1,   3 Jan  1  1970 null
+crw-rw-rw-    1 root     root       1,   8 Jan  1  1970 random
+</SCREEN>
+
+<para>
+Hvis det ovenstående er lykkedes, er filsystemet nu klart til 
+at isolere DNS-serveren og dermed en eventuel angriber. 
+Det eneste der mangler nu er kommandolinien til DNS-serveren. 
+Først skal vi finde ud af om serveren skal køre som root eller
+som en upriviligeret bruger. 
+</para>
+
+<para>
+Forsøg har vist, at angriberen kan bryde ud fra den isolerede 
+del af filsystemet hvis han/hun kan opnå root-privilegier. 
+</para>
+
+<para>
+Hvis DNS-serveren køres som 
+en almindelig bruger i stedet for root, kan man forhindre 
+angriberen i at opnå root-privilegier. Flere Distributioner 
+installerer en upriviligeret bruger til dette formål. Et 
+hurtigt blik på <COMMAND>/etc/passwd</COMMAND> kan afsløre 
+en bruger der hedder f.eks. named, bind eller dns. 
+</para>
+
+<para>
+Hvis der forefindes en bruger ved navn <COMMAND>named</COMMAND> 
+kan BIND DNS-serveren køres i chroot-isolation og som en 
+upriviligeret bruger med den følgende kommando: 
+</para>
+
+<SCREEN>
+OPTS="-u named -t /chroot/named" &&
+CONF="-c /etc/bind/named.conf" &&
+/usr/sbin/named $OPTS $CONF
+</SCREEN>
+
+<para>
+Alt det ovenstående kan sættes ind i et init skript. 
+I Debian ser skriptet således ud for bind9:  
+</para>
+
+<SCREEN>
+#!/bin/sh
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+# for a chrooted server: "-u nobody -t /var/lib/named"
+OPTS="-u named -t /chroot/named"
+# for confile other than named.conf eg named.ext.conf: 
+#   "-c /etc/bind/named.ext.conf"
+CONF="-c /etc/bind/named.conf"
+
+test -x /usr/sbin/named || exit 0
+
+# Devices for a chrooted server 
+mount --bind /dev/log /chroot/named/dev/log
+mount --bind /dev/random /chroot/named/dev/random
+mount --bind /dev/null /chroot/named/dev/null
+
+case "$1" in
+    start)
+        echo -n "Starting domain name service: named"
+        start-stop-daemon --start --quiet --exec \
+        /usr/sbin/named -- $OPTS $CONF
+        echo "."
+    ;;
+
+    stop)
+        echo -n "Stopping domain name service: named"
+        start-stop-daemon --stop --quiet  \
+            --pidfile /var/run/named.pid --exec /usr/sbin/named
+        echo "."
+    ;;
+
+    reload)
+        /usr/sbin/rndc reload
+    ;;
+
+    restart|force-reload)
+        $0 stop
+        sleep 2
+        $0 start
+    ;;
+    
+    *)
+        echo "Usage: /etc/init.d/bind {start|stop|reload|restart|force-reload}" >&2
+        exit 1
+    ;;
+esac
+exit 0
+</SCREEN>
+
+<para>
+DNS-serveren bør kunne skrive til cache-mappen samt den mappe hvor den 
+gemmer sit proces ID, så man bør lige køre
+de følgende kommandoer:
+</para>
+
+<SCREEN>
+chown named.named $JAIL/var/cache/bind
+chown named.named $JAIL/var/run
+</SCREEN>
+
+<para>
+Med ovenstående init-skript kan serveren køre efter genstart, 
+uden indgreb fra administrator. 
+</para>
+
+
+
+<!-- det følgende afsnit bør faktisk være et underafsnit 
+i afsnittet om chroot-dns --> 
+<sect2 id="dns-upriviligeret">
+<title>DNS-serveren som upriviligeret bruger</title>
+<para>
+Dette afsnit handler hovedsagelig om hvordan DNS-serveren 
+BIND 9 opfører sig når den kører som upriviligeret bruger. 
+Selve opsætningen omhandles i foregående afsnit. 
+</para>
+
+<para>
+Traditionelt set, tilhører alle porte lavere end 1024 til 
+root eller daemoner der kører som root. Når BIND køres som 
+en upriviligeret bruger, har den ikke rettigheder til at 
+sende førespørgsler til andre servere fra port 53. 
+Som udgangspunkt vil den vælge et tilfældigt upriviligeret 
+port at sende fra. Hvis netværket beskyttes af en dørvogter 
+der udtrykkeligt specificerer hvilket port DNS-serveren 
+kan sende fra, kan man vælge et bestemt upriviligeret port, 
+f.eks. 5352 og 
+konfigurere BIND til kun at bruge dette port som afsenderport. 
+I konfigurationsfilen til bind <COMMAND>$JAIL/etc/bind/named.conf</COMMAND> 
+bør de følgende linier tilføjes i sektionen <COMMAND>options {}</COMMAND>:
+</para>
+
+<screen>
+<userinput>
+        listen-on port 53 { 192.168.8.1; };
+        query-source address * port 5352;
+</userinput>
+</screen>
+
+<para>
+<!-- Det følgende skal gøre mere ud af men ikke lige nu --> 
+I eksemplet ovenfor, har serveren IP-nummeret 
+<COMMAND>192.168.8.1</COMMAND> på trods af at det er en offentlig 
+DNS server. Forklaringen er, at serveren ikke har fået 
+tildelt et offentligt IP-nummer, men trafik til den bliver 
+dirigeret til den gennem en dørvogter. 
+Dørvogteren skal blot ændres så den tillader udgående trafik 
+med dette source port. 
+Dermed kan BIND fortsætte med at fungere bag selv den mest 
+restriktive dørvogter. 
+</para>
+
+</sect2>
+
+
+<!-- det følgende afsnit bør faktisk være et underafsnit 
+i afsnittet om chroot-dns --> 
+<sect2 id="dns-upriviligeret-test">
+<title>Afprøvning af DNS-serveren</title>
+
+<para>
+De første skridt til at afprøve opsætningen består i at 
+se om bind virkelig kører samt kigge i logfiler. 
+ Hvis bind kører, vil kommandoen 
+<COMMAND>ps aux | grep named |less</COMMAND> vise en eller flere 
+linier som den følgende: 
+</para>
+
+<screen>
+named     2043  0.0  2.8 10396 1432 ?        S    03:11   0:00 /usr/sbin/named -u named -t /chroot/named -c /etc/bind/named.conf
+</screen>
+
+<para>
+Ovenstående linie bekræfter at BIND kører som en upriviligeret bruger 
+og at den er isoleret i <COMMAND>/chroot/named</COMMAND> .
+Hvis bind ikke kan køre, kan man kigge efter yderligere oplysninger 
+i logfilen med kommandoen <COMMAND>tail /var/log/daemon.log</COMMAND> . 
+Den plejer at give en forklaring på hvad der kan være i vejen.
+</para>
+
+<para>
+Hvis serveren kører, bør den kunne svare på forespørgsler. Der findes 
+flere værktøj til dette men her skal nævnes det nu snart forældede 
+<COMMAND>nslookup</COMMAND> samt <COMMAND>dig</COMMAND> . Man kan 
+bede <COMMAND>dig</COMMAND> om at forespørge en vilkårlig DNS server
+ved blot at angive dens IP-nummer med parameteren @. I det følgende 
+eksempel, skal den nyopsatte DNS-server give os oplysninger om 
+domænet sslug.dk . 
+</para>
+
+<!-- jeg bruger også eksemplet med robin@sherwood for at bogen 
+bliver så homogen som muligt  --> 
+<SCREEN>
+<prompt>[robin@sherwood robin]$</prompt> <userinput>dig @192.168.8.1 sslug.dk</userinput>
+</SCREEN>
+
+<SCREEN>
+; &lt;&gt;&gt; DiG 9.2.0 &lt;&gt;&gt; @192.168.8.1 sslug.dk
+;; global options:  printcmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;- opcode: QUERY, status: NOERROR, id: 45711
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 3, ADDITIONAL: 3
+
+;; QUESTION SECTION:
+;sslug.dk.                      IN      A
+
+;; ANSWER SECTION:
+sslug.dk.               86400   IN      A       130.228.2.150
+
+;; AUTHORITY SECTION:
+sslug.dk.               86400   IN      NS      ns.sslug.dk.
+sslug.dk.               86400   IN      NS      ptah.dkuug.dk.
+sslug.dk.               86400   IN      NS      ns-soa.darenet.dk.
+
+;; ADDITIONAL SECTION:
+ns.sslug.dk.            86400   IN      A       130.228.2.150
+ptah.dkuug.dk.          71539   IN      A       195.215.30.66
+ns-soa.darenet.dk.      71539   IN      A       130.226.1.4
+
+;; Query time: 237 msec
+;; SERVER: 192.168.8.1#53(192.168.8.1)
+;; WHEN: Sat Apr 13 18:11:17 2002
+;; MSG SIZE  rcvd: 161
+</SCREEN>
+
+<para>
+Sådan kan man teste serveren ved at pege den på forskellige 
+domæner. Hvid den er authoritativ/primær DNS-server for et 
+domæne bør man selvfølgelig forespørge DNS-serveren om 
+dette domæne. Yderligere oplysninger om opsætning og test 
+af DNS, findes i sslugs bog om administration af egen server. 
+</para>
+
+</sect2>
+</sect1>
+
 </chapter>
 
