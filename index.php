@@ -345,14 +345,14 @@ function vistype($type) {
     "Online" => array(
       first => "bog",
       form => "",
-      last => "index.html".$USE_SUBMIT_INC,
+      last => "index.html",
       online => 1  // Hvis bognavn kun skal med een gange
     ),
     // Eks: frihed/bog/index.html
     "Ændringer" => array(
       first => "bog",
       form => "",
-      last => "apprevhist.html.php",
+      last => "apprevhist.html",
       online => 2  // "Ændringer" har bognavn med to gange
     ),
     // Eks: frihed/linuxbog-friheden-html-4.0.tgz
