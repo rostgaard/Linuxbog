@@ -137,10 +137,17 @@ sub merge {
 
 sub overskrift {
     my $node=shift;
-    my $overskrift=$node->{_content}[0]{_content}[1];
-    if(defined($overskrift) and $overskrift eq "Symboler") { $overskrift=".".$overskrift }
+    my $overskrift;
+    if ($node) {
+	$overskrift=$node->look_down("_tag" => "a")->as_text;
+	if(defined($overskrift) and $overskrift eq "Symboler") { $overskrift=".".$overskrift }
+    } else {
+	# Man kan ikke tage overskriften paa ingenting.
+	$overskrift=undef;
+    }
     return $overskrift;
 }
+
 sub is_primary_word {
     my $ref=shift;
     return not ref $ref->content->[0];
