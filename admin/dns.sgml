@@ -1927,7 +1927,7 @@ som en upriviligeret bruger. Denne kombination gør livet
 Når en proces køres på denne måde kan den ikke se det øvrige 
 filsystem der er udenfor afgrænsningen og den vil ikke kunne
 tilgå det øvrige filsystem. Dem der har brugt et ftp program for at
-koble op til en ftp-tjener, har sandsynligvis set et "chroot-jail"
+koble op til en ftp-server, har sandsynligvis set et "chroot-jail"
 som det ser ud indenfra. 
 </para>
 
@@ -1947,7 +1947,7 @@ Samt:
 http://www.linuxgazette.com/issue30/tag_chroot.html
 </ulink>
 Denne teknik kan feks. ikke forhindre en cracker i at forespørge
-dns-tjeneren om oplysninger til brug i forbindelse med andre angreb på
+dns-serveren om oplysninger til brug i forbindelse med andre angreb på
 computeren. 
 </para>
 
@@ -1955,8 +1955,8 @@ computeren.
 Den følgende vejledning gælder kun for BIND version 9 og opefter men 
 noget kan dog bruges til tidligere versioner. 
 Denne vejledning tager udgangspunkt i konfigurationsfilerne for en
-fungerende DNS-tjener og derfor er det oftest unødvendigt at ændre dem.
-Hvis DNS-tjeneren køres som upriviligeret bruger og beskyttes samtidig
+fungerende DNS-server og derfor er det oftest unødvendigt at ændre dem.
+Hvis DNS-serveren køres som upriviligeret bruger og beskyttes samtidig
 af en meget restriktiv dørvøgter kan man dog alligevel være nødt til
 at lave en lille ændring i konfigurationsfilen. Dette forklares i 
 <xref linkend="dns-upriviligeret">.
@@ -1990,12 +1990,12 @@ stoppe processen.
   <itemizedlist mark="bullet" spacing="compact">
     <listitem>
       <para>
-        Redhat: <filename>/etc/rc.d/init.d/named</filename>
+        Red Hat: <filename>/etc/rc.d/init.d/named</filename>
       </para>
     </listitem>
     <listitem>
       <para>
-        Debian: <filename>/etc/init.d/named9</filename>
+        Debian: <filename>/etc/init.d/bind9</filename>
       </para>
     </listitem>
     <listitem>
@@ -2005,34 +2005,35 @@ stoppe processen.
     </listitem>
     <listitem>
       <para>
-        Suse: ?
+        SuSE: <filename>/etc/init.d/named</filename>
       </para>
     </listitem>
   </itemizedlist>
 
 <para>
-Ovenstående opstartsfil indholder fuldt stinavn på den overordnede
-konfigurationsfil: 
+Placeringen af den overordnede konfigurationsfil. 
+Variablen <filename>KONFIL</filename> sættes lig med denne mappe,
+dog uden det første skråstreg. 
 </para>
   <itemizedlist mark="bullet" spacing="compact">
     <listitem>
       <para>
-        Redhat: <filename>/etc/named.conf</filename>
+         <filename>KONFIL=</filename>
       </para>
     </listitem>
     <listitem>
       <para>
-        Debian: <filename>/etc/bind/named.conf</filename>
+        Red Hat og SuSE: <filename>etc/named.conf</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Debian: <filename>etc/bind/named.conf</filename>
       </para>
     </listitem>
     <listitem>
       <para>
         Mandrake: ?
-      </para>
-    </listitem>
-    <listitem>
-      <para>
-        Suse: ?
       </para>
     </listitem>
   </itemizedlist>
@@ -2061,7 +2062,7 @@ dog uden det første skråstreg.
     </listitem>
     <listitem>
       <para>
-        Redhat: <filename>var/named</filename>
+        Red Hat og SuSE: <filename>var/named</filename>
       </para>
     </listitem>
     <listitem>
@@ -2072,11 +2073,6 @@ dog uden det første skråstreg.
     <listitem>
       <para>
         Mandrake: 
-      </para>
-    </listitem>
-    <listitem>
-      <para>
-        Suse: 
       </para>
     </listitem>
   </itemizedlist>
@@ -2108,7 +2104,7 @@ dog uden det første skråstreg.
     </listitem>
     <listitem>
       <para>
-        Redhat: <filename>var/named</filename>
+        Red Hat og SuSE: <filename>var/named</filename>
       </para>
     </listitem>
     <listitem>
@@ -2121,11 +2117,6 @@ dog uden det første skråstreg.
         Mandrake: 
       </para>
     </listitem>
-    <listitem>
-      <para>
-        Suse: 
-      </para>
-    </listitem>
   </itemizedlist>
 
 <para>
@@ -2135,14 +2126,14 @@ derved kunne ændre dem.
 </para>
 <para>
 En mappe hvor processen har skriveadgang og hvor der normalt placeres slave-zone-filer. 
-Denne mappe nævnes som regel i den overordnede konfigurationsfil og den er angivet
-som <filename>etc/bind/slave</filename> i det følgende eksempel:
+Denne mappe nævnes undtagelsesvis i den overordnede konfigurationsfil og den er angivet
+som <filename>etc/named/slave</filename> i det følgende eksempel:
 </para>
 
 <SCREEN>
   zone "intranet" in {
   type slave;
-  file "/etc/bind/slave/intranet";
+  file "/etc/named/slave/intranet";
   masters { 192.168.0.1; };
 </SCREEN>
 
@@ -2161,7 +2152,7 @@ dog uden det første skråstreg.
     </listitem>
     <listitem>
       <para>
-        Redhat: <filename>var/named/slave</filename>
+        Red Hat og SuSE: <filename>var/named/slave</filename>
       </para>
     </listitem>
     <listitem>
@@ -2174,11 +2165,6 @@ dog uden det første skråstreg.
         Mandrake: 
       </para>
     </listitem>
-    <listitem>
-      <para>
-        Suse: 
-      </para>
-    </listitem>
   </itemizedlist>
 
 <para>
@@ -2187,11 +2173,12 @@ dog uden det første skråstreg.
 </para>
 
 <para>
-   I Redhat: 
+   I Red Hat og SuSE: 
 </para>
 
 <SCREEN>
 <userinput>
+export KONFIL=etc/named.conf
 export OPTDIR=var/named
 export MASTERZD=var/named
 export SLAVEZD=var/named/slave 
@@ -2204,6 +2191,7 @@ I  Debian:
 
 <SCREEN>
 <userinput>
+export KONFIL=etc/bind/named.conf
 export OPTDIR=var/cache/bind
 export MASTERZD=etc/bind
 export SLAVEZD=var/cache/bind
@@ -2289,10 +2277,13 @@ den i Debian oprettes med den følgende kommando:
 
 <para>
 <screen>
-<prompt>[root@linus /root]# </prompt> <userinput>
-adduser --system --group --home /opt/chroot/named named 
-</userinput>
-</screen>
+<prompt>[root@linus /root]#</prompt> <userinput>adduser --system --group --home /opt/chroot/named named</userinput>
+Adding system user named...
+Adding new group named (116).
+Adding new user named (116) with group named.
+Creating home directory /opt/chroot/named.
+<screen>
+
 </para>
 
 </sect2>
@@ -2434,6 +2425,7 @@ cd $JAIL/dev &amp;&amp;
 touch log null random &amp;&amp;
 mount --all &amp;&amp;
 cd / &amp;&amp;
+cp $KONFIL $JAIL/$KONFIL &amp;&amp;
 cd $MASTERZD &amp;&amp;
 find . | cpio -pm  $JAIL/$MASTERZD &amp;&amp;
 cd $JAIL &amp;&amp;
@@ -2446,7 +2438,7 @@ chattr +i  dev etc var $LOKALTID
 <para>
 Kommandoen i femte nederste linie, kopierer hele DNS-serverens 
 opsætning til mappen  $JAIL/$MASTERZD . Den tredje øverste linie sætter
-DNS-tjeneren som ejer af bla. mappen <filename>$JAIL</filename> ,
+DNS-serveren som ejer af bla. mappen <filename>$JAIL</filename> ,
 hvilket jo også er meget passende ide det jo er dens hjemmemappe (Det
 burde det i hvertfald være hvis alting gik godt i 
 <xref linkend="dns-brugernavn"> ). 
@@ -2532,13 +2524,6 @@ stedet for root.
  "chroot-jail" der er blevet klargjort.
  </para>
 </listitem>
-
-<listitem> 
- <para>
-<filename>-c /etc/named.conf</filename> processen skal vide hvor i den
- isolerede del af filsystemet, den finder sin konfigurationsfil.
- </para>
-</listitem>
 </itemizedlist>
 
 <para>
@@ -2547,8 +2532,7 @@ Der tilføjes nogle linier til opstartsfilerne:
 
 <SCREEN>
 OPTS="-u named -t /opt/chroot/named" &amp;&amp;
-CONF="-c /etc/bind/named.conf" &amp;&amp;
-/usr/sbin/named $OPTS $CONF 
+/usr/sbin/named $OPTS 
 </SCREEN>
 
 <para>
@@ -2556,7 +2540,7 @@ For at gøre opsætningen varig, kan ovenstående sættes ind i opstartsfilen.
 </para>
 
 <para>
-I Redhat ser opstartsfilen således ud med ovenstående ændringer: 
+I Red Hat ser opstartsfilen således ud med ovenstående ændringer: 
 </para>
 
 <SCREEN>
@@ -2594,8 +2578,7 @@ I Redhat ser opstartsfilen således ud med ovenstående ændringer:
 #   daemon named 
 # *** De foelgende linier er indsat for chroot
 OPTS="-u named -t /opt/chroot/named"
-CONF="-c /etc/bind/named.conf"
-daemon named $OPTS $CONF
+daemon named $OPTS
 # *** De ovenstaaende linier er indsat for chroot
    RETVAL=$?
    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/named
@@ -2641,20 +2624,11 @@ I Debian ser opstartsfilen således ud for bind version 9:
 </para>
 
 <SCREEN>
-OPTS="-u named -t /opt/chroot/named" &amp;&amp;
-CONF="-c /etc/bind/named.conf" &amp;&amp;
-/usr/sbin/named $OPTS $CONF
-</SCREEN>
-
-<SCREEN>
 #!/bin/sh
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 # for a chrooted server: "-u nobody -t /var/lib/named"
 OPTS="-u named -t /chroot/named"
-# for confile other than named.conf eg named.ext.conf: 
-#   "-c /etc/bind/named.ext.conf"
-CONF="-c /etc/bind/named.conf"
 
 test -x /usr/sbin/named || exit 0
 
@@ -2662,7 +2636,7 @@ case "$1" in
     start)
         echo -n "Starting domain name service: named"
         start-stop-daemon --start --quiet --exec \
-        /usr/sbin/named -- $OPTS $CONF
+        /usr/sbin/named -- $OPTS
         echo "."
     ;;
 
@@ -2703,12 +2677,12 @@ uden indgreb fra administrator.
 
 <para>
 For at starte DNS-processen uden at genstart maskinen, giver man
-følgende kommando i henholdsvis Redhat og Debian (den er desuden pyntet med lidt &&
+følgende kommando i henholdsvis Red Hat og Debian (den er desuden pyntet med lidt &&
 krusiduller og Co. for at man kan se hvordan opstarten går): 
 </para>
 
 <screen>
-<prompt>[root@linus /root]# </prompt> <userinput>/etc/rc.d/init.d/bind start &amp;&amp; tail -f /var/log/messages  
+<prompt>[root@linus /root]#</prompt> <userinput>/etc/rc.d/init.d/named start &amp;&amp; tail -f /var/log/messages  
 </userinput>
 </screen>
 
@@ -2745,8 +2719,8 @@ linier som den følgende:
 </para>
 
 <screen>
-named     2043  0.0  2.8 10396 1432 ?        S    03:11   0:00 \
- /usr/sbin/named -u named -t /opt/chroot/named -c /etc/bind/named.conf
+named 2043 0.0  2.8 10396 1432 ?  S  03:11 0:00 /usr/sbin/named \
+  -u named -t /opt/chroot/named -c /etc/bind/named.conf
 </screen>
 
 <para>
@@ -2829,7 +2803,8 @@ bør den nederste af de følgende linier tilføjes i sektionen options {}:
 </screen>
 
 <para>
-<!-- Det følgende skal gøre mere ud af men ikke lige nu --> 
+<!-- Det følgende skal skrives sammen med de foregående afsnit når
+afsnittene om sikret-dns har vist sit værd --> 
 I eksemplet ovenfor, har serveren IP-nummeret 
 192.168.8.1 på trods af at det er en offentlig 
 DNS server. Forklaringen er, at serveren ikke har fået 
