@@ -6,7 +6,7 @@
 # hvis ikke <PROMPT> forekommer i den <SCREEN>-sektion.
 
 # Kørsel:
-# for S in *.sgml; do mv ${S} ${S}.org; cat ${S}.org|../screen-programlisting.pl>${S} ; done
+# perl -i.bak screen-programlistning.pl *.sgml
 
 while(<>) {
     if(/<SCREEN>/i .. m:</SCREEN>:i) {
