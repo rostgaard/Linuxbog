@@ -1,104 +1,103 @@
 <!-- $Id$ -->
 <chapter id="sysadm">
-<title>Systemadministration</title>
+ <title>Systemadministration</title>
 
-<para>
-I dette kapitel ser vi nærmere på nogle af de værktøjer og opgaver som
-systemadministratoren kommer ud for.
-</para>
+ <para>
+  I dette kapitel ser vi nærmere på nogle af de værktøjer og opgaver
+  som systemadministratoren kommer ud for.
+ </para>
 
-<sect1 id="tilfoeje-brugere">
-<title>Tilføje brugere</title>
-<indexterm><primary>Tilføje brugere</primary></indexterm>
-<indexterm><primary>useradd</primary></indexterm>
+ <sect1 id="tilfoeje-brugere">
+  <title>Tilføje brugere</title>
 
-<para>
-Ud over de grafiske programmer til at håndtere brugere, så kan det
-være praktisk at kunne addere brugere til systemet via en konsol. Skal
-man lave en konto til brugeren Peter Toft med bruger-navn "pto", hjemmekatalog
-<filename>/home/pto</filename> og denne bruger skal være medlem af 
-gruppen <literal>linuxbog</literal>, så køres følgende:
-</para>
+  <indexterm><primary>Tilføje brugere</primary></indexterm>
+  <indexterm><primary>useradd</primary></indexterm>
 
+  <para>
+   Ud over de grafiske programmer til at håndtere brugere, så kan det
+   være praktisk at kunne addere brugere til systemet via en
+   konsol. Skal man lave en konto til brugeren Peter Toft med
+   bruger-navn "pto", hjemmekatalog <filename>/home/pto</filename> og
+   denne bruger skal være medlem af gruppen
+   <literal>linuxbog</literal>, så køres følgende:
 <screen>
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>/usr/sbin/useradd -c 'Peter Toft \
  pto@sslug.dk' -d /home/pto -g linuxbog -m -n pto</userinput>
 </screen>
+   Her er tegnet <command>\</command> anvendt til at kunne fortsætte
+   kommandoen på næste linie.
+  </para>
 
-<para>
-Her er tegnet <command>\</command> anvendt til at kunne fortsætte
-kommandoen på næste linie.
-</para>
-
-<para>
-Peter Toft's email-adresse er også tilføjet for at have flere
-informationer gemt i <filename>/etc/passwd</filename>. Man kunne også
-have tilføjet telefon-nummer. <emphasis>HUSK</emphasis> at tilføje
-password til brugeren 
-</para>
-
+  <para>
+   Peter Toft's e-post-adresse er også tilføjet for at have flere
+   informationer gemt i <filename>/etc/passwd</filename>. Man kunne
+   også have tilføjet telefon-nummer. <emphasis>HUSK</emphasis> at
+   give brugeren en adgangskode:
 <screen>
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>passwd pto</userinput>
 </screen>
-</sect1>
+  </para>
+ </sect1>
 
-<sect1 id="Erstatning-af-tekst">
-<title>Erstatning af tekst i flere filer</title>
-<para>
-Ofte kommer man ud for at skulle erstatte tekst i 
-filer. Nogle gange er det nemmest at starte en emacs- eller vi-editor op 
-og blot rette filen til. Andre gange skal man lave samme rettelse
-i mange filer, og så er det meget nyttigt at kunne en smule shell og Perl.
-Antag f.eks. at man i alle .txt-filer skal erstatte "Windows" med "Linux".
-Det kan gøres med følgende lille script som kan udføres direkte 
-i kommandofortolkeren.
-</para>
+ <sect1 id="Erstatning-af-tekst">
+  <title>Erstatning af tekst i flere filer</title>
 
+  <para>
+   Ofte kommer man ud for at skulle erstatte tekst i filer. Nogle
+   gange er det nemmest at starte en emacs- eller vi-editor op og blot
+   rette filen til. Andre gange skal man lave samme rettelse i mange
+   filer, og så er det meget nyttigt at kunne en smule shell og Perl.
+   Antag f.eks. at man i alle .txt-filer skal erstatte "Windows" med
+   "Linux".  Det kan gøres med følgende lille script som kan udføres
+   direkte i kommandofortolkeren.
 <screen>
 <PROMPT>[anne@linus ~]$</PROMPT> <userinput>for I in *.txt
  do
    perl -pi.bak -e 's/Windows/Linux/g' $I
  done</userinput>
 </screen>
+  </para>
 
-<para>
-Denne operation efterlader en .bak-fil for hver fil du laver
-søg-og-erstat i (bare for en sikkerheds skyld).
-</para>
+  <para>
+   Denne operation efterlader en .bak-fil for hver fil du laver
+   søg-og-erstat i (bare for en sikkerheds skyld).
+  </para>
+ </sect1>
 
-</sect1>
+ <sect1 id="glemt-passwd">
+  <title>Har du glemt din adgangskode?</title>
 
-<sect1 id="glemt-passwd">
-<title>Har du glemt din adgangskode?</title>
+  <indexterm><primary>adgangskode</primary><secondary>glemt</secondary></indexterm>
+  <indexterm><primary>glemt password</primary></indexterm>
+  <indexterm><primary>glemt adgangskode</primary></indexterm>
+  <indexterm><primary>password</primary><secondary>glemt</secondary></indexterm>
 
-<indexterm><primary>adgangskode</primary><secondary>glemt</secondary></indexterm>
-<indexterm><primary>glemt password</primary></indexterm>
-<indexterm><primary>password</primary><secondary>glemt</secondary></indexterm>
+  <para>
+   Hvis du har dummet dig meget og glemt din root-adgangskode, så kan
+   du få sat en ny ind.
+  </para>
 
+  <para>
+   I så fald booter du med "linux init=/bin/sh" . Så starter den en
+   shell som proces nr. 1. Herefter køres:
 
-<para>
-Hvis du har dummet dig meget og glemt din root-adgangskode, så kan du 
-få sat en ny ind. 
-</para>
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>mount -n -o</secondary>
+   </indexterm>
 
-<para>
-I så fald booter du med "linux init=/bin/sh" . Så starter den en
-shell som proces nr. 1. Herefter køres
-</para>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>mount -n -o</secondary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>exec</secondary>
-</indexterm>
-<indexterm>
- <primary>mount -n -o</primary>
-</indexterm>
-<indexterm>
- <primary>exec</primary>
-</indexterm>
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>exec</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>mount -n -o</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>exec</primary>
+   </indexterm>
 
 <screen>
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
@@ -106,108 +105,111 @@ shell som proces nr. 1. Herefter køres
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
 </screen>
+  </para>
 
-<para>
-Dette lyder jo som et stort sikkerhedshul, og det er det også, hvis man
-har fysisk adgang til maskinen. Du kan dog undgå dette ved at tilføje 
-linjen "password=MIT_PASSWORD" til din
-<filename>/etc/lilo.conf</filename>, men så skal du kunne huske
-root-adgangskoden og den adgangskode, du har sat i <filename>/etc/lilo.conf</filename>.
-</para>
+  <para>
+   Dette lyder jo som et stort sikkerhedshul, og det er det også, hvis
+   man har fysisk adgang til maskinen. Du kan dog undgå dette ved at
+   tilføje linjen "password=MIN_ADGANGSKODE" til din
+   <filename>/etc/lilo.conf</filename>, men så skal du kunne huske
+   root-adgangskoden og den adgangskode, du har sat i
+   <filename>/etc/lilo.conf</filename>.
+  </para>
+ </sect1>
 
-</sect1>
+ <sect1 id="Opstart">
+  <title>Opstart af Linux</title>
 
-<sect1 id="Opstart">
- <title>Opstart af Linux</title>
+  <sect2 ID="NTogLinux">  <!-- ikke længere specifikt for NT Windows -->
+   <title>Samtidig installation af Windows og Linux</title>
 
- <sect2 ID="NTogLinux">  <!-- ikke længere specifikt for NT Windows -->
-  <title>Samtidig installation af Windows og Linux</title>
-
-  <indexterm><primary>Opstart af Linux</primary>
+   <indexterm><primary>Opstart af Linux</primary>
          <secondary>Windows</secondary></indexterm>
-  <indexterm><primary>Microsoft Windows</primary>
+   <indexterm><primary>Microsoft Windows</primary>
          <secondary>Windows</secondary></indexterm>
-  <indexterm><primary>Dual Boot</primary>
+   <indexterm><primary>Dual Boot</primary>
          <secondary>Linux</secondary></indexterm>
 
-<para>
-Windows og Linux kan sagtens være installeret på samme computer. Ved at
-bruge et opstartsprogram kan man, når man starter computeren, vælge om den
-skal starte i Linux eller i Windows. Det er samtidig også muligt at have
-flere forskellige udgaver af Linux og/eller Windows installeret på samme
-maskine. Man kan dog kun køre én ad gangen (med mindre man bruger VMware).
-</para>
+   <para>
+    Windows og Linux kan sagtens være installeret på samme
+    computer. Ved at bruge et opstartsprogram kan man, når man starter
+    computeren, vælge om den skal starte i Linux eller i Windows. Det
+    er samtidig også muligt at have flere forskellige udgaver af Linux
+    og/eller Windows installeret på samme maskine. Man kan dog kun
+    køre én ad gangen (med mindre man bruger VMware).
+   </para>
 
-<para>
-Når man starter en computer, der kun har Windows installeret
-indlæses der først et lille startprogram fra <emphasis>Master Boot
-Record</emphasis> (MBR), der ligger først på den første harddisk
-(<filename>/dev/hda</filename>) sammen med beskrivelsen af hvordan
-harddisken er opdelt (partitionstabellen).  Startprogrammet fra MBR
-indlæser et egentligt startprogram fra den første del af den første
-harddisk (<filename>/dev/hda1</filename>) og overfører kontrollen
-til det.  Hvis computeren kører Windows 95 eller 98 vil DOS blive
-startet, og DOS vil så automatisk starte Windows. Kører computeren
-Windows NT eller 2000 giver startsprogrammet et valg mellem
-forskellige opsætninger af styresystemet.
-</para>
+   <para>
+    Når man starter en computer, der kun har Windows installeret
+    indlæses der først et lille startprogram fra <emphasis>Master Boot
+    Record</emphasis> (MBR), der ligger først på den første harddisk
+    (<filename>/dev/hda</filename>) sammen med beskrivelsen af hvordan
+    harddisken er opdelt (partitionstabellen).  Startprogrammet fra
+    MBR indlæser et egentligt startprogram fra den første del af den
+    første harddisk (<filename>/dev/hda1</filename>) og overfører
+    kontrollen til det.  Hvis computeren kører Windows 95 eller 98 vil
+    DOS blive startet, og DOS vil så automatisk starte Windows. Kører
+    computeren Windows NT eller 2000 giver startsprogrammet et valg
+    mellem forskellige opsætninger af styresystemet.
+   </para>
 
 <!-- Flyt følgende para til FTAV begynder bogen? -->
 
-<para>
-Microsoft anbefaler, at C-drevet under Windows NT er formateret som et
-FAT-filsystem. Det giver flere muligheder for fejlfinding end hvis man
-bruger det nyere NTFS-filsystem. En praktisk sideeffekt af at bruge et
-FAT-filsystem er at Linux ikke har problemer med at læse fra og skrive til
-C-drevet. En anden fordel er at hvis man får en maskine hvor Windows fylder
-hele harddisken, så kan man bruge DOS-programmet
-<command>fips.exe</command> til at frigøre en del af Windows-partitionen
-til brug for Linux. Det er derimod ikke muligt at omstrukturere
-NTFS-filsystemer og det vil derfor være nødvendigt at slette og
-geninstallere Windows, hvis man har en harddisk der er fyldt op af et
-enkelt NTFS-filsystem.
-</para>
+   <para>
+    Microsoft anbefaler, at C-drevet under Windows NT er formateret
+    som et FAT-filsystem. Det giver flere muligheder for fejlfinding
+    end hvis man bruger det nyere NTFS-filsystem. En praktisk
+    sideeffekt af at bruge et FAT-filsystem er at Linux ikke har
+    problemer med at læse fra og skrive til C-drevet. En anden fordel
+    er at hvis man får en maskine hvor Windows fylder hele harddisken,
+    så kan man bruge DOS-programmet <command>fips.exe</command> til at
+    frigøre en del af Windows-partitionen til brug for Linux. Det er
+    derimod ikke muligt at omstrukturere NTFS-filsystemer og det vil
+    derfor være nødvendigt at slette og geninstallere Windows, hvis
+    man har en harddisk der er fyldt op af et enkelt NTFS-filsystem.
+   </para>
 
-<para>
-Når man starter en maskine, der kun har Linux installeret, startes
-<emphasis>LInux LOader</emphasis> (LILO), der ligesom Windows'
-startprogram ligger i MBR. Der findes også en række andre
-startprogrammer til Linux, men dem vil vi ignorere i denne
-omgang. LILO giver brugeren mulighed for at vælge hvilken udgave
-af kernen, der skal startes. Typisk vil man kun have én udgave
-liggende, men det giver let mulighed for at afprøve en nyoversat
-kerne. Hvis den ikke virker kan man bare genstarte, og vælge den
-gamle og velfungerende kerne i stedet for. Der er mere om LILO i 
-bogen "Linux - Friheden til at vælge installation".
-</para>
+   <para>
+    Når man starter en maskine, der kun har Linux installeret, startes
+    <emphasis>LInux LOader</emphasis> (LILO), der ligesom Windows'
+    startprogram ligger i MBR. Der findes også en række andre
+    startprogrammer til Linux, men dem vil vi ignorere i denne
+    omgang. LILO giver brugeren mulighed for at vælge hvilken udgave
+    af kernen, der skal startes. Typisk vil man kun have én udgave
+    liggende, men det giver let mulighed for at afprøve en nyoversat
+    kerne. Hvis den ikke virker kan man bare genstarte, og vælge den
+    gamle og velfungerende kerne i stedet for. Der er mere om LILO i
+    bogen "Linux - Friheden til at vælge installation".
+   </para>
 
-<para>
-Hvis det er Windows' startprogram der ligger i MBR, skal
-Windows-opsætningen ændres så det også kan starte Linux. Hvis det er Linux'
-startprogram (LILO) der ligger i MBR skal dets opsætning tilsvarende
-ændres, så det kan starte Windows. De følgende afsnit vil gennemgå begge
-muligheder. 
-</para>
+   <para>
+    Hvis det er Windows' startprogram der ligger i MBR, skal
+    Windows-opsætningen ændres så det også kan starte Linux. Hvis det
+    er Linux' startprogram (LILO) der ligger i MBR skal dets opsætning
+    tilsvarende ændres, så det kan starte Windows. De følgende afsnit
+    vil gennemgå begge muligheder.
+   </para>
 
-<para>
-Bemærk at når Windows (gen)installeres, bliver MBR harddisken overskrevet!
-Hvis LILO er installeret i MBR vil den derfor blive slettet, og man kan
-således ikke starte Linux. Det er derfor meget vigtigt at lave en
-startdiskette (eng. boot disk) til Linux, før man går i gang med at
-installere Windows på en maskine der allerede er Linux på. Det kan også
-være fornuftigt at lave en startdiskette før man begynder at eksperimentere
-med LILO. Så kan man altid redde sig ud af en uheldig opsætning af LILO.
-</para>
+   <para>
+    Bemærk at når Windows (gen)installeres, bliver MBR harddisken
+    overskrevet!  Hvis LILO er installeret i MBR vil den derfor blive
+    slettet, og man kan således ikke starte Linux. Det er derfor meget
+    vigtigt at lave en startdiskette (eng. boot disk) til Linux, før
+    man går i gang med at installere Windows på en maskine der
+    allerede er Linux på. Det kan også være fornuftigt at lave en
+    startdiskette før man begynder at eksperimentere med LILO. Så kan
+    man altid redde sig ud af en uheldig opsætning af LILO.
+   </para>
 
-<para>
-Startdisketten kan fremstilles efter installationen med Linux-kommandoen
-<command>mkbootdisk</command>. Husk at have en formateret diskette parat.
-Det er vigtigt, at disketten er 100% fri for fysiske fejl!
-</para>
+   <para>
+    Startdisketten kan fremstilles efter installationen med
+    Linux-kommandoen <command>mkbootdisk</command>. Husk at have en
+    formateret diskette parat.  Det er vigtigt, at disketten er 100%
+    fri for fysiske fejl!
+   </para>
 
-<para>
-Eksempel:
-</para>
+   <para>
+    Eksempel:
 
 <indexterm>
  <primary>Formatering af diskette [fdformat]</primary>
@@ -249,6 +251,7 @@ Verifying ... done
 Insert a disk in /dev/fd0. Any information on the disk will be lost.
 Press &lt;Enter&gt; to continue or ^C to abort:
 </screen>
+   </para>
 
 <!-- Eksemplet er noget simplificeret sammenlignet med det gamle,
  men kræver at kernen ligger i /boot -->
@@ -434,7 +437,7 @@ bruges, da &gt; alene vil overskrive filen og ikke føje til den:
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mkdir /dos</userinput>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mount -t vfat /dev/hda1 /dos</userinput>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mv /bootsect.lnx /dos/bootsect.lnx</userinput>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> echo 'C:\\bootsect.lnx="Linux - Red Hat 7.0"' >>/dos/BOOT.INI</userinput>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> echo 'C:\\bootsect.lnx="Linux - Red Hat 7.0"' &gt;&gt; /dos/BOOT.INI</userinput>
 </screen>
 </para>
 
@@ -523,8 +526,8 @@ hedder filen <filename>/doc/HOWTO/mini/LILO</filename>.
 </sect1>
 
 
-<SECT1 ID="runlevel">
-<TITLE>Hvad er et "runlevel"?</TITLE>
+<sect1 ID="runlevel">
+<title>Hvad er et "runlevel"?</title>
 <indexterm><primary>Runlevels</primary></indexterm>
 <indexterm><primary>/etc/rc.d</primary></indexterm>
 <indexterm><primary>Start i grafisk tilstand</primary></indexterm>
@@ -622,7 +625,7 @@ Skemaet nedenfor viser
 betydningen af de forskellige runlevels.  </PARA>
 
 <TABLE frame="all">
-  <TITLE>Runlevels</TITLE>
+  <title>Runlevels</title>
   <TGROUP COLS=2 ALIGN="char">
   <THEAD>
    <ROW>
@@ -704,10 +707,10 @@ Se også <xref linkend="etcrcdfilen"> for detaljer om forskelle mellem
 de forskellige Linux-distributioner.
 </para>
 
-</SECT1>
+</sect1>
 
-<SECT1 ID="Nedlukning">
-<TITLE>Nedlukning af Linux</TITLE>
+<sect1 ID="Nedlukning">
+<title>Nedlukning af Linux</title>
 <indexterm><primary>Nedlukning</primary></indexterm>
 <indexterm><primary>Reboot</primary></indexterm>
 <indexterm><primary>Genstart</primary></indexterm>
@@ -1020,10 +1023,10 @@ anvender dette.
 
 
 
-<SECT1 ID="sikkopi">
+<sect1 ID="sikkopi">
 <!-- Skrevet af Claus Sørensen "cs@klid.dk" -->
 
-<TITLE>Sikkerhedskopiering</TITLE>
+<title>Sikkerhedskopiering</title>
 <indexterm>
  <primary>Sikkerheds-kopiering</primary>
 </indexterm>
@@ -1044,7 +1047,7 @@ som skal sikres.
 </para>
 
 <SECT2 ID="sikkopi-metoder">
-<TITLE>Metoder for sikkerhedskopiering</TITLE>
+<title>Metoder for sikkerhedskopiering</title>
 <para>
 Grundlæggende kan man dele sikkerhedskopiering op i lokal- 
 og fjernkopiering, hvilket bestemmes af det omfang af 
@@ -1053,7 +1056,7 @@ forelægger eller investering i samme.
 </para>
 
 <sect3 id="sikkopi-lokal">
-<TITLE>Lokal sikkerhedskopiering</TITLE>
+<title>Lokal sikkerhedskopiering</title>
 
 <para>
 Lokal sikkerhedskopiering sker ved at man
@@ -1064,7 +1067,7 @@ cd'er eller udskiftelige harddiske som lagringsmedier.
 </sect3>
 
 <sect3 id="sikkopi-fjern">
-<TITLE>Sikkerhedskopiering via internettet</TITLE>
+<title>Sikkerhedskopiering via internettet</title>
 
 <para>
 Fjernkopiering sker ved, at man aftaler med andre, 
@@ -1091,7 +1094,7 @@ GnuPG eller lignende krypteringsværktøjer.
 </sect3>
 
 <sect3 id="sikkopi-hvad">
-<TITLE>Hvad skal kopieres?</TITLE>
+<title>Hvad skal kopieres?</title>
 <indexterm>
  <primary>Servere</primary>
  <secondary>Konfigurationsfiler, sikkerhedskopiering</secondary>
@@ -1119,7 +1122,7 @@ have deres egne partitioner.
 </SECT2>
 
 <SECT2 ID="sikkopiprog">
-<TITLE>Værktøjer til sikkerhedskopiering</TITLE>
+<title>Værktøjer til sikkerhedskopiering</title>
 <indexterm>
  <primary>Sikkerheds-kopiering</primary>
  <secondary>Værktøjer</secondary>
@@ -1141,7 +1144,7 @@ som findes til sikkerhedskopiering i et Linux-miljø.
 </para>
 
 <sect3 id="sikkopi-tar">
-<TITLE>Sikkerhedskopiering med tar</TITLE>
+<title>Sikkerhedskopiering med tar</title>
 <indexterm>
  <primary>Servere</primary>
  <secondary>Sikkerhedskopiering</secondary>
@@ -1230,7 +1233,7 @@ sikkerhedskopiering i
 </sect3>
 
 <sect3 id="sikkopi-dump">
-<TITLE>Sikkerhedskopiering med dump og restore</TITLE>
+<title>Sikkerhedskopiering med dump og restore</title>
 <indexterm>
  <primary>dump</primary>
 </indexterm>
@@ -1334,7 +1337,7 @@ man-sider.
 </sect3>
 
 <sect3 id="sikkopi-afio">
-<TITLE>Sikkerhedskopiering med afio</TITLE>
+<title>Sikkerhedskopiering med afio</title>
 <indexterm>
  <primary>Sikkerheds-kopieringsværktøjer</primary>
  <secondary>afio</secondary>
@@ -1354,7 +1357,7 @@ Læs mere med <command>man afio</command>.
 </sect3>
 
 <sect3 id="sikkopi-kbackup">
-<TITLE>Sikkerhedskopiering med KBackup</TITLE>
+<title>Sikkerhedskopiering med KBackup</title>
 <indexterm>
  <primary>Sikkerheds-kopieringsværktøjer</primary>
  <secondary>KBackup</secondary>
@@ -1382,7 +1385,7 @@ hjemmeside: <ulink url="http://kbackup.sourceforge.net">http://kbackup.sourcefor
 </sect3>
 
 <sect3 id="sikkopi-arkeia">
-<TITLE>Sikkerhedskopiering med Arkeia</TITLE>
+<title>Sikkerhedskopiering med Arkeia</title>
 
 <indexterm>
  <primary>Sikkerheds-kopieringsværktøjer</primary>
@@ -1405,7 +1408,7 @@ og installér det.
 </sect3>
 
 <sect3 id="sikkopi-windows">
-<TITLE>Microsoft Windows-værktøjer via Samba</TITLE>
+<title>Microsoft Windows-værktøjer via Samba</title>
 
 <indexterm>
  <primary>Sikkerheds-kopieringsværktøjer</primary>
@@ -1660,7 +1663,7 @@ der er i ens maskine, kan man fordybe sig i hvordan den skal konfigureres.
 
 
 <sect2 id="fejlfind-maskinel-overvaagning">
-<TITLE>Fejlfindning</TITLE>
+<title>Fejlfindning</title>
 <indexterm><primary>i2c</primary></indexterm>
 
 <para>
@@ -1731,7 +1734,7 @@ en eventuel rettelse.
 
 
 <sect2 id="fejlrapport-maskinel-overvaagning">
-<TITLE>Indsamling af oplysninger til fejlrapport</TITLE>
+<title>Indsamling af oplysninger til fejlrapport</title>
 <indexterm><primary>isadump</primary></indexterm>
 <indexterm><primary>i2cdump</primary></indexterm>
 <indexterm><primary>lspci</primary></indexterm>
@@ -2722,45 +2725,100 @@ RedHat Linux KickStart HOWTO
 </para>
 </sect1>
 
-<sect1 id="saette-tid">
-<title>Sætte tiden</title>
+ <sect1 id="saette-tid">
+  <title>Sætte tiden</title>
 
-<indexterm><primary>date</primary></indexterm>
-<indexterm><primary>sætte dato</primary></indexterm>
+  <indexterm><primary>date</primary></indexterm>
+  <indexterm><primary>sætte dato</primary></indexterm>
 
-<para>
-Skal du sætte tiden på din maskine så kan du gøre dette med
-<command>date -s 13:45:00</command>, men det kan også betale sig at se
-på NTP-systemet i <xref linkend="ntp">, idet det giver en meget bedre 
-kontrol over at alle maskiner viser ens tid.
-</para>
-</sect1>
+  <para>
+   Skal du sætte tiden på din maskine så kan du gøre dette med
+   <command>date -s 13:45:00</command>, men det kan også betale sig at
+   se på NTP-systemet i <xref linkend="ntp">, idet det giver en meget
+   bedre kontrol over at alle maskiner viser ens tid.
+  </para>
+ </sect1>
 
+ <sect1 id="sysadm-mknod">
+  <title>Oprette enheder</title>
 
-<SECT1 ID="sysadm-afslutning">
-<TITLE>Tips og tricks</TITLE>
+  <indexterm>
+   <primary>oprette</primary>
+   <secondary>enheder</secondary>
+  </indexterm>
 
-<PARA>
-Der er meget mere i systemadministration, end dette korte kapitel har
-præsenteret. Til Linux findes der især to dokumenter, som er gode at
-læse, nemlig "System Administrator's Guide" (SAG) og "Network
-Administrator's Guide" (NAG) - begge kan hentes fra 
-<ulink url="http://sunsite.dk/ldp">http://sunsite.dk/ldp</ulink> og
-følger med Red Hat-distributionen. De er en del af "Linux
-Documentation Project" (LDP). Red Hat's hjemmeside indeholder endvidere
-en række gode tricks og nyttige oplysninger. De bedste bøger om Unix
-systemadministration er uden tvivl Æleen Frisch's "Essential System
-Administration" udgivet af O'Reilly, og "UNIX System Administration
-Handbook" (Evi Nemeth, Garth Snyder, Scott Seebass og Trent R. Hein) udgivet
-af Prentice Hall PTR.
-</PARA>
+  <indexterm>
+   <primary>enheder</primary>
+   <secondary>oprette</secondary>
+  </indexterm>
 
-<para>
-Vil du vide mere om sikkerhedskopiering 
-under Linux, så kig i 
-"The Linux System Administrators' Guide":
-<ulink url="http://www.linuxdoc.org/LDP/sag/index.html">http://www.linuxdoc.org/LDP/sag/index.html</ulink>. 
-</para>
+  <indexterm>
+   <primary>/dev/null</primary>
+   <secondary>redde</secondary>
+  </indexterm>
 
-</SECT1>
+  <indexterm>
+   <primary>mknod</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>Kommandooversigt</primary>
+   <secondary>mknod</secondary>
+  </indexterm>
+
+  <para>
+   Hvis man skal oprette en enhed (det kan for eksempel være hvis det
+   er lykkedes for en fjollet systemadministrator at slette
+   <filename>/dev/null</filename>) skal man bruge kommandoen
+   <command>mknod</command>.  Hvis vi tager eksemplet med
+   <filename>/dev/null</filename>, så kan vi på et fungerende system
+   se at det er en tegn-enhed (eng.: character device) med
+   primærnummeret 1 og sekundærnummeret 3:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ls -l /dev/null</userinput>
+crw-rw-rw-    1 root     root       1,   3 jan 21 21:22 /dev/null
+</screen>
+   Det er c'et i første søjle der fortæller os at det er en
+   tegn-enhed.  Alternativet er at det er en blok-enhed, hvilket
+   markeres med et b i første søjle.  Vi kan nu ovre på systemet, hvor
+   <filename>/dev/null</filename> er forsvundet genoprette enheden:
+<screen>
+<prompt>[root@saltholm ~]# </prompt><userinput>mknod /dev/null c 1 3</userinput>
+<prompt>[root@saltholm ~]# </prompt><userinput>ls -l /dev/null</userinput>
+crw-r--r--    1 root     root       1,   3 jan 21 21:25 /dev/null
+</screen>
+   Nu er enheden oprettet, men ikke med de helt rigtige rettigheder.
+   Det kan vi rette op på med <command>chmod</command>:
+<screen>
+<prompt>[root@saltholm ~]# </prompt><userinput>chmod go+w /dev/null</userinput>
+<prompt>[root@saltholm ~]# </prompt><userinput>ls -l /dev/null</userinput>
+crw-rw-rw-    1 root     root       1,   3 jan 21 21:26 /dev/null
+</screen>
+  </para>
+ </sect1>
+
+ <sect1 ID="sysadm-afslutning">
+  <title>Tips og tricks</title>
+
+  <para>
+   Der er meget mere i systemadministration, end dette korte kapitel
+   har præsenteret. Til Linux findes der især to dokumenter, som er
+   gode at læse, nemlig "System Administrator's Guide" (SAG) og
+   "Network Administrator's Guide" (NAG) - begge kan hentes fra <ulink
+   url="http://sunsite.dk/ldp">http://sunsite.dk/ldp</ulink> og følger
+   med Red Hat-distributionen. De er en del af "Linux Documentation
+   Project" (LDP). Red Hat's hjemmeside indeholder endvidere en række
+   gode tricks og nyttige oplysninger. De bedste bøger om Unix
+   systemadministration er uden tvivl Æleen Frisch's "Essential System
+   Administration" udgivet af O'Reilly, og "UNIX System Administration
+   Handbook" (Evi Nemeth, Garth Snyder, Scott Seebass og Trent
+   R. Hein) udgivet af Prentice Hall PTR.
+  </para>
+
+  <para>
+   Vil du vide mere om sikkerhedskopiering under Linux, så kig i "The
+   Linux System Administrators' Guide": <ulink
+   url="http://www.linuxdoc.org/LDP/sag/index.html">http://www.linuxdoc.org/LDP/sag/index.html</ulink>.
+  </para>
+ </sect1>
 </chapter>
