@@ -121,13 +121,13 @@ pakhtml:
 html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
 	@echo "Target er HTML i" $(targetshortname)/bog
-	touch test.inc
 	rm -rf $(targetname)*
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
+	touch test.inc
 	cp *.inc tempdir
 	rm -f test.inc
 	(cd tempdir; jade -t sgml -E 1 -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
@@ -159,7 +159,10 @@ bog/enfil.html: $(sgmlfiler)
 	@echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bog1
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	touch test.inc
 	cp *.sgml bog1
+	cp *.inc bog1
+	rm -f test.inc
 	(cd bog1; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
 	(cd bog1; perl ../collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
 	(cd bog1; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > index.html)
@@ -190,14 +193,20 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	perl ./collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	touch test.inc
 	cp *.sgml tempdir
+	cp *.inc tempdir
+	rm -f test.inc
 	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 
 	@echo "Target er" $(targetname)_pdf.zip
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
+	touch test.inc
+	cp *.inc bogpdf
 	cp *.sgml bogpdf
+	rm -f test.inc
 	rm -f $(targetname)-*.pdf
 	cp images/*.png bogpdf
 	(cd bogpdf; perl ../../httpsplit.pl *.sgml)
@@ -216,7 +225,10 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	mkdir bogps
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
+ 	touch test.inc	
+	cp *.inc bogps
 	cp *.sgml bogps
+	rm -f test.inc
 	(cd bogps; perl ../../httpsplit.pl *.sgml)
 	(cd bogps; db2ps bog.sgml )
 	mv bogps/bog.ps $(targetname)-$(version).ps
