@@ -2,9 +2,9 @@
 
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
-all: cvs2html filer
+all: cvs2htmlweb filer
 
-release: cvs2html filer 
+release: cvs2htmlweb filer 
 
 start:
 	@for dir in $(SUBDIRS); do \
@@ -56,7 +56,7 @@ clean: start
 	rm -f dato.sgml version.sgml
 	rm -f *~*~  .#*[0-9]
 
-cvs2html:
+cvs2htmlweb:
 	chmod +x /home/pto/utils/cvs2html
 	rm -rf cvs2html
 	mkdir cvs2html
