@@ -387,15 +387,10 @@ function vistype($type) {
       form => "-eksempler-",
       last => ".tar.gz"
     ),
-    "SGML" => array(
+    "kildetekst" => array(
       first => "linuxbog-",
-      form => "-sgml-",
+      form => "-dist-",
       last => ".tar.gz"
-    ),
-    "SGMLzip" => array(
-      first => "linuxbog-",
-      form => "-sgml-",
-      last => ".zip"
     ),
     "TODO" => array(
       first => ".",
@@ -582,7 +577,7 @@ Indholdet af bøgerne diskuteres på
 </p>
 
 <p>
-Vil du følge med i hvad der sker med vores kilde-kode (SGML-filerne), 
+Vil du følge med i hvad der sker med vores kilde-kode (SGML/dist-filerne), 
 <a href="http://cvs.linuxbog.dk/">så se her</a>.
 </p>
 
