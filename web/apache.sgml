@@ -49,6 +49,7 @@ man f.eks. kan indsætte data fra en database direkte i sider (Perl/PHP/Python).
 
 <sect3 id="apache-historie">
 <title>Lidt historie bag Apache</title>
+<indexterm><primary>Webserver</primary><secondary>Apache historie</secondary></indexterm>
 <para>
 Apache serveren startede sit liv som et "patch-kit" (et sæt ændringer)
 til NCSA-serveren, og det er da også der navnet oprindligt kommer - A
@@ -68,16 +69,27 @@ og gratis.
 
 <para>
 Apache er i skrivende stund nået til version 1.3.12, og er en af de
-hurtigste og mest stabile webservere. Der arbejdes på version 2.0, som
+mest stabile webservere. Dens markedsandel på ca. 60% af Internettet
+er vist det mest sigende bevis på hvor god den er. 
+Der arbejdes på version 2.0, som
 bliver den næste større release.  Denne forventes klar i den sidste
 del af år 2000. Den nye udgave vil blandt andet blive endnu mere
 modulær end den eksisterende.
 </para>
+
+<para>
+Har du brug for en meget hurtig webserver (Apache er hurtig), så
+findes Tux-1.0, som er tunet meget kraftigt til en performance, der
+oftest ligger langt over en tilsvarende MS IIS.
+</para>
+
 </sect3>
 </sect2>
 
 <sect2 id="apache-installation">
 <title>Apache installation</title>
+<indexterm><primary>Webserver</primary><secondary>Apache installation</secondary></indexterm>
+
 <para>
 Når du skal installere en apache web-server, skal du sikre dig, at du
 har seneste udgave.  Du kan enten vælge at installere den fra nogle
@@ -91,16 +103,27 @@ oversættes ind i apache-serveren.
 <title>Apache installation fra pakker</title>
 <para>
 Du kan normalt finde pakker til Red Hat, Debian og andre
-linux-distributioner med Apache.  At anvende pakker kræver normalt du
+Linux-distributioner med Apache.  At anvende pakker kræver normalt du
 har root-adgang til maskinen, du vil installere serveren på.  Hvis du
 vælger at benytte en sådan, vil du normalt blot få en "standard
 apache" (alt efter pakken), som installeres i f.eks.
 <filename>/usr/local/apache</filename> og som kører på port 80.
-I debian mv. installeres de binære filer under <filename>/usr/sbin/</filename>
+</para>
+
+<para>
+I Debian mv. installeres de binære filer under <filename>/usr/sbin/</filename>
 og opsætningsfiler findes i <filename>/etc/apache/</filename>.
-I debian startes og stoppes Apache bedst hvis man anvender
+I Debian startes og stoppes Apache bedst hvis man anvender
 scriptet i /etc/init.d/debian, der også kan anvendes til at
 genindlæse en opdateret konfigurationsfil.
+</para>
+
+<para>
+I Red Hat 7.0 installeres Apache via <filename>apache*.rpm</filename>,
+som følger med distributionen. Skal du have PHP4 med så skal du
+dernæst installere <filename>mod_php-4.0*.rpm</filename>.
+Webserveren sættes op til at din dokument-root (der hvor filer
+gemmes) i <filename>/var/www/html/</filename>. 
 </para>
 
 <para>
@@ -113,7 +136,7 @@ direkte fra kildeteksten.
 </sect3>
 
 <sect3 id="apache-installation-fra-kildeteksten">
-<title>Apache installation fra pakker</title>
+<title>Apache installation fra tar-pakker</title>
 <para>
 For at installere (og anvende) apache, behøver du ikke root-adgang til
 maskinen. Der vil blot være nogle begrænsninger af hvor du kan
@@ -197,8 +220,10 @@ igen at erstatte PREFIX med stien til installations-biblioteket.
 
 <para>
 Apache's configurations-filer kan du finde i PREFIX/conf. Den fil du
-skal have fat i er httpd.conf.  Httpd.conf indeholder et hav af
-indstillingsmuligheder, så vi vil kun lige berøre de mest basale her.
+skal have fat i er <filename>httpd.conf</filename>.  For Red Hat
+finder du filen i <filename>/etc/httpd/conf/httpd.conf</filename>.
+Denne fil indeholder et hav af indstillingsmuligheder, så vi vil kun
+lige berøre de mest basale her.
 </para>
 
 <sect3>
@@ -213,6 +238,8 @@ bør du nok vælge port 80.
 
 <sect3>
 <title>Logfiler</title>
+<indexterm><primary>Apache</primary>
+<secondary>logfiler</secondary></indexterm>
 <para>
 Apache laver 2 logfiler som udgangspunkt - en access-log, som
 fortæller hvem der har besøgt din server, og en error-log, som
@@ -334,6 +361,115 @@ Her tillades at der eksekveres cgi-programmer, hvis de har endelsen .cgi, overal
 alle ikke .cgi-filer vil blive leveret som normalt.
 </para>
 </sect3>
+
+<sect3 id="apache-virtuelle-hosts">
+<title>Virtuelle hosts med Apache</title>
+<indexterm><primary>Apache</primary>
+<secondary>virtuelle webservere</secondary></indexterm>
+<indexterm><primary>virtuelle webservere</primary></indexterm>
+<para>
+En Linux maskine med Apache kan nemt være webserver for mange 
+domæner samtidig. Man opretter såkaldte "virtual hosts" på
+maskinen. Har du en DNS-server skal du sørge for at alle dine 
+virtuelle webservere er oprettet med samme IP-adresse. Har du ikke
+DNS, så sørg for at dine <filename>/etc/hosts</filename>-filer har
+linier med samme IP-nummer og hver sit webserver maskinnavn. Eksempel
+for et hjemmenetværk:
+</para>
+
+<screen>
+192.168.1.1     www.hjemmenet www
+192.168.1.1     test.hjemmenet test 
+</screen>
+
+<para>
+Dernæst skal webserveren sættes op, så de to virtuelle webservere
+tager fat i hver deres kataloger på harddisken. Lad os i eksemplet
+anvende <filename>/home/www/www.hjemmenet</filename> og
+<filename>/home/www/test.hjemmenet</filename>. Man kan tænke på at de
+to steder er til den egentlige webserver, og
+<filename>/home/www/test.hjemmenet</filename> er et test-område til
+nye hjemmesider.
+</para>
+
+<para>
+Man skal redigere <filename>httpd.conf</filename> (Red Hat
+<filename>/etc/httpd/conf/httpd.conf</filename>). Led efter følgende tekst
+</para>
+
+<screen>
+### Section 3: Virtual Hosts
+#
+# VirtualHost: If you want to maintain multiple domains/hostnames on your
+# machine you can setup VirtualHost containers for them.
+# Please see the documentation at &lt;URL:http://www.apache.org/docs/vhosts/&gt;
+# for further details before you try to setup virtual hosts.
+# You may use the command line option '-S' to verify your virtual host
+# configuration.
+</screen>
+
+<para>
+Efter dette indsætter du først IP-adressen på web-serveren under
+<filename>NameVirtualHost</filename>
+</para>
+
+
+<screen>
+NameVirtualHost 192.168.1.1
+
+&lt;VirtualHost 192.168.1.1&gt;
+  ServerName www.hjemmenet
+  DocumentRoot /home/www/www.hjemmenet
+  &lt;Directory "/home/www/www.hjemmenet/"&gt;
+    Options Indexes FollowSymLinks Includes
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+    XBitHack full
+  &lt;/Directory&gt;
+  DirectoryIndex index.shtml index.html index.htm index.php
+
+  ServerAdmin root@localhost
+  ErrorLog logs/www-error_log
+  CustomLog logs/www-access_log common
+&lt;/VirtualHost&gt;
+
+&lt;VirtualHost 192.168.1.1&gt;
+  ServerName test.hjemmenet
+  DocumentRoot /home/www/test.hjemmenet
+  &lt;Directory "/home/www/test.hjemmenet/"&gt;
+    Options Indexes FollowSymLinks Includes
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+    XBitHack full
+  &lt;/Directory&gt;
+  DirectoryIndex index.shtml index.html index.htm index.php
+
+  ServerAdmin root@localhost
+  ErrorLog logs/test-error_log
+  CustomLog logs/test-access_log common
+&lt;/VirtualHost&gt;
+</screen>
+
+<para>
+Som det kan ses har vi tillads at man følger links "FollowSymLinks"
+(pas på hvis disse peger udenfor
+<command>DocumentRoot</command>-området). Vi har også sat at man leder
+efter indeks-filer med navne <filename>index.shtml</filename>,
+<filename>index.html</filename>,
+<filename>index.htm</filename> eller 
+<filename>index.php</filename>. Vi har med "Includes" valgt, at
+webserveren skal fortolke hjemmesider, så du kan opdele siderne i
+forskellige filer, der så indlæses af serveren via linier, såsom
+(noter at der anvendes to minusser ikke kun et).
+</para>
+
+<screen>
+&lt;!--#include virtual="venstremenu.incl" --&gt;
+</screen>
+</sect3>
+
 </sect2>
 
 <sect2>
