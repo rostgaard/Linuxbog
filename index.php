@@ -33,6 +33,8 @@
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
    if (file_exists($DOCUMENT_ROOT."includes/top.phtml")) {
      include($DOCUMENT_ROOT."includes/top.phtml");
+   } else if (file_exists($f="top.php")) {
+	include($f);
    }
 
    list($width,$height) = getimagesize("front.png");
@@ -587,7 +589,9 @@ Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  if (file_exists($DOCUMENT_ROOT."includes/bottom.phtml")) {
-    include($DOCUMENT_ROOT."includes/bottom.phtml");
-  }
+	if (file_exists($DOCUMENT_ROOT."includes/bottom.phtml")) {
+		include($DOCUMENT_ROOT."includes/bottom.phtml");
+	} else if (file_exists($f="bot.php")) {
+		include($f);
+	}
 ?>
