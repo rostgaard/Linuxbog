@@ -1,0 +1,97 @@
+#-----------------------------------------------------------------------------
+#--  Variable:
+
+# Lokalt katalog (fuld sti)
+locdirname:=$(shell pwd)
+
+# Kort navn
+targetshortname:=$(notdir $(locdirname))
+
+# Med linuxbog- foran
+targetname:=linuxbog-$(notdir $(locdirname))
+
+# version
+version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
+
+# Image Magick convert
+ImageMagickconvert:=$(firstword $(wildcard /usr/bin/convert /usr/X11R6/bin/convert))
+
+#-----------------------------------------------------------------------------
+#--  Byggeregler:
+
+all: html pakket_html pakket_palm kildetekst
+#all: html pdf postscript pakket_html pakket_palm kildetekst
+
+html: stikord dato udgave
+	mkdir -p bog
+	echo '<!ENTITY magic "png">' > magic.sgml
+	cp -p images/*.png bog/
+	xmlto -o bog html bog.xml
+	tidy -mq bog/*.html || tidy -mq bog/*.html || true
+
+pdf: stikord dato udgave
+	@echo "Jeg kan ikke finde ud af at bygge PDF-udgaven."
+	@false
+	mkdir -p pdf
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	find images/*.png | sed 's=.png==' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:pdf/%.eps
+	xmlto -o pdf pdf bog.xml
+
+postscript: stikord dato udgave
+	@echo "Jeg kan ikke finde ud af at bygge postscript-udgaven."
+	@false
+	mkdir -p postscript
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:postscript/%.eps
+	xmlto -o postscript ps bog.xml
+
+pakket_html: html
+	mkdir -p $(targetname)-$(version)-html
+	cp -p bog/*.{html,png} $(targetname)-$(version)-html/
+	tar czvf     $(targetname)-$(version)-html.tar.gz $(targetname)-$(version)-html
+	zip -yourDT9 $(targetname)-$(version)-html.zip    $(targetname)-$(version)-html
+	rm -rf $(targetname)-$(version)-html
+
+pakket_palm: html
+	mkdir -p $(targetname)-$(version)-palm
+	cp -p palm/home.html      $(targetname)-$(version)-palm/
+	cp -p palm/external.html  $(targetname)-$(version)-palm/
+	cp -p ../misc/*.prc       $(targetname)-$(version)-palm/
+	cp -p ../misc/*.pdb       $(targetname)-$(version)-palm/
+	cp -p ../misc/gpl.txt     $(targetname)-$(version)-palm/
+	cp -p ../misc/plucker.txt $(targetname)-$(version)-palm/
+	(cd $(targetname)-$(version)-palm/; plucker-build -v -P . -f $(targetname))
+	zip $(targetname)-$(version)-palm.zip $(targetname)-$(version)-palm/*.prc \
+	                                      $(targetname)-$(version)-palm/*.pdb \
+	                                      $(targetname)-$(version)-palm/*.txt
+	rm -rf $(targetname)-$(version)-palm
+
+kildetekst:
+	mkdir -p $(targetname)-$(version)-source/images
+	cp -p Makefile.XML    $(targetname)-$(version)-source/Makefile
+	cp -p collateindex.pl $(targetname)-$(version)-source/collateindex.pl
+	cp -p *.sgml          $(targetname)-$(version)-source/
+	cp -p images/*.png    $(targetname)-$(version)-source/images/
+	tar czvf     $(targetname)-$(version)-source.tar.gz $(targetname)-$(version)-source
+	zip -yourDT9 $(targetname)-$(version)-source.zip    $(targetname)-$(version)-source
+	rm -rf $(targetname)-$(version)-source
+
+stikord:
+	@echo "Laver stikordsregister."
+	@perl  ./collateindex.pl    -s Symboler -t Stikordsregister -g -i stikord    -o stikord.sgml -N
+
+dato:
+	@echo "Laver datostempel."
+	@date +%d/%m-%Y > dato.sgml
+
+udgave:
+	@echo "Registrerer hvilken udgave vi er kommet til."
+	@grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml
+
+clean:
+	rm -fr bog pdf postscript
+	rm -f  dato.sgml magic.sgml stikord.sgml version.sgml
+	rm -f  $(targetname)-*-{html,source}.tar.gz
+	rm -f  $(targetname)-*-{palm}.zip
+
+#-----------------------------------------------------------------------------
