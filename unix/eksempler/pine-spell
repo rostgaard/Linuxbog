@@ -1,0 +1,200 @@
+#!/bin/bash
+#-----------------------------------------------------------------------------
+#--  Check command line arguments:
+
+if [ $# -eq 1 ]; then
+   if [ "$1" = "--help" -o "$1" = "-h" ]; then
+      echo "Usage:"
+      echo ""
+      echo "   $0 <file name>"
+      echo ""
+      echo "Checks the spelling of the file named as the first command line"
+      echo "argument. The program asks the user which dictionary should be"
+      echo "used."
+      echo ""
+      echo "The file '"'${HOME}/.pinespellrc'"' can be used to add "
+      echo "dictionaries to and remove dictionaries from the list presented"
+      echo "to the user. The file can contain three lines:"
+      echo ""
+      echo "   base_dicts:   <one dictionary> <another dictionary>"
+      echo "   ignore_dicts: <hidden dictionary> <another hidden dictionary>"
+      echo "   can_compose:  [ true | false ]"
+      echo "   da_nutids_r:  [ on | off ]"
+      echo ""
+      echo "You should use 'can_compose: true', if you have a solid knowledge"
+      echo "of how and when composite words are created in the languages you"
+      echo "are writing in."
+      echo ""
+      echo "'da_nutids_r: on' is known to cause some problems, so please be"
+      echo "careful about using it."
+      echo ""
+      exit
+   fi
+else
+   echo "Try '$0 --help' to get help on use of"
+   echo "'pine-spell'."
+   exit -1
+fi
+
+#-----------------------------------------------------------------------------
+#--  Check for selected spell checking programs:
+
+for speller in ispell aspell
+do
+   which ${speller} 2>&1 > /dev/null && spell="${speller}"
+done
+
+if [ ${spell:-none} = "none" ]; then
+   echo "No spell checking program found."
+   exit -1
+fi
+
+#-----------------------------------------------------------------------------
+#--  Read configuration:
+
+if [ -r ${HOME}/.pinespellrc ]; then
+   base_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*base_dicts:[[:space:]]+' | perl -pe 's/^[[:space:]]*base_dicts:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
+   ignore_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*ignore_dicts:[[:space:]]+' | perl -pe 's/^[[:space:]]*ignore_dicts:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   can_compose=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*can_compose:[[:space:]]+' | perl -pe 's/^[[:space:]]*can_compose:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   da_nutids_r=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*da_nutids_r:[[:space:]]+' | perl -pe 's/^[[:space:]]*da_nutids_r:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+fi
+
+#-----------------------------------------------------------------------------
+#--  Locate spell checking dictionary directories:
+
+if [ ${spell} = "aspell" ]; then
+   dict_dirs=`aspell dump config | egrep '^# dict-dir (current|default): ' | perl -pe 's/^#[[:space:]]+dict-dir[[:space:]]+(current|default):[[:space:]]+(.*)$/$2/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
+   dict_ext=
+elif [ ${spell} = "ispell" ]; then
+   dict_dirs=`ispell -vv | egrep '^[[:space:]]*LIBDIR[[:space:]]*=' | perl -pe 's/^[[:space:]]*LIBDIR[[:space:]]*=[[:space:]]*(.*)$/$1/' | perl -pe 's/^"(.*)"$/$1/'`
+   dict_ext=[.]hash
+
+   if [ -d ${HOME}/.ispell ]; then
+      dict_dirs="${HOME}/.ispell ${dict_dirs}"
+   fi
+fi
+
+#echo "dict_dirs = '${dict_dirs}'"
+
+#-----------------------------------------------------------------------------
+#--  Make dictionary list:
+
+#echo "base_dicts = '${base_dicts}'"
+
+all_dicts="${base_dicts}"
+
+for dict_dir in ${dict_dirs}
+do
+   all_dicts="${all_dicts} `\ls ${dict_dir} | egrep "${dict_ext}"'$' | perl -pe 's/'"${dict_ext}"'$//' | tr '\n' ' '`"
+done
+
+all_dicts=`echo "${all_dicts}" | tr ' ' '\n' | sort -u`
+
+#echo "all_dicts = '${all_dicts}'"
+
+#-----------------------------------------------------------------------------
+#--  Spell checking dictionaries to ignore:
+
+ignore_dict_pattern=`echo "${ignore_dicts}" | tr '\n' ' ' | perl -pe 's/^[ ]*//' | perl -pe 's/[ ]+$//' | tr ' ' '|'`
+
+dicts=`echo "${all_dicts}" | egrep -v '^('"${ignore_dicts}"')$' | tr '\n' ' ' | perl -pe 's/^[ ](.*)[ ]$/$1/'`
+
+#-----------------------------------------------------------------------------
+#--  Chose dictionary:
+
+echo "VÊlg ordbog (enter for dansk): ${dicts}"
+read dictionary
+dictionary=${dictionary:-dansk}
+
+found=false
+for directory in ${dict_dirs}
+do
+   if [ -r ${directory}/${dictionary}${dict_ext} ]; then
+      found=true
+      dictionary_file=${directory}/${dictionary}${dict_ext}
+   fi
+done
+
+until [ ${found} = true ]
+do
+   echo "Kunne ikke finde en '${dictionary}' ordbog."
+   echo "VÊlg ordbog (enter for dansk): ${dicts}"
+   read dictionary
+   dictionary=${dictionary:-dansk}
+
+   for directory in ${dict_dirs}
+   do
+      if [ -r ${directory}/${dictionary}${dict_ext} ]; then
+         found=true
+         dictionary_file=${directory}/${dictionary}${dict_ext}
+      fi
+   done
+done
+
+#-----------------------------------------------------------------------------
+#--  Start spell checking program:
+
+if [ ${spell} = ispell ]; then
+   #--------------------------------------------------------------------------
+   #--  Ispell:
+
+   if [ "${HOME}/.ispell/${dictionary}${dict_ext}" = "${dictionary_file}" ]
+   then
+      dictionary_file=${HOME}/.ispell/${dictionary}
+   else
+      dictionary_file=${dictionary}
+   fi
+
+   if [ ${can_compose:-false} = true ]; then
+      ispell_flags='-b -S -w·¡‡¿–È…Ë»ÌÕÛ”˙⁄˝›¸‹Ê∆‰ƒ¯ÿˆ÷Â≈'
+   else
+      if [ ${dictionary} = dansk -o \
+           ${dictionary} = deutsch -o \
+           ${dictionary} = f¯royskt -o \
+           ${dictionary} = norsk -o \
+           ${dictionary} = svenska ]; then
+         ispell_flags='-b -C -S -w·¡‡¿–È…Ë»ÌÕÛ”˙⁄˝›¸‹Ê∆‰ƒ¯ÿˆ÷Â≈'
+      else
+         ispell_flags='-b -S -w·¡‡¿–È…Ë»ÌÕÛ”˙⁄˝›¸‹Ê∆‰ƒ¯ÿˆ÷Â≈'
+      fi
+   fi
+
+   speller=`which ${spell}`
+
+   case ${dictionary} in
+      dansk)
+         if [ ${da_nutids_r:-off} = on ]; then
+            perl -i -pe 'use locale; s/(\W(at|vil|ville|kan|kunne|skal|skulle|mÂ|mÂtte) \w+)r(\W)/$1#$3/gim' $@
+         fi
+
+         exec ${speller} -d ${dictionary_file} ${ispell_flags} $@
+         ;;
+      *)
+         exec ${speller} -d ${dictionary_file} ${ispell_flags} $@
+         ;;
+   esac
+
+   #--------------------------------------------------------------------------
+elif [ ${spell} = aspell ]; then
+   #--------------------------------------------------------------------------
+   #--  Aspell:
+
+   speller=`which ${spell}`
+
+   case ${dictionary} in
+      dansk)
+         perl -i -pe 'use locale; s/(\W(at|vil|ville|kan|kunne|skal|skulle|mÂ|mÂtte) \w+)r(\W)/$1#$3/gim' $@
+         exec ${speller} --lang=dansk         check $@
+         ;;
+      *)
+         exec ${speller} --lang=${dictionary} check $@
+         ;;
+   esac
+
+   #--------------------------------------------------------------------------
+else
+   echo "No configuration for the spell checking command '${spell}'."
+   exit -2
+fi
+
+#-----------------------------------------------------------------------------
