@@ -496,6 +496,11 @@ indeks-register.</a>
 </p>
 
 <p>
+Se også vores konkurrenters bog ;-) "Linux i skolen" på 
+<a href="http://www.gnuskole.dk">http://www.gnuskole.dk</a> 
+</p>
+
+<p>
 Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
 </p>
 
