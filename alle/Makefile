@@ -17,8 +17,10 @@ dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)
 badfiles1 = $(wildcard ../*/dato.sgml)
 badfiles2 = $(wildcard ../*/magic.sgml)
 badfiles3 = $(wildcard ../*/stikord.sgml)
-badfiles4 = $(wildcard ../*/version.sgml)
-badfiles = $(badfiles1) $(badfiles2) $(badfiles3) $(badfiles4)
+badfiles4 = $(wildcard ../*/ophavsret.sgml)
+badfiles5 = $(wildcard ../*/bogoversigt.sgml)
+badfiles6 = $(wildcard ../*/version.sgml)
+badfiles = $(badfiles1) $(badfiles2) $(badfiles3) $(badfiles4) $(badfiles5) $(badfiles6)
 
 # Her er en liste af sgml-filer der skal checkes
 totalsgmlfiler=$(wildcard ../alle/*.sgml) \
@@ -76,6 +78,7 @@ html: statusfiles versionfil $(targetshortname)
 $(targetshortname): alle/index.html
 
 alle/index.html: $(sgmlfiler)
+#	echo $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
 	rm -rf stikord.sgml magic.sgml bog alle
 	echo '<!ENTITY magic "png">' > magic.sgml
