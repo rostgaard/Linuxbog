@@ -232,13 +232,6 @@ function vistype($type) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
-    "kontorplatform" => array(
-      title => "Linux - Friheden til at vælge IT-løsning",
-      comment => "Valg af Linux-baseret IT-løsning",
-      auth => array(
-        "Michael Rasmussen" => "mir@miras.org"
-      )
-    ),
    "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
@@ -410,7 +403,8 @@ if ($matrix) { ?>
 <font size="-1">
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
-[<a href="?all=t">Alle filtyper</a>]<br>
+[<a href="?all=t">Alle filtyper</a>]
+[<a href="laese-vejledning.html">Læsevejledning</a>]<br>
 [<a href="http://cvs.sslug.dk/linuxbog/search">Søg i sgml-filer</a>]
 [<a href="hjaelpe.html">Om at hjælpe</a>]
 [<a href="alle/bog/stikord.html">Stikord</a>]
