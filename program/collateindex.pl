@@ -1,7 +1,6 @@
 # -*- Perl -*-
 #
 
-
 use Getopt::Std;
 
 $usage = "Usage: $0 <opts> file
