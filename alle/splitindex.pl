@@ -10,6 +10,7 @@ my $file = "";
 my $filetitle = "";
 
 my $header1 = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+<!-- Denne fil er oprettet af $0 -->
 <HTML>
   <HEAD>
     <TITLE>";
