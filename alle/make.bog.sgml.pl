@@ -23,7 +23,7 @@ foreach $bog (@ARGV) {
 	if (m/\<\!ENTITY\s+(\S+)\s+SYSTEM\s+\"(\S+)\"\>/) {
 	    # print "Fandt: $1 == $2\n";
 	    if (!($2 =~ m/stikord.sgml/)) {
-		print "<!ENTITY $1 SYSTEM \"../../$bog/$2\">\n";
+		print "<!ENTITY $1 SYSTEM \"../$bog/$2\">\n";
 	    }
 	} else {
 	    # print "Ingen match på $_";
