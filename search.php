@@ -13,13 +13,18 @@
    $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
    $maintain_name = "Hans Schou";       // Skriv dit navn her
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
-   include($DOCUMENT_ROOT."/includes/top.phtml");
+   if (file_exists($f = $DOCUMENT_ROOT."/includes/top.phtml"))
+     include($f);
 
    list($width,$height) = @getimagesize("front.png");
 
    # \\ skal laves om til \
    #if (isset($q))
    #  $q = preg_replace("|\\\\\\\|", "\\", $q);
+
+
+if (!$ml)
+  $ml = $HTTP_HOST=="cvs.sslug.dk" ? "sg" : "ht";
 
 ?>
 
@@ -28,6 +33,10 @@
 <h1>SSLUG - Friheden til at søge i sgml/html-filer</h1>
 
 <form action="<?php echo $PHP_SELF ?>" method="get">
+Søg i
+<input type=radio name=ml value="sg"<?php echo $ml=="sg"?" checked":"" ?>> SGML
+<input type=radio name=ml value="ht"<?php echo $ml=="ht"?" checked":"" ?>> HTML
+<br>
 Søg efter:
 <input type="text" name="q" value="<?php echo $q ?>" size="40">
 <input type="submit" name="s" value="Submit">
@@ -81,12 +90,12 @@ if ($q) {
   flush();
   $d = dir(".");
   while ($dir = $d->read())
-    if (@is_dir($dir)) {
+    if (is_dir($dir)) {
       # Prøv og find nogle SGML filer
-      if (preg_match("|^[a-z0-9]+$|", $dir))
+      if ($ml=="sg" && preg_match("|^[a-z0-9]+$|", $dir))
         $count += searchdir($dir, "sgml", $q);
       # prøv med HTML
-      if (@is_dir("$dir/bog"))
+      if ($ml=="ht" && is_dir("$dir/bog"))
         $count += searchdir("$dir/bog", "html", $q);
     }
   $d->close();
@@ -98,5 +107,6 @@ if ($q) {
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  include($DOCUMENT_ROOT."/includes/bottom.phtml");
+   if (file_exists($f = $DOCUMENT_ROOT."/includes/bottom.phtml"))
+     include($f);
 ?>
