@@ -70,70 +70,174 @@ bruge <command>e2fsck</command>:
 
 <!-- skrevet af Hanne Munkholm http://www.linuxlab.dk/fcl/technotes/badblocks.php -->
 <sect1 id="bad-blocks">
-<title>Defekte blokke på harddisken</title>
+ <title>Defekte blokke på harddisken</title>
 
-<indexterm>
+ <indexterm>
   <primary>badblocks</primary>
-</indexterm>
-<indexterm>
+ </indexterm>
+
+ <indexterm>
   <primary>e2fsck</primary>
-</indexterm>
-<indexterm>
-  <primary>Defekt blokke på harddisk</primary>
-</indexterm>
-<indexterm>
-  <primary>Harddisk</primary>
-  <secondary>Defekt blokke</secondary>
-</indexterm>
+ </indexterm>
 
-<para>
-Hvis man har en harddisk med defekte blokke på så bliver man
-nødt til at finde dem og få filsystemet til at gå uden om.
-I det følgende gives en vejledning i at gøre dette.
-</para>
+ <indexterm>
+  <primary>defekte blokke på harddisk</primary>
+ </indexterm>
 
-<para>
-Start op på en Red Hat cdrom. Skriv: "linux rescue"
-ved den prompt man får frem.
-</para>
+ <indexterm>
+  <primary>harddisk</primary>
+  <secondary>defekte blokke</secondary>
+ </indexterm>
 
-<para>
-Redningsproceduren (eng. rescue) vil bede om at få sprog og keyboard
-valgt - eksakt som det gøres ved en egentlig installation. Bare rolig
-- det er ikke en installation vi starter på. Når redningsproceduren
-beder om at montere root-filsystemet under
-<filename>/mnt/sysimage</filename> skal der bare svares "no" (nej), og
-derefter får man en shell.
-</para>
+ <para>
+  Hvis man har en harddisk med defekte blokke på så bliver man nødt
+  til at finde dem og få filsystemet til at gå uden om.  I det
+  følgende gives en vejledning i at gøre dette.
+ </para>
 
-<para>
-Kør nu kommandoen <command>badblocks -o /tmp/blocks
-/dev/hda5</command> hvor <filename>hda5</filename> erstattes af den
-partition man ønsker at tjekke for defekte blokke, og 
-<filename>/tmp/blocks</filename> er et arbitrært valgt filnavn.
-</para>
+ <sect2 id="starte-alternativt-system">
+  <title>Starte maskinen uden om harddisken(e)</title>
 
-<para>
-Derefter <emphasis>kan</emphasis> man læse filen med 
-<command>cat /tmp/blocks</command> for at se om der blev fundet nogle
-defekte blokke. Hvis der ikke blev fundet nogen, så behøver man ikke
-at fortsætte.
-</para>
+  <para>
+   Hvis du har en Red Hat-cdrom, kan du starte maskinen fra den. Det
+   kan kræve en ændring i opsætningen af din BIOS-opsætning, som vi
+   dog ikke vil komme ind på her. Når der kommer en LILO-promt frem
+   skriver du: "linux rescue".
+  </para>
 
-<para>
-Kør derefter <command>e2fsck -l /tmp/blocks /dev/hda5</command>.
-Dette indsætter listen over de defekte blokke fra
-<filename>/tmp/blocks</filename> i filsystemets liste over defekte
-blokke. Tryk "Ctrl-d" for at komme ud af shellen og genstarte maskinen.
-Husk at tage din cdrom ud.
-</para>
+  <para>
+   Redningsproceduren (eng. rescue) vil bede om at få sprog og
+   tastatur valgt - eksakt som det gøres ved en egentlig
+   installation. Bare rolig - det er ikke en installation vi starter
+   på. Når redningsproceduren beder om at montere rod-filsystemet
+   under <filename>/mnt/sysimage</filename> skal der bare svares "no"
+   (nej), og derefter får man en kommandofortolker.
+  </para>
 
-<para>
-Herefter vil maskinen ikke længere prøve at anvende de defekte 
-blokke på harddisken.
-Mere information om de anvendte kommandoer kan læses 
-på <command>man badblocks</command> og <command>man e2fsck</command>. 
-</para>
+  <para>
+   Hvis du i stedet har et "bootable business card" fra Linuxcare (det
+   er en cdrom i visitkort-størrelse), skal du igen starte maskinen
+   fra den. Når systemet er startet får du besked om hvad visitkortets
+   brugernavn og adgangskode er (på mit er det henholdsvis "root" og
+   "linuxcare") og bliver bedt om at logge ind. Et lille
+   irritationsmoment ved Linuxcares cdrom er at det går ud fra at der
+   sidder et amerikansk tastatur på maskinen, så tasterne ikke
+   nødvendigvis giver det tegn der er trykt på dem.
+
+   <!-- Hvornår får vi tastaturer, der sender ISO-10646-koden for de
+        tegn der er vist på deres taster, i stedet for meningsløse
+        koder? -->
+  </para>
+ </sect2>
+
+ <sect2 id="hvilke-filsystemer-skal-tjekkes">
+  <title>Hvilke filsystemer skal tjekkes?</title>
+
+  <para>
+   Linuxcare-cdrom'en vil give dig en liste med de tilgængelige filsystemer
+   når du er logget ind. Den kan for eksempel se sådan ud:
+<screen>
+...
+/dev/cloop on /mnt/cdrom type ext3 (ro)
+/dev/hda2 on /mnt/0 type ext2 (ro)
+/dev/hda3 on /mnt/1 type ext2 (ro)
+...
+</screen>
+   Du vil typisk være interesseret i de filsystemer, der er monterede
+   som <filename>/mnt/</filename>-et-eller-andet-tal, og som er af
+   typen "ext2". Vi kan foreksempel være interesserede i filsystemet
+   på partitionen <filename>/dev/hda2</filename>.
+  </para>
+
+  <para>
+   Hvis du ikke automatisk får en liste med hvad der er af filsystemer
+   i maskinen, kan du bruge kommandoen <command>mount</command> til at
+   få oplysninger om hvilke filsystemer der er monterede:
+<screen>
+<prompt>[root@lnx-bbc ~]# </prompt><userinput>mount -l</userinput>
+/dev/sda2 on / type ext2 (rw) []
+none on /proc type proc (rw)
+/dev/sda3 on /boot type ext2 (rw) []
+/dev/vg1/lv_home on /home type ext2 (rw)
+/dev/vg1/lv_usr on /usr type ext2 (rw)
+none on /dev/pts type devpts (rw,gid=5,mode=620)
+/dev/hdb1 on /backup type ext2 (rw) []
+</screen>
+   Og hvis det ikke giver nok oplysninger, kan du bruge kommandoen
+   <command>fdisk</command> til at spørge til partitioneringen af dine
+   diske. IDE-diske (det typiske i skrivebordsmaskiner) har i Linux
+   navnene <filename>/dev/hd</filename>-et-eller-andet-bogstav. Et
+   linux-systems anden IDE-disk hedder således
+   <filename>/dev/hdb</filename> og du kan spørge til dens opdeling
+   med kommandoen:
+<screen>
+<prompt>[root@lnx-bbc ~]# </prompt><userinput>fdisk -l /dev/hdb</userinput>
+
+Disk /dev/hdb: 16 heads, 63 sectors, 59560 cylinders
+Units = cylinders of 1008 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdb1             1     59560  30018208+  83  Linux
+</screen>
+  </para>
+ </sect2>
+
+ <sect2 id="finde-og-maerke-daarlige-blokke">
+  <title>Finde og mærke dårlige blokke</title>
+
+  <para>
+   Kør nu kommandoen <command>badblocks -o /tmp/blocks
+   /dev/hda5</command> hvor <filename>hda5</filename> erstattes af den
+   partition man ønsker at tjekke for defekte blokke, og
+   <filename>/tmp/blocks</filename> er et arbitrært valgt filnavn.
+  </para>
+
+  <para>
+   Ældre udgaver af programmet <command>badblocks</command> skal have
+   at vide hvor mange blokke der er på den partition der skal
+   tjekkes. Den oplysning kan man få ved at bede
+   <command>fdisk</command> om en liste med alle partitionerne på den
+   relevante disk. Den disk partitionen <filename>/dev/hda2</filename>
+   ligger på hedder <filename>/dev/hda</filename> (man stryger altså
+   bare nummeret):
+<screen>
+<prompt>[root@lnx-bbc ~]# </prompt><userinput>fdisk -l /dev/hda</userinput>
+...
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1             1        70    529168+  82  Linux Swap
+/dev/hda2   *        71       487   3152520   83  Linux
+...
+</screen>
+   Det er tallet <literal>3152520</literal> vi er ude efter. Det føjes
+   til som et sidste argument til <command>badblocks</command>:
+<screen>
+<prompt>[root@lnx-bbc ~]# </prompt><userinput>badblocks -o /tmp/blocks /dev/hda 3152520</userinput>
+</screen>
+  </para>
+
+  <para>
+   Derefter <emphasis>kan</emphasis> man læse filen med <command>cat
+   /tmp/blocks</command> for at se om der blev fundet nogle defekte
+   blokke. Hvis der ikke blev fundet nogen, så behøver man ikke at
+   fortsætte.
+  </para>
+
+  <para>
+   Hvis der blev fundet defekte blokke skal du dernæst køre kommandoen
+   <command>e2fsck -l /tmp/blocks /dev/hda5</command>.  Den indsætter
+   listen over de defekte blokke fra <filename>/tmp/blocks</filename>
+   i filsystemets liste med defekte blokke. Til sidst taster du
+   "Ctrl-d" for at komme ud af kommandofortolkeren og genstarte
+   maskinen.  Husk at tage din cdrom ud.
+  </para>
+
+  <para>
+   Herefter vil maskinen ikke længere prøve at bruge de defekte blokke
+   <command>badblocks</command> fandt på harddisken.  Du kan finde en
+   mere information om de kommandoerne med <command>man
+   badblocks</command> og <command>man e2fsck</command>.
+  </para>
+ </sect2>
 </sect1>
 
 
