@@ -1376,6 +1376,182 @@ FAQ's og mere.
 </sect3>
 </sect2>
 
+<sect2 id="Ogle">
+<title>Ogle til afspilning af DVD</title>
+<indexterm><primary>Ogle</primary></indexterm>
+<para>
+En af de bedre DVD afspillere der er til linux er Ogle, der er understøttelse 
+af menuer i den og den kan afspille uden tab af frames på en 700 mhz Duron 
+processor. Den følgende beskrivelse passer til Mandrake.
+</para>
+
+<sect3 id="ogle-installation">
+<title>Installation af Ogle</title>
+<para>
+Hent filerne:
+<filename>ogle-0.8.1.tar.gz</filename>,
+<filename>ogle_gui-0.7.5.tar.gz</filename> og 
+<filename>libdvdread-0.9.2.tar.gzlibdvdread-0.9.2.tar.gz
+fra <ulink url="http://www.dtek.chalmers.se/groups/dvd/downloads.shtml">http://www.dtek.chalmers.se/groups/dvd/downloads.shtml</ulink>.
+</para>
+
+<para>
+Derudover
+<filename>a52dec-0.7.1b.tar.gz</filename>
+fra <ulink url="http://liba52.sourceforge.net/">http://liba52.sourceforge.net/</ulink> og 
+<filename>libxml2-2.4.9.tar.gz</filename> 
+fra <ulink url="ftp://xmlsoft.org/">ftp://xmlsoft.org/</ulink>.
+</para>
+
+<para>
+Alle filerne placeres i <filename>/usr/local</filename> og det kan være at 
+versionsnumrene er øget siden dette er skrevet.
+</para>
+
+<para>
+Den første der skal installeres er <filename>libdvdread</filename>.
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /usr/local</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>tar xzf libdvdread-0.9.2</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>cd libdvdread-0.9.2</USERINPUT>
+<PROMPT>[root@linus /usr/local/libdvdread-0.9.2]#</PROMPT> <USERINPUT>./configure && make && make install</USERINPUT>
+</screen>
+
+<para>
+Så bliver de nye biblioteker installeret i
+<filename>/usr/local/lib</filename>. Har du ikke før oversat og
+installeret biblioteker i <filename>/usr/local/lib</filename>, så skal
+du sikre dig at programmet <command>ld</command> (linker-programmet)
+kan finde filerne, dette gøres ved at tilføje linien:
+<filename>/usr/local/lib</filename> til filen
+<filename>/etc/ld.so.conf</filename>.
+</para>
+
+<para>
+Bagefter køres programmet:
+<command>ldconfig</command>
+</para>
+
+<para>
+Så skal a52dec installeres:
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>tar xzf a52dec-0.7.1b.tar.gz</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>cd a52dec-0.7.1b</USERINPUT>
+<PROMPT>[root@linus /usr/local/a52dec-0.7.1b]#</PROMPT> <USERINPUT>./configure && make && make install</USERINPUT>
+</screen>
+
+<para>
+Så gælder det xml2 der skal installeres:
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>tar xzf libxml2-2.4.9.tar.gz</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>cd libxml2-2.4.9</USERINPUT>
+<PROMPT>[root@linus /usr/local/libxml2-2.4.9]#</PROMPT> <USERINPUT>./configure && make && make install</USERINPUT>
+</screen>
+
+<para>
+Denne pakke installerer også binære filer som ogle skal bruge i
+<filename>/usr/local/bin</filename>.  Derfor skal ogle kunne finde
+den. Dette gøres ved ændre filen <filename>/root/.bashrc</filename>
+fra:
+</para>
+
+<screen>
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin:
+</screen>
+
+<para>
+til 
+</para>
+
+<screen>
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin:/usr/local/bin
+</screen>
+
+<para>
+Du skal nu logge ud og logge ind igen. Sagen er at du senere skal være
+root for at køre <command>ogle</command>.
+</para>
+
+<para>
+Så skal ogle selv installeres:
+</para>
+
+
+<screen>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>tar xzf ogle-0.8.1.tar.gz
+</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>cd ogle-0.8.1</USERINPUT>
+<PROMPT>[root@linus /usr/local/ogle-0.8.1]#</PROMPT> <USERINPUT>./configure && make && make install</USERINPUT>
+</screen>
+
+<para>
+Og ligeledes skal <filename>ogle_gui-0.7.5.tar.gz</filename> installeres. 
+Dette kræver at disse 
+Mandrake pakker fra Mandrake CD'erne er installeret:
+</para>
+
+<screen>
+libglib1.2-devel        
+libaudiofile0-devel    
+libgtk+1.2-devel        
+libtiff3-devel        
+libungif4-devel            
+indent               
+libesound0-devel        
+libimlib1-devel       
+ORBit-devel               
+db1-devel              
+gnome-libs-devel
+</screen>
+
+<para>
+Installationen af <filename>ovle_gui-0.7.5.tar.gz</filename> foregår ligeledes 
+i <filename>/usr/local</filename> hvor 
+filen er downloaded til:
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>tar xzf ogle_gui-0.7.5.tar.gz</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>cd ogle_gui-0.7.5</USERINPUT>
+<PROMPT>[root@linus /usr/local/ogle_gui-0.7.5]#</PROMPT> <USERINPUT>./configure && make && make install</USERINPUT>
+</screen>
+
+<para>
+Så skal DVD-devicet <filename>/dev/dvd</filename> lige sættes korrekt.
+Hos mig er <filename>/dev/hdc</filename>  (secondary master) 
+DVD drevet, så jeg sætter linket således:
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>ln -s /dev/hdc /dev/dvd</USERINPUT>
+</screen>
+
+<para>
+Og husk at checke at drevet er sat til DMA-overførsel. 
+Dette gøres med programmet <command>hdparm</command>.
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>hdparm -c3d1 /dev/hdc</USERINPUT>
+</screen>
+
+
+<para>
+ellers kan de fleste drev ikke levere data nok til at afspille en DVD.
+</para>
+
+<para>
+Så er det bare at starte ogle ved at skrive <command>ogle</command> som root.
+Som bruger kan det være nødvendigt at skrive fuld path <command>/usr/local/bin/ogle</command> 
+eller at tilføje <filename>/usr/local/bin</filename> til brugerens path variabel.
+</para>
+</sect2
 </sect1>
 
 <sect1 id="tegnegrafik">
