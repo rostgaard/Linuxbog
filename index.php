@@ -86,8 +86,9 @@ function form_filename( $bookname, $format ) {
       return "$bookname/$format[last]";
       break;
     default:
-      // Eks: admin/linuxbog-admin-1.0.ps.gz
-      return "$bookname/$format[first]$bookname-".$books[$bookname][version]."$format[last]";
+      # Eks: admin/linuxbog-admin-ps-5.6.tar.gz
+      #      admin      /  linuxbog-      admin     -ps-          5.6                        .tar.gz
+      return $bookname."/".$format[first].$bookname.$format[form].$books[$bookname][version].$format[last];
   }
 }
 
@@ -323,59 +324,72 @@ function vistype($type) {
     // Eks: frihed/bog/index.html
     "Online" => array(
       first => "bog",
+      form => "",
       last => "index.html",
       online => 1  // Hvis bognavn kun skal med een gange
     ),
     // Eks: frihed/bog/index.html
     "Ændringer" => array(
       first => "bog",
+      form => "",
       last => "apprevhist.html",
       online => 2  // "Ændringer" har bognavn med to gange
     ),
-    // Eks: frihed/linuxbog-friheden-4.0.tgz
+    // Eks: frihed/linuxbog-friheden-html-4.0.tgz
     "HTML" => array(
       first => "linuxbog-",
-      last => ".html.tar.gz"
+      form => "-html-",
+      last => ".tar.gz"
     ),
     "HTML zip" => array(
       first => "linuxbog-",
-      last => "_html.zip"
+      form => "-html-",
+      last => ".zip"
     ),
     "PNG billeder" => array(
       first => "linuxbog-",
-      last => ".png.tar.gz"
+      form => "-png-",
+      last => ".tar.gz"
     ),
     "HTML u/billeder" => array(
       first => "linuxbog-",
-      last => ".html-ub.tar.gz"
+      form => "-htmlub-",
+      last => ".tar.gz"
     ),
     "PostScript" => array(
       first => "linuxbog-",
-      last => ".ps.gz"
+      form => "-ps-",
+      last => ".gz"
     ),
-    // Eks: linuxbog-frihed_pdf.zip
+    // Eks: linuxbog-frihed-pdf.zip
     "PDF" => array(
       first => "linuxbog-",
-      last => "_pdf.zip"
+      form => "-pdf-",
+      last => ".zip"
     ),
     "PalmPilot" => array(
       first => "linuxbog-",
-      last => ".palm.zip"
+      form => "-palm-",
+      last => ".zip"
     ),
     "eksempler" => array(
       first => "linuxbog-",
-      last => "_eksempler.tar.gz"
+      form => "-eksempler-",
+      last => ".tar.gz"
     ),
     "SGML" => array(
       first => "linuxbog-",
-      last => ".sgml.tar.gz"
+      form => "-sgml-",
+      last => ".tar.gz"
     ),
     "SGMLzip" => array(
       first => "linuxbog-",
-      last => ".sgml.zip"
+      form => "-sgml-",
+      last => ".zip"
     ),
     "TODO" => array(
       first => ".",
+      form => "",
       last => "todo.html",
       online => 3  
     )

@@ -111,11 +111,11 @@ pakhtml:
 	cat linuxbog.spec >> bog/$(targetname).spec
 	mv bog $(targetshortname)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html.tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
-	(cd ..;zip $(targetshortname)/$(targetname)-$(version)_html.zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html-ub.tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
-	(cd ..;tar cvzf  $(targetshortname)/$(targetname)-$(version).png.tar.gz $(targetshortname)/$(targetshortname)_images/ )
+	(cd ..;tar cvzf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
 	mv $(targetshortname)_images images 
 	@echo "Done HTML pakning (pakhtml)"
 	@echo ""
@@ -125,7 +125,7 @@ html: bog/index.html
 bog/index.html: $(sgmlfiler) 
 	@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf $(targetname)*
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-html-*.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -156,7 +156,7 @@ endif
 enhtmlfil: bog/enfil.html
 bog/enfil.html: $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/bog1
-	@rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog1
+	@rm -rf tempdir stikord.sgml magic.sgml $(targetname)-html-*.tar.gz bog1
 	@echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bog1
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -180,12 +180,12 @@ endif
 	rm -rf bog1
 
 # Build pdf package.
-pspdf: $(targetname)-$(version)_pdf.zip
-$(targetname)-$(version)_pdf.zip: $(sgmlfiler)
+pspdf: $(targetname)-pdf-$(version).zip
+$(targetname)-pdf-$(version).zip: $(sgmlfiler)
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
-	rm -f $(targetname)-*.pdf*    
-	rm -f $(targetname)-*_pdf.zip
-	rm -f $(targetname)-*.ps.gz              
+	rm -f $(targetname)-pdf*    
+	rm -f $(targetname)-pdf-*.zip
+	rm -f $(targetname)-ps-*.gz              
 	rm -f $(targetname)-*.ps              
 	mkdir tempdir
 
@@ -195,7 +195,7 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 
-	@echo "Target er" $(targetname)_pdf.zip
+	@echo "Target er" $(targetname)-pdf.zip
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
 	cp *.{sgml,xml} bogpdf
@@ -209,7 +209,7 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	(cd bogpdf; db2pdf bog.sgml )
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
-	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
+	zip $(targetname)-pdf-$(version).zip $(targetname)-$(version).pdf
 	@echo "Done PDF (pspdf)"
 	@echo ""
 
@@ -233,16 +233,16 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 test:
 	echo $(eksfiler)
 
-eksempelbackup:  $(targetname)-$(version)_eksempler.tar.gz
-$(targetname)-$(version)_eksempler.tar.gz : $(eksfiler)
+eksempelbackup:  $(targetname)-eksempler-$(version).tar.gz
+$(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
-	rm -f $(targetname)-$(version)_eksempler.tar.gz  
-	touch $(targetname)-$(version)_eksempler.tar
+	rm -f $(targetname)-eksempler-$(version).tar.gz  
+	touch $(targetname)-eksempler-$(version).tar
 	cat dato.sgml > eksempler/BACKUPDATO
-	(cd ..;tar cvf  $(targetshortname)/$(targetname)-$(version)_eksempler.tar $(targetshortname)/eksempler/BACKUPDATO)
+	(cd ..;tar cvf  $(targetshortname)/$(targetname)-eksempler-$(version).tar $(targetshortname)/eksempler/BACKUPDATO)
 	rm -f eksempler/BACKUPDATO
-	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-$(version)_eksempler.tar =
-	gzip -9 $(targetname)-$(version)_eksempler.tar
+	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-eksempler-$(version).tar =
+	gzip -9 $(targetname)-eksempler-$(version).tar
 else
 	@echo "Bogen" $(targetname) "har ikke nogen eksempler";
 endif
