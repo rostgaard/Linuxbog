@@ -471,73 +471,16 @@ konfigurere manuelt med en statisk IP-adresse, standard-gateway osv.
 <indexterm><primary>DHCP</primary><secondary>DNS</secondary></indexterm>
 
 <para>
-DHCP-serveren deler IP-adresser ud. IP-adresser er normalt knyttet til
-værtsnavne, men forbindelsen mellem et værtsnavn og en IP-adresse
-håndteres af navneserveren. Hvordan hænger de to servere sammen?
-</para>
-
-<sect3 id="version2">
-<title>DHCP version 2</title>
-<para>
-Svaret er, at lige nu (april 2000) hænger de ikke særlig godt
-sammen. DHCP-serveren har endnu ikke nogen måde, hvor den kan fortælle
-navneserveren at den lige har uddelt IP-adresse 192.168.0.4 til en
-vært, der gerne ville hedde "eric.intranet", og at navneserveren
-skal sørge for at de to oplysninger bliver matchet.
-</para>
-
-<para>
-Det er noget der arbejdes på, men lige nu og her må man konfigurere
-sin navneserver og DHCP-server separat. Kommunikationen mellem
-DHCP-serveren og navneserveren skulle være klar med den næste version af
-DHCP-server-softwaren, version 3.
-</para>
-
-<para>
-Det kan dog være en fordel at konfigurere en zone i navneserveren, der
-mapper de IP-adresser, som DHCP-serveren uddeler, til et hostnavn -
-f.eks. 192.168.0.101 mappet til "dhcp-101.intranet", 192.168.0.102
-mappet til "dhcp-102.intranet" osv. En del services laver nemlig
-sådan et "reverse DNS"-opslag når man forbinder sig til dem, og hvis
-ikke de kan få et eller andet hostnavn ud af det opslag, så tager det
-som regel længere tid at få forbindelse til den pågældende
-service. Det gælder f.eks. <command>telnet</command> og
-<command>ftp</command>.
-</para>
-
-<para>
-Følgende artikel om DHCP kan nok være af interesse 
-<ulink url="http://linuxfocus.org/English/May2000/article150.shtml">
-http://linuxfocus.org/English/May2000/article150.shtml</ulink>.
-</para>
-
-<para>
 <INDEXTERM><PRIMARY>dynamisk DNS</PRIMARY></INDEXTERM>
 <INDEXTERM>
   <PRIMARY>DNS</PRIMARY>
   <secondary>dynamisk</secondary>
 </INDEXTERM>
-Dynamisk DNS i Linux virker ikke, dvs. der mangler en kobling mellem en
-DHCP-server og DNS-server, for at man til hver en tid kan finde maskine
-"A" uanset IP-adresse. Der arbejdes meget på det pt. Se mere på 
-<ulink
-url="http://www.isc.org/products/DHCP/">http://www.isc.org/products/DHCP/</ulink>,
-<ulink
-url="http://www.isc.org/products/DHCP/dhcp-v3.html">http://www.isc.org/products/DHCP/dhcp-v3.html</ulink>
-og 
-<ulink url="http://www.heronforge.net/~stephen/DHCP-DNS/dhcp-dns.html">http://www.heronforge.net/~stephen/DHCP-DNS/dhcp-dns.html</ulink>.
-</para>
 
 <para>
-En måde at løse ovenstående problem på er, at installere et lille script på hver enkelt klient der sørger for at lave en relation mellem klientens hostnavne og det tildelte ip-nummer fra DHCP-serveren. scriptet, set_domain_ip, kan hentes her <ulink url="http://www.sslug.dk/linuxbog/admin/eksempler">http://www.sslug.dk/linuxbog/admin/eksempler</ulink>. Instruktion for installering findes i scriptets brødtekst. Scriptet løser ikke problemet helt, da andre klienter i netværket stadigvæk ikke vil kende til hinanden, men nu vil den enkelte klient dog kende til sit eget ip-nummer. Hvis dette ikke er tilstrækkeligt, må du thy til DHCP 3.0. DHCP 3.0 er emnet for næste afsnit.
-</para>
-</sect3>
-
-<sect3 id="version3">
-<title>DHCP version 3</title>
-<para>
-Dette afsnit beskriver DHCP 3.0 fra <ulink url="http://www.isc.org">ISC</ulink>, og jeg vil starte med at påpege, at det stadigvæk er i betaudgave, så nu er du advaret - jeg har det dog kørende upåklageligt på min egen server, så jeg vil da opfordre til, at man prøver det.
-</para>
+Dette afsnit beskriver DHCP 3.0 fra <ulink
+url="http://www.isc.org">ISC</ulink>. Tidligere versioner i 2.X-serien har ikke haft samme
+funktionalitet.</para>
 
 <para>
 Installationen er ret nem, enten henter du en <ulink url="ftp://angus.ind.wpi.edu/pub/packages/isc/dhcp">rpm</ulink>- eller en <ulink url="ftp://ftp.isc.org/isc/dhcp/dhcp-latest.tar.gz">tarpakke</ulink> med sourcen. Hvad angår Debian, findes der, mig bekendt, kun den mulighed at hente sourcen og så oversætte den selv.
@@ -666,7 +609,6 @@ Hvis du bruger Redhat 7.2, mangler der en sidste rettelse. Rettelsen skal foreta
 Det skal bemærkes, at ovenstående hostnavn er uden angivelse af domænet. Hvis vi f.eks. har domænet intranet, og ønsker at tildele klienten eric en adresse, skal hostnavnet angives som eric og ikke som eric.intranet.
 </para>
 
-</sect3>
 </sect2>
 
 </sect1>
