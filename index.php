@@ -42,18 +42,25 @@ function fsize_text( $filename ) {
   }
 }
 
-// Funktion til at formatere finavne.
+// Funktion til at formatere filnavne.
 // Online versionen skal kun have bookname een gang
+// "Ændringer" skal navnet med to gange, men uden version
 function form_filename( $bookname, $format ) {
-  if ($format[online])
-    // Eks: admin/bog/index.html
-    return "$bookname/$format[first]$format[last]";
-  else {
-    // Eks: admin/linux-admin-1.0.ps.gz
-    $fp = fopen("$bookname/version.sgml", "r");
-    $version = trim(fgets($fp, 80));
-    fclose($fp);
-    return "$bookname/$format[first]$bookname-$version$format[last]";
+  switch ($format[online]) {
+    case 1:
+      // Onlinebøger, Eks: admin/bog/index.html
+      return "$bookname/$format[first]/$format[last]";
+      break;
+    case 2:
+      // Ændringer, Eks: admin/bog/admin-apprevhist.html
+      return "$bookname/$format[first]/$bookname-$format[last]";
+      break;
+    default:
+      // Eks: admin/linux-admin-1.0.ps.gz
+      $fp = fopen("$bookname/version.sgml", "r");
+      $version = trim(fgets($fp, 80));
+      fclose($fp);
+      return "$bookname/$format[first]$bookname-$version$format[last]";
   }
 }
 
@@ -132,14 +139,14 @@ function form_filename( $bookname, $format ) {
     // Eks: frihed/bog/index.html
     "Online" => array(
       first => "bog",
-      last => "/index.html",
+      last => "index.html",
       online => 1  // Hvis bognavn kun skal med een gange
     ),
     // Eks: frihed/bog/index.html
     "Ændringer" => array(
       first => "bog",
-      last => "/apprevhist.html",
-      online => 1  // Hvis bognavn kun skal med een gange
+      last => "apprevhist.html",
+      online => 2  // "Ændringer" har bognavn med to gange
     ),
     // Eks: frihed/linux-frihed-4.0.tgz
     "HTML" => array(
