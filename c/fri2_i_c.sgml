@@ -416,7 +416,7 @@ int puts (char *message);
 
 <para>
 Det kaldes en prototype. Denne gør det muligt for oversætteren
-at checke, at funktionskald vil fungere efter hensigten.
+at tjekke, at funktionskald vil fungere efter hensigten.
 </para>
 
 <para>
@@ -1664,7 +1664,7 @@ int main(int argc, char *argv[])
 
 <para>
 Somme tider klager folk over, at C programmet ikke har boundary
-check for arrays. Det er der selvfølgelig den gode grund til, at
+tjek for arrays. Det er der selvfølgelig den gode grund til, at
 det ville være spild af tid i et godt program. Hvorfor vil
 ovenstående program ALDRIG gå ud over grænserne fra 0 til 256?
 </para>
@@ -1868,7 +1868,7 @@ men indeholder det nødvendige for at fremhæve pointen.
 Håndteringen af End-Of-File er klodset, og fejl ved konvertering
 af de to tegn efter lighedstegn håndteres slet ikke. EOF
 håndteringen kunne håndteres ved at benytte en linjebuffer og
-fgets(), og strtol(3) giver os et errno, som vi kunne checke på.
+fgets(), og strtol(3) giver os et errno, som vi kunne tjekke på.
 </para>
 
 <para>
@@ -1905,7 +1905,7 @@ pointer. <literal>strtol(str,NULL,16);</literal>
 strtol ville returnere et 0, hvis de efterfølgende bogstaver ikke
 kan konverteres, og det ville selvfølgelig være en situation, vi
 burde undersøge nøjere, ligesom errno, en static variabel i
-library modulet, burde checkes. Prøv at gøre det, og giv
+library modulet, burde tjekkes. Prøv at gøre det, og giv
 programmet input med fejl i og kontroller, at programmet
 håndterer det på en fornuftig måde!
 </para>
@@ -2264,10 +2264,10 @@ kan få hjælp til at kontrollere sine tags. Det program, jade
 <footnote> <para> Jade - James' DSSSL Engine, James Clark har
 også skrevet groff programmet. </para> </footnote>, som
 fremstiller html, postscript, pdf-filer etc.etc. ud fra vores
-kildetekst, skal selvfølgelig også kunne checke for, at man har
+kildetekst, skal selvfølgelig også kunne tjekke for, at man har
 anvendt tags på den rigtige måde. Men inden man kommer dertil,
 kan det somme tider være rart med et mindre program, som
-checker, at man har husket alle end-tags, og endnu bedre, et
+tjekker, at man har husket alle end-tags, og endnu bedre, et
 program, som kan formatere lidt på afsnit og indrykning, så
 kildeteksten er lettere at læse. Man kunne så fortsætte med at
 lave et program, som ville udskrive en formateret ascii udgave.
@@ -2332,7 +2332,7 @@ vi fgets(), som stopper, når bufferen er fuld.
 For at se på det næste bogstav skriver vi en lille funktion,
 ch(), som blot returnerer det næste tegn i vores linjebuffer. Men
 når vi læser og fremrykker pointeren, så skal der selvfølgelig
-checkes på, om der er et gyldigt tegn forude, hvis der ikke er,
+tjekkes på, om der er et gyldigt tegn forude, hvis der ikke er,
 kaldes fillbuf.
 </para>
 
@@ -2348,7 +2348,7 @@ sgml kildetekst.
 <example id="ex-sgmlpre">
 <title>En tag - parser, forstadium</title>
 <programlisting role="C">
-/* sgmlfmt_pre1.c Forstadium til mini program, som checker balancen i
+/* sgmlfmt_pre1.c Forstadium til mini program, som tjekker balancen i
  * sgml tags. I den nuværende skikkelse kan programmet erstatte
  * alle "mindre-end" tegn med sgml-koden for dette, altså &amp;lt; -
  * så det kan såmænd bruges til at filtrere C-programmer, der
@@ -2428,7 +2428,7 @@ int nch()
 
 /* Hvis vi altid vil kunne se mere end én character fremefter, må
  * vi udskifte gch() og fillbuf() funktionerne, således at de
- * checker, hvor meget er der i bufferen, og hvis der er for få
+ * tjekker, hvor meget er der i bufferen, og hvis der er for få
  * (mindre end ønsket) skal de efterfylde bufferen og justere
  * pointere.
  * Det søde ved denne implementering er imidlertid, at vi altid
@@ -2468,7 +2468,7 @@ det, som er det egentlige formål med programmet, er jo også at
 bygge grundbestanddelen til et andet. Det er "terrasse 1", og
 hvis det virker og kopierer input til output (med undtagelse af
 &lt; tegn), så er grunden lagt til næste udgave af programmet,
-som blot skal checke, om en tekst har balancerede tags.
+som blot skal tjekke, om en tekst har balancerede tags.
 </para>
 
 <para>
@@ -2526,7 +2526,7 @@ med variabelen bufindex.
 </sect2>
 
 <sect2 id="sect-recursion">
-<title>Check balancering af tags</title>
+<title>Tjek balancering af tags</title>
 
 <para>
 I den næste version af tag-parseren, tagbal01.c, kan
@@ -2633,7 +2633,7 @@ forskellige ting, denne her parser ikke kan klare. Hvis man
 skriver sin tag hen over en newline (hvilket er lovligt) så vil
 parseren includere newline i tag-navnet. I det hele taget tager
 den alt, bogstavelig taget alt, inden slut vinkelen, og gemmer
-det som et tag-navn. Endvidere checker den ikke for buffer
+det som et tag-navn. Endvidere tjekker den ikke for buffer
 overflow, men det kunne man nemt indføje. Den er ikke desto
 mindre en god demonstration af, hvordan rekursionen kan gøre det
 muligt for os at håndtere mange forskellige slags input. Hvis der
@@ -2692,7 +2692,7 @@ man senere kunne have forskellige levels i parseren, som hver
 især er udtryk for, at der gælder forskellige regler for
 forskellige tags. Men her bliver de alle behandlet ens. Der er
 ikke nogen regler for, hvilke tags der må være inde mellem andre
-tags. Programmet skal blot kunne checke, at der efter en
+tags. Programmet skal blot kunne tjekke, at der efter en
 &lt;tag>, kommer en &lt;/tag> (altså en slut-tag af samme type)
 senere, evt, efter nogle andre, indskudte (nestede) tags og med
 "tekst data" både før og efter.
@@ -2736,7 +2736,7 @@ Her kommer det centrale sted i programmet tagbal01.c:
 
 
 <example id="ex-tag-balance1">
-<title>Check om sgml-tags balancerer</title>
+<title>Tjek om sgml-tags balancerer</title>
 <programlisting>
 #define MAXT 80
 
@@ -2766,7 +2766,7 @@ int parse_level1()
 Efter en nested tag kan der komme mere tekst (som efter emphasis
 tag fx.) Man skal derfor spørge efter flere words når man kommer
 tilbage fra rekursivt kald til parse_level1(). Det er derfor, at
-der forrest i while-løkke (2) er et check for tekst-data, nemlig
+der forrest i while-løkke (2) er et tjek for tekst-data, nemlig
 getword() (3).
 </para>
 <para>
@@ -2799,7 +2799,7 @@ det rekursive kald til parse_level1().
 </para>
 
 <para>
-Det vil være en god øvelse at checke, om der i programmet er
+Det vil være en god øvelse at tjekke, om der i programmet er
 mulighed for buffer overflow nogen steder.
 </para>
 
@@ -2881,7 +2881,7 @@ for sgml-tags, kommer her.
 <prompt>dax@pluto: </prompt><userinput>cat lidt.sgml </userinput>
 
 &lt;chapter>
-&lt;sect1 id="tag_balance_check">
+&lt;sect1 id="tag_balance_tjekk">
 &lt;para>
 Dette       er
 en prøvetekst.
@@ -2904,7 +2904,7 @@ fodnote text kommer her.
 
 <prompt>dax@pluto: </prompt><userinput>tagbal02 &lt; lidt.sgml </userinput>
 &lt;chapter>
-  &lt;sect1 id="tag_balance_check">
+  &lt;sect1 id="tag_balance_tjekk">
     &lt;para> Dette er en prøvetekst.
     &lt;/para>
     &lt;para> mere tekst i ny paragraf
@@ -3147,7 +3147,7 @@ udskiftning. Det er indenfor mulighedernes grænser.
 <para>
 Hvis vi skriver et almindeligt filteringsprogram, f.eks. et,
 som konverterer fra MIME/html characters til extended ascii eller
-rettere ISO-8859-1, så bør vi altså ikke begynde at lave check af
+rettere ISO-8859-1, så bør vi altså ikke begynde at lave tjek af
 CPU-temperatur, disktilstand etc. Det hører hjemme et andet sted
 og er ikke interessant for vores filterprogram.
 </para>
@@ -3345,7 +3345,7 @@ en helt triviel opgave.
 Lav en version af programmet, som selv kan finde ud af, om
 der er overflow på beregningen. Hint: resultat / procent *
 kroner. For den viderekomne kan opgaven løses ved, at man
-benytter en assemblerinstruction, som checker for overflow
+benytter en assemblerinstruction, som tjekker for overflow
 flaget.
 </para>
 </sect2>

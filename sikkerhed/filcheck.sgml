@@ -1,5 +1,5 @@
 <!-- $Id$ -->
-<chapter id="filcheck">
+<chapter id="filtjek">
 <title>Har du haft net-indbrud?</title>
 
 <indexterm><primary>netindbrud</primary></indexterm>
@@ -138,7 +138,7 @@ Vi kan også se, et ISA lydkort ALS100 bliver
 detekteret af isapnp-pakken, men at det ikke er konfigureret
 rigtigt. Derefter en del information om selve maskin-typen,
 CPU-hastighed (det er fra en Pentium 120 MHz PC). Du bør lige 
-checke fra tid til anden, at der ikke
+tjekke fra tid til anden, at der ikke
 logges fejl, såsom problemet med forkerte læse/skrive rettigheder
 eller hardwareproblemer. I øvrigt kan den opmærksomme læser se, at nogle
 tidspunkter er kl. 22 og andre 20. Dette skyldes, at nogle dele af
@@ -153,7 +153,7 @@ systemopstart. Tilsvarende information findes i <filename>/var/log/dmesg</filena
 ftp og SSH logins gemmes i messages-filen.  Den 3. juli kl. 10.06
 kommer brugeren robin ind fra IP nummer 192.168.0.10 via secure shell
 (SSH). To minutter efter logges der ud igen.  Dagen efter er det en
-telnet login, som går igennem PAM-password check (PAM_pwdb).  Kun et
+telnet login, som går igennem PAM-adgangskodetjek (PAM_pwdb).  Kun et
 minut er robin inde. Endelig er brugeren tuck kommet ind via ftp
 (ftpd) den 4. juli og kun blevet fire sekunder.
 </para>
@@ -441,7 +441,7 @@ Commands Run:
 <indexterm><primary>logcheck</primary></indexterm>
 
 <para>
-Et alternativ til LogWatch er logcheck, som kan hentes fra 
+Et alternativ til LogWatch er <command>logcheck</command>, som kan hentes fra 
 <ulink url="http://www.psionic.com/download/">http://www.psionic.com/download/</ulink>.
 Ideen er den samme, og virkemåden er umiddelbart også ens. Blot er
 formatteringen af log-rapporter ikke sorteret så elegant som
@@ -450,7 +450,7 @@ med LogWatch. Prøv begge programmer, og vælg selv dit foretrukne.
 
 
 <para>
-Problemet med programmer som LogWatch og logcheck er bl.a., at
+Problemet med programmer som LogWatch og <command>logcheck</command> er bl.a., at
 programmet normalt køres en gang per døgn (dette kan ændres). Ergo kan
 et eventuelt indbrud sløres, f.eks. ved at personen blot sletter
 linjer i log-filerne svarende til egen adfærd. Det eneste alternativ
@@ -546,7 +546,7 @@ i <filename>/lib</filename>, <filename>/usr/X11R6/lib</filename> og <filename>/u
 </para>
 
 <para>
-Generelt leder man efter ændringer af filsystemet ved at checke
+Generelt leder man efter ændringer af filsystemet ved at tjekke
 fire ting:
 </para>
 
@@ -564,9 +564,9 @@ efter ændringer.
 </para>
 
 <para>
-Det er dog straks sværere at checke, om indholdet af filen er
+Det er dog straks sværere at tjekke, om indholdet af filen er
 intakt. For et filsystem med en stor mængde data er det ikke muligt at
-have en kopi af hele filsystemet og checke byte for byte, om de er ens. Det
+have en kopi af hele filsystemet og tjekke byte for byte, om de er ens. Det
 tager for meget diskplads og alt for lang tid. Derfor er en del
 matematisk forskning gået på at udtænke metoder til at generere en
 funktion, som tager f.eks. indholdet af en fil og ud fra dette
@@ -586,10 +586,10 @@ samme output, antager vi, at filen er urørt.
 
 En simpel hashfunktion kunne være summen af alle de tal, som filen
 består af. Den er blot alt for nem at forfalske. I litteraturen vil
-man ofte støde på CRC checks, som er relativt nemme funktioner at
+man ofte støde på CRC-tjek, som er relativt nemme funktioner at
 beregne. Mange komprimeringsprogrammer anvender CRC til at
 kontrollere, om det, der pakkes ud, er i orden. Til at opdage
-ændringer af filer med tanke på sikkerhed, er CRC checks ikke gode
+ændringer af filer med tanke på sikkerhed, er CRC-tjek ikke gode
 nok. Et hyppigt anvendt alternativ er MD5, som genererer en 128 bit
 kode ud fra en fil. På de fleste Linux-systemer findes programmet
 <command>md5sum</command>, som køres med et filnavn som argument.
@@ -602,7 +602,7 @@ dc2ac9d1c1658d5b4381ca2c280425ee  /bin/ls
 
 <para>
 Det er meget meget svært at ændre i filen <command>/bin/ls</command> og stadig få samme
-MD5 checksum. Lad os lave et eksempel med en lille fil, der får
+MD5-tjeksum. Lad os lave et eksempel med en lille fil, der får
 indholdet ændret, men hvor man kan ikke se udefra, at den er ændret.
 </para>
 
@@ -625,7 +625,7 @@ e829f144f6e43d55daa442baf1462544  testfil
 <para>
 Vi ser, at filen i de to tilfælde indeholder de samme bogstaver, har
 samme længde (14 tegn), har samme datostempel (efter lidt snyd
-med touch-kommandoen) - men MD5 checksummen er helt forskellig. Derfor
+med touch-kommandoen) - men MD5-tjeksummen er helt forskellig. Derfor
 ved vi, at indholdet ikke det samme. Prøv selv at eksperimentere med dette.
 </para>
 
@@ -640,7 +640,7 @@ er jo kun ingeniører :-)
 
 <para>
 Vi vil nu omtale fire forskellige programmer til at hjælpe dig med at
-lave check af ændringer i filsystemet; RPM, Tripwire og Aide. 
+lave tjek af ændringer i filsystemet; RPM, Tripwire og Aide. 
 
 </para>
 </sect2>
@@ -655,15 +655,15 @@ Med Linux-distributionerne SuSE, Caldera Open Linux, Mandrake og
 Red Hat følger programmet "rpm", som er et pakkestyringsprogram. 
 Rpm holder styr på, hvad der er
 installeret. Samtidig er der mulighed for at holde styr på 
-ændringer af filerne. Du kan checke alle RPM-styrede filer med
-kommandoen "rpm -Va".  Denne kommando vil checke for følgende
+ændringer af filerne. Du kan tjekke alle RPM-styrede filer med
+kommandoen "rpm -Va".  Denne kommando vil tjekke for følgende
 ændringer siden installation:
 </para>
 
 <itemizedlist mark="bullet">
  <listitem><para>S - Ændringer af filstørrelse</para></listitem>
  <listitem><para>M - Mode - Ændringer i permissions og filtype</para></listitem>
- <listitem><para>5 - MD5 sum check</para></listitem>
+ <listitem><para>5 - Tjek af MD5-sum</para></listitem>
  <listitem><para>? - Normalt problemer med at læse filen</para></listitem>
  <listitem><para>L - Symlink</para></listitem>
  <listitem><para>D - Device ændringer</para></listitem>
@@ -769,7 +769,7 @@ farlige ændringer, og hvilke der er banale. Et andet problem er, at "rpm
 -Va" ikke kan kontrollere programmer på systemet, der er installeret 
 udenom rpm, såsom WordPerfect og StarOffice. Hvad værre er, så kan man
 teoretisk tænke sig, at en cracker afinstallerede en pakke, og
-installerede en farlig rpm-pakke i stedet for, hvor alle checks med
+installerede en farlig rpm-pakke i stedet for, hvor alle tjek med
 rpm gik glat. Eller installerede en falsk udgave af selve rpm programmet! 
 Derfor er det ønskeligt at få et godt supplement til rpm.
 </para>
@@ -793,10 +793,10 @@ under GNU General Public Licence. Open Source udgaven kan hentes fra
 </para>
 
 <para>
-Tripwire er et program, der kan checke filsystemet for ændringer. Der
+Tripwire er et program, der kan tjekke filsystemet for ændringer. Der
 genereres en database for alle filer i filtræet. For hver fil gemmes
 informationer om sidste ændringsdato, størrelse, indhold, ejer osv. Når
-først databasen er genereret, er det nemt at checke og opdatere for
+først databasen er genereret, er det nemt at tjekke og opdatere for
 ændringer.
 </para>
 
@@ -821,7 +821,7 @@ Tankegangen med Tripwire er at man sætter programmet op
 kommer på - dvs. før maskinen er i risiko-zonen. På dette tidlige
 tidspunkt genereres en "snapshot" af hvordan det oprindelige system
 ser ud. For hver af de vigtige filer på systemet gemmes information 
-om fil-størrelse, ændringsdatoer og checksummer på filerne, så man
+om fil-størrelse, ændringsdatoer og tjeksummer på filerne, så man
 kan afgøre om filerne er ændret. 
 </para>
 
@@ -851,7 +851,7 @@ I dette tilfælde skal man så opdatere Tripwire-databasen med ens "snapshot".
 <para>
 Tripwire installeres på Red Hat ved at man henter en 
 <filename>.tar.gz</filename>-fil, der indeholder en RPM-pakke, som kan 
-installeres. Check at den fil du henter har den rigtige checksum - jfr.
+installeres. Tjek at den fil du henter har den rigtige tjeksum - jfr.
 <ulink url="http://www.tripwire.org/downloads/index.php">http://www.tripwire.org/downloads/index.php</ulink>. Kør <command>md5sum</command> på 
 <filename>.tar.gz</filename>-filen:
 
@@ -995,7 +995,7 @@ manuelt - de er binære og krypterede.
 For at resultater af skanning af filsystemet kan sendes til
 systemadministatoren per e-post så skal man indsætte e-postadressen
 for hver af de afsnit, der er defineret i filen. Bemærk at der er 
-et komma til at afslutte linjen før <literal>emailto = MODTAGERENS_ADRESSE</literal>. Hvis man har tænkt sig at køre tripwire check via crontab, så er
+et komma til at afslutte linjen før <literal>emailto = MODTAGERENS_ADRESSE</literal>. Hvis man har tænkt sig at køre tripwire tjek via crontab, så er
 dette ikke nødvendigt, da man får output i et brev alligevel.
 </para>
 
@@ -1046,10 +1046,10 @@ Generating the database...
 </screen>
 </sect3>
 
-<sect3 id="tripwire-check">
-<title>Check af maskinen med Tripwire</title>
+<sect3 id="tripwire-tjek">
+<title>Tjek af maskinen med Tripwire</title>
 <para>
-Nu er man klar til at checke maskinen - dette kan køres manuelt (dette
+Nu er man klar til at tjeke maskinen - dette kan køres manuelt (dette
 kan man gøre uden brug af passphrase - men man skal dog være root).
 </para>
 
@@ -1346,22 +1346,20 @@ opsætningen).  For at generere en database over dine filer, skrives
 <para>
 Hvor databasen kommer til at ligge, afgøres af konfigurationsfilen, ligesom 
 den afgør hvilke filer, der skal med i databasen. Ligeledes er de
-regler, der afgør hvilke checks, der skal udføres, defineret i aide.conf. 
+regler, der afgør hvilke tjek, der skal udføres, defineret i aide.conf. 
 Som standard leder aide efter konfigurationsfilen i det katalog, hvor
 du står, når du kører programmet. Opdatering af databasen sker med
-</para>
 
 <screen>
 <prompt>[root@hven /root]#</prompt> <userinput>aide --update</userinput>
 </screen>
 
-<para>
-og check af ændringer med
-</para>
+og tjek af ændringer med
 
 <screen>
 <prompt>[root@hven /root]#</prompt> <userinput>aide --check</userinput>
 </screen>
+</para>
 
 <para>
 Se i øvrigt <command>man aide</command>. 
@@ -1388,13 +1386,13 @@ Andre programmer til at skanne filsystemet kan findes på
 
 
 <para>
-Når du skal checke filsystemet, bør du boote maskinen via
+Når du skal tjekke filsystemet, bør du boote maskinen via
 en "sikker" Linux-kerne. Det kan være fra en diskette eller cd-rom.
 Ligeledes bør du bruge en cd-rom eller andet read only medie, til at
 gemme program og database over filsystem på. Ellers kan 
-du ikke checke filtræet mod
+du ikke tjekke filtræet mod
 tidligere skanninger og være sikker på, at du får de reelle forskelle,
-da en cracker så vil kunne ændre i din gemte database, filcheck programmet 
+da en cracker så vil kunne ændre i din gemte database, filtjekprogrammet 
 eller i selve Linux-kernen.
 </para>
 
