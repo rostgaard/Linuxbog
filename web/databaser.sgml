@@ -7,6 +7,8 @@ Databaser
 		PHP
 		Perl
 		Python
+  MySQL
+    PHP
 	(Andre databaser)
 
 CHANGELOG
@@ -242,6 +244,8 @@ Læs mere om SQL-kommandoer på
 <SECT1 id="db-pgsql">
 <TITLE>PostgreSQL</TITLE>
 <INDEXTERM><PRIMARY>PostgreSQL</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Databaser</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>SQL</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
 
 <PARA>
 PostgreSQL er den mest avancerede Open Source SQL-database der findes
@@ -456,7 +460,7 @@ at håndtere de større programmer.
 </SECT2><!-- db-pgsql-shell -->
 
 <SECT2 id="db-pgsql-php">
-<TITLE>PHP</TITLE>
+<TITLE>PHP - PostgreSQL</TITLE>
 <INDEXTERM><PRIMARY>PHP</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
 <INDEXTERM><PRIMARY>PostgreSQL</PRIMARY><SECONDARY>PHP</SECONDARY></INDEXTERM>
 
@@ -695,7 +699,429 @@ Læs mere om Python <!--i XREF LINKEND="python-sect1" og på--> hjemmesiden
 
 </SECT2><!-- db-pgsql-python -->
 </SECT1><!-- db-pgsql -->
-<!-- <SECT1 id="db-mysql"></SECT1> -->
-<!-- <SECT1 id="db-andre"> <TITLE>Andre databaser</TITLE> <INDEXTERM><PRIMARY>DBM</PRIMARY></INDEXTERM> </SECT1> -->
+
+<SECT1 id="db-mysql">
+<TITLE>MySQL</TITLE>
+<INDEXTERM><PRIMARY>MySQL</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Databaser</PRIMARY><SECONDARY>MySQL</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>SQL</PRIMARY><SECONDARY>MySQL</SECONDARY></INDEXTERM>
+
+<!-- af Frank M.G. Jørgensen <gajda@iname.com> -->
+
+<PARA>
+MySQL er et stærk SQL-database program, som folkene bag ikke tøver
+med at udråbe som "en af de hurtigste databaser, overhovedet"
+</PARA>
+
+<PARA>
+Tidligere var det sådan, at MySQL var gratis for langt de fleste, men under særlige forhold skulle
+der betales for en licens. I juli måned 2000 besluttede TcX - der står bag MySQL - imidlertid, at
+alle fremtidige versioner af MySQL udgives under GPL-betingelser. Det har dog hele tiden været
+muligt at hente en GPL-udgave af MySQL, men der er tale om en ældre udgave, som - i sagens natur -
+ikke inkluderer de seneste forbedringer.
+</PARA>
+
+<!-- RPM-INSTALLATION -->
+<PARA>
+TcX anbefaler, at Linux-brugere installerer MySQL ved hjælp af rpm-pakker, og det er da
+også den nemmeste måde at installere programmet på. Disse pakker kan hentes fra MySQL's website på
+adressen: http://www.mysql.com, eller fra sunsites danske mirror-site, http://sunsite.auc.dk/mysql/
+Den nyeste version af MySQL er en  udviklingsversion, og bør derfor undgås. Den version, der er
+benævnt "last stable", eller "recommended" (i skrivende stund version 3.22.32) er den du ønsker at
+hente. På MySQL website angives, hvilket versionsnummer der er det anbefalede. For at installere
+MySQL skal du som minimum hente følgende pakker
+</PARA>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>MySQL-X.XX.XX.i386.rpm</PARA></LISTITEM>
+<LISTITEM><PARA>MySQL-client-X.XX.XX.i386.rpm</PARA></LISTITEM>
+<ITEMIZEDLIST>
+
+<PARA>
+Pakkerne installeres på følgende måde
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /downloads]# </PROMPT><USERINPUT>rpm -ivh MySQL-X.XX.XX.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /downloads]# </PROMPT><USERINPUT>rpm -ivh MySQL-client-X.XX.XX.i386.rpm</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvor X.XX.XX erstattes med versionsnummeret.
+</PARA>
+
+<PARA>
+Nu er MySQL installeret, og der er blevet skabt de relevante opstartsfiler således, at MySQL
+startes automatisk under opstart af maskinen. For at checke om programmet allerede kører kan du
+prøve at indtaste
+</PARA>
+
+<SCREEN>
+[root@linus /root]# mysqladmin version
+</PARA>
+
+<PARA>
+Hvis du får vist versionsnummer uptime mm., kører MySQL. Hvis MySQL ikke kører kan du starte den
+med:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# i</PROMPT><USERINPUT>/etc/rc.d/init.d/mysql start</USERINPUT>
+</SCREEN>
+
+<PARA>
+Nu er du parat til at gå i gang. Der er allerede under installationen
+ oprettet en bruger, "root"
+(denne "root" har ikke noget med maskinens "root" at
+ gøre - der er tale om MySQL's "superbruger")
+som har adgang til at foretage ændringer i databaserne. 
+Denne bruger skal nu have et password:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mysqladmin -u root password 'hemmeligt'</USERINPUT>
+</SCREEN>
+
+<PARA>
+Lad os nu prøve at oprette en database som vi kalder "bog". Først starter vi klientprogrammet:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mysql -u root --password=hemmeligt</USERINPUT>
+</SCREEN>
+
+<PARA>
+Nu er vi i forbindelse med MySQL og prompten skifter til en MySQL-prompt.
+</PARA>
+
+<PARA>
+Her følger så lidt (My)SQL-gymnastik. Først skal vi oprette en database
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>CREATE DATABASE bog;</USERINPUT>
+</SCRREN>
+
+<PARA>
+Dernæst vælger vi den nye base
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>USE bog</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvorpå vi opretter en simpel tabel i basen
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>CREATE TABLE linuxbog(kapitel INT, titel varchar(40));</USERINPUT>
+</SCREEN>
+
+<PARA>
+En database uden indhold er der ikke meget sjov ved, 
+så vi fylder lidt data på tabellen
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>INSERT INTO linuxbog (kapitel,titel) VALUES (0,'Forord');</USERINPUT>
+<PROMTP>mysql&gt; </PROMPT><USERINPUT>INSERT INTO linuxbog (kapitel,titel) VALUES (2,'Introduktion');</USERINPUT>
+</SCREEN>
+
+<PARA>
+Der er ikke noget kapitel 0, så vi retter vores indtastning til "kapitel 1"
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>UPDATE linuxbog SET kapitel=1 WHERE kapitel=0;</USERINPUT>
+</SCREEN>
+
+<PARA>
+Nu vil vi gerne se, hvilke data, der rent faktisk er i vores tabel
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>SELECT * FROM linuxbog ORDER BY kapitel;</USERINPUT>
+</SCREEN>
+
+<PARA>
+Og så sletter vi kapitel 1 (hvis du undlader at udføre de to sidste
+trin, kan databasen bruges
+sammen med PHP-eksemplet i <XREF LINKEND="db-my-php">.
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>DELETE FROM linuxbog WHERE kapitel=1;</USERINPUT>
+</SCREEN>
+
+<PARA>
+Og her sletter vi tabellen
+</PARA>
+
+<SCREEN>
+<PROMPT>mysql&gt; </PROMPT><USERINPUT>DROP TABLE linuxbog;</USREINPUT>
+</SCREEN>
+
+<PARA>
+Hvis du synes, at kommandolinie-klienten er lidt tung at danse med fra tid til anden, findes der
+alternativer. Du kan lave din egen web-applikation f.eks ved hjælp af PHP, hente en af de
+eksisterende web-applikationer fra nettet, eller du kan hente et af de grafiske værktøjer, der
+findes. MySQL er selv i gang med udviklingen af et sådant, MySQLGUI, men der er andre at
+vælge imellem f.eks KmySQL, der er en KDE front-end til MySQL (og via plug-ins til mange andre
+databaser, men indtil videre er MySQL bedst understøttet). Programmet fås som let installerbare
+rpm-pakker (to styk; program og plug-in). MySQL-GUI kan hentes fra MySQL's egne websider, og
+KMySQL kan hentes fra ksql.sourceforge.net
+</PARA>
+
+<!-- pto: Skal vi have source-inst med? Jeg synes ikke, hva mæ dej? /chlor -->
+<!--
+SOURCE-INSTALLATION:
+Hvis du hører til de mere eventyrlystne, har behov for kontrol over, hvor MySQL skal installeres,
+eller er du bare gør-det-selv-typen som ikke er bange for at få jord under neglene, kan du downloade
+source-koden (som "tarball"). Den finder du også på MySQL's website (eller sunsites mirror). Her
+gælder det også, at du bør undgå den nyeste udgave og i stedet hente den anbefalede. Der er nogle
+værktøjer, som skal være tilstede på din maskine, for at kompileringen kan finde sted:
+
+tar
+gcc
+make
+
+Du kan checke om de er til stede med
+
+[root@linus /root]# rpm -q tar gcc make
+
+Hvis du får positivt svar på forespørgslen (pakkenavn med versionsnummer for alle tre pakker), er du
+klar til at fortsætte. Hvis ikke må du først installere de manglende rpm-pakker (de findes på
+din distributions cd-rom).
+
+Filen med source-koden skal først pakkes ud. En hurtig måde at gøre det på er som følger:
+
+[root@linus /root]# cd /sti/til/download
+[root@linus /download]# tar xvfz mysql-X.XX.XX.tar.gz
+
+Herved skabes en mappe, der hedder mysql-X.XX.XX, hvor alle source-filerne er placeret. skift til
+denne mappe og kør configure-scriptet.
+
+
+[root@linus /root]# cd mysql-X.XX.XX
+[root@linus /mysql-X.XX.XX]# ./configure
+
+Configure-scriptet checker dit system og prøver at sikre, at du har installeret, hvad der er
+nødvendigt, for at programmet kan kompileres. Hvis du ikke får fejlmeddelelser fra
+configure-scriptet, kan du gå videre med
+
+[root@linus /mysql-X.XX.XX]# make
+
+Selve kompileringen tager lidt tid, så læn dig tilbage, tag en kop kaffe og nyd forestillingen.
+Når kompileringen er færdig, og du ikke har fået fejlmeddelelser, taster du:
+
+[root@linus /mysql-X.XX.XX]# make install
+
+Dette installerer alt på sin rette plads, og du er nu tæt på målet.
+
+Hvis din maskine er på internet, bør du nu gøre et par sikkerhedsmæssige sidespring.
+Først og fremmest skal du sørge for, at MySQL ikke køres af root. Opret derfor den bruger på dit
+system, som skal køre MySQL (for en nemheds skyld kan vi jo kalde brugeren "mysql")
+
+[root@linus /mysql-X.XX.XX]# adduser mysql
+[root@linus /mysql-X.XX.XX]# passwd mysql
+
+indtast nu et password for bruger "mysql".
+
+Herpå åbner du din favorit-editor, og du skriver
+
+[mysqld]
+user=mysql
+
+og gemmer filen som /etc/my.cnf.
+
+Nu skal de nødvendige brugere og rettigheder oprettes. Dette gøres nemt ved at køre det medfølgende
+script, "mysql_install_db". Hvis du har valgt at oprette en bruger "mysql" og en "my.cnf"-fil, som
+vist ovenfor, så "su" til denne bruger før du kører scriptet. Hvis ikke, kan du blot køre det som
+root.
+
+[root@linus /mysql-X.XX.XX]# su mysql
+[mysql@linus /mysql-X.XX.XX]# scripts/mysql_install_db
+[mysql@linus /mysql-X.XX.XX]# exit
+
+Nu skal MySQL startes, men først skal det script, der starter MySQL gøres eksekverbart
+
+[root@linus /mysql-X.XX.XX]# chmod 744 /support-files/mysql.server
+[root@linus /mysql-X.XX.XX]# /support-files/mysql.server start &
+
+Nu kører MySQL, og du bør som nævnt i "rpm-afsnittet" vælge et password for brugeren root
+
+Hvis du ønsker at MySQL skal starte automatisk ved opstart, kan du kopiere scriptet
+"mysql.server" i mappen "support-files" til mappen, hvor dine opstarts-scripts er placeret
+(RedHat: /etc/rc.d/init.d SuSE: /etc/rd.d) og skabe de relevante links til rcX.d mapperne (hvor X
+er det runlevel du starter din maskine i - som oftest 3 eller 5).
+
+[root@linus /mysql-X.XX.XX]# cp /support-files/mysql.server /etc/rc.d/init.d/mysql.server
+[root@linus /mysql-X.XX.XX]# chmod 744 /etc/rc.d/init.d/mysql.server
+[root@linus /mysql-X.XX.XX]# ln -s /etc/rc.d/init.d/mysql.server /etc/rc.d/rcX.d/S55mysql
+
+Hermed har du en spritny hjemmebagt MySQL og er parat til at arbejde videre herfra. Du kan jo starte
+med (My)SQL gymnastikken beskrevet i "rpm-afsnittet"
+
+ -->
+
+
+<!-- YDERLIGERE OPLYSNING -->
+<PARA>
+MySQL er mere end blot et database program; det er en database-server. 
+Det betyder, at man - hvis
+man er oprettet som bruger og er blevet tildelt de passende rettigheder
+ - ved hjælp af et
+klient-program kan koble sig på serveren via internet, lave opslag, 
+intaste data, ændre data etc.
+Disse muligheder falder udenfor dette kapitels rammer, men der findes 
+et par tutorials på bl.a 
+<ULINK URL="http://www.devshed.com">http://www.devshed.com</ULINK>,
+ der er værd at læse desangående.
+</PARA>
+
+<SECT2 id="db-mysql-php">
+<TITLE>PHP - MySQL</TITLE>
+<INDEXTERM><PRIMARY>PHP</PRIMARY><SECONDARY>MySQL</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>MySQL</PRIMARY><SECONDARY>PHP</SECONDARY></INDEXTERM>
+
+<PARA>
+PHP er et script-sprog, der kan bruges til at skabe dynamiske websider. En af de helt store fordele
+ved PHP er evnen til at kommunikere med forskellige databaseprogrammer, og PHPi
+"taler" usædvanlig godt med MySQL.
+</PARA>
+
+<PARA>
+Før du kan bruge PHP, skal din webserver understøtte sproget.
+Dette opnås nemmest ved at
+installere følgende rpm-pakker. De to "mod_php.."-filer kan findes på
+<ULINK URL="ftp://ftp.redhat.com/pub/contrib/libc6/i386/">ftp://ftp.redhat.com/pub/contrib/libc6/i386/</ULINK>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>apache (fra din distributions cd-rom)</PARA></LISTITEM>
+<LISTITEM><PARA>mod_php3-3.0.12-1.i386.rpm</PARA></LISTITEM>
+<LISTITEM><PARA>mod_php-mysql-3.0.12-1.i386.rpm</PARA></LISTITEM>
+<ITEMIZEDLIST>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh apache_1.2.XX.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh mod_php3-3.0.12-1.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh mod_php3-mysql-3.0.12-1.i386.rpm</USERINPUT>
+</SCREEN>
+
+<PARA>
+Start Apache med kommandoen
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/httpd start</USERINPUT>
+</SCREEN>
+
+<!-- PHP-EKSEMPEL -->
+<PARA>
+Her er et lille eksempel på, hvorledes PHP og MySQL kan arbejde
+ sammen om at hente data fra en
+database i MySQL og præsentere dem på en webside. 
+Databasen der bruges, er basen "bog", som blev
+oprettet i <XREF LINKEND="db-mysql">.
+</PARA>
+
+<SCREEN>
+&lt;HTML&gt;&lt;HEAD&gt;
+&lt;TITLE&gt;LinuxBog MySQL PHP&lt;/TITLE&gt;
+&lt;/HEAD&gt;&lt;BODY&gt;
+&lt;? // Her skiftes der fra HTML til PHP-kode
+// Åben en forbindelse til MySQL
+$conn = mysql_connect("localhost","root","hemmeligt");
+// Udfør en læsning fra tabellen linuxbog
+$sql="SELECT * FROM linuxbog ORDER BY kapitel";
+$res = mysql_db_query("bog",$sql);
+// For alle poster (linier), udskriv indholdet
+// i en lille tabel
+echo "&lt;TABLE BORDER=1&gt;&lt;TR&gt;&lt;TD COLSPAN=2 BGCOLOR=#CCCCCC&gt;&lt;CENTER&gt;Linuxbog&lt;/CENTER&gt;&lt;/TD&gt;&lt;/TR&gt;";
+  for ($n = 0; $n < mysql_numrows($res); $n++ ) {
+    $post = mysql_fetch_array($res);
+    echo "&lt;TR&gt;&lt;TD&gt;$post[kapitel]&lt;/TD&gt;&lt;TD&gt; $post[titel]&lt;/TD&gt;&lt;/TR&gt;\n";
+  }
+echo "&lt;/TABLE>";
+// Frigiv hukommelse
+mysql_freeresult($res);
+// Luk forbindelsen
+mysql_close($conn);
+// Her skifter vi tilbage til HTML igen
+?&gt;
+&lt;/BODY&gt;&lt;/HTML&gt;
+</SCREEN>
+
+<PARA>
+Kopier eventuelt dette eksempel, og indsæt det i et tomt dokument, som du gemmer som "test.php" i
+Apaches dokumentrod. Kald filen igennem en web-browser, og se hvad der sker.
+</PARA>
+
+<PARA>
+Nu kan det ske, at du får en fejl som ligner denne:
+</PARA>
+
+<SCREEN>
+Warning: MySQL Connection Failed: Can't connect to local MySQL server through socket
+'/var/lib/mysql/mysql.sock' (111)...
+</SCREEN>
+
+<PARA>
+Denne fejl er mest sandsynlig, hvis du selv har kompileret MySQL. 
+Den opstår, hvis PHP ikke finder
+"mysql.sock" på den forventede placering. 
+Først skal du sikre dig at MySQL kører. 
+Er
+det ikke tilfældet, så start programmet og se om fejlmeddelelsen forsvinder. 
+Gør den ikke det,
+eller har MySQL kørt hele tiden, kan du oprette en lille konfigurations-fil, 
+der sikrer, at MySQL
+placerer "mysql.sock", så PHP kan finde den. 
+Samtidig guider filen klientprogrammer til den nye
+placering. 
+Åbn din favorit-editor og skriv følgende (har du allerede oprettet en "my.cnf"-fil,
+tilføjer du blot disse linier under de relevante [overskrifter] i filen)
+</PARA>
+
+<SCREEN>
+[mysqld]
+socket=/sti/til/mysql.sock  (i eksemplet ovenfor ville det blive /var/lib/mysql/mysql.sock)
+
+[client]
+socket=/sti/til/mysql.sock
+</SCRREN>
+
+<PARA>
+Gem filen som /etc/my.cnf
+</PARA>
+
+<PARA>
+Herefter skal du oprette mappen til "mysql.sock", skifte ejerskab og genstarte MySQL
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mkdir /sti/til</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chown mysql.mysql /sti/til</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/mysql.server stop</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/mysql.server start &amp;</USERINPUT>
+</SCREEN>
+
+<PARA>
+Og så skulle du være kørende igen.
+</PARA>
+
+<PARA>
+Du kan læse meget mere om PHP på www.php.net, og du kan finde 
+tutorials og scripts på
+<ULINK URL="http://www.devshed.com">www.devshed.com</ULINK>, 
+<ULINK URL="http://www.hotwired.com">www.hotwired.com</ULINK>
+og mange, mange andre steder på nettet.
+</PARA>
+
+</SECT2><!-- db-mysql-php -->
+<!-- andre sprog skydes ind her -->
+</SECT1><!-- db-mysql -->
+
 </CHAPTER><!-- databaser -->
 
