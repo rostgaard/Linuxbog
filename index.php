@@ -345,6 +345,7 @@ function vistype($type) {
     "TODO" => array(
       first => "todo-",
       last => ".html"
+      online => 2  // "Ændringer" har bognavn med to gange
     )
   );
 
