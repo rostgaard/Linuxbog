@@ -1,55 +1,51 @@
-<chapter>
-  <title>Serialisering af objekter</title>
+<chapter id="java-serialisering">
+<title>Serialisering af objekter</title>
 
 <para>
 Indhold:
 </para>
 
 <itemizedlist mark="bullet">
-<listitem><para>
-Hente og gemme objekter i en fil
-</para></listitem>
-<listitem><para>
-Gemme egne klasser - interfacet Serializable og nøgleordet transient
-</para></listitem>
+  <listitem><para>Hente og gemme objekter i en fil</para></listitem>
+  <listitem><para>Gemme egne klasser - interfacet Serializable og nøgleordet transient</para></listitem>
 </itemizedlist>
 
 <para>
-Kapitlet forudsættes af kapitel 18, RMI.
+  Kapitlet forudsættes af kapitel 18, RMI.
 </para>
 
 <para>
-Forudsætter kapitel 14, Datastrømme og filhåndtering.
+  Forudsætter kapitel 14, Datastrømme og filhåndtering.
 </para>
 
 <para>
-Når et program afslutter, kan det være, at man ønsker at gemme data
-til næste gang, programmet starter.
+  Når et program afslutter, kan det være, at man ønsker at gemme data
+  til næste gang, programmet starter.
 </para>
 
 <para>
-Man kan selvfølgelig skrive programkode, der gemmer og indlæser alle
-variablerne i de objekter, der skal huskes, men der findes en nemmere
-måde.
+  Man kan selvfølgelig skrive programkode, der gemmer og indlæser alle
+  variablerne i de objekter, der skal huskes, men der findes en nemmere
+  måde.
 </para>
 
 <para>
-Java har en mekanisme, kaldet <emphasis>serialisering</emphasis>, der
-består i, at objekter kan omdannes til en byte-sekvens (med
-datastrømmen ObjectOutputStream), der f.eks.  kan skrives til en fil
-<footnote><para>Eller netværket for den sags skyld.</para></footnote>.
-Denne bytesekvens kan senere, når man har brug for objekterne igen,
-deserialiseres (gendannes i hukommelsen med datastrømmen
-ObjectInputStream). Dette kunne f.eks. ske, når programmet starter
-næste gang.
+  Java har en mekanisme, kaldet <emphasis>serialisering</emphasis>, der
+  består i, at objekter kan omdannes til en byte-sekvens (med
+  datastrømmen ObjectOutputStream), der f.eks.  kan skrives til en fil
+  <footnote><para>Eller netværket for den sags skyld.</para></footnote>.
+  Denne bytesekvens kan senere, når man har brug for objekterne igen,
+  deserialiseres (gendannes i hukommelsen med datastrømmen
+  ObjectInputStream). Dette kunne f.eks. ske, når programmet starter
+  næste gang.
 </para>
 
-<sect1>
-  <title>Hente og gemme objekter</title>
+<sect1 id="java-serialisering-gemme-hente-objekter">
+<title>Hente og gemme objekter</title>
 
 <para>
-Her er en klasse med to klassemetoder, der henter og gemmer objekter i
-en fil:
+  Her er en klasse med to klassemetoder, der henter og gemmer objekter i
+  en fil:
 </para>
 
 <screen>
@@ -75,16 +71,15 @@ public class Serialisering
 }
 </screen>
 
-
 <para>
-Du kan benytte klassen fra dine egne programmer.
+  Du kan benytte klassen fra dine egne programmer.
 </para>
 
 <para>
-Her er et program, der læser en vektor fra filen <footnote><para>Man
-bruger ofte filendelsen .ser til serialiserede
-objekter.</para></footnote> <constant>venner.ser</constant>, tilføjer
-en indgang og gemmer vektoren i filen igen.
+  Her er et program, der læser en vektor fra filen <footnote><para>Man
+  bruger ofte filendelsen .ser til serialiserede
+  objekter.</para></footnote> <constant>venner.ser</constant>, tilføjer
+  en indgang og gemmer vektoren i filen igen.
 </para>
 
 <screen>
@@ -112,6 +107,7 @@ public class HentOgGem
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Oprettet: [Jacob, Brian, Preben]
@@ -119,14 +115,14 @@ Gemt: [Jacob, Brian, Preben, Ven3]
 </screen>
 
 <para>
-Første gang, programmet kører, opstår der en undtagelse, fordi filen
-ikke findes. Den fanger vi og tilføjer &quot;Jacob&quot;,
-&quot;Brian&quot; og &quot;Preben&quot; til vektoren. Derpå tilføjer
-vi &quot;Ven3&quot; og gemmer vektoren.
+  Første gang, programmet kører, opstår der en undtagelse, fordi filen
+  ikke findes. Den fanger vi og tilføjer &quot;Jacob&quot;,
+  &quot;Brian&quot; og &quot;Preben&quot; til vektoren. Derpå tilføjer
+  vi &quot;Ven3&quot; og gemmer vektoren.
 </para>
 
 <para>
-Næste gang er uddata:
+  Næste gang er uddata:
 </para>
 
 <screen>
@@ -135,7 +131,7 @@ Gemt: [Jacob, Brian, Preben, Ven3, Ven4]
 </screen>
 
 <para>
-Køres programmet igen, ser man, at den hver gang tilføjer en indgang:
+  Køres programmet igen, ser man, at den hver gang tilføjer en indgang:
 </para>
 
 <screen>
@@ -143,18 +139,21 @@ Læst: [Jacob, Brian, Preben, Ven3, Ven4]
 Gemt: [Jacob, Brian, Preben, Ven3, Ven4, Ven5]
 </screen>
 
+<para>og</para>
 
 <screen>
 Læst: [Jacob, Brian, Preben, Ven3, Ven4, Ven5]
 Gemt: [Jacob, Brian, Preben, Ven3, Ven4, Ven5, Ven6]
 </screen>
 
+<para>og</para>
 
 <screen>
 Læst: [Jacob, Brian, Preben, Ven3, Ven4, Ven5, Ven6]
 Gemt: [Jacob, Brian, Preben, Ven3, Ven4, Ven5, Ven6, Ven7]
 </screen>
 
+<para>og</para>
 
 <screen>
 Læst: [Jacob, Brian, Preben, Ven3, Ven4, Ven5, Ven6, Ven7]
@@ -162,70 +161,70 @@ Gemt: [Jacob, Brian, Preben, Ven3, Ven4, Ven5, Ven6, Ven7, Ven8]
 </screen>
 
 <para>
-Hvis nogle af de serialiserede objekter indeholder datafelter, der er
-referencer til andre objekter, serialiseres disse også.  Ovenfor så
-vi, at hvis man serialiserer en vektor, bliver elementerne i vektoren
-også serialiseret. Dette gælder også, hvis disse elementer selv
-indeholder eller er vektorer og så fremdeles, og så kan et helt
-netværk af objekter med indbyrdes referencer blive serialiseret. Man
-skal derfor være lidt påpasselig i sine egne programmer, det kan være,
-at man får for meget med.
+  Hvis nogle af de serialiserede objekter indeholder datafelter, der er
+  referencer til andre objekter, serialiseres disse også.  Ovenfor så
+  vi, at hvis man serialiserer en vektor, bliver elementerne i vektoren
+  også serialiseret. Dette gælder også, hvis disse elementer selv
+  indeholder eller er vektorer og så fremdeles, og så kan et helt
+  netværk af objekter med indbyrdes referencer blive serialiseret. Man
+  skal derfor være lidt påpasselig i sine egne programmer, det kan være,
+  at man får for meget med.
 </para>
 </sect1>    <!--   Hente og gemme objekter -->
 
-<sect1>
-  <title>Serialisering af egne klasser</title>
+<sect1 id="java-serialisering-egne-klasser">
+<title>Serialisering af egne klasser</title>
 
 <para>
-Det er ikke alle klasser, der må/kan serialiseres. For eksempel giver
-det ikke mening at serialisere en datastrøm til en forbindelse over
-netværket (eller bare til en fil).  Hvordan skulle systemet genskabe
-en forbindelse, der har været gemt på harddisken i tre uger? Den anden
-ende af netværksforbindelsen vil formentlig være væk på det tidspunkt
-(og filen kan være flyttet eller slettet).
+  Det er ikke alle klasser, der må/kan serialiseres. For eksempel giver
+  det ikke mening at serialisere en datastrøm til en forbindelse over
+  netværket (eller bare til en fil).  Hvordan skulle systemet genskabe
+  en forbindelse, der har været gemt på harddisken i tre uger? Den anden
+  ende af netværksforbindelsen vil formentlig være væk på det tidspunkt
+  (og filen kan være flyttet eller slettet).
 </para>
 
-<sect2>
-  <title>Interfacet Serializable</title>
+<sect2 id="java-serialisering-egne-klasser-interface">
+<title>Interfacet Serializable</title>
 
 <para>
-Serializable-interfacet, der ingen metoder har defineret, bruges til
-at markere, at objekter <emphasis>godt må</emphasis> serialiseres.
-Hvis en klasse implementerer Serializable, har man fortalt Java at
-objekter af denne type godt kan serialiseres.
+  Serializable-interfacet, der ingen metoder har defineret, bruges til
+  at markere, at objekter <emphasis>godt må</emphasis> serialiseres.
+  Hvis en klasse implementerer Serializable, har man fortalt Java at
+  objekter af denne type godt kan serialiseres.
 </para>
 
 <para>
-Prøver man alligevel at serialisere et objekt der ikke er
-Serializable, opstår der en køretidsfejl. Derfor implementerer
-f.eks. FileWriter og Socket ikke Serializable.
+  Prøver man alligevel at serialisere et objekt der ikke er
+  Serializable, opstår der en køretidsfejl. Derfor implementerer
+  f.eks. FileWriter og Socket ikke Serializable.
 </para>
 </sect2>    <!--   Interfacet Serializable -->
 
-<sect2>
-  <title>Nøgleordet transient</title>
+<sect2 id="java-serialisering-egne-klasser-transient">
+<title>Nøgleordet transient</title>
 
 <para>
-Ud over, at der kan findes objekt-typer, som overhovedet ikke kan
-serialiseres, kan det også ske, at der er visse dele af et objekts
-data, man ikke ønsker serialiseret. Hvis et objekt indeholder
-midlertidige data (f.eks. fortrydelses-information i et
-tekstbehandlingsprogram), kan man markere de midlertidige datafelter i
-klassen med nøgleordet <emphasis>transient</emphasis>.
+  Ud over, at der kan findes objekt-typer, som overhovedet ikke kan
+  serialiseres, kan det også ske, at der er visse dele af et objekts
+  data, man ikke ønsker serialiseret. Hvis et objekt indeholder
+  midlertidige data (f.eks. fortrydelses-information i et
+  tekstbehandlingsprogram), kan man markere de midlertidige datafelter i
+  klassen med nøgleordet <emphasis>transient</emphasis>.
 </para>
 </sect2>    <!--   Nøgleordet transient -->
 
-<sect2>
-  <title>Eksempel</title>
+<sect2 id="java-serialisering-egne-klasser-eksempel">
+<title>Eksempel</title>
 
 <para>
-Eksemplet herunder viser en klasse, der kan serialiseres (implements
-Serializable), med en transient variabel (tmp). Hvis et Data-objekt
-serialiseres, vil a blive gemt i byte-sekvensen, men tmp vil ikke.
+  Eksemplet herunder viser en klasse, der kan serialiseres (implements
+  Serializable), med en transient variabel (tmp). Hvis et Data-objekt
+  serialiseres, vil a blive gemt i byte-sekvensen, men tmp vil ikke.
 </para>
 
 <para>
-Af bekvemmelighedsgrunde er der også lavet en toString()-metode.
+  Af bekvemmelighedsgrunde er der også lavet en toString()-metode.
 </para>
 
 <screen>
@@ -242,10 +241,9 @@ public class Data <emphasis>implements Serializable</emphasis>
 }
 </screen>
 
-
 <para>
-Her er et program, der læser en vektor af Data-objekter, tilføjer et
-og gemmer den igen.
+  Her er et program, der læser en vektor af Data-objekter, tilføjer et
+  og gemmer den igen.
 </para>
 
 <screen>
@@ -274,15 +272,15 @@ public class HentOgGemData
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Oprettet: []
 Gemt: [Data: a=88 tmp=2]
 </screen>
 
-
 <para>
-Køres programmet igen fås:
+  Køres programmet igen fås:
 </para>
 
 <screen>
@@ -290,12 +288,14 @@ Læst: [Data: a=88 tmp=0]
 Gemt: [Data: a=88 tmp=0, Data: a=10 tmp=10]
 </screen>
 
+<para>og</para>
 
 <screen>
 Læst: [Data: a=88 tmp=0, Data: a=10 tmp=0]
 Gemt: [Data: a=88 tmp=0, Data: a=10 tmp=0, Data: a=52 tmp=96]
 </screen>
 
+<para>og</para>
 
 <screen>
 Læst: [Data: a=88 tmp=0, Data: a=10 tmp=0, Data: a=52 tmp=0]
@@ -303,27 +303,27 @@ Gemt: [Data: a=88 tmp=0, Data: a=10 tmp=0, Data: a=52 tmp=0, Data: a=78 tmp=88]
 </screen>
 
 <para>
-Læg mærke til, at den transiente variabel tmp ikke bliver husket fra
-gang til gang.
+  Læg mærke til, at den transiente variabel tmp ikke bliver husket fra
+  gang til gang.
 </para>
+
 </sect2>    <!--   Eksempel -->
 </sect1>    <!--   Serialisering af egne klasser -->
 
-<sect1>
-  <title>Opgaver</title>
+<sect1 id="java-serialisering-opgaver">
+<title>Opgaver</title>
 
 <orderedlist>
-<listitem><para>
-Lav et program, der holder styr på en musiksamling.  Opret en klasse,
-der repræsenterer en udgivelse (int år, String navn, String gruppe,
-String pladeselskab). Programmet skal huske listen over udgivelser og
-kunne udskrive den, brugeren skal kunne tilføje flere, og gemme og
-hente listen i en fil (vha.  serialisering).
-</para></listitem>
-<listitem><para>
-Udvid programmet til, at brugeren angiver filnavnet, der skal
-hentes/gemmes i.
-</para></listitem>
+  <listitem>
+    <para>
+      Lav et program, der holder styr på en musiksamling.  Opret en klasse,
+      der repræsenterer en udgivelse (int år, String navn, String gruppe,
+      String pladeselskab). Programmet skal huske listen over udgivelser og
+      kunne udskrive den, brugeren skal kunne tilføje flere, og gemme og
+      hente listen i en fil (vha.  serialisering).
+    </para>
+  </listitem>
+  <listitem><para>Udvid programmet til, at brugeren angiver filnavnet, der skal hentes/gemmes i.</para></listitem>
 </orderedlist>
 
 </sect1>    <!--   Opgaver -->
