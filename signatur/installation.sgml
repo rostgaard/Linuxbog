@@ -1,5 +1,5 @@
 <chapter id="signatur-installation">
-<title>Installation af certifikater</title>
+<title>Installation af og brug certifikater</title>
 
 <para>Dette kapitel handler om, hvad man rent faktisk skal foretage
 sig på sin egen computer for at kunne bruge certifikatet til noget fornuftigt.
@@ -71,10 +71,10 @@ programmer der benytter openssl.)</emphasis></para>
 <!-- Installation af certifikater -->
 <!-- =================================================================== -->
 <sect1 id="certinst">
-<title>Installation af certifikater i programmer og miljøer</title>
+<title>Installation og brug af certifikater i programmer og miljøer</title>
 
-<para>Dette afsnit beskriver installation af certifikater i
-forskellige programmer.</para>
+<para>Dette afsnit beskriver installation og brug af certifikater i
+forskellige programmer og miljøer. </para>
 
 
 <!-- =================================================================== -->
@@ -82,6 +82,7 @@ forskellige programmer.</para>
 <!-- =================================================================== -->
 <sect2 id="kde2">
 <title>KDE 2</title>
+<indexterm><primary>KDE 2</primary></indexterm>
 
 <para>Dette afsnit burde beskrive hvordan rodcertifikat installation
 fungerer i KDE 3, men foreløbig er det mest en række noter.</para>
@@ -138,7 +139,7 @@ linkend="kmd-ca-ssl-information-fig">.</para>
 </sect2>
 
 <!-- =================================================================== -->
-<!-- KDE -->
+<!-- KDE3 -->
 <!-- =================================================================== -->
 <sect2 id="kde3">
 <title>KDE 3</title>
@@ -224,10 +225,271 @@ linkend="kde3-kmd-ca-instrod-7-fig">.</para>
 <GRAPHIC FILEREF="kde3-kmd-ca-instrod-7.&magic;"  SCALE="45"></GRAPHIC>
 </FIGURE>
 
-<para>Nogen gange kan der tilsyneladende fremkomme en irriterende
-lille dialogboks der beder om et password - den kan du vist bare annulere.</para>
-
 </sect2>
+
+
+<!-- =================================================================== -->
+<!-- Gnus -->
+<!-- =================================================================== -->
+
+<sect2>
+<title>Gnus</title>
+
+<para>Certifikater understøttes endnu kun i udviklingsversionen af
+Gnus. Det er den der også er kendt som Oort Gnus. Metoderne i dette
+afsnit er afprøvet med nyeste version af Oort Gnus som jeg har hentet
+fra CVS-arkivet på <ulink url="http://quimby.gnus.org/gnus/">
+http://quimby.gnus.org/gnus/</ulink>.</para>
+
+<para>Kommende versioner af Gnus (versionsnumre højere end 5.8.8 og
+5.9) vil inkludere certifikatunderstøttelse.</para>
+
+<para>Metoden virker både under Emacs version 20 og 21 (ældre
+versioner af Emacs understøttes ikke længere af Gnus).</para>
+
+<para>Gnus bruger OpenSSL til håndteringen af certifikater (se <xref
+linkend="signatur-software">) og i dokumentationen af Gnus anbefales
+det at OpenSSL bør være version 0.9.6 eller højere da der har vist sig
+fejl med tidligere versioner.</para>
+
+<para>I de følgende afsnit beskrives først hvorledes du installerer
+rodcertifikater samt egen nøgle og certifikat. Dernæst beskrives
+hvordan du kan håndtere andres certifikater og så slutter vi af med at
+beskrive hvordan du bruger alle herlighederne til daglig.</para>
+
+<sect3>
+<title>Installer CA-rodcertifikat i Gnus</title>
+<para>Først og fremmest skal du skaffe dig et rodcertifikat fra en CA
+og dette skal konverteres til PEM-format. Hvordan dette gøres er
+beskrevet hhv. i <xref linkend="rodcertifikat"> og i <xref
+linkend="openssl">. det er kun nødvendigt at installere KMD-CA's
+Kvalificeret Person-rodcertifikat i Gnus.</para>
+
+<para>Vi skal nu have fortalt Gnus at den skal benytte
+rodcertifikatet. Dette kan gøres på to måder. Enten ved at angive en
+direkte sti til certifikatet eller ved at angive et katalog der
+indeholder certifikatet. Hvis du vælger sidstnævnte løsning kan du
+installere rodcertifikater fra flere CA'er i kataloget -- til gengæld
+er der krav til navngivningen af filen med rodcertifikatetet.</para>
+
+<para>Begge metoder konfigureres fra Emacs' customize-interface så i
+din Emacs taster du:</para>
+
+<screen>
+M-x customize-group RET smime RET
+</screen>
+
+<para>hvilket giver mulighed for at konfigurere certifikathåndteringen
+i Gnus (se <xref linkend="gnus-smime-customize-ca-fig">). Udfyld enten
+"Smime Ca Directory" eller "Smime Ca File".</para>
+
+<FIGURE ID="gnus-smime-customize-ca-fig" FLOAT="1">
+<TITLE>Placering af CA-certifikat(er)</TITLE>
+<GRAPHIC FILEREF="gnus-smime-customize-ca.&magic;"  SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>
+Rodcertifikater der installeres i kataloget skal som sagt navngives
+på en særlig måde. Filen skal navngives med X.509 hash-værdien af
+certifikatet. Det gøres som nemt som:</para>
+
+<screen>
+$ mv KMD-CA-KPerson.crt.pem `openssl x509 -noout -hash -in KMD-CA-KPerson.crt.pem`.0
+</screen>
+
+<para>
+Det er hvad der skal til for at installere rodcertifikater.
+</para>
+</sect3>
+
+<sect3>
+<title>Installer eget certifikat og privat nøgle i Gnus</title>
+<para>Du skal naturligvis være i besiddelse af et nøglepar - dvs. en
+offentlig og en privat nøgle. Det er beskrevet andetsteds i denne bog
+hvordan du skaffer dem.</para>
+
+<para>Gnus kræver at den offentlige og den private nøgle samles i en
+fil, men før vi kan det bliver vi nød til at konvertere den
+offentlige nøgle til PEM-format (den private nøgle er allerede i
+PEM-format hvis du har brugt metoden i denne bog til at generere den
+med ellers skal den også konverteres).</para>
+
+<para>
+For at konvertere den offentlige nøgle (det er den du henter hos
+KMD-CA) gør du følgende:</para>
+
+<screen>
+$ openssl x509 -inform DER -in cert.crt -outform PEM -out cert.pem
+</screen>
+
+<para>Nu skal den offentlige og private nøgle samles til en
+fil:</para>
+
+<screen>
+$ cat Mit_Navn_Nøgle.pem cert.pem > ~/.mit-certifikat
+</screen>
+
+<para>
+og så skal vi have fortalt Gnus at certifikatet eksisterer. Gå atter
+ind i customize-interfacet i Emacs:</para>
+
+<screen>
+M-x customize-group RET smime RET
+</screen>
+
+<para>Angiv under "Smime Keys" hvor certifikatet ligger og til hvilken
+mailadresse det knytter sig (se <xref
+linkend="gnus-smime-customize-cert-fig">).</para>
+
+<FIGURE ID="gnus-smime-customize-cert-fig" FLOAT="1">
+<TITLE>Placering af eget certifikat</TITLE>
+<GRAPHIC FILEREF="gnus-smime-customize-cert.&magic;"  SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>Gnus skulle nu være i stand til at håndtere dit certifikat.</para>
+</sect3>
+
+<sect3>
+<title>Installer andres offentlige nøgler i Gnus</title>
+<para>Håndteringen af andre folks offentlige nøgler (dem du vil skrive
+krypteret med) er desværre ikke særlig udbygget i Gnus.</para>
+
+<para>Der er implementeret to metoder. Den ene forudsætter at man har
+nøglen i en fil og angiver den rette fil når man krypterer sine
+beskeder. Den anden kan hente nøglen på en DNS-server (se <ulink
+url="http://rfc.sunsite.dk/rfc/rfc2538.html">RFC 2538</ulink>).</para>
+
+<para>Førstnævnte metode er standard og fungerer smertefrit og
+intuitivt. Anden metode er meget lidt brugt (forfatteren af S/MIME
+delen af Gnus kender kun et certifikat der er gemt på en DNS-server -
+nemlig hans eget) og jeg ved ikke hvordan man bruger det ...</para>
+
+<para>Gnus har desværre ingen metoder til automatisk at gemme den
+offentlige nøgle fra signerede og/eller krypterede mails man modtager
+(men det er dog forholdsvis lige til at gemme dem alligevel, se
+senere). Gnus har desværre heller ingen metoder til at hente
+offentlige nøgler fra LDAP-nøgleservere (fx <ulink
+url="ldap://certifikater.kmd.dk">ldap://certifikater.kmd.dk</ulink>).</para>
+
+<para>Glade e-lisp-hackere går friskt i gang ...</para>
+</sect3>
+
+<sect3>
+<title>Send signeret og krypteret e-post fra Gnus</title>
+<para>
+For at signere eller kryptere en mail i Gnus skal du under
+redigeringen fra menuen "Attachments" vælge enten "S/MIME Sign" eller
+"S/MIME Encrypt" (se <xref
+linkend="gnus-smime-sign-1-fig">. Tastaturgenvejene er
+hhv. <command>C-c RET s s</command> og <command>C-c RET c s</command>.
+</para>
+
+<FIGURE ID="gnus-smime-sign-1-fig" FLOAT="1">
+<TITLE>Signering af mail</TITLE>
+<GRAPHIC FILEREF="gnus-smime-sign-1.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>Der bliver indsat en kode i mailen og når man sender mailen
+afsted (<command>C-c C-C</command>) bliver man spurgt om hvilken nøgle
+der skal bruges (<xref linkend="gnus-smime-sign-2-fig">) og nøglens
+passphrase (<xref linkend="gnus-smime-sign-4-fig">).</para>
+
+<FIGURE ID="gnus-smime-sign-2-fig" FLOAT="1">
+<TITLE>Signering af mail</TITLE>
+<GRAPHIC FILEREF="gnus-smime-sign-1.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="gnus-smime-sign-4-fig" FLOAT="1">
+<TITLE>Signering af mail</TITLE>
+<GRAPHIC FILEREF="gnus-smime-sign-1.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>Kryptering foregår ganske tilsvarende. Ydermere bliver man
+spurgt om i hvilken fil modtagerens offentlige nøgle er.</para>
+
+</sect3>
+
+<sect3>
+<title>Verificer og dekrypter e-post i Gnus</title> <para>Når du læser
+en krypteret mail spørger Gnus selv om den skal dekrytere mailen
+(<xref linkend="gnus-smime-decrypt-1-fig">) og spørger efter din
+private nøgles passphrase (<xref
+linkend="gnus-smime-decrypt-2-fig">).</para>
+
+<FIGURE ID="gnus-smime-decrypt-1-fig" FLOAT="1">
+<TITLE>Gnus spørger selv om den skal dekryptere en krypteret mail</TITLE>
+<GRAPHIC FILEREF="gnus-smime-decrypt-1.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="gnus-smime-decrypt-2-fig" FLOAT="1">
+<TITLE>Din private nøgles passphrase skal bruges til at dekryptere en
+krypteret mail</TITLE>
+<GRAPHIC FILEREF="gnus-smime-decrypt-2.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>Hvis du læser en mail der blot er signeret bliver den ikke
+automatisk verificeret og du bliver heller ikke spurgt om du vil
+verificere den.</para>
+
+<para>Du kan kende en signeret (og en krypteret) mail på det lille "p"
+i statuslinjen (se <xref linkend="gnus-smime-verify-5-fig">).
+</para>
+
+<FIGURE ID="gnus-smime-verify-5-fig" FLOAT="1">
+<TITLE>Det lille "p" fortæller at mailen er signeret og/eller
+krypteret</TITLE> <GRAPHIC FILEREF="gnus-smime-verify-5.&magic;"
+SCALE="45"></GRAPHIC> </FIGURE>
+
+<para>Den store "knap" (<xref linkend="gnus-smime-verify-6-fig">) der
+også fortæller om signaturen er o.k. vises ikke som standard af
+Gnus. For at få den at se skal du tilføje følgende til din
+<filename>.gnus</filename>:</para>
+
+<screen>
+(setq gnus-buttonized-mime-types
+      '("multipart/signed"))
+</screen>
+
+<FIGURE ID="gnus-smime-verify-6-fig" FLOAT="1">
+<TITLE>Denne "knap" indeholder information om signaturen</TITLE>
+<GRAPHIC FILEREF="gnus-smime-verify-6.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>For at verificere den signerede mail vælges menuen "Article /
+MIME" og menupunktet "Verify and Decrypt" (<xref
+linkend="gnus-smime-verify-3-fig">) eller tastaturgenvejen <command>W
+s</command>. Når mailen er verificeret vises resultatet i knappen (se
+<xref linkend="gnus-smime-verify-2-fig">).</para>
+
+<FIGURE ID="gnus-smime-verify-3-fig" FLOAT="1">
+<TITLE>Vælg dette punkt for at verificere en signeret mail</TITLE>
+<GRAPHIC FILEREF="gnus-smime-verify-3.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="gnus-smime-verify-2-fig" FLOAT="1">
+<TITLE>Signaturen var i orden ... heldigvis!</TITLE>
+<GRAPHIC FILEREF="gnus-smime-verify-2.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>Knappen er er som sagt en knap og hvis man klikker på den med
+midterste museknap eller placerer cursoren (point) på den og taster
+return vises al information om signaturen og certifikatet. Et uddrag
+disse oplysninger kan ses på <xref
+linkend="gnus-smime-verify-4-fig">.</para>
+
+<para>I blandt oplysningerne kan man også finde afsenderens offentlige
+nøgle og det er således muligt med almindelige, simple
+Emacs-kommandoer at gemme nøglen til senere brug.</para>
+
+<FIGURE ID="gnus-smime-verify-4-fig" FLOAT="1">
+<TITLE>Oplysninger om signaturen og certifikatet</TITLE>
+<GRAPHIC FILEREF="gnus-smime-verify-4.&magic;" SCALE="45"></GRAPHIC>
+</FIGURE>
+
+</sect3>
+</sect2>
+
+
 
 <!-- =================================================================== -->
 <!-- NETSCAPE -->
