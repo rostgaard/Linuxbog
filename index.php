@@ -359,7 +359,7 @@ function vistype($type) {
     "PostScript" => array(
       first => "linuxbog-",
       form => "-ps-",
-      last => ".gz"
+      last => ".zip"
     ),
     // Eks: linuxbog-frihed-pdf.zip
     "PDF" => array(
