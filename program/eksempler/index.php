@@ -27,7 +27,7 @@ er så bare lavet en symbolic link til "smart.php".
 require("proglang.inc");
 
 $version = file("../version.sgml");
-$tar_eksempler = "linux-program-$version[0]_eksempler.tgz";
+$tar_eksempler = "linux-program-$version[0]_eksempler.tar.gz";
 
 ?><h2><?php
   echo count($proglang);
