@@ -1,0 +1,31 @@
+<?
+  include("Config.php");
+
+  $link = mysql_connect(_MYSQL_SERVER_NAME, _MYSQL_USER_NAME, _MYSQL_PASSWORD);
+  if ($link == 0) {
+     $SessionID = "";
+  }
+  else {
+     mysql_selectdb(_MYSQL_DATABASE_NAME, $link);
+     if (!isset($SessionID) or ($SessionID == "")) {
+     $SessionID = "";
+      }
+     else {
+        $SQLQuery = "SELECT Brugernavn from Session ";
+        $SQLQuery .= "WHERE SessionID='$SessionID'";
+        $result = mysql_query($SQLQuery);
+        if ($result == 0) {
+             $SessionID = "";
+        }
+        else {
+              if (mysql_fetch_row($result)) {
+                  $bruger_id = mysql_result($result,'Brugernavn');
+              }
+              else {
+                   $SessionID = "";
+              };
+              mysql_free_result($result);
+        }
+     }
+  }
+?>

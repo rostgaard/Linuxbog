@@ -1,0 +1,38 @@
+<?
+  require("Config.php");
+
+  $link = mysql_connect(_MYSQL_SERVER_NAME, _MYSQL_USER_NAME, _MYSQL_PASSWORD);
+  if ($link == 0) {
+     header("Location: Fejl.php?Kode=1");
+     exit;
+  }
+
+  mysql_selectdb(_MYSQL_DATABASE_NAME, $link);
+
+  $password = md5($password);
+  $SQLQuery = "SELECT Brugernavn FROM Users ";
+  $SQLQuery .= "WHERE Brugernavn='$user' and ";
+  $SQLQuery .= "Password='$password'";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+     header("Location: Fejl.php?Kode=2");
+     exit;
+  }
+  else{
+       if (mysql_fetch_row($result)){
+           $bruger_id = mysql_result($result,'Brugernavn');
+           $session_id = md5(uniqid(rand()));
+           $SQLQuery = "INSERT INTO Session (Brugernavn, SessionID, SessionDato) ";
+           $SQLQuery .= "VALUES ('$bruger_id', '$session_id', '" . date("Y-m-d H:i:s") . "')";
+           $result = mysql_query($SQLQuery);
+           if ($result == 0) {
+                header("Location: Fejl.php?Kode=3");
+                exit;
+           }
+           mysql_close($link);
+           header("Location: Velkommen.php?SessionID=$session_id");
+           exit;
+       }
+  else header("Location: Fejl.php?Kode=4");
+  }
+?>

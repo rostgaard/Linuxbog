@@ -1,0 +1,70 @@
+<?
+  include("session.php");
+
+  if ($SessionID == "") {
+       header("Location: login.html");
+       exit;
+  }
+
+  $SQLQuery = "SELECT Brugernavn, Navn, Email, Status, Oprettet from Users ";
+  $SQLQuery .= "WHERE Brugernavn='$bruger_id'";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+    header("Location: Fejl.php?Kode=2");
+    exit;
+  }
+  else {
+    $field = mysql_fetch_row($result);
+    $bruger = $field['Brugernavn'];
+    $navn = $field['Navn'];
+    $email = $field['Email'];
+    $status = $field['Status'];
+    $oprettet = $field['Oprettet'];
+  }
+?>
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN \">
+<HTML>
+<HEAD>
+        <TITLE>Website Friheden</TITLE>
+<META NAME=Generator CONTENT=Stone's WebWriter 3>
+</HEAD>
+<BODY BGCOLOR="#999999" TEXT=#000000 LINK=#0000FF VLINK=#660066 ALINK=#FF0000>
+<BR><BR><BR><BR>
+<CENTER>
+<H2>Hvilke oplysninger har vi registreret om den pågældende person</H2>
+<TABLE BORDER=1 BGCOLOR=#CCFFFF>
+<TH COLSPAN="2" BGCOLOR="YELLOW">Følgende er registreret om <? print "$bruger" ?></TH>
+</TR>
+<TR>
+        <TD>Navn</TD>
+        <TD><? echo "$navn" ?></TD>
+</TR>
+<TR>
+        <TD>Email adresse</TD>
+        <TD><? echo "$email" ?></TD>
+</TR>
+<TR>
+        <TD>Status</TD>
+        <TD><? echo "$status" ?></TD>
+</TR>
+<TR>
+        <TD>Oprettet</TD>
+        <TD><? echo "$oprettet" ?></TD>
+</TR>
+</TABLE>
+<BR>
+<BR>
+<?
+if ($bruger == 'admin'){
+    print
+    "<BR>
+    <A HREF='NyBruger.php?SessionID=$SessionID'>Opret ny bruger</A>";
+}
+?>
+</CENTER>
+<BR>
+<P><HR>
+<CENTER><FONT FACE="Times New Roman" SIZE="-2">
+Copyright &copy Michael Rasmussen</FONT></CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,85 @@
+<?
+   $link = mysql_connect($server, $user, $password);
+   if ($link == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+
+   $SQLQuery = "CREATE DATABASE " . $dbnavn;
+   $result = mysql_query($SQLQuery);
+   if ($result == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+
+   mysql_selectdb($dbnavn, $link);
+
+   $SQLQuery = "GRANT INSERT, DELETE, UPDATE, SELECT ON ";
+   $SQLQuery .= $dbnavn . ".*" . " TO " . $dbuser . "@" . $server;
+   $SQLQuery .= " IDENTIFIED BY '" . $dbpassword . "';";
+   $result = mysql_query($SQLQuery);
+   if ($result == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+
+   $SQLQuery = "CREATE TABLE Users (";
+   $SQLQuery .= "Brugernavn varchar(50) PRIMARY KEY,";
+   $SQLQuery .= "Password varchar(50) NOT NULL,";
+   $SQLQuery .= "Navn varchar(50),";
+   $SQLQuery .= "Email varchar(30) NOT NULL,";
+   $SQLQuery .= "Status varchar(15) NOT NULL,";
+   $SQLQuery .= "Oprettet DATETIME,";
+   $SQLQuery .= "UNIQUE Email (Email))";
+   $result = mysql_query($SQLQuery);
+   if ($result == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+
+   $SQLQuery = "CREATE TABLE Session (";
+   $SQLQuery .= "SessionID CHAR(32) PRIMARY KEY,";
+   $SQLQuery .= "Brugernavn varchar(50) NOT NULL,";
+   $SQLQuery .= "SessionDato DATETIME)";
+   $result = mysql_query($SQLQuery);
+   if ($result == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+
+   $SQLQuery = "INSERT INTO Users(Brugernavn, Password, Navn, Email, Status, Oprettet)";
+   $SQLQuery .= " VALUES (\"admin\", \"" . md5("admin") . "\", \"Michael Rasmussen\", ";
+   $SQLQuery .= " \"admin@friheden.dk\", \"Administrator\", \"" . date("d-m-Y H:i:s") . "\")";
+   $result = mysql_query($SQLQuery);
+   if ($result == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+  $SQLQuery = "INSERT INTO Users(Brugernavn, Password, Navn, Email, Status, Oprettet)";
+   $SQLQuery .= " VALUES (\"sten\", \"" . md5("sten") . "\", \"Sten Larsen\", ";
+   $SQLQuery .= " \"sten@larsen.dk\", \"Medlem\", \"" . date("Y-m-d H:i:s") . "\")";
+   $result = mysql_query($SQLQuery);
+   if ($result == 0) {
+      echo(mysql_error($link));
+      exit;
+   }
+
+   $file = fopen("Config.php", "w");
+   if (!$file) {
+      echo("FEJL - Kunne ikke gemme oplysninger i Config.php");
+      exit;
+   }
+
+   fputs($file, "<?\n");
+   fputs($file, "   //Database configs\n");
+   fputs($file, "   define(\"_MYSQL_SERVER_NAME\", \"" . $server . "\");\n");
+   fputs($file, "   define(\"_MYSQL_USER_NAME\", \"" . $dbuser . "\");\n");
+   fputs($file, "   define(\"_MYSQL_PASSWORD\", \"" . $dbpassword . "\");\n");
+   fputs($file, "   define(\"_MYSQL_DATABASE_NAME\", \"" . $dbnavn . "\");\n");
+   fputs($file, "?>\n");
+   fclose($file);
+
+   mysql_close($link);
+
+   header("Location: afslut.html");
+?>
