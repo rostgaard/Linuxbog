@@ -1,21 +1,45 @@
 <chapter id="html">
 <title>HTML</title>
 <para>
-At skrive dokumentation i HTML er ofte smart, idet HTML forstås
-på alle platforme. Ideen med HTML er at man skriver en fil i ren 
-tekst og tilføjer nogle "tags" svarende til at skrive i SGML/DocBook.
-De tags gør at man kan håndtere overskrifter, have referencer til andre
-sider og inkludere billeder.
+At skrive dokumentation i HTML er ofte smart, idet HTML forstås på
+alle platforme. Ideen med HTML er at man skriver en fil i ren tekst og
+tilføjer nogle "tags" svarende til at skrive i SGML/DocBook.  De tags
+gør at man kan håndtere overskrifter, have referencer til andre sider
+og inkludere billeder. Tags kan være skrevet med store bogstaver eller
+smp - de har samme betydning.
 </para>
 
 <para>
-Det er mange muligheder for at lave HTML. Nogle personer skriver HTML i
-en almindelig tekst-editor og har selv fuld kontrol over HTML-koderne. Andre
-skriver siderne i en grafisk editor, såsom Netscape og via menuer med koder
-håndterer layout via en WYSIWYG-brugergrænseflade.
+Det er mange muligheder for at lave HTML. Nogle personer skriver HTML
+i en almindelig tekst-editor og har selv fuld kontrol over
+HTML-koderne. Andre skriver siderne i en grafisk editor, såsom
+Netscape eller Mozilla og via menuer med koder håndterer layout via en
+WYSIWYG-brugergrænseflade.
 </para>
 
+<figure id="mozilla_edit-fig" float="1">
+<title>Mozilla kan anvendes til at skrive HTML</title>
+<graphic fileref="mozilla_edit.&magic;"  scale="60"></graphic>
+</figure>
+
+<para>
+Fordelen med at anvende et program som Mozilla er at man med knapperne
+&lt;HTML&gt;Source og &lt;Normal&gt; nemt kan hoppe frem og tilbage
+mellem HTML-koden og den grafiske visning af hjemmesiden.
+</para>
+
+<figure id="mozilla_edit2-fig" float="1">
+<title>Mozilla kan anvendes til at skrive HTML</title>
+<graphic fileref="mozilla_edit2.&magic;"  scale="60"></graphic>
+</figure>
+
+
 <sect1 id="basal-html">
+<title>Basal HTML</title>
+<para>
+Det første basale HTML-dokument (resultatet kan ses på 
+<xref linkend="mozilla_edit-fig"> man kan skrive kan se således ud;
+</para>
 
 <screen>
 &lt;HTML&gt;
@@ -23,17 +47,123 @@ håndterer layout via en WYSIWYG-brugergrænseflade.
    &lt;TITLE&gt;Titel på siden skrives her&lt;/TITLE&gt;
 &lt;/HEAD&gt;
 &lt;BODY&gt;
-&lt;h1&gt;Overskrift på siden&lt;/h1&gt;
+&lt;H1&gt;Overskrift på siden&lt;/H1&gt;
 Almindelig tekst skrives efter man har afsluttet overskriften
-&lt;h2&gt;En mindre overskrift på siden&lt;/h2&gt;
+&lt;H2&gt;En mindre overskrift på siden&lt;/H2&gt;
 Almindelig tekst skrives efter man har afsluttet overskriften
 &lt;/BODY&gt;
 &lt;/HTML&gt;
 </screen>
 
+<para>
+Der er således en markering af en header 
+<literal>&lt;HEAD&gt;</literal> hvor man kan sætte information om f.eks. 
+titel på dokumentet. Selve indholdet af siden sættes efter 
+<literal>&lt;body&gt;</literal>, hvor man med 
+<literal>&lt;H1&gt;OVERSKRIFT&lt;/H1&gt;</literal> kan sætte en
+overskrift ind. Typisk vises denne overskrift med en stor skrifttype,
+og ønsker man at have en mindre skrifttype så kan 
+<literal>&lt;H1&gt</literal> ændres til 
+<literal>&lt;H2&gt</literal>, <literal>&lt;H3&gt</literal>,
+<literal>&lt;H4&gt</literal> eller endda <literal>&lt;H5&gt</literal>,
+som normalt resulterer i gradvist mindre typer af overskrifter.
+</para>
+
+<para>
+Som det vil blive forklaret i <xref linkend="validering-af-html"> så
+er det vigtigt at hjemmesiderne skrives uden fejl. Derfor bør man
+altid øverst i HTML-filen tilføje hvilken version af HTML hjemmesiden
+skrives i. Dette kan f.eks. være HTML 4.0.
+</para>
+
+<screen>
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+	"http://www.w3.org/TR/REC-html40/loose.dtd"&gt;
+&lt;HTML&gt;
+...
+</screen>
+
+<para>
+Hvad der eksakt ligger i at anvende HTML 4.0 kan læses på 
+<ulink url="http://www.w3c.org">http://www.w3c.org</ulink>.
+</para>
+
+<para>
+Det skal nævnes at alt mange automatiske generatorer af HTML end ikke
+kan valideres. Derfor gennemgår vi dele af at skrive HTML manuelt. 
+</para>
+
+<sect2 id="henvisninger-i-html">
+<title>Henvisninger i HTML</title>
+<para>
+Man kan tilføje <literal>&lt;a href="http://www.sslug.dk"&gt;Se mere
+på SSLUGs hjemmeside&lt;/a&gt;</literal> for at få en henvisning (et
+link) til http://www.sslug.dk indsat. Teksten mellem 
+<literal>&lt;a href="http://www.sslug.dk"&gt;</literal> og 
+<literal>&lt;/a&gt;</literal> bliver normalt vist med en anden farve
+evt. understreget i en browser.
+</para>
+</sect2>
+
+<sect2 id="adskille-tekst-i-html">
+<title>Adskillelse i HTML</title>
+<para>
+I modsætning til SGML/DocBook er det nemt at få teksten på en linie
+til at stoppe og fortsætte på næste linie. Med
+<literal>&lt;br&gt;</literal> opnås dette.
+</para>
+
+<para>
+Vil man i stedet vise at der starter et nyt afsnit og der således skal
+være en smule luft mellem to afsnit anvendes <literal>&lt;p&gt;</literal>
+Har man et afsnit der skal højrejusteres kan man afgrænse afsnittet med
+</para>
+
+<indexterm>
+ <primary>&lt;p&gt;</primary>
+ <secondary>HTML-tag</secondary>
+</indexterm>
+<indexterm>
+ <primary>&lt;HTML-koder&gt;</primary>
+ <secondary>&lt;p&gt;</secondary>
+</indexterm>
+
+<screen>
+&lt;p align=right&gt;
+Teksten her vil blive højrejusteret.
+&lt;/p&gt;
+Mens denne er venstrejusteret som normalt.
+</screen>
+
+<indexterm>
+ <primary>&lt;hr&gt;</primary>
+ <secondary>HTML-tag</secondary>
+</indexterm>
+<indexterm>
+ <primary>&lt;HTML-koder&gt;</primary>
+ <secondary>&lt;hr&gt;</secondary>
+</indexterm>
+
+<para>
+Vil man have en vandret linie som adskillelse mellem to afsnit anvendes
+<literal>&lt;hr&gt;</literal> evt. med <literal>&lt;p&gt;</literal>
+før og efter. Normalt vil linien dække hele bredden, men med 
+<literal>&lt;hr width=50%&gt;</literal> får man f.eks. kun 50% dækket.
+</para>
+
+</sect2>
+
+
 </sect1>
 
 <sect1 id="validering-af-html">
+<title>Validering af hjemmesider</title>
+<para>
+Det er altid irriterende hvis en hjemmeside vises dårligt eller slet ikke
+kan vises. Et godt trick er at anvende 
+<ulink url="http://validator.w3c.org">http://validator.w3c.org</ulink> 
+til at checke om man har skrevet den rigtige HTML-syntaks. 
+</para>
 </sect1>
 
 </chapter>
