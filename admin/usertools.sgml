@@ -1911,6 +1911,295 @@ Mere om Xcdroast og opsætning af brænder
 nu ellers installerede <application>xcdroast</application>.
 </para>
 </sect2>
+
+<sect2 id="cdrecord">
+<title>Brænde cdrom med cdrecord</title>
+<!-- Skrevet af Gert Holtoft <holtoft@get2net.dk> -->
+<indexterm><primary>cdrecord</primary></indexterm>
+
+<para>
+I dette afsnite findes en mini-HOWTO på dansk til CD-R og CD-RW, 
+i bund og grund kun en oversættelse og 'nedkogning' af
+CD-Writing-HOWTO til det mest elementære.
+</para>
+
+<para>
+Du skal starte med at installere følge pakker:
+<filename>cdrecord-*.rpm</filename>,
+<filename>cdparanoia-III*.rpm</filename> og
+<filename>mkisofs-*</filename>.
+</para>
+
+<para>
+Vi forudsætter at brænderen er sat op og virker, dog kører vi lige en
+<command>cdrecord -scanbus</command>. Husk at loade brænder modulerne,
+hvis det ikke er gjort.  I denne opsætning ser den således ud:
+</para>
+
+<screen>
+	Using libscg version 'schily-0.1'
+Cdrecord release 1.8a29 Copyright (C) 1995-1999 Jörg Schilling
+scsibus0:
+	0,0,0	  0) 'HP      ' 'CD-Writer+ 8100 ' '1.0g' Removable CD-ROM
+	0,1,0	  1) *
+	0,2,0	  2) *
+	0,3,0	  3) *
+	0,4,0	  4) *
+	0,5,0	  5) *
+	0,6,0	  6) *
+	0,7,0	  7) *
+</screen>
+
+<para>
+Det vil sige at vores cdrom-brænder-device i dette tilfælde 
+er: <filename>dev=0,0,0</filename>
+</para>
+
+<sect3 id="cdrom-skrivning">
+<title>Skrivning og brænding af et data image</title>
+
+<para>
+Læg alle libs og filer i et bibliotek (eks. <filename>/test</filename>)
+Vedtag et navn for dit cd image (eks. <filename>mit_stof</filename>).
+</para>
+
+<para>
+Lav dit cdrom-image med <command>mkisofs</command>:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -o  mit_stof  /test/</USERINPUT>
+</screen>
+
+
+<para>
+Ønskes et mere Windowsvenligt image, brug -J option ( Joliet )
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -J  -o  mit_stof /test/</USERINPUT>
+</screen>
+
+<para>
+Test indholdet med følgende kommando:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t iso9660 -o ro,loop=/dev/loop0  mit_stof /mnt</USERINPUT>
+</screen>
+
+<para>
+I <filename>/mnt</filename> kan indholdet checkes, afmonter dernæst
+med kommandoen <command>umount mit_stof /mnt</command>.
+</para>
+</sect3>
+
+<sect3 id="braende-cdrom">
+<title>Cdrom brændes</title>
+	
+<para>
+Du kan nu brænde din cdrom med
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof</USERINPUT>
+</screen>
+
+
+<para>
+En langt mere interssant metode er at oprette en fil på 650/700 MB
+(alt efter mediestørrelse), som så fyldes med diverse ting og sager og
+derefter brændes som et iso-image.
+</para>
+
+<para>
+Oprettelse af filen  test.iso
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>dd if=/dev/zero of="test.iso" bs=1024k count=650/700</USERINPUT>
+</screen>
+
+<para>
+Opret et ext2 filsystem på denne fil	
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>/sbin/mke2fs -b 2048 test.iso</USERINPUT>
+</screen>
+
+<para>
+Til spørgsmålet "test.iso is not a block device", skal du bare sige
+"y" for "yes - proceed anyway".
+</para>
+
+<para>
+Mount filen med:	
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t ext2 -o loop=/dev/loop1 test.iso /mnt</USERINPUT>
+</screen>
+	
+<para>
+Kopier hvad du har lyst til, til <filename>/mnt</filename> og afmonter
+den med kommandoen <command>umount test.iso /mnt</command>.
+</para>
+
+
+<para>
+Vi kan nu brænde vores cdrom med:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data test.iso </USERINPUT>
+</screen>
+
+
+<para>
+Det er jo dejligt at kunne redigere frit i et "iso-image" der jo kun
+er "read only". Den sidste gode ting med data-medier er direkte og rå
+kopiering fra cd-rom (her <filename>/dev/hdb</filename>) til brænder. 
+Kommandoen er:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,0 speed=2 -isosize /dev/hdb</USERINPUT>
+</screen>
+
+
+
+<para>
+Skulle kildemediet være større end modtagermediet, kommer der automatisk en
+fejlmelding fra cdrecord, og der bliver ikke brændt noget.
+Denne detalje virker ikke med en musik cd.
+</para>
+
+<para>
+Til at brænde en musik-cd kommer nu en helt basal opskrift.
+Optage en cd (eller dele af den), gøres med <command>cdparanoia</command> :
+Læg din original musik cd i cdrom drevet og kør så følgende for at
+rippe alle sange til filerne <filename>track01.cdda.wav</filename>, <filename>track02.cdda.wav</filename> osv.
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdparanioa -B "1-"</USERINPUT>
+</screen>
+
+<para>
+Ønsker du kun at overføre numrene 3 til fem skal du køre <command>cdparanioa -B "3-5"</command>.
+</para>
+
+<para>
+Du kan nu brænde din musik-cd med
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -audio track01.cdda.wav track02.cdda.wav ...</USERINPUT>
+</screen>
+
+<para>
+hvor ... naturligvis betyder at du fortsætter med at angive musik-filnavne.
+Du kan også bruge * (alle filer), hvis du har filerne i et katalog:
+<command>cdrecord -v speed=2 dev=0,0,0 -audio *.cdda.wav</command>
+</para>
+
+<para>
+Omkring audio formater se <command>man cdparanoia</command> kig evt på
+<command>Sox</command> eller <command>ecasound</command>.
+</para>
+
+<para>Sox kan du finde mere om på <ulink url="ftp://sunsite.unc.edu/pub/Linux/apps/sound/convert/sox-11gamma-cb3.tar.gz">ftp://sunsite.unc.edu/pub/Linux/apps/sound/convert/sox-11gamma-cb3.tar.gz</ulink>.
+Men se om den ikke også er med i din Linux distribution.
+</para>
+
+<para>
+Ecasound har hjemmesiden <ulink url="http://www.wakkanet.fi/ecasound">http://www.wakkanet.fi/ecasound</ulink>.
+</para>
+
+<para>
+Blandede skiver dvs både data og audio på samme medie kan du også lave
+ved at kombinere <command>-data</command> og <command>-audio</command>.
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof -audio track01.cdda.wav</USERINPUT>
+</screen>
+
+<para>
+Vedrørende CD-RW medier er proceduren den samme, blot skal man
+huske at "blanke" mediet inden det bruges næste gang:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 blank=xxxx</USERINPUT>
+</screen>
+
+<para>
+hvor <command>xxxx</command> udfyldes ud fra dette:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  all             blank the entire disk
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  disc            blank the entire disk
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  disk            blank the entire disk
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  fast            minimally blank the entire disk (PMA, TOC, pregap)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  minimal         minimally blank the entire disk (PMA, TOC, pregap)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  track           blank a track
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  unreserve       unreserve a track
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  trtail          blank a track tail
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  unclose         unclose last session
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  session         blank last session    
+ </para>
+</listitem>
+</itemizedlist>
+
+
+<para>
+For yderligere information læs :
+<command>man cdrecord</command>, <command>man cdparanoia</command>,
+<command>man mkisofs</command> og i øvrigt CD-Writing HOWTO.
+</para>
+</sect3>
+</sect2> <!--cdrecord -->
 </sect1>
 
 
@@ -2193,10 +2482,16 @@ nærmest alle nyere diske understøtter. Der kan tunes endnu mere - have
 fun :-)
 </para>
 
+<para>
+Nå det virker fint, kan og bør du lægge kommandoerne ind i filer, der
+køres når systemet startes op. I Red Hat f.eks. i bundet af <filename>/etc/rc.d/rc.local</filename>.
+</para>
+
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -d1 -A1 /dev/hda</userinput>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -k1</userinput>
 </screen>
 
 <para>
@@ -2208,6 +2503,18 @@ harddisken, men din maskine bliver stille.
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -S 1 /dev/hda</userinput>
 </screen>
+
+<para>
+Hvis man har et eller flere programmer der jævnligt checker om nogle filer
+er ændret skal disse filers access tid også opdateres jævnligt -- det
+giver skrivninger til disken selvom filsystemets egtl. data ikke ændres
+(kun dets metadata).  Det kan være en god ide at montere disken via <filename>/etc/fstab</filename> noget i stil med
+</para>
+
+<screen>
+/dev/hda1  /  ext2  defaults,noatime  1 1
+</screen>
+
 
 <para>
 Kernens IDE driver skal supportere det IDE chipsæt, der anvendes af
