@@ -19,8 +19,7 @@
    list($width,$height) = @getimagesize("front.png");
 
    if (isset($q))
-     $q = $q = stripslashes($q);
-
+     $q = stripslashes($q);
 
 if (!$ml)
   $ml = $HTTP_HOST=="cvs.sslug.dk" ? "sg" : "ht";
