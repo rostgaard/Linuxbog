@@ -843,7 +843,7 @@ I dette tilfælde skal man så opdatere Tripwire-databasen med ens "snapshot".
 </para>
 
 <sect2 id="twpol">
-<title>Tripwite installation og opsætning</title>
+<title>Tripwire installation og opsætning</title>
 <para>
 Tripwire installeres på Red Hat ved at man downloader en 
 <filename>.tar.gz</filename>-fil, der indeholder en RPM-pakke, som kan 
@@ -1226,6 +1226,11 @@ for details use --version. This is free software which may be redistributed
 or modified only under certain conditions; see COPYING for details.
 All rights reserved.
 </screen>
+</sect3>
+
+
+<sect3 id="tripwire-update">
+<title>Opdatering af Tripwire-databasen</title>
 
 <para>
 Nu er der selvfølgelig problemer - er det rimeligt at de filer at
@@ -1259,7 +1264,7 @@ Modified:
 </screen>
 
 <para>
-Ideen er således at Tripwire foreslår at man opdaterer alle de
+Tripwire foreslår, at man opdaterer alle de
 ændrede filer, så Tripwire ikke brokke sig over dem igen.
 Hvis du ikke vil ændre så fjern det kryds (dvs. x) som er i tekst-boksen.
 Når du forlader editoren skal man igen angive passphrase for at opdatere.
@@ -1270,6 +1275,23 @@ Herefter vil Tripwire ikke brokke sig over den opdaterede procmail pakke.
 Tripwire bør indsættes i <filename>/etc/cron.daily</filename>,
 dvs. det bliver kørt en gang hver dag.  Resultatet bliver sendt til
 root på maskinen via email.
+</para>
+
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>cat /etc/cron.daily/t</userinput>
+#!/bin/sh  
+
+/usr/sbin/tripwire --check
+<prompt>[root@sherwood /root]#</prompt> <userinput>chmod +x /etc/cron.daily/t</userinput>
+</screen>
+
+<para>
+Bemærk at det her ikke at valgt at kalde filen
+<filename>tripwire</filename>, som ville være naturligt. Men det giver
+jo kun en angriber nemmere ved at se at tripwire er sat op på maskinen.
+Det er vigtigt at holde øje med at tripwire email kommer på ca. det tidspunkt
+som de <emphasis>bør</emphasis> komme på jfr. <filename>/etc/crontab</filename>.
 </para>
 
 <para>
