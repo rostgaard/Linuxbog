@@ -152,7 +152,7 @@ function form_filename( $bookname, $format ) {
     // Eks: linux-frihed-pdf.zip
     "PDF" => array(
       first => "linux-",
-      last => ".pdf.zip"
+      last => "_pdf.zip"
     ),
     "PalmPilot" => array(
       first => "linux-",
