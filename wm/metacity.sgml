@@ -2,7 +2,167 @@
 <chapter id="metacity">
 <title>Metacity</title>
 
-<para>
-X
+<!-- Originalfil http://www.sslug.dk/julekalender/9.php3 -->
+
+
+<para>'Det er en kedelig window manager for den voksne i dig' - Sådan
+beskriver Metacity sig selv i <filename>README</filename>-filen. Den er ganske rigtig
+noget rå i kanterne og har måske ikke så mange sjove features. Der er dog
+support for temaer på sammme måde som mange andre moderne window managere.
+Brugere kan således selv vælge det visuelle udseende han bedst kan
+lide.</para>
+
+<para>Oprindeligt begyndte Metacity som et eksperiment. Den bygger på GTK+ 2.0,
+integrerer godt med Gnome2 og følger bevidst standarderne på området. Derfor
+har Metacity fået en trofast tilhængerskare.</para>
+
+<para>Med standardtemaet uden Gnome ser Metacity således ud:
 </para>
+
+
+<figure id="metacity-fig" float="1">
+<title>metacity</title>
+<graphic fileref="metacity.&magic;" scale="60"></graphic>
+</figure>
+
+
+<sect1>
+  <title>Installation</title>
+
+<para>Hvis der ikke findes en pakke med metacity i ens distribution, så må man
+til at oversætte selv. Kildeteksten kan findes på:
+</para>
+
+<para><ulink url="'http://ftp.gnome.org/pub/gnome/sources/metacity/2.4/'">http://ftp.gnome.org/pub/gnome/sources/metacity/2.4/</ulink>
+
+<para>Desuden skal man bruge udviklingspakkerne til GTK+ 2.0 og en række
+relaterede biblioteker. Derefter oversættes Metacity med en standard
+<command>./configure;&nbsp;make&nbsp;install</command>-sekvens.
+</sect1>    <!--   Installation -->
+
+<sect1>
+  <title>Opsætning</title>
+
+<para>Hele opsætningen af Metacity foregår med Gconf-2. Dette er Gnomes svar
+på Windows Registry. Der er derfor ikke særlig god mulighed for at sætte
+ting op ved at rette direkte i konfigurationsfiler.</para>
+
+<para>Man kan i stedet bruge værktøjerne gconftool-2 eller gconf-editor til at
+sætte Metacity op med. gconftool-2 er et komandolinjeværktøj mens
+gconf-editor er et grafisk værktøj (se skærmbilledet).</para>
+
+<para>Med gconftool-2 kan man for eksempel skifte tema med følgende komando:
+</para>
+
+<screen>
+$ gconftool-2 --type=string --set /apps/metacity/general/theme Crux
+</screen>
+
+
+<para>Vil man ændre på hvordan matacity skifter fokus mellem vinduerne kan
+dette gøres med en af komandoerne:
+</para>
+
+<screen>
+$ gconftool-2 --type=string --set /apps/metacity/general/focus_mode mouse
+$ gconftool-2 --type=string --set /apps/metacity/general/focus_mode sloppy
+$ gconftool-2 --type=string --set /apps/metacity/general/focus_mode click
+</screen>
+
+<sect2>
+  <title>Genvejstaster</title>
+
+<para>Genvejstasterne i Metacity er som standard sat ret normalt op. Med
+Alt-Tab og Alt-Shift-Tab skifter man mellem vinduer den ene og anden vej
+rundt, med Ctrl-Alt-Højrepil og Ctrl-Alt-Venstrepil skifter man
+arbejdsområde og med Alt-space kalder man vinduesmenuen op.</para>
+
+<para>Genvejstasterne sættes også op med Gconf:
+</para>
+
+<screen>
+$ gconftool-2 --type=string --set /apps/metacity/global_keybindings/switch_to_workspace_1 '&lt;Alt&gt;F1'
+</screen>
+
+
+<para>Ud over de almindelige window manager-opgaver har man mulighed for at
+lave genvejstaster til 12 komandoer. Følgende vil få Ctrl-X til at åbne
+en ny xterm:
+
+<screen>
+$ gconftool-2 --type=string --set /apps/metacity/global_keybindings/run_command_1 '&lt;Ctrl&gt;x'
+$ gconftool-2 --type=string --set /apps/metacity/keybinding_commands/command_1 'xterm'
+</screen>
+
+
+<para>Der er ikke rigtigt nogen oversigt over de mulige funktioner man kan
+binde til genvejstaster. Den bedste mulighed er enten at bruge gconf-editor
+eller kikke direkte i <filename>/etc/gconf/schemas/metacity.schemas</filename>
+</para>
+</sect2>    <!--   Genvejstaster -->
+
+<sect2>
+  <title>Menuer</title>
+
+<para>Når man trykker med musen på baggrunden er man ofte vandt til at der
+dukker en menu op, men det gør der ikke i Metacity. Der er nemlig ingen
+menuer man kan starte programmer fra.</para>
+
+<para>Mange vil ikke savne menuerne, da de alligevel primært bruger en menu
+i et panel (for eksempel Gnome-menuen) for andre vil dette nok være en
+mangel. Man bliver så nød til at finde et eksternt program til at give
+menuer. 9menu (se <xref linkend="the-9wm">) virker men er ikke
+helt pæn sammen med Metacity.
+</para>
+</sect2>    <!--   Menuer -->
+
+<sect2>
+  <title>Medfølgende programmer</title>
+
+<para>Samme med Metacity følger nogle hjælpeprogrammer.</para>
+
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<emphasis>metacity-message</emphasis>: giver mulighed for at genstarte metacity, genindlæse
+temaer og slå genvejstaster fra og til.
+ </para>
+</listitem>
+<listitem>
+ <para>
+<emphasis>metacity-theme-preview</emphasis>: viser hvordan alle elementerne i et givet tema
+ser ud (se billedet).
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>metacity-window-demo</emphasis>: generelt program der tester alle de muligheder
+en window manager skal kunne tage sig af.
+ </para>
+</listitem>
+</itemizedlist>
+</sect2>    <!--   Medfølgende programmer -->
+
+<sect2>
+  <title>Andre detaljer</title>
+
+<para>Metacity anvender UTF-8 internt, det skuller derfor være uproblematisk
+at få titler på vinduer til at vise alle mulige tegn. Jeg har dog ikke
+selv set om dette virker.</para>
+</sect2>    <!--   Andre detaljer -->
+</sect1>
+
+<sect1>
+  <title>Metacity - for eller imod?</title>
+
+<para>Det er absolut et minus at Metacity er svær at sætte op. Det er ikke
+muligt at sætte det op med en normal editor og GUI-mulighederne for
+opsætning er ikke gode nok</para>
+
+<para>Hvis man skal have en ressourcelet window manager der skal virke sammen men
+Gnome2, hvor man alligevel skal bruge Gtk+ 2.0 og Gconf2, er metacity et
+ganske godt bud. Metacity giver de muligheder en window manager bør give, og
+ikke meget andet.</para>
+</sect1>
 </chapter>
