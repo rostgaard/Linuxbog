@@ -513,15 +513,15 @@ den nye kode ved at skrive
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs update FILNAVN</userinput>
 </screen>
 
- <para>
-  Og igen kan FILNAVN udelades og de filer som ikke er ajour, vil blive
-  opdateret. Bemærk, at dette ikke sker automatisk, men først når man selv vil
-  det. På denne måde gøres det til en særskilt operation at få opgraderes
-  koden, hvor man må lægge mærke til hvilke ændringer som er foretaget.
-  CVS kan også automatisk sende en email ud til projekt gruppen når filer
-  bliver opdateret, så man ved hvornår dette sker (brug
-  <command>cvs watch</command>).
- </para>
+<para>
+Og igen kan FILNAVN udelades og de filer som ikke er ajour, vil blive
+opdateret. Bemærk, at dette ikke sker automatisk, men først når man selv vil
+det. På denne måde gøres det til en særskilt operation at få opgraderes
+koden, hvor man må lægge mærke til hvilke ændringer som er foretaget.
+CVS kan også automatisk sende en email ud til projekt gruppen når filer
+bliver opdateret, så man ved hvornår dette sker (brug
+<command>cvs watch</command>). Se også <xref linkend="logmails-cvs">.
+</para>
 
 <para>
 Hvis der er konflikter mellem den lokale kode og den kode som er senest
@@ -739,6 +739,67 @@ kodearbejder med mere end en person vil CVS tjene dette overhead ind i
 hundredefold.
 </para>
 
+<sect3 id="logmails-cvs">
+<title>Få emails med log-meddelelser ved cvs commit</title>
+<para>
+Når flere folk arbejder sammen på et software-projekt er det
+nødvendigt at man nemt kan se hvad andre personer har ændret i
+filerne. Med <command>cvs watch add FILNAVN</command> vil du modtage
+emails når andre laver <command>cvs commit FILNAVN</command>, men her
+vil du ikke se hvad de har ændret. Du kan få en bedre føling med
+ændringerne ved at bruge en lille program <filename>log</filename>,
+der følger med cvs. Med det program kan du få en email med hvilke
+filer, som er ændret og du få også i emailen besked om den
+log-meddelelse som brugeren skrev. Hvis man indenfor projektet holder
+en god stil med at skrive ordentlige log-meddelelser, så er dette super.
+</para>
+
+<para>
+Lad os se på opsætningen af dette. Først skal du 
+lave en fil i $CVSROOT, som dit projekt kan læse og skrive. 
+</para>
+
+<para>
+<emphasis>I det følgende skal du erstatte STIL_TIL_CVS_RODEN med den fulde sti
+til dit CVSROOT-katalog.</emphasis>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>touch STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>chgrp MINFÆLLESGRUPPE STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>chmod g+rw STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+</screen>
+
+<para>
+Dernæst skal vi rode i noget af de "helligste" af cvs-opsætningen.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout CVSROOT</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>vi CVSROOT/loginfo</userinput>
+</screen>
+
+<para>
+Indsæt følgende linie til sidst hvis <filename>pto@sslug.dk</filename>
+skal modtage emails. Er der flere som skal modtage emails så tilføj
+gerne flere <filename>-m modtager@email-adresse</filename> efter hinanden.
+</para>
+
+<screen>
+DEFAULT /usr/lib/cvs/contrib/log -m pto@sslug.dk -f STIL_TIL_CVS_RODEN/CVSROOT/commitlog
+</screen>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit -m "Jubi - det virker med log-mails" CVSROOT/loginfo</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs release -d CVSROOT</userinput>
+</screen>
+
+<para>
+De sidste linier vil regenerere CVSROOT (sted hvor CVS-opsætningen er
+gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
+</para>
+
+</sect3>
 
 
 <sect3 id="misc-med-cvs">
