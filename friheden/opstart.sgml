@@ -210,7 +210,7 @@ at rette i <filename>/boot/grub/grub.conf</filename> og ved næste
 genstart af maskinen anvendes den nye opsætning. I bogens eksempler
 kan man finde <filename>splash2.xpm.gz</filename> som er et
 opstarts-billede med SSLUG-logo, der passer til GRUB og
-LILO fra version 22.3.
+også til LILO fra version 22.3.
 </para>
 
 <para>
@@ -243,6 +243,8 @@ hvorefter rettelserne har effekt.
 Et eksempel på <FILENAME>/etc/lilo.conf</FILENAME> kan være
 </para>
 
+<example id="friheden-opstart-lilo-conf">
+<title>En lilo.conf med tre boot-muligheder</title>
 <programlisting>
 boot=/dev/hda
 map=/boot/map
@@ -267,15 +269,139 @@ other=/dev/hda1
         label=ms-dos
         table=/dev/hda
 </programlisting>
+</example>
 
 <para>
-I eksemplet installeres bootsectoren på første IDE-disk.
-(<filename>hda</filename>). Map filen, d.v.s. den fil, som bruges
-til at indholde numrene på de diskblokke, som udgør kernen,
-hedder <filename>/boot/map</filename> og skrives, hvis LILO
-finder at alting er i orden; ellers stopper den med vejledning
-om, hvad man skal gøre. 
+I eksemplet installeres bootsectoren på første IDE-disk (med
+linien <command>boot=/dev/hda</command>.  For at vise, hvordan
+disken med partitioner og boot-blokke "ser ud" på harddisken, har
+Werner Almesberger tegnet nogle diagrammer:
 </para>
+
+<programlisting>
+        +--------------------------------------------+
+        | Partition table                  /dev/hda  |
+        | +------------------------------------------|
+        | | Partition 1                    /dev/hda1 |
+        | |                                          |
+        | |------------------------------------------|
+        | | Partition 2                    /dev/hda2 |
+        | |                                          |
+        | |------------------------------------------|
+        | | Extended partition             /dev/hda3 |
+        | | +----------------------------------------|
+        | | | Extended partition table               |
+        | | |----------------------------------------|
+        | | | Partition 3                  /dev/hda5 |
+        | | |                                        |
+        | | |----------------------------------------|
+        | | | Extended partition table               |
+        | | |----------------------------------------|
+        | | | Partition 4                  /dev/hda6 |
+        | | |                                        |
+        +--------------------------------------------+
+
+
+</programlisting>
+
+<para>
+Hver partition har en boot sector. Partitionstabellen er en del
+af boot-sectoren, så en partition med boot sector kan illustreres
+således:
+</para>
+
+<programlisting>
+                    
+                    +------------------------+ - - -\
+              0x000 |                        |       |
+                    |      Program code      |        
+                    |                        |       |
+                    |                        |
+                    |------------------------|       |
+              0x1BE |    Partition table     |
+                    |                        |       |
+                    |------------------------|
+              0x1FE | Magic number (0xAA55)  |       | partition
+                    +------------------------+
+                    | lidt mellemrum ....... |       |
+                    +------------------------+
+                    | Partition med          |       |
+                    | "unix-boot-sector"     |
+                    | superblok              |       |
+                    | inode-tabel            |
+                    | fil-blokke m.v.        |       |
+                    .                        .
+                    .                        .       |
+                    |                        |       |
+                    +------------------------+ - - -/
+</programlisting>
+
+<para>
+LILO boot-sectoren er designet, så den kan være
+partitions-bootsector, eller med andre ord, der er plads til en
+partitions-tabel. Den kan derfor bruges som følger:
+</para>
+<itemizedlist mark="bullet" id="friheden-opstart-lilo-bootsector">
+<listitem>
+<para>
+Boot sector på en linux floppy (bruges til install og rescue boot) /dev/fd0
+</para>
+</listitem>
+<listitem>
+<para>
+Første boot sector på en harddisk, Master Boot Record (MBR)
+/dev/hda, /dev/sda.
+</para>
+</listitem>
+<listitem>
+<para>
+Boot sector på en Linux primary partition, /dev/hda1
+</para>
+</listitem>
+<listitem>
+<para>
+Boot sector på en extended partition med Linux, /dev/hda5. Det er ikke
+normalt at boote fra en såkaldt extended partition, men det kan
+LILO.
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+LILO bootsector er lille og kan ikke have alle de oplysninger,
+der skal bruges til at boote. Den får hjælp ved at henvise til
+præcise adresser (fysiske disk-blokke, positioner på disken) hvor
+resten af informationerne ligger. Først finder den nogle blokke
+med "blok-listen".
+</para>
+
+<para>
+Bloklisten gemmer LILO i en fil, <filename> /boot/map
+</filename>, som genskrives, hver gang LILO kører uden fejl. I
+map filen ligger så alle de øvrige oplysninger, evt. prompt
+dialog og oplysning om, hvor kernens diskblokke er.
+</para>
+
+<para>
+Map filen er specificeret ovenfor i <xref
+linkend="friheden-opstart-lilo-conf">eksemplet</xref> på
+lilo.conf: <filename>map=/boot/map</filename>.
+</para>
+
+<programlisting>
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+lba32
+timeout=50
+image=/boot/bzImage
+        label=linux
+        root=/dev/hda3
+        read-only
+        restricted
+        password=HEMLI
+</programlisting>
 
 <para>
 install=&lt;filename&gt; er specifikation af, hvilken boot
