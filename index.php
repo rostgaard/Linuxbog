@@ -398,6 +398,7 @@ function vistype($type) {
       form => "-",
       last => ".pdf.tar.gz"
     ),
+    /* Grove mener nedenstående er rigtig til "samling" */
     "PDFb" => array(
       first => "linuxbog-",
       form => "-pdf-",
@@ -412,6 +413,12 @@ function vistype($type) {
       first => "linuxbog-",
       form => "-",
       last => ".pdf"
+    ),
+    /* Grove mener nedenstående er rigtig til fx "friheden" */
+    "PDFe" => array(
+      first => "linuxbog-",
+      form => "-pdf-",
+      last => ".pdf.gz"
     ),
     /* zipzip - lad os få slettet dem
     "PalmPilot" => array(
