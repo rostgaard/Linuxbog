@@ -131,10 +131,10 @@ $(targetname)-html-$(version).tar.gz :	html
 	tar -hczf $(targetname)-html-$(version).tar.gz $(targetshortname)/*
 
 $(targetname)-htmlub-$(version).tar.gz :	html
-	tar hczf $(targetname)-htmlub-$(version).tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
+	tar -hczf $(targetname)-htmlub-$(version).tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
 
 $(targetname)-png-$(version).tar.gz :	html
-	tar hczf $(targetname)-png-$(version).tar.gz $(targetshortname)/*.png
+	tar -hczf $(targetname)-png-$(version).tar.gz $(targetshortname)/*.png
 
 $(targetname)-html-$(version).zip :	html
 	zip $(targetname)-html-$(version).zip $(targetshortname)/*
@@ -171,7 +171,8 @@ else !USE_SOFTLINKS
 	done;
 endif !USE_SOFTLINKS
 	cp linuxbog.css bog
-	ln -s bog alle
+	echo "det var derfor den ikke kunne pakke html filer. ln -s bog alle"
+	cp -pRid bog alle
 	echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
 	echo Summary: `grep -A2 "<title>" ../friheden/indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
@@ -186,6 +187,7 @@ endif !HAVE_PERL_IMAGE_SIZE
 	(echo "Bygger idx filer" && cd bog && tr "\n" " " < stikord.html | ../fix_stikord.html.pl | ../splitindex.pl)
 if HAVE_TIDY
 	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
+	./Insert-Linkname.awk
 else !HAVE_TIDY
 	@echo "Du bør installere tidy"
 endif !HAVE_TIDY
