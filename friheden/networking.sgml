@@ -1,0 +1,733 @@
+<chapter id="Linux-netvaerk-klient">
+<title>Linux og netværk - klientsiden</title>
+
+<para>
+I dette kapitel vil vi ser på klient siden af netværk.
+Det skal bemærkes at i <xref linkend="Linux-netvaerk-server"> er det
+en masse information tilsvarende om server opsætning. Vil du vide mere
+om netværksadresser og hvorfor og hvordan netværk kobles sammen, så se
+mere i <xref linkend="tcp-ip">.
+</para>
+
+
+<sect1 id="modeminternet">
+<title>Modemforbindelse til Internet</title>
+<indexterm><primary>Internet opkobling</primary></indexterm>
+<indexterm><primary>Modem og Internet</primary></indexterm>
+<para>
+Hvis du er en typisk hjemmebruger eller sidder i en mindre virksomhed og
+vil have din computer på Internettet, vil du som regel have brug
+for at gøre det via en modemforbindelse.
+</para>
+
+<para>
+Langt den mest almindelige måde at gøre det på i Linux er ved hjælp af
+PPP, Point-to-Point-protokollen. PPP tilbyder en hel del flere
+faciliteter og mere fleksibilitet, end vi her vil komme ind på. Vi vil nøjes
+med at beskrive den typiske og helt basale opsætning, der vil sætte dig
+i stand til at få en TCP/IP-forbindelse til din internetudbyder op at
+køre.
+</para>
+
+<para>
+Hvis du får brug for at sætte en server op til at modtage PPP-opkald,
+eller hvis du har problemer med at få PPP til at fungere mellem Linux
+og Windows NT eller har andre specielle behov, skulle du overveje at
+tage et kig på følgende bog, der går ganske grundigt til værks
+inden for sit emne:
+</para>
+
+<para>
+Andrew Sun: <emphasis>Using &amp; Managing PPP</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-321-9, 430 sider.
+</para>
+
+<sect2 id="PPP">
+<title>Opsætning af PPP</title>
+<indexterm><primary>PPP</primary></indexterm>
+
+<para>
+Med Red Hat Linux følger der et grafisk baseret opsætningsprogram, der
+gør det forholdsvis enkelt at få PPP i gang. Hvis du har en konto hos
+en internetudbyder (ISP), har du forhåbentlig modtaget de sæt
+oplysninger, der skal bruges for at få din forbindelse til at køre. Du
+skal fra din ISP som minimum have
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>Et dialin brugernavn</para></listitem>
+<listitem><para>En tilhørende adgangskode</para></listitem>
+<listitem><para>Et telefonnummer til internetudbyderens dialin</para></listitem>
+<listitem><para>IP numre på en eller to navneservere hos din ISP</para></listitem>
+</itemizedlist>
+
+Har du sat modemforbindelse til din ISP op under f.eks. Windows 95,
+står de oplysninger du skal have, under de menuer, hvor Internet via
+modem konfigureres. Er du i tvivl, spørg din ISP om disse
+informationer.
+</para>
+
+<para>
+Du skal være "root" for at kunne sætte din internetforbindelse op, så
+skriv <command>su -</command> i en <command>xterm</command>, og gør
+følgende:
+</para>
+
+<para>
+Start med at finde ud af, hvor dit modem sidder.
+COM1 i DOS/Windows svarer til <filename>/dev/ttyS0</filename> i Linux.
+COM2 svarer til <filename>/dev/ttyS1</filename> osv.
+Som root skal du lave en modem device, som er et symbolsk lænke til den
+rette seriel port. Hvis du anvender COM2, skal du skrive:
+</para>
+
+<screen>
+<prompt>[daisy@linus /root]# </prompt> <userinput>ln -sf /dev/ttyS1 /dev/modem</userinput>
+</screen>
+
+<para>
+Tjek lige, at lænken er rigtig.
+</para>
+
+<screen>
+<prompt>[daisy@linus /root]# </prompt> <userinput>ls -al /dev/modem</userinput>
+lrwxrwxrwx   1 root root 5 Sep  5 04:37 /dev/modem -> /dev/ttyS1
+</screen>
+
+</sect2>
+<sect2 id="usernetppp">
+<title>Internetopkobling med modem</title>
+<indexterm><primary>usernet</primary></indexterm>
+<indexterm><primary>Internet opkobling</primary><secondary>usernet</secondary></indexterm>
+
+<para>
+Som root starter du <command>linuxconf</command> og finder
+"Config->Networking->Client tasks->PPP/SLIP/PLIP". Vælg i højre side "Add"
+(se <xref linkend="linuxconf-ppp1-fig">. Derefter "PPP". I næste
+skærmbillede udfylder du telefonnummer (modemport har vi sat op, så
+brug <filename>/dev/modem</filename>), vælg "PAP Authentification" og
+skriv til sidst dit brugernavn og adgangskode til din internetudbyder.
+</para>
+
+
+<FIGURE ID="linuxconf-ppp1-fig" FLOAT="1">
+<TITLE>PPP</TITLE>
+<GRAPHIC FILEREF="../images/linuxconf-ppp0.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+<para>
+Efter at have trykket "Accept", bør du nok lige dobbelt-klikke på din
+nye forbindelse "ppp0". Du kan nu ændre lidt i opsætningen. F.eks. er
+du måske interesseret i at vælge "Hardware->Allow any user
+(de)activate the interface" - for at almindelige brugere kan starte
+internet opkoblingen op selv uden root password. Du kan nok også være
+interesseret i at få valgt "Networking->No Connection" til f.eks. 30 sekunder.
+</para>
+
+<para>
+Hop ud af PPP-delen ved i højre side af vinduet at trykke "Accept" ->
+"Quit". Derefter "Act/Changes" i venstre side - derefter "Activate the
+changes" og til sidste "Quit". Før vi starter Internetforbindelsen
+skal du lige checke at du har dine nameservere skrevet i
+<filename>/etc/resolv.conf</filename> - se 
+<xref linkend="etc-resolv-conf-filen">.
+</para>
+
+<para>
+Nu starter du som almindelig bruger <command>rp3</command>, som vist
+på <xref linkend="rp3-fig">. Her er der allerede en
+netværksforbindelse med <filename>eth0</filename> og loopback (lo) er
+til Linux kernen på den lokale maskine. Vælg <filename>ppp0</filename>
+og tryk OK til at starte. Nu burde det køre.
+</para>
+
+<FIGURE ID="rp3-fig" FLOAT="1">
+<TITLE>rp3</TITLE>
+<GRAPHIC FILEREF="../images/linuxconf-ppp1.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+<para>
+Når du har hul igennem til Internettet, kan du jo passende prøve
+<ulink url="http://www.sslug.dk">http://www.sslug.dk</ulink> - dvs. SSLUG's 
+hjemmeside.
+</para>
+
+
+<para>
+Du kunne have opnået det samme resultat ved at bruge
+<command>netcfg</command> som er en del af
+<command>control-panel</command>, der er et Red Hat program til at
+opsætte net. I virkeligheden er <command>netcfg</command> og
+<command>linuxconf</command> blot behagelige og nemme måder at
+redigere det sæt tekstfiler, der bestemmer, hvordan pppd opfører
+sig. Disse filer ligger i <filename>/etc/ppp</filename>.
+</para>
+
+<para>Vi kan i øvrigt anbefale, at du læser <ulink
+url="http://www.sslug.dk/artikler/ppp-info.html">http://www.sslug.dk/artikler/ppp-info.html</ulink>,
+hvis du har problemer med at få din modem-opkobling til at virke.
+</para>
+
+</sect2>
+
+<sect2 id="kppp">
+<title>Modem og Internet med brug af kppp</title>
+<indexterm><primary>kppp</primary></indexterm>
+<indexterm><primary>Internet opkobling</primary><secondary>kppp</secondary></indexterm>
+<para>
+Et godt program til at styre en internet-opkobling i X er KPPP
+(<command>kppp</command>). Programmet kommer som del af KDE, men
+det kan køres under andre grafiske brugergrænseflader.
+</para>
+
+<FIGURE ID="kppp-fig" FLOAT="1">
+<TITLE>KPPP
+</TITLE>
+<GRAPHIC FILEREF="../images/kppp.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+<para>
+Du vil i Red Hat se at du skal indtast root-adgangskoden for at komme
+i gang. Det er irriterende og vi skal her vise hvordan man undgår
+dette. Først lidt forklaring. Programmet
+<command>/usr/bin/kppp</command> er i Red Hat et link til
+<command>/usr/bin/consolehelper</command>.
+<filename>/usr/bin/consolehelper</filename> er en "pam.d"-wrapper. Den
+finder sin konfigurationsfil i
+<filename>/etc/security/console.apps/kppp</filename>:
+</para>
+
+<screen>
+USER=root 
+PROGRAM=/usr/sbin/kppp 
+SESSION=true
+</screen>
+
+<para>
+Heraf ses, at det program der rent faktisk skal køres er
+<command>/usr/sbin/kppp</command>, som root, og der skal registreres
+en "session" for at det virker.
+</para>
+
+<para>
+Det er imidlertid ikke så vigtigt. Hvad der er vigtigt er filen
+<filename>/etc/pam.d/kppp</filename> som efterfølgende anvendes af
+<command>consolehelper</command> for at godkende starten af kppp:
+</para>
+
+<para>
+Den originale <filename>/etc/pam.d/kppp</filename> ser således ud.
+</para>
+
+<screen>
+#%PAM-1.0 
+auth sufficient /lib/security/pam_rootok.so 
+auth required /lib/security/pam_pwdb.so 
+session optional /lib/security/pam_xauth.so
+account required /lib/security/pam_permit.so
+</screen>
+
+<para>
+Den første linje er en kommentar. 
+Den næste linje siger at mht. autorisation, er det
+<emphasis>tilstrækkeligt</emphasis> at 
+brugeren er "root". Hvis det er tilfældet, vil linje 3
+<emphasis>ikke</emphasis> blive brugt,
+ellers vil linje 3 blive brugt; da brugeren er "root" og auth med pwdb.so
+kræves, skal man give root-adgangskoden.
+</para>
+
+<para>
+De sidste par linjer omhandler oprettelsen en session (mest aht. logging),
+samt hvilke rettigheder man har - da man skal have root auth, har man
+stort set alle rettigheder, og derfor anvendes tilladelse (permit).
+</para>
+
+<para>
+Hvis du  ønsker at give alle brugere, der er logget ind på
+konsollen mulighed for at foretage en Internetopkobling, kan du ændre
+filen til 
+</para>
+
+<screen>
+#%PAM-1.0 
+auth sufficient /lib/security/pam_rootok.so 
+auth sufficient /lib/security/pam_console.so 
+auth required /lib/security/pam_pwdb.so 
+session optional /lib/security/pam_xauth.so
+account required /lib/security/pam_permit.so
+</screen>
+
+<para>
+Her er tjekket:
+<itemizedlist mark="bullet">
+<listitem> <para> a) root? Ja: Ok, nej: næste tjek.</para></listitem>
+<listitem> <para> b) ved konsol? Ja: OK, nej: næste tjek.</para></listitem>
+<listitem> <para> c) Kan man give root-adgangskode? Ja: Ok, nej, fejl. (pga. krævet).</para></listitem>
+</itemizedlist>
+</para>
+
+<para>
+Hvis du ønsker at lave hvad der svarer til "suid root", kan du lave:
+</para>
+
+<screen>
+#%PAM-1.0 
+auth sufficient /lib/security/pam_permit.so 
+session optional /lib/security/pam_xauth.so
+account required /lib/security/pam_permit.so
+</screen>
+
+<para>
+Vil du vide mere så prøv <command>man consolehelper</command>, 
+<command>man userhelper</command> og se måske også 
+<filename>/usr/doc/pam..../html</filename>.
+</para>
+
+<para>
+Desværre ser det ud til at Red Hat 6.2 ikke kan klare sig alene med
+dette og kræver at man f.eks. laver <command>chmod +s
+/usr/sbin/pppd</command> og kalder <command>/usr/sbin/kppp</command>.
+Du kan også blive nødt til at krydse fluebenet af i "Autoconfigure
+hostname from this IP" i kppp configurationen.
+</para>
+
+<para>
+Når man sætter kppp op som root, findes opsætningen i
+<filename>/root/.kde/share/config/kppprc</filename>, men da filen
+findes i roots home-folder, har andre usere ingen adgang og kan dermed
+kun bruge opsætningen hvis de har root-password.  Genialt ikke!
+</para>
+
+</sect2>
+
+<sect2 id="wvdial">
+<title>Modem og Internet med brug af wvdial</title>
+<indexterm><primary>Internet opkobling</primary><secondary>wvdial</secondary></indexterm>
+<para>
+Programmet <command>wvdial</command> følger med SuSE og Red
+Hat. Programmet
+kan konfigureres fra YaST, SuSEs konfigurationsværktøj eller
+direkte
+vha. <command>wvdialconf</command>. <command>wvdialconf</command> vil
+forsøge at detektere dit modem, sætte de optimale
+initialiseringsstrenge op, osv. Efter du har kørt programmet, skal du
+redigere filen <filename>/etc/wvdial.conf</filename>, f.eks. skal du
+indsætte telefonnummer på din internetudbyder.
+</para>
+
+<para>
+Når du har fået sat din opkobling op, kan du ringe op ved at taste
+<command>wvdial</command> på en kommandolinje.
+</para>
+
+</sect2>
+
+<sect2 id="diald">
+<title>Diald</title>
+<indexterm><primary>Internet opkobling</primary><secondary>Diald</secondary></indexterm>
+<indexterm><primary>Diald</primary></indexterm>
+
+<para>
+Når du har en fungerende PPP installeret, kan <command>diald</command>
+muligvis være interessant for dig. Ideen er, at
+<command>diald</command> åbner PPP-forbindelsen, når der er brug for
+den, og lukker den, når der ikke er. På den måde kan du få
+fornemmelsen af at have en fast forbindelse, der altid er
+åben. Virkningen er specielt overbevisende, hvis du har et ISDN-modem,
+der åbner forbindelsen på et kort øjeblik, for et almindeligt analogt
+modem bruger en del tid på at ringe op.
+</para>
+
+<para>
+Der er rige muligheder for at finindstille <command>diald</command>, så
+programmet opfører sig præcis, som du ønsker det. Vi vil nøjes med at
+gøre opmærksom på dets eksistens og i øvrigt henvise til de
+glimrende manual-sider om emnet.
+</para>
+
+<para>
+Læs mere om <command>diald</command> på
+<ulink
+url="http://www.ctv.es/USERS/andressh/linux/Diald-Howto.html">http://www.ctv.es/USERS/andressh/linux/Diald-Howto.html</ulink>.
+Se i øvrigt <ulink
+url="http://www.sslug.dk/artikler/ppp/diald.shtml#links">http://www.sslug.dk/artikler/ppp/diald.shtml#links</ulink>
+og diald hjemmesiden <ulink url="http://diald.sourceforge.net/">http://diald.sourceforge.net/</ulink>.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="ethernet">
+<title>Ethernet-kort</title>
+<indexterm><primary>Ethernet</primary></indexterm>
+<para>
+Hvis du har behov for at koble et mindre antal computere sammen i et
+lokalnetværk, vil du oftest benytte netværkskort af Ethernet-typen.
+</para>
+
+<para>
+Langt de fleste Ethernet-kort fungerer upåklageligt under Linux. De fleste
+billige kort er kloner af Novells NE2000 og fungerer glimrende sammen
+med driveren til det kort.
+</para>
+
+<para>
+Installerede Ethernet-kort hedder i Linux <filename>eth0</filename>,
+<filename>eth1</filename>, <filename>eth2</filename>
+etc. Normalt vil du kun have et enkelt kort, der så naturligvis hedder
+<filename>eth0</filename>.
+</para>
+
+<para>
+Netværkskort kan konfigureres i forbindelse med installationen
+eller senere ved hjælp af programmet <command>linuxconf</command>
+eller <command>netcfg</command> under Red Hat - tilsvarende er det
+<command>yast</command> med SuSE.
+De parametre, som optræder på billedet, skal du have af din
+netværksansvarlige.
+</para>
+
+<FIGURE ID="ethercfg" FLOAT="1">
+<TITLE>Opsætning af ethernet interface</TITLE>
+<GRAPHIC FILEREF="../images/linuxconf-eth0.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+
+</sect1>
+
+
+<sect1 id="email">
+<title>E-post</title>
+<indexterm><primary>Email</primary></indexterm>
+<indexterm><primary>E-post</primary></indexterm>
+<para>
+Til at læse e-breve kan du næsten på alle UNIX-systemer finde
+programmet <command>mail</command>, som er meget simpelt. Skrives f.eks.
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>mail BRUGERNAVN@MASKINE.DOMÆNE</userinput>
+<userinput>help</userinput>
+</screen>
+
+og afsluttes med <filename>Ctrl-D</filename>. Der er så sendt en
+email til <filename>BRUGERNAVN@MASKINE.DOMÆNE</filename> med indholdet
+<filename>help</filename>.
+</para>
+
+<para>
+Senere er Elm (<command>elm</command>) kommet med lidt flere
+muligheder, men ELM bliver ikke videreudviklet mere.
+</para>
+
+<indexterm><primary>Pine</primary></indexterm>
+<indexterm><primary>Elm</primary></indexterm>
+<indexterm><primary>Mutt</primary></indexterm>
+<para>
+Til tekstbaseret læsning og skrivning af e-breve er der to gode
+valg. Mutt (<command>mutt</command>) er hurtig og har mange
+funktioner. 
+</para>
+
+<para>
+Det skal også nævnes, at Netscape har indbygget email håndtering,
+som foretrækkes af mange. Det er grafisk og ret enkelt at bruge.
+</para>
+
+<FIGURE ID="netscapemail-fig" FLOAT="1">
+<TITLE>Netscapes mail funktion
+</TITLE>
+<GRAPHIC FILEREF="../images/netscapemail.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+
+<sect2 id="pine">
+<indexterm><primary>Pine</primary></indexterm>
+<title>Pine</title>
+
+<para>
+Pine er en af de gode programmer til at læse og håndtere e-post. 
+Mailfoldere, en lille og god indbygget teksteditor (<command>pico</command>),
+søgemuligheder, mulighed for at se HTML-formatterede emails og et
+utal af konfigurationsmuligheder gør Pine til et hit.
+</para>
+
+<FIGURE ID="pine-fig" FLOAT="1">
+<TITLE>Pine
+</TITLE>
+<GRAPHIC FILEREF="../images/pine.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+<para>
+I den versioner af Pine som kommer med Red Hat 6.2 er der endda
+muligheder for at definere roller (bl.a. med forskellige
+email-signaturfiler) og farve opsætning. Som det ses på det følgende
+billeder kan man få forskellige farver på hver svar-niveau.
+</para>
+
+<FIGURE ID="pine2-fig" FLOAT="1">
+<TITLE>Pine med farver
+</TITLE>
+<GRAPHIC FILEREF="../images/pine2.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+<para>
+Lad os tage et par nyttige tricks med pine. 
+</para>
+
+<itemizedlist  MARK="bullet" SPACING="compact">
+<listitem><para>
+<emphasis>Tip:</emphasis>
+Du kan lave meget avancerede søgninger i dine e-post-foldere. For at
+få dette valgt, skal du fra hovedmenuen trykke <command>s c w
+agg</command> og afslutte med retur-tasten. Du bør nu stå på et af de
+mange felt i opsætningen, hvor der står
+"enable-aggregate-command-set". Tryk <command>x</command> for at vælge
+<command>e</command> for exit og bekræft med <command>y</command>.
+Som et eksempel kan vi nu gå ned i en e-post folder og finde e-post,
+hvor ordet Andeby er nævnt et vilkårligt sted. Når du er i e-post
+folderen trykker du <command>;</command>, derefter har du en del
+forskellige valgmuligheder - vi vælger <command>t</command> for tekst
+søgning, igen har vi en del muligheder og da vi vil søge i alle dele
+af posten vælger vi <command>a</command>. Nu skrives søgestrengen
+<filename>Andeby</filename> ind og du kan nu med <command>z</command>
+skifte mellem alle post og kun dem, der netop indeholder Andeby.  Får
+man disse kommandoer lært kan man virkelig søge hurtigt og effektivt.
+</para></listitem>
+
+<listitem><para> 
+<emphasis>Tip:</emphasis>
+Et andet godt trick er at kunne sætte sin afsender
+e-post adresse til eksakt det man vil have. Fra hovedmenuen kan vi
+trykke <command>s</command> (for setup), <command>c</command> (for
+config), <command>w custo</command> or afslut med retur. Du er nu på
+<filename>customized-hdrs</filename> feltet. Skriv <filename>From:
+Daisy Royal &lt;daisy@kongeh.dk&gt;</filename>, hvis e-post skal komme
+fra "Daisy Royal &lt;daisy@kongeh.dk&gt;". Du skal også sætte
+<filename>feature-list=allow-changing-from</filename> manuelt i
+<filename>~/.pinerc</filename>.
+</para></listitem>
+
+<listitem><para> <emphasis>Tip:</emphasis> Under setup, skal du sætte
+"character-set = ISO-8859-1" for at få dansk tegnsæt til at virke.
+</para></listitem>
+
+</itemizedlist>
+</sect2>
+
+
+<sect2 id="nyeemails">
+<title>Vise nye e-breve</title>
+<para>
+Programmet <command>xbiff</command> er en lille postkasse, der i et
+vindue indikerer, om der er kommet elektronisk post. Hvis der er post,
+inverteres farverne.  Programmet opdaterer selv ca. en gang i
+minuttet, hvis det ikke konfigureres anderledes.
+</para>
+
+<para>
+Lidt mere smart er <command>xmailbox</command> og
+<command>coolmail</command>, der begge viser en amerikansk
+postkasse, som viser, at der er post med lyd og et flag, der hejses.
+</para>
+
+</sect2>
+
+
+<sect2 id="exchangemail">
+<title>Hent e-post fra en Exchange server</title>
+<indexterm><primary>Exchange</primary></indexterm>
+<para>
+Microsoft har været så venlige at lave en nyere type e-post-server, MS
+Exchange, som uheldigvis ikke er dokumenteret for godt. Heldigvis kan
+man bruge serveren fra f.eks. Netscapes e-postfunktion. I Netscape skal
+du under [preferences]->[mail] sætte at du henter e-breve fra en "IMAP"
+server - ikke POP - og sætte serveren til at være exchange
+serveren. Det er ikke den fulde funktionalitet, du får, men det kan
+bruges. 
+</para>
+
+</sect2>
+
+
+</sect1>
+
+
+<sect1 id="sikkerhed">
+<title>Internet sikkerhed</title>
+<indexterm><primary>Sikkerhed</primary></indexterm>
+<para>
+Da man designede Internettet for mange år siden, fandtes crackere ikke,
+og man havde ikke fantasi til at forestille sig nutidens avancerede
+Internetkriminalitet. Fakta er, at det meste Internet kommunikation
+sendes i klar tekst - inklusiv login-navne og tilhørende adgangskoder.
+Derfor skal man passe på, hvis man skal lave login på Linux-maskinen
+fra et fjernt sted i verden via Internettet. Der er sikre systemer med
+stor fleksibilitet, som ikke transmitterer adgangskoder i klar tekst. Den
+bedste implementering er "Secure Shell" (ssh). 
+</para>
+
+<para>
+Emnet er meget vanskeligt, idet de kriminelle ofte ved uhyre meget om
+netværk og sikkerhedsfejl. Der er dog et par generelle kommentarer,
+som bør følges nøje, hvis din maskine skal stå på et usikkert netværk.
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+
+<LISTITEM>
+<PARA>Følg med i, hvilke programmer der kommer med opdateringer. Se
+f.eks. <ulink url="http://www.cert.dk">http://www.cert.dk</ulink>
+</PARA>
+</LISTITEM>
+
+<LISTITEM>
+<PARA>Luk af for programmer, du ikke bruger. Bliver det kendt, at der
+er en sikkerhedsbrist i bare et af de kørende programmer, kan du
+rammes.  I store træk, så udkommenter alle linier i
+<filename>/etc/inetd.conf</filename> og kør 
+</para>
+
+<screen>
+<prompt>[daisy@linus /root]# </prompt> <userinput>killall -HUP inetd</userinput>
+<prompt>[daisy@linus /root]# </prompt> <userinput>/etc/rc.d/init.d/portmap stop</userinput>
+<prompt>[daisy@linus /root]# </prompt> <userinput>/sbin/chkconfig --level 2345 portmap off</userinput>
+</SCREEN>
+
+<para>
+Med "portmap" stoppet (og ikke startet sidenhen) får du ikke ubrugte 
+stand-alone dæmoner, der kan ramme dig sidenhen.
+Åbn kun for services som du ved du skal bruge.
+Lad være med at køre en web-server eller X-server, hvis du ikke
+bruger det.
+</PARA>
+</LISTITEM>
+
+<LISTITEM>
+<PARA>Installér overvågningssystemer (såsom Tripwire og LogWatch).
+</PARA>
+</LISTITEM>
+
+<LISTITEM>
+<PARA>Installér Secure Shell eller OpenSSH (Se 
+<ulink url="http://www.openssh.com">http://www.openssh.com</ulink>), og lad
+dette erstatte <command>telnet</command> og <command>ftp</command>.
+</PARA>
+</LISTITEM>
+
+<LISTITEM>
+<PARA>Installér og konfigurér en brandmur (eng. firewall) (ipchains).
+Det er en del af Linux-kernen og dermed gratis. Der er gode
+HOWTO-dokumenter om dette.
+</PARA>
+</LISTITEM>
+
+<LISTITEM>
+<PARA>Lær mere om netværk og Linux, og brug dit system med omtanke!
+</PARA>
+</LISTITEM>
+
+</ITEMIZEDLIST>
+
+<para>
+Listen ser dramatisk ud og er ikke så relevant for dem, som lige logger på
+Internettet via modem for at checke epost og surfe lidt. For dem, som
+vil lave missionskritiske forretningssystemer på Internettet, er
+det nok så relevant. Du kan læse meget mere i en artikel-serie du
+finder på 
+<ulink url="http://www.sslug.dk/artikler/Linux_sikkerhed">http://www.sslug.dk/artikler/Linux_sikkerhed</ulink>.
+Tilsvarende bør du læse <ulink url="http://www.sslug.dk/sikkerhed">http://www.sslug.dk/sikkerhed</ulink>.
+</para>
+
+<para>
+Det kan anbefales at købe en god bog om netværkssikkerhed, såsom:
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>
+Simon Garfinkel and Gene Spafford: <emphasis>Practical UNIX &amp;
+Internet Security</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-148-8, 971 sider.
+</para>
+</listitem>
+</itemizedlist>
+
+
+</sect1>
+
+
+<sect1 id="netbooks">
+<title>Bøger om netværk</title>
+
+<para>
+Netværk er et stort og kompliceret emne, som det ikke er muligt at dække på
+andet end den mest nødtørftige måde på den plads, der er brugt her. Hvis du
+har lyst til at lære mere, kan nedenstående bøger anbefales.
+</para>
+
+<para>
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>
+Olaf Kirch: <emphasis>Linux Network Administrator's Guide</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-087-2, 335 sider.
+</para>
+
+<para>
+Dette er en indføring og praktisk vejledning i TCP/IP, UUCP, DNS, PPP,
+mail, news osv., altså stort set alt, hvad der har at gøre med at
+køre netværk under Linux. Det forudsættes, at man er i stand til at
+redigere en tekstfil og generelt "komme omkring" i systemet.
+</para>
+
+<para>
+Da bogen oprindeligt er udsprunget af The Linux Documentation Project, kan
+den hentes frit på Internet, f.eks. på
+<ulink
+url="ftp://metalab.unc.edu/pub/Linux/docs/LDP/network-guide">ftp://metalab.unc.edu/pub/Linux/docs/LDP/network-guide</ulink>.
+Ganske ofte er filen på Linux-CDROM'erne.
+</para>
+</listitem>
+
+<listitem><para>
+Craig Hunt: <emphasis>TCP/IP Network Administration</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN: 0-937175-82-X, 472 sider.
+</para>
+
+<para>
+Denne bog handler om TCP/IP under UNIX generelt i modsætning til Linux
+Network Administrator's Guide og går nok også lidt mere i dybden med
+tingene.
+</para>
+</listitem>
+
+<listitem><para>
+Stig Jensen og Arne Gjelstrup: <emphasis>Datakommunikation</emphasis>,
+Teknisk Forlag, ISBN 87-571-1956-2, 872 sider.
+</para>
+
+<para>
+Hvis du vil have en endnu dybere og mere teknisk betonet viden om netværk
+generelt, er denne bog et glimrende valg og fungerer godt både som lærebog
+og opslagsværk.
+</para>
+
+<para>
+Har du problemer med dit netkort, eller er du i tvivl om, hvilken type
+du skal køre med under Linux, så kan vi anbefale, at du tager en tur
+til
+<ulink url="http://cesdis1.gsfc.nasa.gov/linux/drivers">http://cesdis1.gsfc.nasa.gov/linux/drivers</ulink>
+</para>
+
+<para>
+Det kan i øvrigt være interessant at følge 
+<ulink url="http://users.dhp.com/~whisper/mason/">http://users.dhp.com/~whisper/mason/</ulink> og 
+<ulink url="http://www.opensourcefirewall.com/">http://www.opensourcefirewall.com/</ulink>.
+</para>
+
+
+</listitem>
+
+</itemizedlist>
+</para>
+</sect1>
+
+</chapter>

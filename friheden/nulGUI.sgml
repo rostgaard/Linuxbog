@@ -1,0 +1,672 @@
+<appendix id="nulGUIapp">
+<title>Ingen grafik og hvorfor gik det så galt?</title>
+<para>
+Nu følger en lille tur rundt i de filer, der anvendes af X.
+Det er sket før, at man ikke direkte kan få startet X-serveren, men
+ofte kan man hurtigt finde ud af, hvad der gik galt.
+Start med:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>ls -l /usr/X11R6/bin/XF*
+</userinput>
+-rwxr-xr-x 1 root root 2712220 Jul 29 11:30 /usr/X11R6/bin/XF86_SVGA
+</screen>
+
+
+<para>
+Her kan du se, at X-programmet nok er installeret, og en SVGA X-server
+er installeret, svarende til det aktuelle grafikkort. På
+<ulink url="http://www.xfree86.org">http://www.xfree86.org</ulink> kan du se,
+hvad der passer sammen af server og grafikkort.
+</para>
+
+<para>
+Findes filen <command>/usr/X11R6/bin/X</command> ikke, er X-softwaren
+ikke blevet installeret. I det tilfælde bør du overveje at køre
+installationen forfra.
+</para>
+
+
+<sect1 id="XF86config-sect1">
+<title>XF86Setup, xf86config, SaX og Xconfigurator</title>
+<indexterm><primary>XF86</primary></indexterm>
+<indexterm><primary>X</primary></indexterm>
+<indexterm><primary>XWindow</primary></indexterm>
+<para>
+Du kan også vælge at køre et af programmerne <command>SaX</command>
+(kun SuSE), <command>/usr/X11R6/bin/Xconfigurator</command>,
+<command>/usr/X11R6/bin/XF86Setup</command> eller
+<command>/usr/X11R6/bin/xf86config</command> som root for at få
+genereret en X-konfigurationsfil, der gemmes i
+<filename>/etc/X11/XF86Config</filename> (SuSE
+anvender <filename>/etc/XF86Config</filename>). I denne fil gemmes al
+information om monitor, grafikkort, mus, og hvilket tastatur der
+anvendes.
+</para>
+
+<para>
+Det første, du bør gøre, er at køre programmet <command>SuperProbe</command>
+(som root) - programmet viser dig, hvilket grafikkort du har, og noget om den
+klokchip, du eventuelt har på kortet. De sidste par linjer af uddata fra
+<command>SuperProbe</command> kunne se ud som:
+</para>
+
+
+<screen>
+First video: Super-VGA
+        Chipset: Matrox Mystique (PCI Probed)
+        RAMDAC:  Matrox Mystique built-in DAC w/clock
+                 (with 6-bit wide lookup tables (or in 6-bit mode))
+
+</screen>
+
+<para>
+I dette tilfælde er der fundet et Matrox Mystique kort, hvor SuperVGA
+driveren til X11 skal benyttes (det er dog ikke det, der vises ud for teksten
+"First video").  I øvrigt kan det være klogt at indhente data for dit
+grafikkort, tastatur, mus og skærm fra producenternes hjemmesider og manual.
+</para>
+
+<sect2 id="xf86config-setup">
+<title>xf86config</title>
+<para>
+Hvis <command>xf86config</command> anvendes til at lave en konfigurationsfil,
+skal der først svares på, hvilken type din mus er, og hvilket tastatur-udseende osv.
+du har - dette er reelt forklaret i det følgende, idet
+<command>Xconfigurator</command> ikke er meget
+anderledes. Fordelen ved <command>xf86config</command> er, at dette program
+ikke automatisk søger efter hardware, og man kan således manuelt få sat parametre for
+hardwaren. Ulempen er tilsvarende, at for almindelig gangbar hardware er
+<command>Xconfigurator</command> bare smartere at bruge, da automatisk søgning er nemt.
+</para>
+</sect2>
+
+<sect2 id="XF86Setup-setup">
+<title>XF86Setup</title>
+
+<para>
+Programmet <command>XF86Setup</command> er også godt at kende - målet er det
+samme som for <command>xf86config</command> og
+<command>Xconfigurator</command> - at få lavet X11-opsætningsfilen.
+<command>XF86Setup</command> er grafisk. Programmet starter grafik op i lav
+generisk vga-tilstand, og man kan her nemt sætte parametre for mus, tastatur,
+grafikkort og skærm.
+</para>
+
+<FIGURE ID="XF86Setup-fig" FLOAT="1">
+<TITLE>XF86Setup
+</TITLE>
+<GRAPHIC FILEREF="../images/XF86Setup.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</sect2>
+
+<sect2 id="Xconfigurator-setup">
+<title>Xconfigurator</title>
+
+<para>
+Når <command>Xconfigurator</command> startes op, vises et tekst-skærmbillede
+(med farver), der beskriver, at det er
+<filename>XF86Config</filename> filen, som skal rettes til.
+</para>
+
+<FIGURE ID="Xc1-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+For de fleste pc'ere, der har en pci-baseret bus, vil
+programmet selv finde det korrekte grafikkort og derfra
+vælge, hvilken X-server der skal bruges. Der er et par forskellige
+typer - såsom S3 og super vga (svga), som altså vælges automatisk.
+</para>
+
+<FIGURE ID="Xc2-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Dernæst skal du hjælpe programmet med at vælge skærmtypen. Hent
+manualen til din skærm nu. Som vist nedenfor kan du enten vælge
+mellem en "custom" (egendefineret) - eller mærkevareskærm. Da mange private brugere
+har en "bambus pc", vælger vi "custom" typen og skal så svare på et
+par spørgsmål.
+</para>
+
+<FIGURE ID="Xc3-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc3.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Du skal nu finde data for, hvor hurtig din skærm er. Find i manualen
+noget om "horizontal sync" (målt i kHz) og "vertical sync" (målt i Hz),
+og gå videre.
+</para>
+
+<FIGURE ID="Xc4-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc4.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+I din manual vil der stå, om din skærm kan klare 1024x768 eller måske
+højere, og hvilken opdateringshastighed der understøttes.
+Dette måles i Hertz (forkortet Hz). Brug pil op og ned til at vælge
+mellem de mange muligheder.
+</para>
+
+<FIGURE ID="Xc5-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc5.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Din skærm har nogle grænser for lodret synkronisering (eng. vertical
+sync), som du skal vælge her. Passer din skærm ikke helt til, hvad der
+kan vælges, så tag nærmeste mindre interval. Gør du ikke dette,
+risikerer du at skade din hardware.
+</para>
+
+<FIGURE ID="Xc6-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc6.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu skal grafikkortet testes. Der vil blive tjekket, hvor
+meget grafik-RAM kortet har. Vælg "Probe" (autodetekt).
+</para>
+
+<FIGURE ID="Xc7-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc7.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Derefter skal du vælge, hvilke grafik-tilstande du vil kunne anvende. Vi
+følger "Lad mig vælge" muligheden.
+</para>
+
+<FIGURE ID="Xc8-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc8.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para> Da nedenstående eksempel er for et 1 MB video kort, er der ikke
+meget at vælge mellem. Overskriften for hver af de tre søjler viser,
+hvor mange bits der skal bruges til at vise farver. Her vil 8 bits
+give 256 mulige farver samtidig, 16 bits giver 65536 samtidige farver
+og 24 bits mere end 16 millioner farver. Bemærk, at hvis du vælger lav
+opløsning og få farver, får du en hurtigere grafikopdatering, så vælg
+derfor ikke mere, end du behøver.
+</para>
+
+<FIGURE ID="Xc9-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc9.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu gemmes endelig filen <filename>/etc/X11/Xf86Config</filename>, og
+du kan prøve at skrive <command>startx</command>.
+</para>
+
+<FIGURE ID="Xc10-fig" FLOAT="1">
+<TITLE>Xconfigurator
+</TITLE>
+<GRAPHIC FILEREF="../images/xc10.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</sect2>
+</sect1>
+
+<sect1 id="XF86Configfilen">
+<title>XF86Config filen</title>
+<para>
+For de fleste er der ikke mere opsætning for at kunne vise
+grafikken. Men skulle det ske, at din mus eller dit tastatur ikke virker
+helt, skal du redigere <filename>XF86Config</filename> filen med
+<command>emacs</command>, <command>vi</command> eller
+<command>pico</command> som vist i det følgende. Disse tekst editorer
+er omtalt i <xref linkend="editorer">.
+</para>
+
+<sect2 id="XFtastatur">
+<title>Tastatur</title>
+<indexterm>
+ <primary>Dansk</primary>
+ <secondary>Tastatur</secondary>
+</indexterm>
+
+<para>
+For tastaturet vil følgende linjer passe til de fleste danske
+tastaturer (en del kommentarlinjer, der begynder med
+<filename>#</filename>, er slettet):
+
+<programlisting>
+Section "Keyboard"
+   Protocol        "Standard"
+   AutoRepeat      500 5
+   LeftAlt         Meta
+   RightAlt        Meta
+   ScrollLock      Compose
+   RightCtl        Control
+   XkbKeycodes     "xfree86"
+   XkbTypes        "default"
+   XkbCompat       "default"
+   XkbSymbols      "us(pc101)"
+   XkbGeometry     "pc"
+   XkbRules        "xfree86"
+   XkbModel        "pc101"
+   XkbLayout       "dk"
+EndSection
+</programlisting>
+</para>
+</sect2>
+
+<sect2 id="XFmus">
+<title>Mus</title>
+<indexterm><primary>Mus</primary></indexterm>
+<para>
+I modsætning til Windows-verdenen er det smart at købe en
+tre-knaps mus til Linux. Man kan godt bruge to knaps mus, men Linux
+kan anvende tre knapper på en meget smart måde.
+</para>
+
+<para>Musen kan være lidt problematisk for nogle. Får du ikke fat i den
+rigtige type, kan du se det ved, at musen ofte springer rundt. Du
+skal så rette i <filename>XF86Config</filename> i afsnittet "Pointer", der
+kan se ud som:
+
+<programlisting>
+Section "Pointer"
+    Protocol    "MouseMan"
+    Device      "/dev/mouse"
+#    Emulate3Buttons
+#    Emulate3Timeout    50
+EndSection
+</programlisting>
+
+Vi har her med en Logitech treknapsmus at gøre. En mus, som oftest er
+af typen MouseMan. Dog kan protokollen sættes til PS/2, hvis stikket
+er af PS/2 typen. Har man en Microsoft toknapsmus, må man emulere
+midterknappen ved at trykke begge knapper ned på samme tid, og de to
+udkommenterede linjer ovenfor skal så gøres aktive, dvs. du skal
+fjerne <filename>#</filename>-tegnet.  Valget af protokol er ikke
+universelt. En Cordless Wheel Mouse fra Logitech skal bruge
+"MouseManPlusPS/2".
+</para>
+
+<para>
+Tjek også, at du har <filename>/dev/mouse</filename> til at pege på
+den rigtige port - i dette tilfælde <filename>/dev/psaux</filename>,
+som er PS/2-porten til mus.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>ls -al /dev/mouse
+</userinput>
+lrwxrwxrwx   1 root     root            5 May 15 14:37 /dev/mouse -> psaux
+</screen>
+
+<para>
+Var dette ikke tilfældet, skal du rette op på dette med
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>rm -f /dev/mouse</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>ln -sf /dev/psaux /dev/mouse</userinput>
+</screen>
+
+<para>
+Bruger du COM1 (fra DOS) til musen, så erstat
+<filename>/dev/psaux</filename> med <filename>/dev/ttyS0</filename>.
+</para>
+
+<para>
+Der er følgende lovlige protokoller, som vises ved at skrive
+<filename>man XF86Config</filename>:
+</para>
+
+<para>
+BusMouse, Logitech, Microsoft (Ofte til to-knaps mus), MMSeries,
+Mouseman (tit med Logitech mus), MouseSystems (ofte no-name
+treknapsmus), PS/2 (for PS/2 port mus), MMHitTab, GlidePoint, IntelliMouse,
+Xqueue og OSMouse.
+I Red Hat 5.2 og 6.0 er der også kommet understøttelse for flere varianter af
+Genius NetMouse og Netscroll, Kensington Thinking mouse, ALPS GlidePoint, ASCII
+MieMouse, ATI bus mus, Logitech MouseMan+ og FirstMouse+.
+</para>
+
+<sect3 id="Xmushjul">
+<title>Mus med hjul</title>
+<para>
+Det kan nævnes, at med Microsoft intellimouse, Logitech pilot+, og
+Logitech mouseman+ med hjul på kan der være problemer med at få
+den midterste knap (hjulet) til at virke.  Men som altid, er der
+nogen, som har arbejdet med sagen, og der er hjælp at hente på <ulink
+url="http://www.inria.fr/koala/colas/mouse-wheel-scroll">http://www.inria.fr/koala/colas/mouse-wheel-scroll</ulink>
+</para>
+
+<para>
+For at gøre X i stand til at benytte hjulet som midterknap, skal man
+rette i filen <filename>/etc/X11/XF86Config</filename> for Red Hat og
+tilsvarende er det <filename>/etc/XF86Config</filename> for
+SuSE. Protokollen skal ændres, og hjulfunktionen skal aktiveres.
+</para>
+<para>
+Pointer-sektionen i <filename>XF86Config</filename> ser nu ud som
+følger:
+</para>
+
+<screen>
+Section "Pointer"
+    Protocol    "ps/2"
+    ZAxisMapping 4 5
+    Device      "/dev/mouse"
+</screen>
+
+<sect4 id="Xmushjulnetscape">
+<title>Mus med hjul og Netscape</title>
+<para>
+For at benytte hjulet til at rulle op og ned i Netscape indsættes
+følgende i <filename>~/.Xdefaults</filename>
+</para>
+
+<screen>
+Netscape*drawingArea.translations:  #replace \
+          &lt;Btn1Down&gt;:    ArmLink()   \n\
+          &lt;Btn2Down&gt;:     ArmLink()   \n\
+          ~Shift&lt;Btn1Up&gt;:    ActivateLink()  \n\
+          ~Shift&lt;Btn2Up&gt;:    ActivateLink(new-window)  \
+                                          DisarmLink()   \n\
+          Shift&lt;Btn1Up&gt;:    ActivateLink(save-only)  \
+                                          DisarmLink()   \n\
+          Shift&lt;Btn2Up&gt;:    ActivateLink(save-only)  \
+                                          DisarmLink()   \n\
+          &lt;Btn1Motion&gt;:     DisarmLinkIfMoved()  \n\
+          &lt;Btn2Motion&gt;:     DisarmLinkIfMoved()  \n\
+          &lt;Btn3Motion&gt;:     DisarmLinkIfMoved()  \n\
+          &lt;Motion&gt;:     DescribeLink()  \n\
+          &lt;Btn3Down&gt;:     xfeDoPopup()   \n\
+          &lt;Btn3Up&gt;:     ActivatePopup() \n\
+          Ctrl&lt;Btn4Down&gt;: PageUp()\n\
+          Ctrl&lt;Btn5Down&gt;: PageDown()\n\
+          Shift&lt;Btn4Down&gt;: LineUp()\n\
+          Shift&lt;Btn5Down&gt;: LineDown()\n\
+
+None&lt;Btn4Down&gt;: LineUp()LineUp()LineUp()LineUp()LineUp()LineUp()\n\
+
+None&lt;Btn5Down&gt;:
+LineDown()LineDown()LineDown()LineDown()LineDown()LineDown()\n\
+          Alt&lt;Btn4Down&gt;: xfeDoCommand(forward)\n\
+          Alt&lt;Btn5Down&gt;: xfeDoCommand(back)\n
+ Netscape*globalNonTextTranslations: #override\n\
+          Shift&lt;Btn4Down&gt;: LineUp()\n\
+          Shift&lt;Btn5Down&gt;: LineDown()\n\
+          None&lt;Btn4Down&gt;: LineUp()LineUp()LineUp()LineUp()LineUp()\n\
+          None&lt;Btn5Down&gt;: LineDown()LineDown()LineDown()LineDown()LineDown()
+</screen>
+
+<para>Tilsvarende kan du få mere gavn af musehjulet i xterm ved at
+tilføje
+</para>
+
+<screen>
+xterm*VT100.Translations: #override\n\
+        Shift&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,line)\n\
+        Shift&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,line)\n\
+        Ctrl&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,page)\n\
+        Ctrl&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,page)\n\
+        &lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,halfpage)\n\
+        &lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,halfpage)\n\
+        &lt;KeyPress&gt;Prior : scroll-back(1,page)\n\
+        &lt;KeyPress&gt;Next : scroll-forw(1,page)
+XTerm.vt100.Scrollbar.translations: #override\n\
+     &lt;Btn5Down&gt;: StartScroll(Forward)\n\
+     &lt;Btn4Down&gt;: StartScroll(Backward)
+nxterm*VT100.Translations: #override\n\
+        Shift&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,line)\n\
+        Shift&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,line)\n\
+        Ctrl&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,page)\n\
+        Ctrl&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,page)\n\
+        &lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,halfpage)\n\
+        &lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,halfpage)\n\
+        &lt;KeyPress&gt;Prior : scroll-back(1,page)\n\
+        &lt;KeyPress&gt;Next : scroll-forw(1,page)
+</screen>
+
+<para>
+En anden kortere opsætning er
+</para>
+
+<screen>
+! Netscape mouse scrolling
+Netscape*globalNonTextTranslations: #override\n\
+        Shift&lt;Btn4Down&gt;: LineUp()\n\
+        Shift&lt;Btn5Down&gt;: LineDown()\n\
+        None&lt;Btn4Down&gt;: LineUp()LineUp()LineUp()LineUp()LineUp()\n\
+        None&lt;Btn5Down&gt;: LineDown()LineDown()LineDown()LineDown()LineDown()\n\
+        Ctrl&lt;Btn4Down&gt;: PageUp()\n\
+        Ctrl&lt;Btn5Down&gt;: PageDown()\n\
+        Alt&lt;Btn4Down&gt;: xfeDoCommand(forward)\n\
+        Alt&lt;Btn5Down&gt;: xfeDoCommand(back)
+</screen>
+
+<para>
+Det er muligt at der ryger nogen funktionalitet ved at nøjes med
+ovenstående. Desuden vil det være lidt mere udførligt at nævne at der
+(for ovenstående "korte" smøre) gælder at
+</para>
+
+<para>
+Uden keyboardtaster scroller man almindeligt.
+Med Shift scroller man langsomt.
+Med Ctrl scroller man hurtigt (pageup / pagedown).
+Med Alt svarer scrolning til "forward" hhv. "back".
+</para>
+
+</sect4>
+
+<sect4 id="XhjulEmacs">
+<title>Mus med hjul og Emacs</title>
+<para>
+For at benytte hjulet til at rulle op og ned i Emacs laves en Emacs
+Lisp fil (en el-fil).  Som root kan den placeres sammen med de andre
+el-filer i <filename>/usr/share/emacs/20.2/lisp</filename>. Dette
+muliggør lettere adgang, idet Emacs' "library-path" umiddelbart finder
+filen, når den skal indlæses.  Man kan f.eks. kalde filen
+<filename>mwheel.el</filename>, og den kan se ud som følger:
+</para>
+
+<screen>
+;;; No copyright
+
+;; Maintainer: Jan Eggert Kofoed  mailto:jan.kofoed@person.dk
+;; Keywords: intellimouse
+
+;; This file can be used with GNU Emacs.
+
+;; The code was taken from
+;;   www.inria.fr/koala/colas/mouse-wheel-scroll
+;; which is maintained by Colas Nahaboo, but the code is put there
+;; with courtesy of
+;;    Sylvia Knight, Sylvia.Knight@cl.cam.ac.uk
+
+;;; Code:
+
+(defun up-slightly () (interactive) (scroll-up 5))
+(defun down-slightly () (interactive) (scroll-down 5))
+(global-set-key [mouse-4] 'down-slightly)
+(global-set-key [mouse-5] 'up-slightly)
+(defun up-one () (interactive) (scroll-up 1))
+(defun down-one () (interactive) (scroll-down 1))
+(global-set-key [S-mouse-4] 'down-one)
+(global-set-key [S-mouse-5] 'up-one)
+
+(defun up-a-lot () (interactive) (scroll-up))
+(defun down-a-lot () (interactive) (scroll-down))
+(global-set-key [C-mouse-4] 'down-a-lot)
+(global-set-key [C-mouse-5] 'up-a-lot)
+</screen>
+
+<para>
+Filen kan også byte-oversættes med Emacs.
+Emacs kan så læse filen, når du skriver følgende linje ind i ~/.emacs:
+</para>
+
+<screen>
+(load-library "mwheel")
+</screen>
+</sect4>
+</sect3>
+</sect2>
+
+
+
+<sect2 id="XFskaerm">
+<title>Skærm</title>
+<para>
+Med hensyn til skærm skal du finde manualen og finde data om
+"vertical refresh" målt i Hz og "horizontal sync" målt i kHz.  Under
+afsnittet om "Monitor" må man ikke skrive hurtigere data,
+end skærmen kan klare. Det kan overbelaste skærmen! Har man
+skrevet, at skærmen fint kører 90Hz, selvom det er løgn, vil man se, at
+skærmen kører med ødelagt skærmbillede lidt svarende til dårlig TV
+justering. I samme sektion om "Monitor" står en masse modelines, som
+er mulige skærmfrekvenser, men det fører for vidt at forklare
+formatet af disse. Et eksempel skal dog lige vises - først er der en
+kommentar og dernæst parametre for den relevante mode:
+</para>
+
+<para>
+<programlisting>
+# 1024x768 @ 76 Hz, 62.5 kHz hsync
+Modeline "1024x768"    85    1024 1032 1152 1360   768  784  787  823
+</programlisting>
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Kan du ikke få din skærm til at køre i 16
+bitplaner (65536 farver), så skriv <command>exec X :0.0 -bpp
+16</command> i filen <filename>~/.xserverrc</filename>
+</para>
+
+</sect2>
+</sect1>
+
+<sect1 id="fdisk">
+<title>Anvendelse af fdisk</title>
+
+<para> Hvis du har brug for at partitionere en disk på et tidspunkt
+efter installation, så er <command>fdisk</command> et stabilt værktøj.
+Skriv som "root" <command>fdisk</command> og du kan få hjælp ved at trykke
+<filename>m</filename>.
+</para>
+
+<para>
+Advarsel: Hvis du ikke har forstået, hvordan diskpartitioner fungerer,
+skal du passe meget på. Kommer du til at lave ulykker med fdisk,
+kan du komme til at miste kontakten med andre partitioner på din
+harddisk. Er du i tvivl, er det meget klogt, at du starter med at trykke
+<filename>p</filename> og skriver ned (ja på papir, som i gamle dage),
+hvad du får vist på skærmen.
+</para>
+
+
+<para>
+I <command>fdisk</command> - tryk <filename>p</filename> for at se, hvordan din
+partitionstabel ser ud. Hvis du har været igennem <command>fips</command>,
+har du en ny partition <filename>/dev/hda2</filename>, som er af typen
+"DOS 16-bit >=32M". Du skal tilsvarende have en partition
+<filename>/dev/hda1</filename> af typen "DOS 16-bit >=32M", som
+indeholder din gamle Windows-partition - tjek, om størrelsen stemmer!
+Du skal starte med at slette den ekstra partition - sikkert
+<filename>/dev/hda2</filename> - tryk <command>d</command> og 
+<command>2</command>, hvis du er sikker på, hvad du laver. 
+Ellers spørg i din nærmeste Linux brugergruppe.</para>
+
+<para>
+Skab mindst to nye Linux-partitioner ved at trykke
+<filename>n</filename> og partitionsnummer. Dette skal du gøre to
+gange med partition 2 hhv. 3 (hvis du kun har en Windows-partition i
+forvejen). Lav partition 2 stor og partition 3 på måske 40 MB til Swap.
+Default type er "Linux native". En af partitionerne (nummer 3) skal have
+ændret type til Linux swap, hvilket gøres ved at trykke
+<filename>t</filename> og vælge type 82 (Linux swap). Tryk
+<filename>p</filename> for at verificere, at disken har den ønskede
+opbygning. Den simpleste partitions opbygninger er, som følger (ikke
+alle dele af harddisken er udnyttet i eksemplet).
+</para>
+
+<screen>
+Command (m for help): <userinput>p</userinput>
+
+Disk /dev/hda: 16 heads, 63 sectors, 4092 cylinders
+Units = cylinders of 1008 * 512 bytes
+
+Device   Boot  Begin Start   End Blocks   Id  System
+/dev/hda1   *      1     1  1016 512032+   6  DOS 16-bit >=32M
+/dev/hda2       1017  1017  1626 307440   83  Linux native
+/dev/hda3       3072  3960  4092  67000+  82  Linux swap
+</screen>
+
+
+
+<para>
+Et eksempel på en mere avanceret partitionstabel kan være det
+følgende. Det skal bemærkes, at den fortløbende nummerering af
+partitionerne ikke er nødvendig. Desuden kan det bemærkes, at
+<filename>hda1</filename> til <filename>hda4</filename>
+er numrene for primære eller udvidede partitioner, og at partitioner i
+den udvidede partition får numrene 5 og opefter. Der kan maksimalt
+være 4 partitioner, hvoraf en kan være udvidet. Linux kan i
+princippet placeres på en vilkårlig partition. Bemærk, at enkelte
+laptops bryder med dette.
+</para>
+
+<screen>
+Command (m for help): <userinput>p</userinput>
+
+Disk /dev/hda: 16 heads, 63 sectors, 4092 cylinders
+Units = cylinders of 1008 * 512 bytes
+
+Device   Boot  Begin Start   End Blocks   Id  System
+/dev/hda1   *      1     1  1016 512032+   6  DOS 16-bit >=32M
+/dev/hda2       1017  1017  1626 307440    6  DOS 16-bit >=32M
+/dev/hda3       1024  1627  2439 409752   83  Linux native
+/dev/hda4       2048  2440  4092 833112    5  Extended
+/dev/hda5       2048  2440  3700 635512+  83  Linux native
+/dev/hda6       3072  3701  3959 130504+  83  Linux native
+/dev/hda7       3072  3960  4092  67000+  82  Linux swap
+</screen>
+
+<para> Her er to DOS-partitioner (<filename>/dev/hda1,2</filename>), tre
+Linux-partitioner (<filename>/dev/hda3,5,6</filename>) og en Linux swap-partition
+ (<filename>/dev/hda7</filename>), og extended partitionstabel er
+anvendt (<filename>/dev/hda4</filename>). Du kan nøjes med at have et
+antal DOS (vfat) partitioner og så en Linux-partition, samt en Linux swap-partition.
+</para>
+
+<para>
+Afslut <command>fdisk</command> med at trykke <filename>w</filename>
+for "write to disk". (Du kan i øvrige altid afslutte uden at gemme i
+<command>fdisk</command> ved at trykke
+<filename>q</filename>). Derefter vælges <filename>Done</filename>.
+</para>
+</sect1>
+</appendix>
+
+

@@ -1,0 +1,1890 @@
+<chapter id="install">
+<title>Linux installation</title>
+<indexterm><primary>Installation</primary></indexterm>
+<para>
+I dette kapitel vises, hvordan du installerer Red Hat 6.2 (svarer til
+6.1),  SuSE 6.4 (svarer til 6.3) og Corel Linux 1.1 (svarer til 1.0). 
+Først er vist, hvordan Red
+Hat installeres og dernæst SuSE og Corel - Alle tre er virkelig gode
+distributioner og lige nemme. Corel Linux har en fordel, som de andre
+umiddelbart ikke har - at der er lavet et fornuftigt kursus til
+nybegynderen (på engelsk), som kan findes på 
+<ulink url="http://www.corel.com/learning/wbt/linuxos1/">http://www.corel.com/learning/wbt/linuxos1/</ulink>
+</para>
+
+<para> Der er i det følgende skrevet mest om Red Hat, men det er
+faktisk kun, fordi SuSE folk også kan have glæde af at læse de mange
+generelle kommentarer, som i øjeblikket er skrevet under Red Hat
+installationen. SuSE har pt. et forspring i at have integreret
+ReiserFS i deres system, hvilket er virkelig smart for servere, hvor
+man hurtigt skal kunne op efter en strømafbrydelse eller lignende.
+Corel Linux er en ny distribution på dette marked direkte vendt mod
+desktop markedet. Det er meget spændende, idet den er baseret på
+Debian. I modsætning til Debian er den meget nem at installere for
+nybegynderen - men alligevel interessant for den meget rutinerede
+Linux bruger.
+</para>
+
+<para>
+En anden distribution, som kan have din interesse, er <ulink
+url="http://www.debian.org">Debian</ulink>, som ikke bør være den
+første, du starter med, men det er måske den, du ender med. Du kan
+finde en installations-vejledning til Debian i <xref
+linkend="debianapp">.  
+</para>
+
+<para>
+Har du en UDMA 66 maskine, så vil det være de næste versioner
+af Red Hat og SuSE, som kan understøtte det. Hjælp kan i øvrigt 
+læses på <ulink url="http://www.csie.ntu.edu.tw/~b6506063/hpt366/">http://www.csie.ntu.edu.tw/~b6506063/hpt366/</ulink>.
+</para>
+
+<para>
+Endelig kan det nævnes, at du også kan installere Linux via netværk,
+f.eks. via ftp. Har du problemer med at dit cdrom-drev ikke er
+understøttet af Linux, så læs i <xref linkend="ftp-inst">, hvordan du
+kan komme videre.
+</para>
+
+
+
+<sect1 id="forberedelse">
+<title>Forberedelse til installation af Linux</title>
+
+<para>
+Installation er den del af Linux, som mange mener er mest besværlig.
+En del folk har igennem tiderne prøvet et par gange, før det hele
+spiller. Fortvivl ikke, gå bare i gang. Har du tekniske problemer, er
+der sikkert hjælp at hente i din nærmeste Linux brugergruppe. Dette
+kan du se mere om i <xref linkend="videre">.
+</para>
+
+
+<sect2 id="maskinelinux">
+<title>Kan min maskine bruges til Linux?</title>
+<para>
+Før du tænker på at installere, er det <emphasis>meget
+klogt</emphasis>, at du undersøger, om din hardware er understøttet i
+Linux.  Du kan f.eks. i Windows bruge lidt tid under dit
+"kontrolpanel"/"system" og skrive ned, hvilke typer hardware enheder
+du har på systemet og hvilke adresser, der bruges til netkort,
+grafikkort, lydkort og andet. Har du dette klar, bliver det nemmere
+at komme igennem installationen.
+</para>
+
+<para>
+Har du virus beskyttelse sat til i din BIOS?
+Hvis du vil lade Linux' opstartsprogram LILO (se <xref
+linkend="LILO">) starte maskinen, så slå BIOS virus beskyttelse fra.
+Ellers kan du ikke skrive i MBR (master boot record).
+</para>
+
+<para>
+Generelt er det de helt nye grafikkort, som kan være et problem, og
+nogle laptops ligeså - men ellers kan langt de fleste maskiner køre Linux.
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>
+<ulink url="http://cdb.suse.de/cdb/english/">http://cdb.suse.de/cdb/english/</ulink>
+- SuSE hardware kompatibilitets database (kan i langt de fleste
+tilfælde også dække Red Hat).
+</para></listitem>
+
+
+<listitem><para><ulink
+url="http://www.redhat.com/corp/support/hardware/index.html">http://www.redhat.com/corp/support/hardware/index.html/</ulink>
+- Red Hat hardware kompatibilitets database.
+</para></listitem>
+
+<listitem><para><ulink url="http://www.xfree86.org">http://www.xfree86.org</ulink>
+- Oversigt over, hvilke grafikkort der er understøttet af grafik til Linux.
+</para></listitem>
+
+<listitem><para><ulink url="http://lhd.datapower.com/">http://lhd.datapower.com/</ulink> - Database med hardware, der virker med Linux.
+</para></listitem>
+
+<listitem><para>
+<ulink url="http://www.cs.utexas.edu/users/kharker/linux-laptop/">http://www.cs.utexas.edu/users/kharker/linux-laptop/</ulink>
+og <ulink url="http://www.linux.org/hardware/laptop.html">http://www.linux.org/hardware/laptop.html/</ulink>
+- Skal du installere Linux på bærbar PC, så se altid disse steder.
+</para></listitem>
+</itemizedlist>
+
+</sect2>
+
+<sect2 id="klargoer">
+<title>Gør din PC klar og lav backup</title>
+
+<para>
+Hvis du starter med en Windows 95/98 maskine og skal have Linux
+installeret på den samme harddisk som Windows, skal du have delt
+harddisken op i to dele - en til hvert sit styresystem. 
+Har du en anden harddisk, som kan bruges til at lægge Linux ind på -
+f.eks. en gammel 800 MB disk, så gør dette, for det er en del
+nemmere. 
+</para>
+
+<para>
+I Windows er det klogt at køre en fejlsøgning på disken og derefter en
+defragmentering. Dette finder du under egenskaber for disken under
+"Denne computer" (Windows på dansk). Evt. kan du skanne efter dårlige
+sektorer under DOS med ScanDisk. Finder du fejl på disken nu, er
+det måske tegn på, at du hellere bør købe en ny harddisk til Linux.
+</para>
+
+<para>
+Før du går videre, vil det være en god ide at udskrive alle system
+oplysninger om computeren for at lette installation og
+evt. fejlfinding. Dette gøres ved at gå ind i "Denne computer" og
+derefter trykke på Kontrolpanel. Dobbeltklik på System og vælg
+fanebladet "Enhedshåndtering". I bunden af vinduet vælges udskriv. Det
+kan anbefales at udskrive samtlige systemoplysninger.
+</para>
+
+<FIGURE ID="windowsinfo-fig" FLOAT="1">
+<TITLE>Windows systeminformation</TITLE>
+<GRAPHIC FILEREF="../images/windowsinfo.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Det er nu, du bør tage en backup af de vigtige data
+på din disk. Det bør ikke gå galt, hvis du læser videre og går
+forsigtigt frem. Fik vi nævnt, at du bør tage backup ? :-)
+</para>
+
+</sect2>
+
+<sect2 id="fdiskintro">
+<title>Hvad skal der ske</title>
+<para>
+Kort fortalt: Før du installerer Linux, skal der være en partition til
+rådighed, der er stor nok til at rumme det hele (samt en swappartition).  Hvor
+stor er et spørgsmål om, hvad du vil tage med i installationen - se de
+følgende afsnit.  I løbet af Linux installationen vil der blive
+lejlighed til at repartitionere så meget, du har behov for, inden for
+den plads, der nu er blevet til rådighed.
+</para>
+
+<para>
+DOS/Windows (i det følgende kaldet DOS) har programmet
+<command>fdisk.exe</command>. Linux har programmerne
+<command>fdisk</command> og <command>disk-druid</command>.  Alle
+programmerne er tilfredsstillende beskrevet i deres respektive
+dokumentationer.
+</para>
+
+<para>
+Hvis du har Windows installeret, og ønsker at bevare det, efter at Linux
+er blevet installeret, så kan du først køre
+<command>fdisk.exe</command> i fra dos <command>Start->Luk->Genstart DOS</command> (ikke i 
+et DOS vindue under windows) til at slette en eller flere
+eksisterende DOS/Windows partitioner, så der er plads til Linux.
+Linux installeres derefter bare ved siden af Windows på den fri partition.
+</para>
+
+<para>
+Fips er et DOS-program, som leveres sammen med distributionen, og som
+kan formindske en bestående (DOS) partition, så der kan blive plads
+til Linux. På Red Hat cdrom'er findes det i kataloget dosutils. Før
+Fips køres, skal partitionen være defragmenteret, og før
+defragmentering skal systemfiler markeres, så de kan flyttes rundt
+på harddisken. Hvis Windows9x er installeret, skal du bruge dens
+defragmenteringsprogram og <emphasis>ikke</emphasis> et, der ellers
+kan køre under DOS uden Windows (<command>defrag</command> eller
+Norton's <command>speeddisk</command>).
+</para>
+
+
+<para>
+Selvom vi gennemgår brugen af Fips, skal vi indrømme, at et program
+som <emphasis>Partition Magic</emphasis> er langt bedre, og det kan
+downloades fra Internet. Det er gratis i en prøveperiode.
+</para>
+
+<para>
+Hvis du har disketter og/eller cdrom, så du til enhver tid kan
+geninstallere dine DOS programmer, kan du slette alt på disken og
+genopbygge alt på en ren disk. Først DOS programmerne og derefter
+Linux.
+</para>
+
+<para>
+Det kan også være fristende at gå den lettere vej, nemlig at reservere en
+hel harddisk til Linux, så du i en overgangstid kan veksle mellem en
+DOS disk og en Linux disk.
+</para>
+
+<para>
+Skulle det i løbet af anstrengelserne blive nødvendigt at fjerne en
+mislykket Linux installation fra harddisken og begynde forfra med DOS,
+vil du få brug for at have en DOS boot diskette, som blandt andet skal
+indeholde DOS <command>fdisk.exe</command>.  Fdisk kan køre med en
+(udokumenteret) option <command>fdisk /mbr</command>, som kan fjerne
+de registreringer, Linux måtte have lagt i diskens master boot record
+(det vil vi minde dig om et par gange).
+</para>
+
+</sect2>
+
+<sect2 id="opdelharddisk">
+<title>Opdele en DOS/Windows harddisk til Linux</title>
+<para>
+<indexterm><primary>Opdeling af harddisk</primary></indexterm>
+<indexterm><primary>fips</primary></indexterm>
+Harddisken skal nu deles mellem Linux og Windows. Dette gøres ved, at
+du indsætter din Linux cdrom og finder DOS-programmet
+<command>fips.exe</command>, som du skal starte under DOS - IKKE under
+Windows eller OS/2. Læs i øvrigt dokumentationen til Fips!  Har du to
+versioner af <command>fips.exe</command>, så brug den nyeste (fips20).
+</para>
+<para>
+Programmet <command>fips</command> vil vise dig, at du har én
+partition med Windows (det er det mest normale). Tryk return for at
+komme til næste skærmbillede. Lav gerne en backup til en formatteret
+diskette ved at trykke <command>y</command> (for yes) to gange.
+</para>
+<para>
+Nu vil Fips fortælle, at den foreslår at dele disken i to partitioner,
+så du skal nu til at vurdere, hvor meget plads du vil bruge på hver af
+de to partitioner. Brug venstre og højre pil til at ændre fordelingen,
+hvor Old partition er størrelsen på din Windows partition. Husk, at du
+bør lave noget fri plads til udvidelse af Windows programmer,
+selvom du nok senere hen vil mene, at du hellere vil have pladsen
+under Linux. Det er dit valg. Tryk derefter <command>c</command>
+for continue, og derefter genstartes maskinen med mindre plads under
+Windows. Din ekstra DOS partition skal senere slettes for at give
+plads til mindst en Linux partition og en Linux swappartition.
+</para>
+<para>
+Vi kan lige nævne, at hvis du har en Windows 95 installeret, som er fra
+før 1996 (final beta release), så er der set problemer (for Windows
+95), hvis Linux installeres på "extended partitions". Problemet
+eksisterer ikke med officielt releasede Windows versioner - det er kun
+final beta og tidligere, der har problemer.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="installredhat">
+<title>Installation af Red Hat Linux 6.2 (Zoot)</title>
+<para>
+<indexterm><primary>Red Hat</primary></indexterm>
+Version 6.2 (Zoot) er seneste Red Hat version. Der er lagt meget stor
+vægt på brugervenligheden; både i forbindelse med installationen og
+den daglige administration af systemet. Langt det meste af, hvad der
+tidligere krævede stor indsigt i formatet af diverse
+konfigurationsfiler, kan nu håndteres ved hjælp af det grafisk baserede
+værktøj <command>control-panel</command> eller det nye
+<command>linuxconf</command>, der ikke kun kan køres via den grafiske
+brugergrænseflade i X Window systemet, men også kan fungere rent
+tekstbaseret eller via et web-interface.
+</para>
+
+<para>
+Ud over at være nem at installere og administrere må Red Hat Linux
+også siges at være et godt valg med hensyn til udvalget af
+applikationer. Alle traditionelle Linux-programmer plus en hel del nye
+ligger klar til at installere fra cdrom-en.
+</para>
+
+<sect2 id="RH62nyt">
+<title>Nyheder i Red Hat 6.2</title>
+
+<para>
+I modsætning til Red Hat 6.0 er der nu mulighed for grafiske
+installationsmenuer. Det svarer til hvad Caldera OpenLinux 2.3 og
+Corel Linux 1.0 har. Nemt at gå til.
+</para>
+
+
+<para>
+Linux 2.2.14 kernen er med. Der er en væsentlig forbedring i performance for
+SMP maskiner (fler-processor systemer), og der er bedre understøttelse
+for RAID (diskmirror systemer). Der er bedre udnyttelse af Pentium I, II
+og III og tilsvarende for AMD og Cyrix processorer.
+</para>
+
+<para>
+Med Redhat 6.2 følger GnuPG der svarer til PGP programmet under
+Windows. GnuPG gør det mulig at sende e-post over nettet, så man
+er sikker på at der ikke er andre end modtageren, der kan læse
+emailen, og modtageren kan være sikker på, hvem afsenderen er.
+</para>
+
+<para>
+Ligesom i Red Hat 6.0 og 6.1 er de professionelle grafiske brugergrænseflader
+GNOME (se <ulink
+url="http://www.gnome.org">http://www.gnome.org</ulink>) og KDE (se
+<ulink url="http://www.kde.org">http://www.kde.org</ulink>) begge
+med. 
+</para>
+
+<para>
+Der er et bedre program til at konfigurere X (det basale grafiksystem).
+</para>
+
+<para>
+Red Hat 6.2 er nu meget egnet til klynger
+(eng. cluster) af Linux maskiner, og der er programmel med til at
+styre og udnytte den store regnekraft man kan få ud af en klynge.
+</para>
+
+<para>
+Mange programmer har nu Kerberos understøttelse. Kerberos er en
+sikkerhedsprotokol til netværkskommunikation.
+</para>
+
+<para>
+Netscape kan understøtte 128 kryptering. USA har netop fjernet 
+en eksportrestriktion på dette.
+</para>
+
+<para>
+Der er mulighed for at prøve Red Hat 6.2 ved at installere den på en
+eksisterende FAT partition - dette er dog ikke beskrevet i det følgende.
+</para>
+
+<para>
+En hel del fejl er rettet siden den originale Red Hat 6.1 kom ud.
+</para>
+
+<para>
+Installation af Red Hat 6.1 og 6.2 er næsten den samme.
+</para>
+
+</sect2>
+
+<sect2 id="rhhardwarekrav">
+<title>Hardwarekrav</title>
+<para>
+<indexterm><primary>Hardware krav</primary></indexterm>
+Red Hat Linux 6.2 til PC stiller følgende hardwarekrav:
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>en Intel 32-bit CPU (80386 eller senere). Intel-kompatible
+typer af andet fabrikat, f.eks. AMD K6, K7 eller Athlon 
+kan også sagtens bruges.</para>
+
+</listitem>
+
+<listitem><para>mindst 8 MB RAM, meget gerne 16 MB eller mere. For
+GNOME og KDE kan anbefales 32 MB RAM eller mere.
+</para>
+
+</listitem>
+
+<listitem><para>systembus af typen PCI, ISA, EISA eller VLB.</para>
+
+</listitem>
+<listitem><para>minimum 100 MB ledig plads på harddisken. En typisk
+installation bruger omkring 1 GB, men du kan sagtens bruge mere
+plads. På den maskine vi arbejder ved lige nu, bruges der knap 600
+MB på selve systemet, dokumentation og programmer. Ud over plads
+til selve systemet skal der naturligvis også være plads til
+rådighed for brugerne til deres private filer af forskellig slags.</para>
+</listitem>
+</itemizedlist>
+</para>
+
+</sect2>
+
+<sect2 id="rhCDROMinstall">
+<title>Installation fra cdrom</title>
+<para>
+I denne gennemgang af installationen vil vi gå ud fra, at der
+installeres fra et lokalt CDROM-drev. Der er som nævnt nedenfor andre
+måder at gøre det på, men denne metode er både simpel og tilgængelig
+på langt de fleste moderne PC'ere.
+</para>
+
+<para>
+Hvis din maskine er af ny dato, kan den boote direkte fra
+CDROM'en. Du skal så ind og vælge CDROM-drevet som første boot-drev i BIOS-
+opsætningen. Ved samme lejlighed kan du i øvrigt slå en eventuel
+virus-beskyttelse fra. Den forhindrer skrivning i boot-sektoren og er
+en udmærket sikkerhedsforanstaltning i det daglige, men hvis vi skal
+installere LILO (se nedenfor), er vi faktisk nødt til at have lov til
+dette. Skal du opgradere så er det uhyre nemt i grafisk mode - du
+vælger tastatur og enkelte andre ting, og så kører det. Vi ser dog
+her på installation.
+</para>
+
+<para>
+Hvis du ikke kan boote fra CDROM-drevet, må du i stedet bruge en
+bootdiskette.  Den kan laves i DOS ud fra programmet
+<command>RAWRITE.EXE</command> (der sikkert ligger under
+<filename>/DOSUTILS</filename> på din CDROM) og filen
+<filename>boot.img</filename> (der ligger under
+<filename>/images</filename>).
+</para>
+
+<para>
+Image-filen overføres til disketten ved hjælp af DOS-programmet
+<command>RAWRITE.EXE</command>, der også ligger på CDROM'en i
+<filename>/dosutils</filename>. Læs <filename>RAWRITE3.DOC</filename> for
+nærmere detaljer.
+</para>
+
+<para>
+Som eksempel på fremstilling af en bootdiskette fra en DOS-prompt med
+CDROM-drevet <filename>E:</filename>. Diskettedrevbogstavet er
+<filename>A:</filename>.  Disketten formatteres, så alle data på den
+er slettet. (Grunden til formatteringen er alene at det er surt at
+have en eventuel defekt bootdisk senere).
+</para>
+
+<screen>
+<prompt>C:\WINDOWS\></prompt> <userinput>format A: /u</userinput>
+</screen>
+
+<para>
+Dernæst fremstilles bootdisketten til Linux med kommandoen,
+</para>
+
+<screen>
+<prompt>C:\WINDOWS\></prompt> <userinput>E:\DOSUTILS\RAWRITE -f E:\images\BOOT.IMG -d a</userinput>
+</screen>
+
+<sect3 id="rhinstall">
+<title>Installation</title>
+<para>
+Når systemet er startet op, og Linux er indlæst, vises en
+velkomstmeddelelse og en <filename>boot:</filename> prompt nederst i
+skærmbilledet. De allerfleste kan her nøjes med at trykke
+<command>Enter</command> for at fortsætte installationen i grafisk
+tilstand. 
+</para>
+
+<para>
+Der vises nu en dialogboks, der giver mulighed for at vælge,
+hvilket sprog installationsprogrammet skal bruge. Dansk var tidligere
+med (i Red Hat 5.2), nu kan du f.eks. vælge "English".
+</para>
+
+
+<FIGURE ID="rh62lang-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Vælg installations-sprog
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62lang.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Så skal der vælges en tastaturtype. Et almindeligt dansk PC-tastatur
+hedder i denne sammenhæng "Generic 102-key (intl) PC" og Layout sættes
+til "Danish".
+</para>
+
+<FIGURE ID="rh62keyboard-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Vælg keyboard layout
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62keyboard.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Vælg derefter din mus. Med de fleste nye maskiner er den en PS/2. Kan
+du finde en tre-knaps mus er det klart at foretrække til Linux. Har du
+kun en to-knaps mus, så husk at trykke nederst at den tredie knap skal
+emuleres (at man trykker både højre og ventre vil så svare til et tryk på
+midterste knap af en tre-knaps mus). Serielle porte hedder
+<filename>/dev/ttyS</filename> plus et tal startende fra nul. COM1 i
+DOS svarer til <filename>/dev/ttyS0</filename>. Læs evt. videre i
+<xref linkend="nulGUIapp">. Tilsvarende sidder mus med PS/2 stik
+(lille rundt stik) i <filename>/dev/psaux</filename>.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Er du kommet til at vælge en forkert
+muse-type, så kan du senere hen ændre dette ved at du som "root" kører
+<command>/usr/sbin/mouseconfig</command>. 
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Du kan bruge <command>gpm -B 321</command>
+til at ændre fra højre hånds mus til venstre hånds mus.
+</para>
+
+<FIGURE ID="rh62mouse-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Vælg mus
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62mouse.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>Nu vises et reklame billede for Red Hat, og derefter kommer vi
+til installationstyperne. Som vist på <xref linkend="rh62path-fig"> er
+der fem forskellige muligheder. Vi vælger "Install Custom System".
+</para>
+
+
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>"Install GNOME Workstation"</para>
+<para>GNOME er et desktopmiljø, som er omtalt i <xref
+linkend="GNOME">. Vælger du denne opsætning styres opsætning
+automatisk og der slettes automatisk Linux diskplads til installationen. Lav
+backup før du vælger dette.</para>
+</listitem>
+
+<listitem>
+<para>"Install KDE Workstation"</para>
+<para>KDE er et desktopmiljø, som er omtalt i <xref
+linkend="KDE">. Vælger du denne opsætning styres opsætning
+automatisk og der slettes automatisk Linux diskplads til installationen. Lav
+backup før du vælger dette.</para>
+</listitem>
+
+<listitem>
+<para>"Install Server System"</para>
+<para>Alt installeres
+automatisk - og <emphasis>alle diske vil blive slettet</emphasis> 
+og anvendes til Linux.</para>
+</listitem>
+
+<listitem>
+<para>"Install Custom System"</para>
+<para>
+Denne mulighed er sværere, men giver dig fuld kontrol med
+installationen.
+</para>
+</listitem>
+
+<listitem>
+<para>"Upgrade Existing Installation"</para>
+<para>Til opgradering fra en tidligere version af Red Hat.
+</para>
+</listitem>
+</itemizedlist>
+
+<FIGURE ID="rh62path-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Vælg installations-type
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62path.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Derefter skal vi til at inddele og formattere harddiskpartitioner.
+Først lidt information af mere generel karakter.
+</para>
+</sect3>
+
+<sect3 id="redhatpartitioner">
+<title>Partitioner og filtræet</title>
+<indexterm><primary>Partitioner</primary></indexterm>
+<para>
+I Linux arbejder du ud fra et filtræ, som det kendes fra Windows og
+DOS. I Windows kan du have flere drev
+fx. <filename>C:\</filename>,<filename>D:\</filename> og
+<filename>E:\</filename> svarende til to harddisk partitioner og et
+cdrom drev. I Linux findes der ikke drev, men kun et filtræ der
+starter i roden <filename>/</filename>, og her kan du oprette
+kataloger, der svarer til harddisk partitioner,
+fx. <filename>/cdrev</filename> kunne svare til
+<filename>C:\</filename> mens <filename>/cdrom</filename> kunne svare
+til <filename>E:\</filename>. Hvor man I Windows og DOS bruger '\' til
+kataloger bruger man i Linux og Unix '/' til kataloger.  Det er også
+muligt at oprette kataloger der svarer til en harddisk eller katalog
+på en helt anden Linux eller Windows computer, som man har forbindelse
+med over netværket.
+</para>
+
+<para>
+I Windows ligger systemet ofte i <filename>c:\windows</filename> og
+der er en række faste kataloger i dette katalog, hvor man kan ligge
+fonte, hjælpefiler, menuer og andet. På samme måde er navnet på
+katalogerne i roden af et Linux operativsystem helt faste.  Brugere
+har kun adgang til at oprette kataloger i deres hjemme katalog, der
+normalt findes i <filename>/home/mitbrugernavn</filename>, på den måde
+undgår man at brugere piller ved operativ systemet og andre brugeres
+filer, det har kun administratoren lov til at gøre. Administratoren
+(root) har hjemmekatalog i <filename>/root</filename>.
+</para>
+
+<para>Læs i øvrigt 
+<ulink url="http://www.pathname.com/fhs/announce-2.0.html">http://www.pathname.com/fhs/announce-2.0.html</ulink>.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Du kan efter installationen med <command>man
+7 hier</command> læse mere om filtræet.
+</para>
+
+<para>
+<table>
+<title>Oversigt over filtræet.</title>
+<indexterm><primary>Filtræet</primary></indexterm>
+<tgroup cols=2 align="char">
+<thead>
+<row>
+<entry>Filtræ
+</entry>
+
+<entry>
+Forklaring
+</entry>
+
+</row>
+</thead>
+
+<tbody>
+
+<row>
+<entry><filename>/</filename></entry> 
+<entry>Toppen af katalogstrukturen ("Min Computer" i Windows).</entry>
+</row>
+
+<row>
+<entry><filename>/bin</filename></entry> 
+<entry>Her er de mest nødvendige system kommandoer gemt.</entry> 
+</row>
+
+<row>
+<entry><filename>/boot</filename></entry> 
+<entry>Dette katalog er reserveret til system kernen.
+Men nogle Linux distributioner vælger at placere kernen i roden, dvs.
+<filename>/</filename>.</entry>
+</row>
+
+<row>
+<entry><filename>/dev</filename></entry> 
+<entry>Indeholder alle device filer, dvs. adgang til alle enheder går
+igennem dette.</entry>
+</row>
+
+<row>
+<entry><filename>/etc</filename></entry> <entry>Dette katalog
+indeholder systemopsætningsfilerne, såvel som filerne, der er
+ansvarlige for systemets opstart, og grafiksystemets opsætning (noget
+lignende filerne <filename>CONFIG.SYS</filename> og
+<filename>AUTOEXEC.BAT</filename>).</entry>
+</row>
+
+<row>
+<entry><filename>/home</filename></entry> 
+<entry>Dette er kataloget for alle brugerkonti. Ja, Linux giver
+mulighed for, at mange personer kan arbejde på den samme
+computer samtidigt - uden at blande dem sammen. Linux er et flerbruger
+styresystem.  Vi kan anbefale, at man opretter en bruger til de mest
+normale jobs og <emphasis>kun</emphasis> bruger root til
+administration, da du som root ved en fejl kan komme til at slette
+vigtige filer, hvilket ville være umuligt som almindelig bruger.
+</entry>
+</row>
+
+<row>
+<entry><filename>/lib</filename></entry> 
+<entry>Indeholder systemets delte
+filer. Linux sparer hukommelse ved at lægge
+kode, som bruges af mange programmer, ind i en fil, kaldet "shared
+library" - svarende til DLL'er i Windows. På
+den måde vil der kun eksistere en kopi af filen i hukommelsen,
+når den bliver brugt.
+</entry>
+</row>
+
+<row>
+<entry><filename>/opt</filename></entry> 
+<entry>
+SuSE anvender dette katalog til at installere store programpakker,
+såsom KDE og StarOffice. Hvis du installerer SuSE skal du derfor 
+sørge for, at dette katalog har en del plads.
+</entry>
+</row>
+
+<row>
+<entry><filename>/lost+found</filename></entry>
+<entry>Du har måske prøvet at bruge Norton Utilities til at genskabe
+en fil, som er tabt i en defekt del af harddisken. Vær mere rolig
+under Linux.  Hvis harddisken laver fejl, vil systemet selv forsøge at
+genskabe filerne, og hvis det ikke kan finde ud af, hvor i filtræet
+filen var placeret, vil den blive placeret i
+<filename>/lost+found</filename>.
+</entry>
+</row>
+
+<row>
+<entry><filename>/mnt</filename></entry> <entry>Hvis du vil have
+adgang til en CDROM, ZIP drev eller floppy, er det som regel denne del
+af filsystemet, du får adgang til.
+</entry></row> 
+
+
+<row>
+<entry><filename>/proc</filename> </entry>
+<entry>Dette katalog, indeholder en hel del information om de kørende
+programmer og Linux-kernens status.
+</entry>
+</row>
+
+<row>
+<entry><filename>/root</filename></entry> 
+<entry>Superbrugerens hjemmekatalog.</entry>
+</row>
+
+<row>
+<entry><filename>/sbin</filename></entry> <entry>Her ligger de
+avancerede kommandoer til systemadminstration, og af sikkerhedsgrunde
+skal det kun være muligt for systemadministratoren (root) at få
+adgang til dette katalog.</entry>
+</row>
+
+<row>
+<entry><filename>/tmp</filename></entry> 
+<entry>Programmerne bruger dette
+katalog som den normale placering for
+midlertidige filer og affald. Som regel sletter systemet dem, når det
+starter op. </entry>
+</row>
+
+<row>
+<entry><filename>/usr</filename></entry> 
+<entry>Her ligger de fleste programmer - såvel som dokumentation og
+biblioteker.
+</entry>
+</row>
+
+<row>
+<entry><filename>/usr/local</filename></entry> 
+<entry>Alt andet specifikt for den
+enkelte maskine, f.eks. bør du lægge dine egne tilføjede programmer 
+herunder.</entry>
+</row>
+
+<row>
+<entry><filename>/var</filename></entry> 
+<entry>Indeholder en mængde
+midlertidige filer, som gemmer systembeskeder, brugernes post, printerjobs osv.
+</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+</para>
+
+<para>
+Der kan være yderligere dele af filtræet, såsom en
+Windows disk som man ofte giver tilgang til via
+<filename>/dos</filename> eller <filename>/dosc</filename>.
+</para>
+
+<para>
+Nu er vi nået så langt, at vi skal til at beslutte os for, hvilke
+partitioner der skal oprettes, for at Red Hat Linux har et sted at blive
+installeret. Har du kørt <command>fips.exe</command> tidligere og har
+to DOS partitioner, skal du slette den nye DOS partition, som er
+tom.
+</para>
+
+<para>
+Du er temmelig frit stillet med hensyn til antallet og størrelsen af
+partitionerne. Hvis du kører uden swap-partition, kan du simpelt hen
+installere alt på en enkelt root-partition ("/"). Mange bruger fire
+eller fem partitioner. Denne fordeling er ret udbredt og efter vor mening også
+både fornuftig og fleksibel:
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+<indexterm><primary>Swap</primary></indexterm>
+en swap-partition. Størrelsen kan diskuteres i det uendelige og
+afhænger meget af, hvad du har tænkt dig at bruge systemet til. Et
+eller andet sted mellem 16 MB og 127 MB. En tommelfingerregel siger,
+at swap-partitionens størrelse skal være det dobbelte af den fysiske
+hukommelse.  Har du 32 MB RAM og derover, kan du måske nøjes med en
+swap-størrelse, som svarer til RAM størrelsen. Et råd til dig er, at
+normal anvendelse af Linux ikke kræver over 64 MB, dvs. summen af
+fysisk hukommelse plus swap.  Du kan dog lave mange swappartitioner,
+hvis du vil, og de kan laves på et senere tidspunkt, evt. bundet til en
+stor swapfil, som det kendes fra Windows. Du skal bemærke, at
+swap-partitioner ikke placeres i filtræet. Man kan således ikke gå et
+bestemt sted hen og se swap indholdet, men det er blot mere hukommelse
+for systemet (du kan med kommandoen <command>free</command> senere se,
+hvordan hukommelsen anvendes).
+</para>
+</listitem>
+
+<listitem><para>en partition på 20 MB til
+<filename>/boot</filename>, som lægges før cylinder 1024 på
+disken (Se geometri på <xref linkend="rh62part-fig">).
+Ældre BIOS-typer har en fejl, som gør dette nødvendigt.
+Denne partition bør du kun lave, hvis du vil køre LILO - læs mere i
+<xref linkend="lilo"></para></listitem>
+
+<listitem><para>en partition på 300-500 MB til rodkataloget,
+dvs. <filename>/</filename>, men installerer du SuSE, skal du dertil
+lægge plads til <filename>/opt</filename>, som kan indeholde
+yderligere 200MB, hvis du installerer KDE og StarOffice. Med Red Hat
+installeres disse programmer under
+<filename>/usr</filename>.</para></listitem>
+
+<listitem><para>en partition på 300 MB til 1 GB til
+<filename>/usr</filename></para></listitem>
+
+
+
+<listitem><para>en partition til <filename>/home</filename>,
+størrelse afhængig af antal brugere og deres behov.</para></listitem>
+
+</itemizedlist>
+Installerer du alle pakker som custom, skal du regne med at bruge
+mindst 1 GB.
+</para>
+
+<para>
+Harddisk-nummerering i Windows og Linux er forskellige.  I Linux
+kaldes alle systemenheder - som f.eks. harddiske - for devices og har
+fortløbende bogstavnavne. De ligger alle i kataloget
+<filename>/dev</filename>
+</para>
+<indexterm><primary>IDE diske</primary></indexterm>
+<indexterm><primary>SCSI diske</primary></indexterm>
+
+<para>
+Første IDE disk  = <filename>/dev/hda</filename>
+</para>
+<para>
+Anden IDE disk  = <filename>/dev/hdb</filename>
+</para>
+<para>
+Tredje IDE disk = <filename>/dev/hdc</filename>
+</para>
+<para>
+Fjerde IDE disk = <filename>/dev/hdd</filename>
+</para>
+<para>
+Første SCSI disk = <filename>/dev/sda</filename> osv.
+</para>
+
+<para>
+Partitioner på en disk har numre svarende til disken, f.eks. er
+<filename>/dev/hda2</filename> den anden partition på den første IDE disk.
+</para>
+
+
+<para>
+Til at oprette partitionerne anvendes ikke længere
+<command>fdisk</command>. Der er et nyere og lidt venligere
+program som Red Hat Linux tilbyder - det er integreret direkte i de
+grafiske installationsmenuer. Dette
+er vist på <xref linkend="rh62part-fig">. Har du på et senere tidspunkt
+brug for at partitionere din harddisk, så kan du læse om
+<command>fdisk</command> i <xref linkend="fdisk">.
+</para>
+
+<para>
+Du vælger "Add" og sætter så "Mount Point" til "/" og "Size" til den
+størrelse du ønsker på rod-partitionen. Tilsvarende gøres eventuelle
+andre Linux Native partitioner. Der laves også en Linux Swap partition
+med "Add". I det følgende vindue (ikke vist her), skal du angive
+hvilke partitioner, som skal formatteres. Det skal alle de nye Linux
+native partitioner. Vælg for en sikkerhedsskyld også at checke for
+"Bad Blocks".
+</para>
+
+
+<FIGURE ID="rh62part-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Harddisk partitioner
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62part.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+
+<para>
+Nu skal der vælges, hvor de forskellige partitioner skal bruges i Linux
+filtræet. Linux native partitionen vælges til root-niveau. Skriv / ud for
+denne. Det kan nævnes, at du også kan køre med flere partitioner og
+så have separate <filename>/usr</filename> og
+<filename>/home</filename>. Vi vælger dog kun her den simple udgave med en
+Linux partition. DOS partitioner kan f.eks. lægges ind som
+<filename>/dosc</filename> og <filename>/dosd</filename> (eller 
+<filename>/cdrev</filename> og <filename>/ddrev</filename>)
+osv. Swap
+partitionen skal ikke lægges ind i fil-træet.
+</para>
+
+<para>
+Næste billede giver dig mulighed for at vælge hvilke partitioner, der
+skal formatteres og hvilke, der ikke skal.
+</para>
+</sect3>
+
+
+<sect3 id="liloinstall">
+<title>LILO bootmanager</title>
+<indexterm><primary>LILO</primary></indexterm>
+<para>
+Du kan nu installere LILO, som er et program, som kan boote
+DOS/Windows såvel som Linux. 
+Hvis du skal køre Linux og NT på samme maskine, bør du læse
+<xref linkend="NTogLinux">.
+
+Vil du ikke ændre på din nuværende
+boot-metode, så lad være. DOS programmet <command>loadlin</command>
+kan senere installeres til at lave en bootmenu i starten af Windows
+boot sekvensen. Du kan indtil da boote på den bootdisk, du kan lave i
+det vindue du kan se på <xref linkend="rh62lilo-fig"> - <emphasis>vælg
+dette</emphasis>.  Dernæst kan du lave en bootdisk på en tom
+diskette. Gør dette, og gem den et sikkert sted.
+</para>
+
+<para>
+MBR er det første
+boot-spor af din harddisk - hvor du måske ønsker at kunne boote andre
+styresystemer. Læs evt. først <xref linkend="Opstart">.
+</para>
+
+<FIGURE ID="rh62lilo-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - bootloaderen LILO
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62lilo.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Modsat er LILO et godt og lille program med mange
+konfigurationsmuligheder. Vælg at installere i Master Boot Record,
+hvis LILO skal styre alt boot fra nu af.
+Du kan slutteligt tilføje parametre til boot, så Linux nemmere kan
+finde hardware. Normalt er dette ikke nødvendigt.
+</para>
+
+<para>
+<indexterm><primary>Fjerne LILO</primary></indexterm>
+<indexterm><primary>LILO</primary><secondary>Fjerne</secondary></indexterm>
+<emphasis>Tip</emphasis>: Fortryder du senere
+dette, så brug i DOS <command>fdisk /mbr</command> for at slette
+LILO.
+</para>
+
+<para>
+Du bør måske læse den mini HOWTO om LILO, som kan
+findes under Linux Documentation Project på
+<ulink url="http://sunsite.auc.dk/ldp">http://sunsite.auc.dk/ldp</ulink>
+</para>
+
+<para>
+Har du brug for at slette eller ændre din LILO opsætning, kan du læse mere
+i <xref linkend="Opstart">. Hvis du skal køre Linux og NT på samme
+maskine, bør du læse <xref linkend="NTogLinux">.
+</para>
+</sect3>
+
+<sect3 id="rh-netkort">
+<title>Installation af netkort</title>
+<para>
+Har du et netkort i din maskine og vil have maskinen ind på et
+eksisterende netværk skal du nu skrive netværksparametre ind. Disse
+får du fra din netværksadministrator og du må ikke skrive forkert
+her. Hvad de enkelte dele er vil blive forklaret i <xref
+linkend="Linux-netvaerk-klient"> og <xref
+linkend="Linux-netvaerk-server">.
+</para>
+
+<FIGURE ID="rh62net-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - konfigurer netkort
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62net.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</sect3>
+
+<sect3 id="div-inst">
+<title>Videre med installationen</title>
+<para>
+I næste vindue vælges tidszone til "Europe/Copenhagen" ved at klikke
+på Danmark.
+</para>
+
+
+<para>
+Du skal nu vælge en god adgangskode (password) for
+systemadministrator-kontoen (root). Det må ikke være et navn, der kan
+findes i en ordbog, heller ikke simple ting, som andre kan vide om dig.
+Brug hellere mere indviklede ting som forbogstaver fra en remse,
+f.eks. kan "Ole sad på en knold og sang" blive til kodeordet
+"Osp1kos". Brug store OG små bogstaver samt tal. Brug mindst 7 tegn og
+meget gerne 8 tegn. Et password på 3 tegn kan knækkes på under et
+sekund på en PC, og fire tegn på langt under et minut. For 8 tegn
+tager det lang tid!
+</para>
+
+<para>
+</para>
+
+<para>
+Du kan alt som <filename>root</filename> - også slette alt. Du bør derfor
+kun bruge din root konto til systemarbejde. Start med at lave
+brugerkonti til dig selv og evt. andre med det samme.
+Vi bruger her daisy som login navn for at lave en konto til brugeren
+"daisy". Tryk på "Add" for hver konto (eng. Account) du tilføjer.
+</para>
+
+<para>
+Nu spørges du om, du vil køre NIS, bruge shadow passwords og MD5
+passwords. Er du usikker, så brug hvad der er valgt. NIS skal du dog
+ikke bruge med mindre din systemadministrator siger dette (NIS er
+noget med netværkscheck af din identitet (se evt. <xref linkend="NIS">) og MD5
+handler om forhøjet sikkerhed af passwords på systemet).
+</para>
+</sect3>
+
+<sect3 id="rh-hvad-ind">
+<title>Hvad skal installeres?</title>
+
+<para>
+Næste trin for installation via CDROM, at maskinen finder listen over,
+hvad der kan installeres.
+</para>
+
+<FIGURE ID="rh62group-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Installations grupper
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62group.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>Printer Support: Programmer til at skrive ud på egen
+printer eller netværksprinter.</para> </listitem>
+
+<listitem><para>X Window System: Underliggende grafisk
+brugergrænseflade til Linux (og andre systemer).  Vælges dette ikke,
+er der ikke ret meget grafik.</para> </listitem>
+
+<listitem><para>GNOME: Lækker grafisk brugergrænseflade, som også er
+krævende for dit system.</para> </listitem>
+
+<listitem><para>KDE: Som GNOME, men KDE er lidt længere fremme end GNOME og
+stiller lidt mindre krav til dit system.</para> </listitem>
+
+<listitem><para>Mail/WWW/News Tools: Mail/News og web browser
+programmer.</para></listitem>
+
+<listitem><para>DOS/Windows Connectivity: DOS emulator.</para></listitem>
+
+<listitem><para>Graphics Manipulation: Grafikkonvertering og
+tegneprogrammer.</para></listitem>
+
+<listitem><para>Games: Grafiske spil - ikke det meste hippe, men nogle
+kan være sjove.</para></listitem>
+
+<listitem><para>Multimedia support: Lyd, styringsværktøjer og andet sjov.</para></listitem>
+
+<listitem><para>Networked Workstation: Vælg dette, hvis din maskine
+skal ind i et lokalnetværk.</para></listitem>
+
+<listitem><para>Dialup Workstation:
+Opkoblings-programmer til Modem.</para></listitem>
+
+<listitem><para>News Server: Hvis maskinen skal være server for
+nyhedsgrupper.</para></listitem>
+
+<listitem><para>NFS Server: Hvis maskinen skal kunne være filserver
+for andre UNIX maskiner.</para></listitem>
+
+<listitem><para>SMB (Samba) Server: Vælges, hvis maskinen skal kunne
+være filserver for Microsoft Windows maskiner.</para></listitem>
+
+<listitem><para>IPX/Netware(tm) Connectivity: Opkobling mod Netware
+maskiner.</para></listitem>
+
+<listitem><para>Anonymous FTP/Gopher Server: Vælges, hvis maskinen skal
+være FTP server.</para></listitem>
+
+<listitem><para>Web Server: Installerer verdens mest udbredte webserver,
+Apache.</para></listitem>
+
+<listitem><para>DNS Name Server: Vælges hvis maskinen skal være
+navneserver.</para></listitem>
+
+<listitem><para>Postgres (SQL) Server: Her kan du få en SQL Database
+server.</para></listitem>
+
+<listitem><para>Networked Management Workstation: Flere netværksprogrammer</para></listitem>
+
+<listitem><para>Authoring/Publishing: Tekstformatteringssystemer LaTeX
+og SGML-tools, som er egnede til tekniske
+dokumenter.</para></listitem>
+
+<listitem><para>Emacs: Teksteditoren over dem alle.</para></listitem>
+
+<listitem><para>Development: Oversættere (compilere) og andet
+udviklings software.</para></listitem>
+
+<listitem><para>Kernel Developer: Kildetekst til Linux kernen.</para></listitem>
+
+<listitem><para>Clustering: En bunke værktøjer.</para></listitem>
+
+<listitem><para>Utilities: En bunke værktøjer.</para></listitem>
+
+<listitem><para>Everything: Ok - jeg tager det hele! Kan være en
+dårlig ide idet du åbner en masse funktioner i netværket du ikke 
+måske ikke har styr på.</para></listitem>
+</itemizedlist>
+
+<para>
+Du kan med knappen "<command>Select individual packages</command>"
+vælge under-grupper, som vist på <xref linkend="rh62indi-fig">. Pakker
+med et rødt "check-mark" bliver installeret. Du kan måske være
+specielt interesseret i at finde den danske ordbog "ispell-danish"
+under "Applications"/"Text"
+</para>
+
+<FIGURE ID="rh62indi-fig" FLOAT="1">
+<TITLE>Red Hat 6.2 Installation - Valg af enkelte programpakker
+</TITLE>
+<GRAPHIC FILEREF="../images/rh62indi.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Du kan nu blive bedt om at vælge et par pakker ekstra, for at
+dine valg kan fungere. Normalt er det støttebiblioteker, som skal
+med. Accepter normalt dette.
+</para>
+</sect3>
+
+
+<sect3 id="RH-X">
+<title>Opsætning af videohardware</title>
+
+<para>
+Nu er vi ved at være igennem. Vælg så grafikkortet. Er du i tvivl, kan
+du altid vælge standard VGA og senere få sat det bedre op. Linux har
+support for rigtig mange grafikkort (men for de allernyeste kort skal
+du nok ud på Internettet <ulink
+url="http://www.xfree86.org">http://www.xfree86.org</ulink> eller
+<ulink url="http://www.xig.com">http://www.xig.com</ulink> for at
+finde drivere, da de måske ikke er med på CDROM'en).
+</para>
+
+<para>
+Vælg derefter skærmtype. Har du ikke en kendt skærm, skal du finde din
+skærmmanual, så du kan se, hvor meget den kan klare. Du skal vælge, hvilken
+grafikdybde der skal vises. 8 bit er måske tilstrækkeligt, men 16 er
+godt (men langsommere). Dybden fortæller, hvor mange farver, der kan
+vises samtidigt (8 bit svarer til 256 farver, 16 bit til 65536). Læs
+evt. videre i <xref linkend="nulGUIapp">. Skærm og grafikkort testes
+nu, og du vil forhåbentlig se en grafisk skærm. Du kan vælge, om du vil
+køre med grafisk login (X-systemet) eller ej - dette er op til dig.
+</para>
+
+<para>
+Der kommer også spørgsmål, om grafisk login skal anvendes. Er du
+usikker på om dit grafikkort er understøttet, så lad være med at
+vælge dette. Modsat så er det meget lækkert at have det grafiske
+login.
+</para>
+
+<para>
+Nu er vi klar til den pause - som passer fint med at alle pakkerne
+skal installeres. Det kan tage sin tid alt efter hvor "grådig" du er
+og hvor hurtig din maskine er. Der står dog altid på skærmen, hvor
+lang tid der ca. er tilbage.
+</para>
+
+<para>
+Nu er du færdig - maskinen kan bootes i Linux!
+</para>
+</sect3>
+
+<sect3 id="rhgo">
+<title>Nu skal vi køre Linux</title>
+
+<para>
+Tryk return, og maskinen booter - enten via LILO eller din
+bootdisk. En lang tur, men nu kan der køres Linux.
+</para>
+
+<para>
+Hvis du valgte grafisk login, kan du nu logge ind via den brugerkonto,
+du lavede til dig selv eller som root.  Du kan hoppe fra den grafiske
+login skærm til en tekst baseret (f.eks. hvis du har grafik
+problemer), ved at trykke "Ctrl-Alt-F1".  Log f.eks. ind som brugeren
+<filename>root</filename> og skriv det password, som du valgte
+tidligere.
+</para>
+
+</sect3>
+
+</sect2>
+
+<sect2 id="rh-err">
+<title>Kendte fejl i Red Hat</title>
+
+
+<para>
+Den oprindelige Red Hat 6.1 havde flere fejl eller
+uhensigsmæssigheder, som kan ses på <ulink
+url="http://www.redhat.com/corp/support/errata">http://www.redhat.com/corp/support/errata</ulink>. Pakkerne
+kan findes på <ulink
+url="ftp://updates.redhat.com/6.1/i386/">ftp://updates.redhat.com/6.1/i386/</ulink>.
+Bl.a. bør du opdatere de pakker, der kan læses på 
+<ulink url="http://www.sslug.dk/misc/globe_fejl.html">http://www.sslug.sk/misc/globe_fejl.html</ulink>
+</para>
+
+<para>
+Red Hat 6.2 har en bla. boot-disk filer som ikke virker altid og der er
+fundet et par sikkerhedsfejl. Følg 
+<ulink url="http://www.redhat.com/corp/support/errata">http://www.redhat.com/corp/support/errata</ulink>.
+</para>
+
+<para>
+Linux kernen 2.2.15 har en grim fejl, så man bør opdatere til 2.2.16
+eller senere.
+</para>
+
+<para>
+SGML værktøjerne kan bruges, men laver en masse fejl når man
+oversætter SGML til PDF. Nye pakker er lavet.
+</para>
+
+<para>
+Tilsvarende bør du opgradere Netscape til 4.73 pga. et
+sikkerhedsproblem i SSL. Skal du skrive i SGML er der nye pakker dertil.
+</para>
+
+</sect2>
+
+<SECT2 ID="ftp-inst">
+<TITLE>Installation via netværk</TITLE>
+<INDEXTERM>
+ <PRIMARY>Installation</PRIMARY><SECONDARY>via netværk</SECONDARY>
+</INDEXTERM>
+
+<PARA>
+Specielt med ældre specielle cdrom-drev kan det ske, at du ikke kan
+installere via cdrom-drevet. 
+I stedet kan du prøve at installere Linux via ftp (eller http).
+</para>
+
+<para>
+Skal man installere Linux på en sådan maskine, bruges en floppy disk
+med filen <FILENAME>/mnt/cdrom/images/bootnet.img</FILENAME>.
+Da de fleste computere idag kan boote direkte fra CD,
+har du sikkert glemt hvordan man fremstiller en bootdiskette.
+Der er mange måder at gøre det på, her er en af de nemme:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>cat /mnt/cdrom/images/bootnet.img &gt; /dev/fd0H1440</USERINPUT>
+</SCREEN>
+
+<PARA>
+En anden Linux-maskine sættes så op i netværket med ftp-server og
+Linux cdrom'en mountes.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>mkdir /home/ftp/cdrom</USERINPUT>
+<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>mount /dev/cdrom /home/ftp/cdrom</USERINPUT>
+</SCREEN>
+
+<PARA>
+Herefter booter man den gamle maskine uden cdrom drev fra
+<FILENAME>bootnet.img</FILENAME> disketten, og angiver IP-nummer eller
+navn på serveren når man bliver spurgt.  Som under-katalog angives
+blot som <FILENAME>cdrom</FILENAME>.  Resten af installationen foregår
+som beskrevet i <XREF LINKEND="install">.
+</PARA>
+
+</SECT2> <!-- ftp-inst via netværk -->
+
+
+</sect1>
+
+
+<sect1 id="installsuse64">
+<title>Installation af SuSE Linux 6.4</title>
+<indexterm><primary>SuSE</primary></indexterm>
+<para>
+SuSE Linux version 6.4 installeres og konfigureres ved hjælp af det
+medfølgende systemværktøj, YaST2 (Yet another System Tool - version 2).
+YaST overflødiggør i udstrakt grad nødvendigheden
+af tidligere tiders nøjagtige kendskab til alle mulige
+konfigurationsværktøjer og -filer. Du slipper f.eks. for at skulle
+anvende fdisk til at skabe partitionerne, idet yast har et fornuftigt
+brugerinterface til dette.
+</para>
+
+<para>
+SuSE Linux findes i to udgaver. En officiel købeversion med seks
+CDROM'er, som indeholder over 1500 programpakker og en trykt
+engelsk-sproget manual på ca. 500 sider. Dette gør SuSE til den
+Linux-distribution, der har de fleste programmer og værktøjer med. Der
+findes også en evaluation version på en CDROM. Ordet "evaluation"
+betyder i denne sammenhæng ikke noget med, at man kun må bruge den i
+begrænset tid eller andet. En SuSE evaluation CDROM svarer i
+omfang og niveau til en Red Hat enkelt-cdrom version.  
+Installationen af den officielle
+er ikke meget forskellig fra evalueringsudgaven, men der er
+selvfølgelig meget mere med den store officielle købeversion.
+</para>
+
+
+<sect2 id="susenyheder64">
+<title>Nyheder i version 6.4</title>
+
+<para>
+Den største nyhed i SuSE 6.4 er klart ReiserFS. SuSE er pt. den eneste
+Linux distribution som har et "journaling filesystem", og SuSE har
+valgt at støtte om om ReiserFS. ReiserFS medfører i forhold til det
+almindelige Linux filformat ext2, at hvis stømmen skulle gå og der
+skal laves check af en kæmpe harddisk for defekte filer osv. så vil
+maskinen komme op igen efter få sekunder og ikke en lille time, som
+det kan være med en 50 GB harddisk. Du skal være opmærksom på at du
+ikke må fylde mere end ca. 75% af hver disk partition op, når du
+anvender ReiserFS. 
+</para>
+
+
+<para>
+SuSE Linux 6.4 baserer sig på version 2.2.14 af Linuxkernen, så
+der er god integration med PCMCIA og laptop support er væsentligt forbedret.
+</para>
+
+<para>
+En smart ting som SuSE 6.4 er alene om at have er deres styring af
+autofs (se <xref linkend="autofs">, dvs. automatisk montering af diske
+og netdrev. 
+
+</para>
+
+<para>
+Der er en LVM (logical volume manager) med, hvor man løbende kan ændre
+størrelser på Linux partitioner. 
+</para>
+
+<para>
+Med hensyn til Office systemer er SuSE god. KDE office pakken følger med,
+og hvis du køber den fulde SuSE pakke, kan du også installere
+Wordperfect 8 og/eller StarOffice 5.1 (begge er omtalt i <xref
+linkend="office">. Desuden er der demo versioner af ApplixWare og
+VMWare med.
+</para>
+
+<para>
+Sikkerhedsmæssigt er SuSE mindst på højde med Red Hat,
+idet man har fået PAM systemet fuldt integreret og dermed på
+niveau med Red Hat med hensyn til password-sikkerhed. Der er envidere
+et specielt toolkit med SuSE til at sætte firewall op med.
+</para>
+</sect2>
+
+<sect2 id="susehardware">
+<title>Hardwarekrav</title>
+<para>
+SuSE Linux 6.4 stiller følgende krav til hardware:
+</para>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+ <para>
+   En Intel 32 bit-kompatibel CPU (80386 eller senere). Der er
+   efterhånden god understøttelse af andre mærker end Intel,
+   f.eks. AMD.
+ </para>
+</listitem>
+<listitem>
+ <para>
+   Mindst 8 MB RAM, men 16 MB eller derover anbefales.
+ </para>
+</listitem>
+<listitem>
+ <para>
+   30 MB fri diskplads, men vil du bruge det til noget reelt, bør du
+   regne med 150 MB - mindst! Det koster at installere alle de
+   programmer, og 500 MB - 1 GB er ikke et dårligt udgangspunkt.
+ </para>
+</listitem>
+</itemizedlist>
+</sect2>
+
+<sect2 id="suseinstall64">
+<title>Installationsvejledning</title>
+<para>
+SuSE Linux startes enten direkte fra CDROM'en eller fra den medfølgende
+diskette. Hvis din PC ikke understøtter bootbare CDROM'er, og du ikke
+har den originale bootdiskette, kan du lave en bootdiskette ved hjælp
+af DOS-programmet <filename>RAWRITE.EXE</filename>, der ligger i
+kataloget <filename>/dosutils/rawrite</filename> på CDROM'en. Læs,
+dokumentationen i <filename>RAWRITE3.DOC</filename> for at se, hvordan
+programmet benyttes. Læs hvilken kerne-fil du skal bruge i
+<filename>/disks/README</filename>, men som standard kan du bruge
+<filename>/disks/bootdisk</filename>
+</para>
+
+<para>
+Du starter altså fra CDROM eller diskette og alt efter grafikkort osv
+kommer du til grafisk eller tekst-baseret installation. For den
+grafiske installation tager det en del tid før man
+reelt kommer igang, idet der først skannes efter en masse hardware.
+</para>
+
+<para>
+Der bør starte en grafisk menu, hvor du vælger sprog under
+installationen. Dansk er desværre ikke med, men vælg f.eks. "English
+(GB)" og "Next".  Under "keyboard layout" vælges "Danish" og tag
+"Europe/Denmark" som tidszone og så "Next". Du skal nu vælge om det er
+en installation fra start eller en opgradering og næste vindue vælges
+den harddisk, der er mål for installation (ofte
+<filename>/dev/hda</filename> for C:).  Vi vælger Custom partitioning
+(selvom det er meget nemmere at tage alternativet). Du kan nu slette
+partitioner og skabe nye. Under "Create" skal du lægge mærke til at du
+kan vælge mellem "Ext2" (det gamle filformat) og "ReiserFS" (det nye
+filformat). Du kan endnu ikke boote på en "ReiserFS" partition, men du
+kan lave en 20 MB <filename>/boot</filename> partition med Ext2. Når
+du er tilfreds med partitioneringen kan du vælge hvor meget, der skal
+installeres. Vælg mellem "Mimimal", "Default" og "Almost
+everything". Valget "Default" er måske et godt udgangspunkt her. Du
+kan med valget "Detailed selection" vælge på fint niveau.
+</para>
+
+<para>
+Har du installeret et opstartsystem f.eks. fra Windows på din harddisk
+vil du nu blive bedt om at lægge Linux opstart (LILO) ud på en
+diskette. Dette er klart sikrest, men du kan under "Custom LILO
+installation" vælge hvor du evt. vil lægge LILO ind. Vælger du MBR, så
+kan du boote Linux direkte fra harddisk.
+</para>
+
+<para>
+I næste vindue skal du anføre brugernavn og password til dig selv -
+ikke til root.  Først i det følgende vindue skal du vælge root
+password. Vælg to forskellige adgangskoder (eng. passwords).
+</para>
+
+<para>
+Endelig skal du nu acceptere valget af partitionering og installation
+generelt - nu er det så tid til kaffe.
+</para>
+
+<para>
+YaST2 begynder nu at installere
+programmerne, mens den viser, hvor langt den er nået. Alt efter
+maskintype, er det måske passende tid til at tage en stor kop
+kaffe. Lader du din maskine checke disken for defekter, kan det med
+de nye store diske godt tage 20 minutter eller måske længere at få
+overstået bare check-delen.
+</para>
+
+<para>
+Når den er færdig skal du kun acceptere at boote systemet. Husk at
+tage SuSE CDROM ud før du booter (ellers genstarter du
+installationen). 
+</para>
+
+<para>
+Bemærk at hvis du har installeret LILO som
+opstartssystem på C: så kan du afinstallere LILO ved at skrive
+<command>lilo -u /dev/hda1</command> (eller en anden partition - se
+skærmen og noter).
+</para>
+
+<para>
+Nu kan du tune din grafiske XWindow konfiguration. Vælg den skærm, der
+passer til din maskine, evt. ved at angive hvor hurtigt den kan
+køre. Dernæst finder programmet grafikkort, og du skal angive hvor høj
+opløsning og hvor mange samtidige farver, der skal anvendes. 
+</para>
+
+<para>
+Nu skal du have en pause igen - SuSE konfigurerer nu automatisk alle
+de installerede programpakker. Dette kan tage et par minutter.
+</para>
+
+<para>
+Endelig skal du sætte lyd/printer/netkort op. 
+</para>
+
+<para>
+Nu er vi klar til at logge ind som root eller som din egen konto.
+</para>
+
+<para>
+Nu har du endelig fuldført installation af pakker i SuSE og har dit system
+til at køre, så vil du sikkert på et tidspunkt overveje at fjerne
+nogle programmer og/eller tilføje nye programpakker. I Red Hat
+anvender man <command>rpm</command>-programmet (Se <xref
+linkend="RPM">), og det kan du også gøre i SuSE, men SuSE har et
+godt program til at vedligeholde systemet, herunder installere/fjerne
+pakker. Programmet hedder <command>yast</command>, og det køres af
+root. Start dette op. Er menuen på tysk, så tag andet menupunkt, og i
+den følgende menu første punkt. Vælg nu engelsk.
+</para>
+
+<para>
+Du mangler nu at få opsat dit netkort, printer og måske andre
+enheder. Dette gøres via yast. Se mere i 
+i <xref linkend="suseyast">.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="suseyast">
+<title>Efterfølgende installation af programmer med SuSE</title>
+<indexterm><primary>RPM</primary></indexterm>
+<indexterm><primary>yast</primary></indexterm>
+<para>
+Når du har fuldført installation af pakker i SuSE og har dit system
+til at køre, så vil du sikkert på et tidspunkt overveje at fjerne
+nogle programmer og/eller tilføje nye programpakker. I Red Hat
+anvender man <command>rpm</command>-programmet (Se <xref
+linkend="RPM">), og det kan du også gøre i SuSE, men SuSE har et
+godt program til at vedligeholde systemet, herunder installere/fjerne
+pakker. Programmet hedder <command>yast</command>, og det køres af
+root. Hvis du installerer på samme måde som ved den første
+installation - sikkert fra CDROM - så kan du direkte vælge
+"Choose/Install packages" for at gå videre. Vil du installere via
+netværk eller ændre sprog/keyboard, vælger du "Adjustments of install".
+</para>
+
+<FIGURE ID="syseyast1-fig" FLOAT="1">
+<TITLE>SuSE: Hovedmenu for yast</TITLE>
+<GRAPHIC FILEREF="../images/yast1.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Har du valgt "Choose/Install packages", kommer følgende skærm
+op. Vil du installere/fjerne pakker, så gå direkte videre med
+"Change/create configuration". Vil du se på, hvad du har installeret,
+vælger du "Package information". Det øverste menu punkt, "Load
+configuration", svarer til de profiler, som du kunne vælge under
+installationen, dvs. her kan du nemt få valgt store grupper af pakker.
+</para>
+
+<FIGURE ID="syseyast2-fig" FLOAT="1">
+<TITLE>SuSE: Efter Choose/Install packages</TITLE>
+<GRAPHIC FILEREF="../images/yast2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Har du valgt "Change/create configuration", kan du gå ind og rette
+de enkelte program-grupper, f.eks. "fun", som vi går videre med. Du
+kan i bunden af billedet, se hvor meget diskplads du har brugt og 
+tilsvarende har tilbage.
+</para>
+
+<FIGURE ID="syseyast3-fig" FLOAT="1">
+<TITLE>SuSE: Pakkeoversigt</TITLE>
+<GRAPHIC FILEREF="../images/yast3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu er du nået frem til at kunne installere programmerne. Du kan se,
+hvilke programmer, der allerede er installeret - idet det er markeret
+med et "i". Med mellemrum kan du sætte et "X" til at markere, at
+programmet skal installeres. I bunden af vinduet kan du se en kort
+beskrivelse af, hvad programmet indeholder og fylder. Forlad menuen med
+"F10", og gentag for de andre programgrupper, hvis du har lyst til dette.
+</para>
+
+<FIGURE ID="syseyast4-fig" FLOAT="1">
+<TITLE>SuSE: Pakkevalg</TITLE>
+<GRAPHIC FILEREF="../images/yast4.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Trykkede du "F10" fra den menu, vi viste på <xref
+linkend="syseyast3-fig">, sker der et check af, hvad du har
+indtastet, og du kommer derefter tilbage til den menu, vi viste på 
+<xref linkend="syseyast2-fig">. Menuen har nu fået et par nye
+valgmuligheder. Med "What if" kan du se, hvad dit valg vil medføre, og
+du laver installationen af de valgte pakker ved at vælge "Start Installation".
+</para>
+
+<FIGURE ID="syseyast5-fig" FLOAT="1">
+<TITLE>SuSE: Klar til at installere pakker</TITLE>
+<GRAPHIC FILEREF="../images/yast5.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu laves den egentlige installation af programmer. For hver pakke
+vises, hvor hurtigt den installeres. Efter disse vil yast lave en
+gennemgang af systemet og opdatere en masse lister. Der går lidt tid -
+nyd en kop kaffe, og du er færdig med at installere. 
+</para>
+
+<FIGURE ID="syseyast6-fig" FLOAT="1">
+<TITLE>SuSE: Pakker installeres</TITLE>
+<GRAPHIC FILEREF="../images/yast6.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="syseyast7-fig" FLOAT="1">
+<TITLE>SuSE: Der opdateres konfigurationsfiler</TITLE>
+<GRAPHIC FILEREF="../images/yast7.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Den viste procedure til at installere programmer i SuSE kan gentages
+mange gange og er faktisk ret god sammenlignet med, hvad Red Hat
+tilsvarende har af installationsværktøjer.
+</para>
+
+<sect2 id="suseinstprogram">
+<title>Installation af nye programmer med SuSE</title>
+
+
+<para>
+Har du fået en ny RPM-pakke, f.eks. fra internettet, kan den
+installeres som beskrevet, men du kan også bryge YAST
+som installationsværktøj.
+</para>
+
+<para>
+Fra YAST's hovedmenu:
+"Choose/Install packages", "Install packages", Tryk enter på "Source",
+vælg "Directory", skriv kilde-biblioteket øverst til højre på skærmen
+eller udpeg det i biblioteksstrukturen med enter og pile. Udvælg
+derefter RPM-pakker til installation / afinstallation mm.
+</para>
+
+</sect2>
+</sect1>
+
+<sect1 id="installcorel">
+<title>Installation af Corel Linux 1.0 eller 1.1</title>
+<indexterm><primary>Corel Linux</primary></indexterm>
+<para>
+Corel Linux er nem at installere, hvis din maskine er understøttet. 
+Det er tydeligt, at Corel vil lave en Linux, der er nem at installere
+og perfekt til kontor-brug, hvor Red Hat og SuSE har mere fokus på
+server-siden. Corel satser alene på KDE som grafisk bruger-grænseflade.
+</para>
+
+<para>
+Corel Linux kommer i tre forskellige versioner:
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+  <para>Corel Linux OS (Download) - en CDROM med kun ca. 400
+        MB programmer. En del mindre end Red Hat og SuSE.
+ </para> 
+</listitem>
+<listitem>
+  <para>Corel Linux OS (Standard) - som Download-versionen,
+        men med brugermanual, teknisk hjælpelinie, Netscape Communicator,
+        WordPerfect 8 og Adobe Acrobat Reader. 
+  </para> 
+</listitem>
+<listitem>
+  <para>Corel Linux OS (Deluxe) - som Standard, samt et godt
+        spil, bedre hjælpelinie,  fuld Word Perfect 8 og en 3.5 tommer Linux
+        pingvin maskot.
+  </para> 
+</listitem>
+</itemizedlist>
+
+<para>
+Vil du have samme muligheder som med Red Hat og SuSE kan Download
+versionen nok ikke dække dette (en del mindre). Ønsker du blot at
+prøve Linux kan Download versionen varmt anbefales pga. at den ikke
+fylder ret meget og er nem at installere.
+</para>
+
+<para>
+Man skal i Corel Linux oprette en ext2 partition til installation, hvis
+man ikke vælger DOS/FAT eller at Corel laver en server-install (kun
+Corel Linux).  Har man i forvejen en swap partition så benyttes denne.
+Corel Linux installationen forliges pænt med
+eksisterende DOS/Windows og andre Linux partitioner, og de kommer med
+i Corel Linux's installationsmenu.  Navn på menuen tages fra
+partitionens labelnavn, Så SuSE hedder gerne "Welcome" :))
+</para>
+
+
+<sect2>
+<title>Installationsvejledning til Corel Linux 1.0 og 1.1</title>
+
+<para>
+Det første der skal nævnes, er at skridtet mellem version 1.0 og 1.1
+er til at overse. Den største rettelse er at dansk tastetur virker i
+version 1.1.
+</para>
+
+<para>
+Corel Linux 1.1 findes i to versioner for hver pris-klasse; en
+US-version og en international version. Du skal klart få fat i den
+internationale version, hvis æøå skal virke under X.
+</para>
+
+<para>
+Der er kommet en del mere software med i version 1.1. Hvor download
+udgaven af version Corel Linux 1.0 havde 250 MB har version 1.1 nu
+ca. 400 MB. 
+</para>
+
+<para>
+Er dit grafikkort understøttet vil du med det samme starte ud i
+grafisk installation. Du skal acceptere en licens først og derefter
+angive hvilket brugernavn du vil bruge til dig selv - vælg ikke root -
+men et navn med små bogstaver og evt. tal.
+</para>
+
+<para>
+Nu kan du vælge mellem at installere "standard desktop" eller
+"advanced install". Vi vælger "advanced install", men prøv gerne den
+anden mulighed.
+</para>
+
+<para>
+I næste vindue kan du vælge 
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+  <para>Desktop
+ </para> 
+</listitem>
+<listitem>
+  <para>Desktop Plus - udviklingsværktøjer og teksteditorer.
+  </para> 
+</listitem>
+<listitem>
+  <para>Server (Web, fil, print, ftp)
+  </para> 
+</listitem>
+<listitem>
+  <para>Custom
+  </para> 
+</listitem>
+</itemizedlist>
+
+<para>
+Vi vælger "Desktop Plus". Vælger du "Custom" vil du sikkert have glæde
+af at vælge en hel del flere pakker end det der er forvalgt.
+</para>
+
+<para>
+Nu har du valgt hvad der skal ind og kan gå over til at vælge hvor
+Linux installeres. Der er mulighed for at installere på en DOS/Windows
+partition eller at det er hele disken der skal installeres med Linux.
+Vi vælger en mellemvej -  at editere partitions tabellen.
+Tryk på din harddisk og brug "Add" til at få skabt Linux partitioner.
+Lav en lille 20MB partition til <filename>/boot</filename> og mindst
+en partition til roden <filename>/</filename> og en partition til swap.
+</para>
+
+<para>
+Efter endnu en accept installeres Linux. Rigtig nemt - men til gengæld
+der der ting som endnu ikke er konfigureret. Tag en stor kop kaffe
+dernæst. Der er en statusbar, der viser hvor meget der er installeret,
+men dette er ikke alt. Debian-pakkerne (der ligger bag Corel Linux)
+skal dernæst konfigureres. Dette sker automatisk, og det tager tid -
+en del tid, hvor maskinen står med sort skærm og jævnlig aktivitet på
+disken. Du vil efter et stykke tid blive bedt om at tage floppy disk
+ud (og din cd-rom). 
+</para>
+
+<para>
+Nu er du ved at skulle logge ind for første gang som dig selv. Prøv
+dette med dit brugernavn og password. Du får nu mulighed for at køre
+password-håndtering fra en Windows Domain Name Controller - har du
+dette så gør dette, men ellers tryk "Cancel" for at lade være. 
+</para>
+
+<para>
+Skal din maskine på nettet, så skal du sætte password for root. Skynd
+dig at sætte dette ved at logge ud og logge ind som root - du skulle
+blive bedt om password her, hvis ikke så start et terminal vindue op
+(tredie ikon i bunden fra venstre) og skriv
+<command>passwd</command>.
+</para>
+
+<para>
+Det skal også nævnes, at Corel har lavet deres egen
+fil-håndteringsprogram (<command>CorelExplorer</command>), der minder
+meget om et tilsvarende til MS Windows.
+</para>
+
+<FIGURE ID="corel-fm-fig" FLOAT="1">
+<TITLE>Corel Linux fil-håndteringsprogram
+</TITLE>
+<GRAPHIC FILEREF="../images/CorelExplorer.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Skal du installere nye programmer, så se mere i <xref linkend="dpkg">.
+</para>
+</sect2>
+
+<sect2 id="corel-fejl">
+<title>Fejl i Corel Linux 1.0 og 1.1 US</title>
+
+
+<para>
+Corel Linux 1.0 og 1.1US har fejl - den største fælles fejl er at dansk
+tastatur ikke umiddelbart er understøttet. Dette kan du dog rette
+næsten helt op på, ved at logge ind som root. Start et teminal vindue
+og skriv <command>kedit /etc/X11/XF86Config</command>. Find linie 30
+(ca.) og ret linien
+</para>
+
+<SCREEN>
+    XkbLayout   "us"
+</SCREEN>
+
+<para>
+til
+</para>
+
+<SCREEN>
+    XkbLayout   "dk"
+</screen>
+
+<para>
+Første linie skal du også slette - ellers vil systemet automatisk
+rette tilbage til amerikansk tastatur-layout efter reboot.
+</para>
+
+<para>
+Check også at du i "Corel Center" -> "Input Devices" -> "International
+Keyboard" -> "Advanced" kører med "X default codes". Slet i øvrigt
+amerikansk tastatur-layout.
+</para>
+
+<indexterm>
+ <primary>Dansk</primary>
+ <secondary>Tastatur</secondary>
+</indexterm>
+
+<para>
+Har du brug for tilsvarende dansk tastatur i tekst-mode, så skal
+root-brugeren køre <command>kbdconfig</command> og vælge "dk-latin1".
+</para>
+
+<sect3 id="corel-vigtig">
+<title>Sikkerhed og Corel</title>
+<para>
+Med hensyn til netværkssikkerhed og Corel Linux, så virker det som om
+Corel er bag efter de andre distributioner med hensyn til at rette
+fejl.  En af de problemer som er blevet påpeget med Corel Linux er at
+det kan ske at passwords bliver sat tomme. Du skal specielt checke at 
+root har et password. Du bør for en sikkerheds skyld skrive
+</para>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>su - root</USERINPUT>
+<PROMPT>[root@linus /root]# passwd root</PROMPT>
+<PROMPT>[root@linus /root]# passwd DIG</PROMPT>
+</SCREEN>
+
+<para>
+Hvor du erstatter DIG med dit brugernavn. Så er du sikker på at der er
+sat password for root og dig selv.
+</para>
+
+
+</sect3>
+</sect2>
+
+</sect1>
+</chapter>
+
