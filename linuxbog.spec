@@ -22,16 +22,16 @@ Bogen er en del af en serie der kan findes samlet på http://www.sslug.dk/linuxbo
 %setup -q -n %{buildname}
 
 %install
-mkdir -p $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname}
+mkdir -p $RPM_BUILD_ROOT/usr/share/doc/linuxbog/%{buildname}
 if [ -d ./%{buildname} ]; then
-	(cd %{buildname}; cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname})
+	(cd %{buildname}; cp -r * $RPM_BUILD_ROOT/usr/share/doc/linuxbog/%{buildname})
 else
-	(cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname})
+	(cp -r * $RPM_BUILD_ROOT/usr/share/doc/linuxbog/%{buildname})
 fi
 
 if [ -d ./eksempler ]; then
-	mkdir -p $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname}/eksempler
-	(cd ./eksempler; cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname}/eksempler)
+	mkdir -p $RPM_BUILD_ROOT/usr/share/doc/linuxbog/%{buildname}/eksempler
+	(cd ./eksempler; cp -r * $RPM_BUILD_ROOT/usr/share/doc/linuxbog/%{buildname}/eksempler)
 fi
 
 %clean
@@ -39,9 +39,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %attr(-,root,root) 
-%{_prefix}/share/books/*
+%{_prefix}/share/doc/*
 
 %changelog
+* Tue Apr 16 2002 Troels Liebe Bentsen <tlb@rapanden.dk>
+- Rettede /usr/share/books til /usr/share/doc, hint fra Torkil Zachariassen <torkil\@flug.fo>. 
+
 * Sat Apr 14 2001 Troels Liebe Bentsen <tlb@rapanden.dk>
 - Første udgave.
 
