@@ -135,7 +135,7 @@
  </sect2>
 
  <sect2 id="cvs-funktionalitet">
-  <title>Funktionaliteten af CVS</title>
+  <title>CVS' funktionaliteten</title>
 
   <para>
    Versionskontrolsystemer bruges til at gemme den historie som ens
@@ -312,7 +312,7 @@
 
    <para>
     Denne kommando sætter en variabel, der fortæller <command>cvs</command>
-    at kommunikation over nettet skal ske med SSH-protokollen (der er
+    at kommunikation over nettet skal kunne ske med SSH-protokollen (der er
     krypteret og dermed sikrer mod aflytning af adgangskoder og data). Bemærk
     at variablen også skal være sat, når du senere vil opdatere din kopi af
     projektet eller vil lægge en rettet fil ind i CVS-arkivet. Det kan du
@@ -321,7 +321,8 @@
    </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt><userinput>cvs -d sparre@cvs.sslug.dk:/usr/local/CVSROOT checkout linuxbog</userinput>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cvs \
+-d sparre@cvs.sslug.dk:/usr/local/CVSROOT checkout linuxbog</userinput>
 </screen>
 
    <itemizedlist>
@@ -398,7 +399,8 @@
    </para>
 
 <screen>
-<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs commit -m 'validator.w3.org brokkede sig' tjek.php</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs commit \
+-m 'validator.w3.org brokkede sig' tjek.php</userinput>
 </screen>
 
    <itemizedlist>
@@ -436,9 +438,10 @@
 
    <para>
     Hvis vi nu har skrevet en ny fil ved navn "tak.html" og den ligger sammen
-    med vores personlige kopi af projektet kan vi tilføje den med kommandoen:
+    med vores personlige kopi af projektet kan vi tilføje den med kommandoerne:
 <screen>
-<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs add -m 'lidt almindelig høflighed' tak.html</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs add tak.html</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs commit -m 'lidt almindelig høflighed' tak.html</userinput>
 </screen>
    </para>
 
@@ -452,15 +455,15 @@
 
     <listitem>
      <para>
-      "-m 'lidt almindelig høflighed'" betyder at tilføjelsen i
-      CVS-arkivets logbog skal have kommentaren "lidt almindelig høflighed".
+      Og endelig er "tak.html" navnet på den fil du har skrevet og vil føje
+      til det fælles arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Og endelig er "tak.html" navnet på den fil du har skrevet og vil føje
-      til det fælles arkiv.
+      Efter at "tak.html" er blevet føjet til arkivet bruges "cvs commit" til
+      at aktivere tilføjelsen.
      </para>
     </listitem>
    </itemizedlist>
@@ -482,7 +485,8 @@
     klares med kommandoerne:
 <screen>
 <prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>rm -f tjek-eksp.php</userinput>
-<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs rm -m 'det gik ikke' tjek-eksp.php</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs remove tjek-eksp.php</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs commit -m 'det gik ikke' tjek-eksp.php</userinput>
 </screen>
    </para>
 
@@ -503,29 +507,29 @@
 
     <listitem>
      <para>
-      "-m 'det gik ikke'" betyder at bortfjernelsen i CVS-arkivets logbog
-      skal have kommentaren "det gik ikke".
+      Og endelig er "tjek-eksp.php" navnet på den fil der skal fjernes fra
+      det fælles arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Og endelig er "tjek-eksp.php" navnet på den fil der skal fjernes fra
-      det fælles arkiv.
+      Efter at "tjek-eksp.php" er blevet slettet fra arkivet bruges
+      "cvs commit" til at aktivere sletningen.
      </para>
     </listitem>
    </itemizedlist>
   </example>
 
 
+<!--
 
 <para>
-Antag at man laver en ændring af kildeteksten som så skal kunne tilgå de andre på
-projektet. Dette gøres ved at skrive
+ Antag at man laver en ændring af kildeteksten som så skal kunne tilgå de
+ andre på projektet. Dette gøres ved at skrive
 </para>
 
 <indexterm><primary>cvs</primary><secondary>commit</secondary></indexterm>
-
 
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs commit FILNAVN</userinput>
@@ -554,71 +558,63 @@ CVS kan også automatisk sende en email ud til projekt gruppen når filer
 bliver opdateret, så man ved hvornår dette sker (brug
 <command>cvs watch</command>). Se også <xref linkend="logmails-cvs">.
 </para>
+-->
 
-<para>
-Hvis der er konflikter mellem den lokale kildetekst og den kildetekst som er senest
-i CVS-databasen, må den som har konflikten løse den (måske med hjælp fra
-den som lavede ændringen) og lægge endnu en version ind hvor problemet er
-løst. Faktisk foregår denne proces langt mere smidigt end man skulle tro,
-og med en smule styring af hvem der laver hvad, så vil man finde meget få
-problemer med projektstyringen. Hvis kildeteksten er blevet meget ødelagt ved
-f.eks. en helt forkert kildetekstændring, så er der mulighed for at bakke tilbage
-til en ældre version af kildeteksten (cvs update -r REVISIONNUMBER FILNAVN),
-hvorfra der arbejdes videre.
-</para>
+  <sect3 id="cvs-konfliktloesning">
+   <title>Konfliktløsning ved "dobbelt-opdatering"</title>
 
-<para>
-Enhver kan og bør checke status for den enkelte fil før kildeteksten skal
-lægges ind i CVS-databasen. Dete gøres med
-</para>
+   <para>
+    Hvis der er konflikter mellem en fil i din personlige kopi af CVS-arkivet
+    og den samme fil i det fælles CVS-arkiv, fordi en anden bruger i
+    mellemtiden også har opdateret filen, så vil du skulle flette de to
+    opdateringer sammen, før du kan lægge dine rettelser ind i det fælles
+    arkiv. Det gøres ved at du først "opdaterer" din lokale kopi af filen
+    (<command>cvs update <filename>&lt;filnavn&gt;</filename></command>).
+    CVS vil så markere forskellene mellem de to udgaver, så du i dit
+    tekstbehandlingsprogram kan vælge hvilke udgaver af rettelserne du
+    foretrækker. Når du har valgt mellem rettelserne og i øvrigt tjekket
+    at filen er i orden kan du lægge den sammeflettede opdatering ind i
+    det fælles CVS-arkiv på sædvanlig vis
+    (<command>cvs commit <filename>&lt;filnavn&gt;</filename></command>).
+   </para>
+  </sect3>
 
-<indexterm><primary>cvs</primary><secondary>status</secondary></indexterm>
+  <sect3 id="cvs-gamle-udgaver">
+   <title>Gamle udgaver af filer i CVS-arkivet</title>
 
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs status FILNAVN</userinput>
-</screen>
+   <para>
+    Hvis en fil er blevet rettet i en helt forkert retning, er det muligt at
+    hente en gammel udgave af filen ud af det fælles CVS-arkiv, og arbejde
+    videre udfra den. Det gøres med kommandoen <command>cvs update -r
+    &lt;udgavenummer&gt; <filename>&lt;filnavn&gt;</filename></command>.
+   </para>
+  </sect3>
 
-<para>
-Dette vil vise versionsnummer på egen fil og det versionsnummer som
- CVS har. Et felt for hver fil vil vise om andre har committet kildetekst, eller om
-filen lokalt er ændret i forhold til CVS-databasen.
-Nye filer lægges ind i CVS med to operationer, først
-</para>
+  <sect3 id="cvs-filstatus">
+   <title>Filers status</title>
 
-<indexterm><primary>cvs</primary><secondary>add</secondary></indexterm>
+   <para>
+    Enhver kan og bør principielt tjekke status for de enkelte filer før 
+    opdateringer bliver lagt ind i det fælles arkiv. Det gøres med kommandoen
+    <command>cvs status <filename>&lt;filnavn&gt;</filename></command>.
+    CVS vil så vise udgavenummeret for den fil du har liggende såvel som
+    udgavenummeret for den fil der ligger i det fælles arkiv.
+   </para>
+  </sect3>
 
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs add FILNAVN</userinput>
-</screen>
+  <sect3 id="cvs-logbogen">
+   <title>Logbogen</title>
 
-<para>
-efterfulgt af
-</para>
+   <para>
+    Hver gang du lægger ændringer ind i det fælles CVS-arkiv, kan du skrive
+    en besked i logbogen om <emphasis>hvorfor</emphasis> du har lavet de
+    ændringer. I <xref linkend="cvs-kom-i-gang-commit"> bruger vi
+    kommandolinieflaget "-m" til at angive teksten til logbogen. Hvis du ikke
+    bruger "-m"-flaget, vil CVS i stedet starte det tekstbehandlingsprogram
+    systemvariablen "EDITOR" peger på, så du kan skrive teksten der.
+   </para>
 
-
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit FILNAVN</userinput>
-</screen>
-
-<para>
-På denne måde er der en ekstra sikring imod at forkerte filer kommer i
-CVS-databasen. Tilsvarende kan filer fjernes fra CVS-databasen med
-</para>
-
-<indexterm><primary>cvs</primary><secondary>remove</secondary></indexterm>
-
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs remove FILNAVN</userinput>
-</screen>
-
-<para>
-efterfulgt af
-</para>
-
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit FILNAVN</userinput>
-</screen>
-
+<!--
 <para>
 Hver af disse "cvs commit" ordrer vil starte en editor op, hvor brugeren
 skal skrive (kortfattet) hvilke ændringer der er lavet siden sidst. Dette
@@ -626,31 +622,36 @@ skaber en log historie for hver fil som er guld værd, hvis man er lidt væk
 fra kildeteksten og skal arbejde videre senere. Du kan også angive disse
 log-beskeder direkte
 </para>
+-->
+
+   <para>
+    Hvis du på et tidspunkt vil se, hvad der for eksempel står i logbogen
+    om filen <filename>tjek.php</filename> bruger du kommandoen:
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit -m "log-besked skrives her" FILNAVN</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs log tjek.php</userinput>
 </screen>
 
-<indexterm><primary>cvs</primary><secondary>commit -m</secondary></indexterm>
+    Den vil give dig en liste med de forskellige udgaver af filen, hvem der
+    har lavet ændringerne, og hvad der står om dem i logbogen. Selve
+    ændringerne bliver dog ikke vist.
+   </para>
+  </sect3>
 
-  <para>
-   For at se alle beskeder for en fil i loggen anvendes
-
-   <indexterm><primary>cvs</primary><secondary>log</secondary></indexterm>
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs log FILNAVN</userinput>
-</screen>
-   hvilket vil vise, hvem der har lavet de enkelte versioner og hvad der i
-   korte træk er sket. Selve ændringerne i kildeteksten vises ikke her. Disse
-   fås ved at skrive
+  <sect3 id="cvs-diff">
+   <title><command>cvs diff</command></title>
 
    <indexterm><primary>cvs</primary><secondary>diff</secondary></indexterm>
+
+   <para>
+    Selve ændringerne i kildeteksten vises ikke her. Disse fås ved at skrive
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs diff FILNAVN</userinput>
 </screen>
-   og her kan et revisionsnummer tilføjes, så man kan se, hvordan den lokale
-   kildetekst afviger fra kildeteksten med den valgte revision.
-  </para>
+    og her kan et udgavenummer tilføjes, så man kan se, hvordan den lokale
+    kildetekst afviger fra kildeteksten med den valgte revision.
+   </para>
+  </sect3>
  </sect2>
 
 <!--
@@ -681,63 +682,56 @@ log-beskeder direkte
  <sect2 id="opsaet-cvs">
   <title>Opsætning af CVS</title>
 
-  <indexterm><primary>cvs</primary><secondary>opsætning</secondary></indexterm>
+  <indexterm>
+   <primary>CVS</primary>
+   <secondary>opsætning af</secondary>
+  </indexterm>
+
+  <indexterm>
+   <primary>opsætning af</primary>
+   <secondary>CVS</secondary>
+  </indexterm>
 
   <para>
-   Endelig skal nævnes hvordan man lægger et kildeteksttræ ind i CVS-databasen
-   og hvordan man initialiserer databasen.
-</para>
+   Endelig skal nævnes hvordan man opretter et fælles CVS-arkiv og hvordan
+   man lægger en samling filer ind i det fælles arkiv.
+  </para>
 
-<para>
-Er det dig som skal starte CVS-databasen op for første gang, så find
-et katalog (kaldet <literal>CVSROOT</literal>) som du vil anvende til CVS,
-f.eks. <filename>/usr/local/CVSROOT</filename>. Sørg for at du og de
-andre som skal bruge det katalog har læse og skriverettighed til det.
-</para>
+  <sect3 id="cvs-oprettelse">
+   <title>Oprettelse af et CVS-arkiv</title>
 
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>export CVSROOT=/usr/local/CVSROOT</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs init</userinput>
-</screen>
-
-<para>
-og tilsvarende for tcsh/csh:
-</para>
-
-<screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>setenv CVSROOT /usr/local/CVSROOT</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs init</userinput>
-</screen>
-
-
-<para>
- Hver af brugerne skal selv føje variablen <literal>CVSROOT</literal> til
- deres <filename>~/.bashrc</filename> eller <filename>~/.profile</filename>
-med syntaksen <filename>BRUGER@CVS-SERVER:KATALOG</filename>. Variablen
-<literal>CVSROOT</literal> er sat når man starter en ny
-kommandofortolker. Check dette ved at skrive
+   <para>
+    Hvis du ikke allerede har adgang til et CVS-arkiv, du kan lægge dine
+    filer ind i, må du oprette et. Hvis du har systemoperatørrettigheder
+    bør du oprette et katalog med navnet
+    <filename>/usr/share/CVSROOT</filename> og lægge det der. Alternativt
+    kan du for eksempel lægge det i <filename>$HOME/.CVSROOT</filename>.
+    Det er vigtigt at alle, der skal kunne lægge filer ind i og rette
+    filer i CVS-arkivet har adgang til at skrive i kataloget. Vi går her
+    ud fra at de alle er med i brugergruppen "cvsusers" (se
+    systemadministratorbogen for information om brugergrupper). CVS-arkivet
+    oprettes med kommandoen
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>bash</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>env | grep CVS</userinput>
-CVS_RSH=ssh
-CVSROOT=anne@cvs.sslug.dk:/usr/local/CVSROOT
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs -d $HOME/.CVSROOT init</userinput>
 </screen>
-</para>
+   </para>
 
-<para>
-tilsvarende skal <command>tcsh</command>-brugere åbne en nyt terminal-vindue eller
-skrive <command>tcsh</command> for at checke.
-</para>
+   <para>
+    Når en bruger vil oprette sin egen arbejdskopi af CVS-arkivet, skal
+    han/hun blot kende navnet på det katalog du valgte at lægge det fælles
+    centrale CVS-arkiv i (husk at "$HOME" refererer til
+    <emphasis>dit</emphasis> hjemmekatalog;
+    <command>echo $HOME/.CVSROOT</command> vil give dig det fulde navn på
+    det katalog der blev brugt i ovenstående eksempel). Se i øvrigt
+    eksemplerne <xref linkend="cvs-kom-i-gang-lokalt">,
+    <xref linkend="cvs-kom-i-gang-anonym"> og
+    <xref linkend="cvs-kom-i-gang-ssh"> for flere detaljer. Vi kommer ikke
+    ind på hvordan man giver anonym adgang til et CVS-arkiv her.
+   </para>
+  </sect3>
 
-<para>
-I eksemplet kan man se at maskinen <filename>cvs.sslug.dk</filename>
-er CVS-server og CVS-databasen (repositoriet) ligger på den maskine i
-<filename>/usr/local/CVSROOT</filename>. Brugernavnet
-<filename>anne@</filename> svarer til det bruger-navn, som man har på
-den CVS-server (ikke nødvendigvis det samme på på egen maskine).
-</para>
-
+<!--
 <para>
 Da vi anvendte <command>grep</command> på alt der startede med "CVS",
 fik vi også en anden variabel med <filename>CVS_RSH</filename>, som
@@ -747,13 +741,18 @@ enten secure shell (<command>ssh</command>) eller remote shell
 (<command>rsh</command>). Se mere om <command>ssh</command> i bogen
 "Linux - friheden til sikkerhed på internettet").
 </para>
+-->
 
-<para>
-Lad os komme videre. For at du kan lægge dine filer i CVS for første
-gang skal du flytte dig til hovedbiblioteket for kildeteksten. Derfra laves
-</para>
+  <sect3 id="cvs-oprette-et-projekt">
+   <title>Opret et projekt i CVS-arkivet</title>
 
-<indexterm><primary>cvs</primary><secondary>import</secondary></indexterm>
+   <indexterm><primary>cvs</primary><secondary>import</secondary></indexterm>
+
+   <para>
+    Lad os komme videre. For at du kan lægge dine filer i CVS for første
+    gang skal du flytte dig til hovedbiblioteket for kildeteksten. Derfra laves
+   </para>
+
 
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cd mitsoftwareprojekt</userinput>
@@ -784,11 +783,12 @@ skrevet ind for hver fil ved "cvs commit", til HTML-filer. For
 internetbaserede samarbejdsprojekter er dette virkeligt smart.
 </para>
 
-  <para>
-   Det tager et par timer at komme ind i denne måde at arbejde på, men alle
-   programmerings- eller skriveprojekter i øvrigt med mere end en person vil
-   CVS tjene dette overhead ind i hundredefold.
-  </para>
+   <para>
+    Det tager et par timer at komme ind i denne måde at arbejde på, men alle
+    programmerings- eller skriveprojekter i øvrigt med mere end en person vil
+    CVS tjene dette overhead ind i hundredefold.
+   </para>
+  </sect3>
 
   <sect3 id="logmails-cvs">
    <title>Få emails med log-meddelelser ved cvs commit</title>
@@ -812,14 +812,14 @@ internetbaserede samarbejdsprojekter er dette virkeligt smart.
    </para>
 
 <para>
-<emphasis>I det følgende skal du erstatte STIL_TIL_CVS_RODEN med den fulde sti
+<emphasis>I det følgende skal du erstatte STI_TIL_CVS-RODEN med den fulde sti
 til dit CVSROOT-katalog.</emphasis>.
 </para>
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>touch STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>chgrp MINFÆLLESGRUPPE STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>chmod g+rw STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>touch STI_TIL_CVS-RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>chgrp PROJEKTGRUPPE STI_TIL_CVS-RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>chmod g+rw STI_TIL_CVS-RODEN/CVSROOT/commitlog</userinput>
 </screen>
 
 <para>
@@ -838,7 +838,7 @@ gerne flere <filename>-m modtager@email-adresse</filename> efter hinanden.
 </para>
 
 <screen>
-DEFAULT /usr/lib/cvs/contrib/log -m pto@sslug.dk -f STIL_TIL_CVS_RODEN/CVSROOT/commitlog
+DEFAULT /usr/lib/cvs/contrib/log -m pto@sslug.dk -f STI_TIL_CVS-RODEN/CVSROOT/commitlog
 </screen>
 
 <screen>
