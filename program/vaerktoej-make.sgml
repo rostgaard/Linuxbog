@@ -1,18 +1,18 @@
 <sect1 id="vaerktoej-make">
- <title>Brug af oversættelsesfiler ("makefiles")</title>
+ <title>Brug af oversÃ¦ttelsesfiler ("makefiles")</title>
 
- <indexterm><primary>oversættelsesfiler</primary></indexterm>
+ <indexterm><primary>oversÃ¦ttelsesfiler</primary></indexterm>
  <indexterm><primary>make</primary></indexterm>
  <indexterm><primary>Makefile</primary></indexterm>
 
  <para>
-  Næste eksempel er to filer, hvor den ene kalder funktioner i den anden. I
-  eksemplet, der er skrevet i C, er det igen det største af to tal, der skal
+  NÃ¦ste eksempel er to filer, hvor den ene kalder funktioner i den anden. I
+  eksemplet, der er skrevet i C, er det igen det stÃ¸rste af to tal, der skal
   findes og skrives ud.
  </para>
 
  <para>
-  Følgende fil kan gemmes som <filename>ceks2.c</filename>.
+  FÃ¸lgende fil kan gemmes som <filename>ceks2.c</filename>.
  </para>
 
 <programlisting>
@@ -36,7 +36,7 @@ int main(void)
 </programlisting>
 
  <para>
-  Følgende fil kan gemmes som <filename>cfkt.c</filename>.
+  FÃ¸lgende fil kan gemmes som <filename>cfkt.c</filename>.
  </para>
 
 <programlisting>
@@ -57,70 +57,71 @@ float max(float f1,float f2)
 <screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>gcc -o ceks2 ceks2.c cfkt.c -lm</userinput></screen>
 
  <para>
-  En langt mere elegant metode er at lave en oversættelsesfil. Herefter
-  skrives blot <command>make</command>, og C-oversætteren vil kun oversætte de
-  filer, der er nyere end de oversatte filer. Oversættelsesfiler kan også
-  bruges til at styre oversættelse af andet end regulære programmer. For
-  eksempel LaTeX-kode. En oversættelsesfil (med navnet
-  <filename>Makefile</filename>) kunne være følgende.
+  En langt mere elegant metode er at lave en oversÃ¦ttelsesfil. Herefter
+  skrives blot <command>make</command>, og C-oversÃ¦tteren vil kun oversÃ¦tte de
+  filer, der er nyere end de oversatte filer. OversÃ¦ttelsesfiler kan ogsÃ¥
+  bruges til at styre oversÃ¦ttelse af andet end regulÃ¦re programmer. For
+  eksempel LaTeX-kode. En oversÃ¦ttelsesfil (med navnet
+  <filename>Makefile</filename>) kunne vÃ¦re fÃ¸lgende.
  </para>
 
 <programlisting>
-# Makefile til GNU C-oversætteren - dette er en kommentar
-# I dette eksempel oversættes to filer.
-# ceks2.c og cfkt.c oversættes til den kørbare fil ceks2
+# Makefile til GNU C-oversÃ¦tteren - dette er en kommentar
+# I dette eksempel oversÃ¦ttes to filer.
+# ceks2.c og cfkt.c oversÃ¦ttes til den kÃ¸rbare fil ceks2
 
-# Kommandoen til at oversætte C-programmer er "gcc":
+# Kommandoen til at oversÃ¦tte C-programmer er "gcc":
 CC = gcc
 
 # Navn paa koerbar fil
 OUTPUT   = ceks2
 
-# Kildefilnavne, bemærk der er ingen mellemrum efter \ tegnet.
+# Kildefilnavne, bemÃ¦rk der er ingen mellemrum efter \ tegnet.
 sources  = ceks2.c \
            cfkt.c
 
 # Automatisk navngivning af objektfiler, hvor .c laves om til .o
 OBJS        = $(sources:.c=.o)
 
-# Oversætterflag: Optimering niveau 2
+# OversÃ¦tterflag: Optimering niveau 2
 CFLAGS      = -O2
 
 #Linkerflag: Inkluderer matematik-bibliotek
 LDFLAGS      = -lm
 
 # Foelgende linje tjekker om en .o fil er nyere end den koerbare fil. Hvis
-# dette er tilfaeldet, linkes disse. Dvs. kun nye elementer oversættes.
+# dette er tilfaeldet, linkes disse. Dvs. kun nye elementer oversÃ¦ttes.
 $(OUTPUT): $(OBJS)
         $(CC) $(CFLAGS) -o $(OUTPUT) $(OBJS) $(LDFLAGS)
 </programlisting>
 
  <para>
-  Bemærk at indrykninger i oversættelsesfiler skal være tabulatortegn! Det
+  BemÃ¦rk at indrykninger i oversÃ¦ttelsesfiler skal vÃ¦re tabulatortegn! Det
   fungerer ikke med mellemrum.
  </para>
 
  <para>
-  Oversættelsesfilen består af en masse definitioner af variable og en eller
-  flere opskrifter. Opskriften fortæller at $(OUTPUT) (ceks2) afhænger af
+  OversÃ¦ttelsesfilen bestÃ¥r af en masse definitioner af variable og en eller
+  flere opskrifter. Opskriften fortÃ¦ller at $(OUTPUT) (ceks2) afhÃ¦nger af
   objekt kode filerne $(OBJS) (ceks2.o og cfkt.o), og at at ceks2-programmet
   kan laves med opskriften
   <command>gcc -O2 -o ceks2 ceks2.o cfkt.o -lm</command>. 
-  Make-programmet gætter selv hvordan .c filer skal oversættes for at danne
+  Make-programmet gÃ¦tter selv hvordan .c filer skal oversÃ¦ttes for at danne
   objekt filer .o.
  </para>
 
  <para>
-  Når oversættelsesfilen er skrevet, kan programmet bare oversættes ved at
+  NÃ¥r oversÃ¦ttelsesfilen er skrevet, kan programmet bare oversÃ¦ttes ved at
   skrive
   <screen>
    <prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
   </screen>
-  i det katalog, hvor oversættelsesfilen findes. En oversættelsesfil kan være
-  meget lang og indeholde mange opskrifter, der indbyrdes kan afhænge af
-  hinanden. Make-programmet undersøger datoen på alle filer, og hvis datoen på
-  kildeteksten er nyere end datoen på den tilsvarende objektfil, så er
-  objektfilen forældet, og make oversætter automatisk kildeteksten igen og
+  i det katalog, hvor oversÃ¦ttelsesfilen findes. En oversÃ¦ttelsesfil kan vÃ¦re
+  meget lang og indeholde mange opskrifter, der indbyrdes kan afhÃ¦nge af
+  hinanden. Make-programmet undersÃ¸ger datoen pÃ¥ alle filer, og hvis datoen pÃ¥
+  kildeteksten er nyere end datoen pÃ¥ den tilsvarende objektfil, sÃ¥ er
+  objektfilen forÃ¦ldet, og make oversÃ¦tter automatisk kildeteksten igen og
   samler programmet med den nye objektfil.
  </para>
 </sect1>
+
