@@ -76,7 +76,7 @@ lokale netværk. For det første kan det være, at nogen bryder igennem
 ens firewall, og dermed er der kun lokalnetværkets sikkerhed tilbage. For det
 andet beskytter en firewall ikke imod internt misbrug af ens netværk. 
 I en virksomhed eller på et kollegie e. lign. kan man ikke altid stole
-på de lokale brugere. Nye opgørelser fra IBM peger på, at der ca. er 
+på de lokale brugere. Opgørelser fra IBM peger på, at der ca. er 
 ligeså mange interne netværksindbrud som eksterne.
 </para>
 
@@ -102,7 +102,7 @@ Man er aldrig helt sikker, selv med en firewall...
 
 <title>Links</title>
 <para>
-I denne artikel henvises der til en række HOWTO's og andre dokumenter rundt 
+I dette kapitel henvises der til en række HOWTO's og andre dokumenter rundt 
 om i teksten. Her er en hurtig oversigt:
 </para>
 
@@ -121,10 +121,10 @@ HOWTO's:
     Transparent Proxy with Squid mini-HOWTO <ulink url="http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html">http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html</ulink>
   </para></listitem>
   <listitem><para>
-    Linux 2.4 Packet Filtering HOWTO <ulink url="http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO.html">http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO.html</ulink>
+    Linux 2.4 Packet Filtering HOWTO <ulink url="http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO/index.html">http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO/index.html</ulink>
   </para></listitem>
   <listitem><para>
-    Linux 2.4 NAT HOWTO <ulink url="http://netfilter.kernelnotes.org/unreliable-guides/NAT-HOWTO.html">http://netfilter.kernelnotes.org/unreliable-guides/NAT-HOWTO.html</ulink>
+    Linux 2.4 NAT HOWTO <ulink url="http://netfilter.kernelnotes.org/unreliable-guides/NAT-HOWTO/index.html">http://netfilter.kernelnotes.org/unreliable-guides/NAT-HOWTO/index.html</ulink>
   </para></listitem>
   <listitem><para>
     (Linux IP Masquerade HOWTO <ulink url="http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO.html">http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO.html</ulink>
@@ -149,6 +149,9 @@ Andet:
     IPChains i Linux 2.2 <ulink url="http://www.sslug.dk/sikkerhed/ipchains.html">http://www.sslug.dk/sikkerhed/ipchains.html</ulink>
   </para></listitem>
   <listitem><para>
+    Netfilter i Linux 2.4 <ulink url="http://www.sslug.dk/sikkerhed/netfilter.html">http://www.sslug.dk/sikkerhed/netfilter.html</ulink>
+  </para></listitem>
+  <listitem><para>
     The Netfilter Project HomePage <ulink url="http://netfilter.kernelnotes.org/">http://netfilter.kernelnotes.org/</ulink>
   </para></listitem>
   <listitem><para>
@@ -171,7 +174,7 @@ sit niveau:
 </itemizedlist>
 <para>
 De to første typer, vil vi nu se nærmere på.
-Den tredie type firewall vil vi ikke beskrive her.
+Den tredie type firewall vil vi ikke beskrive nærmere her, men kun omtale kort.
 </para>
 
 
@@ -224,16 +227,17 @@ reserveret til lokale netværk.
 </para>
 
 <para>
-Det er muligt at <ulink url="services.html">åbne for en række porte</ulink>
-i firewall'en, således at det på disse porte er tilladt at oprette
-forbindelser. Dette kan bruges til at tillade bestemte protokoller,
-som vi ved benytter netop disse porte. Dette giver dog problemer med
-en service som http, da den benytter porte vi ikke kender nummeret på
-på forhånd. Det kan derfor være nødvendigt at tillade forbindelser på
-alle porte, indefra. Udefra bør man som udgangspunkt ikke tillade 
-forbindelser med mindre man kører en server - det kan dog være nødvendigt, 
-hvis ens brugere skal kunne benytte ftp. Man kan vælge at håndtere
-dette problem på connection niveau i stedet for på pakke niveau.
+Det er muligt at åbne for en række porte i firewall'en, således at det
+på disse porte er tilladt at oprette forbindelser (se også <xref
+linkend="services">). Dette kan bruges til at tillade bestemte
+protokoller, som vi ved benytter netop disse porte. Dette giver dog
+problemer med en service som http, da den benytter porte vi ikke
+kender nummeret på på forhånd. Det kan derfor være nødvendigt at
+tillade forbindelser på alle porte, indefra. Udefra bør man som
+udgangspunkt ikke tillade forbindelser med mindre man kører en server
+- det kan dog være nødvendigt, hvis ens brugere skal kunne benytte
+ftp. Man kan vælge at håndtere dette problem på connection niveau i
+stedet for på pakke niveau.
 </para>
 </sect2>
 
@@ -254,9 +258,8 @@ forbindelse til en maskine inden for firewall'en.  Det kan også være, at
 vi gerne vil tillade folk udefra en adgang til dele af vores net, f.eks.
 web-serveren. 
 </para>
-</sect2>
 
-<sect2 id="proxy">
+<sect3 id="proxy">
 <title>Proxy</title>
 <indexterm><primary>Proxy</primary></indexterm>
 
@@ -286,8 +289,8 @@ fra det udenfor, så der aldrig oprettes en forbindelse igennem
 proxy'en. Det er altid proxy'en, der opretter forbindelsen ud, og derfor
 kun proxy'en, der er kendt udenfor. Et helt andet aspekt er, at man et
 centralt sted får direkte mulighed for at begrænse, hvad der kan
-hentes, og administratoren får relativ nem adgang til at overvåge,
-hvad der hentes. Her skal man dog være opmærksom på både etiske
+hentes ned fra Internettet, og administratoren får relativ nem adgang til 
+at overvåge, hvad der hentes. Her skal man dog være opmærksom på både etiske
 regler og registerlovene - det er ikke alt, der må overvåges.
 </para>
 
@@ -349,10 +352,10 @@ med "myhost" som modtager.
 <para>
 (Se <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO-3.html">http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO-3.html</ulink>)
 </para>
+</sect3>
 </sect2>
-</sect1>
 
-<sect1 id="SMLI">
+<sect2 id="SMLI">
 <title>SMLI</title>
 
 <indexterm><primary>SMLI</primary></indexterm>
@@ -366,6 +369,7 @@ men det går kort fortalt ud på, at en pakke inspiceres på flere niveauer,
 og dermed både implementerer pakkefiltrering og kontrol med forbindelser,
 omend på en anden måde end proxy'er gør. 
 </para>
+</sect2>
 
 <sect2 id="Ftp-problemet">
 <title>Ftp-problemet</title>
@@ -406,8 +410,8 @@ Aktiv ftp
 
 <itemizedlist mark="bullet">
 <listitem><para>1) Først oprettes en forbindelse fra klienten på en tilfældig port
-(57724) til port 21, ftp kommando porten, på serveren. Klienten overfører 
-et portnummer, som den vil benytte til dataoverførslen (57726).</para></listitem>
+(her port 57724) til port 21, ftp kommando porten, på serveren. Klienten overfører 
+et portnummer, som den vil benytte til dataoverførslen (her port 57726).</para></listitem>
 <listitem><para>2) Serveren siger ok</para></listitem>
 <listitem><para>3) Serveren opretter en dataforbindelse fra sin ftp dataport - port 20 -
 til den angivne port på klienten (57726).</para></listitem>
@@ -502,23 +506,21 @@ der understøtter det.
 </para>
 
 <para> 
-I denne artikel er kerne 2.2 i fokus. Vi vil ikke beskæftige os med 
+I dette kapitel er kerne 2.2 i fokus. Vi vil ikke beskæftige os med 
 kerne 2.0, men vi vil kaste et blik på næste generation af firewallværktøjer
- til Linux kerne 2.3, som endnu er på et udviklingsstadie,
-og som kommer til at hedde 2.4, når den er færdig.</para>
+ til Linux kerne 2.4, som netop er udkommet.</para>
 
 <para>
 Desuden vil vi kigge nærmere på proxy opsætning med squid, samt på
 IP masquerading i kerne 2.2, og snuse lidt til Network Address Translation 
-i kerne 2.3 (2.4).
+i kerne 2.4.
 </para> 
-</sect1>
 
 
-<sect1 id="pakkefiltrering">
+<sect2 id="pakkefiltrering">
 <title>Pakkefiltrering</title>
 
-<sect2 id="ipchains">
+<sect3 id="ipchains">
 <title>Ipchains - kerne 2.2</title>
 
 <indexterm><primary>ipchains</primary></indexterm>
@@ -534,9 +536,8 @@ man anvendte i kerne 2.0.
 En mere grundig introduktion til ipchains kan findes i IPCHAINS-HOWTO
 <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO.html">http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO.html</ulink>.
 </para>
-</sect2>
 
-<sect2 id="har-jeg-ipchains">
+<sect4 id="har-jeg-ipchains">
  <title>Er ipchains installeret på min maskine?</title>
 
  <para>
@@ -554,32 +555,32 @@ Hvis filen eksisterer, er ipchains understøttet i den kerne, der er
 installeret. Hvis den ikke gør, skal der oversættes
 en ny kerne. Vi vil ikke her komme ind på, hvordan man
 oversætter en ny kerne. Der findes en del beskrivelser på Internet om
-dette, f.eks. <ulink url="http://www.sslug.dk/linuxbog/bog/kernelcompile.html">
-http://www.sslug.dk/linuxbog/bog/kernelcompile.html</ulink>. Man skal
+dette, f.eks. <ulink url="http://www.sslug.dk/linuxbog/admin/bog/kerne.html">
+http://www.sslug.dk/linuxbog/admin/bog/kerne.html</ulink>. Man skal
 under konfiguration af den nye kerne vælge "Network Firewalls" og "IP 
 firewalling" under "network options". Hvis maskinen også skal bruge IP
 masquerading, så vælg dette med ind i kernen med det samme - se
 afsnittet om
 <ulink url="#masquerading">Masquerading med ipchains</ulink>.
 </para>
-</sect2>
+</sect4>
 
 
-<sect2 id="rules">
-<title>Opsætning af rules</title>
+<sect4 id="rules">
+<title>Opsætning af regler</title>
 
 <indexterm><primary>rules</primary></indexterm>
 
 
 <para>
-Pakkefiltreringen styres af en række rules (regler), som 
+Pakkefiltreringen styres af en række regler (rules), som 
 systemadministratoren selv sætter op.  Disse regler styrer, hvilke
 pakker, der slippes ind og ud, baseret på afsender, modtager og
 typeinformation i pakke-headeren.
 </para>
 
 <para>
-En rule kan f.eks. være:
+En regel kan f.eks. være:
 </para>
 
 <SCREEN>
@@ -599,12 +600,12 @@ i resten af dette afsnit.
 </para>
 
 <para>
-<emphasis>Chains</emphasis>
-<indexterm><primary>chains</primary></indexterm>
+<emphasis>Kæder</emphasis>
+<indexterm><primary>Kæder</primary></indexterm>
 
 
-Rules puttes ind i kæder (chains). Pakkerne passerer igennem disse kæder, 
-og checkes imod hver rule, der er i kæden. Der er tre indbyggede kæder:
+Regler puttes ind i kæder (chains). Pakkerne passerer igennem disse kæder, 
+og checkes imod hver regel, der er i kæden. Der er tre indbyggede kæder:
 </para>
 
 <itemizedlist mark="bullet">
@@ -621,7 +622,9 @@ inden, en pakke forlader maskinen.
 
 <listitem><para><emphasis>forward</emphasis>: Forward-kæden benyttes
 på pakker, der kommer ind, som har en anden maskine som
-destination. Dvs. pakker der skal videresendes.</para></listitem>
+destination. Dvs. pakker der skal videresendes. De har dog først
+været igennem input kæden, og ryger igennem output kæden før de
+forlader maskinen.</para></listitem>
 
 </itemizedlist>
 
@@ -630,27 +633,27 @@ I eksemplet ovenfor er det input kæden, vi arbejder med.
 </para>
 
 <para>
-Chain relaterede options til ipchains:
+Kæderelaterede options til ipchains:
 </para>
 
 <itemizedlist mark="bullet">
 <listitem><para>-N Opret ny kæde</para></listitem> 
 <listitem><para>-X Slet tom kæde </para></listitem>
 <listitem><para>-F Flush (tøm) kæde</para></listitem>
-<listitem><para>-L Vis de rules, der er i en kæde</para></listitem>
-<listitem><para>-Z Nulstil (zero) pakke- og byte-tællere på alle rules i en kæde</para></listitem>
+<listitem><para>-L Vis de regler, der er i en kæde</para></listitem>
+<listitem><para>-Z Nulstil (zero) pakke- og byte-tællere på alle regler i en kæde</para></listitem>
 </itemizedlist>
 
 <para>
-Pakke- og byte-tælleren på en rule tæller hvor mange pakker hhv
-bytes, der har været forbi, som har "opfyldt" den rule.
+Pakke- og byte-tælleren på en regel tæller hvor mange pakker hhv
+bytes, der har været forbi, som har "opfyldt" den regel.
 </para>
 
 <para>
-<emphasis>Private chains</emphasis>:
-<indexterm><primary>Private chains</primary></indexterm>
+<emphasis>Private kæder</emphasis>:
+<indexterm><primary>Private kæder</primary></indexterm>
 Ud over de tre indbyggede kæder kan man lave sine egne. Det kan være smart, 
-da det bl.a gør ens firewallregler mere overskuelige.</para>
+da det bl.a gør ens firewall-regler mere overskuelige.</para>
 
 <para>
 Hvis man f.eks. har et system, hvor ppp0 (modemet) er det interface, der er
@@ -673,7 +676,8 @@ ind på ppp0.
                ^ |__________|                                    |
               _|_____                                            |
              /if ppp0\                                           |
-             \__else_/ _    _____________________________________|
+            |  else   |                                          |
+             \_______/ _    _____________________________________|
                ^        |  |
    ______      |        v  v
 __|input |__> rule 1    rule 2 __> rule 3
@@ -713,7 +717,7 @@ kæden slettes.
 <indexterm><primary>targets</primary></indexterm>
 
 <emphasis>Targets</emphasis>: 
-En rule har et target (mål), som fortæller hvad der
+En regel har et target (mål), som fortæller hvad der
 skal ske med pakken. Logikken i navnet "target" kan diskuteres, men
 sådan hedder det. Pakkens skæbne kan være
 </para>
@@ -769,7 +773,7 @@ MASQ bruges dog stadig kun i forward kæden.
 </para>
 
 <para>
-Default policy for en kæde sættes med en "-P" options til ipchains:
+Default policy for en kæde sættes med en "-P" option til ipchains:
 </para>
 
 <SCREEN>
@@ -777,27 +781,27 @@ Default policy for en kæde sættes med en "-P" options til ipchains:
 </SCREEN>
 
 <para>
-En rule behøver ikke at have et target. En pakke, som matcher en rule, der
-ikke har noget target, går bare videre til næste rule. En rule uden target
+En regel behøver ikke at have et target. En pakke, som matcher en regel, der
+ikke har noget target, går bare videre til næste regel. En regel uden target
 kan f.eks. bruges til at tælle antallet af pakker, der opfylder bestemte
 kriterier.
 </para>
 
 <para>
-<emphasis>Rules</emphasis>
+<emphasis>Regler</emphasis>
 Rule relaterede options til ipchains:
 </para>
 <itemizedlist mark="bullet">
-<listitem><para>-A Tilføj (append) rule</para></listitem> 
-<listitem><para>-D Slet (delete) rule</para></listitem>
-<listitem><para>-R Erstat (replace) rule</para></listitem>
-<listitem><para>-I Indsæt (insert) rule</para></listitem>
+<listitem><para>-A Tilføj (append) regel</para></listitem> 
+<listitem><para>-D Slet (delete) regel</para></listitem>
+<listitem><para>-R Erstat (replace) regel</para></listitem>
+<listitem><para>-I Indsæt (insert) regel</para></listitem>
 </itemizedlist>
 
 
 
 <para>
-Lad os beholde vores rule-eksempel fra ovenfor.
+Lad os beholde vores eksempel fra ovenfor.
 </para>
 
 <SCREEN>
@@ -805,7 +809,7 @@ Lad os beholde vores rule-eksempel fra ovenfor.
 </SCREEN>
 
 <para>
-"-A" betyder at vi tilføjer en rule (append). 
+"-A" betyder at vi tilføjer en regel (append). 
 </para>
 
 <para>
@@ -827,7 +831,7 @@ eller ikke matcher.
 </itemizedlist>
 
 <para>Desuden kan der ved TCP eller UPD specificeres en port eller et
-port interval efter source eller destination IP adresse. Ved ICMP kan
+portinterval efter source eller destination IP adresse. Ved ICMP kan
 der specificeres en ICMP type og kode efter source eller destination
 adressen. 
 </para>
@@ -844,7 +848,7 @@ kommandoen
 </SCREEN>
 
 <para>
-Lad os prøve at lave nogle rules i praksis. Vi ser igen på vores eksempel 
+Lad os prøve at lave nogle regler i praksis. Vi ser igen på vores eksempel 
 fra tidligere:
 </para>
 
@@ -864,7 +868,7 @@ PING localhost (127.0.0.1): 56 data bytes
 
 <para>
 Før eller siden vil man få timeout på sin ping kommando. For at fjerne
-den nye rule igen skrives
+den nye regel igen skrives
 </para>
 
 <SCREEN>
@@ -886,8 +890,8 @@ round-trip min/avg/max = 0.1/0.1/0.1 ms
 </SCREEN>
 
 <para>
-En rule kan også fjernes ved blot at angive dens nummer i stedet for hele i
-dens indhold. Da vores rule fra før havde nummer 1, kunne den være fjernet med
+En regel kan også fjernes ved blot at angive dens nummer i stedet for hele i
+dens indhold. Da vores regel fra før havde nummer 1, kunne den være fjernet med
 </para>
 
 <SCREEN>
@@ -895,7 +899,7 @@ dens indhold. Da vores rule fra før havde nummer 1, kunne den være fjernet med
 </SCREEN> 
 
 <para>
-Rules får nummer i den rækkefølge, man laver dem: Næste rule vi laver, får
+Regler får nummer i den rækkefølge, man laver dem: Næste regel vi laver, får
 nummer 2. 
 </para>
 
@@ -905,13 +909,13 @@ nummer 2.
 </SCREEN>
 
 <para>
-Den første kommando danner rule nummer et, den næste rule nummer 2. Slettes 
+Den første kommando danner regel nummer et, den næste regel nummer 2. Slettes 
 nummer et, rykker nummer 2 frem og bliver nummer 1.
 </para>
 
 <para>
-Man kan dog indsætte rules inde i en kæde med -I optionen.
-Dette gøres ved at angive det ønskede rule nummer:
+Man kan dog indsætte regler inde i en kæde med -I optionen.
+Dette gøres ved at angive det ønskede regelnummer:
 </para>
 
 <SCREEN>
@@ -920,15 +924,15 @@ Dette gøres ved at angive det ønskede rule nummer:
 </SCREEN>
 
 <para>
-Her vil den sidste rule blive nummer 1, pga -I optionen og ettallet, i
+Her vil den sidste regel blive nummer 1, pga -I optionen og ettallet, i
 der er angivet efter kædenavnet (input).
 </para>
-</sect2>
+</sect4>
 
-<sect2 id="eksempel-hjemmebruger">
+<sect4 id="eksempel-hjemmebruger">
 <title>Eksempel:  hjemmebruger</title>
 <para>
-Nu har vi lært lidt om at oprette og slette rules. Lad os kigge på hvilken
+Nu har vi lært lidt om at oprette og slette regler. Lad os kigge på hvilken
 opsætning af kæder og regler, man kunne ønske sig i virkeligheden.
 </para>
 
@@ -947,7 +951,7 @@ række klienter, der kræver forbindelser (connections): ftp, DNS og Real Audio.
 <para>
 Figuren viser et netværk der består af to computere, en på det lokale
 LAN og en, der skal fungere som firewall. Der kunne selvfølgelig godt være
-mange flere maskiner indenfor firewallen. Men selvom man kun har én
+mange flere maskiner indenfor firewallen. Men selv hvis man kun har én
 computer, kan det godt give mening at installere ipchains på den
 alligevel, for at sortere i, hvilke pakker der skal slippe igennem
 til maskinens egne lokale services.
@@ -956,7 +960,7 @@ til maskinens egne lokale services.
 <SCREEN>
    ________            ___________            __________
   |        |eth0      |           |ppp0      |          |
-  | myhost |----------| firewall |----------| Internet |
+  | myhost |----------| firewall  |----------| Internet |
   |________|      eth0|___________|          |__________|
 </SCREEN>
 
@@ -964,8 +968,8 @@ til maskinens egne lokale services.
 
 Først skal vi sætte vores default policy op. I input og output kæden kan 
 man vælge ACCEPT, DENY eller REJECT. Vælger man ACCEPT, skal man sætte
-rules op for at spærre for alt det, der ikke må komme igennem. Vælger man
-DENY eller REJECT, skal man sætte rules op for alt det, der gerne må komme
+regler op for at spærre for alt det, der ikke må komme igennem. Vælger man
+DENY eller REJECT, skal man sætte regler op for alt det, der gerne må komme
 igennem. Det er nemt at regne ud, at det sidste er det mest sikre. Især på
 input kæden kan det frarådes at køre ACCEPT som default policy, med mindre
 man er helt sikker på, at man ved, hvad man gør, eller sikkerheden ikke er så
@@ -992,10 +996,10 @@ ipchains -P input DENY
 ipchains -P output ACCEPT
 ipchains -P forward DENY
 </SCREEN>
-</sect2>
+</sect4>
 
-<sect2 id="eksempel-for-vores-hjemmebruger">
-<title>Rules for vores hjemmebruger</title>
+<sect4 id="eksempel-for-vores-hjemmebruger">
+<title>Regler for vores hjemmebruger</title>
 <para>
 Tillad alt på loopback interfacet
 </para>
@@ -1045,7 +1049,7 @@ ipchains -A input -p tcp -j ACCEPT -s 0/0 -d 0/0 auth -y
 
 <para>
 Tillad ftp dataforbindelser (når vores hjemmebruger vil lave ftp
-nedhentninger og ftp dir kommandoer på ftp-servere ude i verden)
+downloads og ftp dir kommandoer på ftp-servere ude i verden)
 </para>
 
 <SCREEN>
@@ -1126,7 +1130,7 @@ vores bruger. <emphasis>L=53</emphasis> betyder, at pakken var 53
 bytes lang. <emphasis>S</emphasis> betyder type of
 service. <emphasis>I</emphasis> betyder IP ID, <emphasis>F</emphasis>
 betyder fragment offset, og <emphasis>T</emphasis> betyder Time to
-live. <emphasis>#14</emphasis> betyder, at det var vores rule nummer
+live. <emphasis>#14</emphasis> betyder, at det var vores regel nummer
 14, der loggede pakken. Se
 <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO.html">
 ipchains HOWTO'en</ulink> for yderligere detaljer.
@@ -1146,22 +1150,22 @@ echo "56000 60999" >/proc/sys/net/ipv4/ip_local_port_range
 Se i øvrigt et glimerende eksempel på ipchains opsætning på
 <ulink url="http://www.sslug.dk/sikkerhed/ipchains.html">http://www.sslug.dk/sikkerhed/ipchains.html</ulink>
 </para>
-</sect2>
+</sect4>
 
-<sect2 id="aktivere-rules">
-<title>At aktivere sine rules ved opstart</title>
+<sect4 id="aktivere-rules">
+<title>At aktivere sine regler ved opstart</title>
 
 <para>
-Ipchains styres af en række rules. Selve pakkefiltreringen
+Ipchains styres af en række regler. Selve pakkefiltreringen
 sker i kernen, så det eneste, man skal gøre, er, at fortælle kernen om sine
-ipchain rules.
+ipchain regler.
 </para>
 
 <para>
-Da rules gemmes i kernen, går de imidlertid tabt ved reboot. Derfor er
+Da regler gemmes i kernen, går de imidlertid tabt ved reboot. Derfor er
 det en god ide at gemme dem i en fil. Man kan så lave et startup
-script, som læser filen og sætter kernen op til at bruge de rules ved
-genstart af maskinen. Ipchains rules gemmes i en fil med følgende
+script, som læser filen og sætter kernen op til at bruge de regler ved
+genstart af maskinen. Ipchains regler gemmes i en fil med følgende
 kommando:
 </para>
 
@@ -1228,26 +1232,20 @@ drift. Man lukker simpelthen ned for firewallen.
 <para>
 Se i øvrigt en udemærket HOWTO på <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO.html">http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO.html</ulink>.
 </para>
-</sect2>
+</sect4>
+</sect3>
 
-<sect2 id="netfilter">
-<title>Iptables (Netfilter) - kerne 2.3 (2.4)</title>
+<sect3 id="netfilter">
+<title>Iptables (Netfilter) - kerne 2.4</title>
 <indexterm><primary>Iptables</primary></indexterm>
 <indexterm><primary>Netfilter</primary></indexterm>
 
 <para>
-Kerne 2.3-serien er en ustabil udviklingsgren af Linux-kernen, som
-forhåbentlig snart bliver til kerne 2.4, den næste stabile
-kerne-serie.  Vi vil ikke gå så meget i dybden med kerne 2.3 her, da
-vi antager, at denne artikels primære målgruppe ikke bruger en
-udviklingskerne, og da tingene kan nå at være lavet om igen, inden den
-endelige 2.4 kerne frigives. Afsnittene om kerne 2.3 skal derfor blot
-forstås som en forsmag på, hvad der venter i næste version. Vi vil
-ikke komme med eksempler på opsætning af iptables.
+Kerne 2.4 er den nyeste stabile gren af Linuxkernen, som udkom i januar 2001.
 </para>
 
 <para>
-I kerne 2.3 (2.4) er firewallsystemet igen lavet om.  Kommandoen,
+I kerne 2.4 er firewallsystemet igen lavet om.  Kommandoen,
 der før hed ipchains, hedder nu iptables.  Systemet består af to dele:
 Pakkefiltrering og NAT (<emphasis>N</emphasis>etwork
 <emphasis>A</emphasis>ddress <emphasis>T</emphasis>ranslation).  NAT,
@@ -1262,37 +1260,42 @@ Der er nogle grundlæggende ændringer i designet, men kommandoerne og
 navnene ligner næsten sig selv fra ipchains. Man skal dog ikke lade sig
 narre - iptables kan meget mere.
 </para>
-</sect2>
 
-<sect2 id="hvad-skal-jeg-bruge">
+<sect4 id="hvad-skal-jeg-bruge">
 <title>Hvad skal jeg bruge?</title>
 <para>
-For at komme igang med netfilter skal man bruge en 2.3 kerne oversat med
+For at komme igang med netfilter skal man bruge en 2.4 kerne oversat med
 netfilter aktiveret samt user space-værktøjet iptables. Iptables kan hentes 
 fra Netfilter hjemmesiden: <ulink url="http://netfilter.kernelnotes.org/">http://netfilter.kernelnotes.org/</ulink> .
+Iptables er desuden med i nyere Linux distributioner, f.eks. Red Hat 7.0.
 </para>
 
 <para>
 Kommer man fra ipchains er det ikke svært at følge med i kommandoerne til 
 iptables - der er dog ændringer.
 </para>
-</sect2>
+</sect4>
 
-<sect2 id="chains">
-<title>Chains</title>
+<sect4 id="chains">
+<title>Kæder</title>
 <para>
 Ligesom i ipchains er der i iptables 3 indbyggede kæder: INPUT, OUTPUT
-og FORWARD. Chain relaterede options til iptables er uændret fra ipchains
+og FORWARD. Kæderelaterede options til iptables er uændret fra ipchains.
+Der er dog den gennemgribende arkitekturforskel at pakker til FORWARD
+kæden ikke længere kommer igennem INPUT kæden først og OUTPUT kæden 
+bagefter, men alene igennem INPUT kæden. Og så er mange ting case sensitive
+i iptables - bl.a skal navnene på de indbyggede kæder skrives med stort.
 </para>
+</sect4>
 
-<sect3 id="targets">
+<sect4 id="targets">
 <title>Targets</title>
 
 <para>Der er lavet lidt om i targets: </para>
 <itemizedlist mark="bullet">
 <listitem><para>DROP betyder, at pakken smides væk</para></listitem>
 <listitem><para>ACCEPT betyder, at pakken accepteres</para></listitem>
-<listitem><para>RETURN betyder, "gå til anden af kæden"</para></listitem>
+<listitem><para>RETURN betyder, "gå til enden af kæden"</para></listitem>
 <listitem><para>QUEUE betyder, at pakken skal sættes i kø til user mode processering</para></listitem>
 </itemizedlist>
 
@@ -1317,16 +1320,17 @@ funktionalitet er kommet over i NAT delen af iptables
 (se <ulink url="#nat">afsnittet om
 Network Address Translation med iptables</ulink>).
 </para>
-</sect3>
+</sect4>
 
-<sect3 id="default-policy">
+<sect4 id="default-policy">
 <title>Default policy</title>
 <para>
 Default policy er som i ipchains
 </para>
+</sect4>
 
 <sect4 id="chains-rules">
-<title>Rules</title>
+<title>Regler</title>
 <para>
 Rule relaterede options til iptables er som i ipchains
 </para>
@@ -1401,8 +1405,7 @@ Desuden er der skrevet en række extensions, som følger med iptables:
 </para>
 
 <itemizedlist mark="bullet">
-<listitem><para>mac</para></listitem>
-<listitem>
+<listitem><para>mac</para>
   <itemizedlist mark="bullet">
   <listitem><para>--mac-source</para></listitem>
   </itemizedlist>
@@ -1422,8 +1425,7 @@ Desuden er der skrevet en række extensions, som følger med iptables:
   </itemizedlist>
 </listitem>
 <listitem><para>unclean</para></listitem>
-<listitem><para>state</para></listitem>
-<listitem>
+<listitem><para>state</para>
   <itemizedlist mark="bullet">
   <listitem><para>NEW</para></listitem>
   <listitem><para>ESTABLISHED</para></listitem>
@@ -1438,10 +1440,8 @@ Desuden er der skrevet en række extensions, som følger med iptables:
 <para>Det er også muligt at skrive extensions selv.</para>
 
 </sect4>
-</sect3>
-</sect2>
 
-<sect2 id="state">
+<sect4 id="state">
 <title>State</title>
 <para>
 State er værd at kigge lidt nærmere på, da det bruges til at checke 
@@ -1450,31 +1450,30 @@ del af en eksisterende forbindelse (ESTABLISHED), om den vil etablere en ny
 forbindelse (NEW), om den er relateret til en eksisterende forbindelse, 
 f.eks. en ICMP fejl (RELATED), eller om den ikke kan genkendes (INVALID).
 </para>
+</sect4>
 
-<para>
-BEMÆRK: iptable er på udviklingsstadiet endnu, og man kan altså ikke
-regne med, at det er stabilt.
-</para>
-
+<sect4 id="mere-ipchains">
+<title>Læs selv videre</title>
 <para>
 For mere information om iptables og netfilter anbefaler vi at læse 
 Linux 2.4 Packet Filtering HOWTO:
-<ulink url="http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO.html">http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO.html</ulink>
+<ulink url="http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO/index.html">http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO/index.html</ulink>
 </para>
+</sect4
+</sect3>
 </sect2>
-</sect1>
 
-<sect1 id="proxy-server">
+<sect2 id="proxy-server">
 <title>Linux som proxy server</title>
 
 <itemizedlist mark="bullet">
 <listitem><para>Squid</para></listitem>
 <listitem><para>Masquerading med ipchains</para></listitem>
 <listitem><para>Network Address Translation med iptables (Netfilter)
-i kerne 2.3 (2.4)</para></listitem>
+i kerne 2.4</para></listitem>
 </itemizedlist>
 
-<sect2 id="proxy-squid">
+<sect3 id="proxy-squid">
 <title>Proxy med Squid</title>
 
 <para>
@@ -1498,9 +1497,9 @@ håndterer Squid dog transparent. Ud over hjemmesider (HTTP) er FTP,
 GOPHER, SSL og WAIS protokollen understøttet. Squid kan dog ikke klare
 POP-mail, NNTP (News grupper) og RealAudio.
 </para>
-</sect2>
+</sect3>
 
-<sect2 id="installation-squid">
+<sect3 id="installation-squid">
 <title>Installation af Squid-serveren</title>
 
 
@@ -1525,7 +1524,7 @@ så starte Squid.  Den originale
 nærmere på en simpel opsætning af squid.
 </para>
 
-<sect3 id="basal-squid-conf">
+<sect4 id="basal-squid-conf">
 <title>Basal opsætning af squid.conf</title>
 
 <indexterm><primary>squid.conf</primary></indexterm>
@@ -1642,9 +1641,9 @@ Anvender man 16 og 256 som de sidste to parametre til <FILENAME>cache_dir</FILEN
 man ikke blive bange, når man initialiserer databasen. Der køres hårdt på
 harddisken, og det tager måske flere minutter - databasen bliver stor!
 </para>
-</sect3>
+</sect4>
 
-<sect3 id="squid-bruger">
+<sect4 id="squid-bruger">
 <title>Brugerens opsætning</title>
 
 <indexterm><primary>Proxy klient</primary></indexterm>
@@ -1688,11 +1687,10 @@ proxy-programmet godt kan hente data fra Internet, men at brugere
 ikke kan - hvis man virkelig ønsker, at folk skal bruge
 proxy-serveren.
 </para>
+</sect4>
 </sect3>
-</sect2>
-</sect1>
 
-<sect1 id="transparent-proxy">
+<sect3 id="transparent-proxy">
 <title>Transparent proxy med squid</title>
 
 <indexterm><primary>transparent proxy</primary></indexterm>
@@ -1703,18 +1701,21 @@ Kernen skal være oversat med "Transparent proxying". Vi vil ikke
 beskrive det her, men der findes en mini-HOWTO på
 <ulink url="http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html ">http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html </ulink>.
 </para>
+</sect3>
 
-<sect2 id="Masquerading-med-ipchains">
+<sect3 id="Masquerading-med-ipchains">
 <title>Masquerading med ipchains (kerne 2.2)</title>
 
 <indexterm><primary>Masquerading</primary></indexterm>
 
 <para>
-Masquerading er ikke proxying men en speciel form for NAT (<emphasis>N</emphasis>etwork
-<emphasis>A</emphasis>ddress <emphasis>T</emphasis>ranslation). Det giver delvis samme funktionalitet som proxying,
-- at man kan få sit lokalnetværk på internettet med kun een gyldig IP-adresse -
-men det giver ikke den samme sikkerhed som proxying.
-Linux-kernen understøtter masquerading som en del af ipchains.
+Masquerading er ikke proxying men en speciel form for NAT
+(<emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress
+<emphasis>T</emphasis>ranslation). Det giver delvis samme
+funktionalitet som proxying, - at man kan få sit lokalnetværk på
+internettet med kun een gyldig IP-adresse - men det giver ikke den
+samme sikkerhed som proxying.  Linux-kernen understøtter masquerading
+som en del af ipchains.
 </para>
 
 <para><emphasis>Bemærk at masquerading ikke er særlig sikkert. Der er
@@ -1725,7 +1726,8 @@ bagved masqueraring.</emphasis> </para>
 
 <para>
 Med IP masquerading opnås, at mange forskellige maskiner kan komme på internet
-med kun én IP-adresse. Man sætter en masquerading server op, og alle 
+med kun én IP-adresse - såkaldt "Source NAT" (SNAT). Man sætter en masquerading 
+server op, og alle 
 maskinerne bagved skal bruge den som default gateway. Masquerading serveren 
 omskriver så alle pakkerne, der kommer forbi, til at have dens egen IP adresse
 som afsender. Den "husker" så hvilke pakker, der har været sendt ud, og bruger 
@@ -1777,7 +1779,7 @@ Det kan også give mening at sætte timeouts for masquerading forbindelserne:
 <para>
 Det første tal er timeout for en tcp forbindelse, det næste er hvor længe en 
 tcp forbindelse skal kunne eksistere efter modtagelsen af en FIN pakke, og det
-sidste er timeout for UDP. Timeout tiderne er i sekunder. Default er 15 
+sidste er timeout for UDP. Timeout tiderne er i sekunder. Default timeout er 15 
 minutter, og det kan være lidt kort for en tcp session.
 </para>
 
@@ -1786,32 +1788,37 @@ Nu sættes de andre maskiner i lokalnetværket til at bruge myhost som
 default gateway, og voila! Man kan komme på Internettet fra de andre
 maskiner. 
 </para>
-</sect2>
-</sect1>
 
-<sect1 id="ipchains-moduler">
+<sect4 id="ipchains-moduler">
 <title>Moduler til ipchains</title>
+
 <para>
 Og dog. Http mm virker nu, men der er et par protokoller, der kræver særlige 
 hensyn. Det er bla. ftp, realaudio, irc og forskellige spil.
 </para>
-<para>For at kunne bruge ftp, real audio, irc, spille quake mm via masquerading,
-er vi nødt til gøre det lidt mere indviklet. Der findes moduler til ipchains, 
-der kan håndtere en del forskellige applikationer: ip_masq_ftp, ip_masq_raudio,
-ip_masq_irc, ip_masq_quake etc. For at kunne bruge disse moduler, skal de
-være oversat med, da man lavede kernen. Det er inde under networking options,
-hvor man skal slå "IP masquerading special module support"
-og "ipportfw masq support" til. I kerne 2.2.12 er det nødvendigt at
-slå "prompt for development and/or incomplete code/drivers" til for at
-få lov til at vælge ipportfw.
+
+<para>
+For at kunne bruge ftp, real audio, irc, spille quake mm via
+masquerading, er vi nødt til gøre det lidt mere indviklet. Der findes
+moduler til ipchains, der kan håndtere en del forskellige
+applikationer: ip_masq_ftp, ip_masq_raudio, ip_masq_irc, ip_masq_quake
+etc. For at kunne bruge disse moduler, skal de være oversat med, da
+man lavede kernen. Det er inde under networking options, hvor man skal
+slå "IP masquerading special module support" og "ipportfw masq
+support" til. I kerne 2.2.12 er det nødvendigt at slå "prompt for
+development and/or incomplete code/drivers" til for at få lov til at
+vælge ipportfw.
 </para>
+
 <para>
 Modulerne loades nu med
 </para>
+
 <SCREEN>
 [root@myhost /root] /sbin/modprobe ip_masq_ftp
 [root@myhost /root] /sbin/modprobe ip_masq_raudio
 </SCREEN>
+
 <para>
 Nu virker ftp og realaudio fra de andre maskiner. Gør det samme med
 de andre moduler, der skal bruges. Der findes også et værktøj, der hedder 
@@ -1819,9 +1826,9 @@ IPMASQADM, man kan bruge.
 Der findes en slags beskrivelse af emnet i IP-Masquerade-HOWTO'en på
 <ulink url="http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO-6.html#ss6.8">http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO-6.html#ss6.8</ulink>
 </para>
-</sect1>
+</sect4>
 
-<sect1 id="opsaetning-andre-maskiner">
+<sect4 id="opsaetning-andre-maskiner">
 <title>Opsætning af de andre maskiner i nettet</title>
 <para>
 Default gateway sættes med kommandoen <COMMAND>route</COMMAND>:
@@ -1847,40 +1854,40 @@ IP-Masquerade-HOWTO'en
 <ulink url="http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO">http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO</ulink> .
 HOWTO'en indeholder også referencer til en række gode ressourcer.
 </para>
-</sect1>
+</sect4>
+</sect3>
 
-<sect1 id="NAT">
-<title>Network Address Translation med iptables (Netfilter) i kerne 2.3 (2.4)</title>
+<sect3 id="NAT">
+<title>Network Address Translation med iptables (Netfilter) i kerne 2.4</title>
 
 <indexterm><primary>NAT</primary></indexterm>
 <para>
-I kerne 2.3 (2.4) er ipchains erstattet af iptables, som er en del af
-netfilter. Ipchains understøttede en bestemt form for NAT kaldet
+I kerne 2.4 er ipchains erstattet af iptables, som er en del af
+netfilter. Ipchains understøtter en bestemt form for NAT kaldet
 ip-masquerading. Iptables kan meget mere indenfor NAT. Ud over NAT
 bruges iptables også til pakkefiltrering, som er beskrevet tidligere i
-artiklen.  For at kunne mappe alle svarene på NAT pakkerne rigtigt,
+kapitlet.  For at kunne mappe alle svarene på NAT pakkerne rigtigt,
 benytter iptable sig af connection tracking - den holder styr på de
 oprettede forbindelser.  Dette kan man checke på i sit pakkefilter -
 en meget spændende ny feature.  Se afsnittet om
-"state" under Iptables (Netfilter) - kerne 2.3 (2.4).
+"state" under Iptables (Netfilter) - kerne 2.4.
 <!-- UPS -->
 </para>
-</sect1>
 
-<sect1 id="source-NAT">
+<sect4 id="source-NAT">
 <title>Source NAT</title>
 <indexterm><primary>Source NAT</primary></indexterm>
 
 <para>
 NAT går ud på at man kan "mappe" IP adresser. F.eks. kan man mappe en 
-række lokale IP-adresser til til en begrænset pulje af rigtige 
+række lokale IP-adresser til en begrænset pulje af rigtige 
 Internet-IP-adresser. IP masquerading er et særtilfælde af dette, hvor 
 man mapper alle sine lokale IP-adresser til kun een gyldig internet-IP-adresse.
 I ovenstående tilfælde er det source adressen, man manipulerer - Source NAT.
 </para>
-</sect1>
+</sect4>
 
-<sect1 id="Desination-NAT">
+<sect4 id="Desination-NAT">
 <title>Destination NAT</title>
 <para>
 Man kan også mappe destinationsadressen - Destination NAT - så folks 
@@ -1895,9 +1902,9 @@ en web-server på port 80, og NAT-serveren kan mappe pakkerne til sin
 egen port 3128, hvor der kører en squid. Dette kaldes redirect,
 men er også en form for destination NAT. Resultatet er transparent proxying.
 </para>
-</sect1>
+</sect4>
 
-<sect1 id="hvordan-NAT">
+<sect4 id="hvordan-NAT">
 <title>Hvordan</title>
 <para>
 For at bruge NAT skal modulet <FILENAME>iptables_nat</FILENAME> være loadet.
@@ -1905,8 +1912,8 @@ NAT med iptables laves med "-t nat" option til iptables.
 <emphasis>-t</emphasis> fortæller iptables, at det er NAT-tabellen den skal bruge.
 Til pakkefiltrering bruges filter-tabellen.</para>
 
-<para><emphasis>Chains:</emphasis> 
-NAT har tre chains, hvor man kan sætte rules op for pakkerne:</para>
+<para><emphasis>Kæder:</emphasis> 
+NAT har tre kæder, hvor man kan sætte regler op for pakkerne:</para>
 <itemizedlist mark="bullet">
   <listitem><para>PREROUTING - Destination NAT</para></listitem>
   <listitem><para>POSTROUTING - Source NAT</para></listitem>
@@ -1928,8 +1935,9 @@ Man kan angive <filename>-p protokol</filename>, og for tcp og udp kan
 man også angive portnummer eller port range. <filename>--to</filename>
 angiver den/de ip-adresse(r) der skal NAT'es til.
 </para>
+</sect4>
 
-<sect2 id="eksempel-masq">
+<sect4 id="eksempel-masq">
 <title>Eksempler</title>
 <para>Opsætning af IP masquerading med iptables:</para>
 
@@ -1967,16 +1975,12 @@ er blot ment som illustration af, hvad man kan med iptables NAT.
 
 <para>
 For nærmere beskrivelse, se Linux 2.4 NAT HOWTO på <ulink
-url="http://netfilter.kernelnotes.org/unreliable-guides/NAT-HOWTO.html">http://netfilter.kernelnotes.org/unreliable-guides/NAT-HOWTO.html</ulink>
+url="http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO/index.html">http://netfilter.kernelnotes.org/unreliable-guides/packet-filtering-HOWTO/index.html</ulink>
 Se desuden man-siden for iptables.
 </para>
 
-<para>
-Hvis man går i gang med at lege med iptables, enten til NAT eller 
-pakkefiltrering, mens det stadig er under udvikling, skal man være 
-opmærksom på, at det ikke er færdigt, og at der ikke er nogen garanti 
-for hvor sikkert, det er endnu. 
-</para>
+</sect4>
+</sect3>
 </sect2>
 </sect1>
 
