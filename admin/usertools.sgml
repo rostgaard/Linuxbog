@@ -1393,7 +1393,75 @@ beep_enable:
 
 <para>
 Man kan således se at CPU-blæseren kører 4066 omdrejninger per
-minut og der er tre CPU-temperaturer.
+minut og der er tre CPU-temperaturer. 
+Desuden er der 3 falske alarmer. Derfor skal der foretages justeringer
+i filen <filename>/etc/sensors.conf</filename> i sektionen om den chip
+som blev fundet tidligere. Chippen w83781d deler data med flere andre 
+chips. 
+</para>
+
+<programlisting>
+chip "lm78-*" "lm78-j-*" "lm79-*" "w83781d-*"
+
+    label in0 "VCore 1"
+    label in1 "VCore 2"
+    label in2 "+3.3V"
+    label in3 "+5V"
+    label in4 "+12V"
+    label in5 "-12V"
+    label in6 "-5V"
+
+    set in0_min 2.8*0.95
+    set in0_max 2.8*1.05
+    set in1_min 2.8*0.95
+    set in1_max 2.8*1.05
+    set in2_min 3.3 * 0.95
+    set in2_max 3.3 * 1.10
+    set in3_min 5.0 * 0.95
+    set in3_max 5.0 * 1.05
+    set in4_min 12 * 0.95
+    set in4_max 12 * 1.05
+    set in5_min -12 * 0.93
+    set in5_max -12 * 1.07
+    set in6_min -5 * 0.95
+    set in6_max -5 * 1.05
+
+    ignore in1
+    set fan2_min 0
+    set fan3_min 0
+</programlisting>
+
+<para>
+Hver af chippens interne målepunkter (f.eks. in0) tildeles et 
+navn som f.eks."VCore 1". Hvert målepunkt skal holde sig indenfor et 
+vist område, der som regel sættes til at være nominalværdien 
+plus/minus 5%. Tolerancerne kan selvfølgelig tilpasses maskinen. 
+Især målepunkterne in0 og in1 bør konfigureres og tilpasses processoren. 
+Man kan genstarte maskinen og kigge i dens BIOS og kigge især efter om
+der måles "VCore". Hvis der kun måles een værdi, kan sensors 
+indstilles som ovenfor, til at ignorere målepunktet in1. 
+</para>
+
+<para>
+Ændringer i filen <filename>/etc/sensors.conf</filename> må indlæses i
+selve chippens nvram ved at køre følgende som root
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>sensors -s</userinput>
+</screen>
+
+<para>
+Resultatet kan straks undersøges med kommandoen 
+<command>sensors w83781d-i2c-0-2d</command> eller bare med kommandoen 
+<command>sensors</command> hvis man ønsker resultater fra alle konfigurerede 
+chips.
+</para>
+
+<para>
+Der er en masse forklarende kommentar i filen <filename>/etc/sensors.conf</filename>, 
+så når man har bestemt hvilke chips (der kan nemlig være flere) 
+der er i ens maskine, kan man fordybe sig i hvordan den skal konfigureres. 
 </para>
 
 </sect1>
