@@ -14,32 +14,62 @@ og der er flere andre.
 <indexterm><primary>Zope</primary></indexterm>
 <para>
 Zope er et Open Source <emphasis>Content Management System</emphasis>.
-Det bruges til - på en let og overskuelig måde - at opbygge et
-website. Zope har sit eget komplekse adgangshieraki, som gør det
-overskueligt at lave diverse services på sit site som kun en udvalgt
-skare har adgang til.  Zope er bygget op over forskellige
-<emphasis>Products</emphasis> som man kan importere ind i sin
-Zope. Disse produkter varierer lige fra forskellige databaseforbindelser
-til chats, gæstebøger og kalendere. Alt sammen noget du
-kan bruge på dit site.  Zope er skrevet i Python. Internt bruges
+Det bruges til - på en let og overskuelig måde - at opbygge en
+hierakisk organiseret hjemmeside.
+</para>
+<para>
+Zope er bygget op over forskellige
+<emphasis>Products</emphasis>, som man kan importere i sin Zope, for
+derefter at lægge dem ind forskellige steder i hjemmesidens hieraki.
+Disse produkter varierer lige fra forskellige databaseforbindelser
+til nyhedslister, chats, gæstebøger og kalendere. Alt sammen nyttige ting
+til hjemmesiden.
+</para>
+<para>
+I praksis kan man importere en pakke (et product) ved at placere dens filer under 
+<filename>~/zope/lib/python/Products</filename> og genstarte Zope. Herefter
+optræder dens elementer i listen med objekter, der kan anvendes i foldersystemet.
+</para>
+<para>
+Zope giver mulighed for at kontrollere adgangen til de enkelte dele
+af hjemmesiden. Har man fået adgang i et niveau, gælder denne for alle 
+niveauer herunder, indtil der evt. sættes et nyt adgangs object ind.
+Fremgangsmåden er enkel, man placerer blot et acl_users object i den
+folder, man vil lukke med en adgangskode, og opretter de brugere,
+der skal have adgang. Forskellige andre objecter i samme folder eller
+underfoldere, kan derefter forholde sig til de rettigheder, der er sat op.
+</para>
+<para>
+Man kan i sin adgang fx. give alle (anonyme brugere) adgang til at læse, og
+en eller nogle få adgang til at redigere.
+</para>
+<para>
+Zope er skrevet i Python. Internt bruges
 markup-sproget DTML som man kan bruge til at manipulere dynamiske data
-med på forskellige måder. Man kan dog også lave sine egne python
-scripts hvis man hellere vil dette. De implementeres lige så let som
-DTML dokumenter.  Zope har en indbygget webserver (ZServer) som man
-kan "nøjes" med at bruge hvis man ikke bruger f.eks. Apache til
-noget. Skal den køre parallelt med Apache skal der tilføjes lidt til
-httpd.conf men det kan sagtens lade sig gøre.  Hvis du vil vide mere
-om Zope, henvises til <ulink
-url="http://www.zope.org">http://www.zope.org</ulink>.
+med på forskellige måder. Man kan også vælge at lave sine egne python
+scripts, hvis man hellere vil dette. De implementeres lige så let som
+DTML dokumenter.  
+</para>
+<para>
+Zope har en indbygget webserver (ZServer) som man
+kan nøjes med at bruge til en mindre trafikeret hjemmeside. Der skal i det 
+tilfælde blot rettes i filen ~/zope/z2.py, idet 
+standardværdien for HTTP_PORT er 8080 (rettes til 80), mens den for
+FTP_PORT er 8021 (rettes til 21). Har du et startscript under 
+<filename>/etc/init.d/</filename> skal du også kontrollere dette for 
+portnumrene 8080 hhv. 8021.
+Skal Zope køre parallelt med Apache, skal der tilføjes lidt til
+httpd.conf, hvilket forholdsvis let kan lade sig gøre.  Vil du vide mere
+om Zope, henvises til <ulink url="http://www.zope.org">http://www.zope.org</ulink>.
 </para>
 
 <para>
 En af Zope's største styrker er produktet CMF
 (Content Management Framework). Dette kan bl.a. bruges til at bygge en
 portal. Med CMF er det nemt at styre brugere. CMF sørger for at holde
-indhold, data og kode adskilt. Har en indbygget skin-funktionalitet
-som man kan bruge til at lave forskellige skins til sit site, lave sit
-site flersproget osv. Læs mere på <ulink
+indhold, data og kode adskilt. Har en indbygget skin-funktionalitet,
+som man kan bruge til at lave forskellige udseender til sin hjemmeside, 
+lave den flersproget osv. Læs mere på <ulink
 url="http://cmf.zope.org">http://cmf.zope.org</ulink>
 </para>
 
@@ -66,7 +96,7 @@ skriv dette ned!  Den basale Zope er nu installeret!
 <sect2 id="zope-mysql">
 <title>Zope koblet til MySQL</title>
 <para>
-Lad os nu se på hvordan Zope kobles til MySQL.
+Lad os nu se på hvordan Zope kobles til en database i MySQL.
 </para>
 
 <sect3 id="zope-mysql-data">
@@ -74,11 +104,15 @@ Lad os nu se på hvordan Zope kobles til MySQL.
 
 <para>
  Zope har sin egen indbyggede database (Z Gadfly), og er dit behov for
- datalagring ikke særlig stort, kan du sagtens "nøjes" med denne. Den har dog
- en øvre begrænsning på et par gigabyte. Eftersom der gemmes en del i denne
+ datalagring ikke særlig stort, kan du sagtens klare dig med denne. Dels har den dog
+ en øvre begrænsning på et par gigabyte (det kan de fleste nøjes med), og dels kan
+ man ikke komme i kontakt med den fra andre programmer. Eftersom der gemmes en del i denne
  database i forvejen (bl.a. brugerdata) er dette nok ikke den optimale løsning
- hvis du skal lave et stort websted med mange brugere. Så er der lavet
- forskellige adaptorer til de mest brugte databaser. Til MySQL findes
+ hvis du skal lave et stort websted med mange brugere, eller med databaseindhold, som
+ kommer fra helt andre kilder end Zope selv. 
+ </para>
+ <para>
+ Der er lavet forskellige adaptorer til de mest brugte databaser. Til MySQL findes
  produktet ZMySQLDA. Dette hentes på <ulink
  url="http://www.zope.org/Products/Members/MikeP/ZMySQLDA">http://www.zope.org/Products/Members/MikeP/ZMySQLDA</ulink>.
  Produktet kræver at du har MySQL-misc, MySQL-devel og MySQL-python
@@ -115,7 +149,7 @@ på Zope's mailingliste (<ulink url="http://www.zope.org/Resources/MailingLists">
 <para>
 Sådan henter du data fra f.eks. en MySQL database og viser dem.  Dette
 gøres ret enkelt i Zope. Gå ned i din rodfolder og tilføj et "Z MySQL
-Database Connection"-objekt. Udfyld formen med de rette de data og
+Database Connection"-objekt. Udfyld formen med de korrekte data og
 tilføj den. Tilføj nu en ZSQL Method. "Arguments"-feltet udfylder du
 med udvælgelseskriterier til query-strengen. Hvis du nu har en tabel i
 din database der hedder Medarbejdere.  Den har følgende kolonner:
@@ -143,7 +177,7 @@ Forklaring: &lt;dtml-in&gt; er en nem måde at iterere gennem
 f.eks. SQL resultater. Den fungerer på samme måde som f.eks. en
 for-løkke i PHP.  For at være sikker på at alder optræder i
 REQUEST-objektet, kalder man sin ZSQL-Method med alder-variablen.
-&lt;dtml-var&gt;-tagsene indsætter variablerne der returneres fra
+&lt;dtml-var (navn)&gt;-tag'erne indsætter de variabler, der returneres fra
 ZSQL-metoden.
 </para>
 
@@ -173,11 +207,11 @@ Det er ret nemt at installere disse produkter. Der findes to måder de
 fleste produkter installeres på. (Andre måder kan forekomme - læs
 derfor altid installations vejledningen). Filer er som regel pakket
 som tar.gz, eller også har den en <filename>.zexp</filename>
-extension. I det første tilfælde skal filen udpakkes så det pakkede
+extension. I det første tilfælde skal filen udpakkes så det udpakkede
 dir ender med at ligge i
 <filename>/usr/local/Zope-xx/lib/python/Products/</filename>.
 Herefter genstartes Zope og dit nye produkt er klar til brug. Ender
-filen derimod på <filename>.zexp</filename> skal filen ligges i
+filen derimod på <filename>.zexp</filename> skal filen lægges i
 <filename>/usr/local/Zope-xx/import</filename>. Du skal så gå ind i
 Zope's administration interface i Control Panel - Products og klikke
 på "import/export"-knappen. En ny side kommer nu frem. I
@@ -216,7 +250,7 @@ download-side. Hent den af versionerne der hedder 1.0 og ikke er alpha
 eller beta. Din tarball skal nu udpakkes i
 <filename>&lt;Zopedir&gt;/lib/python/Products</filename>. Du får lavet
 en folder der hedder CMF1.0. Gå ned i det og flyt de tre biblioteker
-der er dernede et level op. Der skulle nu i din Products folder ligge
+der er dernede et niveau op. Der skulle nu i din Products folder ligge
 3 nye foldere: CMFCore, CMDDecor, CMFDefault. Genstart din Zope og CMF
 er klar til brug !
 </para>
@@ -230,21 +264,27 @@ er klar til brug !
 For at kunne lave sin portal, skal man gå ind i Zope's
 administrationsinterface. I den folder du gerne vil placere din portal
 (som regel rod-folderen) vælger du at tilføje et CMF Site. Du kalder
-din portal noget passende og portalen er nu klar til brug. For at
-komme igang med at bruge din portal, skal du klikke på
+din portal noget passende og portalen er nu klar til brug. (Et passende
+navn vil være indec.html, idet de fleste browsere søger efter en fil
+med det navn som standard startsiden).
+</para>
+<para>
+For at komme igang med at bruge din portal, skal du klikke på
 "View"-tabben. Der er et par ting der skal konfigures, før din portal
 er klar til offentligheden. Du kan enten vælge at bruge portalen egen
 konfigurationsside, eller du kan konfigurere den via
 administrationssiden. Vælger du det sidste skal du gå tlbage til
-<filename>http://www.mitdomæme.dk:8080/manage</filename> og vælge din
-portal. Herefter skal du klikke på "Properties"-tabben. Indtast eller
+<filename>http://www.mitdomæme.dk:8080/manage</filename>  og vælge din
+portal. (portnummeret :8080 er standarden, men har du ændret det til 
+port 80, kan du helt udelade :8080 i foregående link).
+Du skal herefter klikke på "Properties"-tabben. Indtast eller
 udskift de eksisterende værdier og klik på "Save". Nu er portalen klar
 til at se dagens lys :-)
 </para>
 
 <para>
-Der er masser af måde du kan ændre designet af din portal på. Men
-inden du går igang med det, er det måske en meget god idé at kigge
+Der er masser af måder du kan ændre designet af din portal på. Men
+inden du begynder, er det måske en meget god idé at kigge
 lidt på hvordan portalen hænger sammen. Der findes som standard tre
 slags brugere; Anonymous, Member og Reviewer. Man er Anonymous indtil
 man bliver medlem. Når man så er medlem, kan man bidrage med
@@ -260,7 +300,7 @@ selvfølgelig gerne have at andre skal kunne læse din nyhed, så du
 klikker på "Publish". Din nyhed er dog ikke helt publiceret endnu. For
 at den kan blive dette, er der en bruger med rollen "Reviewer" eller
 "Manager" der skal godkende din nyhed. Du kan nu vælge enten at
-oprette en anden bruger du kan tildele rollen "Reviewer" eller du kan
+oprette en anden bruger, du kan tildele rollen "Reviewer" eller du kan
 vælge at logge ind med din administrator bruger (som jo har rollen
 "Manager"). Vælger du det første skal du logge ud, klikke endnu engang
 på "Join", oprette brugeren og gå ind i administrationsinterfacet
@@ -281,14 +321,14 @@ etc. etc. Den eneste der begrænser dette, er portal-administratoren.
 <sect3 id="CMF-portal">
 <title>Lav portalen som du selv vil have den</title>
 <para>
-Det er nu på tide at kigge på de lidt mere konfigurér-bare ting af
-portalen der ikke kræver den store programmør. Portalens udseende
+Det er nu på tide at kigge på de lidt mere konfigurerbare ting af
+portalen, der ikke kræver den store programmør. Portalens udseende
 bliver styret fra den folder der hedder "portal_skins". Gå tilbage til
 administrations-interfacet og klik på "+" på skins-folderen så den
-folder sig ud. Der ligger en masse folderen hvoraf en er en
-"almindelig" folder. De andre er det der bliver kaldt for "FileSystem"
-foldere. Indholdet i disse kan ikke ændres i denne folder, men kan
-kopieres til den folder der hedder "Custom" og ændres her. Hvis du
+folder sig ud. Der ligger en række foldere, hvoraf en er en
+"almindelig" folder. De andre er det der kaldes for "FileSystem"
+foldere. Indholdet i disse kan ikke ændres i skins-folderen, men kan
+kopieres til den folder der hedder "Custom" og ændres der. Hvis du
 klikker på folderens "Properties"-tab, kan du se hvordan de
 forskellige skins er defineret. Ud for hvert enkelt skin, står navnene
 på de foldere der bliver inkluderet i skin'et. Folderne bliver
@@ -303,7 +343,7 @@ forskellige udseender at vælge imellem. Du kan også bruge skins til at
 definere forskellige sprog med. En anden god ting man kan lave er et
 "Printable" skin som gør det muligt at vise en print-venlig side af
 alle dine dokumenter. Du laver bare en folder der hedder "Printable" i
-"portal_skin" folderen, kopierer de mest nødvendige filer ned i (såsom
+"portal_skins" folderen, kopierer de mest nødvendige filer ned i (såsom
 "index_html" etc.). Herefter laver du på "portal_skin"-folderens
 properties side et nyt skin der hedder "Printable" og tilføjer de
 skin-foldere der er nødvendige (som oftes skal de samme foldere
