@@ -135,7 +135,7 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% /usr/X11R6/bin/convert -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	cp *.sgml bogps
-	(cd bogps; db2ps bog.sgml)
+	(cd bogps; db2ps bog.sgml > /dev/null)
 	mv bogps/bog.ps $(targetname)-$(version).ps
 	rm -f $(targetname)-*.ps.gz
 	@echo "Done PS (pspdf)"
@@ -147,7 +147,7 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	cp *.sgml bogpdf
 	rm -f $(targetname)-*.pdf
 	cp images/*.png bogpdf
-	(cd bogpdf; db2pdf bog.sgml)
+	(cd bogpdf; db2pdf bog.sgml > /dev/null)
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
