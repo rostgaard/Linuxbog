@@ -267,7 +267,8 @@ SuSE Linux stiller følgende krav til hardware:
 </para>
  
 <para>
-  Med i Yast2 er også en endog meget let adgang til at konfigurere en brandvægg (ikke oversat til dansk).
+  Med i Yast2 er også en endog meget let adgang til at konfigurere en 
+  brandvægg (ikke oversat til dansk).
   Klik på de områder, der skal gives adgang til, og du er sikret.
 </para>
  
@@ -304,184 +305,109 @@ SuSE Linux stiller følgende krav til hardware:
 <indexterm><primary>LVM</primary></indexterm>
 <indexterm><primary>Logical Volume Management</primary></indexterm>
 
-<para>
-LVM arbejder med hele, primære partitioner. Det vil ikke være
-misvisende, hvis du forestiller dig LVM på samme måde som sekundære
-partitioner på en harddisk. En sekundær partition er ganske enkelt en
-opdeling af en primær partition, og på samme måde giver LVM adgang til
-at opdele en primær partition i flere områder.
-</para>
-
-<para>
-For at vise forløbet, har jeg sat en virtuel VMware-maskine op med 2
-harddiske, hdb og hdc (virtuelle drev på hver 2 Gb max), mens hda er en
-selvstændig partition på ca. 4 Gb.
-</para>
-
-<figure  id="Yast2-LVM-3-fig" float="1">
-<title>YaST2</title>
-<graphic fileref="Yast2_LVM_3.&magic;"  scale="60"></graphic>
-</figure>
+ <para>
+  Hvis din maskine har flere harddiske har du et problem. 
+  Enten kan du vælge at dedikere hver enkelt til
+  et af de faste områder (/usr /opt osv), til et hjemmelavet mountpoint 
+  (/hd2 /hd3 eller lignende) eller
+  du kan vælge at installere LVM (Logical Volumn Manager) eller RAID. 
+ </para>
 
 
-
-<sect2 id="lvm-expert">
-<title>Bliv "expert" på få minutter.</title>
-
-<para>
-Det er en smule misvisende, at LVM er dømt "for experts", det er
-faktisk ganske let og ligetil at bruge det, ikke mindst takket være
-YaST2. Ideen bag LVM er i al sin enkelthed, at man opretter en gruppe,
-som indeholder eksisterende drev eller (primære) partitioner. Gruppen
-fremtræder derefter overfor Linux som én stor harddisk, der kan
-partitioneres efter behov.
-</para>
-
-<para>
-De tre harddiske i eksemplet herover rummer til sammen 8 Gb, men det er
-alligevel ikke muligt at oprette en partition på 5 Gb uden brug af LVM
-(eller for den sags skyld to på 3 Gb hver).
-</para>
-
-<para> 
-Desværre tillader Linux endnu ikke, at <filename>/</filename>
-bliver placeret på en LVM-partition, men til gengæld kan man senere
-ændre på størrelsen af de enkelte partitioner, når det viser sig, at
-man ikke har plads nok.  
-</para>
-
-<para>
-Et helt andet problem er rækkefølgen man skal gøre tingene i. Man kan
-ikke bruge en LVM-partition før den er sat sammen i en gruppe, og man
-kan derfor heller ikke blot køre lige igennem, men må have sat sin LVM
-sammen først, vende tilbage til tidligere i forløbet, og få den
-partitioneret.  Det er naturligvis lidt ekspert-agtigt, men altså til
-at komme igennem.  Det ville være en fordel, hvis YaST2 ikke blot tog
-LVM-delen efter partitioneringsdelen, men gav adgang via en knap til
-at oprette en LVM-partition. Det er forhåbentlig noget der kommer i en
-fremtidig version.
-</para>
+ <figure ID="lvm1" float="1">
+ <title>Flere diske i maskinen</title>
+ <graphic fileref="SuSE_80_LVM_1.png" scale="60"></graphic>
+ </figure>
 
 
-<figure  id="Yast2-LVM-4-fig" float="1">
-<title>Der oprettes partitioner</title>
-<graphic fileref="Yast2_LVM_4.&magic;"  scale="60"></graphic>
-</figure>
+ <para>
+  Billedet herover viser en maskine med tre harddiske, hvoraf 
+/dev/sda er anvendt til SuSE's standard
+(root og swap), mens diskene /dev/sdb og /dev/sdc endnu ikke er taget ind i systemet.
+ </para>
 
-<para>
-På maskinen her er det ønsket, at der på hda skal være <filename>/boot</filename>, <filename>/</filename> og swap, mens hdb og hdc skal
-indgå  i  LVM-gruppen. Partitioneringen af hda er ikke vist, mens oprettelsen af en partition
-til brug for LVM er vist herover. Bemærk, at man ikke kan andet end at bestemme størrelsen og
-reservere den til LVM-brug ved at give den type 89.
-</para>
+ <figure ID="lvm2" float="1">
+ <title>Partitionstype 0x8e (LVM)</title>
+ <graphic fileref="SuSE_80_LVM_2.png" scale="60"></graphic>
+ </figure>
 
-<figure  id="Yast2-LVM-5-fig" float="1">
-<title>De oprettede partitioner</title>
-<graphic fileref="Yast2_LVM_5.&magic;"  scale="60"></graphic>
-</figure>
+ <para>
+  Før du kan anvende en disk til LVM skal der oprettes en partition af 
+  typen 0x8e. Dette skal gøres på
+alle de diske, der skal indgå i en LVM-gruppe. Derefter kan du klikke på 
+ knappen "LVM", og nedenstående skærm
+dukker op.
+ </para>
 
-<para> 
-Herover ses resultatet af den endelige
-partitionering. <filename>/boot</filename> skal helst være over 12 Mb
-(der advares hvis den er mindre), swap har jeg ikke meget at bruge til
-og <filename>/</filename> (root) får så resten af hda.  Der er valgt
-ext2 til <filename>/boot</filename> og ReiserFS til
-<filename>/</filename>. Det sidste er også noget forholdsvis nyt, SuSE
-7.0 frarådede at lægge <filename>/</filename> ud med ReiserFS, mens
-7.2 ikke antyder, at det skule give problemer, hvilket det da heller
-ikke endnu har gjort for mig.
-</para>
+ <figure ID="lvm3" float="1">
+ <title>LVM-grupper</title>
+ <graphic fileref="SuSE_80_LVM_3.png" scale="60"></graphic>
+ </figure>
 
-<para>
-Her er det så, at konflikten opstår. Man kan ikke benytte
-LVM-partitionerne direkte. De skal først ind i en gruppe, og man kan
-derfor heller ikke oprette partitioner til /home, /usr osv.  på dem
-endnu.
-</para>
+ <para>
+  Her er der først oprettet en gruppe ved navn "vg", og de to diskes
+  LVM-partitioner er derefter tilknyttet gruppen vg. Skærmen viser kun
+  LVM-partitioner, så der er ikke noget at tage fejl af. En LVM-gruppe
+  er at opfatte som den harddisk, du ender med at kunne arbejde videre
+  med. Får du senere nye harddiske, kan du tilføje dem til en
+  eksisterende gruppe, eller oprette en helt ny gruppe, som de derefter
+  tilknyttes.  
+ </para>
 
-<para>
-Et klik på knappen [Næste] starter LVM-delen.
-</para>
+ <figure ID="lvm4" float="1">
+ <title>"Opdeling af en LVM gruppe"</title>
+ <graphic fileref="SuSE_80_LVM_4.png" scale="60"></graphic>
+ </figure>
+ <para>
+  En LVM-gruppe skal opdeles i en eller flere partitioner på samme måde som en fysisk harddisk. 
+ </para>
 
-<figure  id="Yast2-LVM-6-fig" float="1">
-<title>Opret en Virtuel Gruppe</title>
-<graphic fileref="Yast2_LVM_6.&magic;"  scale="60"></graphic>
-</figure>
+ <para>
+  Fordelen ved at gå omvejen over LVM er primært, at du ikke er bundet
+  til de enkelte harddiskes størrelse. I eksemplet herover er begge
+  diske brugt samlet til /usr, som dermed kan blive dobbelt så stort som
+  de enkelte diske hver for sig. Jeg kunne have valgt, at lade /usr få
+  3G GB og fx. /opt 800 MB i stedet. Igen ville /usr så få mere plads,
+  end der er på nogen af diskene enkeltvis.  
+ </para>
 
+ <figure ID="lvm5" float="1">
+ <title>"Partitionering med LVM"</title>
+ <graphic fileref="SuSE_80_LVM_5.png" scale="60"></graphic>
+ </figure>
 
+ <para>
+  Som det fremgår af billedet, er der en række enheder som ikke 
+  anvendes direkte. I stedet for at have sdb1 og sdc1 til
+  rådighed, optræder /dev/vg/lvmusr (både "vg" og "lvmusr" er navne 
+  jeg har fundet på). Denne enhed har til gengæld
+  pladsen fra både sdb1 og sdc1 samlet i en stor partition.
+ </para>
 
-<para>
-Gruppen skal have et navn. Dette navn indgår senere i "drev"
-betegnelsen (<filename>/dev/gruppenavn/</filename>), så jeg vil
-anbefale at det gøres kort. "vg" synes at være et fornuftigt valg af
-betegnelse.  Jeg har ikke planer om at oprette flere grupper, men på
-større systemer med flere maskiner kan det måske give mening at udvide
-navnet lidt.
-</para>
-
-<figure  id="Yast2-LVM-7-fig" float="1">
-<title>Drevene aktiveres</title>
-<graphic fileref="Yast2_LVM_7.&magic;"  scale="60"></graphic>
-</figure>
-
-
-<para>
-Når gruppen er oprettet får man mulighed for at tilknytte de af ens
-partitioner, der er af typen LVM (89). Herover er hdb1 tilknyttet mens
-hdc1 er på vej til at blive det. Det er hele partitionen der
-tilknyttes gruppen, og det er som tidligere nævnt kun de primære
-partitioner, der overhovedet kan tilknyttes.
-</para>
-
-<figure  id="Yast2-LVM-8-fig" float="1">
-<title>Partitioneringen af LVM-gruppen</title>
-<graphic fileref="Yast2_LVM_8.&magic;"  scale="60"></graphic>
-</figure>
-
-<para>
-Når gruppen er dannet og de enkelte partitioner er tilknyttet skal der
-partitioneres. Hver partition får sit eget navn, som den herefter
-optræder under (i stil med <filename>/dev/hda1</filename> og
-<filename>/dev/hda2</filename>).  Det giver fin mulighed for at give
-meningsfyldte navne. Når der skal oprettes en partition til /home kan
-den passende komme til at hedde vg_home. Fordelen ved dette viser sig
-i næste skærm, hvor jeg er vendt tilbage i forløbet til skærmen, hvor
-der partitioneres.  
-</para>
-
-<figure  id="Yast2-LVM-9-fig" float="1">
-<title>YaST2</title>
-<graphic fileref="Yast2_LVM_9.&magic;"  scale="60"></graphic>
-</figure>
-
-<para> 
-Her et det nemt og hurtigt at koble <filename>/home</filename>
-og <filename>/dev/vg/vg_home</filename> sammen (altså at mounte
-<filename>/dev/vg/vg_home</filename> som
-<filename>/home</filename>). Specielt hvis noget går galt, har man via
-navnet en mulighed for at redde hvad reddes skal (f.eks.
-<filename>/home</filename>), ved ikke at reformatere partitionen, men
-blot bestemme, at den igen skal mountes under /home.  
-</para>
-
-<figure  id="Yast2-LVM-10-fig" float="1">
-<title>YaST2</title>
-<graphic fileref="Yast2_LVM_10.&magic;"  scale="60"></graphic>
-</figure>
-
-
-
-<para>
-Indtil dette tidspunkt er det muligt at gå tilbage og ændre
-partitionsstørrelserne på LVM-partitionerne.  Når først de er
-formaterede og fyldt med rare ting og sager skal der lidt mere til for
-at ændre dem, men det emne falder uden for denne tekst.
-</para>
-
-<para>
-Resten af installationen forløber som tidligere beskrevet, og er derfor ikke omtalt igen her.
-</para>
-</sect2>
+<sect2 ID="RAID"><Title>SuSE 8.0 og RAID</title>
+ <figure ID="raid1" float="1">
+ <title>"SuSE 8.0 og RAID"</title>
+ <graphic fileref="SuSE_80_LVM_6.png" scale="60"></graphic>
+ </figure>
+ <para>
+  Alternativet til at lade de enkelte diske optræde enkeltvist 
+  eller i en LVM konfiguration kan være at oprette
+  et software raid. SuSE understøtter installationen af RAID 0/1/5. 
+  Har du kun to diske som her er valget let, de skal
+  køre RAID 0 (de lægges bare sammen til en stor disk, hvor data 
+  fordeles over begge diske). Har du tre eller flere
+  diske kan du vælge de mere sikre RAID 1/5 løsninger, hvor en del 
+  af pladsen (typisk en disk) bruges til kontrolfunktioner.
+ </para>
+ <figure ID="raid2" float="1">
+ <title>"Partitionering med RAID"</title>
+ <graphic fileref="SuSE_80_LVM_8.png" scale="60"></graphic>
+ </figure>
+ <para>
+  Her er de to diske partitioneret til typen RAID, hvorefter 
+  de samles i samme RAID og anvendes som et enkelt drev.
+ </para>
+ </sect2>
 </sect1>
 
 </chapter>
