@@ -7,7 +7,21 @@
 <para>
 Programmeringssproget C og Unix har traditionelt været tæt knyttet til
 hinanden, og dette gælder i høj grad også for Linux. Kernen og langt de
-fleste applikationer er skrevet i C.
+fleste applikationer er skrevet i C. C++ er en udvidelse af C, der
+giver mulighed for Objekt Orienteret Programmering. 
+</para>
+
+<para>
+Skal et program køre hurtigt, så er C eller C++ programmeringssproget
+et godt valg. C og C++ syntaxen kan dog være svær at forstå for en
+nybegynder. I både C og C++ er det op til brugeren at allokere
+hukommelse til pointer strukturer, og sørge for at programmet kun
+skriver inden for den allokerede hukommelse, dette er en 'egenskab'
+ved C der historisk har ledt til mange luskede programmeringsfejl,
+og derfor kan det tage lang tid at finde fejl i et C eller C++ program.
+C har også en meget primitiv repræsentation af strenge, C++ strings
+er noget bedrer, men fx. Perl er langt stærkere sprog til behandling af
+store mængder tekst.
 </para>
 
 <indexterm><primary>GNU C/C++</primary></indexterm>
@@ -19,9 +33,8 @@ sammensætte et personligt udviklingsmiljø - enten grafisk eller
 tekstbaseret. Med lidt tilvænning er det også hurtigt at anvende, specielt
 hvis der skal oversættes meget kode per gang. Der er også den store fordel,
 at det er standard inden for Unix-verdenen, hvorfor kode og
-oversættelsesfiler (engelsk: makefiles) uden problemer kan flyttes, oversættes
-og
-køres på andre typer af Unix-systemer.
+oversættelsesfiler (engelsk: makefiles) uden problemer kan flyttes,
+oversættes og køres på andre typer af Unix-systemer.
 </para>
 
 
@@ -31,10 +44,8 @@ køres på andre typer af Unix-systemer.
 
 <para>
 Per tradition er HelloWorld-programmet det første C-program, man skal få
-til at virke. 
-Programmet skriver en kort tekst "Hello World" ud på skærmen og afslutter.
-Indtast følgende (brug <command>emacs</command>,
-<command>pico</command> eller <command>vi</command>), og gem det som
+til at virke. Programmet skriver en kort tekst "Hello World" ud på skærmen
+og afslutter. Indtast følgende i en editor, og gem det som
 <filename>hello.c</filename>.
 </para>
 
@@ -48,8 +59,8 @@ int main(void)
 </screen>
 
 <para>
-I kataloget, hvor filen er gemt, kan programmet nu oversættes ved at
-skrive
+I kataloget, hvor filen er gemt, kan programmet nu oversættes
+ved at skrive
 </para>
 
 <screen>
@@ -60,23 +71,31 @@ skrive
 C-oversætteren hedder <command>gcc</command>. Den skal her lave en
 kørbar fil med navnet <filename>hello</filename>, og den skal oversætte
 og linke ud fra kildeteksten i <filename>hello.c</filename>.
+Det oversatte C-program <filename>hello</filename> køres ved at skrive
+<command>./hello</command> i et terminal vindue.
 </para>
 
+</sect2><!-- foerstecprog -->
+
+<sect2 id="biblioteker-c">
+<title>Funktions biblioteker!</title>
+<indexterm><primary>Funktions biblioteker</primary><secondary>dynamisk linking</secondary></indexterm>
+
 <para>
-Det oversatte C-program <filename>hello</filename> køres ved at skrive
-navnet i en <command>xterm</command>. For dem, som har C-erfaring,
-kommer der et par tips nu. En lille sjov ordre er at skrive
+Programmet <command>nm</command> kan bruges til at liste funktionerne
+der defineres i et program. Prøv at køre følgende kommando
+</para>
 
 <screen>
 <prompt>[daisy@linus daisy]$ </prompt> <userinput>nm hello</userinput>
 </screen>
 
+<para>
 Så kan du se, at programmet bl.a. kalder funktionen
-<filename>printf</filename> og indeholder en funktion
-<filename>main</filename>.  Programmet er blevet linket dynamisk
+<command>printf</command> og indeholder en funktion
+<command>main</command>. Programmet er blevet linket dynamisk
 til to eksterne biblioteker - dette kan ses ved at skrive <filename>ldd
-hello</filename>
-<indexterm><primary>ldd</primary></indexterm>
+hello</filename> <indexterm><primary>ldd</primary></indexterm>
 </para>
 
 <screen>
@@ -86,7 +105,18 @@ hello</filename>
 </screen>
 
 <para>
-At den eksterne funktion <filename>printf</filename> rent faktisk kommer
+Ideen er, at alle de programmer bruger <command>printf</command>
+funktionen, kan deles om en <command>printf</command> funktion.
+Printf funktionen findes i et delt bibliotek af funktioner
+(biblioteket af alle standard C funktioner kaldes libc). På den
+måde bliver alle programmer mindre. Programmer, der gør brug af
+delte biblioteker, kan dog ikke køre på en computer med mindre
+alle delte biblioteker er tilstede.  
+</para>
+
+
+<para>
+At den eksterne funktion <command>printf</command> rent faktisk kommer
 fra <filename>libc</filename>, kan ses ved at skrive
 <indexterm><primary>nm</primary></indexterm>
 </para>
@@ -97,10 +127,9 @@ fra <filename>libc</filename>, kan ses ved at skrive
 </screen>
 
 <para>
-Det var lidt om dynamisk link. Ideen er, at programmet kun indeholder de
-nødvendige dele. Under udførelsen af programmet bruges nogle af de nævnte
-eksterne biblioteker. Koden kan også oversættes med alle eksterne
-funktioner linket statisk ind.
+Det var lidt om dynamisk linking. Koden kan også oversættes så
+funktioner fra delte biblioteker linkes statisk ind i den udføre
+bare fil.
 </para>
 
 <screen>
@@ -110,11 +139,50 @@ funktioner linket statisk ind.
 
 <para>
 Bemærk ændringen i filstørrelsen (fra ca. 4 kbytes til over 400 kbytes).
-Nu vil <filename>ldd hello</filename> vise, at der ikke er eksterne
-biblioteker nødvendige for at køre programmet.  Nu tilbage til lidt mere
-simple eksempler.
+Nu vil <command>ldd hello</command> vise, at der ikke er eksterne
+biblioteker nødvendige for at køre programmet.
 </para>
-</sect2><!-- foerstecprog -->
+
+<para>
+Med Linux distributioner følger en lang række af funktions biblioteker
+der indeholder funktioner til at læse og skrive mange forskellige
+billedformater, læse XML filer, hente web sider, læse og skrive pakkede
+filer, vekselvirke med X windows og meget mere. Funktions biblioteker
+kommer næsten altid i to pakker: en der installere de filer, der
+kræves for at køre programmer anvender biblioteket, og en anden pakke
+(kaldet devel), der indeholder C headeres og dokumentation, der skal
+til for selv at udvikle programmer, der gør brug af et funktions bibliotek.
+</para>
+
+<para>
+Hvis programmer bruger funktionsbiblioteker, der ikke linkes ind som
+standard, så skal disse biblioteker listes når programmet oversættes.
+Foreksempel matematik biblioteket libm, linkes med når flaget -lm
+skrives sidst på oversættelses kommando linien. Da alle biblioteker
+starter med "lib" er der specificeres dette ikke på kommando linien.
+</para>
+
+<para>
+Hvis biblioteks filen ikke ligger i de kataloger som kompileren normalt
+gennemsøger kan dette specificeres med flagene
+-L/home/mig/minelibs -lmig. Dette fortæller kompileren at biblioteket
+<filename>libmig.a</filename> i <filename>/home/mig/minelibs</filename>
+kataloget skal inkluderes. Glemmer du at linke de relevante biblioteker,
+når kildekoden oversættes, så vil oversættere generere en fejl om
+manglende symboler.
+</para>
+
+<para>
+Skal kompileren inkludere header filer, der ikke ligger normale steder,
+kan stien til disse inkluderes med flaget -I/home/mig/mineheadere.
+Når <command>#include "minhead.h"</command> kompileres vil 
+oversætteren finde <filename>minhead.h</filename> i
+<filename>/home/mig/mineheadere</filename> kataloget.
+Brug <command>man gcc</command> for at få hjælp til de mange
+muligheder som gcc og g++ har.
+</para>
+
+</sect2><!-- biblioteker -->
 
 <sect2 id="foerstecppprogram">
 <title>Det første C++ program</title>
@@ -137,7 +205,10 @@ int main()
   int val1,val2,maxVal;
 
   read2(val1,val2);
-  maxVal = (val1>val2)?val1:val2;
+
+  if (val1>val2) maxVal=val1;
+            else maxVal=val2;
+
   writeMax(maxVal);
 
   return 0;
@@ -157,32 +228,28 @@ void writeMax(int val)
 </screen>
 
 <para>
-Eksemplet gemmes som <filename>eks1.c++</filename>.
-</para>
-
-<para>
-Oversættelse kan ske med en såkaldt "makefile", men her sker det ved
-direkte at kalde oversætteren.
+Eksemplet gemmes som <filename>eks1.cpp</filename>. Og kan
+oversættes ved at udføre følgende
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>g++ eks1.c++ -o eks1</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>g++ -o eks1 eks1.cpp </userinput>
 </screen>
 
 <para>
  Du kan eventuelt lave en fil, hvor der står ordren til at oversætte en fil
  udfra en variabel. En hurtig måde er direkte at bruge <command>echo</command>
  funktionen.
+</para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>echo 'g++ $1.c++ -g -lm -o $1' > mycompile</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>echo 'g++ $1.cpp -ggdb -lm -o $1' > mycompile</userinput>
 </screen>
 
+<para>
  Koden <filename>$1</filename> betyder første argument, hvorfor filen
  kaldes med første argument lig med C-kodens filnavn. I filen
- inkluderes fejlsøgningsinformation med flaget -g, og
- matematikbiblioteket kædes med ind med -lm. I dette tilfælde er dette
- ikke nødvendigt, men normalt vil det være det. Filen er gemt under
+ inkluderes fejlsøgningsinformation med flaget -ggdb. Filen er gemt under
  navnet <filename>mycompile</filename>. I eksemplet anvendes
  apostroffer ('), i det man med gåseøjne (dvs. "") får erstattet
  variable (med et dollar-tegn foran) <emphasis>før</emphasis>
@@ -198,18 +265,19 @@ Nu skal vi sørge for at filen kan køres:
 <para>Nu kan du skrive
 </para> 
 
-<screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>./mycompile FILNAVN
+<screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>./mycompile filnavn
 </userinput></screen>
 
 <para>
-Det antages, at kildefilen hedder <filename>FILNAVN.c++</filename>, og
-den kørbare fil kommer til at hedde <filename>FILNAVN</filename>.
+Det antages, at kildefilen hedder <filename>filnavn.cpp</filename>, og
+den kørbare fil kommer til at hedde <filename>filnavn</filename>.
 </para>
 
 <para>
-Her skal det nævnes at .C .C++ og .cpp alle er C++-programmer. Hvis man
-forsøger at oversætte C-programmer med C++-oversætteren (<command>g++
-program.c -o program</command>), så kommer der problemer.
+Det er vigtigt at være opmærksom på at det er ikke ligemeget hvad
+filen med kildekoden kaldes. C++ programmer hedder altid .C .C++ eller
+.cpp. Hvis man forsøger at oversætte C-programmer med C++-oversætteren
+(<command>g++ program.c -o program</command>), så kommer der fejl.
 </para>
 
 
@@ -268,11 +336,6 @@ float max(float f1,float f2)
 }
 </screen>
 
-<para>
-Koden kan oversættes ved hjælp af GNU C-oversætteren
-<command>gcc</command>. Brug <command>man gcc</command> for at få
-hjælp til de mange muligheder.
-</para>
 
 <screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>gcc -o ceks2 ceks2.c cfkt.c -lm</userinput></screen>
 
@@ -295,17 +358,17 @@ CC = gcc
 # Navn paa koerbar fil
 OUTPUT   = ceks2
 
-# Kilde fil navne
+# Kilde fil navne, bemærk der er ingen mellemrum efter \ tegnet.
 sources  = ceks2.c \
            cfkt.c
 
-# Automatisk navngivning af objektfiler, hvor  .c bliver til .o
+# Automatisk navngivning af objektfiler, hvor .c laves om til .o
 OBJS        = $(sources:.c=.o)
 
-# Oversætterflag: Maximal optimering -O2 og debug information -g
-CFLAGS      = -O2 -g
+# Oversætterflag: Optimering niveau 2
+CFLAGS      = -O2
 
-#Linkerflag: Inkluderer matematik-bibliotek med -lm !!!!
+#Linkerflag: Inkluderer matematik-bibliotek
 LDFLAGS      = -lm
 
 # Foelgende linje tjekker om en .o fil er nyere end den koerbare fil. Hvis
@@ -315,12 +378,18 @@ $(OUTPUT): $(OBJS)
 </screen>
 
 <para>
-Bemærk, at der skal stå en tabulator foran de linjer, der skal køres,
-såsom den sidste. Der må ikke anvendes mellemrum.
+Makefilen består af en masse definitioner af variable og en 
+eller flere opskrifter. Opskriften fortæller at $(OUTPUT)
+(ceks2) afhænger af objekt kode filerne $(OBJS)
+(ceks2.o og cfkt.o), og at at ceks2 programmet kan laves
+med opskriften <command>cc -O2 -g -o ceks2 ceks2.o cfkt.o -lm</command>. 
+Bemærk, at der skal stå en tabulator foran alle opskrifter.
+Der må ikke anvendes mellemrum. Make programmet gætter selv hvordan
+.c filer skal kompileres for at danne objekt filer .o.
 </para>
 
 <para>
-Når makefilen er skrevet, kan programmet oversættes ved at skrive
+Når makefilen er skrevet, kan programmet bare oversættes ved at skrive
 </para>
 
 <screen>
@@ -329,7 +398,11 @@ Når makefilen er skrevet, kan programmet oversættes ved at skrive
 
 <para>
 i det katalog, hvor makefilen findes. En makefile kan være meget lang og
-indeholde mange regler.
+indeholde mange opskrifter, der indbyrdes kan afhænge af hinanden. Make
+programmet undersøger datoen på alle filer, og hvis datoen på kildekoden
+er nyere end datoen på den tilsvarende objekt fil, så er objekt filen
+forældet, og make oversætter automatisk kildekoden igen og linker 
+programmet med den nye objekt fil.
 </para>
 </sect2><!-- makefiles -->
 
@@ -341,8 +414,8 @@ indeholde mange regler.
 <para>
 Til GNU C/C++ findes en tekst-baseret debugger (<filename>gdb</filename>), som virker fint sammen med
 oversætteren. Hvis alle filer er oversat med flaget
-<filename>-g</filename>, kan man kalde debuggeren ved at skrive
-<command>gdb FILNAVN</command>, hvor <filename>FILNAVN</filename> er
+<filename>-ggdb</filename>, kan man kalde debuggeren ved at skrive
+<command>gdb filnavn</command>, hvor <filename>filnavn</filename> er
 navnet på den kørbare fil.
 </para>
 
@@ -351,23 +424,18 @@ Man kan vise (display) enkelte variabler eller strukturer. Du kan sætte
 "breakpoints" og meget andet, men det hele er tekstbaseret. Programmet
 <command>gdb</command> kan med fordel kaldes fra editoren Emacs ved at
 skrive <filename>Meta-x gdb</filename> (Meta=Alt). Så fås en delt skærm
-med debugger og kode, der kører sammen. Du kan i en
-<command>xterm</command> skrive
-<command>man gdb</command> for at få muligheder for debuggeren.
-Ved fejl kan det
-anbefales at oversætte kode uden optimering, dvs. fjern
-<filename>-O2</filename> ved oversættelse, idet man således ikke får
-fjernet overflødige variable og lignende, som så ikke kan vises med
-debuggeren.
+med debugger og kode, der kører sammen. Du kan i et terminal vindue
+skrive <command>man gdb</command> for at få muligheder for debuggeren.
+Når et program skal debugges så er det en meget god ide at oversætte
+det uden optimering, dvs. fjern <filename>-O2</filename> ved oversættelse.
 </para>
 
 <para>
-Ønsker du at anvende en grafisk debugger, kan du med fordel installere
-<command>ddd</command>, som giver
-en fuldt professionel grafisk brugerflade til debug af C, C++, Perl,
+Ønsker du at anvende en grafisk debugger, kan du med fordel
+installere <command>ddd</command> (Data-Display-Debugger), som giver
+en fuldt professionel grafisk brugerflade til debug af C, C++, Perl, Python,
 Java- og Fortran-kode.  Specielt lækkert er, at man nemt kan følge
-indholdet af strukturer,
-tabeller og simple variabler. DDD kan hentes fra
+indholdet af strukturer, tabeller og simple variabler. DDD kan hentes fra
 <ulink url="http://www.cs.tu-bs.de/softech/ddd">http://www.cs.tu-bs.de/softech/ddd</ulink>.
 </para>
 
@@ -440,6 +508,109 @@ lave grafiske programmer
 </figure>
 
 </sect2><!-- kdevelop -->
+
+<sect2 id="Glade">
+<title>Glade</title>
+<indexterm><primary>Glade</primary></indexterm>
+
+<para>
+Glade er et program, der kan bruges til at designe grafiske
+brugergrænseflader, der bruger GTK og Gnome biblioteketerne.
+Glade kan generere grafiske brugergrænseflader og gemme dem
+som C, C++, Perl, Eiffel og Ada kode. Glade genererer
+automatisk makefiler til at oversætte programmet.
+</para>
+
+<para>
+Glade er ikke et integreret udviklingsmiljø, men er kan kun
+lave grafiske grænseflader. I glade kan man fx. definere at
+der skal kaldes en bestemt funktion, når der, for eksempel,
+trykkes på en knap. Glade gemmer så koden med en tom funktions
+definition. Det er op til programmøren at indsætte kode i
+denne funktion, så programmet rent faktisk gør noget.
+</para>
+
+<figure ID="glade-fig" FLOAT="1">
+<title>Design af grafisk brugergrænseflade i Glade (her vist med Aqua themaet).
+</title>
+<graphic FILEREF="glade1.&magic;" SCALE="50"></graphic>
+</figure>
+
+<para>
+En specielt smart egenskab ved Glade er at den kan gemme hele
+definition af et grafisk brugergrænseflade i en fil, vha. libglade
+funktionsbiblioteket kan et C program automatisk genskabe det
+grafiske brugergrænseflade igen og på den måde lave et fungerende
+grafisk brugergrænseflade. 
+</para>
+
+</sect2> <!-- Glade -->
+
+
+<sect2 id="efence">
+<title>Electic Fence</title>
+<indexterm><primary>Electric Fence</primary></indexterm>
+
+<para>
+Electric Fence er et bibliotek, der er uvurderligt til hurtigt
+finde buffer overløb eller underløb. Et typisk problem i C er
+man allokere en tabel, men forsøger at skrive efter tabellens
+slut eller før dens start. En anden typisk fejl er at allokere
+en streng, der er for lille, som i det følgende eksempel
+</para>
+
+<screen>
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void)
+{
+   char* p=(char*)malloc(16*sizeof(char)); 
+   char* q=(char*)malloc(16*sizeof(char)); 
+
+// test for NULL
+
+   strcpy(q,"efence test");
+   strcpy(p,"efence test buffer overflow");  // 27 tegn lang!!
+
+   printf("q:%s\n",q);
+   printf("p:%s\n",p);
+}
+</screen>
+
+<para>
+Oversættes dette program med <command>gcc -o test test.c</command>,
+så kan der ske alt muligt, når det køres, men typisk vil det udskrive
+</para>
+
+<screen>
+q:low
+p:efence test buffer overflow
+</screen>
+
+<para>
+En streng kopieres til streng pointeren p, men strengen er længrer end
+den hukommelsesblok, der er allokeret. Strcpy overskriver derfor
+delvist q strengen "efence test". Et program kan sagtens køre viderer
+efter at et buffer overløb, men måske er dette buffer overløb årsagen
+til at programmet fejler katastofalt en halv time senere. Det kan derfor
+være uhyre svært at finde denne type fejl, da programmet bare fejler et
+mystisk sted, mens årsagen til fejlen blev introduceret et helt andet
+sted i koden.
+</para>
+
+<para>
+Oversættes programmet istedet med <command>gcc -o test test.c -ggdb -lefence</command>
+vil programmet fejle, og gemme en <filename>core</filename> fil, når 
+det udfører den anden strcpy() linie.
+Køres <command>ddd test core</command> så vil debuggeren fortælle i
+hvilen linie buffer overløbet skete. <command>man efence</command>
+giver en masse information om hvordan efence virker, og hvordan
+det kan bruges til at teste for buffer underløb og meget andet.
+</para>
+
+</sect2>  <!-- efence -->
+
 
 <sect2 id="C-books">
 <title>Bøger om C-programmering under Linux</title>
@@ -561,6 +732,24 @@ C- eller en C++-oversætter.
 
 </itemizedlist>
 </para>
+
+<para>
+Der findes en del bøger om C++-programmering. Følgende er biblen.
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+B. Stoustrup: <emphasis>The C++ Programming Language</emphasis>,
+Addison Wesley, ISBN 0-201-70073-5, 1019 sider. (special edition)
+</para>
+<para>
+Dette er ikke en begynderbog, men en god referense bog om alle
+C++ sprogets muligheder. Bogen er skrevet af Bjarne Stoustrup,
+der opfandt C++ sproget.
+</para>
+</listitem>
+</itemizedlist>
 
 
 </sect2><!-- C-books -->
