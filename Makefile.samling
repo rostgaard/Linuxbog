@@ -1,0 +1,76 @@
+# $Id$
+
+SUBDIRSSAMLING = @SUBDIRSSAMLING@
+
+# version - skal bruges til samlingerne (i øjeblikket kun palm)
+version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > ../samling/version.sgml; cat ../samling/version.sgml))
+
+all: palmpilot ps pdf
+
+ps:
+	echo "Vi bygger desværre ikke PostScript-bøger for tiden - ØV!"
+#	mkdir ps-samling
+#	@for dir in $(SUBDIRSSAMLING); do \
+#		cp ../$$dir/linuxbog-$$dir-`cat ../$$dir/version.sgml`.ps ps-samling/ || /bin/true; \
+#	done;
+#	tar vczf linuxbog-samling-ps-$(version).tar.gz ps-samling/
+
+pdf:
+	mkdir pdf-samling
+	@for dir in $(SUBDIRSSAMLING); do \
+		cp ../$$dir/linuxbog-$$dir-`cat ../$$dir/version.sgml`.pdf pdf-samling/ || /bin/true; \
+	done;
+	tar vczf linuxbog-samling-pdf-$(version).tar.gz pdf-samling/
+
+palmpilot:
+	mkdir -p palm-samling
+	cp palm-faelles/* palm-samling/
+	@for dir in $(SUBDIRSSAMLING); do \
+		cp ../$$dir/PalmBuildDir/linuxbog-$$dir.pdb palm-samling/ || /bin/true; \
+	done;
+	tar vczf linuxbog-samling-palm-$(version).tar.gz palm-samling/
+	zip -r linuxbog-samling-palm-$(version).zip palm-samling/
+
+html:
+	@echo 'html-versionen af samling-"bogen" er endnu ikke implementeret.'
+	@echo 'men giver det overhovedet mening?'
+
+
+pakhtml:
+	@echo 'pakhtml-versionen af samling-"bogen" er endnu ikke implementeret.'
+	@echo 'men giver det overhovedet mening?'
+
+eksempelbackup:
+	@echo 'eksempelbackup target for samling-"bogen" er endnu ikke implementeret.'
+	@echo 'men giver det overhovedet mening?'
+
+
+eksempler-sgml-HTML:
+	@echo 'eksempler-sgml-HTML target for samling-"bogen" er endnu ikke implementeret.'
+	@echo 'men giver det overhovedet mening?'
+
+eksempler-sgml-PDF:
+	@echo 'eksempler-sgml-PDF target for samling-"bogen" er endnu ikke implementeret.'
+	@echo 'men giver det overhovedet mening?'
+
+
+# Jeg har ikke lige styr på forskellen mellem distclean, clean og reallyclean
+# Så indtil videre er de ens!
+#
+# De fjerner sikkert heller ikke alt hvad der skal fjernes!
+
+distclean: clean
+
+clean: 
+	rm -fr palm-samling
+# Skal ændres når vi engang begynder at bygge PostScript-versioner igen!
+#	rm -fr ps-samling
+	rm -fr pdf-samling
+
+	rm linuxbog-samling-*.tar.gz
+	rm linuxbog-samling-*.zip
+
+	rm -f version.sgml
+	rm -f *~*~  .#*[0-9]
+
+reallyclean: clean

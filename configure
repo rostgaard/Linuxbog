@@ -3,13 +3,15 @@
 # Dette script bootstrapper/konfigurer det der skal til for at lave linuxbøgerne 
 
 # Af Mads Bondo Dydensborg, madsdyd@challenge.dk, september 2003.
+# Tilføjelser om samling-bogen af Henrik Christian Grove <grove@sslug.dk>
+#  oktober/november 2003
 
 # Standard bøger at medtage
 #SUBDIRS="admin applikationer c dokumentation forsker friheden itplatform java kontorbruger program signatur sikkerhed unix web wm"
 SUBDIRS="itplatform friheden unix kontorbruger applikationer wm signatur admin sikkerhed program web python c java dokumentation forsker"
 ALLE=
+SAMLING=
 URL=cvs.linuxbog.dk
-
 
 ################################################################################
 #
@@ -23,6 +25,7 @@ brug() {
     echo "                         er en liste af bøger. Kombiner:"
     echo "                         \"$SUBDIRS\""
     echo "  -a, --med-alle         Medtag alle (een stor bog) bogen"
+    echo "  -s, --med-samling      Medtag samling-bogen (samlingen af de byggede bøger)"
     echo "  -u, --bogurl URL       Hvilken url bøgerne skal bruge. [cvs.linuxbog.dk]"
     echo
     echo "Hvor SUBDIROPTIONS kan være"
@@ -54,7 +57,7 @@ for arg ; do ORG_ARGS="$ORG_ARGS \"$arg\"" ; done
 # Note that we use `"$@"' to let each command-line parameter expand to a
 # separate word. The quotes around `$@' are essential!
 # We need TEMP as the `eval set --' would nuke the return value of getopt.
-TEMP=`getopt -o ahm:u: --long med-alle,help,med:,bogurl: -n "$0" -- "$@"`
+TEMP=`getopt -o ahmsu: --long med-alle,help,med:,med-samling,bogurl: -n "$0" -- "$@"`
 
 if [ $? != 0 ] ; then brug ; exit 1 ; fi
 
@@ -64,6 +67,7 @@ eval set -- "$TEMP"
 while true ; do
     case "$1" in
 	-a|--med-alle) ALLE=alle ; shift ;;
+	-s|--med-samling) SAMLING=samling ; shift ;;
 	-h|--help) hjaelp; shift ;;
 	-m|--med) SUBDIRS=$2 ; shift 2 ;;
 	-u|--bogurl) URL=$2 ; shift 2 ;;
@@ -99,9 +103,16 @@ else
   echo "*** Opsætter ikke alle bogen"
 fi
 
+if test "x$SAMLING" != "x" ; then
+  echo "*** Opsætter samling bogen"
+else
+  echo "*** Opsætter ikke samling bogen"
+fi
+
 # Lav Makefile
 sed -e "s/@SUBDIRS@/$SUBDIRS/" \
     -e "s/@ALLE@/$ALLE/" \
+    -e "s/@SAMLING@/$SAMLING/" \
     -e "s/@CONFIGUREARGS@/$ORG_ARGS/" \
     -e "s/@Makefile.in@/RET IKKE I DENNE FIL - AUTOGENERERET FRA Makefile.in/" \
     < Makefile.in > Makefile
@@ -124,6 +135,16 @@ if test "x$ALLE" != "x" ; then
     echo "<!ENTITY linuxbogurl \"$URL\">" > $ALLE/linuxbogurl.sgml || exit;
     mkdir -p $ALLE/palm-faelles
     cp --update misc/*.prc misc/*.pdb misc/gpl.txt misc/plucker.txt $ALLE/palm-faelles
+fi
+if test "x$SAMLING" != "x" ; then
+    echo "*** Installerer fælles filer i $SAMLING"
+#    cp --update faelles-filer/*.sgml $SAMLING
+# Det her er smålamt, ophavsret.sgml skal ikke bruges til noget men
+# configure.ac.subdir insisterer på at den skal være der
+    cp --update faelles-filer/ophavsret.sgml $SAMLING 
+#    echo "<!ENTITY linuxbogurl \"$URL\">" > $SAMLING/linuxbogurl.sgml || exit;
+    mkdir -p $SAMLING/palm-faelles
+    cp --update misc/*.prc misc/*.pdb misc/gpl.txt misc/plucker.txt $SAMLING/palm-faelles
 fi
 
 # Byggerelaterede filer
@@ -150,6 +171,19 @@ if test "x$ALLE" != "x" ; then
     cd $ALLE &&	./make.bog.sgml.pl $SUBDIRS > bog.sgml && cd .. || exit ;
     cd $ALLE &&	./make.bog.2pdf.pl $SUBDIRS > bog.2pdf.sgml && cd .. || exit ;
 fi
+# grove: Gad vide hvor meget af dette der er nødvendigt?
+if test "x$SAMLING" != "x" ; then
+    echo "*** Kører bootstrap i $SAMLING"
+    cp --update bootstrap.subdir $SAMLING/bootstrap
+    sed "s/@SUBDIRSSAMLING@/$SUBDIRS/" < Makefile.samling > $SAMLING/Makefile.am
+    cp --update configure.ac.subdir $SAMLING/configure.ac
+    cp --update linuxbog.spec $SAMLING/linuxbog.spec
+#    mkdir -p $SAMLING/misc
+#    cp --update misc/insertimagesize $SAMLING/misc/
+    cd $SAMLING && ./bootstrap && cd .. || exit ;
+#    cd $SAMLING && ./make.bog.sgml.pl $SUBDIRS > bog.sgml && cd .. || exit ;
+#    cd $ALLE && ./make.bog.2pdf.pl $SUBDIRS > bog.2pdf.sgml && cd .. || exit ;
+fi
 
 # Så køres ./configure i hvert subdir. 
 for dir in $SUBDIRS; do
@@ -159,6 +193,10 @@ done
 if test "x$ALLE" != "x" ; then
     echo "*** Kører configure i $ALLE"
     cd $ALLE && ./configure $EXTRA_ARG && cd .. || exit ;
+fi
+if test "x$SAMLING" != "x" ; then
+    echo "*** Kører configure i $SAMLING"
+    cd $SAMLING && ./configure $EXTRA_ARG && cd .. || exit ;
 fi
 
 echo "*** Du kan nu køre f.eks. make all, eller make dist"
