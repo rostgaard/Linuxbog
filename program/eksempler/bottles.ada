@@ -1,19 +1,26 @@
 with Ada.Text_IO, Ada.Integer_Text_IO;
 
 procedure Bottles is
-   use Ada.Text_IO, Ada.Integer_Text_IO;
+   procedure Put_Bottles (Count : in Natural) is
+      use Ada.Text_IO, Ada.Integer_Text_IO;
+   begin
+      case Count is
+         when 0 =>
+            Put ("No bottles");
+         when 1 =>
+            Put ("1 bottle");
+         when others =>
+            Put (Count, Width => 0); Put (" bottles");
+      end case;
+   end Put_Bottles;
 
-   Count : Natural := 99;
+   use Ada.Text_IO;
 begin
-   loop
-      Put (Count, Width => 0); Put_Line (" bottles of beer on the wall,");
-      Put (Count, Width => 0); Put_Line (" bottles of beer.");
+   for Count in reverse 1 .. 99 loop
+      Put_Bottles (Count); Put_Line (" of beer on the wall,");
+      Put_Bottles (Count); Put_Line (" of beer.");
       Put_Line ("Take one down and pass it around.");
-      Count := Count - 1;
-      exit when Count = 0;
-      Put (Count, Width => 0); Put_Line (" bottles of beer on the wall.");
+      Put_Bottles (Count - 1); Put_Line (" of beer on the wall.");
       New_Line;
    end loop;
-   Put_Line ("No bottles of beer on the wall!");
-   New_Line;
 end Bottles;
