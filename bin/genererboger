@@ -1,12 +1,32 @@
-#!/bin/sh
+#!/bin/bash
 export LANG=en_US
 cd /home/www/cvs.linuxbog.dk/htdocs/
 cvs update -d 
+
+# Publicer cvs som html
 rm -rf cvs2html
 mkdir cvs2html
 cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
-make dist && ./configure --enable-submitbox --med-alle -u cvs.linuxbog.dk > .buildmsgs
-make all >> .buildmsgs >& .builderrs
+
+# Byg boegerne.
+echo -n START: > .buildmsg
+echo -n START: > .builderrs
+date >> .buildmsg
+date >> .builderrs
+
+# Opsaet byggeting - anelse redundant, men bedre sikker end ked...
+./configure --med-alle --bogurl cvs.linuxbog.dk >> .buildmsgs 2>> .builderrs
+make -k dist >> .buildmsgs 2>> .builderrs
+# Det er lidt lamt, men dist fjerner alle Makefiler, saa det betyder at autotools skal koeres to
+# gange.
+./configure --med-alle --bogurl cvs.linuxbog.dk -- --enable-submitbox >> .buildmsgs 2>> .builderrs
+make -k all >> .buildmsgs 2>> .builderrs
+echo -n SLUT: >> .buildmsg
+echo -n SLUT: >> .builderrs
+date >> .buildmsg
+date >> .builderrs
+
+# Lidt rettighedssnaks, og en automail til linuxbog.dk
 chgrp -R linuxbog .
 chmod -R g+w .
 TERM=vt100 /usr/bin/lynx http://cvs.linuxbog.dk/index.php\?matrix=1 -dump | grep "Ud af" > ~/.lbstatus
