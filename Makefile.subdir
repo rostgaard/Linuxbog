@@ -63,7 +63,7 @@ test:
 
 ################################################################################
 # her er det der skal laves
-all: start html pakhtml palmpilot pdf eksempelbackup makeonline stop
+all: start html pakhtml palmpilot pdf eksempelbackup online stop
 
 
 ################################################################################
@@ -194,8 +194,8 @@ pakhtml.clean:
 ################################################################################
 # MAKEONLINE
 ################################################################################
-.PHONY : makeonline
-makeonline: 
+.PHONY : online
+online: 
 	rm -rf bog/
 	cp -R $(targetshortname) bog/
 if ADD_SUBMITBOX
@@ -228,12 +228,12 @@ else !USE_SOFTLINKS
 	cp images/*.png $(targetshortname)
 endif !USE_SOFTLINKS
 if HAVE_PERL_IMAGE_SIZE
-	(cd bog;perl ../misc/insertimagesize)
+	(cd $(targetshortname);perl ../misc/insertimagesize)
 else !HAVE_PERL_IMAGE_SIZE
 	@echo "Du bør installere Perl-modulet Image:Size"
 endif !HAVE_PERL_IMAGE_SIZE
 if HAVE_TIDY
-	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
+	(cd $(targetshortname);tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
 else !HAVE_TIDY
 	@echo "Du bør installere tidy"
 endif !HAVE_TIDY
