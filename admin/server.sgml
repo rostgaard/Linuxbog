@@ -1846,6 +1846,7 @@ for bruge din nye DNS.
 </sect1>
 
 <sect1 id="DHCP">
+<!-- Skrevet af Henrik Størner "henrik@storner.dk" -->
 <title>Opsætning af DHCP-server</title>
 <indexterm><primary>DHCP</primary></indexterm>
 <para>
@@ -1928,9 +1929,10 @@ man sagtens bruge.
 <para>
 Uanset om du vælger at køre en DHCP-server på din Linux-maskine, eller
 du vælger at bruge den der er indbygget i din router, så skal du passe
-på at der kun er EEN DHCP-server på dit netværk. Hvis der er flere, så
-vil du opleve at det kun virker en gang imellem - nemlig når klienten
-får svaret fra den server, der er konfigureret rigtigt.
+på at der kun er <emphasis>en</emphasis> DHCP-server på dit
+netværk. Hvis der er flere, så vil du opleve at det kun virker en gang
+imellem - nemlig når klienten får svaret fra den server, der er
+konfigureret rigtigt.
 </para>
 </sect2>
 
@@ -3997,15 +3999,15 @@ newsserver.
 
 <sect1 id="firewall">
 <title>Firewall</title>
+<!-- Skrevet af Peter Enoch -->
 <indexterm><primary>Firewall</primary></indexterm>
 
 <sect2>
 <title>Hvad er en firewall</title>
 <para>
-
 En firewall er et stykke hardware eller software hvor sikkerheden
 håndhæves og som adskiller et eller flere sikre netværk fra et
-ikke-sikret netværk som f.eks. Internettet. Firewallen afskærer alt
+ikke-sikret netværk som f.eks. Internettet. Firewallen kontrollerer al
 forbindelse mellem to netværk, og bestemmer hvilken trafik, der må
 komme hvorhen, og hvilken trafik der ikke må komme igennem. Det er så
 op til administratoren for netværket at lave sikkerhedsregler for hvad
@@ -4168,19 +4170,23 @@ Af lokale adresser man kan benytte til dit private net:
 <itemizedlist mark="bullet" spacing="compact">
 
 
-<listitem><para><command>-N</command> Opret en ny kæde foruden de
-indbyggede som er INPUT,FORWARD og OUTPUT.
-</para>
+<listitem><para><command>-N</command> Opret en ny kæde</para>
+
+<para>Kæderne INPUT,FORWARD og OUTPUT er indbyggede
+og skal ikke oprettes.</para>
+
 <para>
 <command>ipchains -N NAVN</command>
 </para>
 </listitem>
 
-<listitem><para><command>-X</command> Slet en tom kæde man har lavet
-De indbyggede kæder INPUT,FORWARD og OUTPUT kan ikke slettes. Hvis -X
-kun er angivet og de kæder man selv har oprettet er tomme slettes alle
-kæder undtagen standard kæderne INPUT,FORWARD og OUTPUT.
-</para>
+<listitem><para><command>-X</command> Slet en tom k&æde.</PARA>
+<PARA>De indbyggede kæder INPUT, FORWARD og OUTPUT
+kan ikke slettes.</PARA>
+<PARA>-X uden k&ædenavn sletter alle tomme
+kæder man selv har oprettet.
+</PARA>
+
 <para>
 <command>ipchains -X NAVN</command>
 </para>
@@ -4190,10 +4196,21 @@ kæder undtagen standard kæderne INPUT,FORWARD og OUTPUT.
 </listitem>
 
 <listitem><para> 
-<command>-P</command> Ændre hvad IPCHAINS skal gøre
-hvis der ikke er en regel for den pakke, der kigges på. Mulighederne
-er REJECT,ACCEPT og DENY.
-</para>
+<command>-P</command> 
+ændrer hvad
+IPCHAINS skal gøre, hvis der ikke er en regel
+for den pakke der kigges på.</para>
+
+<para>Mulighederne er REJECT,ACCEPT og DENY.</para>
+
+<para>ACCEPT betyder at man accepterer pakken.</para>
+
+<para>DENY betyder at man nægter pakken adgang
+uden at afsenderen får det at vide.</para>
+
+<para>REJECT betyder at man nægter pakken adgang
+og at afsenderen får en ICMP pakke, der
+fortæller at pakken er afvist.</para>
 
 <para>
 ipchains -P INPUT DENY
@@ -4203,10 +4220,12 @@ ipchains -P INPUT DENY
 <listitem>
 <para>
 <command>-L</command> Få en liste over de regler der er i
-firewall'en. Hvis man benytter -L -n sammen vil man få listen af alle
-regler og der vil ikke blive lavet et reverse lookup af alle IP
+firewall'en.</para>
+
+<para>Hvis man benytter -L -n sammen, vil man få listen af alle
+regler og der vil ikke blive lavet et reverse lookup af IP
 adresserne. Man kan bruge -L -M -n for at se alle masquerading
-forbindelser. Ud over disse kan man også bruge -v som viser detaljeret
+forbindelser. Ud over disse kan man også bruge -v som viser
 hvor mange bytes der er gået igennem en kæde, hvor mange gange en
 given regel er blevet ramt af en pakke m.m. Med -L kædenavn ses kun de
 regler der er i den givne kæde.
@@ -4228,19 +4247,30 @@ regler der er i den givne kæde.
 <command>ipchains -L NAVN</command>
 </para>
 
-<para>
---line-numbers betyder at når man sammen med -L kommer der nummer på
-de forskellige firewall regler ude i venstre side.
-</para>
+<para>Når --line-numbers bruges sammen med -L,
+vises reglerne nummereret så man kan se deres
+position i kæden.</para>
 
 <para>
 <command>ipchains -L --line-numbers</command>
 </para>
+
+<para>
+Bemærk at der anvende to minus-tegn foran line-numbers.
+</para>
+
 </listitem>
 
 <listitem>
 <para>
-<command>-F</command> Hvis -F gives uden nogen kæde, vil ALLE regler
+<command>-F</command>
+Slet alle regler i en kæde.</para>
+
+<para>Hvis -F bruges uden et kædenavn slettes alle
+regler i alle kæder.</para>
+
+<para>
+Hvis -F gives uden nogen kæde, vil ALLE regler
 blive slettet i alle kæder. Hvis man eksempelvis angiver -F input vil
 alle regler i input kæden blive slettet.
 </para>
@@ -4256,9 +4286,11 @@ alle regler i input kæden blive slettet.
 
 <listitem>
 <para>
-<command>-Z</command> alene betyder at man nulstiller tællerne i alle
-kæder, -Z kædenavn betyder at denne kæde bliver nulstillet.
-</para>
+<command>-Z</command>  Nulstil tællere i
+kæde.</para>
+
+<para>Hvis -Z bruges uden et kædenavn nulstilles
+alle tællere i alle kæder.</para>
 
 <para>
 <command>ipchains -Z</command>
@@ -4271,19 +4303,31 @@ kæder, -Z kædenavn betyder at denne kæde bliver nulstillet.
 
 <listitem>
 <para>
-<command>-j ACCEPT,DENY,REJECT,MASQ,KÆDE,RETURN</command> eller
-<command>REDIRECT</command>. ACCEPT betyder at man acceptere pakken ud
-fra den regel man har lavet. DENY betyder at man nægter pakken og
-maskinen der sender pakker til en får ikke noget af vide fra dig om at
-du har nægtet pakken adgang. REJECT betyder næsten det samme som DENY,
-men du sender en ICMP pakke til maskinen ,der sender pakker til dig om
-at du har afvist pakkerne.
-</para>
+<command>-j</command> Jump parameteren
+fortæller hvad der skal ske med pakken
+når den er accepteret af denne kæde.</para>
+
+<para>Mulighederne er ACCEPT, DENY, REJECT, MASQ,
+KæDE, RETURN eller REDIRECT.</para>
+
+<para>ACCEPT betyder at man accepterer pakken.</para>
 
 <para>
-MASQ betyder at sende adressen for nogen maskiner blev omskrevet til
-firewallens IP adresse, MASQ kan kun benyttes med FORWARD reglen. Et
-eksempel:
+DENY betyder at man nægter pakken adgang
+uden at afsenderen får det at vide.</para>
+
+<para>
+REJECT betyder at man nægter pakken adgang
+og at afsenderen får en ICMP pakke, der
+fortæller at pakken er afvist.</para>
+
+<para>
+MASQ betyder at sende adressen for nogle maskiner
+blev omskrevet til firewallens IP adresse. MASQ kan
+kun benyttes med FORWARD reglen.</para>
+
+<para>
+Et eksempel:
 </para>
 
 <para>
@@ -4295,35 +4339,35 @@ eksempel:
 Dette betyder at adressen 192.168.0.1 som skal til eth0 får eth0's IP adresse.
 </para>
 
-<para>
-Der er ikke noget der hedder KÆDE med -j, men i dette sammenhæng
-betyder det at du for eksempelvis en input regel kan sige at den skal
-arbejde videre med pakken i en anden kæde du har oprettet. Du kan ikke
-lade pakken blive "sent" til en af standard kæderne. Et eksempel:
-</para>
 
-<para>
-Først oprettes kæden web, ipchains -N web, herefter vil du gerne have
-at alt trafik ind i input kæden, der skal til din web server bliver
-testet via web kæden.
-</para>
+<para>KÆDE betyder, at pakken skal kontrolleres af
+en anden kæde du har oprettet. Du kan ikke lade
+pakken blive sendt til en af standard
+kæderne.</para>
+
+<para>Et eksempel:</para>
 
 <para>
 <command>ipchains -A input -s 0.0.0.0/0.0.0.0 1024:65535 \
 -d WEBSERVER 80 -p tcp -i ethX -j WEB</command> 
 </para>
 
-<para>
-I din WEB kæde kan du så lave regler for denne trafik. Man kan bruge
-dette til at gøre tingene mere overskueligt.
-</para>
 
-<para>
-RETURN kan kun benyttes på en firewall-kæde man selv har
-oprettet. RETURN betyder at pakken ryger til enden af kæden og bliver
-testet videre derfra hvor den hoppede til en firewall-kæde man
-selv har oprettet. Et eksempel:
-</para>
+<para>Først oprettes kæden web, ipchains -N
+web, som indeholder regler for trafik der skal fra
+input kæden til webserveren.</para>
+
+<para>Ved at opbygge sine regler på denne
+måde kan man gøre tingene mere
+overskuelige.</para>
+
+<para>RETURN kan kun benyttes på en
+firewall-kæde man selv har oprettet. RETURN
+betyder at pakken ryger til enden af kæden og
+bliver testet videre derfra hvor den hoppede til en
+firewall-kæde man selv har oprettet.</para>
+
+<para>Et eksempel:</para>
 
 <SCREEN>
 ipchains -N WEB
@@ -4339,22 +4383,21 @@ ipchains -A WEB -s en eller anden firewall regel
 ipchains -A WEB -s en eller anden firewall regel
 </SCREEN>
 
+<para>Først oprettes en firewall-kæde som hedder WEB. Herefter laver
+jeg en input regel som hopper til WEB kæden. I WEB kæden laver jeg en
+RETURN. Der er nu en pakke fra source adressen BADUSER på vej ind til
+port 80 på WEBSERVER. I regel 2 i input kæden bliver pakken sendt
+videre til WEB kæden. Regel 2 i WEB kæden, som passer på pakken fra
+BADUSER, har parameteren -j RETURN. Dette betyder at resten af
+reglerne i WEB kæden ikke bliver testet på pakken, men at pakken
+bliver testet videre fra regel 3 i input kæden.</para>
 
-<para>
-Først oprettes en firewall-kæde som hedder WEB, herefter laver jeg en
-input regel som hopper til WEB kæden. I WEB kæden laver jeg en
-RETURN. Der er nu i pakke på vej ind til vores maskine WEBSERVER til
-port 80 fra source adressen BADUSER. I regel 2 i input kæden bliver
-pakken testet videre i WEB kæden. I regel 2 i WEB kæden er der en
-regel der passer på pakken, den har regel RETURN. Dette betyder at
-resten af reglerne i WEB kæden ikke bliver testet på pakken, men at
-pakken bliver testet videre fra regel 3 i input kæden.
-</para>
+<para>REDIRECT betyder at du, ud fra en given regel, kan sende
+pakkerne videre til en lokal port på maskinen. REDIRECT kan kun
+benyttes med INPUT reglen.</para>
 
+<para>Et eksempel:</para>
 
-<para>
-REDIRECT betyder at ud fra en given regel kan du sende pakkerne videre til en lokal port på maskinen, REDIRECT kan kun benyttes med INPUT reglen. Et eksempel:
-</para>
 
 <SCREEN>
 ipchains -A input -p tcp -s 192.168.0.0/255.255.255.0 1024:65535 \
@@ -4369,11 +4412,9 @@ være nyttigt til at lave en transparent proxy.
 </para>
 </listitem>
 
-<listitem><para> 
-<command>-A</command> Tilføj en regel i din
-firewall-kæde. Med -A bliver reglen du laver tilføjet i bunden af en
-firewall-kæde.
-</para>
+<listitem><para> <command>-A</command> Tilføj en regel i din
+firewall-kæde. Med -A bliver reglen tilføjet i bunden af en
+firewall-kæde.</para>
 
 <screen>
 ipchains -A input -s 192.168.0.1/255.255.255.255 -i eth0 -j ACCEPT
@@ -4408,16 +4449,14 @@ Dette vil overskrive det der stod i firewall-kæden input position 2.
 </para>
 </listitem>
 
-<listitem><para> <command>-D</command> Bruges på samme måde som -I og
--R men sletter en regel i en kæde på en bestemt position, eller hvis
-man angiver hele reglen vil denne regel slettes i firewallen.
-</para>
+<listitem><para> <command>-D</command> Sletter en regel i en
+kæde. Hvis reglens nummer angives, slettes
+denne regel. Hvis reglen angives, slettes alle
+positioner hvor denne regel findes.</para>
 
 <screen>
 ipchains -D input -s 0.0.0.0/0.0.0.0 1024:65535 \
-  -d 192.192.192.192/255.255.255.255 113 -j ACCEPT
-
-ipchains -D input 2
+  -d 192.192.192.192/255.255.255.255 113 -j ACCEPT ipchains -D input 2
 </screen>
 </listitem>
 
@@ -4484,20 +4523,18 @@ ipchains -A input -b -s 192.168.0.1/255.255.255.255 \
 Dette vil lave to regler i input kæden.  En hvor source adressen er
 192.168.0.1 og destinations adressen er 0.0.0.0/0.0.0.0 og en anden
 regel hvor source adressen er 0.0.0.0/0.0.0.0 og destinations adressen
-er 192.168.0.1
+er 192.168.0.1.
 </para>
 
 </listitem>
 
-<listitem><para> <command>-i</command> betyder interface. Hvis -i
-benyttes på en INPUT kæde betyder det, det interface hvor pakken
-kommer ind, for OUTPUT kæden betyder det interfaceet hvor pakken
-ryger ud og for FORWARD kæden betyder det interfaceet hvor pakken
-skal hen til. Altså hvis du har 2 netkort eth0 og eth1 og du skal lave
-en FORWARD regel for trafik der går fra eth0 til eth1 skal man skrive
--i eth1. Hvis man skrive -i eth+ betyder det at reglen gælder for alle
-interface der starter med eth.
-</para>
+<listitem><para> <command>-i</command> betyder interface. For en INPUT
+kæde er det interfaceet, hvor pakken kommer ind. For en OUTPUT kæde er
+det interfaceet, hvor pakken sendes ud. For en FORWARD kæde er det
+interfaceet, hvor pakken skal hen.  Hvis man har 2 netkort, eth0 og
+eth1, og skal have en FORWARD regel der går fra eth0 til eth1, skal
+man skrive -i eth1. Hvis man skriver -i eth+, betyder det at reglen
+gælder for alle interfaces, der starter med eth.</para>
 </listitem>
 
 <listitem><para> <command>!</command> betyder hvor dette ikke er
@@ -4540,7 +4577,14 @@ adresse. Hvis -d ikke er sat i en regel vil -d være sat til
 </para>
 
 <para>
-Port benyttes efter en source adresse eller destinations adresse. Med TCP og UDP kan man skrive et navn på et service fra service filen i /etc eller et port nummer. 1024:65535 betyder alle portene fra 1024 til 65535 med både 1024 og 65535 inklusiv. Man kan også skrive ssh:smtp som betyder det samme, altså port 22 til port 25, denne måde er dog lidt mere uoverskuelig. Hvis man skal vælge port med ICMP man skrive ipchains --help icmp for at få en oversigt over de muligheder man har for ICMP trafik.
+Port benyttes efter en source adresse eller destinations adresse. Med
+TCP og UDP kan man skrive et navn på et service fra service filen i
+/etc eller et port nummer. 1024:65535 betyder alle portene fra 1024
+til 65535, begge inklusive. Man kan også skrive
+ssh:smtp som betyder det samme, altså port 22 til port 25, denne måde
+er dog lidt mere uoverskuelig. Hvis man skal vælge port med ICMP man
+skrive ipchains --help icmp for at få en oversigt over de muligheder
+man har for ICMP trafik.
 </para>
 </listitem>
 
@@ -4556,7 +4600,7 @@ såkaldte Type Of Service bits i pakken. Af muligheder er:
 </screen>
 
 <para>
-For eksempelvis at får minimum delay på SSH trafik ud kan man skrive:
+Som eksempel kan vi få minimum delay på SSH trafik ud kan man skrive:
 </para>
 
 <screen>
@@ -4568,7 +4612,7 @@ ipchains -A output -p tcp -d 0.0.0.0/0.0.0.0 22  -t 0x01 0x10
 <listitem><para> <command>-l</command> bruges når man vil logge en
 bestemt pakke. Alle log beskeder kommer som standard til at ligge i
 <filename>/var/log/messages</filename>. En logning i
-<filename>/var/log/messages</filename> kunne se sådan ud:
+<filename>/var/log/messages</filename> kan se sådan ud:
 </para>
 
 <screen>
@@ -4578,7 +4622,7 @@ T=64
 </screen>
 
 <para>
-1.Jun 4 14:29:26 betyder at logningen blev taget den 4 Juni kl. 14:29:26
+1.Jun 4 14:29:26 betyder at logningen blev taget den 4 Juni kl. 14:29:26.
 </para>
 
 <para>2.lxhome er maskinens host navn.
@@ -4587,11 +4631,16 @@ T=64
 <para>3.kernel: Packet log betyder at der er lavet en log for pakken.
 </para>
 
-<para>4.input betyder hvilken kæde logningen er lavet på. Dette kunne også være FORWARD,OUTPUT eller en kæde man selv har lavet.
+<para>4.input viser hvilken kæde logningen er lavet på. Dette kunne
+også være FORWARD,OUTPUT eller en kæde man selv har lavet.
 </para>
 
-<para>5.DENY betyder at det er hvad pakken har fået ud fra enten den standard policy som der er på en given kæde eller at man i en firewall regel har givet pakken en DENY. Af andre muligheder her er, ACCEPT,REJECT,DENY,MASQ,REDIRECT og RETURN
-</para>
+<para>5.DENY betyder at det er hvad pakken har
+fået ud fra enten den standard policy som der
+er på en given kæde eller at man i en
+firewall regel har givet pakken en DENY. Andre
+muligheder her er ACCEPT, REJECT, DENY, MASQ,
+REDIRECT eller RETURN.</para>
 
 <para>6.eth0 betyder at logningen blev taget på interfacet eth0.
 </para>
@@ -4617,7 +4666,7 @@ T=64
 <para>13.F=0x0000 er pakken fragments ID. En pakke der starter med 0x2
 eller 0x3 betyder flere fragmenter, så denne er kun en af flere pakker
 som skal samles til en. En værdi som starter med 0x4 eller 0x5 betyder
-at bitten Do not Fragment er sat.
+at bit'en "Do not Fragment" er sat.
 </para>
 
 <para>14.T=64 er pakkens Time To Live felt. 
@@ -5016,33 +5065,33 @@ fi
 
 <para>
 De eneste variable man som regel skal ændre er, EXTIF som er ens
-interface ud mod Internettet, denne variabel vil hvis man har analogt
+interface ud mod Internettet. Denne variabel vil hvis man har analogt
 modem normalt være ppp0, hvis man har ISDN modem ippp0 og hvis man har
-LAN router være eth0 eller eth1. INTIF er det interface som er ud mod
-ens lokale LAN, denne variabel vil som regel være eth0 eller
-eth1. Variablen DHCP, skal ændres hvis man har modem og man ikke har
-en statisk IP adresse skal denne variabel sættes til yes. Hvis man har
-en LAN router skal denne variabel ikke sættes. Den sidste variabel er
-UDPINOK som tillader ALT UDP trafik ind til firewallen på portene
-55000 til 65535. Denne variabel er ikke sat som standard og skal kun
-sættes hvis man har et program der benytter UDP som ikke virker med
-scriptet og man ikke selv kan finde ud af at lave en firewall regel
-til det. Hvis UDPINOK sættes til yes, vil det betyde at der er et
-hul i firewallen.  Som standard er EXTIF sat til ppp0, INTLAN
-sat til eth0, DHCP sat til yes og UDPINOK ikke sat.
+LAN router være eth0 eller eth1. 
+INTIF er det interface som er ud mod ens lokale netværk og vil som
+regel være eth0 eller eth1. Hvis man har modem og ikke har en statisk
+IP adresse skal variablen DHCP sættes til yes.
+Hvis man har en LAN router skal denne variabel ikke sættes. Den sidste
+variabel er UDPINOK som tillader ALT UDP trafik ind til firewallen på
+portene 55000 til 65535. Denne variabel er ikke sat som standard og
+skal kun sættes hvis man har et program der benytter UDP som ikke
+virker med scriptet og man ikke selv kan finde ud af at lave en
+firewall regel til det. Hvis UDPINOK sættes til yes, vil det betyde at
+der er et hul i firewallen.  Som standard er EXTIF sat til ppp0,
+INTLAN sat til eth0, DHCP sat til yes og UDPINOK ikke sat.
 </para>
 
 <para>
 Man skal være opmærksom på at ting som kører via UDP protokollen som
 standard ikke tillades ind som retur trafik og man skal derfor selv
-lave en regel for det. De moduler der startes som benytter UDP som
-transport protokol, eksempelvis ICQ, vil der i scriptet automatisk
-blive lavet en firewall regel, så ICQ retur trafik ind er tilladt.  Da
-alt trafik ud bliver afvist og alt trafik ind bliver nægtet skal man
+lave en regel for det. Til de moduler der startes, som benytter UDP
+som transport protokol, eksempelvis ICQ, vil der i scriptet automatisk
+blive lavet en firewall regel, så ICQ retur trafik ind er tilladt. Da
+al trafik ud bliver afvist og al trafik ind bliver nægtet, skal man
 selv sætte regler op, hvis man eksempelvis har en web server stående,
-så folk udefra kan få forbindelse med den.  Hvis jeg nu ønsker at lave
-en forbindelse til et service som benytter UDP som transport protokol,
-skal man indføre en af disse linjer i script'et der kunne hedde:
+så folk udefra kan få forbindelse med den. Hvis man ønsker at lave en
+forbindelse til en service som benytter UDP som transport protokol,
+skal man indføre en af disse linjer i script'et:
 </para>
 
 <screen>
@@ -5061,14 +5110,14 @@ ipchains -A input -i $EXTIF -p udp -s 0.0.0.0/0.0.0.0 port \
 
 <para>
 Parameteren "host" i første linje er lig med en IP adresse og port er
-lig med den port som service'et kører på. Første linje betyder at du
-acceptere trafik fra IP adressen "host" og som har porten
+lig med den port som servicen. Første linje betyder at du
+accepterer trafik fra IP adressen "host" og som har porten
 "port". Anden linje betyder at du acceptere trafik fra hvilken som
 helst IP adresse som har porten "port".
 </para>
 
 <para>
-Hvis jeg nu gerne vil give folk lov til at få forbindelse med min web
+Hvis man vil give folk lov til at få forbindelse med min web
 server skal man skrive dette:
 </para>
 
@@ -5082,9 +5131,8 @@ ipchains -A output -i $EXTIF -p tcp -s $EXTIP 80 \
 <para>
 Firewall scriptet skal gemmes i <filename>/etc/firewall</filename>
 under linux og der skal man skrive <command>chmod 700
-/etc/firewall</command>, som gør at root som den eneste kan læse,
-skrive og kører scriptet.
-</para>
+/etc/firewall</command>, gør at root er den eneste der kan læse,
+skrive og køre scriptet.</para>
 </sect3>
 
 <sect3 id="firewall-initscript">
@@ -5098,17 +5146,17 @@ hver gang man genstarter sin linux maskine skal scriptet lægges under
 <command>chmod 700 /etc/rc.d/init.d/firewall</command>. Herefter
 skrives <command>chkconfig --add firewall</command> (med dobbelt
 minus), og til sidst <command>chkconfig --level 3 firewall
-on</command> (med dobbelt minus), dette betyder at firewall scriptet
+on</command> (med dobbelt minus). Dette betyder, at firewall scriptet
 bliver kørt hver gang linux startes i runlevel 3.  Dette skal dog kun
-gøres hvis man har en LAN router eller har statisk IP adresse, da man
-ikke på dette tidspunkt i opstarten af linux ikke har lavet et opkald
-til sin Internet udbyder, kan scriptet derfor ikke finde IP adressen
-på ens interface. Hvis man benytter et modem skal man i stedet, hvis
-man kører med Red Hat indsætte <command>/etc/rc.d/init.t/firewall
+gøres hvis man har en LAN router eller har en statisk IP adresse. Da
+man på dette tidspunkt i opstarten af linux ikke har lavet et opkald
+til sin Internet udbyder, kan scriptet ikke finde IP adressen på ens
+interface.  Hvis man benytter et modem skal man i stedet, hvis man
+kører med Red Hat, indsættes <command>/etc/rc.d/init.t/firewall
 start</command> nederst i filen
 <filename>/etc/ppp/ip-up.local</filename> og så stadig benytte INIT
-scriptet. Hvis man ønsker at se hvilke variabler og ting som scriptet
-selv har fundet ud af kan man skrive
+scriptet. Hvis man ønsker at se hvilke variable og ting som scriptet
+selv har fundet ud af, kan man skrive
 <filename>/etc/rc.d/init.d/firewall</filename> debug. For at se de
 muligheder man har skriver man
 <filename>/etc/rc.d/init.d/firewall</filename>.
@@ -5242,10 +5290,12 @@ Dette script kan downloades fra <ulink url="http://www.sslug.dk/linuxbog/firewal
 
 <sect3 id="firewall-IPMASQADM">
 <title>Adgang til interne maskiner med IPMASQADM</title>
+
 <para>
-Hvis man skal have adgang til ens maskiner bag en firewall der kører
-med private adresser kan man benytte ipmasqadm og have modulet
-portfw. Ipmasqadm er ikke med som standard i gængse Linux-distributioner.
+Hvis man skal have adgang til sine maskiner bag en firewall, der kører
+med private adresser, kan man benytte ipmasqadm og have modulet
+portfw. Ipmasqadm er ikke med som standard i gængse
+Linux-distributioner.
 </para>
 
 <para>
@@ -5256,7 +5306,8 @@ IPMASQADM portfw syntakser: <command>ipmasqadm portfw -a -P PROTO -L LADDR LPORT
 <listitem><para><command>-a</command> Indsæt ny regel for ipmasqadm.</para></listitem>
 <listitem><para><command>-f</command> Slet alle regler i listen.</para></listitem>
 <listitem><para><command>-l</command> Vis alle regler i listen.</para></listitem>
-<listitem><para><command>-l -n</command> Vis alle regler i listen, men laver ikke et reverse lookup.</para></listitem>
+<listitem><para><command>-l -n</command> 
+Vis alle regler i listen uden at lave et reverse lookup.</para></listitem>
 <listitem><para><command>-p PREF</command> Prioritet, er som standard 10.</para></listitem>
 <listitem><para><command>-P PROTO</command> PROTO kan være tcp eller udp.</para></listitem>
 <listitem><para><command>LADDR</command> Den IP adresse som modtager de pakker som skal sendes videre til intern maskine.</para></listitem>
