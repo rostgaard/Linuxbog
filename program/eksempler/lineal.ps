@@ -1,0 +1,118 @@
+%!PS-Adobe-3.0
+% af Hans Schou <chlor@sslug.dk>
+% $Id$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dette program tegner en lineal hvor der både vises punkter og mm.
+% En praktisk lille ting når man skal designe og måle på sit
+% Postscript design.
+% Efter udskrivning skæres/klippes den til, ca. en mm inde i måle-
+% stregerne, så man helt præcist kan se hvor man måler.
+% Test med ghostscript:
+%   gs -sDEVICE=x11 -r55 lineal.ps
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Tegnes linealen på skrå, kan den blive lidt længere.
+% Skift imellem true og false.
+/paaskraa false def
+
+% Punkter fra bundkant.
+/bundmargin 25 def
+
+% Antal punkter imellem de korte streger
+/kortinterval 2 def
+
+% Antal punkter imellem de lange streger og tal
+/langinterval kortinterval 5 mul def
+
+% Længden af en kort streg.
+/kortstreg 5 def
+
+% Længden af en lang streg.
+/langstreg kortstreg 5 add def
+
+% Maximum antal punkter der skal tegnes.
+/maxantal 950 def
+
+% Startposition for tal.
+/talX langstreg 5 add def
+
+% Skrifthøjde.
+/skrifthojde 9 def
+
+% Sæt siden op til a4 eller letter.
+a4
+
+% Sæt linietykkelse.
+0.5 setlinewidth
+
+% Sæt skriftsnit.
+/Helvetica findfont skrifthojde scalefont setfont
+
+% Funktion: skrivtal
+% Skriv tal som står på stakken.
+% Afslut med at stå i samme punkt.
+% <int> skrivtal -
+/skrivtal {
+  % Gem stedet hvor vi står
+  gsave
+  % Gå til position for tal. Ryk lidt ned for vertikal centrering.
+  talX skrifthojde 3 div neg rmoveto
+  % Tag kopi af tal og skriv det.
+  dup 5 string cvs show
+  ( \() show
+  % Omregn tal til mm med en decimal og skriv det.
+  254 mul 72 idiv 10 div 10 string cvs show
+  (mm\)) show
+  grestore
+} bind def
+
+% Funktion: tegnstreg
+% Tegn en kort eller en lang målestreg.
+% Hvis det er en lang streg, skriv også tallet.
+%   <intY> tegnstreg -
+/tegnstreg {
+  % gå til x,y
+  dup
+  newpath
+  0 exch moveto
+  % Med modulus beregn om det er lang eller kort streg
+  dup
+  langinterval mod 0 eq {
+    skrivtal
+    langstreg
+  }{
+    % Smid intY væk.
+    pop
+    kortstreg
+  } ifelse
+  0 rlineto
+  stroke
+} bind def
+
+% Flyt nul-punkt og rotér.
+paaskraa {
+  550
+  37 rotate
+}{
+  150
+} ifelse
+  bundmargin translate
+
+% Forstørrelse ved debugging.
+%2 dup scale
+
+% Tegn alle streger fra 0 til maxantal.
+0 kortinterval maxantal { tegnstreg } for
+
+% Lidt hjælpetekst.
+% Gå 1/3 op på siden og lidt til venstre.
+-10 maxantal 3 div moveto
+90 rotate
+(Klip ved denne linie) show
+
+% Udskriv siden.
+showpage
+
+% Afbryd. (kun relevant med ghostscript)
+quit
