@@ -278,7 +278,7 @@ hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
       if ($attr[online])
         echo "<td>&nbsp;</td>\n";
       else
-        echo "<td>$filesize</td>\n";
+        echo "<td align=\"right\">$filesize</td>\n";
       echo "</tr>\n";
     }
     echo "</table>\n";
