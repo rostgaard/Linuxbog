@@ -1,201 +1,216 @@
 <?xml version='1.0' encoding='ISO-8859-1' ?>
+
 <!-- $Id$ -->
 <chapter id="Linux-netvaerk-klient">
  <title>Linux og netværk - klientsiden</title>
 
- <indexterm><primary>Netværk</primary><secondary>klienter</secondary></indexterm>
+ <indexterm>
+  <primary>netværk</primary>
+  <secondary>klienter</secondary>
+ </indexterm>
 
  <para>
-I dette kapitel vil vi se på klientsiden af netværk.
-<!-- Det skal bemærkes at i xref linkend="Linux-netvaerk-server" er det
-en masse information tilsvarende om server opsætning.--> <!-- Vil du vide mere
-om netværksadresser og hvorfor og hvordan netværk kobles sammen, så se
-mere i xref linkend="tcp-ip".-->
-</para>
+  I dette kapitel vil vi se på klientsiden af netværk.  <!-- Det skal
+  bemærkes at i xref linkend="Linux-netvaerk-server" er det en masse
+  information tilsvarende om server opsætning.--> <!-- Vil du vide
+  mere om netværksadresser og hvorfor og hvordan netværk kobles
+  sammen, så se mere i xref linkend="tcp-ip".-->
+ </para>
 
-<indexterm><primary>Kerne 2.4</primary><secondary>problem med 
-net-tilkobling</secondary></indexterm>
+ <para>
+  <indexterm>
+   <primary>Kerne 2.4</primary>
+   <secondary>problem med net-tilkobling</secondary>
+  </indexterm>
 
-<para>
-En vigtig start-kommentar, som kunne stå mange steder i denne bog er
-at der med Linux-kerne 2.4 (f.eks. Red Hat 7.3 og Mandrake 8.2) er
-problemer med at få tilgang til alle hjemmesider - det er et
-problem som er forstået nu, se f.eks. <ulink
-url="http://eltoday.com/article.php3?ltsn=2001-04-17-001-14-PS">http://eltoday.com/article.php3?ltsn=2001-04-17-001-14-PS</ulink>.
-Løsningen er simpel. Tilføj følgende til f.eks. 
-<filename>/etc/rc.d/rc.local</filename>:
-</para>
+  En vigtig start-kommentar, som kunne stå mange steder i denne bog er
+  at der med Linux-kerne 2.4 (f.eks. Red Hat 7.3 og Mandrake 8.2) er
+  problemer med at få tilgang til alle hjemmesider - det er et problem
+  som er forstået nu, se f.eks. <ulink
+  url="http://eltoday.com/article.php3?ltsn=2001-04-17-001-14-PS">http://eltoday.com/article.php3?ltsn=2001-04-17-001-14-PS</ulink>.
+  Løsningen er simpel. Tilføj følgende til f.eks.
+  <filename>/etc/rc.d/rc.local</filename>:
 
 <programlisting>
 echo "0" &gt; /proc/sys/net/ipv4/tcp_ecn
 </programlisting>
+ </para>
 
+ <sect1 id="modeminternet">
+  <title>Modemforbindelse til internettet</title>
 
-<sect1 id="modeminternet">
-<title>Modemforbindelse til internettet</title>
-<indexterm><primary>internet-opkobling</primary></indexterm>
-<indexterm><primary>Modem og internettet</primary></indexterm>
-<para>
-Hvis du er en typisk hjemmebruger eller sidder i en mindre virksomhed og
-vil have din computer på internettet, vil du som regel have brug
-for at gøre det via en modemforbindelse.
-</para>
+  <indexterm><primary>internet-opkobling</primary></indexterm>
+  <indexterm><primary>Modem og internettet</primary></indexterm>
 
-<para>
-Langt den mest almindelige måde at gøre det på i Linux er ved hjælp af
-PPP, Point-to-Point-protokollen. PPP tilbyder en hel del flere
-faciliteter og mere fleksibilitet, end vi her vil komme ind på. Vi vil nøjes
-med at beskrive den typiske og helt basale opsætning, der vil sætte dig
-i stand til at få en TCP/IP-forbindelse til din internetudbyder op at
-køre.
-</para>
+  <para>
+   Hvis du er en typisk hjemmebruger eller sidder i en mindre
+   virksomhed og vil have din computer på internettet, vil du som
+   regel have brug for at gøre det via en modemforbindelse.
+  </para>
 
-<para>
-Hvis du får brug for at sætte en server op til at modtage PPP-opkald,
-eller hvis du har problemer med at få PPP til at fungere mellem Linux og
-Windows NT eller har andre specielle behov, skulle du overveje at
-tage et kig på følgende bog, der går ganske grundigt til værks
-inden for sit emne:
-</para>
+  <para>
+   Langt den mest almindelige måde at gøre det på i Linux er ved hjælp
+   af PPP, Point-to-Point-protokollen. PPP tilbyder en hel del flere
+   faciliteter og mere fleksibilitet, end vi her vil komme ind på. Vi
+   vil nøjes med at beskrive den typiske og helt basale opsætning, der
+   vil sætte dig i stand til at få en TCP/IP-forbindelse til din
+   internetudbyder op at køre.
+  </para>
 
-<para>
-Andrew Sun: <emphasis>Using &amp; Managing PPP</emphasis>,
-O'Reilly &amp; Associates, Inc., ISBN 1-56592-321-9, 430 sider.
-</para>
+  <para>
+   Hvis du får brug for at sætte en server op til at modtage
+   PPP-opkald, eller hvis du har problemer med at få PPP til at
+   fungere mellem Linux og Windows NT eller har andre specielle behov,
+   skulle du overveje at tage et kig på følgende bog, der går ganske
+   grundigt til værks inden for sit emne:
+  </para>
 
-<sect2 id="PPP">
-<title>Opsætning af PPP</title>
-<indexterm><primary>PPP</primary></indexterm>
+  <para>
+   Andrew Sun: <emphasis>Using &amp; Managing PPP</emphasis>, O'Reilly
+   &amp; Associates, Inc., ISBN 1-56592-321-9, 430 sider.
+  </para>
 
-<para>
-Med Red Hat Linux følger der et grafisk baseret opsætningsprogram, der
-gør det forholdsvis enkelt at få PPP i gang. Hvis du har en konto hos
-en internetudbyder (ISP), har du forhåbentlig modtaget de sæt
-oplysninger, der skal bruges for at få din forbindelse til at køre. Du
-skal fra din ISP som minimum have
+  <sect2 id="PPP">
+   <title>Opsætning af PPP</title>
 
-<itemizedlist mark="bullet" spacing="compact">
-<listitem><para>Et dial-in brugernavn</para></listitem>
-<listitem><para>En tilhørende adgangskode</para></listitem>
-<listitem><para>Et telefonnummer til internetudbyderens 
-dial-in</para></listitem>
-<listitem><para>IP-numre på én eller to navneservere hos din 
-ISP</para></listitem>
-</itemizedlist>
+   <indexterm><primary>PPP</primary></indexterm>
 
-Har du sat modemforbindelse til din ISP op under f.eks. Windows 95,
-står de oplysninger du skal have, under de menuer, hvor internettet via
-modem konfigureres. Er du i tvivl, spørg din ISP om disse
-informationer.
-</para>
+   <para>
+    Med Red Hat Linux følger der et grafisk baseret opsætningsprogram,
+    der gør det forholdsvis enkelt at få PPP i gang. Hvis du har en
+    konto hos en internetudbyder (ISP), har du forhåbentlig modtaget
+    de sæt oplysninger, der skal bruges for at få din forbindelse til
+    at køre. Du skal fra din ISP som minimum have
 
-<para>
-Du skal være systemadministrator ("root") for at kunne sætte din internetforbindelse op, så
-skriv <command>su -</command> i en <command>xterm</command>, og gør
-følgende:
-</para>
+    <itemizedlist mark="bullet" spacing="compact">
+     <listitem><para>Et dial-in brugernavn</para></listitem>
+     <listitem><para>En tilhørende adgangskode</para></listitem>
+     <listitem><para>Et telefonnummer til ISP'ens dial-in</para></listitem>
+     <listitem><para>IP-numre på én eller to navneservere hos din ISP</para></listitem>
+    </itemizedlist>
 
-<para>
-Start med at finde ud af, hvor dit modem sidder.
-COM1 i DOS/Windows svarer til <filename>/dev/ttyS0</filename> i Linux.
-COM2 svarer til <filename>/dev/ttyS1</filename> osv.
-Som root skal du lave en modemenhed, som er en symbolsk lænke til den
-rette seriel-port. Hvis du anvender COM2, skal du skrive:
-</para>
+    Har du sat modemforbindelse til din ISP op under f.eks. Windows
+    95, står de oplysninger du skal have, under de menuer, hvor
+    internettet via modem konfigureres. Er du i tvivl, spørg din ISP
+    om disse informationer.
+   </para>
+
+   <para>
+    Du skal være systemadministrator ("root") for at kunne sætte din
+    internetforbindelse op, så skriv <command>su -</command> i en
+    <command>xterm</command>, og gør følgende:
+   </para>
+
+   <para>
+    Start med at finde ud af, hvor dit modem sidder.  COM1 i
+    DOS/Windows svarer til <filename>/dev/ttyS0</filename> i Linux.
+    COM2 svarer til <filename>/dev/ttyS1</filename> osv.  Som root
+    skal du lave en modemenhed, som er en symbolsk lænke til den rette
+    seriel-port. Hvis du anvender COM2, skal du skrive:
 
 <screen>
 <prompt>[root@hven /root]# </prompt><userinput>ln -sf /dev/ttyS1 /dev/modem</userinput>
 </screen>
+   </para>
 
-<para>
-Tjek lige, at det symbolske link er rigtig.
-</para>
+   <para>
+    Tjek lige, at den symbolske link er rigtig:
 
 <screen>
 <prompt>[root@hven /root]#  </prompt><userinput>ls -al /dev/modem</userinput>
 lrwxrwxrwx   1 root root 5 Sep  5 04:37 /dev/modem -> /dev/ttyS1
 </screen>
 
-<para>
-Det ser godt ud. Nu peger <filename>/dev/modem</filename> på den anden
-serielport.
-</para>
-</sect2>
+    Det ser godt ud. Nu peger <filename>/dev/modem</filename> på den
+    anden serielport.
+   </para>
+  </sect2>
 
+  <sect2 id="usernetppp">
+   <title>Internet-opkobling med modem</title>
 
-<sect2 id="usernetppp">
-<title>Internet-opkobling med modem</title>
-<indexterm><primary>usernet</primary></indexterm>
-<indexterm><primary>internet-opkobling</primary><secondary>usernet</secondary></indexterm>
+<!--  Hvad pokker er "usernet"?
+   <indexterm>
+    <primary>usernet</primary>
+   </indexterm>
+   <indexterm>
+    <primary>internetopkobling</primary>
+    <secondary>usernet</secondary>
+   </indexterm>
+-->
 
-<para>
-Som root starter du <command>linuxconf</command> og finder
-"Config->Networking->Client tasks->PPP/SLIP/PLIP". Vælg i højre side "Add"
-(se <xref linkend="linuxconf-ppp1-fig"/>). Derefter "PPP". I næste
-skærmbillede udfylder du telefonnummer (modemport har vi sat op, så
-brug <filename>/dev/modem</filename>), vælg "PAP Authentication" og
-skriv til sidst dit brugernavn og adgangskode til din internetudbyder.
-</para>
+   <para>
+    Som root starter du <command>linuxconf</command> og finder
+    "Config->Networking->Client tasks->PPP/SLIP/PLIP". Vælg i højre
+    side "Add" (se <xref linkend="linuxconf-ppp1-fig"/>). Derefter
+    "PPP". I næste skærmbillede udfylder du telefonnummer (modemport
+    har vi sat op, så brug <filename>/dev/modem</filename>), vælg "PAP
+    Authentication" og skriv til sidst dit brugernavn og adgangskode
+    til din internetudbyder.
+   </para>
 
+   <figure id="linuxconf-ppp1-fig" float="1">
+    <title>PPP</title>
+    <graphic fileref="linuxconf-ppp0.&magic;" scale="40"></graphic>
+   </figure>
 
-<figure id="linuxconf-ppp1-fig" float="1">
-<title>PPP</title>
-<graphic fileref="linuxconf-ppp0.&magic;" scale="40"></graphic>
-</figure>
+   <para>
+    Efter at have trykket "Accept", bør du nok lige dobbeltklikke på
+    din nye forbindelse "ppp0". Du kan nu ændre lidt i
+    opsætningen. F.eks. er du måske interesseret i at vælge
+    "Hardware->Allow any user to (de)activate the interface" - for at
+    almindelige brugere kan starte internetopkoblingen op selv uden
+    systemadministratorens adgangskode. Du kan nok også være
+    interesseret i at få valgt "Networking->No Connection" til
+    f.eks. 30 sekunder.
+   </para>
 
-<para>
-Efter at have trykket "Accept", bør du nok lige dobbeltklikke på din
-nye forbindelse "ppp0". Du kan nu ændre lidt i opsætningen. F.eks. er
-du måske interesseret i at vælge "Hardware->Allow any user to
-(de)activate the interface" - for at almindelige brugere kan starte
-internetopkoblingen op selv uden systemadministratorens adgangskode. Du kan nok også være
-interesseret i at få valgt "Networking->No Connection" til f.eks. 30 sekunder.
-</para>
+   <para>
+    Hop ud af PPP-delen ved i højre side af vinduet at trykke "Accept"
+    -> "Quit". Derefter "Act/Changes" i venstre side - så "Activate
+    the changes" og til sidste "Quit". Før vi starter
+    internet-forbindelsen skal du lige checke at du har dine
+    nameservere skrevet ind i
+    <filename>/etc/resolv.conf</filename>. <!-- se xref
+    linkend="etc-resolv-conf-filen"-->
+   </para>
 
-<para>
-Hop ud af PPP-delen ved i højre side af vinduet at trykke "Accept" ->
-"Quit". Derefter "Act/Changes" i venstre side - så "Activate the
-changes" og til sidste "Quit". Før vi starter internet-forbindelsen
-skal du lige checke at du har dine nameservere skrevet ind i
-<filename>/etc/resolv.conf</filename>. <!-- se
-xref linkend="etc-resolv-conf-filen"-->
-</para>
+   <para>
+    Nu starter du som almindelig bruger <command>rp3</command>, som
+    vist på <xref linkend="rp3-fig"/>. Her er der allerede en
+    netværksforbindelse med <filename>eth0</filename>, og loopback
+    (lo) er til Linux-kernen på den lokale maskine. Vælg
+    <filename>ppp0</filename> og tryk OK til at starte. Nu burde det
+    køre.
+   </para>
 
-<para>
-Nu starter du som almindelig bruger <command>rp3</command>, som vist
-på <xref linkend="rp3-fig"/>. Her er der allerede en
-netværksforbindelse med <filename>eth0</filename>, og loopback (lo) er
-til Linux-kernen på den lokale maskine. Vælg <filename>ppp0</filename>
-og tryk OK til at starte. Nu burde det køre.
-</para>
+   <figure id="rp3-fig" float="1">
+    <title>rp3</title>
+    <graphic fileref="linuxconf-ppp1.&magic;" scale="40"></graphic>
+   </figure>
 
-<figure id="rp3-fig" float="1">
-<title>rp3</title>
-<graphic fileref="linuxconf-ppp1.&magic;" scale="40"></graphic>
-</figure>
+   <para>
+    Når du har hul igennem til internettet, kan du jo passende prøve
+    <ulink url="http://www.sslug.dk">http://www.sslug.dk</ulink> -
+    dvs. SSLUG's hjemmeside.
+   </para>
 
-<para>
-Når du har hul igennem til internettet, kan du jo passende prøve
-<ulink url="http://www.sslug.dk">http://www.sslug.dk</ulink> - dvs. SSLUG's 
-hjemmeside.
-</para>
+   <para>
+    Du kunne have opnået det samme resultat ved at bruge
+    <command>netcfg</command> som er en del af
+    <command>control-panel</command>, der er et Red Hat-program til at
+    opsætte net. I virkeligheden er <command>netcfg</command> og
+    <command>linuxconf</command> blot behagelige og nemme måder at
+    redigere det sæt tekstfiler, der bestemmer, hvordan pppd opfører
+    sig. Disse filer ligger i <filename>/etc/ppp</filename>.
+   </para>
 
-
-<para>
-Du kunne have opnået det samme resultat ved at bruge
-<command>netcfg</command> som er en del af
-<command>control-panel</command>, der er et Red Hat-program til at
-opsætte net. I virkeligheden er <command>netcfg</command> og
-<command>linuxconf</command> blot behagelige og nemme måder at
-redigere det sæt tekstfiler, der bestemmer, hvordan pppd opfører
-sig. Disse filer ligger i <filename>/etc/ppp</filename>.
-</para>
-
-<para>Vi kan i øvrigt anbefale, at du læser <ulink
-url="http://www.sslug.dk/artikler/ppp-info.html">http://www.sslug.dk/artikler/ppp-info.html</ulink>,
-hvis du har problemer med at få din modem-opkobling til at virke.
-</para>
-</sect2>
+   <para>
+    Vi kan i øvrigt anbefale, at du læser <ulink
+    url="http://www.sslug.dk/artikler/ppp-info.html">http://www.sslug.dk/artikler/ppp-info.html</ulink>,
+    hvis du har problemer med at få din modem-opkobling til at virke.
+   </para>
+  </sect2>
 
 <sect2 id="kppp">
 <title>Modem og internettet med brug af kppp</title>
@@ -380,47 +395,56 @@ Se i øvrigt <ulink
 url="http://www.sslug.dk/artikler/ppp/diald.shtml#links">http://www.sslug.dk/artikler/ppp/diald.shtml#links</ulink>
 og diald hjemmesiden <ulink url="http://diald.sourceforge.net/">http://diald.sourceforge.net/</ulink>.
 </para>
-</sect2>
-</sect1>
+  </sect2>
+ </sect1>
 
-<sect1 id="ethernet">
-<title>Ethernet-kort</title>
-<indexterm><primary>Ethernet</primary></indexterm>
-<indexterm><primary>Netkort</primary></indexterm>
-<indexterm><primary>Netværk</primary><secondary>Ethernet</secondary></indexterm>
+ <sect1 id="ethernet">
+  <title>Ethernet-kort</title>
 
-<para>
-Hvis du har behov for at koble et mindre antal computere sammen i et
-lokalnetværk, vil du oftest benytte netværkskort af Ethernet-typen.
-</para>
+  <indexterm>
+   <primary>Ethernet</primary>
+  </indexterm>
+  <indexterm>
+   <primary>netkort</primary>
+  </indexterm>
+  <indexterm>
+   <primary>netværk</primary>
+   <secondary>Ethernet</secondary>
+  </indexterm>
 
-<para>
-Langt de fleste Ethernet-kort fungerer upåklageligt under Linux. De fleste
-billige kort er kloner af Novells NE2000 og fungerer glimrende sammen
-med driveren til det kort.
-</para>
+  <para>
+   Hvis du har behov for at koble et mindre antal computere sammen i
+   et lokalnetværk, vil du oftest benytte netværkskort af
+   Ethernet-typen.
+  </para>
 
-<para>
-Installerede Ethernet-kort hedder i Linux <filename>eth0</filename>,
-<filename>eth1</filename>, <filename>eth2</filename>
-etc. Normalt vil du kun have et enkelt kort, der så naturligvis hedder
-<filename>eth0</filename>.
-</para>
+  <para>
+   Langt de fleste Ethernet-kort fungerer upåklageligt under Linux. De
+   fleste billige kort er kloner af Novells NE2000 og fungerer
+   glimrende sammen med driveren til det kort.
+  </para>
 
-<para>
-Netværkskort kan konfigureres i forbindelse med installationen
-eller senere ved hjælp af programmet <command>linuxconf</command>
-eller <command>netcfg</command> under Red Hat - tilsvarende er det
-<command>yast</command> med SuSE.
-De parametre, som optræder på billedet, skal du have af din
-netværksansvarlige.
-</para>
+  <para>
+   Installerede Ethernet-kort hedder i Linux
+   <filename>eth0</filename>, <filename>eth1</filename>,
+   <filename>eth2</filename> etc. Normalt vil du kun have et enkelt
+   kort, der så naturligvis hedder <filename>eth0</filename>.
+  </para>
 
-<figure id="ethercfg" float="1">
-<title>Opsætning af ethernet-interface</title>
-<graphic fileref="linuxconf-eth0.&magic;" scale="40"></graphic>
-</figure>
-</sect1>
+  <para>
+   Netværkskort kan sættes op i forbindelse med at du installerer
+   Linux eller senere ved hjælp af programmet
+   <command>linuxconf</command> eller <command>netcfg</command> under
+   Red Hat - tilsvarende er det <command>yast</command> med SuSE.  De
+   parametre, som optræder på billedet, skal du have af din
+   netværksansvarlige.
+  </para>
+
+  <figure id="ethercfg" float="1">
+   <title>Opsætning af ethernet-interface</title>
+   <graphic fileref="linuxconf-eth0.&magic;" scale="40"></graphic>
+  </figure>
+ </sect1>
 
 <sect1 id="wavelan">
 <title>Wavelan</title>
@@ -642,31 +666,43 @@ Netscape. Du kan se hvordan Opera ser ud på <xref linkend="opera-fig"/>.
 </figure>
 
 
-<sect2 id="truetype">
-<title>TrueType-skrifttyper og Netscape</title>
-<indexterm><primary>True type-skrifttyper</primary></indexterm>
+  <sect2 id="truetype">
+   <title>TrueType-skriftsnit og Netscape</title>
 
-<para>
-Normalt er TrueType-skrifttyper ikke anvendt under X-vinduesystemet, men du
-kan få f.eks. din Netscape til at bruge de skrifter. Du skal have installeret
-<filename>freetype-1.2-6.i386.rpm</filename> eller en lignende
-version. Man skal blot "finde" programmet <command>ttmkfdir</command>,
-der kan generere en "<filename>fonts.scale</filename>"-fil til sine
-TrueType-skriftsnit.
-</para>
+   <indexterm>
+    <primary>TrueType-skriftsnit</primary>
+   </indexterm>
+   <indexterm>
+    <primary>skriftsnit</primary>
+    <secondary>TrueType-</secondary>
+   </indexterm>
 
-<itemizedlist mark="bullet">
+   <para>
+    Normalt er TrueType-skriftsnit ikke anvendt under
+    X-vinduesystemet, men du kan få f.eks. din Netscape til at bruge
+    de skrifter. Du skal have installeret
+    <filename>freetype-1.2-6.i386.rpm</filename> eller en lignende
+    version. Man skal blot "finde" programmet
+    <command>ttmkfdir</command>, der kan generere en
+    "<filename>fonts.scale</filename>"-fil til sine
+    TrueType-skriftsnit.
+   </para>
 
-<listitem> <para>
-Lav et katalog til dine TrueType (ttf) filer, f.eks.
-<filename>/usr/share/fonts/default/TrueType</filename>.
-</para></listitem>
+   <itemizedlist mark="bullet">
+    <listitem>
+     <para>
+      Lav et katalog til dine TrueType (ttf) filer, f.eks.
+      <filename>/usr/share/fonts/default/TrueType</filename>.
+     </para>
+    </listitem>
 
-<listitem> <para>
-Kopiér ttf-skrifttyperne derned fra en Windows-installation, eller
-hent de gratis ttf-filer fra Microsofts webside (de har en
-gratis samling af de mest almindelige TrueType-skrifttyper).
-</para></listitem>
+    <listitem>
+     <para>
+      Kopiér ttf-skriftsnittene derned fra en Windows-installation,
+      eller hent de gratis ttf-filer fra Microsofts webside (de har en
+      gratis samling af de mest almindelige TrueType-skriftsnit).
+     </para>
+    </listitem>
 
 <listitem> <para>
   <screen>
@@ -675,7 +711,7 @@ gratis samling af de mest almindelige TrueType-skrifttyper).
   <prompt>[root@hven /root]#  </prompt><userinput>mkfontdir</userinput>
   </screen>
   Dette genererer en <filename>fonts.dir</filename>-fil som X bruger til at
-  finde ud af hvilke skrifttyper, der ligger i hvilke filer.
+  finde ud af hvilke skriftsnit, der ligger i hvilke filer.
 </para></listitem>
 
 <listitem> 
@@ -699,8 +735,8 @@ gratis samling af de mest almindelige TrueType-skrifttyper).
 </itemizedlist>
 
 <para>
- Start X, og se om "<command>xlsfonts</command>" udskriver en liste med de
- forskellige TrueType-skrifttyper - prøv for eksempel
+ Start X, og se om "<command>xlsfonts</command>" udskriver en liste
+ med de forskellige TrueType-skriftsnit - prøv for eksempel
  "<command>xlsfonts|grep microsoft</command>".
 </para>
 
@@ -800,72 +836,79 @@ som foretrækkes af mange. Det er grafisk og ret enkelt at bruge.
 <graphic fileref="netscapemail.&magic;" scale="40"></graphic>
 </figure>
 
+  <sect2 id="pine">
+   <title>Pine</title>
 
-<sect2 id="pine">
-<indexterm><primary>Pine</primary></indexterm>
-<title>Pine</title>
+   <indexterm>
+    <primary>Pine</primary>
+   </indexterm>
+   <indexterm>
+    <primary>postprogrammer</primary>
+    <secondary>Pine</secondary>
+   </indexterm>
 
-<para>
-Pine er et af de gode programmer til at læse og håndtere e-post. 
-Mailfoldere, en lille og god indbygget teksteditor (<command>pico</command>),
-søgemuligheder, mulighed for at se HTML-formaterede breve og et
-utal af opsætningsmuligheder gør Pine til et hit.
-</para>
+   <para>
+    Pine er et af de gode programmer til at læse og håndtere e-post.
+    Let håndtering af flere postkasser, en lille og god indbygget
+    teksteditor (<command>pico</command>), søgemuligheder, mulighed
+    for at se HTML-formaterede breve og et utal af
+    opsætningsmuligheder gør Pine til et hit.
+   </para>
 
+   <para>
+    I den version af Pine som kommer med Red Hat er der endda
+    muligheder for at definere roller (bl.a. med forskellige
+    email-signaturfiler) og farveopsætning. Som det ses på de følgende
+    billeder kan man få forskellige farver på hvert svar-niveau.
+   </para>
 
-<para>
-I den version af Pine som kommer med Red Hat er der endda
-muligheder for at definere roller (bl.a. med forskellige
-email-signaturfiler) og farveopsætning. Som det ses på de følgende
-billeder kan man få forskellige farver på hvert svar-niveau.
-</para>
+   <figure id="pine2-fig" float="1">
+    <title>Pine med farver</title>
+    <graphic fileref="pine2.&magic;" scale="40"></graphic>
+   </figure>
 
-<figure id="pine2-fig" float="1">
-<title>Pine med farver
-</title>
-<graphic fileref="pine2.&magic;" scale="40"></graphic>
-</figure>
+   <para>
+    En egentlig vejledning til pine er at finde på <ulink
+    url="http://www.washington.edu/pine/tutorial.4/index.html">http://www.washington.edu/pine/tutorial.4/index.html</ulink>
+   </para>
 
-<para>
-En egentlig vejledning til pine er at finde på 
-<ulink url="http://www.washington.edu/pine/tutorial.4/index.html">http://www.washington.edu/pine/tutorial.4/index.html</ulink>
-</para>
+   <para>
+    Lad os tage et par nyttige tricks med pine. 
+   </para>
 
-<para>
-Lad os tage et par nyttige tricks med pine. 
-</para>
+   <sect3 id="stavekontrol-med-pine">
+    <title>Stavekontrol i Pine</title>
 
-<sect3 id="stavekontrol-med-pine">
-<title>Stavekontrol i Pine</title>
+    <indexterm>
+     <primary>stavekontrol i Pine</primary>
+    </indexterm>
+    <indexterm>
+     <primary>Pine</primary>
+     <secondary>stavekontrol i</secondary>
+    </indexterm>
 
-  <indexterm>
-   <primary>stavekontrol i Pine</primary>
-  </indexterm>
-  <indexterm>
-   <primary>Pine</primary>
-   <secondary>stavekontrol i</secondary>
-  </indexterm>
+    <para>
+     <emphasis>Tip:</emphasis> Når du er i gang med at redigere et
+     brev har du mulighed for at få det tjekket for stavefejl. Når du
+     taster <keysym>Ctrl-T</keysym> starter Pine det
+     stavekontrolprogram det er sat op til at bruge. Normalt vil det
+     være Ispell med en engelsk ordbog. Hvis du skriver breve på flere
+     sprog kan det være lidt irriterende med Pines en-sprogede
+     stavekontrol. Programmet <ulink
+     url="http://www.sslug.dk/linuxbog/unix/eksempler/pine-spell"><command>pine-spell</command></ulink>,
+     der kommer med som et af bogens eksempler, er et forsøg på at
+     rette op på dette problem. Hvis du installerer det på dit
+     unix-system og sætter Pine til at bruge det, vil du få mulighed
+     for at vælge mellem alle de sprog der er ordlister til på
+     systemet, når du taster <keysym>Ctrl-T</keysym>. Du skal have
+     installeret <filename>aspell-da-*.rpm</filename> ud over pine
+     selv.
+    </para>
 
-  <para>
-   <emphasis>Tip:</emphasis>
-   Når du er i gang med at redigere et brev har du mulighed for at få det
-   tjekket for stavefejl. Når du taster <keysym>Ctrl-T</keysym> starter
-   Pine det stavekontrolprogram det er sat op til at bruge. Normalt vil det
-   være Ispell med en engelsk ordbog. Hvis du skriver breve på flere sprog kan
-   det være lidt irriterende med Pines en-sprogede stavekontrol. Programmet
-   <ulink url="http://www.sslug.dk/linuxbog/unix/eksempler/pine-spell"><command>pine-spell</command></ulink>,
-   der kommer med som et af bogens eksempler, er et forsøg på at rette op
-   på dette problem. Hvis du installerer det på dit unix-system og sætter
-   Pine til at bruge det, vil du få mulighed for at vælge mellem alle de
-   sprog der er ordlister til på systemet, når du taster
-   <keysym>Ctrl-T</keysym>. Du skal have installeret 
-   <filename>aspell-da-*.rpm</filename> ud over pine selv.
-  </para>
-
-  <para>
-   Kommandoerne der vises her installerer <command>pine-spell</command>
-   i dit eget programkatalog (<filename>~/bin/</filename>):
-</para>
+    <para>
+     Kommandoerne der vises her installerer
+     <command>pine-spell</command> i dit eget programkatalog
+     (<filename>~/bin/</filename>):
 
 <screen>
 <prompt>tyge@hven ~/&gt; </prompt><userinput>mkdir -p ~/bin</userinput>
@@ -874,100 +917,97 @@ O.k.
 <prompt>tyge@hven ~/&gt; </prompt><userinput>chmod a+x ~/bin/pine-spell</userinput>
 </screen>
 
-  <para>
-   Hvis der ikke kommer et "O.k." gik noget galt. Så bliver du nødt til at
-   køre kommandoen uden flaget <option>-q</option>, så der kommer lidt
-   information om hvad der sker.
-  </para>
+     Hvis der ikke kommer et "O.k." gik noget galt. Så bliver du nødt
+     til at køre kommandoen uden flaget <option>-q</option>, så der
+     kommer lidt information om hvad der sker.
+    </para>
 
-  <para>
-   Vi går nu ud fra at <command>pine-spell</command> er installeret i dit
-   eget programkatalog og du har startet Pine. For at sætte Pine op skal du
-   først ud i hovedmenuen. Hvis du ikke allerede er der, så tast
-   <keysym>M</keysym> for at komme der ud. Her taster du så
-   <keysym>S</keysym> efterfulgt af <keysym>C</keysym> for at komme
-   ind i opsætningen. Du skal finde feltet "speller" (prøv
-   <keysym>W</keysym> efterfulgt af "speller" og et linieskift) og
-   ændre det til "<filename>~/bin/pine-spell</filename>". Når det er gjort
-   taster du <keysym>E</keysym> efterfulgt af <keysym>Y</keysym>
-   for at gemme ændringen. Næste gang du har skrevet et brev og vil
-   undersøge om der er stavefejl i det, så taster du blot
-   <keysym>Ctrl-T</keysym> inden du sender det.
-  </para>
+    <para>
+     Vi går nu ud fra at <command>pine-spell</command> er installeret
+     i dit eget programkatalog og du har startet Pine. For at sætte
+     Pine op skal du først ud i hovedmenuen. Hvis du ikke allerede er
+     der, så tast <keysym>M</keysym> for at komme der ud. Her taster
+     du så <keysym>S</keysym> efterfulgt af <keysym>C</keysym> for at
+     komme ind i opsætningen. Du skal finde feltet "speller" (prøv
+     <keysym>W</keysym> efterfulgt af "speller" og et linieskift) og
+     ændre det til "<filename>~/bin/pine-spell</filename>". Når det er
+     gjort taster du <keysym>E</keysym> efterfulgt af
+     <keysym>Y</keysym> for at gemme ændringen. Næste gang du har
+     skrevet et brev og vil undersøge om der er stavefejl i det, så
+     taster du blot <keysym>Ctrl-T</keysym> inden du sender det.
+    </para>
+   </sect3>
 
-</sect3>
+   <sect3 id="pine-soege">
+    <title>Søgning med Pine</title>
 
-<sect3 id="pine-soege">
-<title>Søgning med PINE</title>
+    <indexterm>
+     <primary>søgning i Pine</primary>
+    </indexterm>
+    <indexterm>
+     <primary>Pine</primary>
+     <secondary>søgning i</secondary>
+    </indexterm>
 
-  <indexterm>
-   <primary>søgning i Pine</primary>
-  </indexterm>
-  <indexterm>
-   <primary>Pine</primary>
-   <secondary>søgning i</secondary>
-  </indexterm>
+    <para>
+     Du kan lave meget avancerede søgninger i dine e-post-foldere. For
+     at få dette valgt, skal du fra hovedmenuen trykke <command>s c w
+     agg</command> og afslutte med retur-tasten. Du bør nu stå på et
+     af de mange felter i opsætningen, hvor der står
+     "enable-aggregate-command-set". Tryk <command>x</command> for at
+     vælge, <command>e</command> for exit og bekræft med
+     <command>y</command>.  Som et eksempel kan vi nu gå ned i en
+     e-post-folder og finde e-post, hvor ordet Andeby er nævnt et
+     vilkårligt sted. Når du er i e-post-folderen trykker du
+     <command>;</command>, derefter har du en del forskellige
+     valgmuligheder - vi vælger <command>t</command> for tekstsøgning.
+     Igen har vi en del muligheder og da vi vil søge i alle dele af
+     posten vælger vi <command>a</command>. Nu skrives søgestrengen
+     <filename>Andeby</filename> ind og du kan nu med
+     <command>z</command> skifte mellem alt post og kun dem, der netop
+     indeholder Andeby. Får man disse kommandoer lært kan man virkelig
+     søge hurtigt og effektivt.
+    </para>
+   </sect3>
 
-<para>
-Du kan lave meget avancerede søgninger i dine e-post-foldere. For at
-få dette valgt, skal du fra hovedmenuen trykke <command>s c w
-agg</command> og afslutte med retur-tasten. Du bør nu stå på et af de
-mange felter i opsætningen, hvor der står
-"enable-aggregate-command-set". Tryk <command>x</command> for at vælge,
-<command>e</command> for exit og bekræft med <command>y</command>.
-Som et eksempel kan vi nu gå ned i en e-post-folder og finde e-post,
-hvor ordet Andeby er nævnt et vilkårligt sted. Når du er i e-post-folderen
-trykker du <command>;</command>, derefter har du en del
-forskellige valgmuligheder - vi vælger <command>t</command> for tekstsøgning.
-Igen har vi en del muligheder og da vi vil søge i alle dele
-af posten vælger vi <command>a</command>. Nu skrives søgestrengen
-<filename>Andeby</filename> ind og du kan nu med <command>z</command>
-skifte mellem alt post og kun dem, der netop indeholder Andeby. Får
-man disse kommandoer lært kan man virkelig søge hurtigt og effektivt.
-</para>
-</sect3>
+   <sect3 id="pine-roller">
+    <title>Afsender og roller</title>
 
-<sect3 id="pine-roller">
-<title>Afsender og roller</title>
+    <indexterm>
+     <primary>Roller i Pine</primary>
+    </indexterm>
+    <indexterm>
+     <primary>Pine</primary>
+     <secondary>roller i</secondary>
+    </indexterm>
 
-  <indexterm>
-   <primary>Roller i Pine</primary>
-  </indexterm>
-  <indexterm>
-   <primary>Pine</primary>
-   <secondary>roller i</secondary>
-  </indexterm>
+    <indexterm>
+     <primary>Afsenderadresse i Pine</primary>
+    </indexterm>
+    <indexterm>
+     <primary>Pine</primary>
+     <secondary>sætte afsenderadresse</secondary>
+    </indexterm>
 
-  <indexterm>
-   <primary>Afsenderadresse i Pine</primary>
-  </indexterm>
-  <indexterm>
-   <primary>Pine</primary>
-   <secondary>sætte afsenderadresse</secondary>
-  </indexterm>
+    <para>
+     Nogle personer sidder ikke på den maskine man ønsker e-post sendt
+     tilbage til, og man har derfor brug for at sætte sin
+     afsender-e-post-adresse til eksakt det man vil have. Fra
+     hovedmenuen kan vi trykke <command>s</command> (for setup),
+     <command>c</command> (for config), <command>w
+     customized-hdrs</command> og afslutte med retur. Du er nu på
+     <filename>customized-hdrs</filename>-feltet. Skriv
+     <filename>From: Tyge &lt;tyge@sslug.dk&gt;</filename>, hvis
+     e-post skal komme fra "Tyge &lt;tyge@sslug.dk&gt;". Du skal også
+     sætte <filename>feature-list=allow-changing-from</filename>
+     manuelt i <filename>~/.pinerc</filename>.
+    </para>
 
-
-<para> 
-Nogle personer sidder ikke på 
-den maskine man ønsker e-post sendt tilbage til, og man har derfor brug 
-for at sætte sin afsender-e-post-adresse
-til eksakt det man vil have. Fra hovedmenuen kan vi
-trykke <command>s</command> (for setup), <command>c</command> (for
-config), <command>w customized-hdrs</command> og afslutte med retur. Du er nu på
-<filename>customized-hdrs</filename>-feltet. Skriv <filename>From:
-Tyge &lt;tyge@sslug.dk&gt;</filename>, hvis e-post skal komme
-fra "Tyge &lt;tyge@sslug.dk&gt;". Du skal også sætte
-<filename>feature-list=allow-changing-from</filename> manuelt i
-<filename>~/.pinerc</filename>.
-</para>
-
-
-<para>
-En anden smart mulighed i Pine er muligheden for at definere roller -
-dvs. at man kan have en afsender-adresse og signatur-fil for hver
-identitet man har defineret - f.eks. en privat hhv. en
-firma-identitet. 
-Vælg først 
+    <para>
+     En anden smart mulighed i Pine er muligheden for at definere
+     roller - dvs. at man kan have en afsender-adresse og signatur-fil
+     for hver identitet man har defineret - f.eks. en privat hhv. en
+     firma-identitet.  Vælg først
 
 Vælg <emphasis>m</emphasis>(ain menu)
 <emphasis>s</emphasis>(setup) <emphasis>c</emphasis>(config)
@@ -1032,76 +1072,110 @@ Press Return to Compose using no role, or ^T to select a role
 ^C Cancel     
 </programlisting>
 
-<para>Tryk Ctrl-t (eller Ctrl-T) for at vælge ^T. Gå ned på den rolle
-du vil anvende og tryk på retur-tasten to gange. Nu skriver du e-post
-i den valgte rolle. Bemærk at "From"-feltet nu skal være sat svarende
-til den identitet du har valgt. Metoden virker også ved svar på e-post.
-</para>
+    <para>
+     Tryk Ctrl-t (eller Ctrl-T) for at vælge ^T. Gå ned på den rolle
+     du vil anvende og tryk på retur-tasten to gange. Nu skriver du
+     e-post i den valgte rolle. Bemærk at "From"-feltet nu skal være
+     sat svarende til den identitet du har valgt. Metoden virker også
+     ved svar på e-post.
+    </para>
+   </sect3>
 
-</sect3>
+   <sect3 id="smaa-pine-tips">
+    <title>Små nyttige tips til opsætning af Pine</title>
 
-<sect3 id="smaa-pine-tips">
-<title>Små nyttige tips til opsætning af Pine</title>
-<para> <emphasis>Tip:</emphasis> Under setup, skal du sætte
-"character-set = ISO-8859-1" for at få dansk tegnsæt til at virke.
-</para>
+    <para>
+     <emphasis>Tip:</emphasis> Under setup, skal du sætte
+     "character-set = ISO-8859-1" for at få dansk tegnsæt til at
+     virke.
+    </para>
 
-<indexterm><primary>UTF-8</primary><secondary>pine</secondary></indexterm>
-<indexterm><primary>pine</primary><secondary>UTF-8</secondary></indexterm>
-<para> <emphasis>Tip:</emphasis> Pine kan ikke læse emails kodet med
-UTF-8 tegnsættet.  Man kan komme omkring dette problem ved at
-installere programmet "yudit". På Mandrake 9.0 skrives blot
-<command>urpmi yudit</command> som "root". På Red Hat 7.2 og 7.3 skal man
-køre kommandoen <command>rpm --upgrade ftp://rpmfind.net/linux/rhcontrib/7.2/i386/yudit-2.4-4.i386.rpm</command> som "root". Derefter skal man lige
-tilføje følgende linie til <filename>~/.pinerc</filename>
-</para>
-<screen>
+    <para>
+     <indexterm>
+      <primary>UTF-8</primary>
+      <secondary>Pine</secondary>
+     </indexterm>
+     <indexterm>
+      <primary>Pine</primary>
+      <secondary>UTF-8</secondary>
+     </indexterm>
+
+     <emphasis>Tip:</emphasis> Pine kender ikke noget til
+     tegnkodninger, men sender som standard bare brevene direkte ud
+     til terminalen bit for bit.  Hvis man for eksempel modtager breve
+     kodet med UTF-8 og ens terminal arbejder med ISO-8859-1 kan det
+     give problemer.  Man kan komme omkring det ved at lade Pine kalde
+     et tegntabelomkodningsprogram, når det skal vise et brev kodet
+     med en anden kodning end den terminalen forventer.  Man kan for
+     eksempel installere programmet "yudit". På Mandrake 9.0 skrives
+     blot <command>urpmi yudit</command> som "root". På Red Hat 7.2 og
+     7.3 skal man køre kommandoen <command>rpm --upgrade
+     ftp://rpmfind.net/linux/rhcontrib/7.2/i386/yudit-2.4-4.i386.rpm</command>
+     som "root".  Når Yudit er installeret skal følgende linje føjes
+     til filen <filename>~/.pinerc</filename>:
+
+<programlisting>
 display-filters=_CHARSET(UTF-8)_ /usr/bin/uniconv -encode iso-8859-1 -decode utf-8
-</screen>
+</programlisting>
+    </para>
 
+    <para>
+     <emphasis>Tip:</emphasis> Vil du se alle headere i din e-post,
+     skal du under setup sætte "enable-full-header-cmd". Tryk på h for
+     at se alle headere når du læser post.
+    </para>
 
-<para> <emphasis>Tip:</emphasis> 
-Vil du se alle headere i din e-post,
-skal du under setup sætte "enable-full-header-cmd". Tryk på h for at
-se alle headere når du læser post.
-</para>
+    <para>
+     <emphasis>Tip:</emphasis> Pine kan farvekode beskederne når du
+     læser dem, så det er lettere at se, hvem der skriver hvad i en
+     diskussion. Fra hovedmenuen trykkes "s k", hvorefter farver på
+     oversigten, "quotelevels" og meget andet kan sættes op.
+    </para>
 
-<para> <emphasis>Tip:</emphasis> 
-Pine kan farvelægge e-post, så det er lettere at se, hvem der skriver
-hvad i en diskussion. Fra hovedmenuen trykkes "s k", hvorefter farver
-på oversigten, "quotelevels" og meget andet kan konfigureres.
-</para>
+    <para>
+     <emphasis>Tip:</emphasis> Hvis du vil kunne hoppe direkte til en
+     URL angivet i en e-post, kan du give fuld sti til din
+     favoritbrowser i setup under url-viewers, f.eks.
+     <command>/usr/bin/netscape</command>.
+    </para>
 
-<para> <emphasis>Tip:</emphasis> 
-Hvis du vil kunne hoppe direkte til en URL angivet i en e-post, kan
-du give fuld sti til din favoritbrowser i setup under url-viewers, f.eks.
-<command>/usr/bin/netscape</command>.
-</para>
+    <para>
+     <emphasis>Tip:</emphasis> 
 
-<para> <emphasis>Tip:</emphasis> 
-<indexterm><primary>printer</primary><secondary>udskrivning af tekst</secondary></indexterm>
-<indexterm><primary>udskrivning af tekst på printer</primary></indexterm>
-<indexterm><primary>enscript</primary></indexterm>
-Vil du gerne have pæn udskrift på printeren af dine tekst-emails, så kan du
-med fordel installere programmet <command>enscript</command>, der følger med
-de fleste Linux-distributioner (eller kan findes via 
-<ulink url="http://rpmfind.net">http://rpmfind.net</ulink>). Sæt din udprintningskommando som følger: I hovedmenuen af Pine, tryk "s" "p" "pil ned"
-"pil ned" "c". Sæt kommandoen til 
-<command>enscript -2rG --word-wrap</command>, så får du to kolonner og 
-der deles linier ved ordgrænserne.
-</para>
+     <indexterm>
+      <primary>printer</primary>
+      <secondary>udskrivning af tekst fra Pine</secondary>
+     </indexterm>
+     <indexterm>
+      <primary>udskrivning af tekst på printer fra Pine</primary>
+     </indexterm>
+     <indexterm>
+      <primary>enscript</primary>
+     </indexterm>
 
-<para>
-Du kan naturlig generelt bruge <command>enscript -2rG --word-wrap 
-TEKSTFILNAVN</command> til at udskrive tekstfiler til printeren.
-</para>
+     Vil du gerne have pæn udskrift på printeren af dine tekst-emails,
+     så kan du med fordel installere programmet
+     <command>enscript</command>, der følger med de fleste
+     Linux-distributioner (eller kan findes via <ulink
+     url="http://rpmfind.net">http://rpmfind.net</ulink>). Sæt din
+     udprintningskommando som følger: I hovedmenuen af Pine, tryk "s"
+     "p" "pil ned" "pil ned" "c". Sæt kommandoen til <command>enscript
+     -2rG --word-wrap</command>, så får du to kolonner og der deles
+     linier ved ordgrænserne.
+    </para>
 
-</sect3>
-</sect2>
+    <para>
+     Du kan naturlig generelt bruge <command>enscript -2rG --word-wrap
+     TEKSTFILNAVN</command> til at udskrive tekstfiler til printeren.
+    </para>
+   </sect3>
+  </sect2>
 
+  &unix-networking-mutt;
 
-<sect2 id="nyeemails">
-<title>Vise nye e-breve</title>
+  <sect2 id="nyeemails">
+   <title>Vise nye e-breve</title>
+
 <indexterm><primary>xbiff</primary></indexterm>
 
 <para>
@@ -1113,13 +1187,13 @@ minuttet, hvis det ikke konfigureres anderledes.
 
 <indexterm><primary>xmailbox</primary></indexterm>
 
-<para>
-Lidt mere smart er <command>xmailbox</command> og
-<command>coolmail</command>, der begge viser en amerikansk
-postkasse, som viser, at der er post med lyd og et flag, der hejses.
-</para>
-
-</sect2>
+   <para>
+    Lidt mere smart er <command>xmailbox</command> og
+    <command>coolmail</command>, der begge viser en amerikansk
+    postkasse, som viser, at der er post med lyd og et flag, der
+    hejses.
+   </para>
+  </sect2>
 
 <sect2 id="fetchmail">
 <title>Hente e-post fra POP-servere med Fetchmail</title>
@@ -2295,8 +2369,8 @@ editor_command    "jed %s -g %d -tmp"
 </programlisting>
 
 <para>
-Filen kan findes under eksempler på bogens hjemmeside 
-<ulink url="http://www.sslug.dk/linuxbog/">http://www.sslug.dk/linuxbog/</ulink>.
+Filen kan findes under eksempler på bogens hjemmeside <ulink
+url="http://www.sslug.dk/linuxbog/">http://www.sslug.dk/linuxbog/</ulink>.
 </para>
 
 <para>
@@ -2329,25 +2403,26 @@ der er markeret for i ASCII-teksten.
 <graphic fileref="slrn3.&magic;" scale="60"></graphic>
 </figure>
 
-<para>
-Ydermere er alle basis-kommandoerne lagt på "?", så de er lige ved
-hånden hvis der er noget man ikke lige kan få slrn til. Derudover, så
-god fornøjelse med slrn.
-</para>
-</sect3>
-</sect2>
-</sect1>
+    <para>
+     Ydermere er alle basis-kommandoerne lagt på "?", så de er lige
+     ved hånden hvis der er noget man ikke lige kan få slrn
+     til. Derudover, så god fornøjelse med slrn.
+    </para>
+   </sect3>
+  </sect2>
+ </sect1>
 
-<sect1 id="FAX">
-<title>FAX under Linux</title>
-<indexterm><primary>FAX</primary></indexterm>
-<para>
-Der findes en del programmer til at sende og modtage FAX under Linux. Se
-mere på <ulink 
-url="http://www.ibiblio.org/pub/Linux/apps/serialcomm/fax/">org/pub/Linux/apps/serialcomm/fax/</ulink>.
-</para>
-</sect1>
+ <sect1 id="FAX">
+  <title>FAX under Linux</title>
 
+  <indexterm><primary>FAX</primary></indexterm>
+
+  <para>
+   Der findes en del programmer til at sende og modtage FAX under
+   Linux. Se mere på <ulink
+   url="http://www.ibiblio.org/pub/Linux/apps/serialcomm/fax/">org/pub/Linux/apps/serialcomm/fax/</ulink>.
+  </para>
+ </sect1>
 
 <sect1 id="netbooks">
 <title>Bøger om netværk</title>
