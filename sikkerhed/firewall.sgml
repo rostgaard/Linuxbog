@@ -1279,45 +1279,104 @@ Se i øvrigt en udemærket HOWTO på <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAI
 <indexterm><primary>Netfilter</primary></indexterm>
 
 <para>
-Kerne 2.4 er den nyeste stabile gren af Linuxkernen, som udkom i januar 2001.
+Kerne 2.4 er den nyeste stabile gren af Linuxkernen. Den er fra
+januar 2001.  I skrivende stund er kerne 2.6 på vej.
 </para>
 
 <para>
-I kerne 2.4 er firewallsystemet igen lavet om.  Kommandoen,
-der før hed ipchains, hedder nu iptables.  Systemet består af to dele:
-Pakkefiltrering og NAT (<emphasis>N</emphasis>etwork
-<emphasis>A</emphasis>ddress <emphasis>T</emphasis>ranslation).  NAT,
-som er lidt mere avanceret end masquerading, vender vi tilbage til
-i <xref linkend="NAT"/>.  Hele systemet hedder
-netfilter, og er grundlæggende et framework i kernen, som iptables
-bygger på.
+I kerne 2.4 er firewallsystemet ændret og forbedret. Systemet
+kaldes <command>netfilter</command> og styres af "The Netfilter
+Core Team".
 </para>
 
 <para>
-Der er nogle grundlæggende ændringer i designet, men kommandoerne og
-navnene ligner næsten sig selv fra ipchains. Man skal dog ikke lade sig
-narre - iptables kan meget mere.
+Kommandoen, der før hed ipchains, hedder nu iptables, fordi den
+arbejder med tre tabeller, en for pakkefiltrering, en for NAT
+(<emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress
+<emphasis>T</emphasis>ranslation), og en for pakke-mangling, som
+bruges til specialiserede ændringer af pakker, fx. kan man ændre
+feltet Type Of Service, TOS. 
+</para>
+
+<para>
+De tre tabeller er data i kernens netfilter del, og iptables gør
+ikke andet end at lægge nogle data ind i disse tabelstrukturer.
+Hver tabel har nogle kæder af regler (chains), og det minder jo
+om den gamle ipchains kommando fra kerne 2.2.
+</para>
+
+<para>
+Kommandoerne og navnene ligner næsten sig selv fra ipchains. Man
+skal dog ikke lade sig narre - iptables kan meget mere.
 </para>
 
 <sect4 id="hvad-skal-jeg-bruge">
 <title>Hvad skal jeg bruge?</title>
 <para>
 For at komme igang med netfilter skal man bruge en 2.4 kerne oversat med
-netfilter aktiveret samt user space-værktøjet iptables. Iptables kan hentes 
-fra Netfilter hjemmesiden: <ulink url="http://netfilter.samba.org/">http://netfilter.samba.org/</ulink> .
-Iptables er desuden med i nyere Linux distributioner, f.eks. Red Hat 7.0.
+netfilter aktiveret samt user space-værktøjet iptables. Begge
+dele er med i alle nyere Linux distributioner efter RedHat 7.0.
+Den nyeste version kan hentes fra Netfilter hjemmesiden: <ulink
+url="http://netfilter.samba.org/">http://netfilter.samba.org/</ulink>
 </para>
 
 <para>
-Kommer man fra ipchains er det ikke svært at følge med i kommandoerne til 
-iptables - der er dog ændringer.
+De fleste Linux-distributører har endog et GUI-apparat til at
+indsætte de vigtigste regler. RedHat har endog en
+installations-mulighed for opsætning af en fornuftig firewall.
+Hvis man vælger den, kan man kun komme ind på maskinen ved hjælp
+af secure shell, et <emphasis>meget</emphasis> fornuftigt valg.
+</para>
+
+<para>
+Kommer man fra ipchains er det ikke svært at følge med i
+kommandoerne til iptables.
 </para>
 </sect4>
 
 <sect4 id="chains">
 <title>Kæder</title>
 <para>
-Ligesom i ipchains er der i iptables 3 indbyggede kæder: INPUT, OUTPUT
+Først ser vi på tabellen for filtrering af pakker på basis af
+protokol, portnumre og netkort, tabellen vælges med option
+<command>-t filter</command>, men det behøver man ikke at skrive.
+Det er default - tabellen. En kommando, som fx. lukker for alt
+input fra netkort nummer to (eth1) kunne se sådan ud:
+</para>
+
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -A INPUT -i eth1 -j DROP
+# eller som nedenstående:
+</userinput>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -t filter -A INPUT -i eth1 -j DROP
+</userinput>
+</screen>
+
+<para>
+Det læses således: iptables kommandoen skal i tabellen "filter"
+tilføje (addere, -A) en regel om, at alt input fra ethernet kort
+eth1 skal smides væk (DROP).
+</para>
+
+<para>
+Hvis du sidder og eksperimenterer med kommandoerne mens du læser
+(hvilket er en god ide) så skal du sidde ved maskinens
+indbyggede tastatur (hvis den har et) og i øvrigt passe lidt på,
+hvis andre bruger den. Du kan fjerne alle regler, flushe, med
+flg. kommando:
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -F 
+# eller:
+</userinput>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -t filter -F
+</userinput>
+</screen>
+
+<para>
+På linje med ipchains har filter-tabellen 3 indbyggede kæder: INPUT, OUTPUT
 og FORWARD. Kæderelaterede options til iptables er uændret fra ipchains.
 Der er dog den gennemgribende arkitekturforskel at pakker til FORWARD
 kæden ikke længere kommer igennem INPUT kæden først og OUTPUT kæden 
@@ -1329,17 +1388,29 @@ i iptables - bl.a skal navnene på de indbyggede kæder skrives med stort.
 <sect4 id="targets">
 <title>Targets</title>
 
-<para>Der er lavet lidt om i targets: </para>
+<para>De indbyggede targets er flg.: </para>
 <itemizedlist mark="bullet">
 <listitem><para>DROP betyder, at pakken smides væk</para></listitem>
 <listitem><para>ACCEPT betyder, at pakken accepteres</para></listitem>
-<listitem><para>RETURN betyder, "gå til enden af kæden"</para></listitem>
+<listitem><para>RETURN betyder, "gå til enden af kæden" og tilbage, hvor vi kom fra</para></listitem>
 <listitem><para>QUEUE betyder, at pakken skal sættes i kø til brugerniveauprocessering</para></listitem>
 </itemizedlist>
 
 <para>
+Muligheden for at sende pakker over til bruger-niveau og så tygge
+dem igennem der er ny. Den skal anvendes med forsigtighed, for
+det er noget, der virkelig koster i tid. Men det er en stor
+fordel for eksperimenter med TCP/IP.
+</para>
+
+<para>
 Når vi sammenligner med ipchains, kan vi se, at REJECT er forsvundet.
-Den findes dog som modul (extension):
+Den findes dog som modul (extension), d.v.s. at man ved
+kernegenerering skal huske at tage det med, ellers kan man ikke
+lade iptables kommandoen bruge REJECT<footnote><para>Det er af
+optimeringshensyn, at alt, hvad der sløver en kerne ned, skal
+vælges separat.</para></footnote>. Der er to extensions, som
+følger med iptables og kerne 2.4.x:
 </para>
 
 <itemizedlist mark="bullet">
@@ -1348,37 +1419,63 @@ Den findes dog som modul (extension):
 </itemizedlist>
 
 <para>
-er de to extensions, der standard følger med iptables. Det er muligt at skrive
-sine egne extension og derved lave andre "targets".
-</para>
-
-<para>
-Desuden er MASQ og REDIRECT forsvundet - de hører til NAT, og deres
-funktionalitet er kommet over i NAT delen af iptables 
-afsnittet om
-Network Address Translation med iptables - <xref linkend="NAT"/>).
+Det er muligt at skrive sine egne extension og derved lave andre
+"targets".
 </para>
 </sect4>
 
 <sect4 id="default-policy">
 <title>Default policy</title>
 <para>
-Default policy er som i ipchains
+Default policy er som i ipchains, alt accepteres. Man kan liste
+filter tabellen med kommandoerne:
 </para>
+
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -L
+# eller som nedenstående:
+</userinput>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -L -v
+</userinput>
+</screen>
+
+<para>
+og tilsvarende, hvis man har installeret <command>nat</command>
+og <command>mangle</command> i kernen:
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -t nat -L
+# eller som nedenstående:
+</userinput>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>iptables -t mangle -L
+</userinput>
+</screen>
+
 </sect4>
 
 <sect4 id="chains-rules">
 <title>Regler</title>
 <para>
-Rule relaterede options til iptables er som i ipchains
+Når en pakke er lagt på dissektionsbordet, undersøger kerne-koden
+pakken ud fra de regler, som er blevet sat op (som data) i kernen
+ved hjælp af iptables kommandoen. Der skal udstedes en iptables
+kommando for hver regel. En regel består af en betingelse og en
+beslutning, som kan være at hoppe til en anden kæde eller til et
+af de indbyggede targets, DROP, ACCEPT, REJECT, SNAT o.s.v.
 </para>
 </sect4>
 
 <sect4 id="betingelser">
 <title>Betingelser</title>
 <para>
-En regel kan indeholde forskellige betingelser, som gør, at pakkerne matcher
-eller ikke matcher.
+En regel kan indeholde flere betingelser. Hvis alle betingelserne
+er opfyldt, siger man at pakken matcher den betingelse. Hvis en
+pakke matcher, ser kernekoden efter, hvilket target den så skal gå
+til, eller sagt på en anden måde, når vi har inspiceret en
+egenskab ved pakken kan vi enten droppe pakken, acceptere den
+eller gå videre med en anden inspektion.
 </para>
 
 <para>
