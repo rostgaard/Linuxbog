@@ -192,6 +192,13 @@ function vistype($type) {
         "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
+    "distro" => array(
+      title => "Linux - Friheden til at vælge distribution",
+      comment => "Hjælp til at være open source distribution",
+      auth => array(
+        "Peter Toft" => "pto@linuxbog.dk"
+      )
+    ),
     "unix" => array(
       title => "Linux - Friheden til at lære Unix",
       comment => "Lær elementær Unix",
