@@ -374,9 +374,28 @@ Du kan nu brænde din cdrom med kommandoen:
 <PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof</USERINPUT>
 </screen>
 
+<para>
+Man kan også være smart og kombinere <command>mkiso</command> og
+<command>cdrecord</command> via en fifo-fil (dvs. en bufferfil, så man
+kommer aldrig til at fylde en hel cdrom på harddisken);
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkfifo image.iso</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs -r -J -o image.iso STI_TIL_DATA  &</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,0,0 -eject speed=4 -data image.iso</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>rm image.iso</USERINPUT>
+</screen>
 
 <para>
-En langt mere interssant metode er at oprette en fil på 650/700 MB
+I dette eksempel skal du selv rette <filename>STIL_TIL_DATA</filename>
+til der hvor dine data-filer ligger. Til
+<command>cdrecord</command>-kommandoen anvendes 4 gange
+skrivehastighed og cdrom'en skubbes ud efter skrivning (-eject).
+</para>
+
+<para>
+En langt mere interessant metode er at oprette en fil på 650/700 MB
 (alt efter mediestørrelse), som så fyldes med diverse ting og sager og
 derefter brændes som et iso-image.
 </para>
