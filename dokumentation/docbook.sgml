@@ -41,17 +41,44 @@ Nu er vi ved at være klar til at få installeret de hentede
 pakker. Stil dig i den mappe, hvor pakkerne ligger (typisk din cdrom) og kør:
 </para>
 
-
-CDROM 1 + 2 ??
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Red Hat 7.2 - cdrom 1:
+ </para>
 
 <SCREEN>
-<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh sgml-common* sgml* openjade* docbook*</userinput>
+<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh docbook*.rpm</userinput>
+<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh openjade*.rpm</userinput>
+<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh sgml-common-*.rpm</userinput>
 </SCREEN>
+
+</listitem>
+<listitem> 
+
+ <para>
+Red Hat 7.2 - cdrom 2:
+ </para>
+
+<SCREEN>
+<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh jadetex*.rpm</userinput>
+<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh docbook*.rpm</userinput>
+<prompt>[root@MinMaskine RPMS]#</prompt> <userinput>rpm -Uvh tetex*.rpm</userinput>
+</SCREEN>
+
+ <para>
+ </para>
+</listitem>
+</itemizedlist>
 
 <para>
 Så er pakkerne installeret. Der skal dog et par små tilretninger til,
 før tingene kører helt godt på dansk. Se disse i <xref
 linkend="docbook-texconfig">.
+</para>
+
+<para>
+Se evt. også <ulink url="http://hvdkooij.xs4all.nl/docs-docbook.cms">http://hvdkooij.xs4all.nl/docs-docbook.cms</ulink>.
 </para>
 
 </sect1>
@@ -925,10 +952,10 @@ Toft", så er det nemmere at bruge <command>&amp;pto;</command>.
 <sect1 id="docbook-Compile">
 <title>Oversætte SGML til andre formater</title>
 <indexterm><primary>oversætte SGML</primary></indexterm>
-<indexterm><primary>db2html</primary></indexterm>
-<indexterm><primary>db2pdf</primary></indexterm>
-<indexterm><primary>db2ps</primary></indexterm>
-<indexterm><primary>db2rtf</primary></indexterm>
+<indexterm><primary>docbook2html</primary></indexterm>
+<indexterm><primary>docbook2pdf</primary></indexterm>
+<indexterm><primary>docbook2ps</primary></indexterm>
+<indexterm><primary>docbook2rtf</primary></indexterm>
 
 <para>
 Du kan oversætte SGML filerne til HTML, PDF, Postscript og RTF.  Der
@@ -941,7 +968,7 @@ megen interesse, idet den ofte bliver meget stor.
 <para>
 Du oversætter din hoved SGML fil
 (f.eks. <filename>bog.sgml</filename>) til HTML ved at skrive
-<command>db2html bog.sgml</command>. Dine HTML filer gemmes i
+<command>docbook2html bog.sgml</command>. Dine HTML filer gemmes i
 <filename>bog</filename> under dit nuværende katalog, fordi SGML-filen
 hedder <filename>bog.sgml</filename>.
 </para>
@@ -954,7 +981,7 @@ kataloget <filename>bog</filename>. Typisk kan dette gøres med en
 
 <para>
 Tilsvarende kan man oversætte <filename>bog.sgml</filename> til PDF
-ved at skrive <command>db2pdf bog.sgml</command>. Igen skal alle
+ved at skrive <command>docbook2pdf bog.sgml</command>. Igen skal alle
 billed-filer (typisk PNG) være placeret der hvor SGML-filerne
 oversættes. Jeg kopierer normalt alle de filer til et midlertidigt
 katalog og oversætter der.
@@ -962,14 +989,14 @@ katalog og oversætter der.
 
 <para>
 Skal man oversætte til Postscript hedder kommandoen
-<command>db2ps</command> og RTF laves med <command>db2rtf</command>.
+<command>docbook2ps</command> og RTF laves med <command>docbook2rtf</command>.
 </para>
 
 <sect2 id="docbook-fejl-i-sgml">
 <title>Fejl i SGML-teksten</title>
 <para>
 Har du lavet fejl i din SGML-tekst, så er den oversætter man har i
-<command>db2html</command> faktisk til stor hjælp. Vi skal se på et
+<command>docbook2html</command> faktisk til stor hjælp. Vi skal se på et
 par eksempler.
 </para>
 
@@ -1007,7 +1034,7 @@ Filen <filename>eks1.sgml</filename> oversættes nu
 </para>
 
 <programlisting>
-<prompt>[root@MinMaskine /root]# </prompt> <userinput> db2html eks1.sgml</userinput>
+<prompt>[root@MinMaskine /root]# </prompt> <userinput> docbook2html eks1.sgml</userinput>
 TMPDIR is DBTOHTML_OUTPUT_DIR3088
  
 input file was called eks1.sgml -- output will be in eks1
@@ -1078,7 +1105,7 @@ Filen <filename>eks2.sgml</filename> oversættes nu
 </para>
 
 <programlisting>
-<prompt>[root@MinMaskine /root]#</prompt> <userinput>db2html eks2.sgml</userinput>
+<prompt>[root@MinMaskine /root]#</prompt> <userinput>docbook2html eks2.sgml</userinput>
 TMPDIR is DBTOHTML_OUTPUT_DIR3110
  
 input file was called eks2.sgml -- output will be in eks2
@@ -1162,7 +1189,7 @@ at gøre SGML-koden nemmere at læse.
 Når man har sat alle sine stikordshenvisninger ind i dokumentet kommer
 turen til at at få genereret dokumentet med <command>collateindex.pl</command>.
 Tricket er at man skal oversætte sit dokument en gang før man kører
-<command>db2html</command> (eller hvad man nu har som mål-format).
+<command>docbook2html</command> (eller hvad man nu har som mål-format).
 </para>
 
 <para>
@@ -1193,7 +1220,7 @@ følgende måde. Jeg har kommenteret Makefilen med kommentarer før kommandoen
         -t Stikordsregister  -g -i stikord \
         -o stikord.sgml tempdir/HTML.index
 # Nu er "stikord.sgml" fuld af referencer som kan oversættes
-    db2html bog.sgml
+    docbook2html bog.sgml
 # Kopier alle PNG-filer fra "images/" til "bog/"
     cp images/*.png bog
 </programlisting>
@@ -1236,8 +1263,8 @@ få sidenumre og ikke afsnitsnavne i stikordsregisteret. Bemærk også at
     cp *.sgml bogpdf
 # Kopier alle PNG-filer fra "images/" til "bog/"
     cp images/*.png bogpdf
-# Kør "db2pdf" i "bogpdf/" 
-    (cd bogpdf; db2pdf bog.sgml)
+# Kør "docbook2pdf" i "bogpdf/" 
+    (cd bogpdf; docbook2pdf bog.sgml)
 # Flytter PDF-filen til nuværende katalog
     mv bogpdf/bog.pdf .
 </programlisting>
