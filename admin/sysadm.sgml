@@ -1370,7 +1370,7 @@ Systemet er så fleksibelt, så man yderligere kan sætte en ekstra-pulje
 op, så brugeren i en fast tidsperiode (kaldet grace-perioden) godt må
 "svine" med pladsen bare der ryddes op igen; f.eks. kan man have 10 MB
 diskplads, men kan få lov til i en periode på to timer ekstra at bruge
-yderligere 10 MB.
+yderligere 5 MB.
 </para>
 
 <para>
@@ -1386,9 +1386,16 @@ og endelig hvordan man rydder op.
 </para>
 
 <para>
-Installation: Der skal være quota-understøttelse i Linux-kernen og
-quota-pakken skal være installeret. Normalt vil en Linuxdistribution
-have quota understøttet. 
+Installation: Der skal være quota-understøttelse i Linux-kernen. 
+Normalt vil en Linuxdistribution have quota understøttet, ellers må 
+du oversætte kernen på ny og da svare ja til "Quota Support" under 
+"Filesystems" (CONFIG_QUOTA=y).
+</para>
+
+<para>
+I quota-tools pakken findes værktøjerne være installeret for at du kan 
+benytte diskkvoterne. Enten kan du benytte hvad der hører til din distribution, (fx. quota-3.01pre9-3.i386.rpm hos Red Hat 7.2) eller også hente og installere 
+pakken <ulink url="http://prdownloads.sourceforge.net/linuxquota/quota-3.03.tar.gz">http://prdownloads.sourceforge.net/linuxquota/quota-3.03.tar.gz</ulink>
 </para>
 
 <para>
@@ -1442,7 +1449,6 @@ Kør følgende som root
  <secondary>/sbin/quotaon -uv </secondary>
 </indexterm>
 
-
 <screen>
 <prompt>[root@linus /root]#</prompt> <userinput>/bin/mount -v -o remount /home </userinput> <-- for at gen-montere den ændrede partition
 <prompt>[root@linus /root]#</prompt> <userinput>/sbin/quotacheck -a -m</userinput> <--- for at lave et index over brugernes forbrug
@@ -1450,10 +1456,37 @@ Kør følgende som root
 </screen>
 
 <para>
-De to første kommandoer skal blot køres en gang for alle, og den sidste
-kommando skal køres hver gang maskinen startes op (indsæt kommandoen i 
-<filename>/etc/rc.local</filename> eller lign).
+mount køres kun en gang for alle, for at få systemet til at genindlæse <filename>/etc/fstab</filename>.
 </para>
+
+<para>
+quotacheck køres for at danne et index over brugernes diskforbrug.
+Indexet gemmes på ældre systemer i <filename>/home/quota.user</filename> og i 
+<filename>/home/aquota.user</filename>
+på nyere.  <command>quotacheck</command> skal køres igen hvis man har rettet fejl i 
+filsystemet med fsck - typisk under opstart efter strømudfald. Det klares da 
+ofte automatisk af ens initscripts ellers kan følgende indsættes, 
+inden quotaon kaldes, i <filename>rc.sysinit</filename>:
+</para>
+
+<screen>
+if [ -x /sbin/quotacheck ]; then
+  echo "Undersøger kvoter på lokale filsystemer"  /sbin/quotacheck -v -a
+fi
+</screen>
+
+<para>
+<command>quotaon</command> skal køres hver gang maskinen startes op,
+og kan automatiseres i med et par linier i <filename>rc.sysinit</filename> 
+eller <filename>rc.local</filename>:
+</para>
+
+<screen>
+  if [ -x /sbin/quotaon ]; then
+    echo "Starter kvotestyring for lokale filsystemer"
+    /sbin/quotaon  -a
+  fi
+</screen>
 
 <para>
 Nu kan man redigere grænsen for en bruger - hvis man har mange
@@ -1471,24 +1504,34 @@ at der ingen grænse er (dette anføres som et nul i opsætningsfilen).
 
 <screen>
 <prompt>[root@linus /root]#</prompt> <userinput>/usr/sbin/edquota -u quotauser</userinput>
-Disk quotas for user petoft (uid 500):
+Disk quotas for user anne (uid 500):
 Filesystem      blocks       soft       hard     inodes     soft   hard       
 /dev/hda2       695879         0          0       6741        0      0
 </screen>
 
 <para>
-Ret nu tallene til det brugeren må. Det er vi-editoren som kommer frem.
+Vi ser at brugeren anne med uid 500 på filsystemet /dev/hda2, (hvor
+<filename>/home</filename> mountes ifølge
+<filename>/etc/fstab</filename>), i øjeblikket benytter 695879
+filblokke (679MB) og 6741 filer, samt at der ikke er sat grænser for
+hvor meget brugeren må benytte.
+</para>
+
+<para>
+Ret nu tallene til det brugeren må. Det er vi-editoren som kommer frem, hvis 
+du ikke har sat EDITOR variablen.
 </para>
 <itemizedlist mark="bullet">
 <listitem>
  <para>
-"soft" betyder antal kilobytes som brugeren må bruge indenfor 
-"grace"-perioden, hvis man ønsker at tillade dette ekstraforbrug.
+"soft" betyder grænse, som brugeren normalt forventes at holde sig under. 
+Systemet tillader dog at denne grænse overstiges i kortere tid 
+("grace"-perioden).
  </para>
 </listitem>
 <listitem> 
  <para>
-"hard" betyder maksimum forbrug.
+"hard" betyder grænse, som brugeren aldrig kan overstige.
  </para>
 </listitem>
 </itemizedlist>
@@ -1496,14 +1539,14 @@ Ret nu tallene til det brugeren må. Det er vi-editoren som kommer frem.
 <para>
 Til højre for de første soft/hard står der inodes og igen soft/hard - 
 dette er antal filer man kan lave. Dette bruges kun sjældent. Hvis man 
-ønsker at brugeren fast kan bruge 10 MB og 10 MB ekstra under grace-perioden 
-skrives
+ønsker at brugeren fast kan bruge 10 MB og 5 MB ekstra i grace-perioden,
+samt et ubegrænset antal filer, skrives
 </para>
 
 <screen>
-Disk quotas for user petoft (uid 500):
+Disk quotas for user anne (uid 500):
 Filesystem      blocks       soft       hard     inodes     soft   hard       
-/dev/hda2       695879       20000      10000     6741        0      0
+/dev/hda2       695879       10000      15000     6741        0      0
 </screen>
 
 <indexterm>
@@ -1527,8 +1570,8 @@ Afslut med at skrive <command>:wq!</command>
 </para>
 
 <para>
-Hvis man derefter vil sætte "grace"-perioden hvor ekstra diskforbrug er
-tolereret, så kan dette indstilles ved at skrive
+Hvis man derefter vil sætte "grace"-perioden hvor ekstra diskforbrug
+tolereres, så kan dette indstilles ved at skrive
 </para>
 
 <screen>
@@ -1603,7 +1646,46 @@ Andre interessante kommandoer:
 </itemizedlist>
 
 <para>
-Flere information om quota kan findes på 
+Til warnquota, der sender mail til brugere over kvota,  hører 
+konfigurationsfilerne /etc/quotatab og /etc/warnquota.conf. Disse benyttes 
+især til at gøre meddeleserne til brugerne mere læse venlige. quota-tools
+understøtter iøvrigt også GNU gettekst, så der er mulighed for at oversætte
+værktøjerne til brugernes eget sprog (make pot && kbabel pot.po).
+</para>
+
+<para>
+I /proc/sys/fs systemet findes dquot-nr og dquot-max, som viser antallet af 
+cachede kvota forekomster, antallet af frie disk kvota forekoster samt øvre
+grænse for antallet af disk kvota forekomster.
+</para>
+
+<para>
+Med quota er det alså muligt at begrænse antallet af filer og deres
+samlede størrelse pr. bruger. Systemet kan dessuden konfigureres til at 
+begrænse antallet af filer og deres samlede størrelse pr. gruppe.
+</para>
+
+<para>
+Med quotastats kan man få lidt information om hvorledes selve kvota systemet
+har det.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><USERINPUT>/usr/sbin/quotastats</USERINPUT>
+Number of dquot lookups: 101289
+Number of dquot drops: 101271
+Number of still active inodes with quota : 18
+Number of dquot reads: 93
+Number of dquot writes: 2077
+Number of quotafile syncs: 134518740
+Number of dquot cache hits: 7391
+Number of allocated dquots: 90
+Number of free dquots: 2036
+Number of in use dquot entries (user/group): -1946
+</screen>
+
+<para>
+Flere informationer om quota kan findes på 
 </para>
 
 <itemizedlist mark="bullet">
@@ -1617,17 +1699,33 @@ Flere information om quota kan findes på
 <ulink url="http://www.gnuskole.dk/bog/quota.html">http://www.gnuskole.dk/bog/quota.html</ulink>
  </para>
 </listitem>
-<listitem>
+<listitem> 
  <para>
-<ulink url="http://www.samag.com/documents/s=1146/sam0109c/0109c.htm">http://www.samag.com/documents/s=1146/sam0109c/0109c.htm</ulink>
+<ulink url="http://www.mvw.cistron.nl/quota.html">http://www.mvw.cistron.nl/quota.html</ulink>
  </para>
 </listitem>
 <listitem> 
  <para>
-<ulink url="http://www.linuxfocus.org/English/November2000/article179.shtml">http://www.linuxfocus.org/English/November2000/article179.shtml</ulink>
+<ulink url="http://www.sf.net/projects/linuxquota/">http://www.sf.net/projects/linuxquota/</ulink>
  </para>
 </listitem>
 </itemizedlist>
+
+<para>
+Den medfølgende dokumentation er lidt spredt, men kan samles til som html og
+postscript med følgende liner:
+</para>
+
+<screen>
+for f in $(file *|grep troff|cut -d: -f-1)
+do
+  man2html $f >doc/$f.html
+done
+cd doc
+sgml2html quotadoc.sgml
+groff -Thtml -ms quotas.ms >quotas.html
+ln -s quotas-1.eps quotas-1.ps
+</screen>
 
 </sect1>
 
