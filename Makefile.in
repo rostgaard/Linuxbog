@@ -32,18 +32,19 @@ default:
 #faelles: faelles-filer/*.css faelles-filer/*.sgml
 faelles:	
 	@echo "TODO: Ville være rart om faelles kunne afhænge af tidsstempler, noget"
-	@for dir in $(SUBDIRS) ; do \
-		echo "*** Installerer fælles filer i $$dir" && \
-                cp --update faelles-filer/*.css $$dir && \
-		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
-		      > $$dir/linuxbogurl.sgml || exit; \
-	done
-	@if test "x$(ALLE)" != "x" ; then \
-		echo "*** Installerer fælles filer i $(ALLE)" && \
-                cp --update faelles-filer/*.sgml $(ALLE) && \
-		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
-		      > $(ALLE)/linuxbogurl.sgml || exit; \
-	fi
+#	@for dir in $(SUBDIRS) ; do \
+#		echo "*** Installerer fælles filer i $$dir" && \
+#                cp --update faelles-filer/*.css $$dir && \
+#                cp --update faelles-filer/*.sgml $$dir && \
+#		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
+#		      > $$dir/linuxbogurl.sgml || exit; \
+#	done
+#	@if test "x$(ALLE)" != "x" ; then \
+#		echo "*** Installerer fælles filer i $(ALLE)" && \
+#                cp --update faelles-filer/*.sgml $(ALLE) && \
+#		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
+#		      > $(ALLE)/linuxbogurl.sgml || exit; \
+#	fi
 
 
 ################################################################################
@@ -54,28 +55,42 @@ faelles:
 .PHONY: bootstrap
 bootstrap:	faelles
 	@echo "TODO: Ville være rart om bootstrap kunne afhænge af tidsstempler, noget"
-	@for dir in $(SUBDIRS); do \
-		echo "*** Kører bootstrap i $$dir" && \
-		cp --update bootstrap.subdir $$dir/bootstrap && \
-		cp --update Makefile.subdir $$dir/Makefile.am && \
-		cp --update configure.ac.subdir $$dir/configure.ac && \
-		cp --update linuxbog.spec $$dir/linuxbog.spec && \
-		mkdir -p $$dir/misc && \
-		cp --update misc/insertimagesize $$dir/misc/ && \
-		cd $$dir && ./bootstrap && cd .. || exit ;\
-	done ;
-	@if test "x$(ALLE)" != "x" ; then \
-		echo "*** Kører bootstrap i $(ALLE)" && \
-		cp --update bootstrap.subdir $(ALLE)/bootstrap && \
-		sed "s/@SUBDIRSALLE@/$(SUBDIRS)/" < Makefile.alle > $(ALLE)/Makefile.am && \
-		cp --update configure.ac.subdir $(ALLE)/configure.ac && \
-		cp --update linuxbog.spec $(ALLE)/linuxbog.spec && \
-		mkdir -p $(ALLE)/misc && \
-		cp --update misc/insertimagesize $(ALLE)/misc/ && \
-		cd $(ALLE) && ./bootstrap && cd .. || exit ;\
-	fi
-#		cp --update faelles-filer/*.sgml $$dir && \
-#		cp --update faelles-filer/*.css $$dir && \
+#	@for dir in $(SUBDIRS); do \
+#		echo "*** Kører bootstrap i $$dir" && \
+#		cp --update bootstrap.subdir $$dir/bootstrap && \
+#		cp --update Makefile.subdir $$dir/Makefile.am && \
+#		cp --update configure.ac.subdir $$dir/configure.ac && \
+#		cp --update linuxbog.spec $$dir/linuxbog.spec && \
+#		mkdir -p $$dir/misc && \
+#		cp --update misc/insertimagesize $$dir/misc/ && \
+#		cd $$dir && ./bootstrap && cd .. || exit ;\
+#	done ;
+#	@if test "x$(ALLE)" != "x" ; then \
+#		echo "*** Kører bootstrap i $(ALLE)" && \
+#		cp --update bootstrap.subdir $(ALLE)/bootstrap && \
+#		sed "s/@SUBDIRSALLE@/$(SUBDIRS)/" < Makefile.alle > $(ALLE)/Makefile.am && \
+#		cp --update configure.ac.subdir $(ALLE)/configure.ac && \
+#		cp --update linuxbog.spec $(ALLE)/linuxbog.spec && \
+#		mkdir -p $(ALLE)/misc && \
+#		cp --update misc/insertimagesize $(ALLE)/misc/ && \
+#		cd $(ALLE) && ./bootstrap && cd .. || exit ;\
+#	fi
+##		cp --update faelles-filer/*.sgml $$dir && \
+##		cp --update faelles-filer/*.css $$dir && \
+
+################################################################################
+#
+# Makefile target
+# Tanken er at denne her makefile afhænger af de faelles filer
+# Desuden gøres den afhængig af de filer der skal til for at opdatere 
+# underbiblioteker - dermed autolaves disse, hvis nogen filer ændres.
+# Der en lille detalje; Hvis man ikke har konfigureret for alle, køres configure
+# alligevel hvis Makefile.alle er blevet ændret. Sådan er det bare.
+Makefile:	faelles-filer/*.css faelles-filer/*.sgml \
+		linuxbog.spec misc/insertimagesize \
+		configure \
+		bootstrap.subdir Makefile.subdir configure.ac.subdir
+	./configure @CONFIGUREARGS@
 
 
 ################################################################################
@@ -85,7 +100,7 @@ bootstrap:	faelles
 # Men, for at køre en distclean skal der være en makefile
 # For at have en makefile, skal der være en configure
 # For at køre en configure skal der være en bootstrap... suk
-configure:	bootstrap
+configure:	
 	@for dir in $(SUBDIRS) $(ALLE) ; do \
 		echo "*** Kører ./configure i $$dir" && \
 		cd $$dir && ./configure && cd .. || exit ;\

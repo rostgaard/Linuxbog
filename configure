@@ -8,21 +8,27 @@
 SUBDIRS="admin applikationer c dokumentation forsker friheden itplatform java kontorbruger program signatur sikkerhed unix web wm"
 # Hmm. Bruges muligvis ikke længere...
 ALLE=alle
+URL=cvs.linuxbog.dk
 #SUBDIRS="alle signatur"
+
 
 ################################################################################
 #
 # Brug
 brug() {
-    echo "Brug: ./configure [--help|-h|--med \"BØGER\"]"
+    echo "Brug: ./configure [OPTIONS] [-- SUBDIROPTIONS]"
     echo
-    echo "  -h, --help          Viser denne hjælp og afslutter"
-    echo "      --med \"BØGER\"   Bestemmer hvilke bøger der medtages, hvor BØGER er"
-    echo "                      en liste af bøger. Kombiner:"
-    echo "                      \"$SUBDIRS\""
-    echo "      --uden-alle     Lad være med at medtage alle (een stor bog) bogen"
+    echo "Hvor OPTIONS kan være een eller flere af "
+    echo "  -h, --help             Viser denne hjælp og afslutter"
+    echo "  -m, --med \"BØGER\"      Bestemmer hvilke bøger der medtages, hvor BØGER"
+    echo "                         er en liste af bøger. Kombiner:"
+    echo "                         \"$SUBDIRS\""
+    echo "  -a, --uden-alle        Lad være med at medtage alle (een stor bog) bogen"
+    echo "  -u, --bogurl URL       Hvilken url bøgerne skal bruge. [cvs.linuxbog.dk]"
     echo
-    echo "Eksempel: ./configure --med \"friheden applikationer\"";
+    echo "Hvor SUBDIROPTIONS kan være"
+    echo "      --enable-softlink  Bruger softlinks for HTML targets"
+    echo "Eksempel: ./configure --med \"friheden applikationer\" -- --enable-softlink";
 }
 
 ################################################################################
@@ -41,14 +47,16 @@ hjaelp() {
 #
 # Check for argumenter
 
+# Originale argumenter gemmes til Makefile
+ORG_ARGS=
+for arg ; do ORG_ARGS="$ORG_ARGS \"$arg\"" ; done
 
 # Note that we use `"$@"' to let each command-line parameter expand to a
 # separate word. The quotes around `$@' are essential!
 # We need TEMP as the `eval set --' would nuke the return value of getopt.
-TEMP=`getopt -o ahm: --long uden-alle,help,med: -n "$0" -- "$@"`
+TEMP=`getopt -o ahm:u: --long uden-alle,help,med:,bogurl: -n "$0" -- "$@"`
 
 if [ $? != 0 ] ; then brug ; exit 1 ; fi
-
 
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
@@ -58,15 +66,16 @@ while true ; do
 	-a|--uden-alle) ALLE= ; shift ;;
 	-h|--help) hjaelp; shift ;;
 	-m|--med) SUBDIRS=$2 ; shift 2 ;;
+	-u|--bogurl) URL=$2 ; shift 2 ;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit 1 ;;
     esac
 done
 
-# Note, vi kunne sende resten af argumenterne til underliggende
-# ./configure programmer... 
-# echo "Remaining arguments:" for arg do
-# echo '--> '"\`$arg'" ; done
+# Opsaml ekstra argumenter til bøger
+EXTRA_ARG=
+for arg ; do EXTRA_ARG="$EXTRA_ARG $arg" ; done
+#echo "EXTRA_ARG: $EXTRA_ARG"
 
 ################################################################################
 #
@@ -82,6 +91,7 @@ fi
 #
 # Rent faktisk gøre noget.
 
+# Status til bruger
 echo "*** Opsætter følgende bøger: $SUBDIRS"
 if test "x$ALLE" != "x" ; then
   echo "*** Opsætter alle bogen"
@@ -89,6 +99,54 @@ else
   echo "*** Opsætter ikke alle bogen"
 fi
 
-sed "s/@SUBDIRS@/$SUBDIRS/" < Makefile.in | sed "s/@ALLE@/$ALLE/" | sed "s/@Makefile.in@/RET IKKE I DENNE FIL - AUTOGENERERET FRA Makefile.in/" > Makefile
+# Lav Makefile
+sed -e "s/@SUBDIRS@/$SUBDIRS/" \
+    -e "s/@ALLE@/$ALLE/" \
+    -e "s/@CONFIGUREARGS@/$ORG_ARGS/" \
+    -e "s/@Makefile.in@/RET IKKE I DENNE FIL - AUTOGENERERET FRA Makefile.in/" \
+    < Makefile.in > Makefile
 
-echo "*** Du kan nu køre f.eks. make bootstrap, make all, eller make dist"
+# Faelles filer
+for dir in $SUBDIRS ; do
+    echo "*** Installerer fælles filer i $dir"
+    cp --update faelles-filer/*.css $dir
+    cp --update faelles-filer/*.sgml $dir
+    echo "<!ENTITY linuxbogurl \"$URL\">" > $dir/linuxbogurl.sgml || exit;
+done
+if test "x$ALLE" != "x" ; then
+    echo "*** Installerer fælles filer i $ALLE"
+    cp --update faelles-filer/*.sgml $ALLE
+    echo "<!ENTITY linuxbogurl \"$URL\">" > $ALLE/linuxbogurl.sgml || exit;
+fi
+
+# Byggerelaterede filer
+for dir in $SUBDIRS; do
+    echo "*** Kører bootstrap i $dir"
+    cp --update bootstrap.subdir $dir/bootstrap
+    cp --update Makefile.subdir $dir/Makefile.am
+    cp --update configure.ac.subdir $dir/configure.ac
+    cp --update linuxbog.spec $dir/linuxbog.spec
+    mkdir -p $dir/misc
+    cp --update misc/insertimagesize $dir/misc/
+    cd $dir && ./bootstrap && cd .. || exit ;
+done
+if test "x$ALLE" != "x" ; then
+    echo "*** Kører bootstrap i $ALLE"
+    cp --update bootstrap.subdir $ALLE/bootstrap
+    sed "s/@SUBDIRSALLE@/$SUBDIRS/" < Makefile.alle > $ALLE/Makefile.am
+    cp --update configure.ac.subdir $ALLE/configure.ac
+    cp --update linuxbog.spec $ALLE/linuxbog.spec
+    mkdir -p $ALLE/misc
+    cp --update misc/insertimagesize $ALLE/misc/
+    cd $ALLE && ./bootstrap && cd .. || exit ;
+fi
+
+# Så køres ./configure i hvert subdir. 
+for dir in $SUBDIRS; do
+    cd $dir && ./configure $EXTRA_ARG && cd .. || exit ;
+done
+if test "x$ALLE" != "x" ; then
+    cd $ALLE && ./configure $EXTRA_ARG && cd .. || exit ;
+fi
+
+echo "*** Du kan nu køre f.eks. make all, eller make dist"
