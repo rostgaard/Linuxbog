@@ -76,7 +76,7 @@ for $file (@ARGV) {
     		     comment => "$abstract",
     		     )
         });
-	if ($dir != "samling") {
+	if ($dir ne "samling") {
 		push(@html, qq{
     			<li><b>$dir</b>: <a href="$dir/$dir/index.html"><b>$title</b></a><br>$abstract</li>
 		});
