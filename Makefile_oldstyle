@@ -47,9 +47,9 @@ clean: Makefiler
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
-	rm -rf /home/www/www.sslug.dk/bog/cvs2html
-	mkdir /home/www/www.sslug.dk/bog/cvs2html
-	/home/pto/utils/cvs2html  -l http://www.sslug.dk/bog -f -p -o /home/www/www.sslug.dk/bog/cvs2html/index.html -v -a -b -n 6 -C cvs_crono.html
+	rm -rf cvs2html
+	mkdir cvs2html
+	/home/pto/utils/cvs2html  -l http://cvs.sslug.dk/linuxbog -f -p -o cvs2html/index.html -v -a -b -n 6 -C cvs_crono.html
 
 
 mail:

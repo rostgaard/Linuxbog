@@ -211,6 +211,8 @@ hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
 Bøgerne kan også fås i
 <a href="http://www.klid.dk/~cs">Microsoft Word format</a>.
 <p>
+Vil du se hvad der skete med kilde-SGML filerne, så se <a href="cvs2html/">her</a>.
+<p>
 
 <FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
 Vil du modtage E-post om nye versioner af bogen?
