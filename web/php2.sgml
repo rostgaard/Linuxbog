@@ -1,0 +1,580 @@
+<!-- $Id$ -->
+<chapter id="php">
+<title>PHP: Hypertext Processor</title>
+<indexterm><primary>PHP</primary></indexterm>
+
+<para>
+PHP er et scriptsprog, der kan inkluders direkte i html sider.
+Til forskel fra JavaScript, der fortolkes af browseren, fortolkes
+PHP scripts af  Apaches serverens PHP4 modul, og resultatet sendes
+så til brugerens klient. Et simpel script kunne se ud som følgende
+HTML fil:</para>
+
+<screen>
+&lt;body&gt;
+&lt;h1&gt;PHP test eksempel.&lt;/h1&gt;
+&lt;?
+  echo "Denne linie udskrives af PHP fortolkeren";
+?&gt;
+&lt;/body&gt;
+</screen>
+
+<para>
+Browseren vil så modtage følgende HTML kode</para>
+
+<screen>
+&lt;body&gt;
+&lt;h1&gt;PHP test eksempel.&lt;/h1&gt;
+Denne linie udskrives af PHP fortolkeren
+&lt;/body&gt;
+</screen>
+
+
+<para>
+PHP har en lang række features, der gør det meget praktisk
+og anvendeligt til at lave dynamiske html sider, sammenlignet med
+CGI scripts. PHP kan udskrive HTML sider med data fra databaser,
+lave billeder, modtage data fra webformulare, kommunikere vha. XML
+formateret filer. PHP kan også kommunikere med e-mail, FTP, POP3, 
+IMAP, LDAP, FTP, MySQL <xref linkend="db-mysql">, 
+PostgreSQL <xref linkend="db-pgsql"> og kender til mange andre databaser,
+protokoler og akronymer.</para>
+
+<para>
+Formålet med det følgende kapittel er en introduktion til variabler,
+syntax, og grundlæggende funktioner i PHP scriptsproget. Med PHP følger en
+excellent manual, der indeholder en masse reference information om PHP
+sprogets mange funktioner. Endnu mere information, kode eksempler m.m.
+kan findes på nettet et godt udgangspunkt er <ulink url="http://www.php.net/">http://www.php.net</ulink>.
+</para>
+
+<sect1 id="php-installation">
+  <title>Installation</title>
+<indexterm><primary>PHP</primary><secondary>installation</secondary></indexterm>
+
+<para>
+RPM pakker følger med Redhat 7.0 disse hedder mod_php*.rpm og php*.rpm,
+men Pentium optimerede versioner kan downloades fra  Troels Arvins Php
+homepage, der kan findes på
+<ulink url="http://rpms.arvin.dk/php/">http://rpms.arvin.dk/php/</ulink>.
+Den nyeste version af PHP er version 4. Apache configureres til at køre
+PHP scripts ved at inkludere følgende i <filename>/etc/httpd/conf/httpd.conf</filename>.
+</para>
+
+<screen>
+LoadModule php4_module /usr/lib/apache/libphp4.so
+AddModule mod_php4.c
+
+&lt;IfModule mod_php4.c&gt;
+        AddType application/x-httpd-php .php .php3 .phtml
+        AddType application/x-httpd-php-source .phps
+&lt;/IfModule&gt;
+</screen>
+
+
+<para>
+Disse linier inkluderes sikket automatisk af installationsprogrammet.
+De første to linier inkludere selve PHP4 modulet, mens &lt;IfModule&gt;
+definere hvilke typer af filer, der skal fortolkes af PHP modulet. PHP
+modulet har sin egen konfigurationsfil der ligger i
+<filename>/etc/php.ini</filename>. Efter PHP er installeret kan Apache
+genstartes med følgende kommandoer:</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt><userinput>apachectl configtest
+</userinput>Syntax OK
+<prompt>[root@daisy /root]# </prompt><userinput>apachectl restart
+</userinput>/usr/sbin/apachectl restart: httpd started
+</screen>
+
+<para>
+ Hver gang computeren bliver genstartet vil PHP modulet
+automatisk blive indlæst.</para>
+
+<para>
+
+Du kan nu eksperimentere med at lave PHP scripts. Start med at gemme
+ovenstående script som <filename>test.php</filename>, og prøv at download
+scriptet i en browser.
+</para>
+<!-- Fejl ?? -->
+
+</sect1>    <!--   Installation -->
+
+<sect1 id="php-datatyper">
+  <title>Simple datatyper</title>
+<indexterm><primary>PHP</primary><secondary>datatyper</secondary></indexterm>
+
+<para>
+PHP har de velkendte variabel typer af heltal, floating point tal, og
+strenge. Variabler deklereres ikke på forhånd som i C. Men defineres ved at
+tilskrive variablen en værdi. Som i Perl starter alle typer af variabler med
+dollartegn, men til forskel fra Perl bruges at og procent tegnene ('@' og '%')
+ikke til mærke variable, der er tabeller eller associative tabeller. Følgende
+eksempel demonstrere hvordan variable oprettes og siden udskrives.</para>
+
+<screen>
+&lt;pre&gt;
+&lt;?
+# Opret variabel
+  $a= 42;    # et heltal
+  $b= 43.0;  # et floating point tal
+  $c= "44";  # en streng
+
+# Udskriv
+  echo "\$a=$a, \$b=$b og \$c=$c \n";
+
+# Udregninger
+  $d=$a+$b;
+  $e=$a+$c;
+
+# Udskriv resultat
+  echo "\$d=$d og \$e=$e \n";
+?&gt;
+&lt;/pre&gt;
+
+Udskriver:
+$a=42, $b=43 og $c=44 
+$d=85 og $e=86
+</screen>
+
+
+<para>
+Som i Perl bliver værdien af variabler indsat automatisk når udskrives
+med som <command>echo "$a"</command>, mens <command>echo '$a'</command> bare
+ville udskrive $a (variabel interpolation). Som i Perl betyder koden "\n"
+linieskift. Bemærk at output jo vises af browseren, og browseren ignorere
+linieskift med mindre teksten vises som preformateret. Dette er grunden til
+at PHP scriptet er foldet ind i &lt;pre&gt;..&lt;/pre&gt; tags, som vist i
+eksemplet.</para>
+
+<para>
+Eksemplet viser også at det er muligt at tage summen af et tal og en streng
+for eksempel: 42+"44" og resultatet er 86. I artitmetiske operationer, der
+involvere strenge, vil strengen automatisk konverteres til en heltal eller
+reelt tal (se <command>man strtod</command> for konverteringen).</para>
+
+<para>
+Følgende eksempel viser nogle grundlæggende operationer på strenge.</para>
+
+<screen>
+&lt;pre&gt;
+&lt;?
+   $a="Tux Penguin\n";
+   
+   print "Streng: $a";
+   print "Længde:". strlen($a) ."\n";
+   print "Karakter på tredie position: $a[2]\n";
+
+#konkatenering:
+   $b  = "Første linie\n";
+   $b .= "Anden Linie\n";
+
+   print $b;
+
+#lange strenge med doc operatoren
+
+   $c= &lt;&lt;&lt;EOT
+Lange strenge der fylder flere
+linier, skrives bedst ved at bruge
+doc (&lt;&lt;&lt;) operatoren.
+EOT;
+
+   echo $c;
+?&gt;
+&lt;/pre&gt;
+
+Udskriver:
+Streng: Tux Penguin
+Længde:12
+Karakter på tredie position: x
+
+Første linie
+Anden Linie
+
+Lange strenge der fylder flere
+linier, skrives bedst ved at bruge
+doc (&lt;&lt;&lt;) operatoren.
+</screen>
+
+
+<para>
+Som i Perl konkateneres strenge ved at bruge punktum. Strenge i PHP
+opfører sig som en tabel, og man kan derfor ekstrahere enkelt karaktere med
+<command>$a[position]</command> hvor position går fra 0 til strenglængde-1,
+strenge slutter med 0. Dette er årsagen til at længden 12 er en karaktere
+længrere end strengen, der er vist i eksemplet. Eksemplet demonstrere
+også hvordan man kan skrive strenge, der fylder flere linier med
+&lt;&lt;&lt; operatoren. Bemærk at det er vigtigt at der ikke står nogen
+mellemrum før slut mærkatet (her EOT).</para> 
+</sect1>    <!--   Simple datatyper -->
+
+<sect1 id="php-table">
+  <title>Tabeller</title>
+
+<para>
+Dette PHP script demonstrere nogle grundlæggende egenskaber ved
+tabeller.</para>
+
+<screen>
+&lt;?
+#simpel tabel
+  $a[0]=1;
+  $a[1]=2;
+  $a[2]=3;
+
+#adder streng til første frie index i tabel
+  $b[]="ost";     # =$b[0]
+  $b[]="smør";    # =$b[1]
+  $b[]="brød";    # =$b[2]
+
+#definer tabel med array funktionen
+  $c=array("Pascal","Basic","Fortran");
+
+#alfabetisk sortering
+  sort($c);
+
+#definer 2D tabel:
+#1 index   $d[0]         ,$d[1]
+#2 index         [0] [1]        [0] [1] 
+
+  $d=array(array("a","b"),array("c","d"));
+
+#udskriv nogle af elementerne
+  echo "$a[0] $b[1] $c[0] {$d[0][1]}\n";
+?&gt;
+
+Udskriver:
+1 smør Basic b
+</screen>
+
+
+<para>
+Tabeller begynder ved index 0, og en tabel defineres ved at man tilskriver
+elementerne i tabellen værdier, til forskel fra Perl bruges dollartegnet også
+til at referere til tabeller (Perl bruger @ for tabel kontekst ). <command>$b[]</command> =streng notationen betyder adder strengen til den første
+element i tabellen. Sort funktionen sortere strengene i tabellen i alfabetisk
+rækkefølge. Det er også muligt at definere multi-dimensionale tabeller ved at
+bruge <command>array(array(),array())</command> koden. Når en 2D tabel skal
+udskrives bruges '{}', dette skyldes at $d[0][1] fortolkes både som variablen
+"$d[0][1]" eller variablen $d[0]" fulgt af strengen "[1]". Bracket {..} viser
+at vi ønsker at udskrive det andet element i den første tabel. Et alternativ
+ville være at bruge konkateneringsoperatoren: <command>echo
+'\$d[0][1]='.$d[0][1]."\n".</command>
+</para>
+</sect1>    <!--   Tabeller -->
+
+<sect1 id="php-array">
+  <title>Associative tabeller</title>
+<indexterm><primary>PHP</primary><secondary>array, tabeller</secondary></indexterm>
+
+<para>
+En associativ tabel er en tabel, der bruger strenge som indices, og de
+"associeres" med en streng eller talværdi.</para>
+
+<screen>
+&lt;?
+#associativ tabel
+   $Disney["fugl"]="Anders And";
+   $Disney["hund"]="Pluto";
+
+#array notation
+#              nøgle      værdi
+   $logo=array("Tux"   =&gt; "Penguin",
+               "Gnome" =&gt; "Fod",
+               "Billg" =&gt; "Snegl");
+
+#multi-dimensional array
+   $kunst=array(
+         "impressionism" =&gt; 
+               array("Monet" =&gt; "Åkander",
+                     "Manet" =&gt; "Frokost i det Grønne"),
+         "barok" =&gt;
+               array("Bach"  =&gt; "Brandenburg koncerterne",
+                     "Hendel"=&gt; "Messias")
+           );
+
+#udskriv
+
+   echo $Disney["hund"] ."\n";
+   echo $logo[Gnome] ."\n";
+   echo $kunst["impressionism"]["Manet"] ."\n";
+ 
+#sorteringseksempler
+   udskrivtabel("Usorteret     : ",$logo);
+
+   asort($b);
+   udskrivtabel("Værdi sorteret: ",$logo);
+
+   ksort($b); 
+   udskrivtabel("Nøgle sorteret: ",$logo);
+
+#definer en udskrivningsfunktion:
+
+function udskrivtabel($streng,$tabel)
+  {
+   echo "\n".$streng;
+
+#loop gennem alle par af nøgler og værdier i tabellen
+   foreach($tabel as $key=&gt;$val)
+      {
+         echo "$key =&gt; $val\t";
+      }
+  }
+?&gt;
+
+Udskriver:
+Pluto
+Fod
+Frokost i det Grønne
+
+Usorteret     : Tux =&gt; Penguin  Gnome =&gt; Fod    Billg =&gt; Snegl
+Værdi sorteret: Gnome =&gt; Fod    Tux =&gt; Penguin  Billg =&gt; Snegl
+Nøgle sorteret: Billg =&gt; Snegl  Gnome =&gt; Fod    Tux =&gt; Penguin
+</screen>
+
+
+<para>
+Eksemplet viser hvordan associeret tabeller kan oprettes og udskrives.
+Eksemplet viser også hvordan en associativ tabel kan sorteres efter nøgler og
+værdier med ksort og asort funktionerne. En funktion defineres til at
+simplifiere udskrivningen af den associative tabel. Funktionen bruger
+<command>foreach</command> kommandoen til at iterere gennem alle elementer i
+tabellen, og udskrive nøgle og værdi for alle elementer i tabellen.
+Koden "\t" betyder tabulator.</para>
+</sect1>    <!--   Associative tabeller -->
+
+<sect1 id="php-function">
+  <title>Funktioner</title>
+<indexterm><primary>PHP</primary><secondary>funktioner, egne</secondary></indexterm>
+
+<screen>
+&lt;pre&gt;
+&lt;?
+# Funktion der udskriver en streng efterfulgt af en tilfældig type af fisk.
+# rand(a,b) funktionen returnere et tilfældigt tal mellem a og b inklusiv.
+  function AddAFish($str)
+   {
+      $fisk=array("Pirana","Elektrisk Ål","Haj","Guldfisk");
+
+      $i=rand(0,count($fisk)-1);
+      echo $str." ";
+      echo $fisk[$i];
+      echo "\n";
+   }
+
+# Returnere den $count gange konkatenerede streng.
+  function StrengGange($str,$count)
+   {
+     for ($i=0;$i&lt;$count;$i++) $retstr.=$str;
+     return $retstr."\n";
+   }
+
+
+# Enkryptere strengen via en reference
+  function Encrypt(&amp;$s)
+   {
+    for ($i=0;$i&lt;strlen($s);$i++)
+     {
+       $s[$i]=chr(ord($s[$i])+1);
+     }  
+   }  
+
+  $str="Hello World";
+
+  AddAFish($str);
+  echo StrengGange("Test",4);
+
+# Overfør reference til funktionen:
+  Encrypt(&amp;$str);
+  echo $str;
+?&gt;
+&lt;/pre&gt;
+
+Udskriver:
+Hello World Guldfisk
+TestTestTestTest
+Ifmmp!Xpsme
+</screen>
+
+
+<para>
+AddAFish funktionen modtager en streng og udskriver strengen igen efter
+fulgt af en tilfældig fisk fra fisk tabellen (Helt klart en funktion ethvert
+website har brug for!). AddAFish funktionen returnere ikke nogle data.
+StrengGange funktionen modtager to argumenter og returnere en streng. Encrypt
+funktionen er mere interessant, den modtager en reference (&amp;$str) til
+strengen $str. Det betyder at $s variablen i Encrypt er præcist den samme
+variabel som den globalt defineret $str variabel, og Encrypt funktionen ændrer
+derfor $str direkte, og behøver ikke at returnere en streng. Selve Encrypt
+funktionen enkryptere strengen ved at erstatte alle karaktere med den næste
+karakter i ASCII tabellen dvs. 'a' bliver til 'b' osv.</para>
+</sect1>    <!--   Funktioner -->
+
+<sect1 id="php-kontrol">
+  <title>Logiske Kontrol strukturer</title>
+
+<para>
+Det følgende eksempel viser syntaxen for de logisk strukturer i PHP.</para>
+
+<screen>
+&lt;pre&gt;
+&lt;?
+  echo "If:\n";
+   
+   $a=1;
+   $b=2;
+
+   if ($a&lt;$b)
+       {
+           echo "$a mindre end $b";
+       }
+    else
+       {
+           echo "$a ikke mindre end $b";
+       }
+
+  echo "\n\nIf elseif .. else:\n";
+
+   $c="Tux";
+   if  
+       ($c=="Tux")   {echo "En penguin";}
+     elseif
+       ($c=="ESR")   {echo "Eric Raymond";}
+     elseif
+       ($c=="RMS")   {echo "Richard Stallman";}
+     elseif
+       ($c=="BillG") {echo "Hvem?";}
+      else
+                     {echo "Ukendt";}
+
+
+   echo "\n\nSwitch:\n";
+
+   $d=2;
+
+   switch ($d)
+    {
+     case 0: 
+       echo "zero"; break;
+     case 1: 
+       echo "one";  break;
+     case 2:
+       echo "two";  break;
+     default:
+       echo "Unknown";
+    }
+?&gt;
+&lt;/pre&gt;
+
+Udskriver:
+If:
+1 mindre end 2
+
+If elseif .. else:
+En penguin
+
+Switch:
+two
+</screen>
+</sect1>    <!--   Logiske Kontrol strukturer -->
+
+<sect1 id="php-loops">
+  <title>Loops</title>
+
+<para>
+Syntaxen for for, while og do-while loops er som i Perl og C, og er vist i
+det følgende eksempel:</para>
+
+<screen>
+&lt;pre&gt;
+&lt;?
+   echo "\n\nFor loop:\n";
+
+   echo "2-tabellen: ";
+   for ($i=0;$i&lt;10;$i++) echo 2*$i." ";
+
+   echo "\n\nWhile loop:\n";
+
+   $i=42;
+   while ($i&gt;30) 
+       { 
+         echo $i." ";
+         $i--;
+       }
+
+   echo "\n\ndo-while loop:\n";
+
+   $i=22;
+   do
+       { 
+         echo $i." ";
+         $i-=2;
+       }
+   while ($i&gt;30);
+?&gt;
+&lt;/pre&gt;
+
+Udskriver:
+For loop:
+2-tabellen: 0 2 4 6 8 10 12 14 16 18 
+
+While loop:
+42 41 40 39 38 37 36 35 34 33 32 31 
+
+do-while loop:
+22
+</screen>
+
+
+<para>
+Loops kan afbrydes med <command>break</command> . <command>break</command> hopper straks
+til slutningen af loopet uden at udføre koden indtil da, til forskel så vil <command>continue</command> straks hoppe til starten af loopet. Begge kommandoer kan
+modtage et heltal argument, der er antallet af loops der skal brydes ud af.
+Følgende er et uhyre kryptisk eksempel der bruger både break og continue:</para>
+
+<screen>
+&lt;pre&gt;
+&lt;?
+   echo "Continue og break:\n";
+
+   $i=42;
+   while ($i!=119)
+      {
+        do
+          {
+            $i-=17;
+         
+            if ($i == 52) { break 2;}
+            if (5*$i % 13==0) break;
+          }  
+        while ($i&gt;0);
+
+        do
+          {
+            $i+=19;
+            if (7*$i % 13==0) break;
+          }  
+        while ($i&lt;101);
+
+        if ($i % 112 == 0) continue;
+
+        echo $i." ";
+        $i++;
+      }
+?&gt;
+&lt;/pre&gt;
+
+Udskriver:
+105 101 114 108 104 119
+</screen>
+
+
+<para>
+En tricky opgave i ovenstående eksempel er at finde ud af om koden
+afsluttes ved at hoppe ud af et break udtryk, eller fordi while udtrykket ikke
+længere er sandt?</para>
+</sect1>    <!--   Loops -->
+
+</chapter>    <!--   Php: Hypertext Processor -->
+
