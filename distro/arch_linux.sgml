@@ -3,9 +3,7 @@
 
  <para>
   <ulink url="http://www.archlinux.org/">Arch Linux</ulink> er en distribution
-  der specifikt er optimeret til i686-arkitekturen.  Dens målgruppe er
-  linuxbrugere (vel egentlig systemadministratorer) der ikke er bange for
-  kommandolinjen.
+  der specifikt er optimeret til i686-arkitekturen.
  </para>
 
  <figure id="arch-linux-logo" float="1">
@@ -20,15 +18,20 @@
   jeg har ikke fundet noget der svarer til <command>apt-cache</command> endnu.
  </para>
 
-<!--
  <sect1 id="distro-arch-linux-maalgruppe">
   <title>Målgruppe</title>
 
   <para>
-   ...
+   Arch Linux' erklærede målgruppe er linuxbrugere (vel egentlig
+   systemadministratorer) der ikke er bange for kommandolinjen.
+  </para>
+
+  <para>
+   Dertil må man nok også lægge at, hvis man bruger nogle lidt
+   specielle ting, skal man være villig til selv at pakke dem til Arch
+   Linux, da der endnu ikke er et voldsomt stort udvalg af pakker.
   </para>
  </sect1>
--->
 
  <sect1 id="distro-arch-linux-installation">
   <title>Installation</title>
@@ -93,9 +96,10 @@
 <screen>
 <prompt>[root@hven root]# </prompt><userinput>XFree86 -configure</userinput>
 </screen>
-    men det virkede ikke helt, da XFree86s opsætningsrutine antager at musen
-    kan findes som <filename>/dev/mouse</filename>.  Da det ikke var tilfældet
-    på mit system, måtte jeg rette <filename>/dev/mouse</filename> til
+    men det virkede ikke helt, da XFree86s opsætningsrutine antager at
+    musen kan findes som <filename>/dev/mouse</filename>.  Da det ikke
+    var tilfældet på mit system, måtte jeg rette
+    <filename>/dev/mouse</filename> til
     <filename>/dev/psaux</filename> (PS/2-mus) i opsætningsfilen:
 <screen>
 <prompt>[root@hven root]# </prompt><userinput>sed -i 's:/dev/mouse:/dev/psaux:' XF86Config.new</userinput>
@@ -104,7 +108,8 @@
 <screen>
 <prompt>[root@hven root]# </prompt><userinput>XFree86 -xf86config XF86Config.new</userinput>
 </screen>
-    (brug Ctrl-Alt-Backspace for at lukke <command>XFree86</command> ned igen).
+    (brug Ctrl-Alt-Backspace for at lukke <command>XFree86</command>
+    ned igen).
    </para>
 
    <para>
@@ -121,7 +126,8 @@
    </para>
 
    <para>
-    Hvis man har et dansk tastatur, vil man nok også lige rette linjerne:
+    Hvis man har et dansk tastatur, vil man nok også lige rette
+    linjerne:
 <programlisting>
 Section "InputDevice"
         Identifier  "Keyboard0"
@@ -138,7 +144,58 @@ Section "InputDevice"
 EndSection
 </programlisting>
    </para>
+
+   <para>
+    Jeg har kun kunnet få de to almindelige museknapper på min Compaq
+    Evo N1020v til at virke ordentligt.  Den runde joystick-lignende
+    knap foran de almindelige museknapper har jeg ikke kunnet
+    få til at gøre noget fornuftigt.
+   </para>
   </note>
+
+  <note id="distro-arch-linux-installation-lyd">
+   <title>Opsætning af lyd</title>
+
+   <para>
+    Jeg har lidt problemer med at få lyden til at køre på min Compaq
+    Evo N1020v.  <command>lspci</command> viste mig at mit lydsystem
+    nok hed noget med <literal>5451</literal> og en eftersøgning med
+    <command>locate 5451</command> viste at der fandtes en lyddriver
+    ved navn <literal>snd-ali5451</literal>.  Af en eller anden grund
+    var det ikke nok at skrive <command>modprobe snd-ali5451</command>
+    for at få installeret driveren, men efter at jeg havde kørt
+    <command>depmod -a</command> gik det.
+   </para>
+
+   <para>
+    Så skulle man tro at man bare kunne køre <command>aumix</command>
+    for at justere lydstyrken og spille en lydfil med
+    <command>mplayer</command>, men begge programmer brokker sig over
+    at de ikke kan få fat i lydenheden.
+   </para>
+  </note>
+ </sect1>
+
+ <sect1 id="distro-arch-linux-pakker">
+  <title>Installation af ekstra programmel</title>
+
+  <para>
+   Installation af pakker er ganske enkel, hvis man ved hvilken pakke man vil
+   have.  Sådan installerede jeg for eksempel FVWM
+   <emphasis>og</emphasis> X:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>pacman -Sy fvwm</userinput>
+</screen>
+  </para>
+
+  <para>
+   Det er dog overordentligt irriterende at den
+   eneste måde man kan finde pakker på, er gennem <ulink
+   url="http://www.archlinux.org/packages.php">pakkedatabasen på Arch
+   Linux-webstedet</ulink>.  Når man er blevet forvænt med Debians
+   <command>apt-cache</command>-kommando, så er det altså alt for besværligt
+   at skulle lede efter pakker i en webgrænseflade.
+  </para>
  </sect1>
 
  <sect1 id="distro-arch-linux-brug">
@@ -146,26 +203,8 @@ EndSection
 
   <para>
    Som bruger vil man næppe opleve Arch Linux som anderledes end andre
-   distributioner.  Måske kører nogle af programmerne lidt hurtigere, men det
-   burde også være det hele.
-  </para>
-
-  <para>
-   Som systemadministrator synes jeg det er overordentligt irriterende at den
-   eneste måde jeg kan finde pakker på er gennem <ulink
-   url="http://www.archlinux.org/packages.php">pakkedatabasen på Arch
-   Linux-webstedet</ulink>.  Når man er blevet forvænt med Debians
-   <command>apt-cache</command>-kommando, så er det altså alt for besværligt
-   at skulle lede efter pakker i en webgrænseflade.
-  </para>
-
-  <para>
-   Installation af pakker er til gengæld ganske enkel, når man først har fundet
-   ud af hvilken pakke man vil have.  Sådan installerede jeg for eksempel FVWM
-   <emphasis>og</emphasis> X:
-<screen>
-<prompt>[root@hven root]# </prompt><userinput>pacman -Sy fvwm</userinput>
-</screen>
+   distributioner.  Måske kører nogle af programmerne lidt hurtigere,
+   men det burde også være det hele.
   </para>
  </sect1>
 
@@ -173,8 +212,16 @@ EndSection
   <title>Samlet vurdering</title>
 
   <para>
-   Jeg må indrømme at jeg er positivt overrasket over Arch Linux.  Den har
-   grundlæggende været let at få op at køre.
+   Jeg må indrømme at jeg er positivt overrasket over Arch Linux.  Den
+   har grundlæggende været let at få op at køre.
+  </para>
+
+  <para>
+   Det eneste der har voldet mig problemer har været at få lyden til
+   at fungere på systemet.  Og så det par minutter det tog mig at
+   finde ud af at jeg skulle erstatte <filename>/dev/mouse</filename>
+   med <filename>/dev/psaux</filename> i
+   <filename>XF86Config</filename>.
   </para>
  </sect1>
 </chapter>
