@@ -1,0 +1,27 @@
+-- hello.psql
+-- af Hans Schou <chlor@sslug.dk>
+-- $Id$
+
+-- Installation: psql < hello.psql
+
+-- Afvikling: psql -c "select hello()"
+----------------------------------------------------------------
+
+-- De følgende linier installere PL/pgSQL i PostgreSQL serveren.
+-- Dette skal kun gøres een gang for database du har.
+create function plpgsql_call_handler () returns opaque as
+  '/usr/lib/pgsql/plpgsql.so' language 'C';
+
+-- drop procedural language 'PLpgSQL';
+create trusted procedural language 'PLpgSQL'
+  handler plpgsql_call_handler
+  lancompiler 'PL/pgSQL';
+
+----------------------------------------------------------------
+
+-- Når handleren er installeret, kan egne funktioner installeres
+create function hello() returns text as '
+  begin
+    return ''Hello, world!'';
+  end;
+' language 'PLpgSQL';

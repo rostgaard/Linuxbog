@@ -1,0 +1,51 @@
+%!PS
+% smart.ps
+% af Hans Schou <chlor@sslug.dk>
+% $Id$
+%
+% Afvikling: 
+%  lpr smart.ps
+% eller:
+%  gs -q smart.ps
+
+% Eksemplet tegner nogle blomster ved hjælp af 'forall' funktionen.
+% PostScript kan udfører løkker på mange måder, og 'forall' er
+% blot en af mange.
+
+% PostScript er velegnet til at tegne med, for dem der er bedre
+% til programmering end til at tegne i hånden.
+
+% Funktion: blomst
+% Flytter udgangspunktet til positionen som angivet i array'et på stakken.
+% Tegner fire blade af en blomst.
+% [<x> <y>] blomst
+/blomst {
+  % Inddata er et array, tøm dette up på stakken
+  {} forall
+  % Flyt relativt til punkt angivet ved x,y
+  translate
+  % Tegn fire blade af blomsten med en for-løkke
+  % <start> <step> <end> {proc} for
+  0 90 270
+  { gsave
+      % Rotér værdien fra for-løkken
+      rotate
+      % Tegn et blad
+      0 0 moveto
+      100 0 0 -100 0 0 curveto
+      % Udfyld bladet
+      fill
+    grestore
+  } for
+} bind def
+
+% Skalér op til 200%
+2 2 scale
+
+% Tegn blomster for alle punkter angivet i array'et.
+% Første blomst er i nederste venstre hjørne, kun eet blad kan ses.
+% Sidste blad står omtrendt midt på siden.
+[ [0 0] [50 100] [0 100] [0 100] [120 -100] ] {blomst} forall
+
+% Tegn siden
+showpage

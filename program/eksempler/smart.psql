@@ -1,0 +1,75 @@
+-- smart.psql
+-- af Björn Bergsten <bergsten@pixicore.com>
+-- & Hans Schou <chlor@sslug.dk>
+-- $Id$
+
+-- Installation: (PLpgSQL handler, se hello.psql)
+--   psql < smart.psql
+-- Afvikling:
+--   psql -c "select cpr_birthday('3112990000')"
+
+-- Dette eksempel viser hvordan man kan bruge funktioner i PostgreSQL.
+-- Anvender man forskellige programmeringssprog sammen med PostgreSQL,
+-- kan det være en fordel at have nogle funktioner defineret
+-- i databasen, så man altid anvender den samme funktion.
+
+-- I dette eksempel regnes fødselsdagen ud på baggrund af CPR-nr.
+-- Idag er få født i 18XX og 20XX, men der er nogle, og det skal
+-- højde for.
+
+-- SQL function to calculate birthdate from danish CPR number
+--drop   index CprCent_uix;
+drop   table CprCent;
+create table CprCent (
+  y1    int2,
+  y2    int2,
+  code  int2,
+  cent  int2
+);
+--create unique index CprCent_uix on CprCent(y1, y2, code);
+
+insert into CprCent (y1, y2, code, cent) values ( 0, 99, 0000, 1900);
+insert into CprCent (y1, y2, code, cent) values ( 0, 99, 1000, 1900);
+insert into CprCent (y1, y2, code, cent) values ( 0, 99, 2000, 1900);
+insert into CprCent (y1, y2, code, cent) values ( 0, 99, 3000, 1900);
+insert into CprCent (y1, y2, code, cent) values ( 0, 36, 4000, 2000);
+insert into CprCent (y1, y2, code, cent) values (37, 99, 4000, 1900);
+insert into CprCent (y1, y2, code, cent) values ( 0, 36, 5000, 2000);
+insert into CprCent (y1, y2, code, cent) values (37, 57, 5000,   -1);
+insert into CprCent (y1, y2, code, cent) values (58, 99, 5000, 1800);
+insert into CprCent (y1, y2, code, cent) values ( 0, 36, 6000, 2000);
+insert into CprCent (y1, y2, code, cent) values (37, 57, 6000,   -1);
+insert into CprCent (y1, y2, code, cent) values (58, 99, 6000, 1800);
+insert into CprCent (y1, y2, code, cent) values ( 0, 36, 7000, 2000);
+insert into CprCent (y1, y2, code, cent) values (37, 57, 7000,   -1);
+insert into CprCent (y1, y2, code, cent) values (58, 99, 7000, 1800);
+insert into CprCent (y1, y2, code, cent) values ( 0, 36, 8000, 2000);
+insert into CprCent (y1, y2, code, cent) values (37, 57, 8000,   -1);
+insert into CprCent (y1, y2, code, cent) values (58, 99, 8000, 1800);
+insert into CprCent (y1, y2, code, cent) values ( 0, 36, 9000, 2000);
+insert into CprCent (y1, y2, code, cent) values (37, 99, 9000, 1900);
+
+drop   function cpr_birthday (text);
+create function cpr_birthday (text) returns date as '
+  declare
+    cpr  alias for $1;
+    ccyy int2;
+    year int2;
+    cccc int2;
+
+  begin
+    year = substr(cpr, 5, 2);
+    cccc = substr(cpr, 7, 4);
+    select cent into ccyy from CprCent
+      where (y1 <= year) and (year <= y2)
+        and (code <= cccc) and (cccc <= code+999);
+    if (ccyy > 0) then
+      return date(text(ccyy + year) || ''-'' ||
+                  substr(cpr, 3, 2) || ''-'' ||
+                  substr(cpr, 1, 2));
+    else
+      raise exception ''Invalid CPR number: %'', cpr;
+    end if;
+  end;
+' language 'PLpgSQL';
+
