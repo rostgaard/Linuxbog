@@ -192,52 +192,44 @@ efter behov.
 </para>
 
 <para>
-Hvilke services, der skal startes, bestemmes af filen
-<FILENAME>/etc/inetd.conf</FILENAME>. Eks.:
+Hvilke services, der skal startes, bestemmes i  kataloget
+<FILENAME>/etc/xinetd.d</FILENAME>, og de filer der ligger der. Eks.:
 </para>
 
 <SCREEN>
-# These are standard services.
-#
-ftp    stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
-telnet stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd
-gopher stream  tcp     nowait  root    /usr/sbin/tcpd  gn
-
-...
 </SCREEN>
 
 <para>
 En service kan slås fra ved at udkommentere den linie, der starter
 den pågældende service.
-Eks.:
+Eks. er <filename>telnet</filename>
 </para>
 
 <SCREEN>
-ftp     stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
+# default: on
+# description: The telnet server serves telnet sessions; it uses \
+#       unencrypted username/password pairs for authentication.
+service telnet
+{
+        flags           = REUSE
+        socket_type     = stream
+        wait            = no
+        user            = root
+        server          = /usr/sbin/in.telnetd
+        log_on_failure  += USERID
+        disable         = yes
+}
 </SCREEN>
 
 <para>
-bliver efter udkommentering til
-</para>
-
-<SCREEN>
-#ftp    stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a
-</SCREEN>
-
-<para>
-dvs. du indsætter et # foran den linie, der styrer den enkelte
-service.  Dette gør, at denne service ikke bliver startet, og dermed
-vil din maskine ikke længere stille ftp-servicen til rådighed for
-andre maskiner på nettet.  Når du alligevel retter i
-<FILENAME>/etc/inetd.conf</FILENAME>, så udkommenter også linien med
-gopher, som er en ældre service, der i dag er helt erstattet af http.
-<indexterm><primary>/etc/inetd.conf</primary></indexterm>
-
+Det du skal se efter er om der står <literal>disable=yes</literal>
+i hver fil, for dermed startes de enkelte services <emphasis>ikke</emphasis>.
+<indexterm><primary>/etc/xinetd.d</primary></indexterm>
 </para>
 
 <para>
-For at ændringerne i <FILENAME>/etc/inetd.conf</FILENAME> skal træde i
-kraft, er det nødvendigt at genstarte inetd processen. Dette kan gøres
+For at ændringerne i <FILENAME>/etc/xinetd.d</FILENAME> skal træde i
+kraft, er det nødvendigt at genstarte xinetd processen. Dette kan gøres
 på flere måder.  Nogle distributioner har en struktur med startup
 scripts, der bruges til dette formål. Under Red Hat og Debian ligger
 de under <FILENAME>/etc/rc.d/init.d</FILENAME>
@@ -250,26 +242,24 @@ Red Hat:
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput>/etc/rc.d/init.d/inet reload </userinput>
-</SCREEN>
-
-<para>
-Debian:
-</para>
-
-<SCREEN>
-<prompt>[root@locksley robin]#</prompt> <userinput>/etc/init.d/netbase restart</userinput>
+<prompt>[root@sherwood robin]#</prompt> <userinput>/etc/init.d/xinetd reload </userinput>
 </SCREEN>
 
 <para>
 Der er dog også nogle Linux-distributioner, der ikke benytter denne struktur
 herunder Slackware, så vi har brug for en mere generel løsning. For en 
-vilkårlig distribution kan man genstarte inetd ved at skrive:
+vilkårlig distribution kan man genstarte xinetd ved at skrive:
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput>killall -1 inetd</userinput>
+<prompt>[root@sherwood robin]#</prompt> <userinput>killall -1 xinetd</userinput>
 </SCREEN>
+
+<para> 
+Før Red Hat 7 anvendte man i stedet for
+<command>xinetd</command> forgængeren <command>inetd</command> og der skal man udkommentere linierne i <filename>/etc/inetd.conf</filename>
+</para>
+
 
 <para>
 Bemærk, at du i eksemplet kun slår din ftp-<emphasis>server</emphasis>
@@ -285,18 +275,18 @@ kører udenom inetd som daemons.
 </para>
 
 <para>
-Gennemgå de andre services i <FILENAME>/etc/inetd.conf</FILENAME> på
+Gennemgå de andre services i <FILENAME>/etc/xinetd.d</FILENAME> på
 samme måde som vist ovenfor.  Undersøg, hvad der kører på din maskine,
 og find ud af om det er nødvendigt at de enkelte services kører. Hvis
 ikke, så slå det fra.  En gylden regel er, at du hellere må køre for
 få end for mange services.  Vi kommer senere til en gennemgang af de
-services, der findes i <FILENAME>/etc/inetd.conf</FILENAME>.
+services, der findes i <FILENAME>/etc/xinetd.d</FILENAME>.
 </para>
 
 <para>
 Husk slutteligt, at hvis du ender med at du slet ikke vil køre
-services via <FILENAME>/etc/inetd.conf</FILENAME>, så kan du 
-lige så godt lukke selve inetd programmet ned.
+services via <FILENAME>/etc/xinetd.d</FILENAME>, så kan du 
+lige så godt lukke selve xinetd programmet ned.
 </para>
 
 </sect2>
@@ -320,18 +310,18 @@ Man kan f.eks. også få den til at sende sig en email, hvis nogen
 udefra forsøger at få adgang via telnet til maskinen.
 </para>
 
-<para>
+<!--
 Tcpd virker sådan, at hver gang, der kommer en forespørgsel til
 inetd om at starte en service, er det tcpd, der får lov at starte den.
 Tcpd rapporterer til syslogd, hvad der sker, så det bliver skrevet 
 i logfiler, og kontrollerer, om den kaldende
 host har adgang til den pågældende service. Hvis alt er i orden,
 starter tcpd servicen, og afslutter sig selv. Simpelt og elegant.
-Tcpd skal sættes ind i <FILENAME>/etc/inetd.conf</FILENAME>-filen i stedet 
+Tcpd skal sættes ind i <FILENAME>/etc/xinetd.d</FILENAME>-filen i stedet 
 for navnet på den service, der skal udføres. 
 Navnet på serviceprogrammet gives som parameter til tcpd. I de viste linier 
-fra <FILENAME>/etc/inetd.conf</FILENAME> ovenfor er tcpd allerede sat ind.
-</para>
+fra <FILENAME>/etc/xinetd.conf</FILENAME> ovenfor er tcpd allerede sat ind.
+--!>
 </sect2>
 
 <sect2 id="Adgang-til-din-maskine">
@@ -615,7 +605,7 @@ drift angreb", også kendt som DOS attack) - maskinen nægter brugerene
 den service, som skulle leveres, fordi den er sat ud af drift af
 angrebet. Der findes også sikkerhedshuller til andre slags DOS attacks
 i nogle ftp-servere.  Hvis du ikke skal bruge ftp, bør du slå den fra
-i /etc/inetd.conf.
+i <filename>/etc/xinetd.d</filename>.
 </para>
 
 <SCREEN>
@@ -665,11 +655,11 @@ Denne kommando kan køres fra andre maskiner mod din maskine, og kan
 anvendes af folk udefra til f.eks. at finde frem til en brugerkonto,
 der ikke har været brugt længe. Denne information bør du ikke give 
 videre ud over maskinen selv.
-Derfor bør du i <FILENAME>/etc/inetd.conf</FILENAME> tilføje et "#" foran linien
+Derfor bør du i <FILENAME>/etc/xinetd.d/finger</FILENAME> rette
 </para>
 
 <SCREEN>
-finger  stream  tcp     nowait  root    /usr/sbin/tcpd  in.fingerd      
+disable         = yes    
 </SCREEN>
 
 <para>
@@ -686,8 +676,8 @@ andre maskiner skal være spærret f.eks. med tcp-wrappers.
 
 <para>
 <indexterm><primary>POP</primary></indexterm>
-Hvis din maskine ikke skal være mailserver, så udkommenter pop-2,
-pop-3 og imap i <FILENAME>/etc/inetd.conf</FILENAME>.
+Hvis din maskine ikke skal være mailserver, så indsæt <literal>disable=yes</literal> i filerne med pop-2,
+pop-3 og imap i <FILENAME>/etc/xinetd.d</FILENAME>.
 </para>
 
 <para>
@@ -793,7 +783,7 @@ SSL eller bedre kryptering indbygges i server og klient.
 
 <para>
 Ud over services, som konfigureres via
-<FILENAME>/etc/inetd.conf</FILENAME>, er der en klasse af services,
+<FILENAME>/etc/xinetd.d</FILENAME>, er der en klasse af services,
 som anvender RPC - Remote Procedure call. Vi vil se lidt på RPC og de
 mest kendte RPC-baserede services.
 </para>
@@ -1447,7 +1437,7 @@ som nameserver.
 <title>Epilog</title>
 
 <para>
-<indexterm><primary>/etc/inetd.conf</primary></indexterm>
+<indexterm><primary>/etc/xinetd.d/</primary></indexterm>
 
 Selvom vi har været inde på mange services her, har vi ikke været inde
 på alle. Programmer som <COMMAND>nmap</COMMAND> og kommandoer som
@@ -1456,7 +1446,7 @@ hvilke porte, der benyttes, hvilke services, der kører, og hvilke
 netværksforbindelser, der er etableret. Brug også <COMMAND>ps
 aux</COMMAND> flittigt og se hvilke processer, der rent faktisk kører
 på dit system. Sørg for at alle unødvendige services i
-<FILENAME>/etc/inetd.conf</FILENAME> er kommenteret ud, og check dine
+<FILENAME>/etc/xinetd.d</FILENAME> er disablet, og check dine
 runlevel kataloger. Læs manualsiderne til de services, du vælger at
 køre. Følg med på sikkerhedslister på Internet, og følg med i
 fejlrapportet for din Linuxdistribution.  Tænk dig om, og hold øje med
