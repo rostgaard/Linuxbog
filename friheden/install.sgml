@@ -110,8 +110,649 @@ de fleste maskiner køre Linux med fuld udnyttelse af grafikkortet.
 <itemizedlist mark="bullet" spacing="compact">
 
 <listitem><para>
-<ulink url="http://cdb.suse.de/cdb/english/">http://cdb.suse.de/cdb/english/</ulink>
+<ulink url="http://cdb.suse.de/cgi-bin/scdb?HTML=ENGLISH/cdb_listtemplates/menu.htm&amp;LANG=ENGLISH">http://cdb.suse.de/cgi-bin/scdb?HTML=ENGLISH/cdb_listtemplates/menu.htm&amp;LANG=ENGLISH</ulink>
 - SuSE hardware kompatibilitets database (kan i langt de fleste
+tilfælde også dække Red Hat).
+</para></listitem>
+
+
+<listitem><para><ulink
+url="http://www.redhat.com/corp/support/hardware/index.html">http://www.redhat.com/corp/support/hardware/index.html</ulink>
+- Red Hat hardware kompatibilitets database.
+</para></listitem>
+
+<listitem><para><ulink url="http://www.xfree86.org">http://www.xfree86.org</ulink>
+- Oversigt over, hvilke grafikkort der er understøttet af grafik til Linux.
+</para></listitem>
+
+<listitem><para><ulink url="http://lhd.datapower.com/">http://lhd.datapower.com/</ulink> - Database med hardware, der virker med Linux.
+</para></listitem>
+
+<indexterm><primary>laptop og Linux</primary></indexterm>
+<listitem><para>
+<ulink url="http://www.cs.utexas.edu/users/kharker/linux-laptop/">http://www.cs.utexas.edu/users/kharker/linux-laptop/</ulink>
+og <ulink url="http://www.linux.org/hardware/laptop.html">http://www.linux.org/hardware/laptop.html/</ulink>
+- Skal du installere Linux på bærbar PC, så se altid disse steder.
+</para></listitem>
+</itemizedlist>
+</sect3>
+</sect2>
+
+<sect2 id="klargoer">
+<title>Gør din PC klar og lav sikkerhedskopi</title>
+
+<para>
+Har du en anden harddisk, som kan bruges til at lægge Linux ind på -
+f.eks. en gammel 800 MB eller måske 2 GB disk, så brug denne, 
+for det er en del nemmere end at skulle om-partitionere harddisken.
+</para>
+
+<para>
+Hvis du starter med en Windows 95/98-maskine og skal have Linux installeret
+på den samme harddisk som Windows, skal du have delt
+harddisken op i to dele - en til hvert styresystem. 
+</para>
+
+<para>
+Har du Windows 2000 fyldt op på harddisken og kun en harddisk, så kan
+du få problemer med at lave nye partitioner til
+Linux hvis Windows 2000 bruger NTFS filsystemet. Nyere
+Linux-distributioner - f.eks. Mandrake 7.2 - har et fint
+re-partitionerings program, som kan håndtere Windows 2000.
+<indexterm><primary>Windows 2000</primary></indexterm>
+<indexterm><primary>Partitionering</primary><secondary>Windows 2000</secondary></indexterm>
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Hvis du selv installerer Windows så 
+vælg at installere det på en FAT formateret harddisk og undgå
+NTFS fil systems. På den måde kan filer direkte kopieres fra
+Linux til Windows. Og du kan altid gøre Windows-partitionen
+mindre med DOS/Windows-programmet Fips. (Se <xref linkend="opdelharddisk">)
+</para>
+
+<para>
+I Windows er det klogt at køre en fejlsøgning på disken og derefter en
+defragmentering. Dette finder du under egenskaber for disken under
+"Denne computer" (Windows på dansk). Evt. kan du skanne efter dårlige
+sektorer under DOS med ScanDisk. Finder du fejl på disken nu, er
+det måske tegn på, at du hellere bør købe en ny harddisk til Linux.
+</para>
+
+<para>
+Før du går videre, vil det være en god ide at udskrive alle system
+oplysninger om computeren for at lette installation og
+evt. fejlfinding. Dette gøres ved at gå ind i "Denne computer" og
+derefter trykke på Kontrolpanel. Dobbeltklik på System og vælg
+fanebladet "Enhedshåndtering". I bunden af vinduet vælges udskriv. Det
+kan anbefales at udskrive samtlige systemoplysninger.
+</para>
+
+<FIGURE ID="windowsinfo-fig" FLOAT="1">
+<TITLE>Windows systeminformation</TITLE>
+<GRAPHIC FILEREF="windowsinfo.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Det er nu, du bør tage en sikkerhedskopi af de vigtige data
+på din disk. Det bør ikke gå galt, hvis du læser videre og går
+forsigtigt frem. Fik vi nævnt, at du bør tage sikkerhedskopi ? :-)
+</para>
+
+</sect2>
+
+<sect2 id="fdiskintro">
+<title>Hvad skal der ske</title>
+<para>
+Kort fortalt: Før du installerer Linux, skal der være en partition til
+rådighed, der er stor nok til at rumme det hele (samt en swappartition).  Hvor
+stor er et spørgsmål om, hvad du vil tage med i installationen - se de
+følgende afsnit.  I løbet af Linux-installationen vil der blive
+lejlighed til at repartitionere så meget, du har behov for, inden for
+den plads, der nu er blevet til rådighed.
+</para>
+
+<para>
+DOS/Windows (i det følgende kaldet DOS) har programmet
+<command>fdisk.exe</command>. Linux har programmerne
+<command>fdisk</command> og <command>disk-druid</command>.  Alle
+programmerne er tilfredsstillende beskrevet i deres respektive
+dokumentationer.
+</para>
+
+<para>
+Hvis du har Windows installeret, og ønsker at bevare det, efter at Linux er
+blevet installeret, så kan du først køre
+<command>fdisk.exe</command> i fra dos <command>Start->Luk->Genstart DOS</command> (ikke i 
+et DOS vindue under Windows) til at slette en eller flere
+eksisterende DOS/Windows-partitioner, så der er plads til Linux.
+Linux installeres derefter bare ved siden af Windows på den fri partition.
+</para>
+
+<para>
+Skulle det i løbet af anstrengelserne blive nødvendigt at fjerne en
+mislykket Linux-installation fra harddisken og begynde forfra med DOS,
+vil du få brug for at have en opstartsdiskette til DOS, som blandt andet skal
+indeholde DOS <command>fdisk.exe</command>.  Fdisk kan køre med en
+(udokumenteret) option <command>fdisk /mbr</command>, som kan fjerne
+de registreringer, Linux måtte have lagt i diskens master boot record
+(det vil vi minde dig om et par gange).
+</para>
+
+<para>
+Du kan måske være interesseret i at læse denne vejledning i
+om-partitionering af harddisken: 
+<ulink url="http://www.redhat.com/support/manuals/RHL-6.2-Manual/ref-guide/ch-partitions.html">http://www.redhat.com/support/manuals/RHL-6.2-Manual/ref-guide/ch-partitions.html</ulink>.
+</para>
+
+</sect2>
+
+
+<sect2 id="opdelharddisk">
+<title>Opdele en DOS/Windows-harddisk til Linux</title>
+<para>
+<indexterm><primary>Opdeling af harddisk</primary></indexterm>
+<indexterm><primary>fips</primary></indexterm>
+Harddisken skal nu deles mellem Linux og Windows. Dette gøres ved, at
+du indsætter din Linux-cdrom og finder DOS-programmet
+<command>fips.exe</command>, som du skal starte under DOS - IKKE under
+Windows eller OS/2. Læs i øvrigt dokumentationen til Fips!  Har du to
+versioner af <command>fips.exe</command>, så brug den nyeste (fips20).
+</para>
+
+<para>
+Programmet <command>fips</command> vil vise dig, at du har én
+partition med Windows (det er det mest normale). Tryk enter for at
+komme til næste skærmbillede. Lav gerne en sikkerhedskopi til en formatteret
+diskette ved at trykke <command>y</command> (for yes) to gange.
+</para>
+
+<para>
+Nu vil Fips foreslå, at dele disken i to partitioner,
+så du skal nu til at vurdere, hvor meget plads du vil bruge på hver af
+de to styresystemer. Brug venstre og højre pil til at ændre fordelingen,
+hvor Old partition er størrelsen på din Windows-partition. Husk, at du
+bør lave noget fri plads til udvidelse af Windows-programmer,
+selvom du nok senere hen vil mene, at du hellere vil have pladsen
+under Linux. Det er dit valg. Tryk derefter <command>c</command>
+for continue, og derefter genstartes maskinen med mindre plads under
+Windows. Din ekstra DOS partition skal senere slettes for at give
+plads til mindst en Linux-partition og en Linux-swappartition.
+</para>
+
+<para>
+Vi kan lige nævne, at hvis du har en Windows 95 installeret, som er fra
+før 1996 (final beta release), så er der set problemer (for Windows 95), hvis
+Linux installeres på "extended partitions". Problemet
+eksisterer ikke med officielt udgivne Windows-versioner - det er kun
+final beta og tidligere, der har problemer.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="disklayout">
+<title>Disk partitioner</title>
+<para>
+Du er temmelig frit stillet med hensyn til antallet og størrelsen af
+partitionerne. Hvis du kører uden swap-partition, kan du simpelt hen
+installere alt på en enkelt root-partition ("/"). Mange bruger fire
+eller fem partitioner. Denne fordeling er ret udbredt og efter vor mening også
+både fornuftig og fleksibel:
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+<indexterm><primary>Swap</primary></indexterm>
+en swap-partition. Størrelsen kan diskuteres i det uendelige og
+afhænger meget af, hvad du har tænkt dig at bruge systemet til. Et
+eller andet sted mellem 16 MB og 127 MB. En tommelfingerregel siger,
+at swap-partitionens størrelse skal være det dobbelte af den fysiske
+hukommelse.  Har du 32 MB RAM og derover, kan du måske nøjes med en
+swap-størrelse, som svarer til RAM størrelsen. Et råd til dig er, at
+normal anvendelse af Linux ikke kræver over 64 MB, dvs. summen af
+fysisk hukommelse plus swap.  Du kan dog lave mange swap-partitioner,
+hvis du vil, og de kan laves på et senere tidspunkt, evt. bundet til en
+stor swapfil, som det kendes fra Windows. Du skal bemærke, at
+swap-partitioner ikke placeres i filtræet. Man kan således ikke gå et
+bestemt sted hen og se swap indholdet, men det er blot mere hukommelse
+for systemet (du kan med kommandoen <command>free</command> senere se,
+hvordan hukommelsen anvendes).
+</para>
+</listitem>
+
+<listitem><para>en partition på 20 MB til <filename>/boot</filename>,
+som lægges før cylinder 1024 på disken.  Ældre BIOS-typer har en fejl,
+som gør dette nødvendigt.  Denne partition bør du kun lave, hvis du
+vil køre LILO - læs mere i <xref linkend="lilo"></para></listitem>
+
+<listitem><para>en partition på 300-500 MB til rodkataloget,
+dvs. <filename>/</filename>, men installerer du SuSE, skal du dertil
+lægge plads til <filename>/opt</filename>, som kan indeholde
+yderligere 200MB, hvis du installerer KDE og StarOffice. Med Red Hat
+installeres disse programmer under
+<filename>/usr</filename>.</para></listitem>
+
+<listitem><para>en partition på 300 MB til 1 GB til
+<filename>/usr</filename></para></listitem>
+
+
+
+<listitem><para>en partition til <filename>/home</filename>,
+størrelse afhængig af antal brugere og deres behov.</para></listitem>
+
+</itemizedlist>
+Installerer du alle pakker som custom, skal du regne med at bruge
+mindst 1 GB.
+</para>
+
+<para>
+Harddisk-nummerering i Windows og Linux er forskellige.  I Linux kaldes
+alle systemenheder - som f.eks. harddiske - for enheder (eng. devices) og har
+fortløbende bogstavnavne. De ligger alle i kataloget
+<filename>/dev</filename>
+</para>
+<indexterm><primary>IDE diske</primary></indexterm>
+<indexterm><primary>SCSI diske</primary></indexterm>
+
+<para>
+Første IDE disk  = <filename>/dev/hda</filename>
+</para>
+<para>
+Anden IDE disk  = <filename>/dev/hdb</filename>
+</para>
+<para>
+Tredje IDE disk = <filename>/dev/hdc</filename>
+</para>
+<para>
+Fjerde IDE disk = <filename>/dev/hdd</filename>
+</para>
+<para>
+Første SCSI disk = <filename>/dev/sda</filename> osv.
+</para>
+
+<para>
+Partitioner på en disk har numre svarende til disken, f.eks. er
+<filename>/dev/hda2</filename> den anden partition på den første IDE disk.
+</para>
+
+
+
+</sect1>
+
+<sect1 id="installredhat">
+<title>Installation af Red Hat Linux 7.1 (Seawolf)</title>
+<para>
+<indexterm><primary>Red Hat</primary></indexterm>
+Version 7.1 (Seawolf) er seneste Red Hat version. Der er lagt meget stor
+vægt på brugervenligheden; både i forbindelse med installationen og
+den daglige administration af systemet. Langt det meste af, hvad der
+tidligere krævede stor indsigt i formatet af diverse
+opsætningsfiler, kan nu håndteres ved hjælp af det grafisk baserede
+værktøj <command>control-panel</command> eller det nye
+<command>linuxconf</command>, der ikke kun kan køres via den grafiske
+brugergrænseflade i X Window systemet, men også kan fungere rent
+tekstbaseret eller via et web-interface.
+</para>
+
+<para>
+Ud over at være nem at installere og administrere må Red Hat Linux også
+siges at være et godt valg med hensyn til udvalget af
+applikationer. Alle traditionelle Linux-programmer plus en hel del nye
+ligger klar til at installere fra cdrom-erne.
+</para>
+
+<para>
+Det skal siges, at der var en sjat børnesygdomme i Red Hat 7.1 som nu 
+er rettet op i Red Hat 7.1. De problemer kan dog heldigvis rettes ved
+at følge med de opdateringspakker, der annonceres løbende på
+<ulink url="http://www.redhat.com/support/errata/">http://www.redhat.com/support/errata/</ulink>.
+</para>
+
+
+<sect2 id="RH70nyt">
+<title>Nyheder i Red Hat 7.1</title>
+
+
+<para>
+Installation af Red Hat 6.1-7.1 er næsten den samme.
+</para>
+
+<para>
+Der kommer to C-oversættere med Red Hat 7.0. <command>gcc</command> er
+en eksperimentel C-oversætter og <command>kgcc</command> er en
+velafprøvet oversætter, som skal anvendes, hvis du for eksempel
+oversætter Linux-kernen (installer
+<filename>compat-egcs-*.rpm</filename>).  Med Red Hat 7.1 skulle dette
+problem være væk hvis du holder dig til 2.4-kerner. Se i øvrigt bogen
+"Linux - friheden til systemadministration" for mere info om Linux-kernen.
+</para>
+
+<para>
+Red Hat 7.1 har KDE 2.1.1 med, som er et godt grafisk brugermiljø. 
+KDE 2.1.1 understøtter anti-aliaserede skrifttyper, hvilket er lækkert.
+Tilsvarende GNOME 1.2 med. Ximian Gnome 1.4 må hentes fra 
+<ulink url="http://www.ximian.com">http://www.ximian.com</ulink>. 
+</para></listitem>
+
+
+<listitem><para>
+<ulink url="http://www.redhat.com/corp/support/hardware/index.html">http://www.redhat.com/corp/support/hardware/index.html</ulink>
+- Red Hat hardware kompatibilitets database.
+</para></listitem>
+
+<listitem><para><ulink url="http://www.xfree86.org">http://www.xfree86.org</ulink>
+- Oversigt over, hvilke grafikkort der er understøttet af grafik til Linux.
+</para></listitem>
+
+<listitem><para><ulink url="http://lhd.datapower.com/">http://lhd.datapower.com/</ulink> - Database med hardware, der virker med Linux.
+</para></listitem>
+
+<indexterm><primary>laptop og Linux</primary></indexterm>
+<listitem><para>
+<ulink url="http://www.cs.utexas.edu/users/kharker/linux-laptop/">http://www.cs.utexas.edu/users/kharker/linux-laptop/</ulink>
+og <ulink url="http://www.linux.org/hardware/laptop.html">http://www.linux.org/hardware/laptop.html/</ulink>
+- Skal du installere Linux på bærbar PC, så se altid disse steder.
+</para></listitem>
+</itemizedlist>
+</sect3>
+</sect2>
+
+<sect2 id="klargoer">
+<title>Gør din PC klar og lav sikkerhedskopi</title>
+
+<para>
+Har du en anden harddisk, som kan bruges til at lægge Linux ind på -
+f.eks. en gammel 800 MB eller måske 2 GB disk, så brug denne, 
+for det er en del nemmere end at skulle om-partitionere harddisken.
+</para>
+
+<para>
+Hvis du starter med en Windows 95/98-maskine og skal have Linux installeret
+på den samme harddisk som Windows, skal du have delt
+harddisken op i to dele - en til hvert styresystem. 
+</para>
+
+<para>
+Har du Windows 2000 fyldt op på harddisken og kun en harddisk, så kan
+du få problemer med at lave nye partitioner til
+Linux hvis Windows 2000 bruger NTFS filsystemet. Nyere
+Linux-distributioner - f.eks. Mandrake 7.2 - har et fint
+re-partitionerings program, som kan håndtere Windows 2000.
+<indexterm><primary>Windows 2000</primary></indexterm>
+<indexterm><primary>Partitionering</primary><secondary>Windows 2000</secondary></indexterm>
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Hvis du selv installerer Windows så 
+vælg at installere det på en FAT formateret harddisk og undgå
+NTFS fil systems. På den måde kan filer direkte kopieres fra
+Linux til Windows. Og du kan altid gøre Windows-partitionen
+mindre med DOS/Windows-programmet Fips. (Se <xref linkend="opdelharddisk">)
+</para>
+
+<para>
+I Windows er det klogt at køre en fejlsøgning på disken og derefter en
+defragmentering. Dette finder du under egenskaber for disken under
+"Denne computer" (Windows på dansk). Evt. kan du skanne efter dårlige
+sektorer under DOS med ScanDisk. Finder du fejl på disken nu, er
+det måske tegn på, at du hellere bør købe en ny harddisk til Linux.
+</para>
+
+<para>
+Før du går videre, vil det være en god ide at udskrive alle system
+oplysninger om computeren for at lette installation og
+evt. fejlfinding. Dette gøres ved at gå ind i "Denne computer" og
+derefter trykke på Kontrolpanel. Dobbeltklik på System og vælg
+fanebladet "Enhedshåndtering". I bunden af vinduet vælges udskriv. Det
+kan anbefales at udskrive samtlige systemoplysninger.
+</para>
+
+<FIGURE ID="windowsinfo-fig" FLOAT="1">
+<TITLE>Windows systeminformation</TITLE>
+<GRAPHIC FILEREF="windowsinfo.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Det er nu, du bør tage en sikkerhedskopi af de vigtige data
+på din disk. Det bør ikke gå galt, hvis du læser videre og går
+forsigtigt frem. Fik vi nævnt, at du bør tage sikkerhedskopi ? :-)
+</para>
+
+</sect2>
+
+<sect2 id="fdiskintro">
+<title>Hvad skal der ske</title>
+<para>
+Kort fortalt: Før du installerer Linux, skal der være en partition til
+rådighed, der er stor nok til at rumme det hele (samt en swappartition).  Hvor
+stor er et spørgsmål om, hvad du vil tage med i installationen - se de
+følgende afsnit.  I løbet af Linux-installationen vil der blive
+lejlighed til at repartitionere så meget, du har behov for, inden for
+den plads, der nu er blevet til rådighed.
+</para>
+
+<para>
+DOS/Windows (i det følgende kaldet DOS) har programmet
+<command>fdisk.exe</command>. Linux har programmerne
+<command>fdisk</command> og <command>disk-druid</command>.  Alle
+programmerne er tilfredsstillende beskrevet i deres respektive
+dokumentationer.
+</para>
+
+<para>
+Hvis du har Windows installeret, og ønsker at bevare det, efter at Linux er
+blevet installeret, så kan du først køre
+<command>fdisk.exe</command> i fra dos <command>Start->Luk->Genstart DOS</command> (ikke i 
+et DOS vindue under Windows) til at slette en eller flere
+eksisterende DOS/Windows-partitioner, så der er plads til Linux.
+Linux installeres derefter bare ved siden af Windows på den fri partition.
+</para>
+
+<para>
+Skulle det i løbet af anstrengelserne blive nødvendigt at fjerne en
+mislykket Linux-installation fra harddisken og begynde forfra med DOS,
+vil du få brug for at have en opstartsdiskette til DOS, som blandt andet skal
+indeholde DOS <command>fdisk.exe</command>.  Fdisk kan køre med en
+(udokumenteret) option <command>fdisk /mbr</command>, som kan fjerne
+de registreringer, Linux måtte have lagt i diskens master boot record
+(det vil vi minde dig om et par gange).
+</para>
+
+<para>
+Du kan måske være interesseret i at læse denne vejledning i
+om-partitionering af harddisken: 
+<ulink url="http://www.redhat.com/support/manuals/RHL-6.2-Manual/ref-guide/ch-partitions.html">http://www.redhat.com/support/manuals/RHL-6.2-Manual/ref-guide/ch-partitions.html</ulink>.
+</para>
+
+</sect2>
+
+
+<sect2 id="opdelharddisk">
+<title>Opdele en DOS/Windows-harddisk til Linux</title>
+<para>
+<indexterm><primary>Opdeling af harddisk</primary></indexterm>
+<indexterm><primary>fips</primary></indexterm>
+Harddisken skal nu deles mellem Linux og Windows. Dette gøres ved, at
+du indsætter din Linux-cdrom og finder DOS-programmet
+<command>fips.exe</command>, som du skal starte under DOS - IKKE under
+Windows eller OS/2. Læs i øvrigt dokumentationen til Fips!  Har du to
+versioner af <command>fips.exe</command>, så brug den nyeste (fips20).
+</para>
+
+<para>
+Programmet <command>fips</command> vil vise dig, at du har én
+partition med Windows (det er det mest normale). Tryk enter for at
+komme til næste skærmbillede. Lav gerne en sikkerhedskopi til en formatteret
+diskette ved at trykke <command>y</command> (for yes) to gange.
+</para>
+
+<para>
+Nu vil Fips foreslå, at dele disken i to partitioner,
+så du skal nu til at vurdere, hvor meget plads du vil bruge på hver af
+de to styresystemer. Brug venstre og højre pil til at ændre fordelingen,
+hvor Old partition er størrelsen på din Windows-partition. Husk, at du
+bør lave noget fri plads til udvidelse af Windows-programmer,
+selvom du nok senere hen vil mene, at du hellere vil have pladsen
+under Linux. Det er dit valg. Tryk derefter <command>c</command>
+for continue, og derefter genstartes maskinen med mindre plads under
+Windows. Din ekstra DOS partition skal senere slettes for at give
+plads til mindst en Linux-partition og en Linux-swappartition.
+</para>
+
+<para>
+Vi kan lige nævne, at hvis du har en Windows 95 installeret, som er fra
+før 1996 (final beta release), så er der set problemer (for Windows 95), hvis
+Linux installeres på "extended partitions". Problemet
+eksisterer ikke med officielt udgivne Windows-versioner - det er kun
+final beta og tidligere, der har problemer.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="disklayout">
+<title>Disk partitioner</title>
+<para>
+Du er temmelig frit stillet med hensyn til antallet og størrelsen af
+partitionerne. Hvis du kører uden swap-partition, kan du simpelt hen
+installere alt på en enkelt root-partition ("/"). Mange bruger fire
+eller fem partitioner. Denne fordeling er ret udbredt og efter vor mening også
+både fornuftig og fleksibel:
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+<indexterm><primary>Swap</primary></indexterm>
+en swap-partition. Størrelsen kan diskuteres i det uendelige og
+afhænger meget af, hvad du har tænkt dig at bruge systemet til. Et
+eller andet sted mellem 16 MB og 127 MB. En tommelfingerregel siger,
+at swap-partitionens størrelse skal være det dobbelte af den fysiske
+hukommelse.  Har du 32 MB RAM og derover, kan du måske nøjes med en
+swap-størrelse, som svarer til RAM størrelsen. Et råd til dig er, at
+normal anvendelse af Linux ikke kræver over 64 MB, dvs. summen af
+fysisk hukommelse plus swap.  Du kan dog lave mange swap-partitioner,
+hvis du vil, og de kan laves på et senere tidspunkt, evt. bundet til en
+stor swapfil, som det kendes fra Windows. Du skal bemærke, at
+swap-partitioner ikke placeres i filtræet. Man kan således ikke gå et
+bestemt sted hen og se swap indholdet, men det er blot mere hukommelse
+for systemet (du kan med kommandoen <command>free</command> senere se,
+hvordan hukommelsen anvendes).
+</para>
+</listitem>
+
+<listitem><para>en partition på 20 MB til <filename>/boot</filename>,
+som lægges før cylinder 1024 på disken.  Ældre BIOS-typer har en fejl,
+som gør dette nødvendigt.  Denne partition bør du kun lave, hvis du
+vil køre LILO - læs mere i <xref linkend="lilo"></para></listitem>
+
+<listitem><para>en partition på 300-500 MB til rodkataloget,
+dvs. <filename>/</filename>, men installerer du SuSE, skal du dertil
+lægge plads til <filename>/opt</filename>, som kan indeholde
+yderligere 200MB, hvis du installerer KDE og StarOffice. Med Red Hat
+installeres disse programmer under
+<filename>/usr</filename>.</para></listitem>
+
+<listitem><para>en partition på 300 MB til 1 GB til
+<filename>/usr</filename></para></listitem>
+
+
+
+<listitem><para>en partition til <filename>/home</filename>,
+størrelse afhængig af antal brugere og deres behov.</para></listitem>
+
+</itemizedlist>
+Installerer du alle pakker som custom, skal du regne med at bruge
+mindst 1 GB.
+</para>
+
+<para>
+Harddisk-nummerering i Windows og Linux er forskellige.  I Linux kaldes
+alle systemenheder - som f.eks. harddiske - for enheder (eng. devices) og har
+fortløbende bogstavnavne. De ligger alle i kataloget
+<filename>/dev</filename>
+</para>
+<indexterm><primary>IDE diske</primary></indexterm>
+<indexterm><primary>SCSI diske</primary></indexterm>
+
+<para>
+Første IDE disk  = <filename>/dev/hda</filename>
+</para>
+<para>
+Anden IDE disk  = <filename>/dev/hdb</filename>
+</para>
+<para>
+Tredje IDE disk = <filename>/dev/hdc</filename>
+</para>
+<para>
+Fjerde IDE disk = <filename>/dev/hdd</filename>
+</para>
+<para>
+Første SCSI disk = <filename>/dev/sda</filename> osv.
+</para>
+
+<para>
+Partitioner på en disk har numre svarende til disken, f.eks. er
+<filename>/dev/hda2</filename> den anden partition på den første IDE disk.
+</para>
+
+
+
+</sect1>
+
+<sect1 id="installredhat">
+<title>Installation af Red Hat Linux 7.1 (Seawolf)</title>
+<para>
+<indexterm><primary>Red Hat</primary></indexterm>
+Version 7.1 (Seawolf) er seneste Red Hat version. Der er lagt meget stor
+vægt på brugervenligheden; både i forbindelse med installationen og
+den daglige administration af systemet. Langt det meste af, hvad der
+tidligere krævede stor indsigt i formatet af diverse
+opsætningsfiler, kan nu håndteres ved hjælp af det grafisk baserede
+værktøj <command>control-panel</command> eller det nye
+<command>linuxconf</command>, der ikke kun kan køres via den grafiske
+brugergrænseflade i X Window systemet, men også kan fungere rent
+tekstbaseret eller via et web-interface.
+</para>
+
+<para>
+Ud over at være nem at installere og administrere må Red Hat Linux også
+siges at være et godt valg med hensyn til udvalget af
+applikationer. Alle traditionelle Linux-programmer plus en hel del nye
+ligger klar til at installere fra cdrom-erne.
+</para>
+
+<para>
+Det skal siges, at der var en sjat børnesygdomme i Red Hat 7.1 som nu 
+er rettet op i Red Hat 7.1. De problemer kan dog heldigvis rettes ved
+at følge med de opdateringspakker, der annonceres løbende på
+<ulink url="http://www.redhat.com/support/errata/">http://www.redhat.com/support/errata/</ulink>.
+</para>
+
+
+<sect2 id="RH70nyt">
+<title>Nyheder i Red Hat 7.1</title>
+
+
+<para>
+Installation af Red Hat 6.1-7.1 er næsten den samme.
+</para>
+
+
+
+<para>
+Der kommer to C-oversættere med Red Hat 7.0. <command>gcc</command> er en
+eksperimentel C-oversætter og <command>kgcc</command> er en velafprøvet
+oversætter, som skal anvendes, hvis du for eksempel oversætter
+Linux-kernen. Med Red Hat 7.1 er dette problem væk.
+</para>
+ <!--  Det er noget hø at Linux kun kan oversættes med gcc!!!  -->
+
+<para>
+Red Hat 7.1 har KDE 2.1.1 med, som er et godt grafisk brugermiljø. 
+KDE 2.1.1 understøtter anti-aliaserede skrifttyper, hvilket er lækkert.
+Tilsvarende GNOME 1.2 med. Ximian Gnome 1.4 må hentes fra 
+<ulink url="http://www.ximian.com"> SuSE hardware kompatibilitets database (kan i langt de fleste
 tilfælde også dække Red Hat).
 </para></listitem>
 
@@ -423,13 +1064,16 @@ Installation af Red Hat 6.1-7.1 er næsten den samme.
 <para>
 Der kommer to C-oversættere med Red Hat 7.0. <command>gcc</command> er en
 eksperimentel C-oversætter og <command>kgcc</command> er en velafprøvet
-oversætter, som skal anvendes, hvis du for eksempel oversætter Linux-kernen.
+oversætter, som skal anvendes, hvis du for eksempel oversætter
+Linux-kernen. Med Red Hat 7.1 er dette problem væk.
 </para>
  <!--  Det er noget hø at Linux kun kan oversættes med gcc!!!  -->
 
 <para>
 Red Hat 7.1 har KDE 2.1.1 med, som er et godt grafisk brugermiljø. 
-Tilsvarende GNOME 1.2 med.
+KDE 2.1.1 understøtter anti-aliaserede skrifttyper, hvilket er lækkert.
+Tilsvarende GNOME 1.2 med. Ximian Gnome 1.4 må hentes fra 
+<ulink url="http://www.ximian.com">http://www.ximian.com</ulink>.
 </para>
 
 <para>
@@ -1192,8 +1836,7 @@ tidligere.
 Den oprindelige Red Hat 7.0  havde flere fejl eller
 uhensigtsmæssigheder, som kan ses på <ulink
 url="http://www.redhat.com/support/errata">http://www.redhat.com/support/errata</ulink>. Pakkerne
-kan findes på <ulink
-url="ftp://updates.redhat.com/7.0/">ftp://updates.redhat.com/7.0</ulink>.
+kan findes på <ulink url="http://www.redhat.com/download/mirror.html">http://www.redhat.com/download/mirror.html</ulink>.
 </para>
 
 <para>
@@ -1364,8 +2007,7 @@ I vores gennemgang af installationen af Mandrake 7.2 vil vi antage, at
 du har to cdrom'er, nemlig <emphasis>Installation</emphasis> og 
 <emphasis>Extension</emphasis> (den findes dog også i en 
 udgave med kun én cdrom). Du kan hente iso-billeder af begge fra
-<ulink url="ftp://ftp.sunet.se/pub/Linux/distributions/mandrake/iso/">
-ftp://ftp.sunet.se/pub/Linux/distributions/mandrake/iso/</ulink>.
+<ulink url="http://www.linuxiso.org">http://www.linuxiso.org</ulink>.
 </para>
 
 <para>
@@ -2510,7 +3152,7 @@ engelsk).
 <para>
 Den gratis version af Slackware 7.1 består af 3 cdrom'er. Den første
 er installations-cdrommen, nummer to er ekstra pakker og nummer tre er
-kildeteksten. De kan alle hentes fra http://www.slackware.com det er
+kildeteksten. De kan alle hentes fra <ulink url="http://www.slackware.com">http://www.slackware.com</ulink> det er
 dog kun den første som er strengt nødvendig.
 </para>
 
@@ -2918,7 +3560,7 @@ Fakta  Slackware har dels sit eget pakkesystem,
 Den officielle Slackware-side findes på 
 <ulink url="http://www.slackware.com">http://www.slackware.com</ulink>
 For yderligere hjælp kan 
-<ulink url="http://www.slackware/forum">http://www.slackware/forum</ulink> og
+<ulink url="http://www.slackware.com/forum">http://www.slackware.com/forum</ulink> og
 <ulink url="news://alt.os.linux.slackware">news://alt.os.linux.slackware</ulink> 
 anbefales, nå ja, og så
 <ulink url="http://www.sslug.dk">http://www.sslug.dk</ulink> 
