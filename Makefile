@@ -42,7 +42,7 @@ clean: Makefiler
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz
 	rm -f dato.sgml version.sgml
-	rm -f *~*~
+	rm -f *~*~  .#*[0-9]
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
