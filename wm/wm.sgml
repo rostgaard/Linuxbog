@@ -1,0 +1,115 @@
+<chapter id="wm-generelt">
+<title>Generelt om håndtering af window managere</title>
+<sect1 id="starte-egen-wm">
+<title>At starte en alternativ windowmanager</title>
+
+<para>
+En windowmanager er egentlig bare endnu et program der kan køre under
+X. Ligesom Netscape, OpenOffice.org eller xload.  Windomanageren er
+særdeles nyttig idét den tager sig af rammer, knapper og dekorationer
+samt minimering og maximering af de andre programmer der kører i
+X. Uden window manageren kunne man ikke flytte rundt på sine vinduer,
+ændre størrelse på dem etc.  Windowmanageren startes som regel
+automatisk sammen med X, eller når man logger ind via en display
+manager (grafisk login program).
+</para>
+
+<sect2 id="x-opstart">
+<title>Sådan startes X</title>
+
+<para>
+Det der starter X er som regel en binær fil ved navn
+<command>xinit</command>. Afhængig af hvordan <command>xinit</command>
+kaldes læses der forskellige konfigurationsfiler og scripts. Det kan
+være foruddefinerede filer der gælder for alle brugere eller det kan
+være brugerens egne scripts. <filename>${HOME}/.xinitrc</filename>
+eller <filename>${HOME}.xsession</filename> er de "officielle" navne
+til disse scripts. I dem definerer brugeren hvilke programmer der skal
+udføres når X starter, herunder hvilken windowmanager der ønskes.
+</para>
+
+<para>
+<filename>.xsession</filename> bruges ved login gennem GDM eller
+KDM. <filename>.xinitrc</filename> bruges når X startes med kommandoen <command>startx</command> fra
+kommandolinien.  De to filer har samme syntax.  
+</para>
+
+<para>
+Eksempel: 
+</para>
+
+<screen>
+#!/bin/sh
+xterm &
+xclock -geometry 60x60 &
+exec /usr/X11R6/bin/icewm
+</screen>
+
+<para>
+Ovenstående script vil starte en xterm, en xclock samt windowmanageren
+icewm.  Husk at <filename>~/.xsession</filename> skal have
+execute-rettigheder: <command>chmod +x ~/.xsession</command>.  For at
+få samme omgivelser både når der logges ind via GDM/KDM eller når
+<command>startx</command> bruges kan man lade
+<filename>~/.xinitrc</filename> være et symbolsk link til
+<filename>.xsession</filename>: <command>ln -s .xsession
+.xinitrc</command>. På denne måde vil det kun være nødvendigt at vedligeholde
+den ene fil.</para> 
+</sect2>
+
+<sect3 id="Display-managers">
+<title>Display managers</title>
+
+<para>
+ GDM - GNOME Display Manager eller KDM - KDE Display Manager er
+efterhånden de mest anvendte programmer til at styre grafisk login.
+</para>
+
+<para>
+På de forskellige Linux-distributioner er GDM og KDM konfigureret
+forskelligt, men fælles for dem er at de kan bruge
+<filename>.xsession</filename> til starte programmer og en
+windowmanager defineret af brugeren.  
+</para>
+
+<figure id="gdm-fig" float="1">
+<title>GNOME Display Manager</title>
+<graphic fileref="GDM1_shot_crop.&magic;" scale="60"></graphic>
+</figure>
+
+</sect3>
+</sect2>
+
+
+
+Valg af windowmanager med GDM og KDM
+
+
+ For at starte en anden windowmanager end de der ellerede er konfigureret kan brugeren oprette filen .xsession i sit hjemmekatalog. En meget enkel .xsession kunne nøjes med at indeholde selve den eksekverbare windowmanagerfil:
+ 
+
+  #!/bin/sh
+
+  exec /usr/X11R6/bin/icewm
+
+
+ For at få GDM til at læse ~BRUGER/.xsession skal Default (under Debian 3.0 skal man vælge Xsession) vælges fra Session-menuen. 
+
+
+Valg af session med GDM 
+
+Tilsvarende skal der fra KDM vælges default i menu-punktet "Session Type". 
+
+
+Nu læses ~BRUGER/.xsession og man kan begynde at eksperimentere med at indsætte sine favorit programmer i .xsession. Fx: 
+
+#!/bin/sh
+
+/usr/X11R6/bin/xload &
+exec /usr/X11R6/bin/icewm
+
+
+</para>
+
+</sect1>
+</chapter>
