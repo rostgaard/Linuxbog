@@ -1292,6 +1292,8 @@ Her kan der være forskelle alt efter maskin-type.
 
 </sect1>
 
+
+<!-- Skrevet af Anna Jonna Armannsdottir "aj@aka.dk.eu.org" og Peter Toft -->
 <sect1 id="cpu-temperatur">
 <title>Måling af CPU-temperatur</title>
 
@@ -1432,19 +1434,19 @@ chip "lm78-*" "lm78-j-*" "lm79-*" "w83781d-*"
 </programlisting>
 
 <para>
-Hver af chippens interne målepunkter (f.eks. in0) tildeles et 
-navn som f.eks."VCore 1". Hvert målepunkt skal holde sig indenfor et 
+Hver af chippens interne måle-punkter (f.eks. in0) tildeles et 
+navn som f.eks."VCore 1". Hvert måle-punkt skal holde sig indenfor et 
 vist område, der som regel sættes til at være nominalværdien 
 plus/minus 5%. Tolerancerne kan selvfølgelig tilpasses maskinen. 
-Især målepunkterne in0 og in1 bør konfigureres og tilpasses processoren. 
+Især måle-punkterne in0 og in1 bør konfigureres og tilpasses processoren. 
 Man kan genstarte maskinen og kigge i dens BIOS og kigge især efter om
-der måles "VCore". Hvis der kun måles een værdi, kan sensors 
-indstilles som ovenfor, til at ignorere målepunktet in1. 
+der måles "VCore". Hvis der kun måles en værdi, kan sensors 
+indstilles som ovenfor, til at ignorere måle-punktet in1. 
 </para>
 
 <para>
 Ændringer i filen <filename>/etc/sensors.conf</filename> må indlæses i
-selve chippens nvram ved at køre følgende som root
+modulerne, ved at køre følgende som root
 </para>
 
 <screen>
@@ -1464,7 +1466,162 @@ så når man har bestemt hvilke chips (der kan nemlig være flere)
 der er i ens maskine, kan man fordybe sig i hvordan den skal konfigureres. 
 </para>
 
+
+
+<sect2 id="fejlfind-maskinel-overvaagning">
+<TITLE>Fejlfindning</TITLE>
+<indexterm><primary>i2c</primary></indexterm>
+
+<para>
+Overvågning af computerens maskinel, skal bruge 
+passende moduler til maskinen samt i2c bus understøttelse. 
+</para>
+
+<para>
+Når sensors modulerne er installeret i kernen, dannes filerne: 
+<filename>/proc/sys/dev/sensors/*</filename> 
+<filename>/proc/bus/i2c*</filename> . 
+Hvis disse filer ikke er at finde, er sensors modulerne ikke 
+installeret i kernen. 
+</para>
+
+<para>
+Hvis i2c bus modulerne eller hardware modulerne findes på computeren kan de findes med kommandoerne
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>ls -l /lib/modules/`uname -r`/kernel/drivers/i2c/ </userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>ls -l /lib/modules/`uname -r`/kernel/drivers/sensors/ </userinput>
+</screen>
+
+<para>
+Ovennævnte placering gælder for en specialbygget kerne i Debian 
+unstable, men kan formodes at gælde for alle 2.4 kerner. 
+</para>
+
+<para>
+Hvis maskinovervågningen giver forkerte oplysninger, kan der være flere årsager:
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem> 
+<para>
+Opsætnings-programmet <command>sensors-detect</command> er ikke perfekt 
+og det kan installere forkerte moduler. Det kan medføre udlæsning af 
+forkerte oplysninger om maskinens tilstand. Der er eksempler på udlæsninger 
+af for høj eller for lav CPU temperatur, blot fordi der var blevet 
+installeret et modul der ikke passede til maskinen. 
+</para>
+</listitem>
+
+<listitem>
+ <para>
+Nogle bundkort er sådan indrettet, at modulerne skal konfigureres med 
+særlige parametre for at fungere korrekt. Opsætnings-programmet 
+<command>sensors-detect</command> kan finde de fleste af disse parametre men 
+ikke alle. I dette tilfælde kan man forsøge, at finde de korrekte parametre 
+og derpå kan man indsende en fejl-rapport med de parametre man har fundet. 
+Medfølgende med lm-sensors, er dokumentation om hvordan disse parametre 
+bør være. Samme dokumentation findes på webadressen: 
+<ulink url="http://www2.lm-sensors.nu/~lm78/docs.html">http://www2.lm-sensors.nu/~lm78/docs.html</ulink>
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+Der er fejl i selve modulets kilde-tekst. Hak den og indsend en fejl-rapport og 
+en eventuel rettelse. 
+ </para>
+</listitem>
+</itemizedlist>
+
+</sect2>
+
+
+<sect2 id="fejlrapport-maskinel-overvaagning">
+<TITLE>Indsamling af oplysninger til fejlrapport</TITLE>
+<indexterm><primary>isadump</primary></indexterm>
+<indexterm><primary>i2cdump</primary></indexterm>
+<indexterm><primary>lspci</primary></indexterm>
+<indexterm>
+ <primary>dump</primary>
+ <secondary>i2c</secondary>
+</indexterm>
+<indexterm>
+ <primary>i2c</primary>
+ <secondary>dump</secondary>
+</indexterm>
+
+<para>
+Hvis opsætnings-programmet danner en fejlagtig opsætning kan man 
+overveje at indsende en fejl-rapport direkte til udviklings-holdet for 
+lm-sensors på web adressen: 
+<ulink url="http://www2.lm-sensors.nu/~lm78/">http://www2.lm-sensors.nu/~lm78/</ulink> 
+Fejl-rapporten kan indeholde oplysninger om PCI bussen og en dump
+udskrift af i2c bussen.  Der kan også laven en dump udskrift af ISA
+bussen men der advares kraftigt imod at gøre det, idet områder i
+hukommelsen kan blive overskrevet, som kan indeholde oplysninger der
+er vitale for maskinens stabilitet. Hvis man absolut skal dumpe ISA
+bussen, bør man genstarte maskinen i single-user mode fra diskette
+eller cdrom. På den måde er der mindst risiko for at miste oplysninger
+eller endda et helt filsystem.
+</para>
+
+<para>
+Oplysninger om PCI bussen i en maskine med et Asus bundkort med Intel
+TX chipsæt og Realtek 8139 netkort, kan se således ud:
+</para>
+
+<screen>
+<prompt>[anne@linus /]$</prompt> <userinput>/bin/lspci -n </userinput>
+00:00.0 Class 0600: 8086:7100 (rev 01)
+00:01.0 Class 0601: 8086:7110 (rev 01)
+00:01.1 Class 0101: 8086:7111 (rev 01)
+00:01.2 Class 0c03: 8086:7112 (rev 01)
+00:01.3 Class 0680: 8086:7113 (rev 01)
+00:09.0 Class 0200: 10ec:8139 (rev 10)
+00:0c.0 Class 0100: 9004:5078 (rev 03)
+</screen>
+
+<indexterm>
+ <primary>i2c</primary>
+ <secondary>dev</secondary>
+</indexterm>
+
+<para>
+Modulet i2c-dev skal være installeret før man kan dumpe i2c bussen. 
+En dump udskrift af i2c bussen kan se således ud: 
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/usr/sbin/i2cdump 0 0x18</userinput>
+Warning: no size specified (using byte-data access)
+  WARNING! This program can confuse your I2C bus, cause data loss and worse!
+  I will probe file /dev/i2c-0, address 0x18, mode byte
+  You have five seconds to reconsider and press CTRL-C!
+
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00: 20 00 04 3c 20 00 04 3c 20 00 04 3c 20 00 04 3c 
+10: 20 00 04 3c 20 00 04 3c 20 00 04 3c 20 00 04 3c 
+... 
+</screen>
+
+<para>
+Parametrene til i2cdump kan man få ved at kigge på filnavnene i mappen 
+<filename>/proc/sys/dev/sensors/</filename> hvor der tilfældigvis findes mappen
+<filename>max1617-i2c-0-18</filename>. 
+</para>
+
+<para>
+Desuden bør man medtage alle øvrige oplysninger der kan være af nytte ved opklaringen 
+af problemet. 
+</para>
+
+</sect2>
 </sect1>
+
+
 
 <sect1 id="quota">
 <title>Kontrol af diskforbrug med quota</title>
