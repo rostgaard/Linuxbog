@@ -2,14 +2,20 @@
 <chapter id="kerne">
 <title>Linux-kernen</title>
 
+<para>
+I dette kapitel ser vi nærmere på Linux kernen. Først lidt teknisk om
+hvordan kernen virker, dernæst mere om hvordan processer
+håndteres. Det vises, hvordan kernen oversættes og moduler håndteres
+og endeligt ser vi nærmere på kerne 2.4.
+</para>
+
 <!-- Lavet af Hanne Munkholm et al i "The Linux way" -->
 <sect1 id="Hovedkarakteristika">
 <title>Hovedkarakteristika ved Linux-kernen</title>
 
 <itemizedlist mark="bullet">
 <listitem>
- <para>
-<emphasis>Multi-tasking</emphasis>
+ <para><emphasis>Multi-tasking</emphasis>
 Linux understøtter ægte multi-tasking. Alle processer kører helt
 uafhængigt af hinanden. Ingen processer behøver at tage højde for 
 processor-tid til andre processer.
@@ -17,8 +23,7 @@ processor-tid til andre processer.
 </listitem>
 
 <listitem> 
- <para>  
-  <emphasis>Multi-bruger tilgang</emphasis>
+ <para><emphasis>Multi-bruger tilgang</emphasis>
 Linux tillader flere brugere at benytte systemet samtidigt.
  </para>
 </listitem>
@@ -26,7 +31,7 @@ Linux tillader flere brugere at benytte systemet samtidigt.
 <listitem> 
  <para>
   <emphasis>Demand load executables</emphasis> Kun de dele af et
-program, som faktisk er påkrævet for eksekveringen bliver hentet ind i
+program, som faktisk er påkrævet for eksekveringen, bliver hentet ind i
 hukommelsen. Når en ny proces er skabt ved hjælp af
 <command>fork()</command>, afsættes der ikke straks hukommelse, men i
 stedet bruges hukommelsen fra forældre-processen af begge
@@ -56,7 +61,7 @@ harddisken, hvilket er betydeligt mindre effektivt.
  <para>
  <emphasis>Dynamisk cache for harddisken</emphasis> Brugere af MS-DOS
 og Windows er kendt med behovet for at reservere hukommelse af en
-bestemt størrelse til harddisk cache programmer som SMARTDRIVE.  Linux
+bestemt størrelse til harddisk-cache-programmer som SMARTDRIVE.  Linux
 justerer dynamisk størrelsen af cache-hukommelse som bruges, for at
 tilpasse sig den nuværende hukommelsessituation. Hvis der ikke er mere
 hukommelse tilbage på et givent tidspunkt, reduceres størrelsen af
@@ -68,11 +73,11 @@ cachen for at frigive hukommelse. Når først hukommelse er frigivet,
 
 <listitem> 
  <para>
- <emphasis>Shared libraries</emphasis> Libraries (på dansk;
+ <emphasis>Shared libraries</emphasis> Libraries (på dansk:
 biblioteker) er samlinger af rutiner, som er nødvendige for
 data-processing for et program. Linux har et antal standard libraries,
 der bruges af flere processer ad gangen. Det er derfor fornuftigt at
-indlæse programkoden for disse libraries ind i hukommelsen én gang for
+indlæse programkoden for disse libraries i hukommelsen én gang for
 alle. Dette muliggøres ved hjælp af <emphasis>shared
 libraries</emphasis>. Da disse kun indlæses til programkoden når
 processen eksekveres, kendes de også som dynamiske linkede biblioteker
@@ -81,14 +86,13 @@ processen eksekveres, kendes de også som dynamiske linkede biblioteker
 </listitem>
 
 <listitem> 
- <para>
-Understøttelse for POSIX 1003.1 standard og delvis System V og BSD
-POSIX 1003.1 definerer et minimum interface for et UNIX type
+ <para>Understøttelse for <emphasis>POSIX 1003.1 standard</emphasis> 
+og delvis <emphasis>System V</emphasis> og <command>BSD</command>.
+POSIX 1003.1 definerer et minimum interface for et UNIX-type
 operativsystem. Dette interface er beskrevet i C-funktions
 deklarationer. Denne standard understøttes nu af alle nyere og
 relativt sofistikerede UNIX-systemer. I dag understøtter Linux
-tilnærmelsesvis POSIX 1003.1. Yderligere system-grænseflader for 
-UNIX-udviklingsliner. System V og BSD er også implementeret. 
+tilnærmelsesvis POSIX 1003.1.
  </para>
 </listitem>
 
@@ -99,10 +103,10 @@ UNIX-udviklingsliner. System V og BSD er også implementeret.
 Da det meste software i dag er skrevet til Microsoft Windows, er
 det ønskværdigt at kunne køre programmer til disse systemmiljøer under
 Linux. Derfor er emulatorer for MS-DOS og Microsoft Windows under udvikling.
-Linux kan også eksekvere programmer fra andre INTEL-baserede
+Linux kan også eksekvere programmer fra andre Intel-baserede
 UNIX-systemer, som går under iBCS2 standard. Dette inkluderer f.eks.
-mange kommercielle programmer brugt under SCO UNIX. iBCS2 emulering er
-endnu ikke en del af standard kernen, men den kan hentes fra
+mange kommercielle programmer brugt under SCO-UNIX. iBCS2 emulering er
+endnu ikke en del af standard-kernen, men den kan hentes fra
 Internettet.
  </para>
 </listitem>
@@ -131,7 +135,7 @@ af systemet efter en ikke-planlagt nedlukning (f.eks. efter strømsvigt).
 
 <para>
 Oftest anvendes ext2-diskformat, men Linux kan læse og skrive et hav
-af andre disk-formater, FAT, vfat, NTFS (kun læse), UDF (DVD-format),
+af andre diskformater, FAT, vfat, NTFS (kun læse), UDF (DVD-format),
 ISO 9600 (cdrom-format) og mange andre.
 I netværk kan
 man få adgang til filsystemet på andre systemer transparent ved hjælp
@@ -143,8 +147,8 @@ af NFS (Network File System) eller SMB (Windows filshare).
 <listitem> 
  <para>
  <emphasis>TCP/IP, SLIP og PPP understøttelse</emphasis>
-Linux kan integreres i lokale UNIX netværk. I princippet kan alle
-netværks-tjenester som NFS og Remote Login bruges. SLIP og PPP
+Linux kan integreres i lokale UNIX-netværk. I princippet kan alle
+netværkstjenester som NFS og Remote Login bruges. SLIP og PPP
 understøtter brugen af TCP/IP-protokollen over serielle linier. Det
 betyder at link til Internettet via telefonnetværk ved hjælp af et modem er
 muligt.
@@ -197,15 +201,15 @@ kan opnå skalerbar performance på 16 og 32 processorer.
 Linux er ikke et real-time system. Bl.a. virtuel hukommelse gør det
 umuligt for Linux at overholde kravene til et "hard" real-time system,
 men det kan laves mere real-time end det er i dag, bl.a. ved at
-arbejde med scheduling'en og optimere interruptene. Det er bl.a. et
-projekt RTLinux, som har lavet en overbygning på kernen til realtidsbrug.
+arbejde med scheduling'en og optimere interruptene. Der er bl.a. et
+projekt, RTLinux, som har lavet en overbygning på kernen til realtidsbrug.
 </para>
 
 <para>
 Linux var tidligere (før kerne 2.0) en monolitisk kerne, mens man med
 kerne 2.0 fik adgang til at lave kerne-moduler. Dette var en nødvendig
 måde at kunne understøtte meget forskellig hardware på. To brugere med
-forskelligt lydkort anvender hvert sit kernemodul, og derfor har de to
+forskelligt lydkort anvender hver sit kernemodul, og derfor har de to
 brugere ikke unødvendig meget program-kode læst ind i hukommelsen.
 </para>
 
@@ -216,17 +220,17 @@ programmer</primary></indexterm>
 <indexterm><primary>cluster</primary></indexterm>
 <para>
 Linux er ikke et distribueret operativsystem - alting foregår på én
-maskine. Ovenpå Linux kan man så køre systemer såsom PVM og MPI til at
+maskine. Oven på Linux kan man så køre systemer såsom PVM og MPI til at
 afvikle programmer på mange maskiner. Både PVM og MPI starter
-processer på på flere maskiner, udveksler data mellem maskinerne og
+processer på flere maskiner, udveksler data mellem maskinerne og
 udnytter den store fælles datakapacitet til at køre programmerne i
 parallel. Dette kræver dog at programmerne er skræddersyet til det.
 Linux kan også snildt bruges til at lave et cluster af maskiner. Med
 MOSIX <ulink url="http://www.mosix.org">http://www.mosix.org</ulink>
-kan man binde en række maskiner sammen, så de udefra ser ud om en stor
+kan man binde en række maskiner sammen, så de udefra ser ud som én stor
 maskine. MOSIX-clusteret fordeler selv programmerne efter laveste
-belastning af de enkelte maskiner og man kan transparent flytte
-programmer fra en maskine til den næste. Det er særdeles elegang.
+belastning af de enkelte maskiner, og man kan transparent flytte
+programmer fra en maskine til den næste. Det er særdeles elegant.
 </para>
 
 
@@ -243,9 +247,9 @@ kan ikke slette andet end egne filer.
 
 <para>
 UNIX-operativsystemer er multi-programming og multi-user systemer. Det
-betyder at flere programmer kan kører på én computer samtidig, og
+betyder at flere programmer kan køre på én computer samtidig, og
 dermed også at flere personer kan bruge én computer som server
-samtidig. For brugeren ser det ud som om programmerne kører parallelt
+samtidig. For brugeren ser det ud som om programmerne kører parallelt,
 og at flere processer dermed har CPU'en samtidig. Dette fungerer i
 praksis ved, at hver proces har CPU'en i et bestemt tidsrum, hvorefter
 den ryger bag i en kø og næste proces hentes ind (multi-tasking).
@@ -268,8 +272,8 @@ udførelse.
 </para>
 
 <para>
-x86 arkitekturen understøtter 4 "priviledge" modes (eller levels), hvor
-mode 0 er den mest privilegerede og 3 den mindst privilegerede. Et
+x86 arkitekturen understøtter 4 "privilege" modes (eller levels), hvor
+mode 0 er den mest privilegerede, og 3 den mindst privilegerede. Et
 kørende program vil altid være i en af disse modes.
 </para>
 
@@ -298,7 +302,7 @@ en udbyder af servicefunktioner.
 </para>
 
 <para>
-Når en proces kører i system mode kan den være i en af følgende
+Når en proces kører i system mode, kan den være i en af følgende
 tilstande:
 </para>
 
@@ -315,7 +319,7 @@ eller et systemkald.
 <listitem> 
  <para>
  <emphasis>Interrupt-rutine</emphasis>
-Interrupt-rutinen bliver aktiv, når der kommer et hardware signal,
+Interrupt-rutinen bliver aktiv, når der kommer et hardware-signal,
 f.eks. nye input fra keyboard.
  </para>
 </listitem>
@@ -329,8 +333,8 @@ systemkald kan suspendere en proces, så den skal vente på en hændelse.
 <listitem> 
  <para>
   <emphasis>Waiting</emphasis>
-Processen venter på en ekstern hændelse og processen vil ikke
-forsætte, før denne hændelse indtræffer.
+Processen venter på en ekstern hændelse, og processen vil ikke
+fortsætte, før denne hændelse indtræffer.
  </para>
 </listitem>
 <listitem> 
@@ -374,11 +378,11 @@ forælderprocessen, men en ny proces.
 Det kan være meget ressourcekrævende at oprette en ny proces, da der
 kan være mange data fra forælderprocessen, som skal kopieres. Derfor
 bruges der i Linux "copy-on-write" teknikken. Tanken bag denne teknik
-er, at et antal af processer kan have adgang til den samme hukommelse, så
-længe der ikke er nogle af processerne der laver ændringer i data.
+er, at et antal processer kan have adgang til den samme hukommelse, så
+længe der ikke er nogen af processerne, der laver ændringer i data.
 Således bliver de relevante pages af hukommelse ikke kopierede ved
 systemkaldet <command>fork()</command>, men den fælles hukommelse bliver
-skrivebeskyttet.  Hvis en af processerne forsøger at skrive til hukommelsen
+skrivebeskyttet.  Hvis en af processerne forsøger at skrive til hukommelsen,
 bliver processen afbrudt, og kernen laver en kopi af den relevante
 page. Herefter kan der tildeles en kopi til hver proces. Den store
 fordel ved denne metode er, at data kun bliver kopieret hvis det er
@@ -395,17 +399,17 @@ session. I Linux kan en proces være tilknyttet flere grupper.
 </para>
 
 <para>
-Når en ny proces bliver genereret får den et nyt pid-nummer, og
+Når en ny proces bliver genereret, får den et nyt pid-nummer, og
 <command>fork()</command> returnerer 0 til barn-processen og 
 barn-processens pid til forælder-processen. Derved kan de to processer se,
-hvilken proces der er barn-proces og hvilken der er forælder-proces.
+hvilken proces der er barn-proces, og hvilken der er forælder-proces.
 </para>
 
 <para>
 For at kunne bestemme hvor en proces har adgang, har hver proces et
 bruger-ID (userid = uid) og et gruppe-ID (gid). Disse ID-numre har 
 børne-processerne arvet efter deres forældre-processer. Når en 
-adgangskontrol skal foretages er det dog den effektive bruger-ID (euid) 
+adgangskontrol skal foretages, er det dog den effektive bruger-ID (euid) 
 og gruppe-ID (egid) der bliver brugt. Generelt er uid = euid og gid = egid,
 undtagen for set-UID programmer.
 </para>
@@ -427,7 +431,7 @@ set-UID på binære filer, ikke på shell scripts.
 <title>proc-filsystemet</title>
 <indexterm><primary>/proc</primary></indexterm>
 <para>
-Som systemadministrator (root) er der gode muligheder for at følge,
+Som systemadministrator (root) har man gode muligheder for at følge,
 hvad Linux-kernen foretager sig. Prøv at skrive <command>mount</command>. En
 af de linier, som kommer frem er
 </para>
@@ -480,9 +484,10 @@ der sker i <filename>/proc</filename>
 <para>
 <indexterm><primary>PID</primary></indexterm>
 <indexterm><primary>Proces-ID</primary></indexterm>
-<indexterm><primary>ps</primary></indexterm> Som det kan ses er der en
+<indexterm><primary>ps</primary></indexterm> 
+Som det kan ses, er der en
 mængde kataloger med numre. Der er et katalog for hver proces på
-maskinen. Lad os se på et af katalogerne i større detalje. Der kører
+maskinen. Lad os se på et af katalogerne mere detaljeret. Der kører
 netop nu en <command>emacs</command> på maskinen med PID=18243 (PID
 betyder proces-ID). Dette findes ved brug af
 <filename>ps</filename>. Tilsvarende kan vi se hvad kataloget i
@@ -492,28 +497,16 @@ betyder proces-ID). Dette findes ved brug af
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>ps aux | grep emacs</userinput>
 pto  18243  0.1  4.7  8940 6076 pts/1   S  22:11  0:09 emacs kerne.sgml 
-<prompt>[anne@linus ~]$ </prompt><userinput>ls -l /proc/18243</userinput>
-totalt 0
-dr-xr-xr-x  3 pto  www  0 jan 22 23:39 .
-dr-xr-xr-x 98 root root 0 jan 21 03:19 ..
--r--r--r--  1 pto  www  0 jan 22 23:39 cmdline
-lrwx------  1 pto  www  0 jan 22 23:39 cwd -> /home/pto/linuxbog/admin
--r--------  1 pto  www  0 jan 22 23:39 environ
-lrwx------  1 pto  www  0 jan 22 23:39 exe -> /usr/bin/emacs
-dr-x------  2 pto  www  0 jan 22 23:39 fd
-pr--r--r--  1 pto  www  0 jan 22 23:39 maps
--rw-------  1 pto  www  0 jan 22 23:39 mem
-lrwx------  1 pto  www  0 jan 22 23:39 root -> /
--r--r--r--  1 pto  www  0 jan 22 23:39 stat
--r--r--r--  1 pto  www  0 jan 22 23:39 statm
--r--r--r--  1 pto  www  0 jan 22 23:39 status      
+<prompt>[anne@linus ~]$ </prompt><userinput>ls /proc/18243</userinput>
+cmdline  cwd   environ  exe    fd  maps  
+mem      root  stat     statm  status       
 </screen>
 
 <para>
-Det første underlige, er at filerne har filstørrelse nul. Det skal man
+Det første underlige er, at filerne har filstørrelse nul. Det skal man
 ikke lade sig snyde af. Alt er virtuelt her - og nogle gange kan filer
 i <filename>/proc</filename> have indhold. Prøv selv at køre
-<command>more /proc/PID/cmdline</command>, hvor PID er en af de
+<command>more /proc/PID/cmdline</command>, hvor PID er en 
 proces-ID på din maskine, f.eks. for en editor, du har startet på 
 kommando-linien.
 </para>
@@ -531,7 +524,7 @@ os nu se på hvad der ellers kan findes i <filename>/proc</filename>.
 </para>
 
 <para>
-Belastning af maskinen (load) - eller rettere - hvor mange processor
+Belastning af maskinen (load) - eller rettere - hvor mange processer,
 der prøver at tilgå kernen i snit, kan ses direkte ud fra
 <filename>/proc/loadavg</filename>. Det er samme tal som
 <command>uptime</command> har til sidst - belastning det sidste minut,
@@ -541,7 +534,7 @@ sidste 5 minutter, og endelig de sidste 15 minutter.
 </para>
 
 <para>
-Vil du vide mere om hvor meget hukommelse, som er brugt, så kan du få
+Vil du vide mere om, hvor meget hukommelse er brugt, så kan du få
 dette fra kommandoen <command>free</command>, men en endnu mere
 detaljeret visning kan hentes fra filen
 <filename>/proc/meminfo</filename>.
@@ -593,19 +586,19 @@ ikke har brug for. Ved at omkonfigurere kernen slipper du for at spilde en
 masse hukommelse (og måske tid). Du kan måske også mangle understøttelse for
 en hardware-del, f.eks. USB (Universal Serial Bus). USB er for
 nylig kommet med i Linux-kernen, hvorfor du kan blive nødt til at
-lave en ny Linux kerne. 
+lave en ny Linux-kerne. 
 </PARA>
 
 <PARA>
 Vores gennemgang af kernekonfiguration er overfladisk, dvs. vi vil
 ikke gå i detaljer med, hvad de enkelte funktioner kan, men forklare
 dig, hvordan en konfiguration foregår.  Du kan installere den
-kernel HOWTO-guide som følger med flere af Linux distributionerne og
+kernel HOWTO-guide som følger med flere af Linux-distributioner og
 lære meget mere om kernen.
 </PARA>
 
 <PARA>Et par bemærkninger omkring drivere til Linux er på sin
-plads. Drivere kan eksistere på to måder under Linux; som
+plads. Drivere kan eksistere på to måder under Linux: Som
 en del af kernen eller som et modul. Hvis driveren er en
 del af kernen, ligger den fast i hukommelsen hele tiden, men et modul
 indlæses først i det øjeblik, der er brug for det - ja,
@@ -621,7 +614,7 @@ klart en fordel at benytte moduler, hvis man ikke har megen hukommelse.
 
 <PARA>
 Første trin til at lave din egen kerne er at se, om du fik installeret
-hele kildekoden til Linux kernen. Der er to muligheder; enten fra den
+hele kildekoden til Linux-kernen. Der er to muligheder; enten fra den
 installations-cdrom du har, eller fra en helt ny kildetekst.
 </PARA>
 
@@ -647,11 +640,11 @@ drwxr-xr-x  17 root root 1024 Jan 25 21:22 linux-2.0.36
 drwxr-xr-x  15 root root 1024 Jan 31 20:45 linux-2.2.5
 </screen>
 
-På denne måde er det nemt at teste forskellige versioner af Linux
-kernen. Antag, at du vil opgradere til kerne 2.3.1, som du henter hjem
-fra Internettet, dvs. nu vil du installere kildeteksten selv (uden
-RPM). Start med at lave en ny mappe og et symbolsk lænke til den nye
-mappe (du skal være root).
+På denne måde er det nemt at teste forskellige versioner af
+Linux-kernen. Antag, at du vil opgradere til kerne 2.3.1, som du
+henter hjem fra Internettet, dvs. nu vil du installere kildeteksten
+selv (uden RPM). Start med at lave en ny mappe og et symbolsk link
+til den nye mappe (du skal være root).
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rm /usr/src/linux</USERINPUT>
@@ -716,13 +709,13 @@ er.</PARA>
 </SCREEN>
 
 <para>
-Bagefter kan du finde den nye Linux kerne i
+Bagefter kan du finde den nye Linux-kerne i
 <filename>/usr/src/linux/arch/i386/boot/bzImage</filename>. Du kan
 teste den nye kerne ved at kopiere den til en diskette og så starte
-fra denne. Brug <userinput>dd if=/usr/src/linux/arch/i386/boot/bzImage
-of=/dev/fd0</userinput> for at teste på denne måde. Er du tilfreds med
+fra denne. Brug <command>dd if=/usr/src/linux/arch/i386/boot/bzImage
+of=/dev/fd0</command> for at teste på denne måde. Er du tilfreds med
 den nye kerne, kan du kopiere kernen til <filename>/boot</filename> og
-rette i LILO's konfigurationsfil. <!-- læs mere i xref linkend="lilo"-->
+rette i LILO's konfigurationsfil.
 </para>
 
 <para>
@@ -732,7 +725,7 @@ Moduler laves til kernen svarende til kernens versionsnummer under
 hvorfor man i det hele taget laver en kerne og så moduler. Dels kan
 kernen blive mindre og derfor ofte hurtigere. Men er der fejl i et
 modul, kan man hurtigt rette i modulets kildetekst, genoversætte
-koden og starte modulet påny - uden at genstarte maskinen!
+koden og starte modulet på ny - uden at genstarte maskinen!
 </para>
 
 </sect2>
@@ -741,17 +734,17 @@ koden og starte modulet påny - uden at genstarte maskinen!
 <title>Lav en redningsdiskette</title>
 <para>
 Har du brug for at lave en redningsdiskette (eng. rescue-disk), med
-Linux kernen på, som du
-kan starte din Linux maskine fra, så kan du gøre dette med
-<command>mkbootdisk</command>. Find først ud af hvilken
-kerne, der er på dit system. Kør f.eks. <command>ls
+Linux-kernen på, som du
+kan starte din Linux-maskine fra, så kan du gøre dette med
+<command>mkbootdisk</command>. Find først ud af, hvilken
+kerne der er på dit system. Kør f.eks. <command>ls
 /lib/modules/</command>. Står der 2.2.12-20, så skal du - som root -
 skrive 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>/sbin/mkbootdisk --device /dev/fd0 2.2.12-20</USERINPUT>
 </SCREEN>
 
-Disken har Linux kernen, og du kan også bruge denne disk, hvis du skal
+Disken har Linux-kernen, og du kan også bruge denne disk, hvis du skal
 flytte rundt på dine harddiske (fra primær til sekundær osv).
 </para>
 
@@ -774,7 +767,7 @@ afsnit vil vi introducere det mest basale omkring moduler.
 
 <para>
 Modul-systemet blev skrevet om til kerne version 2.2 (som følger med
-Red Hat 6.2 og SuSE 6.3). Vi vil antage, at du har en version 
+Red Hat 7.0 og SuSE 6.4). Vi vil antage, at du har en version 
 2.2 kerne. Du kan evt. tjekke det ved at skrive <userinput>uname
 -r</userinput>. For en standard-installation af Red Hat 6.2 vil din
 maskine svare "2.2.14-20".
@@ -829,7 +822,7 @@ er lukket ned).
 <title>Indlæs et modul</title>
 <indexterm><primary>modprobe</primary></indexterm>
 <para>
-Typisk ligger moduler i et undermappe til
+Typisk ligger moduler i en undermappe til
 <filename>/lib/modules</filename>. På en standard-installation af Red 
 Hat 6.2 hedder undermappen <filename>2.2.14-5.0</filename> efter
 kernen (husk svaret fra <command>uname</command>). Nede i
@@ -875,7 +868,7 @@ Det kan ske, at du bliver træt af et modul eller blot i længere tid
 ikke har brug for det, og du derfor gerne vil nedlægge det igen. Der
 er to måder, du kan gøre det på. Den første kræver simpel tålmodighed:
 efter 60 sekunder vil ubrugte moduler automatisk blive nedlagt. Dette
-søger en dæmon ved navn <command>kerneld</command> for. Den anden måde
+sørger en dæmon ved navn <command>kerneld</command> for. Den anden måde
 er at gøre det selv. Til denne metode skal du bruge kommandoen
 <command>modprobe -r</command> ("remove module").
 </para>
@@ -962,7 +955,7 @@ er 220, og interruptet er 5).
 
 <para>
 Nøgleordet "pre-install" fortæller modul-systemet, at før et modul
-indlæses skal et andet modul være indlæst. Alt hvad der kommer
+indlæses, skal et andet modul være indlæst. Alt hvad der kommer
 efter modulets navn, tolkes som en kommando med tilhørende
 parametre. Ligeledes findes "post-install", som angiver en kommando, der
 skal udføres efter modulet er indlæst.
@@ -974,7 +967,7 @@ I Debian og Corel Linux bør man ikke rette
 <command>update-modules</command> vil overskrive filen.  Programmet
 henter konfigurationen fra filerne i
 <filename>/etc/modutils/</filename> , bl.a. stier, options arhc/i386,
-og aliaser.  Skal man lave rettelse bør det gøres i disse filer og
+og aliaser.  Skal man lave rettelser bør det gøres i disse filer og
 efterfølgende bør <command>update-modules</command> udføres.
 </para>
 </sect2>
@@ -984,7 +977,7 @@ efterfølgende bør <command>update-modules</command> udføres.
 <sect1 id="kerne-2-4">
 <title>Kerne 2.4</title>
 <para>
-Den seneste generation af Linuxkernen er 2.4, som udkom den 5.  januar
+Den seneste generation af Linux-kernen er 2.4, som udkom den 5. januar
 2001. Linus Torvalds annoncerede i vittig og underspillet tone, at nu
 var kerne 2.4.0 færdig:
 </para>
@@ -1015,14 +1008,14 @@ kerner fra 2.2-serien? Svaret er - mange ting.
 </para>
 
 <para>
-For det første så er antallet af processorer som understøttes gået
+For det første så er antallet af processorer som understøttes, gået
 meget i vejret. Nu understøttes hele spektret fra 386 til Pentium IV,
 dvs. Intels nye Itanium-processor. Tilsvarende er AMD-processorerne
 understøttet.  Selv den specielle Crusoe-processor er med og 64 bit
 MIPS processorer.  En spændende nyhed er at S/390 nu er understøttet.
 Mange af os har nok ikke lige en mange-millioner kroner S/390-maskine,
 men f.eks. Telia har købt en sådan maskine med Linux til erstatning af
-70 Sun maskiner. Det skal også nævnes, at kerne 2.4 er udviklet så
+70 Sun-maskiner. Det skal også nævnes, at kerne 2.4 er udviklet så
 processorer, der kører hurtigere end 2 GHz er understøttet. Nu er det
 så bare at vente på at de kommer i butikkerne :-)
 </para>
@@ -1030,9 +1023,9 @@ så bare at vente på at de kommer i butikkerne :-)
 <para>
 Kerne 2.4 skulle umiddelbart ikke kræve mere hukommelse
 end kerne 2.2-serien - men den understøtter meget mere hukommelse.
-En af de ting, som nogle var utilfreds med i kerne 2.2-serien var
+En af de ting, som nogle var utilfredse med i kerne 2.2-serien, var
 mængden af hukommelse, som Linux-kernen kunne bruge. Når man
-konfigurerer 2.4.0-kernen er der spørgsmål om hvor meget hukommelse
+konfigurerer 2.4.0-kernen, er der spørgsmål om hvor meget hukommelse
 man har. To grænser kan man vælge - enten under 4 GB eller 64 GB
 RAM. Det er efter sigende en 5-6% mindre ydelse, hvis man vælger 64 GB
 hukommelse. 
@@ -1041,15 +1034,15 @@ hukommelse.
 <para>
 En ting som store firmaer har haft problemer med, er antallet af
 brugere som kunne understøttes. Tidligere var grænsen på ca. 65000
-brugere, mens den nu er 4.2 milliarder. Problemet var meget aktuelt
+brugere, mens den nu er 4,2 milliarder. Problemet var meget aktuelt
 for f.eks. e-post-servere, som skulle have konti for alle firmaets
 medarbejdere.
 </para>
 
 <para>
-Med hardware kan man nu samtidigt understøtte 16 Ethernet-kort, 10 IDE
-controllere, og meget andet. Alt i alt har Linux taget et stort spring
-fremad med hensyn til high-end Linux markedet.
+Med hardware kan man nu samtidigt understøtte 16 Ethernet-kort, 10
+IDE-controllere, og meget andet. Alt i alt har Linux taget et stort
+spring fremad med hensyn til high-end Linux-markedet.
 </para>
 
 <para>
@@ -1068,15 +1061,15 @@ processorer forbedret markant.
 
 <para>
 For en Linux-laptop, så var PCMCIA med kerne 2.2 ikke ret
-smart. Skulle man oversætte en kerne, så skulle man have styr på sin
+smart. Skulle man oversætte en kerne, så skulle man have styr på sine
 PCMCIA drivere ud over selve kernen. De to ting var ikke integreret,
 selvom de burde have været det. Med kerne 2.4 er PCMCIA en del af
 Linux-kernen på linie med USB.
 </para>
 
 <para>
-USB understøttelse er ny i Linux-kernen. USB tastatur og mus skulle
-virke fint, men der kan godt være at din USB skanner eller kamera ikke
+USB-understøttelse er ny i Linux-kernen. USB tastatur og mus skulle
+virke fint, men det kan godt være at din USB skanner eller kamera ikke
 virker, da USB standarden stadig er under udvikling.
 </para>
 
@@ -1086,7 +1079,7 @@ tilsvarende auto-detektion af enheder til ISA-bus.
 </para>
 
 <para>
-En ting som netop er kommet med i kerne 2.4.0 er LVM "logical volume
+En ting som netop er kommet med i kerne 2.4.0, er LVM "logical volume
 management", som gør det muligt at kombinere harddiske til store
 enheder (ligesom RAID-0), men med LVM kan man også ændre størrelsen af
 de enkelte partitioner løbende. Det er en klar fordel i forhold til
@@ -1118,18 +1111,18 @@ dvs. indgange til hardware, såsom harddisk
 <filename>/dev/hda</filename>. Med kerne 2.4 <emphasis>kan
 man</emphasis> anvende DevFS, som er en total restrukturering af
 <filename>/dev</filename>, så man ikke længere har ekstremt mange
-filer i <filename>/dev</filename>, men i stedet får man en hierakisk
+filer i <filename>/dev</filename>, men i stedet får man en hierarkisk
 opbygning med mange underkataloger. Som eksempel vil man ikke længere
 kunne finde
 <filename>/dev/hda1</filename>-<filename>/dev/hda16</filename>, men i
 stedet have tilsvarende filer under <filename>/dev/ide0/</filename> -
-altså en niveau længere nede.
+altså et niveau længere nede.
 </para>
 
 <para>
-For dem som laver hurtige web-servere, så er kHTTPd interessant. Man
-kan accellerere web-servere kraftigt for statiske web-sider, dvs. ikke
-for CGI-programmer eller PHP-løsninger, ved at kernen casher sider 
+For dem som laver hurtige web-servere er kHTTPd interessant. Man
+kan accelerere web-servere kraftigt for statiske web-sider, dvs. ikke
+for CGI-programmer eller PHP-løsninger, ved at kernen cacher sider 
 intelligent. Det er også markeret som eksperimentel kode.
 </para>
 
@@ -1140,19 +1133,19 @@ Voice-over-IP.
 </para>
 
 <para>
-For dem som arbejder med video, så er der godt nyt. Både IEEE-1394- (Firewire)
+For dem som arbejder med video er der godt nyt. Både IEEE-1394- (Firewire)
 og I2O-grænsesnit er med. Det er også ting som stadig er under udvikling.
 HIPPI (gigabit-netkort) er der også blevet arbejdet meget med, så der nu er
 fire forskellige understøttede kort.
 </para>
 
 <para>
-For ADSL-brugere, så er kerne 2.4 (eller sene versioner af 2.3-serien)
-et must. Der er lavet meget indenfor ATM understøttelsen.
+For ADSL-brugere er kerne 2.4 (eller sene versioner af 2.3-serien)
+et must. Der er lavet meget indenfor ATM-understøttelsen.
 </para>
 
 <para>
-Og på de mere interne linier, så er store dele af kernen skrevet om,
+Og på de mere interne linier er store dele af kernen skrevet om,
 så selve koden skulle være meget lettere at læse. Der er arbejdet
 meget med at strukturen skulle forbedres, så man lettere kunne
 inkorporere nye ting, som ikke tidligere var med.
@@ -1164,7 +1157,7 @@ er et <emphasis>journaling filesystem</emphasis>. Det sidste år har
 der været arbejdet meget hårdt på tre forskellige avancerede
 filsystemer, som skriver data til disk på en meget sikker måde i
 forhold til det gamle ext2-filsystem.  I tilfælde af f.eks. strømsvigt
-eller lign. vil de nye filssystemer være meget mere robuste. ReiserFS
+eller lign. vil de nye filsystemer være meget mere robuste. ReiserFS
 vil være det første til at komme med i kernen, mens SGI's
 XFS-filsystem og ext3 fra Red Hat er stærkt på vej, men endnu er det
 uklart, hvornår de er produktionsklare.
