@@ -238,7 +238,9 @@ konfigurering af Java-softwaresystemer.
 <title>Ant</title>
 
 <para>
-Ant er et Java-baseret værktøj.
+Ant er et Java-baseret værktøj. Ant kan hentes fra:
+<ulink url="http://jakarta.apache.org/">http://jakarta.apache.org/</ulink>
+hvor man desunden kan finde yderligere dokumentation og information.
 </para>
 
 <sect3 id="java-dev-env-configuration-dir-layout">
@@ -268,8 +270,114 @@ projektnavn/test/src     Kildetekst relateret til test af softwaresystemet
 <title>Konfigurationsfil</title>
 
 <para>
-TODO...lav build.xml der matcher ovenstående biblioteksstruktur i funktionalitet
+Nedenstående er vist et eksempel på en konfigurations fil til Ant som
+benytter ovenstående layout. For at anvende build.xml skal man kopiere
+build.xml til projekt katalog som man har valgt til dette project. Man kan benytte:
+
+<itemizedlist mark="bullet">
+<listitem>
+  <para><command>ant init</command> til at oprette ovenstående katalog struktur</para>
+</listitem>
+<listitem>
+  <para><command>ant compile</command> til at kompliere kildekoden</para>
+</listitem>
+<listitem>
+  <para><command>ant dist</command> til at oprette en jar fil med klasse filerne</para>
+</listitem>
+<listitem>
+  <para><command>ant clean</command> sletter katalogerne dist og build</para>
+</listitem>
+<listitem>
+  <para>
+  <command>ant doc</command> til at generer javadoc. Du til skal dog erstatte  <emphasis> 
+dk.cmm.*</emphasis> med dine egne pakker
 </para>
+</listitem>
+</itemizedlist>
+</para>
+
+<para>
+Man kan utroligt mange forskellige ting med Ant. Lige fra at
+komplilere sin kildekode, til at køre java programmer, til test, til ftp
+med mere. I stedet for at lave sine egne scripts kan det anbefales at
+man ser på dokumentationen til Ant og finder den rette task således at
+man har samlet projektets konfiguration på et sted.
+</para>
+
+<screen>
+&lt;project name="antEksempel" default="compile" basedir="."&gt;
+
+&lt;description&gt;
+  Eksempel paa Ant build.xml
+&lt;/description&gt;
+
+&lt;property name="name"       value="antEksempel"/&gt;
+&lt;property name="packages"   value="dk.cmm.*"/&gt;
+
+&lt;property name="build"      value="build"/&gt;
+&lt;property name="dist"       value="dist"/&gt;
+&lt;property name="docs"       value="docs"/&gt;
+&lt;property name="api"        value="${docs}/api"/&gt;
+&lt;property name="log"        value="log"/&gt;
+&lt;property name="src"        value="src"/&gt;
+&lt;property name="lib"        value="lib"/&gt;
+&lt;property name="test"       value="test"/&gt;
+&lt;property name="testlib"    value="${test}/lib"/&gt;
+&lt;property name="testreport" value="${test}/report"/&gt;
+&lt;property name="testsrc"    value="${test}/src"/&gt;
+
+&lt;target name="init"&gt; 	
+   &lt;tstamp/&gt;
+
+   &lt;mkdir dir="${build}"/&gt;
+   &lt;mkdir dir="${dist}"/&gt;
+   &lt;mkdir dir="${docs}"/&gt;
+   &lt;mkdir dir="${api}"/&gt;
+   &lt;mkdir dir="${log}"/&gt;
+   &lt;mkdir dir="${lib}"/&gt;
+   &lt;mkdir dir="${src}"/&gt;
+   &lt;mkdir dir="${test}"/&gt;
+   &lt;mkdir dir="${testlib}"/&gt;
+   &lt;mkdir dir="${testreport}"/&gt;
+   &lt;mkdir dir="${testsrc}"/&gt;
+&lt;/target&gt;
+
+&lt;path id="classpath"&gt;
+   &lt;fileset dir="lib"&gt;
+      &lt;include name="**/*.jar"/&gt;
+   &lt;/fileset&gt;
+&lt;/path&gt;
+
+&lt;target name="compile" 
+        depends="init" 
+	description="compile the source " &gt;
+    &lt;javac srcdir="${src}" 
+           destdir="${build}"
+	   classpathref="classpath"/&gt;
+&lt;/target&gt;
+
+&lt;target name="dist" 
+        depends="compile" 
+	description="Generates a jar file" &gt;
+    &lt;jar jarfile="${dist}/${appName}-${DSTAMP}.jar" basedir="${build}"/&gt;
+&lt;/target&gt;
+
+&lt;target name="clean"
+        description="clean up" &gt;
+    &lt;!-- Delete the ${build} and ${dist} directory trees --&gt;
+    &lt;delete dir="${build}"/&gt;
+    &lt;delete dir="${dist}"/&gt;
+&lt;/target&gt;
+
+&lt;target name="doc"
+	description="generates api documentation"&gt;
+   &lt;javadoc packagenames="${packages}"
+            destdir="${api}"
+            sourcepath="src"/&gt;
+&lt;/target&gt;
+
+&lt;/project&gt;
+</screen>
 
 </sect3>
 
