@@ -6,22 +6,12 @@ all: filer
 
 release : version cvs2html filer 
 
-Specfiler: 
-	@for dir in $(SUBDIRS); do \
-		echo %define buildname $$dir > $$dir/linuxbog-$$dir.spec; \
-		echo Name: linuxbog-$$dir >> $$dir/linuxbog-$$dir.spec; \
-		echo Summary: `grep -A2 "<title>" $$dir/indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> $$dir/linuxbog-$$dir.spec; \
-		echo Version: `cat $$dir/version.sgml` >> $$dir/linuxbog-$$dir.spec; \
-		echo Release: 1mdk >>  $$dir/linuxbog-$$dir.spec; \
-		cat linuxbog.spec >> $$dir/linuxbog-$$dir.spec; \
-	done;
-
 Makefiler:
 	@for dir in $(SUBDIRS); do \
 		cp -f Makefile.subdir.tlb $$dir/Makefile; \
 	done;
 
-filer:  Makefiler Specfiler
+filer:  Makefiler
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done;
@@ -33,13 +23,6 @@ pspdf:	Makefiler
 	done;
 
 	$(MAKE) -C alle -f Makefile.tlb pspdf
-
-version: Makefiler
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $$dir version; \
-	done;
-
-	cp friheden/version.sgml alle/version.sgml
 
 eksempelbackup:
 	@for dir in $(SUBDIRS); do \

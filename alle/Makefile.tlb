@@ -8,10 +8,10 @@ targetshortname=$(notdir $(locdirname))
 targetname=linuxbog-$(notdir $(locdirname))
 
 # version
-version=$(shell cat version.sgml)
+version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml))
 
 # dato
-dato=$(shell cat dato.sgml)
+dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)	
 
 # cygnus dsl ligger ikke ens på MDK8 og RH6.2
 cygnusdsl = $(firstword $(wildcard  /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl))
@@ -36,8 +36,17 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
+SUBDIRS = friheden applikationer admin program web sikkerhed c docbook kontorbruger itplatform
+	
 # her er det der skal laves
 all: html palmpilot sgml
+
+statusfiles:
+	@for dir in $(SUBDIRS); do \
+		echo -n "$$dir "; \
+		(cd ../$$dir;grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; echo -n "`cat version.sgml`"); \
+		(cd ../$$dir;date +%d/%m-%Y> dato.sgml; echo " (`cat dato.sgml`)"); \
+	done;
 
 sgml: $(sgmlfiler) $(targetname)-$(version).sgml.tar.gz $(targetname)-$(version).sgml.zip
 
@@ -55,12 +64,8 @@ $(targetname)-$(version).palm.zip: html
 	cp ../misc/*.prc palm
 	zip $(targetname)-$(version).palm.zip palm/*.prc palm/*.pdb
 
-statusfiler:
-	@$(shell date +%d/%m-%Y> dato.sgml)
-	@echo Dato sat til $(dato)
-
-html: $(targetshortname) pakhtml
-$(targetshortname): $(sgmlfiler) statusfiler
+html: statusfiles $(targetshortname) pakhtml
+$(targetshortname): $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -71,30 +76,21 @@ $(targetshortname): $(sgmlfiler) statusfiler
 	(cd tempdir; perl ../collateindex.pl -s Symboler  -x -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
 	#db2html bog.sgml
 	(cd tempdir;jade -t sgml -ihtml -d $(cygnusdsl)\#html bog.sgml)
-	mkdir $(targetshortname)
-	cp tempdir/*.html $(targetshortname)
-	cp ../friheden/images/*.png $(targetshortname)
-	cp ../admin/images/*.png $(targetshortname)
-	cp ../web/images/*.png $(targetshortname)
-	cp ../program/images/*.png $(targetshortname)
-	cp ../c/images/*.png $(targetshortname)
-	cp ../docbook/images/*.png $(targetshortname)
-	cp ../kontorbruger/images/*.png $(targetshortname)
-	cp ../itplatform/images/*.png $(targetshortname)
-	cp ../applikationer/images/*.png $(targetshortname)
-	cp ../sikkerhed/images/*.png $(targetshortname)
-	cp linuxbog.css $(targetshortname)
+	mkdir bog
+	cp tempdir/*.html bog
+	for dir in $(SUBDIRS); do \
+		cp ../$$dir/images/*.png bog; \
+	done;
 	rm -rf tempdir
-ifeq	("$(shell perl -e 'use Image::Size; print "1"' 2> /dev/null)", "1")
+ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
 	(cd html;perl ../../misc/insertimagesize)
 else
-	@echo Du mangler perl modulet Image::Size.
+	@echo Du bør installere Perl-modulet Image::Size.
 endif
-ifeq	("1", "1")
-#ifneq	($(shell if which tidy &> /dev/null; then echo -n 1; fi), "1")
+ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
 	(cd html;tidy -f err.txt -imu *html;rm -f err.txt)
 else
-	@echo du mangler tidy.
+	@echo Du bør installere tidy.
 endif
 
 pakhtml: $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip	
@@ -112,7 +108,7 @@ $(targetname)-$(version)_html.zip:
 	zip $(targetname)-$(version)_html.zip $(targetshortname)/*
 
 pspdf:	$(targetname)-$(version)_pdf.zip
-$(targetname)-$(version)_pdf.zip: billeder statusfiler
+$(targetname)-$(version)_pdf.zip: statusfiles
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
@@ -136,7 +132,9 @@ $(targetname)-$(version)_pdf.zip: billeder statusfiler
 	mkdir bogpdf
 	cp *.sgml bogpdf
 	rm -f $(targetname)-*.pdf
-	cp images/*.png bogpdf
+	for dir in $(SUBDIRS); do \
+		cp ../$$dir/images/*.png bog; \
+	done;
 	(cd bogpdf; db2pdf bog.sgml )
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
@@ -148,5 +146,5 @@ test:
 	echo $(sgmlfiler)
 
 .PHONY clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images
+	rm -rf version.sgml dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images
 
