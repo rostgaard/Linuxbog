@@ -85,23 +85,51 @@ er i en god tilstand.
 
 <indexterm><primary>Filsystemer</primary>
 <secondary>ReiserFS</secondary></indexterm>
+<indexterm><primary>Filsystemer</primary>
+<secondary>ext2</secondary></indexterm>
 <para>
 ReiserFS er et af de nyere filsystemer til Linux. Faktisk er det så nyt,
-at det endnu ikke er en del af den officielle kerne. 
-ReiserFS er en anden type filsystem end den der kendes fra Linux's
-Ext2, og DOS/Windows FAT-drev, idet ReiserFS er et journaliserende
-filsystem. Det betyder, at alle filer til en hver tid er opdaterede. Det
-betyder, at hvis din computer går ned pga. en strømafbrydelse vil du ikke
-miste data. Endvidere betyder det, at de partitioner som er formateret
-ved hjælp af ReiserFS ikke skal tjekkes ved opstart. Hvis du har meget store harddiske
-vil det betyde at du får en meget kortere opstartstid. Dette kan være 
-vigtigt, hvis din computer er server med f.eks. 100 GB harddisk (ikke
-ualmindelig i den virkelige serververden).
+at det endnu ikke er en del af den officielle kerne. Indtil kerne
+2.4 vil det kun være det gamle velprøvede ext2-filsystem, som 
+kernen understøtter officielt, men det er allerede bebudet at i kerne
+2.4.1 vil ReiserFS være med.
 </para>
 
 <para>
-ReiserFS følger med Mandrake 7.1 og under denne distribution er det
-let at installere. Men selv under andre distributioner er det ikke
+ReiserFS er en anden type filsystem end den der kendes fra Linux's
+Ext2, og DOS/Windows FAT-drev, idet ReiserFS er et journaliserende
+filsystem. Det betyder, at alle filer til en hver tid er
+opdaterede. Det betyder, at hvis din computer går ned pga. en
+strømafbrydelse vil du ikke miste data. Endvidere betyder det, at de
+partitioner som er formateret ved hjælp af ReiserFS ikke skal tjekkes
+ved opstart. Hvis du har meget store harddiske vil det betyde at du
+får en meget kortere opstartstid. Dette kan være vigtigt, hvis din
+computer er server med f.eks. 100 GB harddisk (ikke ualmindelig i den
+virkelige serververden).
+</para>
+
+<para>
+Tidligere versioner af ReiserFS ville ikke virke med Lilo boot fra en
+ReiserFS-partion.  Dette kunne løses ved at lægge
+<filename>/boot</filename> på en ext2-partition, og hvis
+<filename>/boot</filename> er en lille selvstændig partition, kan
+<filename>/</filename>-partitionen være ReiserFS-formatteret.
+I de nyeste versioner af ReiserFS (november 2000) bør denne
+begrænsning være væk, blot man mounter boot-partitionen med et ekstra
+flag; "notail":
+</para>
+
+<screen>
+/dev/hda2 on / type reiserfs (rw,notail)
+</screen>
+
+
+<para>
+ReiserFS følger med Mandrake (fra version 7.1) og SuSE (fra
+6.4) og under disse distributioner er det let at vælge
+formattering med ReiserFS istedet for ext2 under
+installation.
+Men selv under andre distributioner er det ikke
 svært. Du skal sikre dig, at kernen understøtter ReiserFS som
 filsystem. Måske skal du omkonfigurere din kerne (se også <xref
 linkend="kernelcompile">). Det kan godt betale sig at få ReiserFS
@@ -168,8 +196,9 @@ ReiserFS version 3.5.18
 </para>
 
 <para>
-Naturligvis kan du indsætte din nye partition i filen <filename>/etc/fstab</filename>
-med typen <emphasis>reiserfs</emphasis>. Derved vil partitionen blive monteret
+Naturligvis kan du indsætte din nye partition i filen
+<filename>/etc/fstab</filename> med typen
+<emphasis>reiserfs</emphasis>. Derved vil partitionen blive monteret
 under opstart.
 </para>
 
