@@ -193,6 +193,11 @@ Units = cylinders of 1008 * 512 bytes
 
  <sect2 id="finde-og-maerke-daarlige-blokke">
   <title>Finde og mærke dårlige blokke</title>
+<indexterm><primary>badblocks</primary></indexterm>
+<indexterm><primary>e2fsck</primary></indexterm>
+<indexterm><primary>fsck</primary></indexterm>
+<indexterm><primary>defekt harddisk</primary></indexterm>
+<indexterm><primary>fejl på harddisk</primary></indexterm>
 
   <para>
    Kør nu kommandoen <command>badblocks -o /tmp/blocks
@@ -255,6 +260,226 @@ Se også <ulink url="http://www.redhat.com/mailing-lists/ext3-users/msg02454.html
  </sect2>
 </sect1>
 
+<sect1 id="partitionstabel-vaek">
+<title>Hjælp min partitionstabel er væk</title>
+
+<para>
+Hvis man er særlig uheldig, så kan man miste sin partitionstabel ved
+et Windows-crash. Her er et par erfaringer. Skriv partitionstabellen
+(anvend <filename>fdisk /dev/hda</filename>, hvis din harddisk er
+<filename>/dev/hda</filename>) ud på papir og gem den sammen med
+udskrift af <filename>/etc/fstab</filename>. Hvis du har disse informationer
+så kan man typisk genskabe indhold af harddisken. 
+</para> 
+
+<para>
+Hvis man ikke har styr på hvor på harddisken man havde de enkelte
+partitioner, så kan de programmer på <ulink
+url="http://inet.uni2.dk/~svolaf/utilities.htm">http://inet.uni2.dk/~svolaf/utilities.htm</ulink>
+være af <emphasis>STOR</emphasis> gavn. Med
+<filename>findext2.exe</filename> er det muligt at find
+Linux-partitioner af ext2/ext3-typen. Programmet kræver en
+DOS-diskette med en fortolker og det tager typisk et par timer at søge
+harddisken igennem for mulige partitioner. 
+</para>
+
+<para>
+Nedenfor er vist hvad programmet kan give af informationer. Programmet er
+kørt 29/6-2003. Dagen efter at partitionstabellen blev slettet.
+Tre linier indikerer hvilke partitioner som er "rigtige" - bemærk datoer
+for hvornår de blev monteret og checket sidste gang - dagen før.
+</para>
+
+<para>
+Konklusionen blev at der var tre partitioner, som skulle reddes ved at indtaste
+følgende grænser manuelt i <command>fdisk</command>.
+</para>
+
+<screen>
+Linuxpartition 1 : start 474  - slut 920
+Linuxpartition 2 : start 951  - slut 2739
+Linuxpartition 3 : start 2740 - slut 4865
+</screen>
+
+<screen>
+Findext2, version 1.6
+Copyright Svend Olaf Mikkelsen, 2002.
+
+Searches for ext2/ext3 superblocks. False positives might be found.
+The partition location can be wrong. Data MB may be used megabytes,
+especially for superblock 0. Mount/Write/Check are date/time if
+valid. Note that cylinders are numbered from 0. Linux fdisk
+numbers from 1.
+
+OS:  DOS 7.10  WINDOWS 4.10
+
+Disk: 1   Cylinders: 4865   Heads: 255   Sectors: 63   MB: 38162
+
+Start cylinder: 0   End cylinder: 4864
+
+-PCyl N ID -----LBA -----Num ---MB -Start CHS- --End CHS-- BS  CHS
+
+    0 - 83    48191 14329917  6997    2 254 60  894 253 59 B0   OK
+      Data MB    1857                Actual end sector: 54
+      Mount 2002.07.16  19:55:28     Superblock 0  Block 0
+      Write 2002.07.16  19:55:28     Superblock LBA 48193
+      Check 2002.07.16  16:36:30     Superblock CHS 2/254/62
+      Blocks:  KB: 4    First: 0     Per group: 32768
+      Ext3
+      Searched        100   0  1
+
+    0 - 83       63 14329917  6997    0   1  1  891 254 63 B5   OK
+      Data MB    142                 Actual end sector: 58
+      Mount                    0     Superblock 9  Block 294912
+      Write 2002.07.16  16:36:36     Superblock LBA 2359359
+      Check 2002.07.16  16:36:30     Superblock CHS 146/220/10
+      Blocks:  KB: 4    First: 0     Per group: 32768
+      Ext3
+      Searched        200   0  1
+      Searched        300   0  1
+      Searched        400   0  1
+
+<emphasis>    0 - 83  7620209  7164927  3498  474  85 45  920  84 44 B0   OK</emphasis>
+      Data MB    2396                Actual end sector: 37
+      Mount 2003.06.28  14:24:18     Superblock 0  Block 0
+      Write 2003.06.28  14:24:18     Superblock LBA 7620211
+      Check 2003.04.12  16:09:18     Superblock CHS 474/85/47
+      Blocks:  KB: 4    First: 0     Per group: 32768
+      Ext3
+
+    0 - 83  7614873  7164927  3498  474   1  1  919 254 63 B    OK
+      Data MB    87                  Actual end sector: 56
+      Mount                    0     Superblock 1  Block 32768
+      Write 2003.04.12  16:09:21     Superblock LBA 7877017
+      Check 2003.04.12  16:09:18     Superblock CHS 490/82/2
+      Blocks:  KB: 4    First: 0     Per group: 32768
+      Ext3
+      Searched        500   0  1
+      Searched        600   0  1
+      Searched        700   0  1
+      Searched        800   0  1
+      Searched        900   0  1
+
+<emphasis>    0 - 83 15277878 28740222 14033  951   1  1 2739 254 63 B0   OK</emphasis>
+      Data MB    13873               Actual end sector: 57
+      Mount 2003.06.28  14:24:33     Superblock 0  Block 0
+      Write 2003.06.28  23:05:59     Superblock LBA 15277880
+      Check 2002.07.17  00:43:41     Superblock CHS 951/1/3
+      Blocks:  KB: 4    First: 0     Per group: 32768
+      Ext3
+      Searched       1000   0  1
+      Searched       1100   0  1
+      Searched       1200   0  1
+      Searched       1300   0  1
+      Searched       1400   0  1
+      Searched       1500   0  1
+
+    0 - 83 25415665  8388740  4096 1582  13 17 2104  57 54 B    OK
+      Data MB    4096          
+      Mount          -1535052965     Superblock 30168  Block-1241421144
+      Write 2020.12.31  90:03:06     Superblock LBA 25415665
+      Check 1997.05.24  00:00:14     Superblock CHS 1582/13/17
+      Blocks:  KB: 1    First: 0     Per group:-1024238801
+      Ext3
+      Searched       1600   0  1
+      Searched       1700   0  1
+      Searched       1800   0  1
+      Searched       1900   0  1
+      Searched       2000   0  1
+      Searched       2100   0  1
+      Searched       2200   0  1
+      Searched       2300   0  1
+      Searched       2400   0  1
+      Searched       2500   0  1
+      Searched       2600   0  1
+      Searched       2700   0  1
+
+<emphasis>    0 - 83 44018163 34147192 16673 2740   1  1 4865 144 58 B0   OK?</emphasis>
+      Data MB    6096          
+      Mount 2003.06.28  14:24:34     Superblock 0  Block 0
+      Write 2003.06.28  23:05:59     Superblock LBA 44018165
+      Check 2002.09.22  09:51:38     Superblock CHS 2740/1/3
+      Blocks:  KB: 4    First: 0     Per group: 32768
+      Ext3
+      Searched       2800   0  1
+      Searched       2900   0  1
+      Searched       3000   0  1
+      Searched       3100   0  1
+      Searched       3200   0  1
+      Searched       3300   0  1
+      Searched       3400   0  1
+      Searched       3500   0  1
+      Searched       3600   0  1
+      Searched       3700   0  1
+      Searched       3800   0  1
+
+    0 - 83 61836487     1952     0 3849  36 35 3849  67 33 B0   OK
+      Data MB    1             
+      Mount 2002.09.10  20:31:45     Superblock 0  Block 1
+      Write 2002.09.10  20:31:45     Superblock LBA 61836489
+      Check 2002.09.10  20:31:45     Superblock CHS 3849/36/37
+      Blocks:  KB: 1    First: 1     Per group: 8192
+
+    0 - 83 61843559     1632     0 3849 148 51 3849 174 44 B0   OK
+      Data MB    1             
+      Mount 2002.09.10  20:31:50     Superblock 0  Block 1
+      Write 2002.09.10  20:31:51     Superblock LBA 61843561
+      Check 2002.09.10  20:31:50     Superblock CHS 3849/148/53
+      Blocks:  KB: 1    First: 1     Per group: 8192
+      Searched       3900   0  1
+      Searched       4000   0  1
+      Searched       4100   0  1
+      Searched       4200   0  1
+      Searched       4300   0  1
+      Searched       4400   0  1
+      Searched       4500   0  1
+      Searched       4600   0  1
+      Searched       4700   0  1
+      Searched       4800   0  1
+</screen>
+
+<para>
+Langt hurtigere er <filename>findpart.exe</filename> som også kan give
+partitionsgrænserne direkte, men den viser ikke hvornår de enkelte partitioner
+blev anvendt sidst.
+</para>
+
+<screen>
+Findpart, version 4.33 - for Windows 95/98/ME/NT/2000/XP.
+Copyright Svend Olaf Mikkelsen, 2003.
+
+Searches for partitions type 01, 04, 06, 07, 0B, 0C, 0E, 82, 83,
+plus Fdisk F6 and Lilo sectors. Information based on bootsectors
+is marked B. If the disk is larger than supported by BIOS, the
+supported part of the disk is examined. Disks are numbered from 1.
+
+OS:  Windows 4.10
+
+Disk: 1   Cylinders: 4865   Heads: 255   Sectors: 63   MB: 38162
+
+-PCyl N ID -----Rel -----Num ---MB -Start CHS- --End CHS-- BS  CHS
+<emphasis>    0 - 0B       63  7616512  3719    0   1  1  474  28  1 B    OK</emphasis>
+    Fdisk F6 sector                   3   0  1
+    Fdisk F6 sector                   5   1  1
+  474 1 83       63 70550487 34448  474   1  1 1023 254 63 NB   NB?
+<emphasis>  920 1 82       63   497952   243  920   1  1  950 254 63      OK</emphasis>
+  920 2 05  7663005 62887545 30706  951   0  1 1023 254 63 474  NB?
+<emphasis>  951 1 83       63 28740222 14033  951   1  1 2739*254 63 OK 3 OK</emphasis>
+  951 2 05 36403290 34147260 16673 2740#  0  1 1023 254 63 474  NB?
+ 2740 1 83       63 34147197 16673 2740#  1  1 1023 254 63 NB   NB?
+<emphasis> 2740 - 83       63 34147192 16673 2740   1  1 4865 144 58 B0 3 OK?</emphasis>
+    Fdisk F6 sector                4407   0  1
+    Fdisk F6 sector                4407   1  1
+</screen>
+
+<indexterm><primary>rescue</primary></indexterm>
+<para>
+Endelig skal det nævnes at bl.a. Mandrake har en mulighed for at boote op på første
+cdrom og vælge <emphasis>rescue</emphasis> og genskabe boot-information, hvis det
+er muligt. Dette er ikke altid muligt...
+</para>
+
+</sect1>
 
 <sect1 id="reiserFS">
 <title>ReiserFS</title>
