@@ -50,7 +50,7 @@ dele af netværket fungerer.
 </para>
 
 <screen>
-<prompt>[anne@linus ~]$ </prompt><userinput>ping -c 4 www.linux.org</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>ping -c 4 www.linux.org</userinput>
 </screen>
 
 <para>
@@ -1335,4 +1335,126 @@ til ens netkort, som kan dette - og under Linux skal man bla. se efter
 som programmet virker sammen med.
 </para>
 </sect1>
+
+<sect1 id="rsync">
+<title>Sykronisering af data mellem to steder med rsync</title>
+
+<indexterm>
+ <primary>Synkronisering af data</primary>
+ <secondary>rsync</secondary>
+</indexterm>
+
+<indexterm>
+ <primary>rsync</primary>
+</indexterm>
+
+<para>
+At synkronisere data mellem to kataloger eller to maskiner er meget
+nyttigt. Tanken er at man har ca. samme data to steder - det kan enten
+være to kataloger på samme maskine eller to forskellige maskiner
+(f.eks. en laptop og en stationær maskine). Man ønsker så elegant at
+kunne overføre <emphasis>de ændrede filer</emphasis> fra den ene
+maskine til den anden - i forhold til sidste gang de to maskiner blev
+synkroniseret mod hinanden.
+</para> 
+
+<para>
+Det første man skal gøre er at installere
+<filename>rsync</filename>-pakken på ens maskine (check dette med
+<command>rpm -q rsync</command>) på begge maskiner og OpenSSH (Secure
+Shell) hvis man vil synkronisere mellem to maskiner. Opsætning og
+installation af OpenSSH er forklaret i "Linux - Friheden til sikkerhed på Internettet", der kan findes på <ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>. Man skal også sætte miljø-variablen <filename>RSYNC_RSH=ssh</filename> i brugerens opstartsfil (<filename>~/.bashrc</filename> "export RSYNC_RSH=ssh" eller <filename>~/.tcshrc</filename> "setenv RSYNC_RSH ssh").
+</para>
+
+<para>
+Programmet <command>rsync</command> er genialt - det sammenligner
+filer i de to ender via checksummer og opdaterer filen i den ene ende
+kun med ændringerne mellem de to filer. Ofte har man få ændringer - og
+dermed kan <command>rsync</command> spare rigtig meget tid og båndbredde.
+</para>
+
+<para>
+Antag at brugerens email-katalog <filename>~/mail</filename> evt. med
+en række under-kataloger findes på egen maskine (den vi kører
+kommandoer fra) samt maskinen
+<filename>asterix</filename>. 
+</para>
+
+<para>
+Antager vi først at <filename>asterix</filename> har de nyeste filer
+som skal synkroniseres over til vores egen maskine, da skriver vi
+</para>
+
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>rsync -azv asterix:mail ~</userinput>
+</screen>
+
+<para>
+Bemærk at hvis der også
+er ændrede filer på egen maskine siden sidste synkronisering så
+overskrives disse.
+</para>
+
+<para>
+Antager vi modsat at vores egen maskine har de nyeste filer som skal
+synkroniseres over til <filename>asterix</filename>, da skriver vi
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>rsync -azv --delete asterix:mail ~</userinput>
+</screen>
+
+
+<para>
+
+ Derefter vil
+asterix have eksakt de samme filer som vores maskine i
+<filename>~/mail</filename>. Med parameteren
+<filename>--delete</filename> sørger vi også for at slette eventuelle
+filer på <filename>asterix</filename> under
+<filename>~/mail</filename> som ikke findes på vores egen maskine.
+</para>
+
+<para>
+Med de to ovennævnte eksempler vil filer blive overskrevet fra den ene
+maskine til den anden uanset hvilke filer der er de nyeste. Lad os nu
+antage at vi gerne vil synkronisere mail-katalogerne så det altid er
+de nyeste filer som findes <emphasis>begge</emphasis> steder. 
+</para>
+
+<screen>
+Egen maskine:
+mail/fil1   April 2
+mail/fil2   April 3
+mail/fil3   April 1
+
+asterix:
+mail/fil1   April 5
+mail/fil2   April 1
+
+
+Bagefter har begge maskiner:
+mail/fil1   April 5
+mail/fil2   April 3
+mail/fil3   April 1
+</screen>
+
+<para>
+Dette gøres ved
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>rsync -auvz mail/ asterix:mail/</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>rsync -auvz asterix:mail/ mail/</userinput>
+</screen>
+
+<para>
+<emphasis>Bemærk:</emphasis> At <command>rsync</command> fungerer
+forskeligt alt efter om der kommer <filename>/</filename> efter
+katalog-navnet. Pas på med dette.
+</para>
+
+
+</sect1> 
 </chapter>
