@@ -2435,6 +2435,104 @@ Læs om den under <command>man test</command>.
 
 </sect2><!-- id="koerflere" -->
 
+<sect2 id="nyshell">
+<title>Start en ny shell på kommandolinjen</title>
+<indexterm>
+ <primary>( )</primary>
+</indexterm>
+<para>
+Når man starter en ny shell, får man nye omgivelser (environment)
+som scriptet køres i. Dette ses når man har et schell-script hvor
+environment-variable ændres og tilføjes, eller der skiftes til
+et andet sub-dir.
+Når shell-scriptet er færdig med at køre, er alt tilbage ved det gamle.
+Til tider kan det være nemmere ikke at skulle oprette et shell-script først,
+men blot skrive det hele på kommandolinjen.
+Først et lille simpelt eksempel som script, der først skifter til sub-dir
+<filename>/tmp</filename> og dernæst lister filerne.
+Tricket er, at når scriptet er færdig med at køre, står vi i samme sub-dir.
+</para>
+
+<programlisting>
+#! /bin/sh
+cd /tmp ; ls
+</programlisting>
+
+<para>
+For at gøre det samme på kommandolinjen skal der blot paranteser omkring:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>(cd /tmp ; ls)</userinput>
+</screen>
+
+<para>
+Det eneste "ødelæggende" der skete ved ovenstående, var at der blev skiftet
+til et andet sub-dir, men det kunne også være en variabel der blev ændret:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>(cd /tmp ; PATH=. ; min_test)</userinput>
+</screen>
+
+<para>
+Et mere praktisk eksempel der er besværligt at løse uden brug af "()",
+kan illustreres ved noget hvor der skal holdes en pause.
+Som vist før kan man blot udskifte det som står imellem paranteserne
+med et script, hvilket i det følgende ikke er praktisk.
+</para>
+
+<para>
+Vil man gerne vide lidt om hvordan en web-server er sat op,
+kan dette gøres med <command>telnet</command> og brug af HTTP-protokollen.
+Først åbnes en forbindelse til port 80.
+Når man får en forbindelse indtastet HEAD-kommandoen og så venter man indtil
+der kommer et svar.
+Manuelt gøres det således:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>telnet www.sslug.dk 80</userinput>
+Trying 130.228.2.150...
+Connected to ns.sslug.dk (130.228.2.150).
+Escape character is '^]'.
+<userinput>HEAD / HTTP/1.0</userinput>
+
+HTTP/1.1 200 OK
+Date: Wed, 24 Jul 2002 07:21:16 GMT
+Server: Apache/1.3.26 (Unix) (Red-Hat/Linux) OpenSSL/0.9.5a PHP/3.0.18
+Last-Modified: Wed, 24 Jul 2002 04:45:00 GMT
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+Connection closed by foreign host.
+</screen>
+
+<para>
+Bemærk at efter <command>HEAD</command> skal der tastes ENTER to gange.
+Her kunne man være fristet til at pipe HEAD-kommandoen direkte til
+<command>telnet</command>, men det går ikke da forbindelsen bliver lukket
+inden der kommer ouput retur fra web-serveren.
+En lille pause på et par sekunder med <command>sleep</command> løser problemet,
+men så skal kommandoen indkapsles med ().
+Det færdige eksempel er så:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>(echo -e "HEAD / HTTP/1.0\n"; sleep 2) | telnet www.sslug.dk 80</userinput>
+</screen>
+
+<para>
+Som før nævnt, kan det der står i parantes skrives i et script:
+</para>
+
+<programlisting>
+#! /bin/sh
+echo -e "HEAD / HTTP/1.0\n"
+sleep 2
+</programlisting>
+
+</sect2><!-- id="nyshell" -->
 
 <sect2 id="kill">
 <title>Dræb en proces</title>
