@@ -1,0 +1,964 @@
+<!-- $Id$ -->
+<chapter id="installredhat">
+<title>Installation af Red Hat Linux 7.2 (Enigma)</title>
+<para>
+<indexterm><primary>Red Hat</primary></indexterm>
+Version 7.2 (Enigma) er seneste Red Hat version. Der er lagt meget stor
+vægt på brugervenligheden; både i forbindelse med installationen og
+den daglige administration af systemet. Langt det meste af, hvad der
+tidligere krævede stor indsigt i formatet af diverse
+opsætningsfiler, kan nu håndteres ved hjælp af det grafisk baserede
+værktøjer.
+</para>
+
+<para>
+Ud over at være nem at installere og administrere må Red Hat Linux også
+siges at være et godt valg med hensyn til udvalget af
+applikationer. Alle traditionelle Linux-programmer plus en hel del nye
+ligger klar til at installere fra cd-rom'erne.
+</para>
+
+<para>
+Det skal siges, at der var en sjat børnesygdomme i Red Hat 7.0 og 7.1 som nu
+er rettet op med Red Hat 7.2, så skal du vælge mellem de tre, så tag
+7.2! Problemer med Red Hat 7.2 er der også nogle stykker af, men
+de kan dog heldigvis rettes ved at følge med de opdateringspakker, der 
+annonceres løbende på <ulink
+url="http://www.redhat.com/support/errata/">http://www.redhat.com/support/errata/</ulink>.
+</para>
+
+
+<sect1 id="RH72nyt">
+<title>Nyheder i Red Hat 7.2</title>
+
+
+<para>
+Installation af Red Hat 6.1-7.2 er næsten den samme.
+</para>
+
+
+<indexterm><primary>ext3</primary></indexterm>
+<para>
+En markant forskel i forhold til tidligere er muligheden 
+for at installere med diskformat ext3, som er et journaliserende
+filsystem. Det gør at det ikke er ret farligt at tage strømmen 
+fra maskinen. Det efterfølgende systemcheck ved genstart 
+er nu langt hurtigere. Det er en markant fordel.
+</para>
+
+<para>
+Der er en hel del opdateringer af system-værktøjerne til det bedre :)
+</para>
+
+<para>
+Mange pakker er opdateret til endnu bedre funktioner og ydelse 
+- ikke mindst KDE.
+</para>
+
+</sect1>
+
+<sect1 id="rhhardwarekrav">
+<title>Hardwarekrav</title>
+<para>
+<indexterm><primary>Hardware krav</primary></indexterm>
+Red Hat Linux til pc stiller følgende hardwarekrav:
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>en Intel 32-bit CPU (80386 eller senere). Intel-kompatible
+typer af andet fabrikat, f.eks. AMD K6, K7 eller Athlon 
+kan også sagtens bruges.</para>
+
+</listitem>
+
+<listitem><para>mindst 16 Mb RAM, meget gerne 32 Mb eller mere. For
+Gnome og KDE kan anbefales 64 Mb RAM eller mere.
+</para>
+
+</listitem>
+
+<listitem><para>systembus af typen PCI, ISA, EISA eller VLB.</para>
+
+</listitem>
+<listitem><para>minimum 500 Mb ledig plads på harddisken. En typisk
+installation bruger omkring 1-2 Gb, men du kan sagtens bruge mere
+plads. Ud over plads
+til selve systemet skal der naturligvis også være plads til
+rådighed for brugerne til deres private filer af forskellig slags.</para>
+</listitem>
+</itemizedlist>
+</para>
+
+</sect1>
+
+<sect1 id="rh-cd-rom-install">
+<title>Installation fra cd-rom</title>
+<para>
+I denne gennemgang af installationen vil vi gå ud fra, at der
+installeres fra et lokalt cd-rom-drev. Der er som nævnt nedenfor andre
+måder at gøre det på, men denne metode er både simpel og tilgængelig
+på langt de fleste moderne pc'er.
+</para>
+
+<para>
+Hvis din maskine er af ny dato, kan den starte direkte fra
+cd-rom'en. Du skal så ind og vælge cd-rom-drevet som første "boot drive"
+i BIOS-opsætningen. Typisk kommer du ind i BIOS-opsætningen ved at
+trykke en tastekombination når du tænder for computeren, 
+tastekombinationen varierer fra computermærke til computermærke og står
+sikkert i brugsanvisningen eller på skærmen under opstarten.
+</para>
+
+<para>
+Når du alligevel er inde i BIOS-opsætningen kan du checke om 
+virusbeskyttelse er slået til. Virusbeskyttelsen forhindrer
+skrivning i boot-sektoren og er en udmærket sikkerhedsforanstaltning
+i det daglige, men hvis vi skal installere LILO (se nedenfor), er
+vi faktisk nødt til at have lov til dette. Skal du opgradere så er
+det uhyre nemt i grafisk mode - du vælger tastatur og enkelte andre
+ting, og så kører det. Vi ser dog her på installation.
+</para>
+
+<para>
+Hvis du ikke kan starte fra cd-rom-drevet, må du i stedet bruge en
+opstartsdiskette.  Den kan laves i DOS ud fra programmet
+<command>RAWRITE.EXE</command>. Dette program ligger normalt 
+i <filename>/DOSUTILS</filename> kataloget på din Linux installations-cd-rom.
+Filen <filename>boot.img</filename> skal også bruges og er selve
+boot-disken, der normalt ligger i kataloget <filename>/images/</filename>.
+Tekstfilen <filename>RAWRITE3.DOC</filename> forklarer i nærmere detaljer
+hvordan programmet skal anvendes.
+</para>
+
+<para>
+Som eksempel ser vi på fremstilling af en opstartsdiskette fra en DOS-prompt med
+cd-rom-drevet <filename>E:</filename>. Diskettedrevbogstavet er
+<filename>A:</filename>.  Disketten formateres, så alle data på den
+er slettet. (Grunden til formateringen er alene at det er surt at
+have en eventuel defekt bootdisk senere).
+</para>
+
+<screen>
+<prompt>C:\WINDOWS\></prompt> <userinput>format A: /u</userinput>
+</screen>
+
+<para>
+Dernæst fremstilles opstartsdisketten med kommandoen,
+</para>
+
+<screen>
+<prompt>C:\WINDOWS\></prompt> <userinput>E:\DOSUTILS\RAWRITE -f E:\images\BOOT.IMG -d a</userinput>
+</screen>
+
+<para>
+Derefter kan Windows genstartes. Computeren vil nu starte på
+opstartsdisketten og fortsætte Linux-installationen fra
+installations-cd-rom'en.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Før du genstarter computeren, og påbegynder
+Linux-installationen er det smart at lave en bootdisk til Windows,
+hvis der skulle gå noget galt med LILO-installationen. På Windows 95
+og 98 kan en bootdisk laves ved at indsætte en tom diskette og skrive
+<command>format a: /s</command> på kommandolinien eller ved at
+højreklikke på diskdrevet og vælge 'Format' og markere et kryds i feltet "Kopier systemfiler".
+Når computeren starter fra disketten vil du ende i DOS, og kan starte
+Windows ved at udføre programmet <command>win</command> i
+<filename>c:\windows</filename>. Under Windows NT og 2000 kan man
+lave en bootdisk ved at formatere en tom diskette (dette er vigtigt
+da der oprettes en NT/2000 bootsektor på disketten) og så kopiere
+følgende tre filer <filename>ntldr</filename>, 
+<filename>ntdetect.com</filename> og <filename>boot.ini</filename> 
+fra roden af <filename>C:</filename>-drevet til disketten.
+Disse filer er normalt både skjulte og 'system'-mærkede og bliver
+normalt ikke vist i Microsoft Explorer med mindre man ændrer deres 
+konfiguration.
+</para>
+
+<sect2 id="rhinstall">
+<title>Installation</title>
+<para>
+Når systemet er startet op igen, og Linux er indlæst, vises en
+velkomstmeddelelse og en <filename>boot:</filename>-prompt nederst i
+skærmbilledet. De allerfleste kan her nøjes med at trykke
+<command>Enter</command> for at fortsætte installationen i grafisk
+tilstand. 
+</para>
+
+<para>
+Der vises nu en dialogboks - her kan du passende vælge "Danish" for
+dansk installation.
+</para>
+
+
+<FIGURE ID="rh72lang-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Vælg installations-sprog
+</TITLE>
+<GRAPHIC FILEREF="rh71_1.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+ <indexterm><primary>tastatur</primary><secondary>dansk</secondary></indexterm>
+ <indexterm><primary>dansk tastatur</primary></indexterm>
+
+Så skal der vælges en tastaturtype. Et almindeligt dansk pc-tastatur
+hedder i denne sammenhæng "Generic 102-key (Intl) PC" og hvis du har
+Windows-taster, så tag "Generic 105-key (Intl) PC". Udseende sættes
+til "Danish" og accenter bør benyttes for at man kan skrive ä, é og
+andre sjove tegn - tag "Benyt ikke udskudt virkning af accenttaster". 
+</para>
+
+<FIGURE ID="rh72keyboard-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Vælg tastaturlayout
+</TITLE>
+<GRAPHIC FILEREF="rh72_2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Vælg derefter din mus. Med de fleste nye maskiner er den en PS/2. Kan
+du finde en tre-knaps mus er det klart at foretrække til Linux. Har du
+kun en to-knaps mus, så husk at angive nederst at den tredie knap skal
+emuleres (at man trykker både højre og venstre vil så svare til et tryk
+på midterste knap af en tre-knaps mus). Serielle porte hedder
+<filename>/dev/ttyS</filename> plus et tal startende fra nul. COM1 i
+DOS svarer til <filename>/dev/ttyS0</filename>. Læs evt. videre i
+<xref linkend="nulGUIapp">. Tilsvarende sidder mus med PS/2-stik
+(lille rundt stik) i <filename>/dev/psaux</filename>. I Red Hat 7.0 og
+senere er der også understøttelse for USB-mus.
+</para>
+
+<indexterm>
+ <primary>mus</primary>
+ <secondary>forkert valg</secondary>
+</indexterm>
+
+<para>
+<emphasis>Tip:</emphasis> Er du kommet til at vælge en forkert
+muse-type, så kan du senere ændre dette ved at du som 'root' kører
+<command>/usr/sbin/mouseconfig</command>. 
+</para>
+
+<indexterm>
+ <primary>mus</primary>
+ <secondary>venstre håndet</secondary>
+</indexterm>
+
+
+<para>
+<emphasis>Tip:</emphasis> Du kan når installationen er færdig bruge
+<command>gpm -B 321</command> til at ændre fra højrehånds-mus til
+venstrehånds-mus.
+</para>
+
+<FIGURE ID="rh72mouse-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Vælg mus
+</TITLE>
+<GRAPHIC FILEREF="rh72_3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu vises et reklamebillede for Red Hat, og derefter kommer vi
+til installationstyperne. Som vist på <xref linkend="rh72type-fig"> er
+der flere forskellige muligheder. Vi vælger "Egendefineret system".
+</para>
+
+<FIGURE ID="rh72com-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - reklame :)
+</TITLE>
+<GRAPHIC FILEREF="rh72_4.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>"Arbejdsstation"</para>
+<para>
+Denne mulighed giver en automatisk installation af en
+arbejdsstation. Bemærk at alle eksisterende Linux-partitioner vil
+blive slettet ved dette valg. Du skal
+have mindst 900 Mb Linux-diskplads.
+</para>
+</listitem>
+
+<listitem>
+<para>"Server"</para>
+<para>Her <emphasis>slettes</emphasis> automatisk alle
+diske og der skal bruges mindst 1.7 Gb diskplads.</para>
+</listitem>
+
+<listitem>
+<para>"Bærbar"</para>
+<para>Her vil dine PCMCIA-enheder automatisk blive genkendt. Anvendes
+til bærbare.
+</para>
+</listitem>
+
+<listitem>
+<para>"Tilpasset"</para>
+<para>Denne mulighed er for de avancerede brugere, og giver dig
+fuld kontrol over hvilke programmer du vil have installeret.
+</para>
+</listitem>
+
+<listitem>
+<para>"Opgradér"</para>
+<para>Til opgradering fra en tidligere version af Red Hat.
+</para>
+</listitem>
+</itemizedlist>
+
+<FIGURE ID="rh72type-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Vælg installationstype
+</TITLE>
+<GRAPHIC FILEREF="rh72_5.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Derefter skal vi til at inddele og formatere harddisk-partitioner.
+Først lidt information af mere generel karakter.
+</para>
+</sect2>
+
+<sect2 id="redhatpartitioner">
+<title>Partitioner og filtræet</title>
+<indexterm><primary>Partitioner</primary></indexterm>
+<para>
+I Linux arbejder du ud fra et filtræ, som det kendes fra Windows og
+DOS. I Windows kan du have flere drev
+f.eks. <filename>C:\</filename>, <filename>D:\</filename> og
+<filename>E:\</filename> svarende til to harddisk-partitioner og et
+cd-rom-drev. I Linux findes der ikke drev, men kun et filtræ der
+starter i roden <filename>/</filename>, og her kan du oprette
+kataloger, der svarer til harddisk-partitioner,
+f.eks. <filename>/cdrev</filename> kunne svare til
+<filename>C:\</filename> mens <filename>/cdrom</filename> kunne svare
+til <filename>E:\</filename>. Hvor man i Windows og DOS bruger '\' til
+kataloger bruger man i Linux og Unix '/' til kataloger.  Det er også
+muligt at oprette kataloger der svarer til en harddisk eller et katalog
+på en helt anden Linux- eller Windows-computer, som man har forbindelse
+til over netværket.
+</para>
+
+<para>
+I Windows ligger systemet ofte i <filename>c:\windows</filename> og
+der er en række faste kataloger i dette katalog, hvor man kan lægge
+skrifttyper, hjælpefiler, menuer og andet. På samme måde er navnet på
+katalogerne i roden af et Linux-styresystem helt faste.  Brugere
+har kun adgang til at oprette kataloger i deres hjemmekatalog, der
+normalt findes i <filename>/home/mitbrugernavn</filename>, på den måde
+undgår man at brugere piller ved operativsystemet og andre brugeres
+filer - det har kun administratoren lov til at gøre. Administratoren
+(root) har hjemmekatalog i <filename>/root</filename>..
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Du kan efter installationen med <command>man
+7 hier</command> læse mere om filtræet.
+</para>
+
+<para>
+Nu er vi nået så langt, at vi skal til at beslutte os for, hvilke
+partitioner der skal oprettes, for at Red Hat Linux har et sted at blive
+installeret. Har du kørt <command>fips.exe</command> tidligere og har
+to DOS-partitioner, skal du slette den nye DOS-partition, som er
+tom.
+</para>
+
+<para>
+Ud over <command>fdisk</command> er der også en mulighed for at kære
+med automatisk partitionering - hold fingrene fra dette med mindre du kun
+vil have en ren Linux-maskine. Vi anbefaler at du vælger "Disk Druide"
+- et nyere og lidt venligere program som Red Hat Linux tilbyder.  
+Har du på et senere
+tidspunkt brug for at partitionere din harddisk, så kan du læse om
+<command>fdisk</command> i <xref linkend="fdisk">. Vi vælger "Disk
+druiden".
+</para>
+
+<FIGURE ID="rh72ddmain-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Harddisk udlægning
+</TITLE>
+<GRAPHIC FILEREF="rh72_6.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+
+<para>
+Du vælger en "Ny" og sætter så "Monteringspunkt" til "/" og "Size" til
+den størrelse, du ønsker på rod-partitionen. Tilsvarende gøres ved eventuelle
+andre "Linux Native"-partitioner. Der laves også en "Linux swap"-partition
+med "Ny". Nu skal der vælges, hvor de forskellige partitioner skal
+bruges i Linux-filtræet. "Linux native"-partitionen vælges som "rod". Skriv
+<filename>/</filename> ud for denne - se <xref linkend="rh72ddmount-fig">. 
+</para>
+
+<para>
+Det kan nævnes, at du også kan køre med
+flere partitioner og så for eksempel have separate <filename>/usr</filename>
+og <filename>/home</filename>. Vi vælger dog her kun den simple udgave med
+en enkelt Linux-partition.
+</para>
+
+<para>
+Windows-partitioner kan f.eks. lægges ind som
+<filename>/dosc</filename> og <filename>/dosd</filename> (eller
+<filename>/cdrev</filename> og <filename>/ddrev</filename>) osv.
+Swap-partitionen skal ikke lægges ind i filtræet. 
+</para>
+
+
+<FIGURE ID="rh72ddpartmain-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Harddisk-partitioner med Disk Druid
+</TITLE>
+<GRAPHIC FILEREF="rh72_7.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="rh72ddmount-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Operationer på en partition
+</TITLE>
+<GRAPHIC FILEREF="rh72_8.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+I det følgende vindue (ikke vist her),
+skal du angive hvilke partitioner, som skal formateres. Det skal alle
+de nye 'Linux native'-partitioner. Vælg for en sikkerheds skyld også at
+checke for "beskadigede blokke" på harddisken.
+</para>
+
+<para>
+<emphasis>Red Hat 7.0 problem:</emphasis> Bemærk, at den originale Red
+Hat 7.0 havde problemer med at acceptere partitioner, som ikke er
+Linux native. Dine Windows-partitioner kan du dog godt få adgang til -
+men vent med dette til efter selve installationen.
+</para>
+
+</sect2>
+
+
+
+
+
+<sect2 id="liloinstall">
+<title>Bootmanager</title>
+<indexterm><primary>LILO</primary></indexterm>
+<indexterm><primary>GRUB</primary></indexterm>
+<indexterm><primary>Boot af Linux</primary></indexterm>
+
+<para>
+Du kan nu installere en boot-manager. Der er to at vælge i mellem. Den
+gamle LILO og den nye GRUB. Boot-manageren er et program, der ved
+opstart af din computer giver en menu, hvor du kan vælge at starte
+Windows hhv. Linux.
+</para>
+
+<FIGURE ID="rh72bootload-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - bootloaderen
+</TITLE>
+<GRAPHIC FILEREF="rh72_9.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Hvis du altid vil starte DOS/Windows og kun vil starte Linux 
+med en bootdiskette eller loadlin så skal du ikke installere LILO.
+Hvis du kun kører Linux, eller vil have valget mellem at køre
+Linux eller DOS/Windows når du starter computeren, så skal du 
+installere LILO. Hvis du ikke kender denne del så vælg GRUB.
+</para>
+
+<para>
+Du kan også bruge DOS-programmet <command>loadlin</command> som
+boot-loader, der ligger i <filename>\DOSUTILS</filename> kataloget på
+Linux installations-cdrom'en til at starte Linux fra
+DOS-kommandolinien.
+</para>
+
+<para>
+Du kan indtil da starte på den bootdisk, du kan lave i det vindue du
+kan se på <xref linkend="rh72bootload-fig"> - <emphasis>vælg
+dette</emphasis>.  Du bør vælge at lave en Linux-bootdisk på en tom
+diskette. Gør dette, og gem den et sikkert sted. Så kan du altid få
+kontakt med Linux-partitionen hvis du kommer til at lave fejl i
+opstartssystemet.  Disketten skal først indsættes efter størstedelen
+af installationen er færdig.
+</para>
+
+<para>
+MBR er det første boot-spor af din harddisk (Master Boot Record)
+- hvor du måske ønsker at kunne starte andre styresystemer.
+</para>
+
+<para>
+I næste vindue skal du vælge adgangskode til GRUB (hvis du valgte denne).
+</para>
+
+<FIGURE ID="rh72bootload2-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - bootloaderen</TITLE>
+<GRAPHIC FILEREF="rh72_10.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+LILO et godt lille program med mange opsætningsmuligheder. Vælg
+at installere i Master Boot Record, hvis LILO skal styre alt boot
+fra nu af. Du kan slutteligt tilføje parametre til boot, så
+Linux nemmere kan finde hardware. Normalt er det ikke nødvendigt.
+</para>
+
+<para>
+<indexterm><primary>Fjerne LILO</primary></indexterm>
+<indexterm><primary>LILO</primary><secondary>Fjerne</secondary></indexterm>
+<emphasis>Tip</emphasis>: Fortryder du senere
+dette, så brug i DOS <command>fdisk /mbr</command> for at slette
+LILO.
+</para>
+
+<para>
+Du bør måske læse den mini HOWTO om LILO, som kan
+findes under Linux Documentation Project på
+<ulink url="http://sunsite.dk/ldp">http://sunsite.dk/ldp</ulink>
+</para>
+
+<para>
+Har du brug for at slette eller ændre din LILO-opsætning, kan du læse mere
+i "Linux - Friheden til at lære Unix".
+</para>
+
+</sect2>
+
+<sect2 id="rh-netkort">
+<title>Installation af netkort</title>
+<para>
+Har du et netkort i din maskine og vil have maskinen ind på et
+eksisterende netværk skal du nu skrive netværksparametre ind. Disse
+får du fra din netværksadministrator og du må ikke skrive forkert
+her. Hvad de enkelte dele er, vil blive forklaret i 
+"Linux - Friheden til at lære Unix". Denne del kan springes over 
+hvis du ikke ved hvad du skal skrive her.
+</para>
+
+<FIGURE ID="rh72-network-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - netværk</TITLE>
+<GRAPHIC FILEREF="rh72_11.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+</sect2>
+
+
+<sect2 id="rh-firewall"> <!-- Jacob don't touch -->
+<title>Opsætning af brandmur (firewall)</title>
+<para>
+I næste vindue kan du sætte en brandmur, dvs. en firewall, op.  En
+firewall skærmer dig mod andre maskiner, og højner sikkerheden, men
+kan aldrig gardere dig 100%. Der er tre niveauer - Høj, Middel og
+Ingen brandmur. Tag mindst Middel og anvend standardregler. 
+</para>
+
+<FIGURE ID="rh72firewall-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Firewall-opsætning</TITLE>
+<GRAPHIC FILEREF="rh72_12.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</sect2>
+
+<sect2 id="rh-sprog"> 
+<title>Sprog og tidszone</title>
+<para>
+I næste vindue kan du sætte op hvor mange sprog, du skal have 
+installeret med vejledninger osv. Vælg "Danish" og "English (USA)" og
+eventuelle andre ønsker.
+</para>
+
+<FIGURE ID="rh72langsupport-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Valg af sprog
+</TITLE>
+<GRAPHIC FILEREF="rh72_13.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para> 
+I næste vindue vælges tidszone til "Europa/København" ved at
+klikke på Danmark. Du har mulighed for at vælge om din pc kører i GMT
+(universal time zone) - vælg dette hvis du ikke skal køre Windows på
+maskinen - vælg ellers lokal tid. Windows kan ikke køre med GMT i
+BIOS, og det betyder blot et problem med sommertid.  Har du lyst til
+at vælge om senere efter installationen, så kan du køre
+<command>/usr/sbin/timeconfig</command> for at vælge om.  </para>
+
+<FIGURE ID="rh72timezone-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Tidszone
+</TITLE>
+<GRAPHIC FILEREF="rh72_14.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+</sect2>
+
+<sect2 id="valg-af-password">
+<title>Valg af adgangskode</title>
+
+<para>
+Du skal nu vælge en god adgangskode (eng. password) for
+systemadministrator-kontoen (root). Det må ikke være et navn, der kan
+findes i en ordbog, heller ikke simple ting, som andre kan vide om dig.
+Brug hellere mere indviklede ting som forbogstaver fra en remse,
+f.eks. kan "Ole sad på en knold og sang" blive til kodeordet
+"Osp1kos". Brug store OG små bogstaver samt tal. Brug mindst 7 tegn og
+meget gerne 8 tegn. En adgangskode på 3 tegn kan knækkes på under et
+sekund på en pc, og fire tegn på langt under et minut. For 8 tegn
+tager det lang tid!
+</para>
+
+<FIGURE ID="rh72account-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Valg af adgangskode
+</TITLE>
+<GRAPHIC FILEREF="rh72_15.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Du kan alt som <filename>root</filename> - også slette alt. Du bør derfor
+kun bruge din root-konto til systemarbejde. Start med at lave
+brugerkonti til dig selv og evt. andre med det samme.
+Vi bruger her "anne" som brugernavn for at lave en konto til brugeren
+Anne. Tryk på "Tilføj" for hver konto (eng. Account) du tilføjer.
+</para>
+
+<para>
+Nu spørges du om du vil bruge skygge-adgangskoder, MD5, NIS,
+LDAP og Kerberos.  Er du usikker, så brug hvad der er valgt. NIS, LDAP
+og Kerberos skal du umiddelbart ikke bruge med mindre din 
+systemadministrator siger det. 
+MD5 handler om forhøjet sikkerhed af adgangskoder på
+systemet).
+</para>
+
+
+</sect2>
+
+
+<sect2 id="rh-hvad-ind">
+<title>Hvad skal installeres?</title>
+
+<para>
+Næste trin for installation via cd-rom er at maskinen finder listen over,
+hvad der kan installeres.
+</para>
+
+<FIGURE ID="rh72group-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Installationsgrupper
+</TITLE>
+<GRAPHIC FILEREF="rh72_16.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>Gnome: Lækker grafisk brugergrænseflade, som også er
+krævende for dit system.</para> </listitem>
+
+<listitem><para>KDE: Som Gnome, men KDE er lidt længere fremme end Gnome og
+stiller lidt mindre krav til dit system.</para> </listitem>
+
+<listitem><para>Programudvikling. Compilere til forskellige spog.</para></listitem>
+
+<listitem><para>Spil og underholdning: Grafiske spil - ikke det meste hippe, men nogle
+kan være sjove.</para></listitem>
+
+</itemizedlist>
+
+<para>
+Du kan med knappen "Vælg individuelle pakker" vælge undergrupper, som
+vist på <xref linkend="rh72indi-fig">. Pakker med et rødt "check-mark"
+bliver installeret. Du kan måske være specielt interesseret i at finde
+den danske ordbog "aspell-da" under "Applications"/"Text".
+</para>
+
+<FIGURE ID="rh72indi-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Valg af enkelte programpakker</TITLE>
+<GRAPHIC FILEREF="rh72_17.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Du kan nu blive bedt om at vælge et par pakker ekstra for at
+dine valg kan fungere. Normalt er det støttebiblioteker, som skal
+med. Acceptér normalt dette.
+</para>
+</sect2>
+
+
+<sect2 id="RH-X">
+<title>Opsætning af videohardware</title>
+
+<para>
+Nu er vi ved at være igennem. Systemet prøver nu at finde dit
+grafikkort og din monitor.  Der er en meget stor database med grafikkort
+og skærme - prøv at se om din ikke er med i listerne.  Har du ikke en
+kendt skærm, skal du finde din skærmmanual, så du kan se, hvor meget
+den kan klare.
+</para>
+
+<para>
+Er du i tvivl, kan du altid vælge standard VGA og senere få sat det
+bedre op. Linux har support for rigtig mange grafikkort (men for de
+allernyeste kort skal du nok ud på Internettet <ulink
+url="http://www.xfree86.org">http://www.xfree86.org</ulink> eller
+<ulink url="http://www.xig.com">http://www.xig.com</ulink> for at
+finde drivere, da de måske ikke er med på cd-rom'en).
+</para>
+
+
+<FIGURE ID="rh72videocard-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Indstilling af grafikkort
+</TITLE>
+<GRAPHIC FILEREF="rh72_18.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Du skal derefter vælge hvor mange farver, du kan se og hvor stor
+opløsning du vil anvende. Har du et 2 Mb grafikkort eller mere, så
+anvend 1024x768 med 16 bit farver.
+</para>
+
+
+<para>
+Skærm og grafikkort skal nu testes, og du vil forhåbentlig se en
+grafisk skærm.  Der kommer også spørgsmål om hvorvidt grafisk
+adgangskontrol skal anvendes. Er du usikker på om dit grafikkort er
+understøttet, så lad være med at vælge dette. Modsat så er det meget
+lækkert at have den grafiske adgangskontrol-mulighed. Husk at sætte
+Standard-skrivebord til Gnome eller KDE alt efter din smag.
+</para>
+
+<para>
+Nu er vi klar til den pause - som passer fint med at alle pakkerne
+skal installeres. Det kan tage sin tid alt efter hvor "grådig" du er
+og hvor hurtig din maskine er. Der står dog altid på skærmen, hvor
+lang tid der ca. er tilbage.
+</para>
+
+<FIGURE ID="rh72progress-fig" FLOAT="1">
+<TITLE>Red Hat 7.2 Installation - Der installeres pakker</TITLE>
+<GRAPHIC FILEREF="rh72_19.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Langt inde i installationen skal du skifte fra cd-rom nummer 1 til
+nummer 2.
+</para>
+
+<para>
+Nu skal du indsætte opstartsdisketten som bliver slettet.
+Derefter er du færdig - maskinen kan bootes i Linux!
+</para>
+</sect2>
+
+<sect2 id="rhgo">
+<title>Nu skal vi køre Linux</title>
+
+<para>
+Tryk Enter og maskinen starter - enten via LILO eller din
+bootdisk. En lang tur, men nu kan der køres Linux.
+</para>
+
+<para>
+Hvis du valgte grafisk adgangskontrol, kan du nu logge ind via den brugerkonto,
+du lavede til dig selv eller som root.  Du kan hoppe fra den grafiske
+adgangskontrol-skærm til en tekstbaseret (f.eks. hvis du har grafik-problemer),
+ved at trykke "Ctrl-Alt-F1".  Log f.eks. ind som brugeren
+<filename>root</filename> og skriv den adgangskode, som du valgte
+tidligere.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="rh-err">
+<title>Kendte fejl i Red Hat</title>
+<para>
+Den oprindelige Red Hat 7.1  havde flere fejl eller
+uhensigtsmæssigheder, som kan ses på <ulink
+url="http://www.redhat.com/support/errata">http://www.redhat.com/support/errata</ulink>. Pakkerne
+kan findes på <ulink url="http://www.redhat.com/download/mirror.html">http://www.redhat.com/download/mirror.html</ulink>.
+</para>
+
+<para>
+Det første spørgsmål, man kan stille sig, er om du skal opgradere alle
+de pakker, der er nævnt i errata? Svaret er nej. Du skal ikke
+opgradere pakker, du ikke har installeret. Grunden er, at du ikke bør
+installere noget du ikke bruger. Lad os tage et eksempel. Der er fejl
+i mount-rpm pakken. Vi checker om denne er installeret ved at skrive
+<command>rpm -q mount</command>. Med den originale Red Hat 7.0 får du
+svaret "mount-2.10m-5". I dette tilfælde bør du installere 
+<filename>ftp://updates.redhat.com/7.0/i386/mount-2.10m-6.i386.rpm</filename>.
+Var pakken ikke installeret får du svaret "package mount is not
+installed", og du behøver ikke opdatere denne pakke.
+</para>
+
+
+<sect2 id="rh70-err">
+<title>Kendte fejl i Red Hat 7.0</title>
+
+<para>
+I Red Hat 7.0 har der været fejl i bla. Xconfigurator som glemmer
+at indsætte eller  får måske slettet "EndSection" i den section, der
+hedder Monitor. Fejlen  bevirker at opsætning med Xconfigurator
+ALTID fejler.
+</para>
+
+</sect2>
+
+<sect2 id="rh71-err">
+<title>Kendte fejl i Red Hat 7.1</title>
+
+<para>
+Hvis du har problemer med at få din printer til at virke, så 
+kan det anbefales at nedgradere til Red Hat 7.0 pakkerne:
+<command>rpm -e LPRng printconf printconf</command> - installér i
+stedet fra Red Hat 7.0:
+<command>rpm -ivh LPRng*rpm printtool*rpm rhs-printfilters*rpm</command>
+</para>
+
+<para>
+Kan du ikke få dit NE2000 netkort til at virke? Indsæt dette i
+<filename>/etc/modules.conf</filename>
+</para>
+
+<screen>
+alias eth0 ne
+options ne io=0x300 irq=10
+</screen>
+
+<para>
+eller i bunden af <filename>/etc/rc.local</filename> 
+</para>
+
+<screen>
+modprobe ne io=0x300 irq=10
+</screen>
+</sect2>
+
+<sect2 id="rh72-err">
+<title>Kendte fejl i Red Hat 7.2</title>
+
+<para>
+Printeropdatering. Der er med nogle printere problemer med at marginer er 
+sat forkert.
+</para>
+
+<para>
+Der er også nogle sikkerhedsfejl, hvor flere pakker skal opdateres hvis 
+maskinen skal direkte på Internet.
+</para>
+
+</sect2>
+
+
+</sect1>
+
+<SECT1 ID="ftp-inst">
+<TITLE>Installation via netværk</TITLE>
+<INDEXTERM>
+ <PRIMARY>Installation</PRIMARY><SECONDARY>via netværk</SECONDARY>
+</INDEXTERM>
+
+<PARA>
+Specielt med ældre specielle cd-rom-drev kan det ske, at du ikke kan
+installere via cd-rom-drevet. I stedet kan du prøve at installere Linux
+via ftp (NFS eller http). Og har du mange maskiner der skal installeres
+er det lettere på den måde.
+</para>
+
+<para>
+Skal man installere Linux via netværk, bruges en diskette med filen
+<FILENAME>bootnet.img</FILENAME>. Den ligger under
+<FILENAME>/images/</FILENAME> på cd-rom'en.  Da de fleste computere i
+dag kan starte direkte fra cd-rom, har du sikkert glemt hvordan man
+fremstiller en opstartsdiskette. Der er mange måder at gøre det på,
+her er en af de nemme:
+</PARA>
+
+<para>
+Indsæt en formateret diskette i diskettedrevet og montér cd-rom'en.
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cd /mnt/cdrom/images</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>dd if=bootnet.img of=/dev/fd0 bs=1440k</USERINPUT>
+</SCREEN>
+
+<PARA>
+Nu har du din startdiskette. Hvis din maskine har et skummelt netkort
+så lav evt. en diskette med <FILENAME>drivers.img</FILENAME> så har du
+flere netkort at vælge imellem.
+</PARA>
+
+<PARA>
+Nu skal vi så have noget at installere fra. 
+En anden Linux-maskine sættes så op i netværket med ftp-server,
+NFS-server eller hvad du nu ønsker.
+</PARA>
+
+<PARA>
+Da Red Hat 7.1 er på 2 cd-rom'er går det desværre ikke, bare at montere
+cd-rom'en og installere fra den. Cd-rom'erne skal hældes over på en
+harddisk (de fylder næsten 1 Gb).
+</PARA>
+
+<PARA>
+Følgende fremgangsmåde er en omarbejdet udgave af den, som Red Hat beskriver:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>mkdir /var/ftp/cdrom</USERINPUT> (For eksempel)
+</SCREEN>
+
+<PARA>
+Indsæt cd-rom nummer 1.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom /mnt/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cp -var /mnt/cdrom/RedHat /var/ftp/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /mnt/cdrom</USERINPUT>
+</SCREEN>
+<PARA>
+Indsæt cd-rom nummer 2.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom /mnt/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cp -var /mnt/cdrom/RedHat /var/ftp/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvis du vil installere via NFS skriver du i filen
+filen<FILENAME>/etc/exports</FILENAME> følgende:
+</PARA>
+
+<SCREEN>
+/var/ftp/cdrom (ro)
+</SCREEN>
+
+
+<PARA>
+Herefter starter man den gamle maskine uden cd-rom-drev fra
+<FILENAME>bootnet.img</FILENAME>-disketten, og angiver IP-nummer eller
+navn på serveren, når man bliver spurgt.  Som underkatalog angives
+blot <FILENAME>cdrom</FILENAME> ved FTP-installation, og <FILENAME>/var/ftp/cdrom</FILENAME> ved NFS-installation.  Resten af installationen foregår
+som beskrevet i <XREF LINKEND="installredhat">.
+</PARA>
+
+</SECT1> <!-- ftp-inst via netværk -->
+
+
+</chapter>
