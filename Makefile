@@ -6,19 +6,20 @@ all: filer
 
 release : cvs2html filer 
 
-Makefiler:
+start:
 	@for dir in $(SUBDIRS); do \
 		cp -f Makefile.subdir $$dir/Makefile; \
+		cp -f faelles-filer/* $$dir; \
 	done;
-	echo "Installerer Makefiler til alle bøger"
+	echo "Installerer Makefiler osv til alle bøger"
 
-filer:  Makefiler
+filer:  start
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done;
 	$(MAKE) -C alle -f Makefile
 
-pspdf:	Makefiler
+pspdf:	start
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir pspdf; \
 	done;
@@ -30,7 +31,7 @@ eksempelbackup:
 		$(MAKE) -C $$dir eksempelbackup; \
 	done;
 
-clean: Makefiler
+clean: start
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir clean; \
 		rm -f $$dir/Makefile; \
