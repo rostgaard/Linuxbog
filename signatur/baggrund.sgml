@@ -1,23 +1,138 @@
 <chapter id="signatur-baggrund">
 <title>Baggrund</title>
 
-<para>I dette afsnit vil jeg forsøge at forklare hvordan KMD-CA's system
+<para>Baggrunden for udarbejdelsen af denne bog er at indførelsen af
+digitale signaturer og certifikater i Danmark er hastigt undervejs. I
+fremtiden må vi forvente at det i en vis udstrækning vil være
+nødvendigt at have et digitalt certifikat hvis man som borger vil
+anvende det offentliges digitale tilbud.</para>
+
+<para>Dette er egentlig ganske udemærket, men hvis man i øjeblikket
+gerne vil erhverve og anvende et digitalt certifikat under Linux, vil
+man opleve at de fleste udstedere forventer at man anvender Microsoft
+Windows. Deres procedurer og vejledninger er derfor målrettet imod
+denne platform.</para>
+
+<para>Derfor denne bog &ndash; hensigten er at forklare hvad der skal
+til for at erhverve og anvende digitale certifikater under Linux. På
+sigt er det meningen at bogen skal dække alle certifikatudstedere af
+betydning i Danmark, men foreløbig er kun <ulink
+url="http://www.kmd.dk/">Kommunedata (KMD-CA)</ulink> dækket. Andre
+udstedere er <ulink url="http://www.certifikat.dk">TeleDK</ulink> og
+<ulink url="http://www.eurotrust.dk">EuroTrust</ulink>. I dette
+kapitel præsenteres digitale certifikater og signaturer kort, og
+derefter bliver KMD-CA kort præsenteret.</para>
+
+<!-- CERTIFIKATER BEGYND -->
+<sect1>
+<title>Digitale certifikater og signaturer</title>
+<indexterm><primary>Digitale certifikater og signaturer</primary></indexterm>
+<indexterm><primary>Rodcertifikat</primary></indexterm>
+<indexterm><primary>Identitet</primary></indexterm>
+<indexterm><primary>Signering</primary></indexterm>
+<indexterm><primary>Kryptering</primary></indexterm>
+<indexterm><primary>Privat nøgle</primary></indexterm>
+<indexterm><primary>Certifikat</primary></indexterm>
+
+<para>Hvis man ikke er bekendt med kryptografi teknologi, kan det være
+lidt vanskeligt at forstå hvad digitale certifikater og signaturer er
+for nogen størrelser. Jeg vil her give en meget simplificeret
+fremstilling.</para>
+
+<para>En digital (eller elektronisk) signatur er en slags underskrift,
+der giver mening i "det digitale rum". Normalt &ndash; i den virkelige
+verden &ndash; signerer vi os som regel med noget der minder om
+bogstaver i en bestemt kombination, eventuelt med en række krummelyrer
+og andre streger. En sådan signatur, som antages at være personlig,
+anses for værende juridisk bindende i en række situationer, men
+faktisk accepteres den ikke alene i mange sammenhænge. Hvis man vil
+være virkelig sikker, skal ens navn som regel også angives og jævnligt
+vil det være nødvendigt at vidner skriver under (f.eks. ved indgåelse
+af ægteskab) på at man er den man udgiver sig for at være.</para>
+
+<para>I den digitale verden er der mange problemer med at kopiere
+ovenstående procedure. Dels er der ikke noget fysisk at manipulere
+(som f.eks. et stykke papir) dels er det ekstremt nemt at kopiere en
+underskrift, såfremt den "stod alene", altså f.eks. var et billede af
+ens virkelige signatur.</para>
+
+<para>Problemet med en digital signatur kan løses ved hjælp af
+kryptografi. Kryptografi er mildt sagt temmeligt indviklet og jeg vil
+ikke komme ind på det her. Men, man kan som sagt udvikle metoder så
+man kan sætte sin signatur på f.eks. et elektronisk dokument, sådan at
+det kan afgøres entydigt at man har skrevet under. Imidlertid
+forudsætter dette at andre kan finde ud af hvem man er. Det klares
+typisk ved &ndash; og det er det denne bog handler om &ndash; at man
+bliver enige om at stole på en tredjepart, en såkaldt "Certificate
+Authority" når man skal afgøre hvem der er hvem. Man erhverver sig et
+digitalt certifikat fra denne tredjepart og dette certifikat kan bruge
+til at signere f.eks. dokumenter med, og bruge til at dokumentere at
+man er den man er. En del af erhvervelsen består i at man
+identificerer sig entydigt overfor autoriteten. (I Danmark gøres dette
+som regel ved hjælp af et pas &ndash; Danmark har ikke nogen mere
+sikker måde at entydigt identificere sig på. Dette har ført til mindst
+et tilfælde at identitetstyveri i den virkelige verden! Den
+elektroniske sikkerhed for at en person er den han udgiver sig for,
+kan altså aldrig blive større end den sikkerhed man har i den
+virkelige verden, og må generelt antages at være mindre.)</para>
+
+<para>Når du vil identificere dig elektronisk overfor en anden person
+eller myndighed, kan du således give vedkommende dit certifikat.
+Modtageren kan derefter få bekræftet dit certifikats gyldighed hos
+autoriteten (f.eks. KMD-CA). Typisk vil vedkommende gøre dette ved at
+installere et såkaldt
+<emphasis>rodcertifikat</emphasis> fra autoriteten på sin lokale
+computer, som kan anvendes til at afgøre om dit certifikat er
+gyldigt.</para>
+
+<para>Når modtageren er overbevist om at dit certifikat er gyldigt,
+kan du bruge din private nøgle &ndash; som du vil have fået
+konstrueret som en del af processen med at erhverve dig dit certifikat
+&ndash; til at kommunikere sikkert med vedkommende.</para>
+
+<para>Hvis du f.eks. sender en email, kan du
+<emphasis>signere</emphasis> din mail med din private nøgle. Når
+modtageren modtager din mail, kan han afkode din signatur med det
+certifikat du allerede har givet ham, og være sikker på at mailen rent
+faktisk er fra dig.</para>
+
+<para>Du kan også <emphasis>kryptere</emphasis> din mail. Det gøres
+igen ved hjælp af din private nøgle, samt modtagerens certifikat. Når
+modtageren modtager din mail, kan han først læse den, når han har
+afkodet den med dit certifikat og sin egen private nøgle. (For at gøre
+dette, skal du altså have modtagerens certifikat og være sikker på at
+det <emphasis>er</emphasis> hans.)</para>
+
+<para>Det lyder umiddelbart ret kompliceret, men når først du har fået
+dit certifikat, er det meningen at du bare skal installere det på din
+computer sammen med din private nøgle og så fungerer resten rimeligt
+automatisk. Du skal måske nogen gange sørge for at folk har adgang til
+dit certifikat og at du har certifikater fra folk du vil kommunikere
+krypteret med. Men, det er lidt ligesom at udveksle adresser &ndash;
+og man kan forestille sig at der endda vil være steder hvor man kan
+hente folks certifikater &ndash; at de f.eks. har dem på deres
+hjemmeside. Så vidt jeg har forstået er det planen at f.eks. KMD-CA
+vil tilbyde en sådan service.</para>
+
+</sect1>
+<!-- KMD-CA BEGYND -->
+<sect1>
+<title>Kommunedata CA</title>
+<indexterm><primary>Kommunedata CA</primary></indexterm>
+
+
+<para>I dette afsnit vil jeg forklare hvordan KMD-CA's system
 fungerer, set fra brugerens side. Forklaringen er med vilje
-simplificeret og
-fokuserer på hvordan systemet fungerer i anvendelse, ikke hvordan
-det fungerer teknisk eller teoretisk (kryptografisk). Bemærk at det er
-planen at mange af disse skridt skal automatiseres af diverse endnu
-ikke udviklet software.</para>
+simplificeret og fokuserer på hvordan systemet fungerer i anvendelse,
+ikke hvordan det fungerer teknisk eller teoretisk
+(kryptografisk). Bemærk at mange af disse skridt vil kunne
+automatiseres.</para>
 <indexterm><primary>KMD-CA</primary></indexterm>
 
-<para>Ideen er at KMD vil udstede digitale certifikater til almindelige
-borgere. Disse certifikater kan vi (borgerne) så anvende overfor
-myndighederne og hinanden til at dokumentere hvem vi er.</para>
-
-<para>For at KMD kan udstede et certifikat til dig, skal du bede dem om
-det. Det gøres ved at lave en "certificate request" - altså en
-forespørgsel om at få et certifikat. Denne forespørgsel skal
-selvfølgelig laves digitalt.</para>
+<para>For at KMD-CA kan udstede et certifikat til dig, skal du bede
+dem om det. Det gøres ved at lave en "certificate request" - altså en
+forespørgsel om at få et certifikat. Denne forespørgsel skal laves
+digitalt.</para>
 <indexterm><primary>Certifikate request</primary></indexterm>
 <indexterm><primary>Certifikat forespørgsel</primary></indexterm>
 
@@ -31,70 +146,44 @@ hente et program fra KMD-CA's hjemmeside der kan lave forespørgslen for dig. Se
 <GRAPHIC FILEREF="kmd-ca-request-prog.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
-<para>På sigt vil KMD-CA udvikle en ActiveX komponent der kan gøre det
-i browseren hvis man kører Windows. Det er trist at KMD-CA vælger at
-satse på den slags lukket teknologi, men heldigvis vil man stadig
-have muligheden for at lave forespørgslen offline.</para>
+<para>På sigt er det vist hensigten at KMD-CA vil udvikle en ActiveX
+komponent der kan gøre det i browseren hvis man kører Windows. Det er
+trist at KMD-CA vælger at satse på den slags lukket teknologi, men
+heldigvis vil man stadig have muligheden for at lave forespørgslen
+offline.</para>
 
-<para>Under Linux vil vi således altid være nødt til at
-køre et program, der genererer requesten for
-dig. Dette program vil bede om en række oplysninger, blandt andet dit
-navn og adresse, mv. Programmet vil så lave en privat nøgle og en
-certifikat forespørgsel.</para>
+<para>Under Linux vil du således altid være henvist til at køre et
+program, der genererer requesten for dig. (Et eksempel på et sådan
+program gives i <xref linkend="sslugsig">). Dette program vil bede om en
+række oplysninger, blandt andet dit navn og adresse, mv. Programmet
+vil så lave en privat nøgle og en certifikat forespørgsel.</para>
 
-<para>Den private nøgle skal du passe godt på, og ikke lade andre få
-adgang
-til. Du vil typisk lade programmet beskytte den med et password, så
-andre ikke kan afkode den.</para>
+<para>Den private nøgle skal du passe rigtigt godt på, og ikke lade andre få
+adgang til. Du vil typisk lade programmet beskytte den med et
+password, så andre ikke kan afkode den. Hvis andre får adgang til den
+private nøgle, vil de være i stand til at udgive sig for dig
+(mht. digitale signaturer) så det er overmåde vigtigt at andre ikke
+får adgang til den.</para>
 
 <para>Certifikat forespørgslen indeholder din offentlige nøgle, så den
-ser du ikke selv. Du skal sende certifikat forespørgslen til
+ser du i første omgang ikke selv. Du skal sende certifikat forespørgslen til
 KMD-CA. De vil behandle den, og sende dig et brev om at du skal gå på posthuset
-og dokumentere hvem du er. En medarbejder på posthuset vil godkende din 
-identitet overfor KMD, hvorefter du kan hente dit nye certifikat hos
+og dokumentere hvem du er. En medarbejder på posthuset vil bekræfte din 
+identitet overfor KMD-CA, hvorefter du kan hente dit nye certifikat hos
 KMD-CA. </para>
 
 <para>Når du fremover vil identificere dig elektronisk overfor en
-anden person eller myndighed, kan du give vedkommende dit certifikat.
-Modtageren kan derefter få bekræftet dit certifikats gyldighed hos KMD.
-Typisk vil vedkommende gøre dette ved at installere et <emphasis>rod
-certifikat</emphasis> fra KMD på deres lokale computer, som
-<emphasis>(TODO: Hvordan?)</emphasis> kan anvendes til at afgøre om dit
-certifikat er gyldigt.</para>
+anden person eller myndighed (som anerkender KMD-CA), kan du give
+vedkommende dit certifikat, som beskrevet i afsnittet ovenfor og gå
+igang med at benytte det.</para>
 
-<para>Når modtageren er overbevist om at dit certifikat er gyldigt,
-kan du bruge din private nøgle til at kommunikere sikkert med
-vedkommende.</para>
-
-<para>Hvis du f.eks. sender en email, kan du
-<emphasis>signere</emphasis> din mail med din private nøgle. Når
-modtageren modtager din mail, kan han afkode din signatur med det
-certifikat du allerede har givet ham, og være sikker på at mailen rent
-faktisk er fra dig.</para>
-
-<para>Du kan også <emphasis>kryptere</emphasis> din mail. Det gøres
-igen ved hjælp af din private nøgle, samt modtagerens certifikat. Når
-modtageren modtager din mail, kan han først læse den, når han har
-afkodet den med dit certifikat og sin egen private nøgle. (For at gøre
-dette, skal du altså have modtagerens certifikat og være sikker på at
-det <emphasis>er</emphasis> hans - nok ved at have installeret KMD's rod
-certifikat).</para>
-
-<para>Det lyder umiddelbart ret kompliceret, men når først du har fået
-dit
-certifikat, er det meningen at du bare skal installere det på din
-computer, sammen med din private nøgle og så fungerer resten rimeligt
-automatisk. Du skal måske nogen gange sørge for at folk har adgang til
-dit certifikat og at du har certifikater fra folk du vil kommunikere
-krypteret med. Men, det er lidt ligesom at udveksle adresser - og
-man kan forestille sig at der endda vil være steder hvor man kan hente
-folks certifikater - at de f.eks. har dem på deres hjemmeside. Så vidt
-jeg har forstået er det planen at KMD-CA vil tilbyde en sådan
-service.</para>
-
-<para>Der er mange mange flere informationer om proceduren på KMD-CA's
+<para>Der er flere informationer om proceduren på KMD-CA's
 websider, f.eks. på <ulink
 url="http://www.kmd-ca.dk/digital_signatur.htm">
-http://www.kmd-ca.dk/digital_signatur.htm</ulink>.</para>
+http://www.kmd-ca.dk/digital_signatur.htm</ulink> og de følgende
+kapitler indeholder information om hvordan man benytter certifikatet,
+mv, under Linux.</para>
+
+</sect1>
 
 </chapter>
