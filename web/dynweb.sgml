@@ -127,7 +127,7 @@ stdout blive returneret til browseren. Data der skrives til stderr vil
 blive gemt i webserverens fejllog
 <filename>/var/log/httpd/error_log</filename>.  Programmet kan også
 modtage data på stdin fra webserveren, dette vil typisk være data der
-er indtastet i en webformular eller filer, der skal uploades.
+er indtastet i en webformular eller filer, der skal lægges op på serveren.
 CGI-programmer modtager også en række data igennem miljø-variable
 (eng. environment variable).
 </para>
@@ -160,7 +160,7 @@ enkel oplysning, f.eks. hvad klokken er. Gem følgende program i
 #Filnavn: klokken.cgi
 
 #Udskriv hoved
-print "Content-Type: text/plain\r\n";
+print "Content-Type: text/plain; charset=iso-8859-1\r\n";
 print "\r\n";
 
 #Udskriv indhold
@@ -172,7 +172,7 @@ Køres <filename>klokken.cgi</filename> fra kommandolinjen får man:
 </para>
 
 <programlisting>
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
 
 Datoen er Thu Jul 20 11:38:08 2000
 </programlisting>
@@ -180,17 +180,17 @@ Datoen er Thu Jul 20 11:38:08 2000
 <para>
 Prøv nu at hente det i en webbrowser som
 <command>http://localhost/cgi-bin/klokken.cgi</command>. Du skulle
-gerne kunne se hvad datoen er. Prøv at reloade siden nogle gange, så
-du kan se sekunderne gå.  Hvis dette ikke virker, så kig i sektionen
-om 'Typiske Fejl'.
+gerne kunne se hvad datoen er. Prøv at genindlæse siden nogle gange, så
+du kan se sekunderne gå.  Hvis dette ikke virker, så kig i afsnittet
+om »Typiske Fejl«.
 </para>
 
 <para>
 Først udskriver programmet en linje med en "Content-Type", der fortæller
 webbrowseren, hvad den skal gøre med hvad de data der følger, feltet
-kaldes for medietypen. Her betyder text/plain det at indholdet er
-ascii tekst formatteret, ligesom når man loader en .txt fil i
-browseren. Der kan være flere linjer i hovedet og de afsluttes med en tom
+kaldes for medietypen. Her betyder »text/plain« det at indholdet er klar
+tekst, og »charset=iso-8859-1« at teksten er kodet i ISO-8859-1.
+Der kan være flere linjer i hovedet og de afsluttes med en tom
 linje, alt under den tomme linje er data der vises i browseren.
 </para>
 
@@ -198,7 +198,6 @@ linje, alt under den tomme linje er data der vises i browseren.
 Tekst er lidt kedeligt, så vi kunne istedet ønske at returnere HTML-formateret
 tekst. Dette kan let gøres ved at modificere programmet som
 følger:
-</para>
 
 <programlisting>
 #!/usr/bin/perl -w
@@ -206,7 +205,7 @@ følger:
 #Filnavn: klokken2.cgi
 
 #Udskriv hoved
-print "Content-Type: text/html\r\n";
+print "Content-Type: text/html; charset=iso-8859-1\r\n";
 print "\r\n";
 
 #Vælg tilfældig farve 
@@ -217,10 +216,11 @@ print "&lt;H1>Datoen er: ";
 print "  &lt;font color=\"#$color\">", scalar(localtime) ,"&lt;/font>";
 print "&lt;/H1>";
 </programlisting>
+</para>
 
 <para>
 Programmet vil nu udskrive datoen med store bogstaver og med en tilfældig
-farve, der ændrer sig hver gang programmet reloades.
+farve, der ændrer sig hver gang programmet kaldes/siden genindlæses.
 </para>
 
 </sect2><!-- cgi-svar -->
@@ -1447,21 +1447,23 @@ CGI-modul.</para>
 <sect3 id="cgi-fast-inst">
 <title>Installation af FastCGI</title>
 
-<para>Installer apache-devel program pakken (indeholde apxs programmet).</para>
+<para>Installér apache-devel programpakken (indeholder apxs programmet).</para>
 
-<para>Download koden til FastCGI apache-modulet fra <ulink url="http://www.fastcgi.com">http://www.FastCGI.com</ulink></para>
+<para>Hent kildeteksten til FastCGI apache-modulet fra <ulink url="http://www.fastcgi.com">http://www.FastCGI.com</ulink></para>
 
-<para>Oversæt koden med:</para>
+<para>Oversæt koden med:
 
-<programlisting>
+<screen>
 apxs -c -o mod_fastcgi.so *.c
-</programlisting>
+</screen>
+</para>
 
-<para>Installer apache modulet med:</para>
+<para>Installér Apache-modulet med:
 
-<programlisting>
+<screen>
 apxs -i -a -n fastcgi mod_fastcgi.so
-</programlisting>
+</screen>
+</para>
 
 <para>Check at mod_fastcgi er inkluderet i httpd.conf og at path til det
 dynamiske bibliotek er korrekt.</para>
