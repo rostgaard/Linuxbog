@@ -1,4 +1,4 @@
-all:	html 1fil pspdf palmpilot txt 
+all:	html 1fil pdf palmpilot txt 
 
 palmpilot:	
 	(cd palm; python /usr/lib/python1.5/site-packages/PyPlucker/Spider.py -v -p . -f Linuxbog)
@@ -65,11 +65,13 @@ pdf:
 	cp images/*.png bogpdf
 	(cd bogpdf; db2pdf bog.sgml)
 	mv bogpdf/bog.pdf ./linuxbog.pdf
+	rm -rf linuxbog.pdf.gz
+	gzip -9 linuxbog.pdf
 
 tags:
 	etags *.sgml
 
 clean:
-	rm -rf *.html magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog/* linuxbog.ps bog *.dvi stikord.sgml tempdir bogps bogpdf linuxbog.pdf images/*.eps linuxbog_palm.zip  linuxbog.txt.gz
+	rm -rf *.html magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog/* linuxbog.ps bog *.dvi stikord.sgml tempdir bogps bogpdf linuxbog.pdf linuxbog.pdf.gz images/*.eps linuxbog_palm.zip  linuxbog.txt.gz
 
 
