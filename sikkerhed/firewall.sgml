@@ -2255,6 +2255,206 @@ Se desuden man-siden for iptables.
 </sect3>
 </sect2>
 
+<sect2 id="sikkerhed-komplet-firewall">
+<title>En komplet firewall</title>
+
+<para>
+Selv om der allerede er givet eksempler på en firewall <xref
+linkend="sikkerhed-really-quick-guide" /> så vises her en lidt
+større konfiguration af en firewall. Eksemplet er valgt 
+ud fra det kriterium, at det skal være en opsætning,
+som har fungeret og har vist sig at være stabil.
+</para>
+
+<para>
+Setuppet er, at vi har en maskine, som har forbindelse til vores
+ISP med fast (eller næsten fast) adresse, 130.3.2.99. Den skal
+være gateway og firewall. Desuden står der et antal maskiner i
+vores lille computerworkshop, og de må gerne snakke med
+internettet gennem vores gateway/firewall, men da de ikke har
+"private adresser" må vi også sørge for, at firewallen laver NAT.
+Desuden vil vi gerne have, at firewallen er web-server. Dette er
+ikke realistisk for en virksomhed, som ønsker high-speed,
+ultimativ sikkerhed, her ville man sørge for at fordele
+belastningen på flere maskiner, men realistisk nok for at
+demonstrere mange pointer.  </para>
+
+<para>
+Firewall maskinen har 2 netkort, eth0 og eth1. På eth0 er den
+forbundet til en hub på det interne net, og på eth1 er der hul
+til ISP'ens gateway, der har nummer 130.3.2.1, en såkaldt klasse
+B adresse, som har netmaske 255.255.255.0 så den fungerer som en
+klasse A adresse, med max 255 maskiner i netværket.
+</para>
+
+<para>
+Det interne net har adresser i området 192.168.67.0 - 255. Det er
+for at være lidt på tværs, at jeg altid anbefaler andet end
+192.168.1.1-254 om ikke andet, så kan de værste root-kit til
+intrusion på lokalnet herved vanskeligere få adgang ved spoofing.
+</para>
+
+<para>
+Vi starter med at konstatere, at man ikke kan lave en default
+policy som kun gælder for det ene netkort. Derfor adskilles
+trafikken, således at alt input fra eth1 ledes igennem en kæde,
+som kaldes door1.
+</para>
+
+<para>
+Door1 skal ende med at droppe al trafik, som vi ikke ønsker ind i
+vores netværk. De ting, som vi gerne vil have med, skal
+accepteres med en kommando -j ACCEPT.
+</para>
+
+<para>
+Det aller første, scriptet gør, er at sikre, at netfilter delen i
+kernen er i en kendt tilstand, d.v.s. vi flusher alle regler i
+alle kæder og sætter alle default policies. Hvis man prøver at
+optimere ved kun at foretage de nødvendige ting for ens opsætning
+efter et boot, så skal man lige sørge for at have en version
+liggende, som kan klare <emphasis> alle </emphasis> situationer.
+</para>
+
+<para>
+Det næste, der sker, er at kæden door1 slettes. Det sker
+selvfølgelig for at sikre, at der ikke ligger rester af andre
+regler i door1.
+</para>
+
+<para>
+Det kan gøres på mange mange andre måder, men denne her metode er
+valgt efter lidt eksperimenteren. Man får også nulstillet
+tællerne for door1, og fejlene er ikke nogen, som får systemet
+til at hænge, hvilket vistnok har kunnet forekomme med nogle af
+de iptables options, som giver fejl, hvis man kører dem
+selv om de ikke er nødvendige. Læseren kan eksperimentere med at
+flushe kæden door1 i stedet for (også hvis den ikke findes).
+</para>
+
+<para>
+Næste skridt er så at oprette kæden door1. Nu er den tom - ingen
+regler, ingen forbindelse med andre kæder. Lister man med -L
+kommandoen, får man at vide "no references", svarende til død
+kode eller ubrugt variabel.
+</para>
+
+<para>
+Nu installeres regel efter regel i firewallen. De vigtigste er
+stadig dem, som tillader brugere indefra at kommunikere frit, men
+man skal lige huske, at denne trafik altid starter med input fra
+eth0, som vi slet ikke ser i denne door1 kæde. Indtil videre er
+der fri passage indefra og ud. Det er først til sidst, at der
+etableres en regel som siger, at al indadgående trafik fra eth1
+skal via door1. Det kunne lige så godt have været først, og under
+alle omstændigheder må man kun aktivere eth1, når alle reglerne i
+firewallen er opsat. Man kan godt opsætte regler for et
+interface, som er "down", <command> ifconfig eth1 down
+</command>.
+</para>
+
+<para>
+Der åbnes for al trafik til ssh-porten, både den indefra-ud og
+udefra-ind.  Ligeledes åbnes der for al trafik til http porten.
+</para>
+
+<para>
+Næste regel åbner for indkommende trafik, der stammer fra port
+53, nameservere.
+</para>
+
+<para>
+Nu kommer en regel, som kun skal benyttes, hvis ISP benytter DHCP
+til kontrol af IP, nameservices og routing. Det er en god ting
+og forhindrer slet ikke, at man selv styrer konfigurationen.
+</para>
+
+<para>
+Der åbnes også for ping. Det er ikke et krav for en firewall, men
+er ok at gøre på en maskine, der står udenfor en firewall men
+inden en gateway. I eksemplet her er gateway og firewall den
+samme, men det er ok at åbne for ping/ICMP, hvis man holder øje
+med trafikken.
+</para>
+
+<para>
+Endelig kommer de spændende linier, hvor der åbnes for indgang
+for alt, hvad der er svar på forbindelser etableret indefra.
+</para>
+
+<para>
+Dernæst er der kun opsætning af NAT-ing og aktivering af
+forwarding.
+</para>
+
+<programlisting>
+
+#/bin/ksh
+
+iptables -t filter -F
+iptables -t nat    -F
+iptables -t mangle -F
+iptables -X door1 2> /dev/null 1>&2
+iptables -N door1
+
+iptables -A door1 -m state --state INVALID -j DROP
+# åbne for al ssh og http
+iptables -A door1 -p tcp --sport ssh  -j ACCEPT
+iptables -A door1 -p tcp --dport ssh  -j ACCEPT
+iptables -A door1 -p tcp --sport http -j ACCEPT
+iptables -A door1 -p tcp --dport http -j ACCEPT
+# åbne for svar fra nameserere, DNS.
+iptables -A door1 -p udp --sport 53   -j ACCEPT
+# der åbnes for konversation med dhcp serveren på gatewayen.
+iptables -A door1 -p udp --source 130.3.2.1 --dport bootps -j ACCEPT
+# åbne for ping (mange vil foretrække at lukke i stedet!)
+iptables -A door1 -p icmp             -j ACCEPT
+# Alt, hvad der er etableret indefra, accepteres.
+iptables -A door1 -m state --state ESTABLISHED,RELATED  -j ACCEPT
+# alt andet smides væk.
+iptables -A door1 -j DROP
+
+# Hop til door1 hvis input er fra eth1
+iptables -A INPUT -i eth1 -j door1
+
+# NAT-ing sættes op, så alt, hvad der kommer fra lokalnettet,
+# bliver videresendt som om det kommer fra firewallen.
+iptables -t nat -A POSTROUTING --src 192.168.67.0/24 \
+         -o eth1 -j SNAT --to 130.3.2.99
+
+# for at det skal fungere, må vi aktivere forwarding:
+echo 1 >> /proc/sys/net/ipv4/ip_forward
+
+</programlisting>
+
+<para>
+Der er mange andre ting, man kan foretage sig, for at maskinen
+bliver sikret. Sidst i kapitlet vises nogle af disse tiltag for
+"hardening" af et system. System hærdning kan forbedre alene ved
+at fjerne de tools, som en systemadministrator bruger til
+diskformatering, oprettelse af filsystemer mv. men det vil for de
+fleste private være at gå for vidt og vil medføre
+irritationsmomenter i det daglige arbejde. Man kunne selvfølgelig
+have en supplements-server stående, som man lige kunne hooke op
+når man havde brug for det ...
+</para>
+
+<para>
+Sådan er der så mange ting, man kunne gøre. De fleste af disse
+tiltag beskrives i sidste afsnit <!--TODO xref linkend="" /-->
+</para>
+
+<para>
+Kommentarer til ovenstående firewall er velkomne, særligt hvis
+der er konkrete ting, som er afprøvet, men også kommentarer, som
+bevæger sig i yderkanten af emnet.
+</para>
+
+<para>
+</para>
+
+</sect2>
+
 
 
 <sect2 id="proxy-server">
