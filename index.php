@@ -224,7 +224,6 @@ function vistype($type) {
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
-<<<<<<< index.php
     ),
     "kontorbruger" => array(
       title => "Linux - Friheden til at vælge kontorprogrammer",
@@ -239,8 +238,6 @@ function vistype($type) {
       auth => array(
         "Michael Rasmussen" => "mir@miras.org"
       )
-=======
->>>>>>> 1.69
     ),
    "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
