@@ -260,10 +260,11 @@ Vi foretrækker direkte rettelser foretaget i SGML-kildeteksten, men
 kan også rette ud fra præcise angivelser for hvor rettelserne skal
 foretages.
 
-<p>
+<p> 
 Bogen udvikles løbende med opdateringer et par gange om ugen.
-Vores arbejdskopi kan findes på <a href="http://cvs.sslug.dk/">http://cvs.sslug.dk/</a>,
-men indtil endelig release, kan der være graverende fejl i den.
+Vores arbejdskopi kan findes på <a
+href="http://cvs.sslug.dk/linuxbog/">http://cvs.sslug.dk/linuxbog/</a>,
+men indtil endelig release, kan der være graverende fejl i den.  
 </p>
 
 <hr>
