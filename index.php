@@ -9,6 +9,16 @@
 </HEAD>
 <BODY>
 <?php
+
+  // Nogen vil gerne se kildeteksten, og det skal de da have lov til.
+  // Men læs hellere om PHP i "Linux - Friheden til at programmere".
+  if ($show_source) {
+    echo "<tt>";
+    show_source(basename($PHP_SELF));
+    echo "</tt></BODY></HTML>";
+    exit;
+  }
+
   include($DOCUMENT_ROOT."includes/top.phtml");
 ?>
 
@@ -18,6 +28,7 @@ $Id$
 -->
 <?php
 
+// Funktion til at lave hyperlink
 function href($url,$desc) {
   return "<a href=\"$url\">$desc</a>";
 }
@@ -28,7 +39,7 @@ function fsize_text( $filename ) {
   $ISO = array("","K","M","G","T","P");
   $filesize = filesize($filename);
   if (! $filesize) {
-      return "000 B";
+      return "000 B";  // file_exists() skulle være checket her
   } else {
     $base = floor(floor(log10($filesize))/3);
     $num3 = $filesize/pow(1024,$base);
@@ -36,15 +47,28 @@ function fsize_text( $filename ) {
   }
 }
 
-  // friheden/linux-friheden.tgz
-  // friheden/bog/index.html
+// Funktion til at formatere finavne.
+// Online versionen skal kun have bookname een gang
+function form_filename( $bookname, $format ) {
+  if ($format[online])
+    // Eks: admin/bog/index.html
+    return "$bookname/$format[first]$format[last]";
+  else {
+    // Eks: admin/linux-admin-1.0.ps.gz
+    $fp = fopen("$bookname/version.sgml", "r");
+    $version = trim(fgets($fp, 80));
+    fclose($fp);
+    return "$bookname/$format[first]$bookname-$version$format[last]";
+  }
+}
 
+  // Bøger
   $books = array(
     // Bognavn, forkortet
     "friheden" => array(
       title => "Linux - Friheden til at vælge",
       comment => "En god begynderbog",
-      audt => array(
+      auth => array(
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
@@ -52,14 +76,15 @@ function fsize_text( $filename ) {
     "admin" => array(
       title => "Linux - Friheden til systemadministration",
       comment => "Administrer din egen Linux-server",
-      audt => array(
-        "Peter Toft" => "pto@sslug.dk"
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk",
+        "Hans Schou" => "chlor@sslug.dk"
       )
     ),
     "program" => array(
       title => "Linux - Friheden til at programmere",
       comment => "Programmering på Linux",
-      audt => array(
+      auth => array(
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
@@ -67,7 +92,7 @@ function fsize_text( $filename ) {
     "sikkerhed" => array(
       title => "Linux - Friheden til sikkerhed på internettet",
       comment => "Sikkerhed omkring din Linux-boks",
-      audt => array(
+      auth => array(
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
@@ -75,7 +100,7 @@ function fsize_text( $filename ) {
     "web" => array(
       title => "Linux - Friheden til egen webserver",
       comment => "Web og datadaser",
-      audt => array(
+      auth => array(
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
@@ -83,23 +108,23 @@ function fsize_text( $filename ) {
     "kerne" => array(
       title => "Linux - Friheden til kernen",
       comment => "Forstå Linux-kernen til bunds",
-      audt => array(
+      auth => array(
         "Jacob Laursen" => "lau@sslug.dk",
         "Peter Toft" => "pto@sslug.dk"
       )
     )*/
   );
 
-  // Bogpakker
+  // Bogpakker pakket på forskellige måder
   // <first><$books><last>
   $packs = array(
-    // Eks: frihed/index.html
+    // Eks: frihed/bog/index.html
     "Online" => array(
       first => "bog",
       last => "/index.html",
       online => 1  // Hvis bognavn kun skal med een gange
     ),
-    // Eks: linux-frihed.tgz
+    // Eks: frihed/linux-frihed-4.0.tgz
     "HTML" => array(
       first => "linux-",
       last => ".html.tgz"
@@ -117,10 +142,12 @@ function fsize_text( $filename ) {
       first => "linux-",
       last => ".pdf.gz"
     ),
+/*
     "Tekst" => array(
       first => "linux-",
       last => ".txt.gz"
     ),
+*/
     "PalmPilot" => array(
       first => "linux-",
       last => ".palm.tgz"
@@ -140,8 +167,10 @@ function fsize_text( $filename ) {
 Filtyper: 
 <?php
 
+  // Kort liste over filtyper: "Online, HTML..."
   reset($packs);
-  while (list($type,$attr) = each($packs)) {
+  while (list($type) = each($packs)) {
+    // Nogle filtyper har mellemrum i navnet, derfor bruges rawurlencode()
     echo "<a href=\"#".rawurlencode($type)."\">$type</a>\n";
   }
 
@@ -150,6 +179,7 @@ Filtyper:
 <ul>
 <?php
 
+  // Pæn bullet liste over alle bog-titler med kort beskrivelse
   reset($books);
   while (list($short,$desc) = each($books)) {
     echo "<li><b>$short:</b> ";
@@ -159,23 +189,26 @@ Filtyper:
   }
 ?>
 </ul>
+<p>
+
+Benyt vores "Et-klik-service" for at downloade og læse bøgerne,
+eller køb en indbundet udgave hos følgende forretninger:
+<ul>
+<li><a href="http://www.printxpress.dk/linuxbog/">PrintXpress</a></li>
+<li><a href="http://www.pn-tryk.dk/html/linux.html">PN-tryk</a></li>
+<li><a href="http://www.sc-birkeroed.dk/htm-sider/Linux.htm">SC-Birkerød</a></li>
+</ul>
+Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
+hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
+<p>
+
 <?php
 
-function form_filename( $bookname, $format ) {
-  if ($format[online])
-    return "$bookname/$format[first]$format[last]";
-  else {
-		$fp = fopen("$bookname/version.sgml", "r");
-		$version = chop(fgets($fp, 80));
-	// XXX	 linux-admin-1.0.ps.gz
-		fclose($fp);
-    return "$bookname/$format[first]$bookname-$version$format[last]";
-	}
-}
+  echo "<hr><h2>Bøger</h2>\n";
 
   reset($books);
   while (list($short,$desc) = each($books)) {
-    echo "<hr><a name=\"$short\"></a><h3>$desc->title</h3>\n";
+    echo "<a name=\"$short\"></a><h3>$desc->title</h3>\n";
     echo "$desc->comment";
     echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
@@ -195,21 +228,23 @@ function form_filename( $bookname, $format ) {
       } else {
         echo "<td>$filename</td>\n";
         $date = " - ";
-        $filesize = "00 B";
+        $filesize = " - ";
       }
-      echo "<td>$date</td>\n";
+      echo "<td align=\"center\">$date</td>\n";
       if ($attr[online])
         echo "<td>&nbsp;</td>\n";
       else
-        echo "<td>$filesize</td>\n";
+        echo "<td align=\"right\">$filesize</td>\n";
       echo "</tr>\n";
     }
     echo "</table>\n";
   }
 
+  echo "<hr><h2>Filtyper</h2>\n";
+
   reset($packs);
   while (list($type,$attr) = each($packs)) {
-    echo "<hr><a name=\"".rawurlencode($type)."\"></a><h3>$type</h3>\n";
+    echo "<a name=\"".rawurlencode($type)."\"></a><h3>$type</h3>\n";
     echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
     echo "<th>Link</th>\n";
@@ -286,7 +321,9 @@ function form_filename( $bookname, $format ) {
 <?php
   include($DOCUMENT_ROOT."includes/top.phtml");
 ?>
-<center><p>Denne side vedligeholdes af Hans Schou (&lt;<A HREF="mailto:chlor@sslug.dk">chlor@sslug.dk</a>&gt;)</p>
+<center>
+<p>Denne side vedligeholdes af Hans Schou (&lt;<A HREF="mailto:chlor@sslug.dk">chlor@sslug.dk</a>&gt;)
+<br><a href="<?php echo $PHP_SELF ?>?show_source=1">Se kildeteksten</a></p>
 </center>
 </BODY>
 </HTML>
