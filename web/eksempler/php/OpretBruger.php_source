@@ -1,0 +1,77 @@
+<?
+  include("session.php");
+
+  if ($SessionID == "") {
+       header("Location: login.html");
+       exit;
+  }
+
+  $link = mysql_connect(_MYSQL_SERVER_NAME, _MYSQL_USER_NAME, _MYSQL_PASSWORD);
+  if ($link == 0) {
+     header("Location: Fejl.php?Kode=1");
+     exit;
+  }
+
+  mysql_selectdb(_MYSQL_DATABASE_NAME, $link);
+
+  $SQLQuery = "SELECT Brugernavn FROM Session ";
+  $SQLQuery .= "WHERE SessionID='$SessionID'";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+     header("Location: Fejl.php?Kode=2");
+     exit;
+  }
+  else{
+    $field = mysql_fetch_array($result);
+    $bruger = $field['Brugernavn'];
+  }
+
+  if ($bruger <> 'admin') {
+     header("Location: Fejl.php?Kode=5");
+     exit;
+  }
+
+  if ($password <> $retype) {
+     header("Location: Fejl.php?Kode=6");
+     exit;
+  }
+
+  $email = $user . "@friheden.dk";
+  $dato = date("d-m-Y H:i:s");
+  $SQLQuery = "INSERT INTO Users (Brugernavn, Password, Navn, Email, Status, Oprettet) ";
+  $SQLQuery .= "VALUES (\"$user\", \"" . md5("$password") . "\", \"$user\", ";
+  $SQLQuery .= "\"$email\", \"Medlem\", \"" . date("Y-m-d H:i:s") . "\")";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+    header("Location: Fejl.php?Kode=3");
+    exit;
+  }
+  else{
+  print "
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0 Transitional//EN' 'http://www.w3.org/TR/REC-html40/loose.dtd'>
+<HTML>
+<HEAD>
+        <TITLE>Login på Friheden - vinduet til PHP's forunderlige verdenen</TITLE>
+<META NAME='Generator' CONTENT='Stone's WebWriter 3'>
+</HEAD>
+<BODY BGCOLOR='#999999' TEXT='#000000' LINK='#0000FF' VLINK='#660066' ALINK='#FF0000'>
+<CENTER>
+<H1>Resultat af brugeroprettelse i Friheden</H1>
+<H2>Administratorsiden</H2>
+<HR>
+<BR>
+<P>
+Brugernavn: $user<BR>
+Email: $email<BR>
+Status: Medlem<BR>
+Oprettet: $dato<BR>
+</P>
+</CENTER>
+<BR>
+<P><HR>
+<CENTER><FONT FACE='Times New Roman' SIZE='-2'>
+Copyright &copy Michael Rasmussen</FONT></CENTER>
+</BODY>
+</HTML>";
+}
+?>
