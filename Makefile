@@ -33,6 +33,17 @@ statusfiler:  Makefiler
 	make -C c  statusfiler
 	make -C alle  statusfiler
 
+statusfiler:  Makefiler
+	make -C friheden eksempelbackup
+	make -C applikationer  eksempelbackup
+	make -C admin  eksempelbackup
+	make -C program  eksempelbackup
+	make -C web  eksempelbackup
+	make -C sikkerhed  eksempelbackup
+	make -C c  eksempelbackup
+	make -C alle  eksempelbackup
+
+
 
 clean: Makefiler
 	make -C friheden clean
