@@ -302,10 +302,10 @@ function vistype($type) {
       first => "linuxbog-",
       last => ".ps.gz"
     ),
-    // Eks: linuxbog-frihed-pdf.zip
+    // Eks: linuxbog-frihed.pdf
     "PDF" => array(
       first => "linuxbog-",
-      last => "_pdf.zip"
+      last => ".pdf"
     ),
     "PalmPilot" => array(
       first => "linuxbog-",
