@@ -195,8 +195,8 @@ Filtyper:
   }
 ?>
 </ul>
-<p>
 
+<p>
 Benyt vores "Et-klik-service" for at downloade og læse bøgerne,
 eller køb en indbundet udgave hos følgende forretninger:
 <ul>
@@ -206,45 +206,50 @@ eller køb en indbundet udgave hos følgende forretninger:
 </ul>
 Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
 hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
-<p>
+</p>
 
+<p>
 Bøgerne kan også fås i
 <a href="http://www.klid.dk/~cs">Microsoft Word format</a>.
+</p>
+
 <p>
 Vil du se hvad der skete med kilde-SGML filerne, så se <a href="cvs2html/">her</a>.
-<p>
+</p>
 
+<p>
 <FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
 Vil du modtage E-post om nye versioner af bogen?
 <BR>Skriv din E-post adresse her
 <BR><INPUT TYPE=TEXT SIZE=40 NAME="required-email">
 <BR><INPUT TYPE=HIDDEN VALUE="http://www.sslug.dk/linuxbog" NAME="url">
 <INPUT TYPE=SUBMIT VALUE="Indsend form"></FORM>
-<p>
+</p>
 
+<p>
 Bøgerne redigeres af Peter Toft og Hans Schou
 &lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
 <br>
 Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
-<p>
+</p>
 
+<p>
 Der er altid ting vi gerne vil have skrevet om, eller skrevet mere på.<br>
 Du er meget velkommen til at komme med forslag. 
 <a href="todo.html">Vi efterlyser bla. disse ting</a>.
+</p>
 
 <p>
-
 Vil du følge med i hvad der sker med vores kilde-kode (SGML-filerne), 
 <a href="http://cvs.sslug.dk/linuxbog/">så se her</a>.
-
+</p>
 
 <p>
-
 Hvis du har noget du søger efter, så skal du nok <a
 href="alle/bog/stikord.html">starte i vores samlede
 indeks-register.</a>
-
+</p>
 
 <p>
 Har du fundet fejl i en bog, så send venligst dette til 
@@ -254,6 +259,13 @@ Er du ikke medlem af SSLUG, så skriv til
 Vi foretrækker direkte rettelser foretaget i SGML-kildeteksten, men
 kan også rette ud fra præcise angivelser for hvor rettelserne skal
 foretages.
+
+<p>
+Bogen udvikles løbende med opdateringer et par gange om ugen.
+Vores arbejdskopi kan findes på <a href="http://cvs.sslug.dk/">http://cvs.sslug.dk/</a>,
+men indtil endelig release, kan der være graverende fejl i den.
+</p>
+
 <hr>
 <a name="matrix"></a>
 <h2>Samlet bogoversigt</h2>
