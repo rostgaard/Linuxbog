@@ -25,9 +25,9 @@ clean:
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
-	rm -rf /home/www/www.sslug.dk/bog/cvshtml
-	mkdir /home/www/www.sslug.dk/bog/cvshtml
-	/home/pto/utils/cvs2html  -l http://www.sslug.dk/bog -f -p -o /home/www/www.sslug.dk/bog/cvshtml/index.html -v -a -b -n 6 -C cvs_crono.html
+	rm -rf /home/www/www.sslug.dk/bog/cvs2html
+	mkdir /home/www/www.sslug.dk/bog/cvs2html
+	/home/pto/utils/cvs2html  -l http://www.sslug.dk/bog -f -p -o /home/www/www.sslug.dk/bog/cvs2html/index.html -v -a -b -n 6 -C cvs_crono.html
 
 
 mail:
