@@ -137,16 +137,16 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	cp *.sgml tempdir
 	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -x -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-	mkdir bogps
-	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% /usr/X11R6/bin/convert -antialias images/%.png eps2:bogps/%.eps
-	echo '<!ENTITY magic "eps">' > magic.sgml
-	cp *.sgml bogps
-	(cd bogps; db2ps bog.sgml > /dev/null)
-	mv bogps/bog.ps $(targetname)-$(version).ps
-	rm -f $(targetname)-*.ps.gz
-	@echo "Done PS (pspdf)"
-	@echo ""
-	gzip -9 $(targetname)-$(version).ps
+#	mkdir bogps
+#	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% /usr/X11R6/bin/convert -antialias images/%.png eps2:bogps/%.eps
+#	echo '<!ENTITY magic "eps">' > magic.sgml
+#	cp *.sgml bogps
+#	(cd bogps; db2ps bog.sgml > /dev/null)
+#	mv bogps/bog.ps $(targetname)-$(version).ps
+#	rm -f $(targetname)-*.ps.gz
+#	@echo "Done PS (pspdf)"
+#	@echo ""
+#	gzip -9 $(targetname)-$(version).ps
 	@echo "Target er" $(targetname).pdf
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
