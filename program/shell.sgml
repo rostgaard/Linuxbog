@@ -1,0 +1,298 @@
+<chapter id="shell">
+<title>Shell-programmering</title>
+<indexterm><primary>Shell programmering</primary></indexterm>
+<indexterm><primary>/bin/sh</primary></indexterm>
+<indexterm><primary>sh</primary></indexterm>
+<indexterm><primary>bash</primary></indexterm>
+<para>
+Hvis du ofte har brug for at køre nogle bestemte programmer for at
+håndtere en tilbagevendende opgave, bør du sætte dig ind i at skrive
+<emphasis>shell-skript</emphasis>. Kender du til
+batch-filer under DOS, har du en ide om, hvad det går ud på. Et
+shell-skript er i bund og grund blot en tekstfil, der indeholder en
+række kommandoer og måske nogle ekstra linjer til at vælge hvilke dele
+af scriptet, der skal udføres.
+</para>
+
+<para>
+Det første eksempel på et shell-skript bør være "Hello World", som
+skriver en tekst på skærmen.
+</para>
+
+<screen>
+#!/bin/sh
+echo "Hello World"
+</screen>
+
+<para>
+Dette gemmes under navnet <filename>HelloWorld</filename> eller
+lignende, og derefter gøres filen eksekverbar med <command>chmod +x
+HelloWorld</command>. Du kan nu teste eksemplet ved at skrive
+<command>./HelloWorld</command> på en kommando linje (f.eks. i en
+xterm). Du skal skrive punktum og skråstreg foran programnavnet, hvis
+du ikke har ændret din søgestien ($PATH) i
+<filename>./.profile</filename>.
+</para>
+
+<para>
+Et eksempel kunne være, at du fandt ud af, at du ofte havde brug for en
+nem metode til at tage en hurtig kopi af tekstfilerne i
+arbejdskataloget.
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter sikkerhedskopiéring..."
+mkdir backup
+cp *.txt backup
+echo "Sikkerhedskopiéring slut"
+</screen>
+
+<para>
+Gem denne tekst i en fil med navnet <filename>bu</filename> (for "back
+up"), og gør den eksekverbar med kommandoen <userinput>chmod +x
+bu</userinput>. Nu kan du køre <filename>bu</filename> fra kommandolinjen:
+</para>
+
+<screen>
+<prompt>$</prompt> <userinput>./bu</userinput>
+Starter sikkerhedskopiéring...
+Sikkerhedskopiéring slut
+</screen>
+
+<para>
+Første linje i scriptet er egentlig en kommentar, men giver
+samtidig systemet besked om, at dette er et shell-skript og ikke f.eks. et
+perl-skript.
+</para>
+
+<para>
+Hvis du er lidt forsigtig anlagt og gerne vil undgå at komme til at
+overskrive en eksisterende backup, kan du udvide skriptet en smule:
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter sikkerhedskopiéring..."
+mkdir backup
+if [ $? -eq 0 ]
+then
+    echo "kataloget ./backup oprettet..."
+else
+    echo "kataloget ./backup kunne IKKE oprettes"
+    echo "bu afsluttes"
+    exit 1
+fi
+cp -v *.txt backup
+echo "bu slut"
+</screen>
+
+<indexterm><primary>Shell variable</primary></indexterm>
+<para>
+I linje 4 i skriptet støder vi på en såkaldt shell-variabel, nemlig
+<filename>$?</filename>, der betyder "resultatet af sidst udførte
+kommando". Her bruges den til at vise, om <filename>mkdir</filename>
+lykkedes eller ej. I dette eksempel går vi enfoldigt ud fra, at hvis
+kommandoen <userinput>mkdir backup</userinput> ikke lykkedes, er det, fordi
+kataloget <filename>backup</filename> eksisterer i forvejen.
+</para>
+
+<para>
+Hvis vi så finder ud af, at vi af og til har brug for at overskrive en
+backup, kan vi ændre vores skript en smule, så vi ved at tilføje
+<userinput>-O</userinput> på kommandolinjen kan få den til at være
+ligeglad med, om kataloget findes i forvejen:
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter sikkerhedskopiéring..."
+mkdir backup
+if [ $? -eq 0 ]
+then
+    echo "kataloget ./backup oprettet..."
+else
+    echo "kataloget ./backup kunne IKKE oprettes"
+    OVERWRITE="-O"
+    if [ $# -eq 1 ]
+    then
+    if [ $1 != $OVERWRITE ]
+	  then
+        echo "bu afsluttes"
+	  exit 1
+        else
+            echo "der overskrives..."
+        fi
+    else
+        echo "bu afsluttes"
+        exit 1
+    fi
+fi
+cp -v *.txt backup
+echo "bu slut"
+</screen>
+
+<para>
+Du kan faktisk nå temmelig langt ved hjælp af shell-skript, men det kan
+hurtigt blive lidt kryptisk at læse. Kunsten er nok i virkeligheden at
+stoppe, mens legen er god, og vælge et "rigtigt" programmeringssprog, når
+opgaven kræver det. Alligevel bør du lære at skrive shell-programmer, dels
+for at lave dine egne små praktiske løsninger på dagligdagens problemer,
+dels for at kunne forstå andres skript.
+</para>
+
+<para>
+Endelig kan det nævnes at der findes en del bøger om
+shell-programmering, bl.a. fra <ulink
+url="http://www.oreilly.com">O'Reilly</ulink>, bl.a. "Learning the
+Bash Shell". Eksemplerne fra denne bog er interessante og de kan
+hentes fra <ulink url="http://www.oreilly.com/catalog/bash/">http://www.oreilly.com/catalog/bash/</ulink>
+</para>
+
+
+<sect1 ID="sed">
+<title>sed</title>
+<indexterm><primary>sed</primary></indexterm>
+<para>
+Programmet <command>sed</command> er ofte anvendt i UNIX til at
+modificere tekst, såsom at uddrage eller omforme en mindre del af en
+tekstlinie. Ofte læses teksten fra en rør-konstruktion (eng. pipe) eller fil og
+tilsvarende afleveres resultatet i en fil eller rør.
+Fordelen med <command>sed</command> i forhold til Perl (som kan meget
+mere) er at sed er et lille program.
+</para>
+
+<para>
+Lad os tage et eksempel med anvendelse af sed.  I shell-skript kan man
+ofte være interesseret i at finde stinavne (eng. pathname), basefilename 
+og extension udfra den fulde sti i $0 for shell-skript.  Så for at manipulere med
+fuld sti kan man gøre følgende:
+</para>
+
+<SCREEN>
+  pathname=`echo $0 | sed 's#[^/]*$##'`
+  progname=`echo $0 | sed 's#^.*/##'`
+  noext=`echo $0 | sed 's/\.[^\.]\+$//`
+
+  ext =`echo $progname | sed 's/^.\+\.//'`
+  ext2=`echo $progname | sed 's/^.*\././'`
+</screen>
+
+<para>
+Dog vil ovenstående eksempler måske fejle for visse typer stinavne,
+men de plejer at virke for de fleste "normale" sti+filnavne man
+anvender.
+</para>
+
+</sect1>
+
+<sect1 id="tcsh">
+<title>tcsh</title>
+
+<indexterm><primary>tcsh</primary></indexterm>
+
+<para>
+På de fleste UNIX-kompatible maskiner, såsom Linux findes andre
+kommando-shells (kommandofortolkere). Gamle kendinge er ksh 
+(Korn-shellen), sh (Bourne-shellen) og csh. De er meget udbredte, 
+men til daglig anvendelse
+mangler flere af dem funktioner, såsom vis forrige kommando, kommando
+og filnavn udfyldning (tryk på tabulator). Derfor er Bash (Bourne
+again-shellen) og tcsh bedre alternativer. I Linux er sh og bash links
+til hinanden, så man kan se mere om bash tidligere i dette
+kapitel. Her skal vi nævne lidt om tcsh.
+</para>
+
+<para>
+Skal du brug tcsh som shell, så skal du ændre den del af linien for
+dig selv i <filename>/etc/passwd</filename> fra
+<filename>/bin/bash</filename> til <filename>/bin/tcsh</filename>.
+Tcsh vil anvende kommandoer skrevet i filerne 
+<filename>.login</filename> (ved login) og 
+<filename>.tcshrc</filename> (til hver shell, der startes). Et
+eksempel på <filename>.login</filename> kan være.
+<indexterm><primary>.login</primary></indexterm>
+</para>	
+
+<indexterm>
+ <primary>Dansk</primary>
+ <secondary>Tastatur og sprog</secondary>
+</indexterm>
+
+<screen>
+#!/bin/csh
+# User .login file (/bin/csh initialization).
+
+# Begræns forbrug for programmer
+limit coredumpsize 0
+limit stacksize 140000
+limit datasize 140000
+limit memoryuse 140000
+limit filesize 20000
+
+# Editor
+setenv EDITOR emacs
+# CVS skal bruge Secure Shell
+setenv CVS_RSH ssh
+setenv RSYNC_RSH ssh
+# gzip skal komprimere maksimalt
+setenv GZIP "-9 -v"
+setenv HOSTNAME "cat /etc/HOSTNAME"
+unsetenv LESS
+# Brug latin1 tegnsæt med less kommandoen
+setenv LESSCHARSET latin1
+# Vælg printer til lp
+setenv PRINTER lp
+
+#Dansk tastaturopsætning
+setenv LC_ALL da_DK
+setenv LANG da
+
+# Manual path
+setenv MANPATH /usr/local/man:/usr/man/preformat:/usr/man:/usr/X11/man
+
+if ( ! $?PAGER ) then
+  setenv PAGER less
+endif
+
+#if ($TERM == linux) startx
+
+# Hvis du er i tekst terminal 1, så start X op automatisk
+if (`echo $tty` == tty1) startx
+</screen>
+
+<screen>
+#!/bin/tcsh
+# User .tcshrc file (/bin/tcsh initialization).
+
+# Standard fil maske rw for mig - r for andre og gruppe
+umask 022
+# Path (søgesti)
+set path = ( .  ~/bin /usr/local/bin /usr/X11R6/bin \
+ /bin /usr/bin /usr/X11R6/bin /usr/lib/teTeX/bin \
+ /usr/local/Office51/bin )
+
+if ( ! $?prompt ) exit                      # Shell is interactive
+
+set filec
+set notify
+set nobeep
+set cdpath  = ( ~:/usr/spool )
+#set watch = (1 any any)
+set history = 500                           # Command prompt history
+set savehist                                # Number to save across sessions
+set autolist                                # List choices in name completion
+set correct = cmd                           # Checks spelling of commands
+set prompt  = "%{^[[1m%}${user}@`hostname`%/>%{^[[0m%} " # Command prompt
+
+#Gør at ls får farver
+alias ls 'ls --color=always'
+                                                      # in boldface
+set matchbeep=nomatch
+
+# Er der er en .alias fil, så indlæs denne
+if ( -e ~/.alias ) source ~/.alias
+</screen>
+
+</sect1>
+</chapter>
