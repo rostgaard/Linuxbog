@@ -31,12 +31,12 @@ tunge programmer på en stærk server og få vist resultater på en anden
 
 <para>
 Antag, at vi har et lokalnet bestående af tre maskiner. Vi anvender
-maskinen "uranienborg" (IP-adresse 192.168.0.1) med brugernavnet tyge, men vi
+maskinen "hven" (IP-adresse 192.168.0.1) med brugernavnet tyge, men vi
 vil køre programmer fra maskinen "bohr" (192.168.0.2). I netværket 
 finder vi desuden maskinen "nottingham" (192.168.0.3), som vi leger er 
 en ondsindet maskine, der ønsker at bryde vores sikkerhed. I praksis 
 kunne det være tre maskiner på internettet, hvor netværkstrafik mellem 
-"uranienborg" og "bohr" tilfældigvis også kommer forbi "nottingham".
+"hven" og "bohr" tilfældigvis også kommer forbi "nottingham".
 </para>
 
 <para>
@@ -53,20 +53,20 @@ nettet.
 <indexterm><primary>xhost</primary><secondary>sikkerhed</secondary></indexterm>
 
 <para>
-Hvis du på uranienborg kører en X-baseret grafisk brugergrænseflade, og
+Hvis du på hven kører en X-baseret grafisk brugergrænseflade, og
 du vil køre X-programmer (grafiske programmer) fra maskinen bohr,
-skal du starte med at fortælle uranienborg, at det er i orden, at
+skal du starte med at fortælle hven, at det er i orden, at
 bohr benytter dens display.  Dette gøres ved at føje bohr til
 listen over godkendte hosts med kommandoen xhost:
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>xhost + bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>xhost + bohr</userinput>
 bohr being added to access control list 
 </SCREEN>
 
 <para>Dermed vil grafiske programmer fra bohr vil blive accepteret af
-uranienborg. Udelades maskinnavnet, betyder det, at alle maskiner kan vise
+hven. Udelades maskinnavnet, betyder det, at alle maskiner kan vise
 grafik på din skærm. Lad være med det, da det sikkerhedsmæssigt er
 en dårlig ide. 
 </para>
@@ -76,7 +76,7 @@ Lad os nu logge ind på bohr med telnet,
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>telnet bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>telnet bohr</userinput>
 Trying 192.168.0.2...
 Connected to bohr.herne.dk.
 Escape character is '^]'.
@@ -94,12 +94,12 @@ var logget ind lokalt.
 
 <para>
 For at kunne få de grafiske programmer, du starter på bohr, til at
-vise sig på uranienborg' skærm er det nødvendigt at sætte DISPLAY
+vise sig på hven' skærm er det nødvendigt at sætte DISPLAY
 environment variablen:
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>export DISPLAY=uranienborg:0.0</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>export DISPLAY=hven:0.0</userinput>
 </SCREEN>
 
 <para>
@@ -109,11 +109,11 @@ Mange X-programmer kan dog også kaldes med "-display" som option.
 <para>
 Nu kan du køre dit X-program, f.eks. "xload", som om du sad på 
 bohr. Programmet kører på bohr, men
-alt grafik vises på uranienborg, og programmet styres fra uranienborg. 
+alt grafik vises på hven, og programmet styres fra hven. 
 </para>
 
 <SCREEN>
-<prompt>[tyge@bohr tyge]$ </prompt><userinput>xload -display uranienborg:0.0 -geometry 60x60 -nolabel &amp;</userinput>
+<prompt>[tyge@bohr tyge]$ </prompt><userinput>xload -display hven:0.0 -geometry 60x60 -nolabel &amp;</userinput>
 </SCREEN>
 
 <FIGURE ID="xload-fig" FLOAT="1">
@@ -126,19 +126,19 @@ Problemet er ikke at du nu kan kalde grafik op på en anden skærm end
 din egen. Problemet er, at den adgang du har etableret med xhost så at
 sige går begge veje. I og med du har lavet <command>xhost +
 bohr</command> har alle brugere på bohr adgang til at læse og
-skrive fra og til dit dislay på "uranienborg". Er bohr et
+skrive fra og til dit dislay på "hven". Er bohr et
 multibrugersystem, og har en cracker, eller blot en nysgerrig kollega
 konto på maskinen, kan vedkommende køre kommandoen <command>xwd -display
-uranienborg:0.0 -root -out uranienborg.dump</command> efterfulgt af <command>xwud -in
-uranienborg.dump</command>. Den første giver vedkommende et skærmdump af uranienborg, den
+hven:0.0 -root -out hven.dump</command> efterfulgt af <command>xwud -in
+hven.dump</command>. Den første giver vedkommende et skærmdump af hven, den
 næste viser dette billede lokalt (på bohr). Alt hvad du kan se på
-skærmen på uranienborg kan enhver på bohr tage et dump af.
+skærmen på hven kan enhver på bohr tage et dump af.
 </para>
 
 <para>
-Selv hvis uranienborg har <command>xhost -</command> kan en bruger, der har
-lokal shell-adgang på uranienborg, i visse tilfælde stadigvæk køre
-xwd-kommandoen! Vedkommende skal så blot være logget ind på uranienborg, når
+Selv hvis hven har <command>xhost -</command> kan en bruger, der har
+lokal shell-adgang på hven, i visse tilfælde stadigvæk køre
+xwd-kommandoen! Vedkommende skal så blot være logget ind på hven, når
 kommandoen udføres - det kan ikke ske over nettet som beskrevet
 ovenfor.
 </para>
@@ -183,7 +183,7 @@ Sniffit skal køres som root.
 
 <para>
 Lad os antage, at den ondsindede "nottingham" (192.168.0.3) lytter med på, 
-hvad vi laver mellem "uranienborg" (192.168.0.1) og "bohr" (192.168.0.2).
+hvad vi laver mellem "hven" (192.168.0.1) og "bohr" (192.168.0.2).
 Programmet sniffit startes  i interactive mode med angivelse af
 hvilket netværks-interface, der skal lyttes på: 
 </para>
@@ -195,7 +195,7 @@ hvilket netværks-interface, der skal lyttes på:
 <para>
 hvor eth0 betyder første ethernet kort i maskinen, og i betyder
 interactive mode. Ud kommer nedenstående billede, hvor man ser, at
-maskinen med netværksadresse 192.168.0.1 (uranienborg) har oprettet en
+maskinen med netværksadresse 192.168.0.1 (hven) har oprettet en
 forbindelse til port 23 på maskinen med netværksadresse 192.168.0.2
 (bohr). Port 23 er den port, telnet lytter på. Port 3211, som man
 sender fra, er valgt blandt maskinens ledige porte, dvs. de porte, der
@@ -241,7 +241,7 @@ netværk.
 
 <title>ftp</title>
 <para>
-Hvis vi vil overføre filer fra "uranienborg" (192.168.0.1) til
+Hvis vi vil overføre filer fra "hven" (192.168.0.1) til
 "bohr" (192.168.0.2), er ftp et af de gennemprøvede og gamle 
 værktøjer. Også her er der sikkerhedsproblemer.
 Vi sætter igen "nottingham" (192.168.0.3) til at køre sniffit som vist 
@@ -303,12 +303,12 @@ To andre velkendte programmer i samme kategori er "rlogin" og "rsh".
 Programmerne virker næsten ens. Begge 
 giver interaktivt login på maskinen, men rsh kan udføre en kommando 
 samtidig med, at man logger ind. F.eks. vil den følgende kommando logge 
-ind direkte fra uranienborg til bohr og køre kommandoen "df" (som viser 
+ind direkte fra hven til bohr og køre kommandoen "df" (som viser 
 hvor fyldte dine diske er).
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>rsh bohr df</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>rsh bohr df</userinput>
 </SCREEN>
 
 <para>
@@ -321,11 +321,11 @@ På maskinen "nottingham" kører vi sniffit:
 </SCREEN>
 
 <para>
-Vi logger ind fra uranienborg til bohr med kommandoen:
+Vi logger ind fra hven til bohr med kommandoen:
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>rlogin bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>rlogin bohr</userinput>
 Password: qwe123
 $ 
 </SCREEN>
@@ -419,18 +419,18 @@ Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
 <para>
 Igen ser man tydeligt brugernavn og password blive sendt ukrypteret
 over nettet (se sidste tegn på hver linie).  Man kan se, at rlogin på
-bohr bruger port 513, og at der på uranienborg sendes fra port 1023.
+bohr bruger port 513, og at der på hven sendes fra port 1023.
 </para>
 
 <para>
 Skal du kopiere filer mellem to maskiner, så er ftp som tidligere
 skrevet meget anvendt. Alternativt kan remote copy
 <command>rcp</command> anvendes.  Skal du kopiere filen
-<filename>.emacs</filename> fra uranienborg til bohr, sker dette med
+<filename>.emacs</filename> fra hven til bohr, sker dette med
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>rcp .emacs bohr:</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>rcp .emacs bohr:</userinput>
 </SCREEN>
 
 <para>
@@ -445,13 +445,13 @@ Med rlogin, rsh og rcp kan man vælge, at login kan ske uden
 password. Dette gøres ved at sætte sit hostnavn og evt. brugernavn ind
 i filen <filename>~/.rhosts</filename> i sit hjemmekatalog på den
 maskine, der skal logges ind på. Hvis du gerne vil kunne logge ind fra
-uranienborg til bohr uden password, som brugeren tyge, kan
+hven til bohr uden password, som brugeren tyge, kan
 <filename>.rhosts</filename>-filen i dit hjemmekatalog på bohr se
 sådan ud:
 </para>
 
 <programlisting>
-uranienborg tyge
+hven tyge
 </programlisting>
 
 <para>
@@ -462,13 +462,13 @@ samme brugernavn som sit eget, der kan logge ind fra en anden
 maskine. Er filen ikke læsbar for andre, kan man anføre linier i
 <filename>.rhosts</filename>-filen med først maskinnavn og dernæst det
 brugernavn, som anvendes på den anden maskine. For at "peter" skal
-logge på ind på "uranienborg" som "tyge", kan man således bruge
-<command>rlogin uranienborg -l tyge</command>.
+logge på ind på "hven" som "tyge", kan man således bruge
+<command>rlogin hven -l tyge</command>.
 </para>
 
 <para>
 Den viste <filename>.rhosts</filename>-fil vil betyde, at du fra
-maskinen "uranienborg" som brugeren "tyge", godt må komme ind på bohr
+maskinen "hven" som brugeren "tyge", godt må komme ind på bohr
 som "tyge", uden adgangskode. Det kræver, at brugeren findes på begge
 maskiner, og ".rhosts" filen skal ligge i brugerens hjemmekatalog på
 den maskine, man prøver at logge ind på. Det er nemt og giver
@@ -479,7 +479,7 @@ maskiner i netværket) kan aflytte rsh/rlogin netværkstrafik et stykke
 tid, og derved finde ud af fra hvilken maskine og med hvilket bruger
 navn, man kan logge ind direkte.  Derefter kan man med lidt snilde
 sætte maskinen "nottingham" lidt anderledes op, så "bohr" tror, at
-den er "uranienborg".
+den er "hven".
 </para>
 
 <para>
@@ -525,7 +525,7 @@ under <FILENAME>/home/</FILENAME>, så kan dette gøres med
 </para>
 
 <SCREEN>
-<prompt>[root@uranienborg root]# </prompt><userinput>find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print;</userinput>
+<prompt>[root@hven root]# </prompt><userinput>find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print;</userinput>
 </SCREEN>
 
 <para>
@@ -533,7 +533,7 @@ Hvis man samtidigt vil slette de fundne .rhosts filer kan man anvende
 </para>
 
 <SCREEN>
-<prompt>[root@uranienborg root]# </prompt><userinput>find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print -exec rm {} \;</userinput>
+<prompt>[root@hven root]# </prompt><userinput>find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print -exec rm {} \;</userinput>
 </SCREEN>
 
 
@@ -694,12 +694,12 @@ rigtig nemt, idet alle filerne følger med distibutionen.
 </para>
 
 <screen>
-<PROMPT>[tyge@uranienborg ~]# </prompt><userinput>su</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>rpm ivh zlib-1.1.3-i386.rpm</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>rpm ivh openssl-0.9.5a-i386.rpm</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>rpm ivh openssh-2.3.0p1-1.i386.rpm</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>rpm ivh openssh-clients-2.3.0p1-1.i386.rpm</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>rpm ivh openssh-server-2.3.0p1-1.i386.rpm</userinput>
+<PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh zlib-1.1.3-i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssl-0.9.5a-i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssh-2.3.0p1-1.i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssh-clients-2.3.0p1-1.i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssh-server-2.3.0p1-1.i386.rpm</userinput>
 </screen>
 
 <para>
@@ -715,12 +715,12 @@ Først Zlib, hvis dette ikke er installeret (check om
 </para>
 
 <screen>
-<PROMPT>[tyge@uranienborg ~]# </prompt><userinput>su</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>tar xzvf zlib-1.1.3.tar.gz</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>cd zlib-1.1.3</userinput>
-<prompt>[root@uranienborg zlib-1.3]# </prompt><userinput>./configure</userinput>
-<prompt>[root@uranienborg zlib-1.3]# </prompt><userinput>make</userinput>
-<prompt>[root@uranienborg zlib-1.3]# </prompt><userinput>make install</userinput>
+<PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf zlib-1.1.3.tar.gz</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>cd zlib-1.1.3</userinput>
+<prompt>[root@hven zlib-1.3]# </prompt><userinput>./configure</userinput>
+<prompt>[root@hven zlib-1.3]# </prompt><userinput>make</userinput>
+<prompt>[root@hven zlib-1.3]# </prompt><userinput>make install</userinput>
 </screen>
 
 <para>
@@ -729,12 +729,12 @@ Dernæst skal OpenSSL installeres
 
 
 <screen>
-<PROMPT>[tyge@uranienborg ~]# </prompt><userinput>su</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>tar xzvf openssl-0.9.5a.tar.gz</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>cd openssl-0.9.5a</userinput>
-<prompt>[root@uranienborg openssl-0.9.5a]# </prompt><userinput>./configure</userinput>
-<prompt>[root@uranienborg openssl-0.9.5a]# </prompt><userinput>make</userinput>
-<prompt>[root@uranienborg openssl-0.9.5a]# </prompt><userinput>make install</userinput>
+<PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf openssl-0.9.5a.tar.gz</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>cd openssl-0.9.5a</userinput>
+<prompt>[root@hven openssl-0.9.5a]# </prompt><userinput>./configure</userinput>
+<prompt>[root@hven openssl-0.9.5a]# </prompt><userinput>make</userinput>
+<prompt>[root@hven openssl-0.9.5a]# </prompt><userinput>make install</userinput>
 </screen>
 
 <para>
@@ -742,13 +742,13 @@ Og slutteligt skal OpenSSH oversættes og installeres
 </para>
 
 <screen>
-<PROMPT>[tyge@uranienborg ~]# </prompt><userinput>su</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>tar xzvf openssh-2.3.0p1.tar.gz</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>cd openssh-2.3.0p1</userinput>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>./configure --sysconfdir=/etc/ssh</userinput>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>make</userinput>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>make install</userinput>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>make host-key</userinput>
+<PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf openssh-2.3.0p1.tar.gz</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>cd openssh-2.3.0p1</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>./configure --sysconfdir=/etc/ssh</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>make</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>make install</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>make host-key</userinput>
 </screen>
 
 <para>
@@ -773,8 +773,8 @@ Linux-distributioner.
 </para>
 
 <screen>
-<PROMPT>[tyge@uranienborg ~]# </prompt><userinput>su</userinput>
-<prompt>[root@uranienborg /home/tyge]# </prompt><userinput>cp contrib/sshd.pam.generic /etc/pam.d/sshd</userinput>
+<PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>cp contrib/sshd.pam.generic /etc/pam.d/sshd</userinput>
 </screen>
 
 <para>
@@ -784,7 +784,7 @@ op på maskinen efter system-genstart. Du kan for SuSE kopiere
 
 
 <screen>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.config.d/sshd.rc.config</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.config.d/sshd.rc.config</userinput>
 </screen>
 
 
@@ -793,7 +793,7 @@ og for Red Hat
 </para>
 
 <screen>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.d/init.d/sshd.rc.config</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.d/init.d/sshd.rc.config</userinput>
 </screen>
 
 
@@ -809,7 +809,7 @@ maskinen udefra. For Red Hat køres
 </para>
 
 <screen>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>/etc/rc.d/init.d/sshd start</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>/etc/rc.d/init.d/sshd start</userinput>
 </screen>
 
 <para>
@@ -817,7 +817,7 @@ og tilsvarende for SuSE køres
 </para>
 
 <screen>
-<prompt>[root@uranienborg openssh-2.3.0p1]# </prompt><userinput>/sbin/init.d/sshd start</userinput>
+<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>/sbin/init.d/sshd start</userinput>
 </screen>
 
 <para>
@@ -848,7 +848,7 @@ Lav det tilpas kryptisk, men du skal kunne huske det.
 </para>
 
 <screen>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh-keygen -d</USERINPUT> 
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh-keygen -d</USERINPUT> 
 Generating DSA parameter and key.
 Enter file in which to save the key (/home/tyge/.ssh/id_dsa):
 Enter passphrase (empty for no passphrase): <USERINPUT>V1 hANDLER me spaghett1</USERINPUT>
@@ -856,7 +856,7 @@ Enter same passphrase again: <USERINPUT>V1 hANDLER me spaghett1</USERINPUT>
 Your identification has been saved in /home/tyge/.ssh/id_dsa.
 Your public key has been saved in /home/tyge/.ssh/id_dsa.pub.
 The key fingerprint is:
-ea:20:20:ae:b3:39:6f:d9:1b:a2:ef:02:0c:05:c5:fb tyge@uranienborg
+ea:20:20:ae:b3:39:6f:d9:1b:a2:ef:02:0c:05:c5:fb tyge@hven
 </screen>
 
 
@@ -882,7 +882,7 @@ kommet filer tre steder, som vi nu vil se nærmere på.
 
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ls -al /etc/ssh/*</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ls -al /etc/ssh/*</userinput>
 -rw-r--r-- 1 root root  932 okt  6 00:09 ssh_config
 -rw------- 1 root root  668 okt 11 01:33 ssh_host_dsa_key
 -rw-r--r-- 1 root root  604 okt 11 01:33 ssh_host_dsa_key.pub
@@ -921,7 +921,7 @@ også over usikre netværk. Start med at skrive
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh bohr</userinput>
 Host key not found from the list of known hosts.
 Are you sure you want to continue connecting (yes/no)?          
 </SCREEN>
@@ -953,7 +953,7 @@ sammen ovenfor.
 
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh -2 tuck@bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh -2 tuck@bohr</userinput>
 </SCREEN>
 
 <para>
@@ -979,7 +979,7 @@ compression yes
 <para>
 Log ud ved at skrive exit (eller trykke Ctrl-D) for at komme tilbage
 til din egen maskine. Kopier nu din public key fra din egen maskine
-(uranienborg) til fjern maskinen og gem den under
+(hven) til fjern maskinen og gem den under
 <filename>~/.ssh/authorized_keys</filename> (for SSH1, dvs. RSA
 nøglen) og <filename>~/.ssh/authorized_keys2</filename> (for SSH2,
 dvs. DSA nøglen). Ingen andre end dig skal kunne læse den fil du
@@ -989,8 +989,8 @@ ikke kan få adgang.
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>cd ~/.ssh</userinput>
-<prompt>[tyge@uranienborg .ssh]$ </prompt><userinput>scp id_dsa.pub bohr:authorized_keys2</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cd ~/.ssh</userinput>
+<prompt>[tyge@hven .ssh]$ </prompt><userinput>scp id_dsa.pub bohr:authorized_keys2</userinput>
 </SCREEN>
 
 <para>
@@ -1005,7 +1005,7 @@ klog, men det er også nødvendig for at din offentlige nøgle
 
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh bohr</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>mkdir ~/.ssh</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>mv authorized_keys ~/.ssh</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>chmod go-w ~</userinput>
@@ -1023,7 +1023,7 @@ starte et grafik program såsom "xload" ved at skrive
 </para>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh bohr xload</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh bohr xload</userinput>
 Enter passphrase for RSA key 'tyge@bohr': V1 hANDLER me spaghett1
 </SCREEN>
 
@@ -1031,7 +1031,7 @@ Enter passphrase for RSA key 'tyge@bohr': V1 hANDLER me spaghett1
 Du blev nu mødt af noget nyt igen, idet du skulle skrive din
 passphrase og ikke dit password. Bemærk, at i virkeligheden vises din
 passphrase naturligvis ikke på skærmen.
-xload vil nu køre fra bohr og vises på din egen maskine (uranienborg). 
+xload vil nu køre fra bohr og vises på din egen maskine (hven). 
 Skal du logge ind på bohr, så skriver du blot "ssh bohr", og skal 
 du have udført et program derfra, tilføjer du blot programnavnet til denne
 ordre. 
@@ -1039,7 +1039,7 @@ ordre.
 
 
 <para>
-Skal du kopiere en fil fra uranienborg til bohr, skriver du
+Skal du kopiere en fil fra hven til bohr, skriver du
 </para>
 
 <indexterm>
@@ -1049,7 +1049,7 @@ Skal du kopiere en fil fra uranienborg til bohr, skriver du
 <indexterm><primary>scp</primary></indexterm>
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>scp LOKALT_FILNAVN bohr:FJERN_FILNAVN</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>scp LOKALT_FILNAVN bohr:FJERN_FILNAVN</userinput>
 </SCREEN>
 
 <para>
@@ -1084,8 +1084,8 @@ gang for alle i den X session, du har igang, giver din passphrase.
 
 
 <SCREEN>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh-agent bash</userinput>
-<prompt>[tyge@uranienborg ~]$ </prompt><userinput>ssh-add ~/.ssh/id_dsa</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh-agent bash</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ssh-add ~/.ssh/id_dsa</userinput>
 Enter passphrase for /home/pto/.ssh/id_dsa:
 </SCREEN>
 
