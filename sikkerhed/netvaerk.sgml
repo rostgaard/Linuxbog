@@ -49,6 +49,7 @@ nettet.
 <sect2 id="telnet-og-xhost">
 <title>telnet og xhost</title>
 <indexterm><primary>telnet</primary><secondary>sikkerhed</secondary></indexterm>
+<indexterm><primary>xhost</primary><secondary>sikkerhed</secondary></indexterm>
 
 <para>
 Hvis du på sherwood kører en X-baseret grafisk brugergrænseflade, og
@@ -120,13 +121,47 @@ alt grafik vises på sherwood, og programmet styres fra sherwood.
 </FIGURE>  
 
 <para>
-Det er nemt, og allerede ved disse enkle operationer kan du have
-mistet hele din password-sikkerhed. Sagen er, at da man i sin tid
-designede telnet tænkte man ikke så meget på sikkerhed, men mere på
-driftstabilitet.  Når man laver telnet fra en maskine til en anden,
-sender man først sit brugernavn og derefter password. <emphasis>Begge sendes
-klar tekst</emphasis>. Det kan selvfølgelig udnyttes til at stjæle passwords
-på Internet - og det gøres!
+Problemet er ikke at du nu kan kalde grafik op på en anden skærm end
+din egen. Problemet er, at den adgang du har etableret med xhost så at
+sige går begge veje. I og med du har lavet <command>xhost +
+locksley</command> har alle brugere på locksley adgang til at læse og
+skrive fra og til dit dislay på robin. Er locksley et
+multibrugersystem, og har en cracker, eller blot en nysgerrig kollega
+konto på maskinen, kan vedkommende køre kommandoen <command>xwd -display
+robin:0.0 -root -out robin.dump</command> efterfulgt af <command>xwud -in
+robin.dump</command>. Den første giver vedkommende et skærmdump af robin, den
+næste viser dette billede lokalt (på locksley). Alt hvad du kan se på
+skærmen på robin kan enhver på locksley tage et dump af.
+</para>
+
+<para>
+Selv hvis robin har <command>xhost -</command> kan en bruger, der har
+lokal shell-adgang på robin, i visse tilfælde stadigvæk køre
+xwd-kommandoen! Vedkommende skal så blot være logget ind på robin, når
+kommandoen udføres - det kan ikke ske over nettet som beskrevet
+ovenfor.
+</para>
+
+<para>
+Det bliver værre: Med <command>xlswins</command> kan man vise hvilke
+vinduer (xterm, netscape osv.) der er åbne på den anden maskine, og så
+dump disse enkeltvis med <command>xwatchwin</command>. Begge
+programmer er enten med i standard X, eller fås kvit og frit på
+Internet.
+</para>
+
+<para>
+Og værre: Programmet <command>xscan</command> skal efter sigende kunne
+lave et tilsvarende trick, men med tastetryk. Direkte til en logfil,
+alt hvad der tastes på maskinen, der har xhost: brugernavne,
+adgangskoder, pgp-koder.
+</para>
+
+<para>
+<command>xhost</command> er generelt en meget dårlig ide, og bør i
+alle tilfælde erstattes med SSH, der automatisk og transparent sørger
+for at sætte display og X rettigheder, så man hele tiden "har sit
+display med sig".
 </para>
 </sect2>
 
