@@ -154,34 +154,6 @@ endif
 	@echo "Done HTML (html)"
 	@echo ""
 
-enhtmlfil: bog/enfil.html
-bog/enfil.html: $(sgmlfiler)
-	@echo "Target er HTML i" $(targetshortname)/bog1
-	@rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog1
-	@echo '<!ENTITY magic "png">' > magic.sgml
-	mkdir bog1
-	/usr/bin/collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	touch test.inc
-	cp *.{sgml,xml} bog1
-	cp *.inc bog1
-	rm -f test.inc
-	(cd bog1; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
-	(cd bog1; perl ../collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
-	(cd bog1; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > index.html)
-	cp linuxbog.css bog1
-#	cp images/*.png bog1
-ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
-	(cd bog1;perl ../../misc/insertimagesize)
-else
-	@echo "Du bør installere Perl-modulet Image:Size"
-endif
-ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
-	(cd bog1;tidy -f err.txt -imu *html;rm -f err.txt)
-else
-	@echo "Du bør installere tidy"
-endif
-	cp bog1/index.html bog/enfil.html
-	rm -rf bog1
 
 # Build pdf package.
 pdf: $(targetname)-$(version)_pdf.zip
