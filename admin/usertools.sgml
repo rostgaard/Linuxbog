@@ -18,7 +18,7 @@ samme. Vi fortalte mere om dette i installationskapitlet.
 <para>
 Kataloget <filename>/etc</filename> indeholder konfigurationsfiler til dit
 Linux-system. Filerne er vitale for dit Linux-system, så vær derfor
-bforsigtig, når du ved hjælp af en teksteditor retter i filerne. Vi vil
+forsigtig, når du ved hjælp af en teksteditor retter i filerne. Vi vil
 foreslå, at du <emphasis>altid</emphasis> først laver en kopi af den
 fil, du vil ændre, dvs.
 </para>
@@ -1158,7 +1158,7 @@ sikring af dine adgangskoder.
 <para>
 Hvis en person ikke skal have lov til at logge ind på maskinen, så kan
 du rette i <filename>/etc/passwd</filename> og indsætte en stjerne
-(dvs. *) foran det krypterede password. Har du krypterede passwords på
+(dvs. *) foran den krypterede adgangskode. Har du krypterede adgangskoder på
 maskinen, så er det i stedet i <filename>/etc/shadow</filename>, du
 skal indsætte * (efter første kolon).
 </para>
@@ -1184,7 +1184,7 @@ For brugeren "anne" står der de krypterede adgangskoder. For Red Hat er
 det længere end for SuSE, idet Red Hat anvender en bedre
 krypteringsmåde. Derefter vises antal dage siden 1/1-1970 for sidste
 ændring af adgangskoderne. Antal dage siden sidste ændring af
-password. Antal dage før udløb af adgangskoder skal der sendes en
+adgangskode. Antal dage før udløb af adgangskoder skal der sendes en
 advarsel (her 99999). Sidste anvendte felt (7) er antal dage siden 1/1
 1970 til kontoen bliver lukket. Endelig er der et felt som ikke anvendes.
 </para>
@@ -1755,12 +1755,51 @@ map=/boot/map
 install=/boot/boot.b
 prompt
 timeout=50
-append="hdd=ide-scsi" 
+append="hdd=ide-scsi" // hdd = secondary slave device
 image=/boot/vmlinuz-2.2.5-15
         label=linux
         root=/dev/hda5
         read-only
 </screen>
+
+<para>
+I linien append skal skrives hvilken enhed brænderen er på
+ide-controlleren. Bagefter køres <command>/sbin/lilo</command> og den
+nye kerne bootes. Når systemet kommer op igen kan man nu skrive
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-cd ignore=hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe sg</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-scsi</USERINPUT>
+</screen>
+
+
+
+<para>
+Så skulle scsi emulueringen være iorden og man kan nu lave en:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cat /proc/scsi/scsi</USERINPUT> 
+Attached devices: 
+Host: scsi0 Channel: 00 Id: 00 Lun: 00
+  Vendor: HP       Model: CD-Writer+ 7200  Rev: 3.01
+  Type:   CD-ROM                           ANSI SCSI revision: 02
+</screen>
+
+<para>
+Og der skal brænderen være dukket op. Så er det bare at installere
+brændersoftware, så kan du brænde din først linux cd til dine venner.
+</para>
+
+<para>
+Skal man nu automatisere dette lidt så man ikke skal skrive modprobe
+linierne efter hver bootup, så skal de tilføjes i systemets bootup
+script som på min Red Hat er <filename>/etc/rc.d/rc.local</filename>,
+hvor jeg har tilføjet linierne.
+</para>
 
 <sect2 id="X-cdroast">
 <title>X-cdroast</title>
@@ -2606,7 +2645,7 @@ systemadministrator.
 
 
 <sect2 id="glemt-passwd">
-<title>Har du glemt dit password?</title>
+<title>Har du glemt din adgangskode?</title>
 
 <indexterm><primary>glemt adgangskode</primary></indexterm>
 <indexterm><primary>adgangskode</primary><secondary>glemt</secondary></indexterm>
@@ -2615,7 +2654,7 @@ systemadministrator.
 
 
 <para>
-Hvis du har dummet dig meget og glemt dit root-password, så kan du 
+Hvis du har dummet dig meget og glemt din root-adgangskode, så kan du 
 få sat et nyt ind. 
 </para>
 
@@ -2626,7 +2665,7 @@ shell som proces nr. 1. Herefter køres
 
 <screen>
 <PROMPT>[root@linus ~]# </PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
-<PROMPT>[root@linus ~]# </PROMPT> <userinput>passwd</userinput>                       # skift password
+<PROMPT>[root@linus ~]# </PROMPT> <userinput>passwd</userinput>                       # skift adgangskode
 <PROMPT>[root@linus ~]# </PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
 <PROMPT>[root@linus ~]# </PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
 </screen>
@@ -2636,7 +2675,7 @@ Dette lyder jo som et stort sikkerhedhul og det er det også, hvis man
 har fysisk adgang til maskinen. Du kan dog undgå dette ved at tilføje 
 linien "password=MIT_PASSWORD" til din
 <filename>/etc/lilo.conf</filename>, men så skal du kunne huske
-root-password og det password du har sat i <filename>/etc/lilo.conf</filename>.
+root-adgangskode og den adgangskode du har sat i <filename>/etc/lilo.conf</filename>.
 </para>
 
 </sect2>
