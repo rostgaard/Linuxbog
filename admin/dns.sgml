@@ -1202,12 +1202,12 @@ dvs. at maskinerne ikke er på internettet. Vi vælger derfor adresser fra
 <xref linkend="private-ip-adresser"> i <xref linkend="private-ip">.
 </para>
 
-<screen>
+<programlisting>
 192.168.0.1      linus.intranet    linus
 192.168.0.2      alan.intranet     alan
 192.168.0.3      richard.intranet  richard
 192.168.0.4      eric.intranet     eric
-</screen>
+</programlisting>
 
 <para>
 Vi vedtager også at maskinen "linus" skal være DNS-server, og at samme
@@ -1301,7 +1301,7 @@ grundlæggende opsætning:
 
 <indexterm><primary>/etc/named.conf</primary></indexterm>
 
-<screen>   
+<programlisting>   
 options {
   /* Hvor er filerne med DNS-opsætning */
   directory "/var/named";
@@ -1347,7 +1347,7 @@ zone "intranet" in {
   type master;
   file "intranet";
 };
-</screen>
+</programlisting>
 
 <para>
 De første linjer definer i hvilket bibliotek de senere omtalte filer
@@ -1374,13 +1374,13 @@ DNS-servere til domænet, master og slave, eller primær og
 sekundær. Følgende er et eksempel på en slave-zone:
 </para>
 
-<screen>   
+<programlisting>   
 zone "intranet" in {
   type slave;
   file "intranet";
   masters { 192.168.0.1; };
 };
-</screen>
+</programlisting>
 
 <para>
 Udover at der nu står slave i stedet for master, er en linje tilføjet
@@ -1401,7 +1401,7 @@ Vi kan f.eks. bruge følgende udgangspunkt for
 <filename>/var/named/root.cache</filename> - dvs. root-zonen.
 </para>
 
-<screen>
+<programlisting>
 ;       This file holds the information on root name servers needed to
 ;       initialize cache of Internet domain name servers
 ;       (e.g. reference this file in the "cache  .  &lt;file&gt;"
@@ -1485,7 +1485,7 @@ L.ROOT-SERVERS.NET.      3600000      A     198.32.64.12
 .                        3600000      NS    M.ROOT-SERVERS.NET.
 M.ROOT-SERVERS.NET.      3600000      A     202.12.27.33
 ; End of File
-</screen>
+</programlisting>
 </sect2>
 
 
@@ -1497,7 +1497,7 @@ M.ROOT-SERVERS.NET.      3600000      A     202.12.27.33
 Den næste fil er for maskinerne i 192.168.0.*-området:
 </para>
 
-<screen>
+<programlisting>
 $TTL   1D
 @   IN SOA ns.intranet. hostmaster.intranet. (
                                       1999102400 ; serial number
@@ -1536,7 +1536,7 @@ eric        IN   A   192.168.0.4
 ;
 ns          IN   CNAME   linus.intranet.
 mail        IN   CNAME   linus.intranet.
-</screen>
+</programlisting>
 
 <para>
 <emphasis>Husk: Den første linje $TTL - "Time to live"
@@ -1698,7 +1698,7 @@ Den første "reverse"-fil er for "localhost", som vi i
 <filename>/var/named/127.0.0.rev</filename>.
 </para>
 
-<screen>
+<programlisting>
 $TTL    1D
 @ IN  SOA   ns.intranet. hostmaster.intranet. (
                                       1999102400 ; serial number
@@ -1717,7 +1717,7 @@ IN   NS    ns.intranet.
 ; Reverse mappings:
 ;
 1   IN   PTR   localhost.
-</screen>
+</programlisting>
 
 <para>
 <emphasis>Husk den første linje $TTL - "Time to live" - skal med, og
@@ -1755,7 +1755,7 @@ zone-navnet (127.0.0) = 127.0.0.1), herefter klassen (IN), record-typen
 Den næste "reverse"-fil er for maskinerne i 192.168.0.*-området:
 </para>
 
-<screen>
+<programlisting>
 $TTL   1D
 @ IN SOA   ns.intranet. hostmaster.intranet. (
                                       1999102400 ; serial number
@@ -1777,7 +1777,7 @@ IN   NS    ns.intranet.
 2   IN   PTR   alan.intranet.
 3   IN   PTR   richard.intranet.
 4   IN   PTR   eric.intranet.
-</screen>
+</programlisting>
 
 <para>
 Ovenstående er reverse zone-filen for zonen 192.168.0.*.  Nok en gang
@@ -1848,10 +1848,10 @@ Unix-maskiner nu have <filename>/etc/resolv.conf</filename> med
 indhold for at bruge din nye DNS-server.
 </para>
 
-<screen>
+<programlisting>
 search intranet
 nameserver 192.168.0.1
-</screen>
+</programlisting>
 
 <para>
 Endelig skal det nævnes, at der i tidens løb har været en del
@@ -2040,9 +2040,9 @@ eksemplet i <xref linkend="DNS-eks-etc-name-conf">) og den er angivet
 som <filename>var/named</filename> i det følgende eksempel:
 </para>
 
-<SCREEN>
+<programlisting>
  options { directory "/var/named";} 
-</SCREEN>
+</programlisting>
 
 <para>
 Variablen <filename>OPTDIR</filename> sættes lig med denne mappe,
@@ -2074,12 +2074,12 @@ konfigurationsfil og den er angivet
 som <filename>etc/bind</filename> i det følgende eksempel:
 </para>
 
-<SCREEN>
+<programlisting>
 zone "127.in-addr.arpa" {
 	type master;
 	file "/etc/bind/db.127";
 };
-</SCREEN>
+</programlisting>
 
 <para>
 Variablen <filename>MASTERZD</filename> sættes lig med denne mappe,
@@ -2115,12 +2115,12 @@ Denne mappe nævnes undtagelsesvis i den overordnede konfigurationsfil og den er 
 som <filename>etc/named/slave</filename> i det følgende eksempel:
 </para>
 
-<SCREEN>
+<programlisting>
   zone "intranet" in {
   type slave;
   file "/etc/named/slave/intranet";
   masters { 192.168.0.1; };
-</SCREEN>
+</programlisting>
 
 <para>
 Den forvalgte mappe kan sagtens bruges her hvis master filerne lægges
@@ -2156,27 +2156,27 @@ dog uden det første skråstreg.
    I Red Hat, Mandrake og SuSE: 
 </para>
 
-<SCREEN>
+<programlisting>
 <userinput>
 export KONFIL=etc/named.conf
 export OPTDIR=var/named
 export MASTERZD=var/named
 export SLAVEZD=var/named/slave 
 </userinput>
-</SCREEN>
+</programlisting>
 
 <para>
 I  Debian: 
 </para>
 
-<SCREEN>
+<programlisting>
 <userinput>
 export KONFIL=etc/bind/named.conf
 export OPTDIR=var/cache/bind
 export MASTERZD=etc/bind
 export SLAVEZD=var/cache/bind
 </userinput>
-</SCREEN>
+</programlisting>
 
 <para>
 Der kan opstå forvirring vedrørende placeringer af filer og mapper
@@ -2205,13 +2205,13 @@ allesammen fortolkes i forhold til filsystemets rod, nemlig
 <para>
 Et fiktivt eksempel hvor variablen <filename>SLAVEZD</filename> er
 forskellig fra værdien i den overordnede konfigurationsfil. 
-<SCREEN>
+<programlisting>
 <userinput>
 export SLAVEZD=var/named/slave
 </userinput>
-</SCREEN>
+</programlisting>
 Mens der i den overordnede konfigurationsfil bla. står: 
-<SCREEN>
+<programlisting>
   options { directory "/var/named";
   };
   zone "intranet" in {
@@ -2219,7 +2219,7 @@ Mens der i den overordnede konfigurationsfil bla. står:
   file "slave/intranet";
   masters { 192.168.0.1; };
 };
-</SCREEN>
+</programlisting>
 </para>
 
 <para>
@@ -2295,13 +2295,13 @@ mulighed for at afprøve opsætningen men den vil være tabt ved genstart
 af computeren.
 </para>
 
-<SCREEN>
+<programlisting>
 <userinput>
 mount --bind /dev/log $JAIL/dev/log
 mount --bind /dev/random $JAIL/dev/random
 mount --bind /dev/null $JAIL/dev/null
 </userinput>
-</SCREEN>
+</programlisting>
 
 <para>
 Erfarne brugere vil vide at mount kommandoen også kan bruges i
@@ -2312,7 +2312,7 @@ lige tager en kopi af denne fil idet den er meget vigtig for
 systemet). Dette gøres lettest med de følgende kommandoer:  
 </para>
 
-<SCREEN>
+<programlisting>
 <userinput>
 export JAIL=/opt/chroot/named &amp;&amp;
 cd /etc &amp;&amp;
@@ -2321,7 +2321,7 @@ echo -e '/dev/log\t'$JAIL'/dev/log\tnone \t rw,bind \t 0 0' >>fstab &amp;&amp;
 echo -e '/dev/null\t'$JAIL'/dev/null\tnone \t rw,bind \t 0 0' >>fstab &amp;&amp;
 echo -e '/dev/random\t'$JAIL'/dev/random\tnone \t rw,bind \t 0 0' >>fstab
 </userinput>
-</SCREEN>
+</programlisting>
 
 <para>
 Ovenstående kommandoer er nok til at sætte computeren op så
@@ -2347,11 +2347,11 @@ forbindelser i kernen.
 <SCREEN>
 <prompt>[root@linus /root]# </prompt> <userinput>mount</userinput>
 </SCREEN>
-<SCREEN>
+<programlisting>
 /dev/log on /opt/chroot/named/dev/log type none (rw,bind)
 /dev/null on /opt/chroot/named/dev/null type none (rw,bind)
 /dev/random on /opt/chroot/named/dev/random type none (rw,bind)
-</SCREEN>
+</programlisting>
 
 </sect2>
 
@@ -2386,7 +2386,7 @@ kan man blot ændre variablen <filename>$JAIL</filename> i starten af
  terminalvindue hvor root allerede har logget ind: 
 </para>
 
-<SCREEN>
+<programlisting>
 <userinput>
 export JAIL=/opt/chroot/named &amp;&amp;
 export PIDDIR=var/run &amp;&amp;
@@ -2410,7 +2410,7 @@ chown $UNAMED.$GNAMED .  $PIDDIR $SLAVEZD &amp;&amp;
 chmod 700 . .. &amp;&amp;
 chattr +i  dev etc var $LOKALTID
 </userinput>
-</SCREEN>
+</programlisting>
 
 <para>
 Kommandoen i femte nederste linie, kopierer hele DNS-serverens 
@@ -2451,7 +2451,7 @@ sikkerhedsventiler på kommandoen <command>rm -rf</command> for det
 tilfælde at variablen <filename>&amp;JAIL</filename> ikke findes. 
 </para>
 
-<SCREEN>
+<programlisting>
 <userinput>
 umount $JAIL/dev/* &amp;&amp;
 cd $JAIL &amp;&amp;
@@ -2459,7 +2459,7 @@ chattr -i  dev etc var $LOKALTID &amp;&amp;
 cd /tmp &amp;&amp;
 rm -rf $JAIL findesikke 
 </userinput>
-</SCREEN>
+</programlisting>
 
 </sect2>
 
@@ -2507,10 +2507,10 @@ stedet for root.
 Der tilføjes nogle linier til opstartsfilerne: 
 </para>
 
-<SCREEN>
+<programlisting>
 OPTS="-u named -t /opt/chroot/named" &amp;&amp;
 /usr/sbin/named $OPTS 
-</SCREEN>
+</programlisting>
 
 <para>
 For at gøre opsætningen varig, kan ovenstående sættes ind i opstartsfilen. 
@@ -2520,7 +2520,7 @@ For at gøre opsætningen varig, kan ovenstående sættes ind i opstartsfilen.
 I Red Hat ser opstartsfilen således ud med ovenstående ændringer: 
 </para>
 
-<SCREEN>
+<programlisting>
    #!/bin/sh
    #
    # named           This shell script takes care of starting and stopping
@@ -2594,13 +2594,13 @@ daemon named $OPTS
    esac
 
    exit $RETVAL
-</SCREEN>
+</programlisting>
 
 <para>
 I Debian ser opstartsfilen således ud for bind version 9: 
 </para>
 
-<SCREEN>
+<programlisting>
 #!/bin/sh
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -2640,7 +2640,7 @@ case "$1" in
     ;;
 esac
 exit 0
-</SCREEN>
+</programlisting>
 
 <para>
 Med ovenstående opstartsfil kan serveren køre efter genstart, 
@@ -2668,7 +2668,7 @@ krusiduller og Co. for at man kan se hvordan opstarten går):
 </userinput>
 </screen>
 
-<screen>
+<programlisting>
 Jun  8 14:29:28 nse named[308]: starting BIND 9.2.0 -u named -t /opt/chroot/named \ 
 -c /etc/bind/named.conf
 Jun  8 14:29:28 ns named[308]: using 1 CPU
@@ -2680,7 +2680,7 @@ Jun  8 14:29:29 ns named[311]: zone 127.in-addr.arpa/IN: loaded serial 1
 Jun  8 14:29:29 ns named[311]: zone 168.192.in-addr.arpa/IN: loaded serial 2000111605
 Jun  8 14:29:29 ns named[311]: zone 255.in-addr.arpa/IN: loaded serial 1
 Jun  8 14:29:29 ns named[311]: zone localhost/IN: loaded serial 1
-</screen>
+</programlisting>
 
 <para>
 Hvis alting er som det skal være, udskrives noget der ligner det
@@ -2695,10 +2695,10 @@ se om bind virkelig kører samt kigge i logfiler.
 linier som den følgende: 
 </para>
 
-<screen>
+<programlisting>
 named 2043 0.0  2.8 10396 1432 ?  S  03:11 0:00 /usr/sbin/named \
   -u named -t /opt/chroot/named -c /etc/bind/named.conf
-</screen>
+</programlisting>
 
 <para>
 Ovenstående linie bekræfter at BIND kører som den upriviligerede bruger 
@@ -2772,12 +2772,12 @@ I den overordnede konfigurationsfil til BIND
 bør den nederste af de følgende linier tilføjes i sektionen options {}:
 </para>
 
-<screen>
+<programlisting>
 <userinput>
         listen-on port 53 { 192.168.8.1; };
         query-source address * port 1053;
 </userinput>
-</screen>
+</programlisting>
 
 <para>
 <!-- Det følgende skal skrives sammen med de foregående afsnit når
@@ -2817,7 +2817,7 @@ domænet sslug.dk .
 <prompt>[robin@sherwood robin]$</prompt> <userinput>dig @192.168.8.1 sslug.dk</userinput>
 </SCREEN>
 
-<SCREEN>
+<programlisting>
 ; &lt;&lt;&gt;&gt; DiG 9.2.0  &lt;&lt;&gt;&gt; @192.168.8.1 sslug.dk
 ;; global options:  printcmd
 ;; Got answer:
@@ -2844,7 +2844,7 @@ ns-soa.darenet.dk.      71539   IN      A       130.226.1.4
 ;; SERVER: 192.168.8.1#53(192.168.8.1)
 ;; WHEN: Sat Apr 13 18:11:17 2002
 ;; MSG SIZE  rcvd: 161
-</SCREEN>
+</programlisting>
 
 <para>
 Sådan kan man teste serveren ved at pege den på forskellige 

@@ -223,14 +223,14 @@ samtidigt de mest brugte SQL-kommandoer.  Kommandoerne gør følgende:
 <LISTITEM><PARA>Sletter tabellen</PARA></LISTITEM>
 </ITEMIZEDLIST>
 
-<SCREEN>
+<programlisting>
 CREATE TABLE linuxbog(kapitel INT, titel VARCHAR(40));
 INSERT INTO linuxbog(kapitel, titel) VALUES(0, 'Indledning');
 UPDATE linuxbog SET kapitel=1 WHERE kapitel=0;
 SELECT * FROM linuxbog ORDER BY kapitel;
 DELETE FROM linuxbog WHERE kapitel=1;
 DROP TABLE linuxbog;
-</SCREEN>
+</programlisting>
 
 <PARA>
 De viste SQL-kommandoer er helt basale og virker med alle SQL-databaser.
@@ -316,7 +316,7 @@ kommandoer opretter en tabel, indsætter en post, retter den samme post,
 udlæser indholdet af tabellen, sletter en post og sletter tabellen.
 </PARA>
 
-<SCREEN>
+<programlisting>
 -- fil: create.sql
 -- PostgreSQL/LinuxBog
 -- Kør dette program:
@@ -327,7 +327,7 @@ UPDATE linuxbog SET kapitel=1 WHERE kapitel=0;
 SELECT * FROM linuxbog ORDER BY kapitel;
 DELETE FROM linuxbog WHERE kapitel=1;
 DROP TABLE linuxbog;
-</SCREEN>
+</programlisting>
 
 <PARA>
 SQL-kommandoerne kan nemt indlæses fra en fil med kommandoen
@@ -424,7 +424,7 @@ Placér programmet <FILENAME>pgsql.sh</FILENAME> i <FILENAME>cgi-bin</FILENAME>
 og gør det kørbart med kommandoen <COMMAND>chmod +x pgsql.sh</COMMAND>.
 </PARA>
 
-<SCREEN>
+<programlisting>
 #!/bin/sh
 echo Content-type: text/html
 echo
@@ -432,7 +432,7 @@ echo "&lt;HTML&gt;&lt;TITLE&gt;PostgreSQL CGI&lt;/TITLE&gt;"
 echo "&lt;H1&gt;PostgreSQL CGI&lt;/H1&gt;"
 psql nobody -H -c "SELECT * FROM linuxbog"
 echo "&lt;/HTML&gt;"
-</SCREEN>
+</programlisting>
 
 <PARA>
 CGI-programmet kan nu startes fra din browser med URL'en
@@ -446,9 +446,9 @@ Ovenstående SQL-kommando er nok ikke lige det du vil,
 men nok mere noget i retning af:
 </PARA>
 
-<SCREEN>
+<programlisting>
 psql nobody -H -T "cellspacing='0'" -c "SELECT kapitel AS \"Bog kapitel\", titel FROM linuxbog ORDER BY kapitel DESC LIMIT 10 OFFSET 0"
-</SCREEN>
+</programlisting>
 
 <PARA>
 I ovenstående kommer der en pænere ramme uden om med option 
@@ -513,7 +513,7 @@ Hvis ikke <APPLICATION>Apache</APPLICATION> er startet nu, så gør det.
 Eksemplet <FILENAME>pgsql.php3</FILENAME> bruger den tabel der blev beskrevet i <XREF LINKEND="db-sql"> om SQL.
 </PARA>
 
-<SCREEN>
+<programlisting>
 &lt;html&gt;&lt;head&gt;&lt;TITLE&gt;LinuxBog PostgreSQL PHP&lt;/TITLE&gt;&lt;/head&gt;
 &lt;?  // Her skiftes der fra HTML til PHP-kode med tegnet '&lt;?'
   // Åben en forbindelse til PostgreSQL
@@ -531,15 +531,15 @@ Eksemplet <FILENAME>pgsql.php3</FILENAME> bruger den tabel der blev beskrevet i 
   // Luk forbindelsen
   pg_close($conn);
 ?&gt;&lt;/html&gt;
-</SCREEN>
+</programlisting>
 
 <PARA>
 Resultatet af ovenstående ser således ud i en browser
 </PARA>
 
-<SCREEN>
+<programlisting>
 1 Indledning
-</SCREEN>
+</programlisting>
 
 <PARA>
 PHP er frit programmel og kan hentes på
@@ -606,7 +606,7 @@ bruger den tabel der blev oprettet i
 Tabellen <DATABASE>linuxbog</DATABASE> åbnes og alle poster udskrives.
 </PARA>
 
-<SCREEN>
+<programlisting>
 #!/usr/bin/perl
 # Inkluder DBI-modulet
 use DBI;
@@ -624,7 +624,7 @@ while (($kapitel,$titel) = $sth-&gt;fetchrow) {
 $sth-&gt;finish;
 # Luk forbindelsen til PostgreSQL
 $dbh-&gt;disconnect;
-</SCREEN>
+</programlisting>
 
 <PARA>
 DBI og DBD har mange flere kommandoer som kan findes i online-manualen
@@ -678,7 +678,7 @@ bruger den tabel der blev oprettet i
 Tabellen <DATABASE>linuxbog</DATABASE> åbnes og alle poster udskrives.
 </PARA>
 
-<SCREEN>
+<programlisting>
 #!/usr/bin/python
 # Inkluder fra postgresql (pg) modulet
 from pg import DB
@@ -691,7 +691,7 @@ for data in dbqo.dictresult():
     print str(data["kapitel"]) + " : " + data["titel"]
 # Luk forbindelsen til databasen
 dbc.close()
-</SCREEN>
+</programlisting>
 
 <PARA>
 Gem filen som <FILENAME>pgsql.py</FILENAME> og gør den eksekverbar
@@ -798,9 +798,9 @@ startes automatisk under opstart af maskinen. For at checke om programmet allere
 prøve at indtaste
 </PARA>
 
-<SCREEN>
+<programlisting>
 [root@linus /root]# mysqladmin version
-</SCREEN>
+</programlisting>
 
 <PARA>
 Hvis du får vist versionsnummer, uptime mm., kører MySQL allerede. Hvis MySQL ikke kører, kan du
@@ -975,9 +975,9 @@ Nu kan det ske, at Apache fortæller, at den ikke kan "determine local host...". 
 du åbne /etc/httpd/conf/httpd.conf i din favorit-editor og finde frem til linien
 </PARA>
 
-<SCREEN>
+<programlisting>
 #ServerName localhost
-</SCREEN>
+</programlisting>
 
 <PARA>
 Fjern #-symbolet, gem og start Apache igen.
@@ -992,7 +992,7 @@ Databasen der bruges, er basen "bog", som blev
 oprettet i <XREF LINKEND="db-mysql">.
 </PARA>
 
-<SCREEN>
+<programlisting>
 &lt;HTML&gt;
 	&lt;HEAD&gt;
 		&lt;TITLE&gt;LinuxBog MySQL PHP&lt;/TITLE&gt;	
@@ -1026,7 +1026,7 @@ mysql_close($conn);  // Luk forbindelsen
 
 &lt;/BODY&gt;&lt;/HTML&gt;
 
-</SCREEN>
+</programlisting>
 
 <PARA>
 Kopier eventuelt dette eksempel, og indsæt det i et tomt dokument, som du gemmer som "test.php" i

@@ -64,10 +64,10 @@ skal udføres i Apaches opsætningsfiler, der ligger normalt i
 <para>Filen <filename>srm.conf</filename> skal indeholde følgende linier
 </para>
 
-<screen>
+<programlisting>
 AddHandler cgi-script .cgi
 ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
-</screen>
+</programlisting>
 
 <para>
 Filen <filename>access.conf</filename> definere web browseres rettigheder til
@@ -77,12 +77,12 @@ kataloger hvor webserveren skal udføre programmer. Typisk er der i forvejen et
 til at udføre programmer:
 </para>
 
-<screen>
+<programlisting>
 &lt;Directory /home/httpd/cgi-bin&gt;
   AllowOverride None
   Options ExecCGI
 &lt;/Directory&gt;
-</screen>
+</programlisting>
 
 <para>
 Det kan være nødvendigt at ændre adgangen til dette katalog, så du som
@@ -94,10 +94,10 @@ o+rwx /home/httpd/cgi-bin</command>.
 Filen <filename>httpd.conf</filename> skal indeholde følgende linjer:
 </para>
 
-<screen>
+<programlisting>
 LoadModule dir_module         modules/mod_dir.so
 AddModule mod_cgi.c
-</screen>
+</programlisting>
 
 <para>
 Mange af disse ændringer består i at fjerne udkommenteringen af '#' i
@@ -155,7 +155,7 @@ enkel oplysning, f.eks. hvad klokken er. Gem følgende program i
 <filename>/home/httpd/cgi-bin/</filename> som <filename>klokken.cgi</filename>:
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl -w
 #Filnavn: klokken.cgi
 
@@ -165,17 +165,17 @@ print "\r\n";
 
 #Udskriv indhold
 print "Datoen er ".scalar(localtime);
-</screen>
+</programlisting>
 
 <para>
 Køres <filename>klokken.cgi</filename> fra kommandolinjen får man:
 </para>
 
-<screen>
+<programlisting>
 Content-Type: text/plain
 
 Datoen er Thu Jul 20 11:38:08 2000
-</screen>
+</programlisting>
 
 <para>
 Prøv nu at hente det i en webbrowser som
@@ -200,7 +200,7 @@ tekst. Dette kan let gøres ved at modificere programmet som
 følger:
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl -w
 
 #Filnavn: klokken2.cgi
@@ -216,7 +216,7 @@ my $color=sprintf("%x",int rand(0x1000000));
 print "&lt;H1>Datoen er: ";
 print "  &lt;font color=\"#$color\">", scalar(localtime) ,"&lt;/font>";
 print "&lt;/H1>";
-</screen>
+</programlisting>
 
 <para>
 Programmet vil nu udskrive datoen med store bogstaver og med en tilfældig
@@ -322,7 +322,7 @@ fortæller browseren og stråmænd (som for eksempel Squid), at siden ikke
 må gemmes:
 </para>
 
-<screen>
+<programlisting>
 #Udskriv hoved
 print "Content-Type: text/html\r\n";
 
@@ -334,14 +334,14 @@ print "Pragma: no-cache\r\n";
 print "\r\n";
 
 #Resten af programmet
-</screen>
+</programlisting>
 
 <para>
 Hvis siden må gemmes, men man ønsker at bestemme hvor længe, kan det
 gøres med <command>Expires</command>-feltet. Følgende stump kode viser
 hvordan:
 
-<screen>
+<programlisting>
 # Indsættes: Udskriv hoved
 
 use POSIX qw(strftime);
@@ -357,7 +357,7 @@ print "Expires: ",$date,"\r\n";
 print "\r\n";
 
 #Her udføres resten af programmet
-</screen>
+</programlisting>
 </para>
 
 <para>
@@ -404,9 +404,9 @@ funktionalitet specificeres i
 <filename>/etc/httpd/conf/httpd.conf</filename> med linien:
 </para>
 
-<screen>
+<programlisting>
 DirectoryIndex index.htm index.html index.shtml index.cgi
-</screen>
+</programlisting>
 
 <para>
 Dvs. at <filename>index.cgi</filename> køres hvis ikke nogen af de
@@ -415,7 +415,7 @@ andre indeks-filer kan findes i kataloget. Så gem følgende program som
 og hvor der ikke er nogen anden indeks-fil.
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl -w
 #Filnavn: index.cgi
 
@@ -431,7 +431,7 @@ my $no=int rand($#files+1);
 
 #udskriv en location til dokument no $no
 print 'Location: ', $files[$no] ,"\r\n\r\n"; 
-</screen>
+</programlisting>
 
 <para>Programmet vil finde alle <filename>.html</filename>-filer i samme
 katalog, og udskrive en redirektion til en filfældig
@@ -444,7 +444,7 @@ ovenstående program gemmes i <filename>/baggrund</filename>-kataloget,
 og modificeres så '.html' ændres til '.jpeg', og HTML-koden for
 sider, der skal have en tilfældig baggrund er nu:</para>
 
-<screen>&lt;body background="/baggrund/index.cgi"></screen>
+<programlisting>&lt;body background="/baggrund/index.cgi"></programlisting>
 
 </sect2>
 
@@ -456,13 +456,13 @@ indtastet i webformularer på nettet. Følgende eksempel er en simpel
 HTML-formular, hvor man kan indtaste et navn og en e-postadresse:
 </para>
 
-<screen>
+<programlisting>
 &lt;form action="/cgi-bin/get_metoden.cgi" method="GET"&gt;
    Indtast navn: &lt;input type="text" name="navn"&gt;&lt;br&gt;
    Indtast Email: &lt;input type="text" name="adresse"&gt;&lt;br&gt;
    &lt;input type="Submit"&gt;
 &lt;/form&gt;
-</screen>
+</programlisting>
 
 <para>
 I browseren vil det se ud som:
@@ -488,12 +488,12 @@ Gem følgende program som <filename>get_metoden.cgi</filename> i
 <filename>/home/httpd/cgi-bin</filename>:
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl -w
 
 print "Content-Type: text/plain\r\n\r\n";
 print $ENV{'QUERY_STRING'};
-</screen>
+</programlisting>
 
 <para>
 I eksemplet vist vil get_data.cgi udskrive
@@ -533,7 +533,7 @@ Følgende Perl-program laver en URL-kodet streng om til en hashtabel
 <literal>%data</literal> af (variabelnavn->værdi)-par.
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl
 
 #Filnavn: get_metoden.cgi
@@ -595,17 +595,17 @@ foreach (sort keys %data)
     {
        print "   $_ = \"$data{$_}\"\n";
     }
-</screen>
+</programlisting>
 
 <para>
 Programmet vil udskrive
 </para>
 
-<screen>
+<programlisting>
 Jeg modtog følgende data:
     adresse = "Tux@linux.org"
     navn = "Tux Penguin"
-</screen>
+</programlisting>
 
 <para>
 I stedet for at udskrive disse i browseren kunne programmet tilføjes navn og
@@ -643,15 +643,15 @@ efter en indtastning. Det tidligere eksempel kan let omskrives til at bruge
 post metoden:
 </para>
 
-<screen>
+<programlisting>
 &lt;form action="/cgi-bin/post_metoden.cgi" method="POST"&gt;
    Indtast navn: &lt;input type="text" name="navn"&gt;&lt;br&gt;
    Indtast e-postadresse: &lt;input type="text" name="adresse"&gt;&lt;br&gt;
    &lt;input type="Submit"&gt;
 &lt;/form&gt;
-</screen>
+</programlisting>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl
 
 #filnavn: post_metoden.cgi
@@ -695,7 +695,7 @@ foreach (sort keys %data)
     {
        print "   $_ = \"$data{$_}\"\n";
     }
-</screen>
+</programlisting>
 
 <para>
 Post metoden kan modtage lige så store datamænger som man ønsker. Men
@@ -726,9 +726,9 @@ I HTML-koden der kalder programmet kan der også indlejres information
 f.eks.:
 </para>
 
-<screen>
+<programlisting>
 &lt;input type="hidden" navn="hemmelig" value="Jeg er en hemmelig streng"&gt;
-</screen>
+</programlisting>
 
 <para>
 Hvis HTML-koden til en webformular udskrives af et program, og det program
@@ -782,14 +782,14 @@ kaldes fra HTML-koden i en webformular:
 Et eksempel på HTML-koden til en webformular der anvender kommandolinieargumenter og skjulte variable:
 </para>
 
-<screen>
+<programlisting>
 &lt;form action="/cgi-bin/debug.cgi/foo/bar?arg1&amp;arg2" method="POST"&gt;
    Indtast navn: &lt;input type="text" name="navn"&gt;&lt;br&gt;
    Indtast Email: &lt;input type="text" name="adresse"&gt;&lt;br&gt;
    &lt;input type="hidden" navn="hemmelig" value="Jeg er en hemmelig streng"&gt;
    &lt;input type="Submit"&gt;
 &lt;/form&gt;
-</screen>
+</programlisting>
 
 <para>
 Følgende er en liste af de mest interessante environment variable som
@@ -897,7 +897,7 @@ CGI-programmer og for at debugge webformularer. Det kan modtage både Get og Post
 data, udskriver alle de data det modtager.
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl
 
 #Filnavn: echo.cgi
@@ -952,7 +952,7 @@ if ($ENV{'QUERY_STRING'} and $ENV{'REQUEST_METHOD'} eq "POST")
           print "   \"$_\"\n";
        }
 }
-</screen>
+</programlisting>
 
 </sect2>
 
@@ -1014,14 +1014,14 @@ der kan vises i browseren. Istedet for die kan følgende stump kode
 bruges hvis man i forvejen har udskrevet HTTP-hovedet ($!  er fejlteksten
 svarende til sidste fejl):</para>
 
-<screen>
+<programlisting>
 sub Fejl
 #udskriver fejl til browser og error_log
 {
   print "Fejl! $!";
   die "Fejl! $!";
 }
-</screen>
+</programlisting>
 
 <para>CGI-program situationer, der typisk giver fejl:</para>
 
@@ -1099,7 +1099,7 @@ kommandolinien eller i en debugger. De to filer er formateret i en syntaks, der
 ligner XML så det er også let at lave ændringer i datafilerne.
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl
 
 #filnavn: debug.cgi
@@ -1226,7 +1226,7 @@ if ($isDebug)
 
 
 #Her behandles webformular data.
-</screen>
+</programlisting>
 
 <para>Hvis programmet er skrevet i C eller C++ har man den mulighed at man kan
 debugge program processen mens det kører. Dette gøres ved at oversætte
@@ -1282,13 +1282,13 @@ problem.</para>
 som programmet kører på, siden at den type information kan misbruges af hackere.
 Det følgende stump kode indeholder to sikkerhedsfejl:</para>
 
-<screen>
+<programlisting>
 #$filnavn er navnet på en fil og er indtastet i en webformular.
 
 my $fil = "/www/filer/$filnavn";
 
 #Indlæs og udskriv filen
-</screen>
+</programlisting>
 
 <para>
 Indtastes nu <filename>../../etc/passwd</filename> som filnavn i webformularen,
@@ -1306,14 +1306,14 @@ udskrives en Location til filen. På den måde virker Apaches adgangskontrol og
 ikke mindst adgangsbegrænsning stadig
 </para>
 
-<screen>
+<programlisting>
 #$filnavn er navnet på filen og kommer fra et en web formular.
 
 die "Suspekt filnavn!\n" if  $filename =~ /\//;
 my $fil = "/filer/$filnavn";
 
 #udskriv en Location til filen.
-</screen>
+</programlisting>
 
 <para>
 Specielt farlige er de tre perl kommandoer eval, exec og system der gør det
@@ -1323,12 +1323,12 @@ en streng af kommandoer, der skal udføres. Følgende program udskriver hvilke
 processer en bestemt bruger køre og indeholder en bagdør til webserver
 kontoen.</para>
 
-<screen>
+<programlisting>
 #$user er et bruger navn fra en webformular.
 
 print "Content-Type: text/plain\r\n\r\n";
 system("ps aux | grep $user");
-</screen>
+</programlisting>
 
 <para>En bruger kan nu taste "root" og se alle de tjenester der kører på
 maskinen. Det giver en ide om hvilke sikkerhedshuller der kan være i systemet.
@@ -1386,7 +1386,7 @@ perlsec" for mere information om tainted variable.</para>
 <para>Det følgende eksempel bruger tainted variable, og viser hvordan det
 untaintes.</para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl -T
 
 #hent variable fra webformularen.
@@ -1410,7 +1410,7 @@ die "Fy! fingerene væk!" if ($user =~ /root/);
 print "Content-Type: text/plain\r\n\r\n";
 system("ps aux | grep $user");
 #da $user er untainted generere dette ikke en fejl.
-</screen>
+</programlisting>
 
 <para>Hvis flere bruger skal have adgang til at køre programmer på den samme
 webserver, så kan det være praktisk at anvende suEXEC (Swich User for Exec).
@@ -1452,27 +1452,27 @@ CGI-modul.</para>
 
 <para>Oversæt koden med:</para>
 
-<screen>
+<programlisting>
 apxs -c -o mod_fastcgi.so *.c
-</screen>
+</programlisting>
 
 <para>Installer apache modulet med:</para>
 
-<screen>
+<programlisting>
 apxs -i -a -n fastcgi mod_fastcgi.so
-</screen>
+</programlisting>
 
 <para>Check at mod_fastcgi er inkluderet i httpd.conf og at path til det
 dynamiske bibliotek er korrekt.</para>
 
 <para>Adder følgende linie til srm.conf</para>
-<screen>AddHandler fastcgi-script fcg fcgi fpl</screen>
+<programlisting>AddHandler fastcgi-script fcg fcgi fpl</programlisting>
 
 <para>Restart apache</para>
 
-<screen>
+<programlisting>
 /etc/rc.d/init.d/httpd restart
-</screen>
+</programlisting>
 
 <para>Apache webserveren understøtter nu fastCGI protokollen.</para>
 
@@ -1480,13 +1480,13 @@ dynamiske bibliotek er korrekt.</para>
 et FCGI-modul der tillader Perl-programmer at anvende fastCGI-modulet.
 Perl-modulet som andre Perl-moduler med:</para>
 
-<screen>
+<programlisting>
 tar -zxvf FCGI-0.53.tar.gz
 cd FCGI-0.53
 perl Makefile.PL
 make
 make install
-</screen>
+</programlisting>
 
 </sect3>
 
@@ -1496,7 +1496,7 @@ make install
 <para>Gem følgende program som fastcgi_test.fcgi og kør det flere gange i
 browseren.</para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl
 use FCGI;
 
@@ -1513,7 +1513,7 @@ while($request::accept() >= 0)
 
 #her kan resten af CGI-programmet udføres.
 }
-</screen>
+</programlisting>
 
 <para>Det specielle ved FastCGI-programmer er at de kan huske tidligere
 forbindelser. $count i eksemplet tælles op for hver gang programmet modtager en

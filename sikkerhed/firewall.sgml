@@ -386,7 +386,7 @@ nødt til at lade en masse porte stå åbne. Lad os se, hvad der sker,
 når man bruger traditionel ftp:
 </para>
 
-<SCREEN>
+<programlisting>
 Aktiv ftp 
 
   Klient                  Server
@@ -407,7 +407,7 @@ Aktiv ftp
   |    |                  |    |
   |    |                  |    |
 
-</SCREEN>
+</programlisting>
 
 <itemizedlist mark="bullet">
 
@@ -444,7 +444,7 @@ der starter forbindelser op.
 
 <example id="passiv-ftp">
 <title>Passiv ftp</title>
-<SCREEN>
+<programlisting>
 Passiv ftp 
 
   Klient                  Server
@@ -464,7 +464,7 @@ Passiv ftp
   |    |                  |    |    |
   |    |                  |    |    |
   |    |                  |    |    |
-</SCREEN>
+</programlisting>
 </example>
 
 <itemizedlist mark="bullet">
@@ -684,7 +684,7 @@ at reglerne for ppp0 kun gennemløbes, hvis pakken rent faktisk er kommet
 ind på ppp0.
 </para>
 
-<SCREEN>
+<programlisting>
                   __________
                 _|ppp0-rules|__> ppp0 rule 1 __> ppp0 rule 2 ..._
                ^ |__________|                                    |
@@ -702,7 +702,7 @@ __|output|
    _______
 __|forward|
   |_______|
-</SCREEN>
+</programlisting>
 
 <para>
 En kæde oprettes med kommandoen:
@@ -1002,11 +1002,11 @@ Først sætter vi "default policies" op.
 <indexterm><primary>default policy</primary></indexterm>
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -P input DENY
 ipchains -P output ACCEPT
 ipchains -P forward DENY
-</SCREEN>
+</programlisting>
 </sect4>
 
 <sect4 id="eksempel-for-vores-hjemmebruger">
@@ -1015,17 +1015,17 @@ ipchains -P forward DENY
 Tillad alt på loopback interfacet
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p all -j ACCEPT -i lo
-</SCREEN>
+</programlisting>
 
 <para>
 Tillad alt på LAN
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p all -j ACCEPT -i eth0
-</SCREEN>
+</programlisting>
 
 <para>
 Nu er der kun indgående trafik fra internettet (ppp0) tilbage.  Først
@@ -1034,9 +1034,9 @@ ip-adresser" fra det eksterne interface. Hvis vores interne net er
 192.168.0.0/255.255.255.0, hedder det:
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -p all -s 192.168.0.0/255.255.255.0 -j DENY -i ppp0
-</screen>
+</programlisting>
 
 <para>
 Lad os nu kigge på TCP pakker. Tillad alt, hvad der <emphasis>ikke</emphasis>
@@ -1044,44 +1044,44 @@ forsøger at oprette en forbindelse, det vil sige alt, hvad der ikke
 har SYN bitten sat:
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p tcp -j ACCEPT \! -y
-</SCREEN>
+</programlisting>
 
 <para>
 Tillad forbindelser til vores http, https og auth server:
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p tcp -j ACCEPT -s 0/0 -d 0/0 http -y
 ipchains -A input -p tcp -j ACCEPT -s 0/0 -d 0/0 https -y
 ipchains -A input -p tcp -j ACCEPT -s 0/0 -d 0/0 auth -y
-</SCREEN>
+</programlisting>
 
 <para>
 Tillad ftp dataforbindelser (når vores hjemmebruger vil lave ftp
 downloads og ftp dir kommandoer på ftp-servere ude i verden)
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p tcp -j ACCEPT -s 0/0 ftp-data -d 0/0 56000:65096 -y
-</SCREEN>
+</programlisting>
 
 <para>
 UDP pakker: Tillad DNS replies:
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p udp -j ACCEPT -s 0/0 domain -d 0/0 56000:65096
-</SCREEN>
+</programlisting>
 
 <para>
 Tillad Real Audio / Real video i bedste kvalitet:
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p udp -j ACCEPT -d 0/0 32768:37769
-</SCREEN>
+</programlisting>
 
 <para>
 ICMP
@@ -1092,20 +1092,20 @@ Tillad ikke redirect (kan principielt bruges til at manipulere
 routing)
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p icmp -s 0/0 redirect -j DENY --log
 ipchains -A input -p icmp -s 0/0 timestamp-request -j DENY --log
 ipchains -A input -p icmp -s 0/0 address-mask-request -j DENY --log
 ipchains -A input -p icmp -j ACCEPT
-</SCREEN>
+</programlisting>
 
 <para>
 Log resten
 </para>
 
-<SCREEN>
+<programlisting>
 ipchains -A input --log
-</SCREEN>
+</programlisting>
 
 
 <para>
@@ -1121,10 +1121,10 @@ logges information om disse pakker i kerne-logfilen (ofte
 En log entry kan f.eks. se sådan ud:
 </para>
 
-<SCREEN>
+<programlisting>
 input - ppp0 PROTO=17 4.3.2.1:4000 1.2.3.4:1872 L=53 S=0x00      
 I=60456 F=4000 T=240 (#14)
-</SCREEN>
+</programlisting>
 
 <para>
 hvor <emphasis>1.2.3.4</emphasis> er vores hjemmebrugers egen
@@ -1153,9 +1153,9 @@ maskinen er sat op til at bruge nogle andre porte til at oprette
 forbindelser på. Det kan systemadministratoren selv sætte med kommandoen
 </para>
 
-<SCREEN>
+<programlisting>
 echo "56000 60999" >/proc/sys/net/ipv4/ip_local_port_range
-</SCREEN>
+</programlisting>
 
 <para>
 Se i øvrigt et glimerende eksempel på ipchains opsætning på
@@ -1201,7 +1201,7 @@ Det følgende startup script kan hvert fald bruges med Red Hat, SuSE og
 Debian:
 </para>
 
-<SCREEN>
+<programlisting>
 #!/bin/sh
 #ipchains startup script
 #To be run before starting network on startup
@@ -1232,7 +1232,7 @@ case "$1" in
         exit 1
         ;;
 esac                
-</SCREEN>
+</programlisting>
 
 <para>
 Lav et symlink til det i <FILENAME>/etc/rc.d/rc</FILENAME><emphasis>N</emphasis><FILENAME>.d</FILENAME> (N=runlevel) 
@@ -1459,7 +1459,7 @@ Desuden er der skrevet en række extensions, som følger med iptables:
 </itemizedlist>
 
 <para>Extension modulerne loades med <emphasis>-m</emphasis>, f.eks.</para>
-<SCREEN># iptables -A INPUT -m mac --mac-source 192.168.0.1</SCREEN>
+<programlisting># iptables -A INPUT -m mac --mac-source 192.168.0.1</programlisting>
 <para>Det er også muligt at skrive extensions selv.</para>
 
 </sect4>
@@ -1566,7 +1566,7 @@ Vi skal nu vise en kort <FILENAME>squid.conf</FILENAME>, hvor vi lader squid kør
 brugeren <FILENAME>squid</FILENAME>.
 </para>
 
-<SCREEN>
+<programlisting>
 #squid.conf -  Basal opsætning
 
 #Laveste niveau af logging
@@ -1607,7 +1607,7 @@ maximum_object_size 4096 KB
 #  Level2 dir antal - Antal underkataloger for hver Level-1 kataloger
 # Sæt ikke produktet mellem de to sidste vildt højt!
 cache_dir /var/spool/squid 100 16 256
-</SCREEN>
+</programlisting>
 
 
 <para>
@@ -1615,9 +1615,9 @@ Lad os se nærmere på, hvad der installeres, og hvordan squid
 kører. Installer squid med 
 </para>
 
-<SCREEN>
+<programlisting>
 #rpm -ivh squid-2.2.STABLE5-1.i386.rpm
-</SCREEN>
+</programlisting>
 
 <para>
 Ret <FILENAME>/etc/squid/squid.conf</FILENAME> til som vist ovenfor. Husk dog at gemme 
@@ -1676,11 +1676,11 @@ sætte følgende environment variable
 (her hedder vores proxy-server "proxy.herne.dk")
 </para>
 
-<SCREEN>
+<programlisting>
 % setenv http_proxy http://proxy.herne.dk:3128/
 % setenv gopher_proxy http://proxy.herne.dk:3128/
 % setenv ftp_proxy http://proxy.herne.dk:3128/ 
-</SCREEN>
+</programlisting>
 
 <para>
 I Netscape skal brugerne under
@@ -1858,9 +1858,9 @@ Der findes en slags beskrivelse af emnet i IP-Masquerade-HOWTO'en på
 Default gateway sættes med kommandoen <COMMAND>route</COMMAND>:
 </para>
 
-<SCREEN>
+<programlisting>
 route add default gw myhost
-</SCREEN>
+</programlisting>
 
 <para>
 Hvis det skal være permanent, er der lidt forskel på distributionerne.
@@ -1967,14 +1967,14 @@ angiver den/de ip-adresse(r) der skal NAT'es til.
 
 <para>Med fast ip-adresse:</para>
 
-<SCREEN>
+<programlisting>
 # iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to 1.2.3.4
-</SCREEN>
+</programlisting>
 
 <para>Med dynamisk ip-adresse:</para>
-<SCREEN>
+<programlisting>
 # iptables -t nat -A POSTROUTING -o ppp0 -j MASQUERADE
-</SCREEN>
+</programlisting>
 
 <para>
 MASQUERADING target er specielt til masquerading med en dynamisk
@@ -1982,15 +1982,15 @@ tildelt ip-adresse, som en dial-up forbindelse har. Den finder
 selv ud af det, når ip-adressen på ppp0 skifter. 
 </para>
 <para>Lav destination NAT til ip 1.2.3.4, 1.2.3.5 eller 1.2.3.6</para>
-<SCREEN>
+<programlisting>
 # iptables -t nat -A PREROUTING -i eth1 -j DNAT --to 1.2.3.4-1.2.3.6
-</SCREEN>
+</programlisting>
 
 <para>Lav destinations NAT fra port 80 til den lokale port 3128, hvor squid kører</para>
-<SCREEN>
+<programlisting>
 # iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 \ 
 -j REDIRECT --to-port 3128
-</SCREEN>
+</programlisting>
 
 <para>
 Eksemplerne er taget mere eller mindre direkte fra Linux 2.4 NAT HOWTO, og

@@ -27,10 +27,10 @@ For at Apache skal udføre SSI skal følgende linier udkommenteres i
 </para>
 
 
-<screen>
+<programlisting>
 AddType text/html .shtml
 AddHandler server-parsed .shtml
-</screen>
+</programlisting>
 
 <para>
 Aller filer med typen <filename>.shtml</filename> bliver fortolket af Apaches
@@ -46,11 +46,11 @@ adgangskonfiguration disse befinder sig i
 <filename>/etc/httpd/conf/access.conf</filename> filen, f.eks.:
 </para>
 
-<screen>
+<programlisting>
 &lt;directory /www &gt;
 Options Includes
 &lt;/directory&gt;
-</screen>
+</programlisting>
 
 <para>
 Bruges <command>IncludesNOEXEC</command> istedet for Includes, så kan
@@ -68,7 +68,7 @@ at fortolke visse <filename>.html</filename> og
 som følger
 </para>
 
-<screen>
+<programlisting>
 &lt;directory /www &gt;
 
 # "*.shtml"-filer fortolkes
@@ -77,7 +77,7 @@ Options Includes
 #filer med chmod u+x fil fortolkes
 XBitHack on
 &lt;/directory&gt;
-</screen>
+</programlisting>
 
 <para>
 Alle filer hvor brugeren har rettigheder til at udføre dem vil nu
@@ -120,7 +120,7 @@ filer.  Dette kan gøres med <command>#include</command> kommandoen der
 har følgende syntaks:
 </para>
 
-<screen>&lt;!--#include virtual="URL" --></screen>
+<programlisting>&lt;!--#include virtual="URL" --></programlisting>
 
 <para>
 
@@ -136,14 +136,14 @@ mellemrum før den afsluttende <command>--></command>. Følgende er et
 eksempel på hvordan et hoved og en fod kan inkluderes i et HTML-dokument:
 </para>
 
-<screen>
+<programlisting>
 &lt;body&gt;&lt;!--#include virtual="/hoved.html" --&gt;
 
 &lt;h1&gt;Titel&lt;/h1&gt;
 &lt;p&gt;Dokumentets indhold&lt;/p&gt;
 
 &lt;!--#include virtual="/fod.html" --&gt;&lt;/body&gt;
-</screen>
+</programlisting>
 
 <para>
 Her ligger både "hoved.html" og "fod.html" i WebRoot
@@ -165,16 +165,16 @@ til en fil.
 Uddata fra et CGI-program kan også inkluderes f.eks. 
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#exec cgi="/cgi-bin/hoved.cgi" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Alt imellem <command>&lt;..&gt;</command> vil blive erstattet af de
 data som <filename>hoved.cgi</filename> programmet udskriver. Hvis CGI-programmet udskriver en omdirigering af formen 
-<screen>
+<programlisting>
 Location: <literal>URL</literal>\r\n\r\n
-</screen>
+</programlisting>
 indsættes <literal>URL</literal> som et link istedet.
 </para>
 
@@ -184,18 +184,18 @@ Det følgende eksempel bruger et CGI-program til at generere <command>&lt;body
 bgcolor="#farve"&gt;</command>, hvor farven afhænger af tiden.
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#exec cgi="/cgi-bin/colorbody.cgi" --&gt; 
  &lt;h1&gt;Test&lt;/h1&gt;
 &lt;/body&gt;
-</screen>
+</programlisting>
 
 
 <para>
 Og koden til <filename>colorbody.cgi</filename> er et lille Perl-program
 </para>
 
-<screen>
+<programlisting>
 #!/usr/bin/perl
 
 #find RRGGBB farve på basis af tiden
@@ -205,7 +205,7 @@ print "Content-Type: text/html\r\n\r\n";
 
 #udskriver &lt;body ..&gt; tag
 print "&lt;body bgcolor=\"#$color\"&gt;\n";
-</screen>
+</programlisting>
 
 <para>
 Programmet fungerer ved at <literal>time</literal> er antallet af sekunder siden 1 jan. 1970.
@@ -220,11 +220,11 @@ komponent varierer med en periode på omkring en uge.
 Browseren modtager HTML-kode som:
 </para>
 
-<screen>
+<programlisting>
 &lt;body bgcolor="#ff1adc78"&gt;
  &lt;h1&gt;Test&lt;/h1&gt;
 &lt;/body&gt;
-</screen>
+</programlisting>
 
 <para>
 Reloades siden så vil baggrundfarven ændre sig fra gang til gang. NB. dette
@@ -239,7 +239,7 @@ Det er også muligt at udføre programmer direkte og inkludere deres
 output f.eks.
 </para>
 
-<screen>&lt;!--#exec cmd="who" --&gt;</screen>
+<programlisting>&lt;!--#exec cmd="who" --&gt;</programlisting>
 
 <para>
 Apache vil starte en shell og udføre
@@ -252,12 +252,12 @@ på serveren.
 Et mere avanceret eksempel er følgende:
 </para>
 
-<screen>
+<programlisting>
 &lt;pre&gt;
 De sidste 50 sider du hentede på denne server var:
 &lt;!--#exec cmd="cat /var/log/httpd/access_log | grep ${REMOTE_ADDR} | tail -n50" --&gt;
 &lt;/pre&gt;
-</screen>
+</programlisting>
 
 <para>
 Først udskrives Apache's log af alle filer den har afsendt. Dette filteres
@@ -290,9 +290,9 @@ således at man manuelt skal justere datoen hvergang man retter i filen, så kan
 man anvende SSI til at automatisk indsætte fil datoen som følger:
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#echo var="LAST_MODIFIED" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Dette vil udskrive "Friday, 04-Aug-2000 21:00:41 CEST". Det er datoen, men
@@ -390,9 +390,9 @@ downloade 20Mb via en langsomt modem forbindelse. Istedet for at skrive dette
 i HTML-koden kan man med SSI automatisk indsætte størrelsen af filen:
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#fsize virtual="storfil.mp3" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Størrelsen af <filename>storfil.mp3</filename> bliver så indsat for eksempel 11k eller
@@ -404,9 +404,9 @@ Størrelsen af <filename>storfil.mp3</filename> bliver så indsat for eksempel 11k
 Hvis man istedet vil have antallet af bytes kan man bruge 
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#config sizefmt="bytes" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Apache vælger automatisk at udskrive den mest fornuftige størrelse i kilo
@@ -414,18 +414,18 @@ eller megabyte alt efter hvor stor filen er, dette svarer til følgende config
 kommando:
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#config sizefmt="abbrev" --&gt;
-</screen>
+</programlisting>
 
 <para>
 På samme måde kan man indsætte tiden for hvornår fil sidst blev ændret
 med
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#flastmod virtual="storfil.mp3" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Formatet på output fra denne kommando kan konfigueres ligesom i sidste
@@ -443,17 +443,17 @@ Hvis der opstår en fejl mens en SSI kommando vil der udskrives den voldsomt
 informative fejlmeddelelse:
 </para>
 
-<screen>
+<programlisting>
 [an error occurred while processing this directive]
-</screen>
+</programlisting>
 
 <para>
 Hvis man ønsker at tilrette denne fejlmeddelelse kan det gøres med
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#config errmsg="(SSI-Fejl: Sand i maskineriet, støvsug mig!)" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Enhver tekststreng kan bruges som fejlmeddelelse. Fejlmeddelelser vil for eksempel
@@ -474,17 +474,17 @@ findes der? Der findes en kommando der udskriver alle de variable, der er
 kendt:
 </para>
 
-<screen>
+<programlisting>
 &lt;pre&gt;
 &lt;!--#printenv --&gt;
 &lt;/pre&gt;
-</screen>
+</programlisting>
 
 <para>
 Følgende er et udklip af hvad ovenstående eksempel udskriver:
 </para>
 
-<screen>
+<programlisting>
 HTTP_USER_AGENT=Mozilla/4.73 [en] (X11; U; Linux 2.2.16-3 i686)
 REMOTE_ADDR=127.0.0.1
 REMOTE_HOST=localhost
@@ -495,7 +495,7 @@ DATE_GMT=Sunday, 06-Aug-2000 11:11:39 GMT
 LAST_MODIFIED=Sunday, 06-Aug-2000 13:11:38 CEST
 DOCUMENT_URI=/cgibog/test.shtml
 :
-</screen>
+</programlisting>
 
 
 <para>
@@ -515,18 +515,18 @@ indsættes have de samme environment variable til rådighed.
 Det er muligt selv at erklære variable, dette gøres med 
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#set var="minvariabel" value="Dette er indholdet af min variabel" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Det er også muligt at anvende andre variable til at definere nye variabler
 f.eks.:
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#set var="ServerFil" value="${REMOTE_ADDR} -> ${DOCUMENT_URI}" --&gt;
-</screen>
+</programlisting>
 
 <para>
 Variablen ServerFil vil så i ovenstående eksempel indeholder strengen
@@ -544,12 +544,12 @@ Det er muligt at anvende logiske udtryk i SSI. Dette minder lidt om
 #define, #ifdef,#else og #endif i C/C++. Syntaksen i SSI er:
 </para>
 
-<screen>
+<programlisting>
 &lt;!--#if expr="betingelse" --&gt;
 &lt;!--#elif expr="betingelse" --&gt;
 &lt;!--#else --&gt;
 &lt;!--#endif --&gt;
-</screen>
+</programlisting>
 
 <table>
   <title>Betingelser:</title>
@@ -606,7 +606,7 @@ egrep</command>.
 Et eksempel:
 </para>
 
-<screen>
+<programlisting>
 &lt;body&gt;
 &lt;!--#if expr="${HTTP_USER_AGENT} = /Mozilla/" --&gt;
 
@@ -623,7 +623,7 @@ Et eksempel:
   Din browser kan ikke genkendes.
 &lt;!--#endif --&gt;
 &lt;/body&gt;
-</screen>
+</programlisting>
 
 <para>
 I dette eksempel bruges SSI til at genkende hvilken browser der bruges, og
@@ -669,7 +669,7 @@ navnet på den server der ønsker data så giver det en række
 interessante muligheder f.eks.:
 </para>
 
-<screen>
+<programlisting>
 &lt;body&gt;
 &lt;!--#if expr="${REMOTE_HOST} = /microsoft.com/" --&gt;
 
@@ -683,7 +683,7 @@ Now did you reboot windows 5 or 6 times?
 
 &lt;!--#endif --&gt;
 &lt;/body&gt;
-</screen>
+</programlisting>
 
 <para>
 Programmet vil returnere én side til alle folk der surfer fra maskiner

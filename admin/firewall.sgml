@@ -216,9 +216,9 @@ uden at afsenderen får det at vide.</para>
 og at afsenderen får en ICMP pakke, der
 fortæller at pakken er afvist.</para>
 
-<screen>
+<programlisting>
 ipchains -P INPUT DENY
-</screen>
+</programlisting>
 </listitem>
 
 <listitem>
@@ -331,10 +331,10 @@ kun benyttes med FORWARD reglen.</para>
 Et eksempel:
 </para>
 
-<screen>
+<programlisting>
 ipchains -A forward -s 192.168.0.1/255.255.255.255 \
  -d 0.0.0.0/0.0.0.0 -i eth0 -j MASQ
-</screen>
+</programlisting>
 
 <para>
 Dette betyder at adressen 192.168.0.1 som skal til eth0 får eth0's IP-adresse.
@@ -370,7 +370,7 @@ dørvogterkæde man selv har oprettet.</para>
 
 <para>Et eksempel:</para>
 
-<SCREEN>
+<programlisting>
 ipchains -N WEB
 ipchains -A input en eller anden dørvogterregel
 ipchains -A input -s 0.0.0.0/0.0.0.0  -d WEBSERVER 80 -j WEB
@@ -382,7 +382,7 @@ ipchains -A WEB -s en eller anden dørvogterregel
 ipchains -A WEB -s BADUSER -j RETURN
 ipchains -A WEB -s en eller anden dørvogterregel
 ipchains -A WEB -s en eller anden dørvogterregel
-</SCREEN>
+</programlisting>
 
 <para>Først oprettes en dørvogterkæde som hedder WEB. Herefter laver
 jeg en input regel som hopper til WEB kæden. I WEB kæden laver jeg en
@@ -400,10 +400,10 @@ benyttes med INPUT reglen.</para>
 <para>Et eksempel:</para>
 
 
-<SCREEN>
+<programlisting>
 ipchains -A input -p tcp -s 192.168.0.0/255.255.255.0 1024:65535 \
 -d 0.0.0.0/0.0.0.0 80 -j REDIRECT 8080
-</SCREEN>
+</programlisting>
 
 
 <para>
@@ -417,9 +417,9 @@ være nyttigt til at lave en transparent proxy.
 dørvogterkæde. Med -A bliver reglen tilføjet i bunden af en
 dørvogterkæde.</para>
 
-<screen>
+<programlisting>
 ipchains -A input -s 192.168.0.1/255.255.255.255 -i eth0 -j ACCEPT
-</screen>
+</programlisting>
 </listitem>
 
 
@@ -428,9 +428,9 @@ dørvogterkæde. Hvis -I angives uden noget andet vil reglen blive
 indsat øverst i kæden.
 </para>
 
-<screen>
+<programlisting>
 ipchains -I input 2 -s 0.0.0.0/0.0.0.0 1024:65535 -d 192.192.192.192/255.255.255.255 113 -j ACCEPT
-</screen>
+</programlisting>
 
 <para>
 Input 2 vil indsætte en regel i position 2 i kæden input.
@@ -440,10 +440,10 @@ Input 2 vil indsætte en regel i position 2 i kæden input.
 <listitem><para> <command>-R</command> Er ligesom -I men overskriver
 en regel på en bestemt position.</para>
 
-<screen>
+<programlisting>
 ipchains -R input 2 -s 0.0.0.0/0.0.0.0 1024:65535 \
   -d 192.192.192.192/255.255.255.255 113 -j ACCEPT
-</screen>
+</programlisting>
 
 <para>
 Dette vil overskrive det der stod i dørvogterkæden input position 2.
@@ -455,10 +455,10 @@ kæde. Hvis reglens nummer angives, slettes
 denne regel. Hvis reglen angives, slettes alle
 positioner hvor denne regel findes.</para>
 
-<screen>
+<programlisting>
 ipchains -D input -s 0.0.0.0/0.0.0.0 1024:65535 \
   -d 192.192.192.192/255.255.255.255 113 -j ACCEPT ipchains -D input 2
-</screen>
+</programlisting>
 </listitem>
 
 <listitem><para> <command>-C</command> Test en regel i dørvogteren og
@@ -466,10 +466,10 @@ få af vide om pakken vil blive accepteret, nægtet, masq, sendt videre
 til en lokal port (redirect) eller om den bliver afvist.
 </para>
 
-<screen>
+<programlisting>
 ipchains -C input -s 10.0.0.1/255.255.255.255 1054 \
  -d 192.192.192.192/255.255.255.255 113 -i eth0 -p tcp
-</screen>
+</programlisting>
 </listitem>
 
 <listitem><para>
@@ -492,10 +492,10 @@ sat. Det vil sige en forbindelse til en service. -y kan kun benyttes
 med -p tcp.
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -s 0.0.0.0/0.0.0.0 1024:65535 \
   -d 192.192.192.192/255.255.255.255 113 -y -j ACCEPT
-</screen>
+</programlisting>
 </listitem>
 
 <listitem><para>
@@ -504,9 +504,9 @@ viser antal bytes, megabytes eller gigabytes præcis i stedet for
 normalt at afrunde.
 </para>
 
-<screen>
+<programlisting>
 ipchains -L -x -v
-</screen>
+</programlisting>
 
 </listitem>
 
@@ -515,10 +515,10 @@ regel for det du skriver og en regel hvor source og destination er
 vendt om. 
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -b -s 192.168.0.1/255.255.255.255 \
   -d 0.0.0.0/0.0.0.0 -j ACCEPT 
-</screen>
+</programlisting>
 
 <para>
 Dette vil lave to regler i input kæden.  En hvor source adressen er
@@ -544,7 +544,7 @@ kan sættes på porte, source adresse, destination adresse, interface og
 på protokollerne TCP,UDP og ICMP.
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -s 0.0.0.0/0.0.0.0 \
   -d 111.111.111.111/255.255.255.255 1024:65535 -p tcp ! -y -j ACCEPT
 ipchains -A input -s ! 192.168.0.1/255.255.255.255 -j ACCEPT
@@ -552,7 +552,7 @@ ipchains -A input -d ! 192.168.0.1/255.255.255.255 -j ACCEPT
 ipchains -A input -s 192.168.0.1/255.255.255.255 -p ! icmp -j ACCEPT
 ipchains -A input -s 192.168.0.1/255.255.255.255 ! 80 -j ACCEPT
 ipchains -A input ! -i eth0 -s 192.168.0.1/255.255.255.255 -j ACCEPT
-</screen>
+</programlisting>
 
 </listitem>
 
@@ -560,10 +560,10 @@ ipchains -A input ! -i eth0 -s 192.168.0.1/255.255.255.255 -j ACCEPT
 given regel skal gælde for. Man kan vælge TCP,UDP og ICMP.
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -s 192.168.0.1/255.255.255.255 \
   -d 0.0.0.0/0.0.0.0 -p TCP -j MASQ
-</screen>
+</programlisting>
 </listitem>
 
 <listitem><para>
@@ -594,20 +594,20 @@ man har for ICMP trafik.
 såkaldte Type Of Service bits i pakken. Af muligheder er:
 </para>
 
-<screen>
+<programlisting>
 -t 0x01 0x10 = Minimum Delay
 -t 0x01 0x08 = Maximum Throughput
 -t 0x01 0x04 = Maximum Reliability
 -t 0x01 0x02 = Minimum Cost
-</screen>
+</programlisting>
 
 <para>
 Som eksempel kan vi få minimum delay på SSH trafik ud kan man skrive:
 </para>
 
-<screen>
+<programlisting>
 ipchains -A output -p tcp -d 0.0.0.0/0.0.0.0 22  -t 0x01 0x10
-</screen>
+</programlisting>
 
 </listitem>
 
@@ -617,11 +617,11 @@ bestemt pakke. Alle log beskeder kommer som standard til at ligge i
 <filename>/var/log/messages</filename> kan se sådan ud:
 </para>
 
-<screen>
+<programlisting>
 Jun 4 14:29:26 lxhome kernel: Packet log: input DENY eth0 PROTO=6
 111.111.111.111:1033 100.100.100.100:80 L=84 S=0x00 I=3121 F=0x0000
 T=64
-</screen>
+</programlisting>
 
 <para>
 1.Jun 4 14:29:26 betyder at logningen blev taget den 4 Juni kl. 14:29:26.
@@ -675,9 +675,9 @@ at bit'en "Do not Fragment" er sat.
 Eksempel på en logning:
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -s BAD GUY -l vil logge alt trafik fra BAD GUY til syslog.
-</screen>
+</programlisting>
 </listitem>
 </itemizedlist>
 </sect2>
@@ -695,7 +695,7 @@ Følgende eksempel kan hentes fra
 <ulink url="http://www.sslug.dk/linuxbog/admin/eksempler">http://www.sslug.dk/linuxbog/admin/eksempler</ulink>.
 </para>
 
-<screen>
+<programlisting>
 #!/bin/sh
 export PATH=/sbin:/usr/bin:/bin
 clear
@@ -1062,7 +1062,7 @@ if [ -f /etc/firewall.debug ]; then
  fi
   echo "Hvis nogen af disse omlysninger er forkerte skal du rette dem i programmet."
 fi
-</screen>
+</programlisting>
 
 <para>
 Den eneste variabel man som regel skal ændre er EXTIF som er ens
@@ -1095,19 +1095,19 @@ forbindelse til en tjeneste som benytter UDP som transportprotokol,
 skal man indføre en af disse linjer i opsætningen:
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -i $EXTIF -p udp -s host/255.255.255.255 port \
    -d $EXTIP 55000:65535 -j ACCEPT
-</screen>
+</programlisting>
  
 <para>
 eller
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -i $EXTIF -p udp -s 0.0.0.0/0.0.0.0 port \
   -d $EXTIP 55000:65535 -j ACCEPT
-</screen>
+</programlisting>
 
 <para>
 Parameteren "host" i første linje er lig med en IP-adresse og port er
@@ -1122,12 +1122,12 @@ Hvis man vil give folk lov til at få forbindelse med min web
 server skal man skrive dette:
 </para>
 
-<screen>
+<programlisting>
 ipchains -A input -i $EXTIF -p tcp -s 0.0.0.0/0.0.0.0 1024:65535 \
   -d $EXTIP 80 -j ACCEPT
 ipchains -A output -i $EXTIF -p tcp -s $EXTIP 80 \
   -d 0.0.0.0/0.0.0.0 1024:65535 -j ACCEPT
-</screen>
+</programlisting>
 
  <para>
   Dørvogteropsætningen skal gemmes i <filename>/etc/firewall</filename> og der
@@ -1163,7 +1163,7 @@ muligheder man har skriver man
 <filename>/etc/rc.d/init.d/firewall</filename>.
 </para>
 
-<screen>
+<programlisting>
 #!/bin/sh
 # chkconfig: 35 20 80
 # description: Dørvogterinitialiseringsprogram til at starte 
@@ -1281,7 +1281,7 @@ case "$1" in
 esac
 
 exit 0
-</screen>
+</programlisting>
 
 <para>
 Dette program kan hentes fra <ulink url="http://www.sslug.dk/linuxbog/firewall">http://www.sslug.dk/linuxbog/firewall</ulink>.
@@ -1321,9 +1321,9 @@ Vis alle regler i listen uden at lave et reverse lookup.</para></listitem>
 Hvis man eksempelvis vil sende alt web trafik på port 80 til den interne maskine, der hedder 10.10.10.10:
 </para>
 
-<screen>
+<programlisting>
 ipmasqadm portfw -a -P tcp -L 192.192.192.192 80 -R 10.10.10.10 80
-</screen>
+</programlisting>
 </sect2>
 </sect1>
 </chapter>

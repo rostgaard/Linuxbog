@@ -184,7 +184,7 @@ max. gyldigt i 24 timer.</para></listitem>
 Konfigurationsfilen <filename>/etc/dhcpd.conf</filename> skal så se således ud:
 </para>
 
-<screen>
+<programlisting>
 subnet 192.168.0.0 netmask 255.255.255.0 {
         range 192.168.0.100 192.168.0.250;
         option subnet-mask 255.255.255.0;
@@ -198,7 +198,7 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
         default-lease-time 36000;
         max-lease-time 86400;
 }
-</screen>
+</programlisting>
 
 <para>
 "range" fortæller så, hvilke IP-adresser serveren kan tildele klienter
@@ -224,17 +224,17 @@ din internetudbyders navneserver her.
 </para>
 
 
-<screen>
+<programlisting>
 option domain-name-servers 192.168.0.1, 192.168.0.2;
-</screen>
+</programlisting>
 
 <para>
 eller
 </para>
 
-<screen>
+<programlisting>
 option domain-name-servers ns1.intranet.foo, ns2.intranet.foo;
-</screen>
+</programlisting>
 
 <para>
 "default-lease-time" er det antal sekunder, et lease er
@@ -298,11 +298,11 @@ net, f.eks. for et klasse C-netværk 192.168.36.X. I det
 tilfælde kan følgende tilføjes til <filename>/etc/dhcpd.conf</filename>.
 </para>
 
-<screen>
+<programlisting>
         subnet 192.168.36.0 netmask 255.255.255.0 {
                  not authoritative;
         }
-</screen>
+</programlisting>
 
 
 </sect3>
@@ -354,12 +354,12 @@ Når serveren kører, logger den forespørgsler til en log-fil,
 almindeligvis <filename>/var/log/messages</filename>. Det kan se således ud:
 </para>
 
-<screen>
+<programlisting>
 dhcpd: DHCPDISCOVER from 00:00:b4:c7:1e:e6 via eth0
 dhcpd: DHCPOFFER on 192.168.0.101 to 00:00:b4:c7:1e:e6 via eth0
 dhcpd: DHCPREQUEST for 192.168.0.101 from 00:00:b4:c7:1e:e6 via eth0
 dhcpd: DHCPACK on 192.168.0.101 to 00:00:b4:c7:1e:e6 via eth0 
-</screen>
+</programlisting>
 
 <para>
 Først er det klienten, som leder efter en DHCP-server. Så tilbyder
@@ -414,7 +414,7 @@ DHCP-serveren, så tilføjer vi nogle linjer til
 lavede før - så kommer den til at se således ud:
 </para>
 
-<screen>
+<programlisting>
 subnet 192.168.0.0 netmask 255.255.255.0 {
         range 192.168.0.100 192.168.0.250;
         option subnet-mask 255.255.255.0;
@@ -433,7 +433,7 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
                 fixed-address 192.168.0.4;
         }
 }
-</screen>
+</programlisting>
 
 <para>
 "host eric" indleder en særlig specifikation af hvordan en enkelt vært
@@ -503,7 +503,7 @@ at foretage opdateringer i vores zonefiler, og tilladelsen gives
 med følgende kommando: allow-update {localhost;}. Se eksempel nedenfor.
 </para>
 
-<screen>
+<programlisting>
 options {
 	directory "/var/named";
 	notify no;
@@ -538,7 +538,7 @@ zone "XXX.YYY.ZZZ.IN-ADDR.ARPA" in {
 	file "filnavn";
 	allow-update {localhost;};
 };
-</screen>
+</programlisting>
 
 <para>
 I dhcpd.conf skal der tilføjes en række options, der vedrører dynamisk dns. 
@@ -550,18 +550,18 @@ Disse options starter alle med ddns, og de væsentligste er følgende:
 <LISTITEM><para>ddns-rev-domainname "IN-ADDR.ARPA"</para></listitem>
 <LISTITEM><para>ddns-update-style interim</para></listitem>
 <LISTITEM>
-<screen>
+<programlisting>
 zone domænenavn. {
 	primary DNS-serverens ip-adresse;
 }
-</screen>
+</programlisting>
 </listitem>
 <LISTITEM>
-<screen>
+<programlisting>
 zone reverse ip-adresse.IN-ADDR.ARPA. {
 	primary DNS-serverens ip-adresse;
 }
-</screen>
+</programlisting>
 </listitem>
 </itemizedlist>
 
@@ -569,7 +569,7 @@ zone reverse ip-adresse.IN-ADDR.ARPA. {
 Et eksempel følger nedenfor.
 </para>
 
-<screen>
+<programlisting>
 	option domain-name "domænenavn";
 	ddns-update-style interim;
 
@@ -605,7 +605,7 @@ zone domænenavn. {
 zone ZZZ.XXX.WWWW.in-addr.arpa. {
   primary WWW.XXX.ZZZ.YYY;
 }
-</screen>
+</programlisting>
 
 <para>
 Hvis du bruger Redhat 7.2, mangler der en sidste rettelse. 
@@ -790,12 +790,12 @@ filtræet der skal deles, derefter hvilke klienter der skal bruge det
 exports</command> for flere detaljer.
 </para>
 
-<screen>
+<programlisting>
 # /etc/exports - NFS export of /home til beta
 # Tilsvarende gives kun læseadgang til /mnt/cdrom til alle maskiner
 /home beta.domænenavn.dk(rw)
 /mnt/cdrom *(ro)
-</screen>
+</programlisting>
 
 <para>
 Derefter skal du genstarte nfs-serveren ved at skrive
@@ -1425,7 +1425,7 @@ standard options koblet til. En lidt mere kompliceret
 konfiguration kunne være følgende:
 </para>
 
-<screen>
+<programlisting>
 - 
 MinLinuxMac -port 12000
 "Denne Linux Leger Mac" -port 12001
@@ -1433,7 +1433,7 @@ MinLinuxMac -port 12000
 "Guest Volume" -nocleartxt  -loginmesg "Vær venlig ved min gæsteserver !"
 "Boksen" -noguest -port 12000
 "Det Helligste" -notcp -defaultvol &lt;path&gt; -systemvol &lt;path&gt;
-</screen>
+</programlisting>
 
 <para>
 Forklaring af konfigurationsfilen:
@@ -1524,10 +1524,10 @@ atalkd selv route AppleTalk-pakker mellem netkortene.
 Følgende konfiguration kunne overvejes:
 </para>
 
-<screen>
+<programlisting>
 eth0 -net 153-174 -addr 154.212 -zone "Langt Ude"
 eth1 -net 175-200 \adr 182.318 -zone "På Landet" -seed  
-</screen>
+</programlisting>
 
 <para>
 Hvad betyder så dette? Forklaringen er ret simpel; hver linje i filen
@@ -1567,17 +1567,17 @@ ligger, hvis du ikke allerede ved det.
 Dette kan du gøre sådan her: 
 </para>
 
-<screen>
+<programlisting>
 find /* -name "*atalk*" -print 
-</screen>
+</programlisting>
 
 <para>
 eller med                       
 </para>
 
-<screen>
+<programlisting>
 locate "*atalk*" 
-</screen>
+</programlisting>
 
 <indexterm>
  <primary>updatedb</primary>
@@ -1615,10 +1615,10 @@ hvis du på forhånd har konfigureret en i
 <filename>atalkd.conf</filename>-filen. Det gøres sådan her:
 </para>
 
-<screen>
+<programlisting>
 /usr/local/atalk/etc/afpd -F
 /usr/local/atalk/etc/afpd.conf
-</screen>
+</programlisting>
 
 <para>
 Bemærk! Hvis du skal bruge mere end 5 forbindelser til
@@ -1877,9 +1877,9 @@ Tilføj nedenstående linje i konfigurationsfilen
 <filename>/etc/inittab</filename>
 </para>
 
-<screen>
+<programlisting>
 <userinput>S0:2345:respawn:/usr/sbin/mgetty ttyS0 -D /dev/ttyS0</userinput>
-</screen>
+</programlisting>
 
 <para>
 Efter den er blevet gemt, opdateres oplysningerne 
@@ -1916,7 +1916,7 @@ for <command>ppp</command>-serveren med følgende
 indhold:
 </para>
 
-<screen>
+<programlisting>
 <userinput>-detach
 asyncmap 0
 modem
@@ -1925,7 +1925,7 @@ lock
 proxyarp
 require-pap
 refuse-chap</userinput>
-</screen>
+</programlisting>
 
 <para>
 Tilføj de loginnavne (client), som skal have mulighed 
@@ -1935,11 +1935,11 @@ tjeneste (server) og IP-adresse i filen
 <filename>/etc/ppp/pap-secrets</filename>
 </para>
 
-<screen>
+<programlisting>
 # Secrets for authentication using PAP
 # client        server  secret                  IP addresses
 <userinput>  martin        *       nitram                  *</userinput>
-</screen>
+</programlisting>
 
 <para>
 Disse loginnavne og adgangskoder skal helst ikke være de samme som for
@@ -1957,9 +1957,9 @@ angives henholdsvis IP-nummeret for værten og IP-nummeret
 for den maskine der ringer ind:
 </para>
 
-<screen>
+<programlisting>
 <userinput>192.168.1.1:192.168.1.222</userinput>
-</screen>
+</programlisting>
 
 <para>
 Vær opmærksom på, at IP-nummeret for den maskine 
@@ -2000,37 +2000,37 @@ runlevel 5, dvs. man ændrer linjen i <filename>/etc/inittab</filename>
 (eksemplet er fra Red Hat)
 </para>
 
-<screen>
+<programlisting>
 id:3:initdefault:
-</screen>
+</programlisting>
 
 <para>
 til 
 </para>
 
-<screen>
+<programlisting>
 id:5:initdefault:
-</screen>
+</programlisting>
 
 <para>
 og tilsvarende længere nede i samme fil
 </para>
 
-<screen>
+<programlisting>
 # Run xdm in runlevel 5
 # xdm is now a separate service
 x:5:respawn:/etc/X11/prefdm -nodaemon
-</screen>
+</programlisting>
 
 <para>
 ændres til
 </para>
 
-<screen>
+<programlisting>
 # Run xdm in runlevel 5
 # xdm is now a separate service
 x:5:respawn:/etc/X11/prefdm
-</screen>
+</programlisting>
 
 
 <para>
@@ -2044,19 +2044,19 @@ Anvender du Gnomes login-system, så skal du endvidere rette i
 <filename>/etc/X11/gdm/gdm.conf</filename>.
 </para>
 
-<screen>
+<programlisting>
 [xdmcp]
 Enable=0
-</screen>
+</programlisting>
 
 <para>
 rettes til 
 </para>
 
-<screen>
+<programlisting>
 [xdmcp]
 Enable=1
-</screen>
+</programlisting>
 
 
 <para>
@@ -2080,9 +2080,9 @@ kan du evt. så senere indsætte som en del af
 <filename>/etc/inittab</filename>.
 </para>
 
-<screen>
+<programlisting>
 x:3:respawn:/usr/X11R6/bin/X 2>/var/log/Xlog -dpi 100 -query SERVER
-</screen>
+</programlisting>
 
 <para>
 hvor SERVER byttes ud med navnet på den maskine der er X-server.
