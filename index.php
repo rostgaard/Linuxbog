@@ -129,9 +129,9 @@ function form_filename( $bookname, $format ) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
-    "office" => array(
-      title => "Linux - Friheden til at bruge Office-programmel",
-      comment => "Office under Linux",
+    "kontor" => array(
+      title => "Linux - Friheden til at vælge kontorprogrammer",
+      comment => "Basal anvendelse af Linux-programmer",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )

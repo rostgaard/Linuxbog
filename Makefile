@@ -12,7 +12,7 @@ Makefiler:
 	cp Makefile.subdir sikkerhed/Makefile
 	cp Makefile.subdir c/Makefile
 	cp Makefile.subdir docbook/Makefile
-	cp Makefile.subdir office/Makefile
+	cp Makefile.subdir kontor/Makefile
 
 filer:  Makefiler
 	$(MAKE) Makefiler
@@ -24,7 +24,7 @@ filer:  Makefiler
 	$(MAKE) -C sikkerhed
 	$(MAKE) -C c
 	$(MAKE) -C docbook
-	$(MAKE) -C office
+	$(MAKE) -C kontor
 	$(MAKE) -C alle 
 
 statusfiler:  Makefiler
@@ -36,7 +36,7 @@ statusfiler:  Makefiler
 	$(MAKE) -C sikkerhed  statusfiler
 	$(MAKE) -C c  statusfiler
 	$(MAKE) -C docbook  statusfiler
-	$(MAKE) -C office  statusfiler
+	$(MAKE) -C kontor  statusfiler
 	$(MAKE) -C alle  statusfiler
 
 version:  Makefiler
@@ -48,7 +48,7 @@ version:  Makefiler
 	@grep -A2 "<listitem>" sikkerhed/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > sikkerhed/version.sgml
 	@grep -A2 "<listitem>" c/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > c/version.sgml
 	@grep -A2 "<listitem>" docbook/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > docbook/version.sgml
-	@grep -A2 "<listitem>" office/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >office/version.sgml
+	@grep -A2 "<listitem>" kontor/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >kontor/version.sgml
 	cp friheden/version.sgml alle/version.sgml
 	@echo "friheden" `cat friheden/version.sgml`
 	@echo "applikationer" `cat applikationer/version.sgml`
@@ -58,7 +58,7 @@ version:  Makefiler
 	@echo "sikkerhed" `cat sikkerhed/version.sgml`
 	@echo "c" `cat c/version.sgml`
 	@echo "docbook" `cat docbook/version.sgml`
-	@echo "office" `cat office/version.sgml`
+	@echo "kontor" `cat kontor/version.sgml`
 
 eksempelbackup:  statusfiler
 	$(MAKE) -C friheden eksempelbackup
@@ -69,7 +69,7 @@ eksempelbackup:  statusfiler
 	$(MAKE) -C sikkerhed  eksempelbackup
 	$(MAKE) -C c  eksempelbackup
 	$(MAKE) -C docbook  eksempelbackup
-	$(MAKE) -C office  eksempelbackup
+	$(MAKE) -C kontor  eksempelbackup
 
 clean: Makefiler
 	$(MAKE) -C friheden clean
@@ -80,7 +80,7 @@ clean: Makefiler
 	$(MAKE) -C sikkerhed clean 
 	$(MAKE) -C c clean 
 	$(MAKE) -C docbook clean 
-	$(MAKE) -C office clean 
+	$(MAKE) -C kontor clean 
 	$(MAKE) -C alle clean 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
