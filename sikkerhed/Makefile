@@ -34,6 +34,7 @@ html:	statusfiler
 	cp images/*.png bog
 	tar cvzf $(targetname)-$(version).html.tgz bog
 	tar cvzf $(targetname)-$(version).html-ub.tgz bog/*.html bog/*.css
+	tar cvzf $(targetname)-$(version).png.tgz images/
 	@echo "Done HTML (html)"
 	@echo ""
 
