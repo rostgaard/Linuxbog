@@ -1755,51 +1755,12 @@ map=/boot/map
 install=/boot/boot.b
 prompt
 timeout=50
-append="hdd=ide-scsi" // hdd = secondary slave device
+append="hdd=ide-scsi" 
 image=/boot/vmlinuz-2.2.5-15
         label=linux
         root=/dev/hda5
         read-only
 </screen>
-
-<para>
-I linien append skal skrives hvilken enhed brænderen er på
-ide-controlleren. Bagefter køres <command>/sbin/lilo</command> og den
-nye kerne bootes. Når systemet kommer op igen kan man nu skrive
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-cd ignore=hdd</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe sg</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe cdrom</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-scsi</USERINPUT>
-</screen>
-
-
-
-<para>
-Så skulle scsi emulueringen være iorden og man kan nu lave en:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cat /proc/scsi/scsi</USERINPUT> 
-Attached devices: 
-Host: scsi0 Channel: 00 Id: 00 Lun: 00
-  Vendor: HP       Model: CD-Writer+ 7200  Rev: 3.01
-  Type:   CD-ROM                           ANSI SCSI revision: 02
-</screen>
-
-<para>
-Og der skal brænderen være dukket op. Så er det bare at installere
-brændersoftware, så kan du brænde din først linux cd til dine venner.
-</para>
-
-<para>
-Skal man nu automatisere dette lidt så man ikke skal skrive modprobe
-linierne efter hver bootup, så skal de tilføjes i systemets bootup
-script som på min Red Hat er <filename>/etc/rc.d/rc.local</filename>,
-hvor jeg har tilføjet linierne.
-</para>
 
 <sect2 id="X-cdroast">
 <title>X-cdroast</title>
@@ -2201,6 +2162,34 @@ For yderligere information læs :
 <command>man mkisofs</command> og i øvrigt CD-Writing HOWTO.
 </para>
 </sect3>
+
+<sect3 id="mp3">
+<title>Lave MP3 filer</title>
+<indexterm><primary>MP3</primary></indexterm>
+<para>
+En meget nem måde at lave MP3 filer på ud fra en cdrom, er at
+installere <command>grip</command>, som findes på <ulink
+url="http://www.nostatic.org/grip">http://www.nostatic.org/grip</ulink>.
+Grip er et grafisk program, som kan anvender programmer til at rippe
+hhv. kode MP3 filer. En mulighed er at installere
+<command>lame</command> og <command>cdparanoia</command> samt
+<command>grip</command>. Dette er beskrevet på <ulink
+url="http://www.thedukeofurl.org/reviews/misc/mp3linux/">http://www.thedukeofurl.org/reviews/misc/mp3linux/</ulink>.
+Programmet <command>grip</command> er smart ud fra at det automatisk
+kan hente titler og cdrom information fra en af de store cdrom
+databaser og derved får MP3 filerne al information om
+sangene. Programmet vil køre en rip proces (cdrom-&gt;wav-fil) og en
+MP3-kodnings proces (wav-&gt;MP3) på samme tid, og når alt er kodet,
+bliver der automatisk slettet de midlertidige wav-filer.
+</para>
+
+<FIGURE ID="grip" FLOAT="1">
+<TITLE>Grip anvendes til at lave MP3 filer fra musik cdrom</TITLE>
+<GRAPHIC FILEREF="grip.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+</sect3>
 </sect2> <!--cdrecord -->
 </sect1>
 
@@ -2349,6 +2338,17 @@ none       /dev/pts    devpts  gid=5,mode=620  0 0
 
 </listitem>
 </itemizedlist>
+
+<para>
+Har du tidligere haft et raid system sat op på diskene, skal du bruge
+<command>mkraid --really-force /dev/md0</command> til at initialisere 
+diskene igen, også selvom de er slettede med fdisk. Husk dog at tage
+backup (f.eks. <command>tar pcfz data.tar.gz /mount/data</command>, 
+før du anvender 
+<command>mkraid --really-force /dev/md0</command>, da raid-diskene slettes
+derved.
+</para>
+
 </sect3>
 </sect2>
 
