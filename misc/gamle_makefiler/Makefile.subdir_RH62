@@ -130,7 +130,7 @@ bog/index.html: $(sgmlfiler)
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	cp *.{sgml,xml} tempdir
+	cp *.{sgml,xml,docbook} tempdir
 	(cd tempdir; jade -t sgml -E 1 -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	rm -rf tempdir
@@ -161,7 +161,7 @@ bog/enfil.html: $(sgmlfiler)
 	@echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bog1
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	cp *.{sgml,xml} bog1
+	cp *.{sgml,xml,docbook} bog1
 	(cd bog1; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
 	(cd bog1; perl ../collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
 	(cd bog1; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > index.html)
@@ -192,14 +192,14 @@ $(targetname)-pdf-$(version).zip: $(sgmlfiler)
 
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	perl ./collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	cp *.{sgml,xml} tempdir
+	cp *.{sgml,xml,docbook} tempdir
 	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 
 	@echo "Target er" $(targetname)-pdf.zip
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
-	cp *.{sgml,xml} bogpdf
+	cp *.{sgml,xml,docbook} bogpdf
 	rm -f $(targetname)-*.pdf
 	cp images/*.png bogpdf
 	(cd bogpdf; perl ../../httpsplit.pl *.{sgml,xml})
@@ -218,7 +218,7 @@ $(targetname)-pdf-$(version).zip: $(sgmlfiler)
 	mkdir bogps
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
-	cp *.{sgml,xml} bogps
+	cp *.{sgml,xml,docbook} bogps
 	(cd bogps; perl ../../httpsplit.pl *.{sgml,xml})
 	(cd bogps; db2ps bog.sgml )
 	mv bogps/bog.ps $(targetname)-$(version).ps
