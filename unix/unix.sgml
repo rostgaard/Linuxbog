@@ -3282,6 +3282,77 @@ gøre:
 </sect2>
 
 
+<sect2 id="xargs">
+<title>xargs</title>
+<para>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>xargs</secondary>
+</indexterm>
+<indexterm><primary>xargs</primary></indexterm>
+En af de meget nyttige kommandoer er <command>xargs</command>, som kan 
+bruges som kobling mellem en kommando der giver en række filnavne, hvor
+der skal udføres en speciel kommando på hver af de filer. Som eksempel
+kan vi prøve at få antal linier i alle filer der ender på 
+<filename>.sgml</filename>.
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>ls  *.sgml</userinput>
+indhold.sgml
+mandrake.sgml
+unix.sgml
+</screen>
+
+<para>
+Hvis man prøver at pipe filnavnet ind i <command>wc</command>, så går det
+galt
+</para>
+
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>ls  *.sgml | wc --lines</userinput>
+3
+</screen>
+
+<para>
+Der der kommer som svar er at der er tre filer i <command>ls</command>-kommandoen. I stedet
+bruger vi <command>xargs</command>
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt> <userinput>ls  *.sgml | xargs -i= wc --lines =</userinput>
+ 700 indhold.sgml
+ 232 mandrake.sgml
+1232 unix.sgml
+</screen>
+
+<para>
+Programmet <command>xargs</command> får her filnavnene ind, og kører en kommando for 
+<emphasis>hver</emphasis> af strengene. Argumentet <literal>-i=</literal>
+betyder at i den efterfølgende kommandoer skal lig-med (=) erstattes med en af de tekst-strenge 
+(her er det et filnavn). Kommandoen er her <command>wc --lines =</command>, som viser antal 
+linier i filnavnet <filename>=</filename>, dvs. det som kommer fra <command>ls</command>-kommandoen.
+</para>
+
+<para>
+Der der i det nuværende katalog er tre filer, så er det nemt at vise hvad der egentlig bliver udført
+at ovenstående <command>xargs</command>-kommando:
+</para>
+
+<screen>
+wc --lines indhold.sgml
+wc --lines mandrake.sgml
+wc --lines unix.sgml
+</screen>
+
+
+<para>
+Det skal nævnes at anvendelsen af lig-med i eksemplet ikke er essentiel. Man kan også anvende
+et andet special-tegn.
+</para>
+
+</sect2>
 
 
 
