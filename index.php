@@ -352,7 +352,7 @@ function vistype($type) {
     "Ændringer" => array(
       first => "bog",
       form => "",
-      last => "apprevhist.html",
+      last => "apprevhist.html".$USE_SUBMIT_INC,
       online => 2  // "Ændringer" har bognavn med to gange
     ),
     // Eks: frihed/linuxbog-friheden-html-4.0.tgz
