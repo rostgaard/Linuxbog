@@ -4,7 +4,7 @@
 <indexterm><primary>Netværk</primary></indexterm>
 
 <para>
-I dette kapitel vil vi se nærmere på Linux som server og på
+I dette kapitel vil vi se nærmere på Linux som server og det er på
 et mere avanceret plan.  Først kommer der en mere grundlæggende
 forklaring af netværk, TCP/IP og netværksadresser, idet dette er helt
 centralt for alt med netværk. Dernæst vil der blive vist, hvordan man
@@ -15,53 +15,55 @@ firewall.
 
 <sect1 id="tcp-ip">
 <title>TCP/IP</title>
+<!-- Skrevet af Christian Rasmussen "chr@egebjerg.com" -->
 
 <para>
 Det er i dag blevet meget almindeligt, også for privatbrugere, at
 koble flere computere sammen i et netværk. For at computerne kan
 "tale" sammen kræves en standard for hvorledes kommunikationen skal
-foregå. En sådan standard kaldes en protokol.
+foregå, en sådan standard kaldes en protokol.
 </para>
 
 <para>
-En protokol består af nogle regler som blandt andet
+En protokol består basalt set af nogle regler som blandt andet
 forhindrer computerne i at "snakke i munden på hinanden". Samtidig er
 der defineret hvor store portioner data som skal sendes af gangen,
 hvor lang tid computeren skal vente på at modparten svarer og
 lignende.
 </para>
 
-<para>
-<indexterm><primary>TCP/IP</primary></indexterm>
-Gennem tiden er forskellige standarder indenfor datakommunikation
-blevet udviklet.  TCP/IP og Internet har rødder tilbage til 1969, hvor
-den amerikanske regeringsorganisation DARPA (Defense Advanced Research
-Projects Agency) søsatte et forskningsprojekt, der havde til formål at
-udvikle teknologier til pålidelig datakommunikation. Resultatet kom
-til at hedde ARPANET. Efterhånden voksede ARPANET og delte sig i flere
-uafhængige, men indbyrdes forbundne netværk. Den stadige knopskydning
-og vækst omdannede efterhånden det oprindelige ARPANET til vore dages
-Internet.
-</para>
+<para> 
+Gennem tiden er forskellige standarder indenfor
+datakommunikation blevet udviklet. En dominerende teknologi,
+kompatibel med flertallet af computersystemer, har ikke eksisteret før
+Internettet for alvor brød igennem i 90'erne.  </para>
 
 <para>
 For at muliggøre kommunikation mellem vidt forskellige
 computersystemer er talrige standarder blevet vedtaget - og bliver
 løbende vedtaget. Kommunikation over Internet er bygget op om
 protokollen "TCP/IP", Transmission Control Protocol/Internet
-Protocol. I modsætning til andre operativsystemer har denne
-protokol altid været en del af Linux, hvilket betyder at Linux er
-overlegent til Internet kommunikation i forhold til øvrige
-systemer.
+Protocol. Linux har i modsætning til andre operativsystemer altid
+indeholdt denne protokol, hvilket betyder at Linux er meget overlegent
+til Internet kommunikation.
+</para>
+
+<para> 
+TCP/IP har rødder helt tilbage til slutningen af 60'erne, hvor
+den amerikanske militær organisation DARPA (Defense Advanced Research
+Projects Agency) startede et forskningsprojekt. Målet var at udvikle
+en teknologi til sikker datakommunikation, som ikke var afhængig af en
+central enhed, og kunne fungere selvom en stor del af netværket var
+destrueret af fjender. Samtidig skulle teknologien kunne fungere på
+vidt forskellige computersystemer og operativsystemer. Teknologien kom
+til at hedde ARPANET.  
 </para>
 
 <para>
-Internet og TCP/IP har eksisteret i mange år, de første versioner blev
-udviklet af den amerikanske regering allerede i slutningen af
-60'erne. Sidenhen ekspanderede nettet kraftigt, og bredte sig ud over
-USA's grænser. Filosofien har fra starten været, at skabe et så
-uafhængigt netværk som muligt, uafhængigt at specifikke
-computersystemer, og uden én enkelt central computer til at bestemme.
+ARPANET ekspanderede kraftigt, og delte sig i flere uafhængige men
+forbundne netværk. Inden længe havde ARPANET bredt sig til mange
+amerikanske universiteter og senere ud over USA's grænser, det blev
+herefter til det som vi i dag kalder "Internet".
 </para>
 
 <para>
@@ -80,9 +82,7 @@ Internettets historie er der skrevet mange bøger om, stort set hver
 bog har sin egen version af historien. Der er ikke altid enighed om
 hvornår hvilken begivenhed indtraf eller hvem der stod bag. Men rent
 faktisk er det kun filosofien datidens "Internet" har til fælles med
-nutidens Internet. Derfor er det lidt udenfor denne bogs område, at
-beskrive datoerne og de individuelle organisationer i Internettets
-historie.
+nutidens Internet.
 </para>
 
 <sect2 id="laernetvaerk">
@@ -138,8 +138,8 @@ hedde: 11000011. Følgende metode benyttes for at omregne feltet til
 decimal tal:
 </para>
 
-<table id="net1">
-<title>Omregning af IP til binært format</title>
+<table id="netv1">
+<title> Omregn binær til decimal </title>
 <tgroup cols=3 align="char">
 
 <thead><row>
@@ -335,8 +335,8 @@ C-klasse net subnet maske skal de 3 første felter i en IP adresse
 altså være ens før 2 IP adresser stammer fra samme IP net.
 </para>
 
-<table id="subnet-eksempel">
-<title>Subnet masker</title>
+<table id="test-ip">
+<title>Test af IP net</title>
 <tgroup cols=2 align="char">
 
 <thead><row>
@@ -366,14 +366,18 @@ altså være ens før 2 IP adresser stammer fra samme IP net.
 </table>
 
 <para>
-Ovenstående skema viser med nogle eksempler hvordan man ser om en
-given adresse er i samme IP net som en anden. Det første felt i den
-første adresse (212) er ikke lig 195, og derfor er de 2 adresser ikke
-i samme net. Ved den næste adresse matcher det første felt, men det
-andet felt (125), er ikke lig det andet felt i test adressen (249).
-Den sidste adresse er på samme IP net fordi de 3 første felter
-matcher, hvilket var kriteriet for en adresse med subnetmasken
-255.255.255.0.
+Ovenstående skema viser med nogle eksempler hvordan man ser om
+C-klasse IP adressen 195.249.116.158 er i samme IP net som en anden
+adresse. Kriteriet er at de 3 første felter skal være ens, da vi har
+at gøre med en C-klasse subnet maske (255.255.255.0).
+</para>
+
+<para>
+Det første felt i den første adresse (212) er ikke lig 195, og derfor
+er de 2 adresser ikke i samme net. Ved den næste adresse matcher det
+første felt, men det andet felt (125), er ikke lig det andet felt i
+test adressen (249). Den sidste adresse er på samme IP net fordi de 3
+første felter matcher.
 </para>
 
 <para>
@@ -390,81 +394,27 @@ læse mere om IP adresser.
 <title>Sammenkobling af flere netværk</title>
 
 <para>
-Som nævnt tidligere kan alle computere i et netværk umiddelbart komme i
-kontakt med hinanden. Som eksempel kan vi forestille os, at vi har et
-klasse C netværk 192.168.100.0 (vært nummer 0 henviser ikke til en
-computer - men til hele netværket) med tre computere med flg. adresser:
+En computer i et TCP/IP netværk benytter altså subnet masken til at
+verificere om en anden computer som den skal kommunikere med er på det
+samme IP net. Hvis det ikke skulle være tilfældet skal computeren
+bruge en "gateway". En gateway er en slags mellemled som fysisk er
+tilkoblet flere netværk og samtidig har en IP adresse for hvert
+netværk, på denne måde kan data komme fra et netværk, passere igennem
+gateway'en, og ud på et andet netværk til sin destination. Gatewayen
+er nærmere en funktion end en enhed, denne "funktion" kaldes routning
+og kan udføres af en computer, en router eller en lignende hardware
+enhed.
 </para>
 
 <para>
-<table id="tab-eks-3-maskiner">
-<title>Netværket 192.168.100.0</title>
-<tgroup cols=2 align="char">
-<thead><row><entry>Værtsnavn</entry><entry>Adresse</entry></row></thead>
-
-<tbody>
-<row><entry>alfa</entry> <entry>192.168.100.1</entry></row>
-<row><entry>beta</entry> <entry>192.168.100.2</entry></row>
-<row><entry>gamma</entry> <entry>192.168.100.3</entry></row>
-</tbody>
-</tgroup>
-</table>
+Et elementært eksempel kunne være en virksomhed bestående af en
+salgsafdeling og en regnskabsafdeling, med hver deres lokalnetværk:
 </para>
 
-<para>
-De er allesammen på samme netværk og kan derfor hver især umiddelbart
-komme i kontakt med hinanden. Men lad os nu forestille os, at der i samme
-bygning er et andet lille netværk 192.168.200.0, som også består af tre
-maskiner:
-</para>
-
-<para>
-<table id="tab-eks2-3-maskiner">
-<title>Netværket 192.168.200.0</title>
-<tgroup cols=2 align="char">
-<thead><row><entry>Værtsnavn</entry><entry>Adresse</entry></row></thead>
-
-<tbody>
-<row><entry>svend</entry> <entry>192.168.200.1</entry></row>
-<row><entry>knud</entry> <entry>192.168.200.2</entry></row>
-<row><entry>valdemar</entry> <entry>192.168.200.3</entry></row>
-</tbody>
-</tgroup>
-</table>
-</para>
-
-</sect2>
-
-
-<sect2 id="default-gateway">
-<title>Standard gateway</title>
-<indexterm><primary>gateway</primary></indexterm>
-<indexterm><primary>Default gateway</primary></indexterm>
-<para>
-Nu viser det sig, at brugerne på de to netværk gerne vil i kontakt med
-hinanden via netværket. Man kunne så forestille sig, at man bare slog
-de to netværk sammen til et enkelt og delte nye netværksadresser ud,
-så alle kunne kontakte hinanden direkte. Det kunne også sagtens
-lade sig gøre, men vil måske komme på tværs af den måde, de to netværk
-administreres på.
-</para>
-
-<para>
-Normalt gør man i stedet det, at man vælger en enkelt maskine,
-der tildeles adresser på begge netværk. I eksemplet ovenfor kunne det være
-computeren svend (192.168.200.1), der blev udstyret med et ekstra
-netværkskort og forbundet til netværket 192.168.100.0. Den kunne så
-passende blive tildelt værtsnummeret 4 på dette netværk og har så to
-adresser.
-</para>
-
-<para>
-<FIGURE ID="gateway" FLOAT="1">
-<TITLE>De to forbundne netværk
-</TITLE>
-<GRAPHIC FILEREF="gateway.&magic;"  SCALE="60"></GRAPHIC>
+<FIGURE ID="net1" FLOAT="1">
+<TITLE>Netværks eksempel</TITLE>
+<GRAPHIC FILEREF="net1.&magic;"  SCALE="60"></GRAPHIC>
 </FIGURE>
-</para>
 
 <indexterm><primary>Gateway</primary></indexterm>
 <para>
@@ -489,15 +439,25 @@ kan komme i direkte kontakt med 192.168.30.1 eller ved, hvem den kan give
 sorteper videre til.
 </para>
 
+<FIGURE ID="net2" FLOAT="1">
+<TITLE>Netværk med gateway</TITLE>
+<GRAPHIC FILEREF="net2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
 <para>
-Computere i et TCP/IP netværk benytter altså subnet masken til at
-verificere om en anden computer som den skal kommunikere med er på
-det samme IP net. Hvis det ikke skulle være tilfældet skal computeren
-bruge en "default gateway" for at kommunikere med den aktuelle
-computer. En gateway er i princippet en enhed som skaber forbindelse
-mellem 2 netværk, det kan enten være en computer, en router eller
-lignende. For at benytte internettet vil det derfor altid være
-påkrævet at have en default gateway.
+Gateway er nu mellemledet som direkte kan kommunikere med samtlige
+PC'er i virksomheden. De øvrige PC'er har fået en gateway konfigureret
+(angivet som GW), for PC2 og PC3's vedkommende er denne adresse
+gateway's IP 1, mens de øvrige har gateway's IP 2.
+</para>
+
+<para> 
+Udfra ovenstående kan det konkluderes at en gateway er
+nødvendig når en computer skal kommunikere med en anden computer som
+ikke er indenfor det samme IP net. Det er derfor logisk at en gateway
+vil være påkrævet når man eksempelvis skal benytte internettet, da
+størstedelen af adresserne ligger udenfor ens eget IP net.
 </para>
 </sect2>
 
@@ -519,8 +479,8 @@ de nye og langt mindre net:
 </para>
 
 
-<table id="net-klasser">
-<title>Nettyper</title>
+<table id="ip-nets">
+<title>IP net oversigt</title>
 <tgroup cols=4 align="char">
 
 <thead><row>
@@ -614,23 +574,112 @@ de nye og langt mindre net:
 </table>
 
 <para>
-Bemærk, at nettene mellem A, B og C klasserne er ikke medtaget!
-Det skal også bemærkes, at man normalt ikke har alle adresserne til
-rådighed alligevel. Man mister den laveste og højeste adresse til
-nettet henholdsvis broadcast adresse (bruges til at lede efter
-maskiner). Skal man have kobling til andre netværk, så ryger der også
-adresser til routere osv. 
+(Nettene mellem A, B og C klasserne er ikke medtaget!)
 </para>
 
 <para>
-I et net skal 2 IP adresser altid bruges til at "definere" nettet,
-derfor skal et net mindst indeholde 4 adresser for at kunne benyttes.
-De 2 adresser som bruges til at definere nettet kan ikke samtidig
-tildeles computere. Nettene benævnes på deres subnet maske, eller
-subnet maskens bit. Tallet i kolonnen "Bit" fortæller hvor mange af
-de 32 bit som er sat, det første net med subnet masken
-255.255.255.255 har 32 bit sat og kaldes derfor et "32 net".
+Nettene benævnes på deres subnet maske, eller subnet maskens
+bit. Tallet i kolonnen "Bit" fortæller hvor mange af de 32 bit som er
+sat, det første net med subnet masken 255.255.255.255 har 32 bit sat
+og kaldes derfor et "32 net".
 </para>
+
+<para>
+Hvert IP net indeholder en netværksadresse og en broadcast
+adresse. Netværksadressen er den første adresse i IP nettet og bruges
+til at definere nettet. Broadcast adressen er den sidste adresse, og
+benyttes til at kontakte samtlige andre adresser i IP nettet på en
+gang. Broadcast adressen kan være nyttig hvis man eksempelvis vil
+pinge (se om en computer er aktiv) samtlige computere på et IP net, i
+stedet for at pinge hver enkel kan man blot pinge broadcast adressen.
+</para>
+
+<para>
+Den første og sidste adresse i et IP net er derfor altid reserveret og
+kan ikke tildeles andre enheder. Det mindste IP net som kan bruges til
+at tildele IP adresser fra er derfor et 32 bit net som indeholder 4 IP
+adresser. Efter netværksadressen og broadcast adressen er talt fra, er
+2 adresser i overskud som kan tildeles computere.
+</para>
+
+<para>
+IP nettet som vores test IP adresse, 195.249.116.158 tilhører vil man
+umiddelbart kalde 195.249.116.0/24, da IP adressen tilhører et
+C-klassenet som jo netop består af 24 bit. Netværksadressen vil i
+dette IP net hedde 195.249.116.0, broadcast adressen 195.249.116.255.
+</para>
+</sect2>
+
+<sect2 id="eks-net">
+<title>Eksempel på netværk tilkoblet Internet</title>
+<indexterm><primary> Eksempel på netværk tilkoblet Internet </primary></indexterm>
+
+<para>
+Hvis man forestiller sig et firma som netop er blevet forbundet til
+Internet via en fast forbindelse, og som af deres Internet udbyder er
+blevet tildelt IP nettet 195.249.116.144/28, vil følgende
+informationer gøre sig gældende:
+</para>
+
+<table id="ip-net-eksempel">
+<title>IP net eksempel</title>
+<tgroup cols=2 align="char">
+
+<tbody>
+
+<row>
+ <entry>Subnetmaske</entry> <entry>255.255.255.240</entry>
+</row>
+<row>
+ <entry>Antal IP adresser</entry> <entry>16</entry>
+</row>
+<row>
+ <entry>Netværksadresse</entry> <entry>195.249.116.144</entry>
+</row>
+<row>
+ <entry>Broadcast adresse</entry> <entry>195.249.116.160</entry>
+</row>
+<row>
+ <entry>Første tilgængelige adresse</entry> <entry>195.249.116.145</entry>
+</row>
+<row>
+ <entry>Sidste tilgængelige adresse</entry> <entry>195.249.116.159</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Internet udbyderen har samtidig leveret en router, som er blevet
+fysisk tilkoblet netværket. Hensigten med denne er at den skal fungere
+som gateway, den har derfor fået tildelt den første af de tilgængelige
+adresser.
+</para>
+
+<para>
+Firmaet har 10 computere som er tilkoblet netværket, TCP/IP skal på
+hver af disse konfigureres til at bruge Internettet udfra ovenstående
+oplysninger:
+</para>
+
+<FIGURE ID="net3" FLOAT="1">
+<TITLE>Netværk med Internet</TITLE>
+<GRAPHIC FILEREF="net3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Ovenstående eksempel viser hvorledes de første 3 PC'er skal
+konfigureres, de resterende konfigureres på samme måde.
+</para>
+
+<para>
+Computerne vil nu være fuldt ud i stand til at kommunikere med hele
+Internettet, ligeså gælder den anden vej, hele Internettet kan nu
+kommunikere med hver af computerne.
+</para>
+
 </sect2>
 
 <sect2 id="private-ip">
@@ -644,16 +693,26 @@ direkte, er det umiddelbart et rent slaraffenland for hackere.
 </para>
 
 <para>
-For at hindre direkte kommunikation mellem internettet og lokalnettet
-benytter man såkaldte private IP adresser på lokalnettet som ikke
-umiddelbart kan nås fra internettet.
+Der er fordele ved at gøre sine computere direkte tilgængelige over
+Internet, men der bestemt også ulemper! For hackere er det et rent
+slaraffenland, eftersom de kan kommunikere med samtlige adresser
+direkte, er der ingen mellemled til at bremse deres indbrudsforsøg.
+</para>
+
+<para>
+For at hindre direkte kommunikation mellem Internettet og lokalnettet
+benytter man såkaldte private IP adresser som ikke kan nås fra
+Internettet.
 </para>
 
 <para>
 Private IP adresser er specielle adresseområder som man har valgt at
-"frede", netop med det formål at firmaer/institutioner selv kan vælge
-et adresseområde og benytte dette på deres lokalnetværk. Følgende er
-en oversigt over de nuværende private IP-adresser:
+"frede", netop med det formål at firmaer/institutioner kan vælge et af
+disse og benytte det på deres lokalnetværk. Private IP adresser er
+altså derfor modsætningen til offentlige IP adresser, da private
+adresser ikke er brugbar på internet, de bliver simpelthen sorteret
+fra når de forsøger at komme igennem en gateway. Følgende oversigt
+viser de private IP adresse områder:
 </para>
 
 <table id="private-ip-adresser">
@@ -692,18 +751,21 @@ en oversigt over de nuværende private IP-adresser:
 </table>
 
 <para>
-I praksis fungerer et netværk med private adresser på den måde at
-computerne individuelt frit kan kommunikere, i og med at de tilhører
-samme IP net, eksempelvis 192.168.1.0/24 (/24 angiver at 24 bit er
-sat i subnetmasken = C-klassenet, den første adresse hedder
-192.168.1.1 den sidste 192.168.1.254)
+I praksis fungere et netværk med private adresser ikke meget
+anderledes end et netværk med officielle adresser. Når de enkelte
+computere skal kommunikere med en IP adresse som er udenfor deres eget
+IP net, og derfor kommunikerer via deres gateway, er denne
+konfigureret til at "oversætte" deres adresse til en officiel adresse.
 </para>
 
 <para>
-Når de enkelte computere skal kommunikere med en IP adresse som er
-udenfor deres eget IP net, og derfor kommunikerer via deres default
-gateway er denne konfigureret til at "oversætte" deres adresse til en
-officiel adresse.
+Basalt set fungere det på den måde at de beder gatewayen om at
+kommunikere med en given internet-computer på deres
+vegne. Internet-computeren "tror" den udelukkende kommunikere med
+gatewayen - og kender derfor ikke til computerne bagved gatewayen. Man
+kan derfor også kalde det en slags "envejs-kommunikation", da det kun
+er computeren med den private adresse der kan kontakte en computer på
+Internettet og ikke omvendt.
 </para>
 
 <para>
@@ -717,25 +779,143 @@ internettet og ikke omvendt.
 </para>
 
 <para>
-Denne form for adresseoversættelse kaldes også NAT, Network Address
-Translation. Mange internet routere kan udføre denne funktion, for at
-konfigurere linux til det skal programmet ipchains benyttes.
+Denne form for adresse oversættelse kaldes også NAT, Network Address
+Translation, hvilket er en slags udvidet routnings funktion. Mange
+routere kan udføre denne funktion, for at konfigurere linux til det
+skal programmet ipchains benyttes.
 </para>
 
 <para>
-I princippet kan man sagtens køre NAT og bare bruge nogle tilfældige
-internet adresser altså IKKE private adresser. Dette har dog den
-uheldige virkning at de computere på internettet med de adresser man
-selv har taget ikke kan kontaktes fra lokalnettet. Det skyldes at de
-individuelle computere er konfigureret til at alle adresserne på det
-givne IP net er lokale, og de behøver derfor ikke benytte gatewayen
-for at kommunikere med det. Eftersom kommunikationen aldrig når ud
-igennem gatewayen og ud på internettet vil det mislykkedes.
+Det er meget vigtigt, at man sørger for at vælge private IP adresser
+når man kører med NAT som er inde for det tilladte område. Hvis man i
+stedet vælger at benytte et IP net som i forvejen er i brug, vil
+konsekvensen være at man ikke kan kommunikere med de enheder som
+retmæssigt har fået tildelt IP adresserne.
+</para>
+
+<para>
+Det skyldes, at ens computere er konfigureret til at benytte en gateway,
+når de skal kommunikere med enheder UDENFOR det lokale IP net. Hvis IP
+adressen derimod er indenfor det lokale IP net vil de forsøge at
+kommunikere med den PC som har den aktuelle IP adresse, eftersom det
+er den forkert PC vil det naturligvis mislykkes.
+</para>
+
+<para>
+Hvis man alligevel forestillede sig at computerne kommunikerede via
+gatewayen og kunne kontakte de rigtige enheder ville der opstå en
+konflikt idet der nu eksisterede flere enheder med samme IP adresser,
+dette er ikke tilladt og operativsystemet vil straks advare om
+problemet. Hvis IP adresser ikke er unikke kan computere ikke finde ud
+af at bruge dem.
 </para>
 
 </sect2>
 
-<sect2 id="dns">
+<sect2 id="eks-nat">
+<title>Eksempel på netværk med NAT</title>
+<indexterm><primary>Eksempel på netværk med NAT</primary></indexterm>
+<indexterm><primary>NAT</primary></indexterm>
+
+<para>
+Vi bygger videre på det foregående eksempel, og benytter derfor
+informationerne fra figur 9-5 igen, men denne gang vil vi benytte
+NAT. Primært for at øge sikkerheden, men også for at øge
+fleksibiliteten, i og med vi ikke behøver at kontakte vores Internet
+udbyder og ansøge om flere IP adresser, hvis de 16 viser sig at være
+for få.
+</para>
+
+<para>
+Der skal tages stilling til 2 ting, hvilken enhed skal udføre
+NAT-oversættelsen, og hvilket privat IP net skal benyttes. Enten
+vælger man at købe en Internet løsning med NAT, hvilket vil sige den
+router Internet udbyderen leverer allerede er konfigureret med
+NAT. Eller også konfigurere man en computer til at køre NAT.
+</para>
+
+<para>
+Valget af det private IP net afhænger meget af ens behov, og hvor
+stort antal computere man regner med at have på sit netværk indenfor
+en overskuelig årrække. I vores eksempel vælger vi 192.168.1.0/24:
+</para>
+
+
+
+<table id="privat-ip-net-eksempel">
+<title>Privat IP net eksempel</title>
+<tgroup cols=2 align="char">
+
+<tbody>
+
+<row>
+ <entry>Subnetmaske</entry> <entry>255.255.255.0</entry>
+</row>
+<row>
+ <entry>Antal IP adresser</entry> <entry>255</entry>
+</row>
+<row>
+ <entry>Netværksadresse</entry> <entry>192.168.1.0</entry>
+</row>
+<row>
+ <entry>Broadcast adresse</entry> <entry>192.168.1.255</entry>
+</row>
+<row>
+ <entry>Første tilgængelige adresse</entry> <entry>192.168.1.1</entry>
+</row>
+<row>
+ <entry>Sidste tilgængelige adresse</entry> <entry>192.168.1.254</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Routeren skal bibeholde IP adressen 195.249.116.145, mens der i næste
+led skal placeres en enhed til at udføre NAT oversættelsen. Denne skal
+på "ydersiden" (mod routeren) have tildelt en officiel IP adresse, her
+vælger vi den næste ledige, 195.249.116.146. Desuden skal den have
+tildelt en private IP adresse på indersiden, her vælger vi den først
+tilgængelige adresse, 192.168.1.1.
+</para>
+
+
+<FIGURE ID="net4" FLOAT="1">
+<TITLE>Netværk med NAT</TITLE>
+<GRAPHIC FILEREF="net4.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Ovenstående eksempel illustrer hvorledes netværket skal sammenkobles
+hvis man vælger selv at konfigurer en enhed til at udføre NAT
+oversættelsen. Routeren bliver fysisk tilkoblet NAT enheden, som
+samtidig via et sekundært netkort er tilkoblet det eksisterende
+netværk, denne vil herefter fungere som gateway for PC1-PC3.
+</para>
+
+<para>
+Alternativt kan man, som omtalt, købe en løsning hvor routeren
+indeholder NAT konfigurationen, i dette tilfælde vil Internet
+udbyderen foretage den nødvendige konfiguration. I forhold til
+ovenstående figur vil man kunne skippe NAT enheden idet routeren selv
+klarer opgaven, routeren vil i så fald få tildelt både en extern og
+intern IP adresse.
+</para>
+
+<para>
+Hvis man senere ønsker at tilføje yderligere PC'er til denne opsætning
+kan dette gøres problemfrit, indtil man har opbrugt de resterende
+adresser i IP nettet. Herefter vil det være nødvendigt at skifte IP
+net, en simpel løsning vil være blot at skifte subnet maske,
+eksempelvis til /16, hvilket vil betyde 255 flere IP adresser.
+</para>
+
+</sect2>
+
+
+<sect2 id="om-dns">
 <title>Domain Name Service (DNS)</title>
 <indexterm><primary>Domain Name Service</primary></indexterm>
 <indexterm><primary>DNS</primary></indexterm>
@@ -1000,7 +1180,7 @@ hvem der bestyrer navn.med.info.domæne.dk
 
 <para>
 Da DNS ikke er helt simpelt at sætte op korrekt, kan de ovenstående
-eksempler bruges, hvis du skal afluse din egen DNS. De kan også
+eksempler bruges, hvis du skal fejlfinde din egen DNS. De kan også
 bruges til at finde ud af, hvorfor netværksfejl opstår eller til
 at finde en ansvarlig for et domæne, som man har modtaget
 reklame-emails fra.
@@ -2919,7 +3099,7 @@ der installeres DNS på Linuxserveren.
 
 <para>
 Hvordan man installerer DNS på Linux, kan du læse mere om her. Se
-<xref linkend="DNS">.
+<xref linkend="dns-opsaetning">.
 </para>
 
 <sect3 id="kryptpass">
