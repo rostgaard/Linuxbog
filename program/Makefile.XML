@@ -19,7 +19,8 @@ ImageMagickconvert:=$(firstword $(wildcard /usr/bin/convert /usr/X11R6/bin/conve
 #-----------------------------------------------------------------------------
 #--  Byggeregler:
 
-all: html pdf postscript pakket_html kildetekst
+all: html pakket_html pakket_palm kildetekst
+#all: html pdf postscript pakket_html kildetekst
 
 html: stikord dato udgave
 	mkdir -p bog
@@ -49,6 +50,20 @@ pakket_html: html
 	cp -p bog/*.{html,png} $(targetname)-$(version)-html/
 	tar czvf $(targetname)-$(version)-html.tar.gz $(targetname)-$(version)-html
 	rm -rf $(targetname)-$(version)-html
+
+pakket_palm: html
+	mkdir -p $(targetname)-$(version)-palm
+	cp -p palm/home.html      $(targetname)-$(version)-palm/
+	cp -p palm/external.html  $(targetname)-$(version)-palm/
+	cp -p ../misc/*.prc       $(targetname)-$(version)-palm/
+	cp -p ../misc/*.pdb       $(targetname)-$(version)-palm/
+	cp -p ../misc/gpl.txt     $(targetname)-$(version)-palm/
+	cp -p ../misc/plucker.txt $(targetname)-$(version)-palm/
+	(cd $(targetname)-$(version)-palm/; plucker-build -v -P . -f $(targetname))
+	zip $(targetname)-$(version)-palm.zip $(targetname)-$(version)-palm/*.prc \
+	                                      $(targetname)-$(version)-palm/*.pdb \
+	                                      $(targetname)-$(version)-palm/*txt
+	rm -rf $(targetname)-$(version)-palm
 
 kildetekst:
 	mkdir -p $(targetname)-$(version)-source/images
