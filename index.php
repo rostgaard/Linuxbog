@@ -11,6 +11,23 @@
 
 ?>
 <title>Friheden til at vælge</title>
+<style type="text/css">
+/* From PhpWiki: <a href> looks like buttons */
+a.button {
+  /*color: black;*/
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 11pt;
+  border-top:  1px solid #c6d2de;
+  border-left: 1px solid #c6d2de;
+  border-bottom: 2px solid #494f5d;
+  border-right:  2px solid #494f5d;
+  padding-top:    0.2ex;
+  padding-bottom: 0.1ex;
+  padding-left:  .5em;
+  padding-right: .5em;
+}
+</style>
 </HEAD>
 
 
@@ -373,18 +390,16 @@ if (count($notexists))
 
 ?>
 
-<font size="-1">
-[<a href="http://www.linuxbog.dk/">Seneste udgaver</a>]
-[<a href="http://cvs.linuxbog.dk">Beta-upgaver</a>]
-[<a href="laese-vejledning.html">Læsevejledning</a>]
-[<a href="hjaelpe.html">Om at hjælpe</a>]
-[<a href="http://cvs.linuxbog.dk/cvs2html/cvs_crono.html">Følg ændringer</a>]
-<br>
-[<a href="?matrix=1">Samlet bogoversigt</a>]
-[<a href="?all=b">Alle bøger</a>]
-[<a href="?all=t">Alle filtyper</a>]
-[<a href="search.php">Søg</a>]
-</font>
+<a class="button" href="http://www.linuxbog.dk/">Seneste udgaver</a>
+<a class="button" href="http://cvs.linuxbog.dk">Beta-upgaver</a>
+<a class="button" href="laese-vejledning.html">Læsevejledning</a>
+<a class="button" href="hjaelpe.html">Om at hjælpe</a>
+<a class="button" href="http://cvs.linuxbog.dk/cvs2html/cvs_crono.html">Følg ændringer</a>
+<p>
+<a class="button" href="?matrix=1">Samlet bogoversigt</a>
+<a class="button" href="?all=b">Alle bøger</a>
+<a class="button" href="?all=t">Alle filtyper</a>
+<a class="button" href="search.php">Søg</a>
 
 <?php
 	if (file_exists("idx-a.html")) {
