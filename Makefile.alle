@@ -210,9 +210,9 @@ endif !BUILD_HTML
 ################################################################################
 
 if BUILD_PDF
-pdf: $(targetname)-$(version).pdf
+pdf: $(targetname)-pdf-$(version).pdf
 # $(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.2pdf.sgml
-$(targetname)-$(version).pdf: $(sgmlfiler) bog.2pdf.sgml
+$(targetname)-pdf-$(version).pdf: $(sgmlfiler) bog.2pdf.sgml
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pdf"
 	@echo ".........................................."
@@ -228,8 +228,8 @@ $(targetname)-$(version).pdf: $(sgmlfiler) bog.2pdf.sgml
 	(cd PdfBuildDir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.2pdf.sgml)
 	(cd PdfBuildDir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
 	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.2pdf.sgml; true)
-	mv PdfBuildDir/bog.pdf $(targetname)-$(version).pdf
-	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
+	mv PdfBuildDir/bog.pdf $(targetname)-pdf-$(version).pdf
+	pdfinfo $(targetname)-pdf-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	rm -rf PdfBuildDir
 	@echo "Done PDF (pdf)"
 	@echo ""
