@@ -174,7 +174,7 @@ $(targetshortname)/$(targetname)-html-$(version).tar.gz: html
 	@echo Version: `cat version.sgml` >> bog/$(targetname).spec
 	@echo Release: 1mdk >>  bog/$(targetname).spec
 	cat linuxbog.spec >> bog/$(targetname).spec
-# 	FLytter bog (fra html) til pakkekatalog for at kunne få et korrekt navn ved nedpakning
+# 	Flytter bog (fra html) til pakkekatalog for at kunne få et korrekt navn ved nedpakning
 	mv bog $(targetshortname)
 	(cd ..;tar hczf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
@@ -226,15 +226,13 @@ html.stamp: $(dep_sgml_filer)
 # TODO: Hvordan fungerer afhængighederne imellem html og pakhtml?
 	rm -rf $(targetname)-*.html.tar.gz bog
 	@echo '<!ENTITY magic "png">' > magic.sgml
-#	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-#	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml
-#	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
 	rm -rf bog/
 	mkdir bog
 	db2html -V %stylesheet%=linuxbog.css -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
 	cp linuxbog.css bog
+	cp bog/$(targetname)-apprevhist.html bog/apprevhist.html
 if USE_SOFTLINKS
-	(cd bog && ln -s ../images/*.png .)
+	(cd bog && ln -sf ../images/*.png .)
 else !USE_SOFTLINKS
 	cp images/*.png bog
 endif !USE_SOFTLINKS
@@ -275,7 +273,7 @@ $(targetname)-$(version).pdf: $(dep_sgml_filer)
 #	@rm -rf PdfBuildDir stikord.sgml
 	@rm -rf PdfBuildDir
 	@mkdir PdfBuildDir
-	@cd PdfBuildDir && ln -s ../*sgml ../*xml ../images/*png .
+	@cd PdfBuildDir && ln -sf ../*sgml ../*xml ../images/*png .
 #	@echo Bygger stikord.sgml
 #	@cd PdfBuildDir && collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml && \
 #	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml && \
