@@ -197,12 +197,29 @@ HTTP protokollen er karakteristisk ved, at serveren som regel
 lytter på port 80. D.v.s. at vi kunne lave en firewall regel, som
 siger, at al trafik, som er til eller fra port 80 på en computer
 <emphasis>udenfor lokalnetværket</emphasis> skal have lov at
-passere. Det er en løsning, men, som vi senere skal se, en fattig
-løsning, idet man kommer til at mangle name servicen, DNS, og
-endvidere kommer til at lide under, at nogle web-sites forventer,
-at man kan bruge FTP til download, eller ligefrem flytter
-brugerens forespørgsel til en server på et andet portnummer.
+passere. Det er en løsning, men en fattig løsning, idet man
+kommer til at mangle name servicen, DNS, og endvidere kommer til
+at lide under, at nogle web-sites forventer, at man kan bruge FTP
+til download, eller ligefrem flytter brugerens forespørgsel til
+en server på et andet portnummer.
 </para>
+
+<para>
+En netværksforbindelse mellem to applikationer defineres af
+IP-adresse plus portnummer. En sådan identificeret forbindelse
+kaldes en socket.
+</para>
+
+<programlisting>
+
+Afsender                                Modtager (http-server)
+
+IP-adresse  + portnummer                IP-adresse   + portnummer
+
+201.2.3.4     51001          &lt;----->    193.88.44.22   80
+
+</programlisting>
+
 </sect3>
 
 <sect3 id="sikkerhed-aaben-alt"><title>Lad alt være åbent -
@@ -684,17 +701,109 @@ vide om, hvordan Linux fungerer.
 </sect1>
 
 
-<sect1 id="sikkerhed-router-marked">
-<title>Lidt om Linux som router</title>
+<sect1 id="sikkerhed-virkemaader">
+<title>Firewallens virkemåder</title>
 
 <para>
-Som sagt kan en Linux-PC fungere som router, men en router kan
-også være en dedikeret, flad boks, som egentlig er et diskløst
-system, der kan fjernstyres fra en anden computer.  Der fås
-billige routere til mindre virksomheder og private net, og der
-fås også store routere med mange stik, som kan håndtere meget
-store trafikmængder. Der er en Linux-kerne inde i mange af den
-slags dedikerede routere. TODO: eksempler, billede.
+Som sagt kan en Linux-PC fungere som firewall og router. En
+firewall-router er dog ofte en dedikeret, flad boks, som
+egentlig er et diskløst system, der kan fjernstyres fra en anden
+computer.  Der fås billige routere til mindre virksomheder og
+private net, og der fås også store routere med mange stik, som
+kan håndtere meget store trafikmængder. Der er en Linux-kerne
+inde i mange af den slags dedikerede routere. TODO: eksempler,
+billede.
+</para>
+
+<para>
+Inde i firewallen inspiceres pakkerne. Hvordan man gør, og hvor
+meget det koster i tid, og hvilke problemer, der kan opstå, er
+emnet for de næste afsnit.
+</para>
+
+<para>
+Netværksmodellen (<xref linkend="sikkerhed-layer"/>) viser 2
+ting. Dels viser den abstraktionslagene, som giver de elektriske
+signaler mening. Dels viser modellen, at en applikation, som
+ønsker at sende data (typisk tekst) til en anden applikation på
+en remote værtsmaskine skal sende sin pakke gennem adskillige
+instanser (lag svarer her til programafsnit eller
+kernefunktioner). Hver gang pakken passerer et lag, bliver det
+hele lagt i en slags "konvolut". Uden på applikationens
+information er der en række TCP oplysninger, og når vi kommer ned
+til IP-laget, kommer der en IP header (konvolut) foran. Her er
+lagene fra den simple DoD model:
+</para>
+
+<itemizedlist>
+<listitem><para>
+applikationslaget, fx. FTP og HTTP, eller <command>finger</command>.
+</para></listitem>
+
+<listitem><para>
+transportlaget TCP - her tilføjes TCP portnummer, TCP-type, checksum m.v.
+</para></listitem>
+
+<listitem><para>
+netværkslaget, her finder man IP-numre, SNMP, ICMP og router protokoller.
+</para></listitem>
+
+<listitem><para>
+Fysisk link-lag, d.v.s. MAC-adresser, ethernetkort og ledninger (der er
+egentlig også et par abstraktionslag her).
+</para></listitem>
+</itemizedlist>
+
+<para>
+Et par forklaringer:
+Finger protokollen er en af de simplere, morsomme protokoller.
+Det er nemt at prøve fingerprotokollen: <command>finger
+quake@geophys.washington.edu</command>
+</para>
+
+<para>
+SNMP, Simple Network Management Protocol, bruges til fjernkontrol
+af netværks enheder som fx. routere. ICMP, Internet Control
+Message Protocol, er den, som ping programmet benytter, og den,
+som gør det muligt at sende en besked om, at vores maskine ikke
+har tænkt sig at svare på fx. ftp. MAC adresser kan listes med
+<command> arp -a</command> programmet og er et tal, som er brændt
+ind i netkortets ROM, så hardwaren altid kan skelne to netkort
+fra hinanden.
+</para>
+
+<para>
+Disse netværks lag er defineret med henblik på at kunne
+transportere så meget som muligt så hurtigt som muligt. Derfor
+behøver IP laget ikke at interessere sig for, om data er korrekte
+eller om der lyttes modtagerens portnummer, og heller ikke for
+applikationens datakodning og så videre.
+</para>
+
+<para>
+Det er derfor meget enkelt og "billigt", målt i tid, at filtrere
+indkommende pakker på netværkslaget. Bare se efter, om de er til
+vores maskine og om de kommer inde eller udefra.
+</para>
+
+<para>
+Hvis firewallen imidlertid er nødt til også at udpakke transport
+pakken (d.v.s. se i TCP-konvolutten for at få fat i portnummeret)
+så kræver det selvfølgelig lidt mere tid. Hvis pakken yderligere
+skal om-adresseres og en ny checksum skal beregnes, så bliver det
+rigtig dyrt.
+</para>
+
+<para>
+Som tidligere nævnt, så giver filtrering udelukkende på
+netværksniveauet ikke mulighed for at fange de pakker, som er
+svar på den kommunikation, der kommer fra lokalnettet.
+</para>
+
+<para>
+De omtalte netværks lag svarer i kernen til programafsnit, som
+bearbejder henholdsvis IP-adresse, TCP-oplysninger og, i sidste
+instans, flytter pakken til den applikation, som skal bruge data.
 </para>
 
 <sect2 id="sikkerhed-hvad-kan-linux-pc">
@@ -707,64 +816,7 @@ brugere og/eller protokoller, fordele belastningen over flere
 parallelle opkoblinger og meget, meget mere.
 </para>
 
-<!--
-<para>
-En af de vigtigste ting for en firewall til et privat netværk er,
-at man kan tillade brugerne indenfor at have FTP, web, ssh,
-mail og sågar telnet og så videre udadtil, selv om man lukker for
-alle, der udefra forsøger at komme ind på systemet. Hvis man
-forestiller at hver enkelt maskine på et lokalnet var sikret på
-denne måde mod uvedkommende, så kan man forstå, hvorfor
-Linux/GNU/BSD af fagfolk anses for at være bedre og sikrere
-systemer.
-</para>
-/-->
-
-</sect2>
-</sect1>
-
-
 <!--dax 2003-10-22 arbejder her HUSK/-->
-<sect1 id="sikkerhed-pakkefiltrering">
-<title>Netværks-niveauer</title>
-
-<para>
-Man taler ofte om netværksniveauer, se evt. <xref
-linkend="sikkerhed-layer"/>
-</para>
-
-<sect2><title>Filtrering på pakkeniveau</title>
-<para>
-Pakkefiltrering kan sættes op på en maskine, som pakkerne skal
-igennem for at komme videre. Det er typisk en maskine med to
-netkort. En sådan maskine eller enhed kaldes en en gateway i Unix
-terminologi. "Router" er blot en lidt anden betegnelse. <!--TODO
-er det nu også helt rigtigt?/-->
-</para>
-
-<para id="sikkerhed-router-udtale">
-Router udtales på engelsk rauter, man danskere har for vane at sige
-ruter, (hvilket er ok). En router forbinder to eller flere
-netværk med hinanden. Det ene netkort går til lokalnettet, det
-andet til det offentlige net eller noget lignende. Det kan være
-lokalnetværk, eller det kan være større netværk - pakkerne skal
-igennem routeren for at kunne komme videre<footnote><para>Der
-findes bokse med et stik, som leverandøren kalder router. Den
-foretager kun "NATting", som jo er nødvendig for videresendelse
-af pakker fra et såkaldt "privat netværk".</para></footnote>
-</para>
-
-<para>
-Ordet <emphasis>inter-net</emphasis> betyder netop, at man
-forbinder flere lokale netværk og har en måde at gøre det på,
-denne måde kaldes Internet Protokollen (IP).
-</para>
-
-</sect2>
-</sect1>
-
-<sect1 id="sikkerhed-nat-og-ftp">
-<title>Diskussion af vanskelige routeropgaver</title>
 
 <para>
 En af de vigtigste ting for en firewall til et privat netværk er,
@@ -776,11 +828,13 @@ denne måde, så kan man forstå, hvorfor Linux/GNU/BSD af fagfolk
 anses for at være bedre og sikrere systemer.
 </para>
 
+</sect2>
+
 <sect2 id="sikkerhed-nat">
-<title>NAT giver også mere sikkerhed</title>
+<title>NAT-ing giver også mere sikkerhed</title>
 
 <para>
-Som tidliger nævnt skal en NAT-ing router omsætte de interne
+Som tidligere nævnt skal en NAT-ing router omsætte de interne
 eller private IP-adresser til den offentlige (lovligt købte)
 IP adresse, som man har fået af sin Internet Udbyder, Internet
 Service Provider, ISP.  Man kan for eksempel bruge adresserne
@@ -793,63 +847,15 @@ søge og betale for "rigtige IP-adresser".
 
 <para>
 NAT teknikken er med til at gøre firewallen mere
-uigennemtrængelig, for hvad sker der, hvis man prøver at "snakke"
-med en maskine med et 192.168.x.y - nummer? Pakkerne kommer ingen
-vegne. Hvis nogen prøver at trænge igennem en firewall ved at bryde
-ind i en kommunkations sekvens (tredie-mands princippet,
-spoofing) så skal pakkerne kunne snyde firewallen *og*
-modtagemaskinen indenfor muren. Det er svært, og det sker
-heldigvis meget sjældent.
+uigennemtrængelig. Det ses, hvis man forestiller sig hvad der
+sker, hvis man prøver at "snakke" med en maskine med et
+192.168.x.y - nummer? Pakkerne kommer ingen vegne. Hvis nogen
+prøver at trænge igennem en firewall ved at bryde ind i en
+kommunkations sekvens (tredie-mands princippet, spoofing) så skal
+pakkerne kunne snyde firewallen *og* modtagemaskinen indenfor
+muren. Det er svært, og det sker heldigvis meget sjældent.
 </para>
 
-</sect2>
-
-<sect2 id="sikkerhed-pakkefilt-ejnok">
-<title>Filtrering på pakkeniveau</title>
-
-<para>
-Hvorfor skal det være så besværligt? Kunne man ikke bare sige, at
-alle forbindelse indefra til http-servere udenfor skulle være
-tilladt? Jo, det kan man godt, men det giver ikke det ønskede
-resultat.
-</para>
-
-<para>
-Hvis man lukker for al adgang med den undtagelse, at pakker, som
-skal til port 80 på eksterne computere, skal have lov at passere,
-så taler vi om filtrering på transportlaget eller på pakkeniveau.
-</para>
-
-<para>
-Hvad vil der så ske, hvis en web-side indeholder et link eller et
-billede fra fx.
-<ulink url="http://www.e-bannerx.com:8888/adrevolver/ui">
-"http://www.e-bannerx.com:8888/adrevolver/ui"</ulink>?
-Vi vil ikke få forbindelse, for vi requester port 8888 fra en
-remote host, og vi må kun få fat i port 80!
-</para>
-
-<para>
-Vi vil med andre ord gerne åbne for al trafik indefra, men spærre
-for uvedkommende udefra. Dertil kræves connection tracking
-modulet, som husker en forbindelsen, der identificeres med
-afsenders IP+portnummer og modtagers IP+portnummer. 
-</para>
-
-<programlisting>
-
-Afsender                                Modtager (http-server)
-
-IP-adresse  + portnummer                IP-adresse   + portnummer
-
-201.2.3.4     51001          &lt;----->    193.88.44.22   80
-
-</programlisting>
-
-<para>
-Dertil kommer at NAT routeren skal huske sin egen ændring af
-portnumre og IP adresse.
-</para>
 </sect2>
 
 
