@@ -32,7 +32,7 @@ om Zope, henvises til
 </para>
 
 <para>
-Et af Zope's største styrker er produktet CMF
+En af Zope's største styrker er produktet CMF
 (ContentManagementFramework). Dette kan bl.a. bruges til at bygge en
 portal. Med CMF er det nemt at styre brugere. CMF sørger for at holde
 indhold, data og kode adskilt. Har en indbygget skin-funktionalitet
@@ -59,7 +59,83 @@ skriv dette ned!  Den basale Zope er nu installeret!
 <TITLE>Zope i aktion</TITLE>
 <GRAPHIC FILEREF="zope.&magic;"  SCALE="40"></GRAPHIC>
 </FIGURE>
+</sect2>
 
+<sect2 id="zope-mysql">
+<title>Zope koblet til MySQL</title>
+<para>
+Lad os nu se på hvordan Zope kobles til MySQL.
+</para>
+
+<sect3 id="zope-mysql-data">
+<title>Få Zope til at bruge MySQL i stedet for Zope's egen databasefil</title>
+
+<para>
+Zope har sin egen indbyggede database, og er dit behov for datalagring
+ikke særlig stort, kan du sagtens "nøjes" med denne. Den har dog en
+øvre negrænsning på et par gigabyte. Eftersom der gemmes en del i
+denne database i forvejen (bl.a. brugerdata) er dette nok ikke den
+optimale løsning hvis du skal lave et stort site med mange brugere. Så
+er der lavet forskellige adaptorere til de mest brugte databaser. Til
+MySQL findes produktet ZMySQLDA. Dette hentes på <ulink
+url="http://www.zope.org/Products/Members/MikeP/ZMySQLDA">http://www.zope.org/Products/Members/MikeP/ZMySQLDA</ulink>. Produktet
+kræver at du har MySQL-misc, MySQL-devel og MySQL-python installeret
+(alle disse kan hentes fra <ulink
+url="http://www.mysql.com/download/">http://www.mysql.com/download/</ulink>).
+Udpak tarball'en i dit Zope-dir og skift katalog til til
+<filename>lib/python/Products/ZMySQLDA/src</filename>. Nu skal du
+kompilere en extension så python kan connecte til MySQL. Skriv:
+</para>
+
+<screen>
+make -f Makefile.pre.in boot 
+make
+</screen>
+
+<para>
+Test at modulet virker i python ved at starty python (dette gøres med
+kommandoen "python") og skriv: <command>import MySQL</command>. Får du
+ingen fejl, virker modulet. Til slut skal du bare kopiere
+<filename>MySQLmodule.so</filename> et katalog-niveau op (i dit <filename>ZMySQLDA</filename>-katalog) og genstarte din Zope.
+</para>
+</sect3>
+
+<sect3 id="zope-mysql-vis">
+<title>Vise MySQL data i Zope</title>
+<para>
+Sådan henter du data fra f.eks. en MySQL database og viser dem.
+Dette gøres ret enkelt i Zope. Gå ned i din rodfolder og lav et ZMySQLDA
+objekt. Udfyld formen med de rette de data og tilføj den. Tilføj nu en ZSQL
+Method. "Arguments"-feltet udfylder du med udvælgelseskriterier til
+query-strengen. Hvis du nu har en tabel i din database der hedder Medarbejdere.
+Den har følgende kolonner: Navn, Afdeling, Alder. Du vil gerne liste alle
+medarbejdere der er født i 1980. Fra det DTML-Document der kalder din ZSQL
+Method har du adgang til variablen alder. Derfor kan du i din "Argument"-liste
+skrive alder. Din query-streng skal så se ud som følger: <literal>SELECT * FROM
+Medarbejdere WHERE ALDER=&lt;dtml-sqlvar alder
+type=string&gt;</literal>.
+</para>
+
+<para>
+Fra dit DTML Document kalder du din ZSQL Method på følgende måde:
+</para>
+
+<screen>
+&lt;dtml-in expr="MinSQLMethod(alder=alder)"&gt;
+        Navn: &lt;dtml-var Navn&gt;&lt;BR&gt;
+        Afdeling: &lt;dtml-var Afdeling&gt;&lt;BR&gt;&lt;BR&gt;
+&lt;/dtml-in&gt;
+</screen>
+
+<para>
+Forklaring: &lt;dtml-in&gt; er en nem måde at iterere gennem
+f.eks. SQL resultater. Den fungerer på samme måde som f.eks. en
+for-løkke i PHP.  For at være sikker på at alder optræder i
+REQUEST-objektet, kalder man sin ZSQL-Method med alder-variablen.
+&lt;dtml-var&gt;-tagsene indsætter variablerne der returneres fra
+ZSQL-metoden.
+</para>
+</sect3>
 </sect2>
 </sect1>
 
@@ -70,4 +146,5 @@ skriv dette ned!  Den basale Zope er nu installeret!
 Se <ulink
 url="http://www.phpnuke.org">http://www.phpnuke.org</ulink>. More to follow.
 </para>
+</sect1>
 </chapter>
