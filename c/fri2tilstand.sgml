@@ -1063,14 +1063,145 @@ Mere i næste version af "Friheden til at programmere i C" ...
 <sect1 id="Tilstandsmaskiner">
 <title>Tilstandsmaskiner</title>
 <para>
-Tilstandsmaskiner er betegnelse for 2 ting. Alle programmer
-er tilstands-maskiner. En speciel teknik, som anvendes i parsere,
-indeholder en tilstandstabel.
+Tilstandsmaskiner er betegnelse for 2 ting: (1) generelt for
+computer programmer, idet alle programmer er tilstands-maskiner,
+og (2) en speciel teknik, som består i, at man bruger en
+tabel til at beskrive de tilstande, et program kan være i.
+Tilstandstabeller anvendes blandt andet i parsere.
 </para>
 
 <para>
 Hvis man vil se en "rigtig" tilstandsmaskine, så kan man studere
-output fra yacc eller bison parser-generatorer.
+output fra yacc eller bison parser-generatorer. De egner sig
+imidlertid også til opgaver. Da ID-Software frigav koden til
+Quake og Quake-2 projekterne, kunne man se, at botternes
+bevægelser og strategi blev styret af simple tilstandsmaskiner.
+</para>
+
+<para>
+Tilstandsmaskiner kaldes mere præcist Finite State Machines,
+(FSM) maskiner med et endeligt antal tilstande. Tilstandene kan
+noteres i en tabel, for der er jo kun et endeligt antal af dem.
+Hver tilstand er karakteriseret af, at der er et begrænset antal
+muligheder for, hvordan maskinen kan reagere. Maskinen reagerer
+på input, som skal kunne opdeles i et endeligt antal kategorier.
+Input kan være fra et tastatur, men i et spil kan det
+selvfølgelig også være fra en joy-stick.
+</para>
+
+<para>
+For at få et billede af en FSM kan man forestille sig en
+adventure-lignende situation: Jeg står foran indgangen til en
+grotte, og jeg kan vælge at gå ind, kravle op af bjergvæggen, gå
+baglæns eller til højre eller venstre. Jeg vælger at gå ind. Nu
+har jeg andre muligheder, tilstanden er en anden. Det at gå fra
+én tilstand til en anden kaldes en tilstandsændring (state
+transition) og mulighederne for hver tilstand noteres i
+tilstandstabellen.
+</para>
+
+<para>
+Hvis jeg havde valgt at gå tilbage, havde jeg haft andre
+muligheder bagefter, jeg var gået til en anden tilstand.
+</para>
+
+<para>
+For at tabellen kan være på siden har jeg udeladt muligheden for
+at gå til venstre.
+</para>
+
+<para>
+ <informaltable frame="all">
+   <tgroup cols="5">
+<thead>
+  <row>
+    <entry>foran-grotte tilstand</entry>
+    <entry>Inp.kategori 1</entry>
+    <entry>Inp.kategori 2</entry>
+    <entry>Inp.kategori 3</entry>
+    <entry>Inp.kategori 4</entry>
+    <entry>Inp.kategori 5</entry>
+  </row>
+</thead>
+<tbody>
+  <row>
+    <entry>--</entry>
+    <entry>Skift til ind i grotte-tilstand</entry>
+    <entry>Skift til væk-fra-indgang tilstand</entry>
+    <entry>Skift til op-over-grotte tilstand</entry>
+    <entry>Skift til højre-for-grotte tilstand</entry>
+    <entry>Skift til ubrugeligt-input tilstand</entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+</para>
+
+<para>
+Det er væsentligt for teorien at der er en kategori af
+ikke-brugbart input, og det har yderligere den fordel, at
+tilstandstabellen bliver mere overskuelig.  Næste tabel viser
+hvilke muligheder, vi har, når vi er gået ind i grotten, jeg er i
+"grotte tilstand". Der er samme antal input-kategorier, blot for
+at gøre det lettere at håntere implementeringen senere.
+</para>
+
+<para>
+ <informaltable frame="all">
+   <tgroup cols="5">
+<thead>
+  <row>
+    <entry>inde-i-grotte tilstand</entry>
+    <entry>Inp.kategori 1</entry>
+    <entry>Inp.kategori 2</entry>
+    <entry>Inp.kategori 3</entry>
+    <entry>Inp.kategori 4</entry>
+    <entry>Inp.kategori 5</entry>
+  </row>
+</thead>
+<tbody>
+  <row>
+    <entry>--</entry>
+    <entry>Skift til støde-ind-i-væg tilstand</entry>
+    <entry>Skift til foran-grotte tilstand</entry>
+    <entry>Skift til ubrugeligt-input tilstand</entry>
+    <entry>Skift til gennem-dør tilstand</entry>
+    <entry>Skift til ubrugeligt-input tilstand</entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+</para>
+
+
+<para>
+I et rigtigt spil skal der selvfølgelig være mange, mange
+tilstande, ligesom der i et godt adventure spil er mange huler,
+grotter og underlige steder, man kan komme hen. I hver situation
+udløser input-katetori X et skift til en tilstand (det kan godt
+være samme tilstand og evt. en action, fx. at man kommer i
+besiddelse af nye ting - og det er så en anden tilstand. Antallet
+at tilstande kan derfor være ret stort i sådan et spil, og man
+laver derfor heller ikke én FSM for hele spillet, men fx. som i
+Quake en tilstandsmaskien for en "bot". Her bliver input til
+"bot"en så ikke nødvendigvis input direkte fra tastaturet, men
+resultatet af en beregning fra en tilstandsmaskine et andet sted
+i programmet.
+</para>
+
+<para>
+Antallet af tilstande, en CPU kan være i, fås ved at tage alle
+registre og flag og lægge i forlængelse af hinanden og så tælle
+antallet af bits, T, så er antallet 2<superscript>T</superscript>
+</para>
+
+<para>
+Det almindeligste eksempel på en tilstandsmaskine er parsning af
+en tekststring, som formodes at indeholde et floating point tal,
+for eksempel <literal>123.45</literal>. Vi benytter den
+internationale standard for floating point, altså punktum, i hele
+kapitlet. Det kan være en god øvelse at lave et program, som også
+kan acceptere flydendetals-komma.
 </para>
 
 <para>
