@@ -3,7 +3,7 @@
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
 
-all: cvs2html filer
+all: cvs2htmlweb filer
 
 start:
 	@for dir in $(SUBDIRS); do \
@@ -71,11 +71,11 @@ clean: start
 	rm -f *~*~  .#*[0-9]
 	rm -rf palm-samling
 
-cvs2html:
+cvs2htmlweb:
 ifeq	($(shell if which cvs2html >/dev/null 2>&1; then echo -n 1; fi;), 1)
-	rm -rf cvs
-	mkdir cvs
-	cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs/index.html -v -a -b -D 30 -C cvs_crono.html
+	rm -rf cvs2html
+	mkdir cvs2html
+	cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
 endif
 
 mail:
