@@ -1,5 +1,6 @@
 <?php
    // $Id$
+   // Første version af Hans Schou. Dernæst har Peter og Hans rettet i et væk.
 
    /* top.phtml sets 
       <!--DOCTYPE ....
@@ -234,7 +235,8 @@ Bøgerne kan også fås i
 </p>
 
 <p>
-Vil du se hvad der skete med kilde-SGML filerne, så se <a href="cvs2html/">her</a>.
+Ændringerne der er sket med bøgerne kan ses på
+<a href="http://cvs.sslug.dk/linuxbog/cvs2html/">http://cvs.sslug.dk/linuxbog/cvs2html/</a>.
 </p>
 
 <p>
