@@ -3230,9 +3230,230 @@ forskellige ting i denne fil, bl.a. om man vil have stable-, unstable-
 eller testingpakker installeret. I denne fil kan man også indsætte
 flere entrys til Apt, som man så kan bruge. Man skal blot huske at
 køre en <command>apt-get update</command> efter man har opdateret
-<filename>sources.list</filename>.
+<filename>sources.list</filename>. Se mere om dette i næste afsnit.
 </para>
 </sect2>
-</sect1>
+
+<sect 2 id="debian-unstable"> <!-- Herfra og frem er Makholm den skyldige -->
+<title>At bruge en lettere ustabil Debian</title>
+
+<para>
+Debian er ikke særlig hurtig til at udgive nye stabile udgaver, derfor
+ønsker mange at bruge dele af en af udviklingsudgaverne af Debian for
+at få nyere versioner af nogle programmer.
+</para>
+
+<para>
+Debian Unstable hedder ikke unstable for sjov, og der er en grund til
+at Debian testing ikke officielt er erklæret for en stabil udgave
+endnu. Følger man vejledningerne i dette afsnit kommer man til at
+bruge programmer, der ikke er fuldstændigt testet og hvis ens maskine
+pludselig ikke virker er det bare synd! (Tag dette som en advarsel, I
+får ikke flere)
+</para>
+
+<para>
+Når en udvikler har lavet en ny debianpakke ryger den direkte ind i
+unstable. Man kan derfor let komme ud for at pakker i unstable har
+nogle ret kritiske fejl. Når en pakke har været i unstable i mindst 14
+dage, ikke har nogle kritiske fejl og er oversat til alle platforme så
+bliver pakken automatisk installeret i Testing. Der skulle derfor ikke
+være ret mange kritiske fejl i Debian Testing, men det er som sagt
+ikke fuldt ud gennemprøvet.
+</para>
+
+<sect3 id="debian-fuldt-unstable">
+<title>At lave en fuld opdatering</title>
+
+<para>
+Hvis man ønsker at bruge en ren Testing eller Unstable kan det
+anbefales at begynde med at installere i Debian Stable og så opdatere
+over netværket.
+</para>
+
+<para>
+Når man har installeret Debian har man en fil, der hedder
+<filename>/etc/apt/sources.list</filename>. Denne fil bestemmer hvor
+Debian henter pakker fra. Formodentligt har den to linjer, der ligner
+følgende:
+</para>
+
+<screen>
+deb http://http.us.debian.org/debian stable main contrib non-free
+deb http://non-us.debian.org/debian-non-US stable/non-US main contrib non-free
+</screen>
+
+<para>
+For fuldt ud at skifte til testing eller unstable, skal disse filer
+ændres, så de nævner henholdsvis testing eller unstable istedet for
+stable. Det vil sige at linjerne skal se således ud:
+</para>
+
+<screen>
+deb http://http.us.debian.org/debian testing main contrib non-free
+deb http://non-us.debian.org/debian-non-US testing/non-US main contrib non-free
+</screen>
+
+<para>
+Dernæst skal man opdatere sin pakkeliste og så er det bare at
+opgradere (til en ny distribution):
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get update</userinput>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get dist-upgrade</userinput>
+</screen>
+
+<para>
+Fremover holder man sin maskine opdateret ved med jævne mellemrum at
+opdatere sin pakkeliste og opgradere (samme distribution):
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get update</userinput>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get upgrade</userinput>
+</screen>
+
+<para>
+Kalder man <command>apt-get upgrade</command> med en -u option, altså
+<command>apt-get -u upgrade</command> fortæller den om alle de pakker
+den opgraderer.
+</para>
+
+<para>
+En række pakker vil apt-get fortælle at den ikke vil opdatere ("The
+following packages have been kept back"). Dette betyder at pakkerne
+ikke kan opgraderes uden enten at installerer flere pakker eller ved
+at fjerne pakker fra systemet. Disse pakker kan så opgraderes ved at
+skrive:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get install &lt;pakke&gt;</userinput>
+</screen>
+</sect3>
+
+<sect3 id="debian-enkelte-unstable">
+<title>At kun opdatere enkelte pakker</title>
+
+<para>
+Ofte er det kun enkelte pakker man virkelig har brug for at skulle
+have i en nyere version. Det kan derfor være smart kun at opdatere de
+pakker man har brug for at opdatere. Dette kan man gøre hvis man
+bruger en nogenlunde ny version af apt (den der ligger i testing).
+</para>
+
+<para>
+Først skal man fortælle apt at den skal hente pakkelisterne for både
+stable, testing og unstable (eller bare to af dem). Dette gøres ved at
+skrive begge distributioner ind i <filename>/etc/apt/sources.list</filename>:
+</para>
+
+<screen>
+deb http://http.us.debian.org/debian stable main contrib non-free
+deb http://http.us.debian.org/debian testing main contrib non-free
+deb http://http.us.debian.org/debian unstable main contrib non-free
+deb http://non-us.debian.org/debian-non-US stable/non-US main contrib non-free
+deb http://non-us.debian.org/debian-non-US testing/non-US main contrib non-free
+deb http://non-us.debian.org/debian-non-US unstable/non-US main contrib non-free
+</screen>
+
+<para>
+Dernæst skal pakkelisten opdateres
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get update</userinput>
+</screen>
+
+<para>
+Vi skal nu fortælle apt at selvom, der findes nyere versioner af en
+pakke, skal den altid bruge pakken fra stable, med mindre den
+eksplicit bliver fortalt andet. Dette gøres ved at lave en fil
+<filename>/etc/apt/preferences<filename>, der indeholder følgende:
+</para>
+
+<screen>
+Package: *
+Pin: release a=stable
+Pin-Priority: 600
+</screen>
+
+<para>
+Dermed ved apt at den skal give alle pakker, der kommer fra stable, en
+prioritet på 600. (standardprioriteten er 500). Når apt skal vælge
+hvilke pakker den skal installere (opgradere til) vælger den de pakker
+med højst prioritet (før den ser på versionsnumre).
+</para>
+
+<para>
+Det er nu muligt at installere enkelte pakker direkte fra testing ved
+at skrive:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get install slashem/testing</userinput>
+</screen>
+
+<para>
+Dette installerer pakken slashem fra testing. Hvis pakken er afhængig
+af andre pakker, der ikke er i stable, skal disse angives
+eksplicit. Hvis man ønsker at opfylde alle afhængigheder, ved at
+installere pakker fra testing kan man skrive følgende:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get --target-release testing install slashem</userinput>
+</screen>
+
+<para>
+Hvormed at apt vil give prioriteten 990 til alle pakker i testing.
+</para>
+
+<para>
+Hvis man altid vil følge pakken slashem fra testing, kan man skrive
+følgende i sin <filename>/etc/apt/preferences</filename>:
+</para>
+
+<screen>
+Package: slashem
+Pin: release a=testing
+Pin-Priority: 700
+
+Package: *
+Pin: release a=stable
+Pin-Priority: 600
+</screen>
+
+<para>
+Så vil slashem fra testing have en højre prioritet en slashem fra
+stable (600) og slashem fra unstable (500).
+</para>
+
+<para>
+Den fulde dokumentation af hvad man kan med /etc/apt/preferences
+findes i manualsiden apt_preferences(8)
+</para>
+</sect3>
+
+<sect3 id="debian-unstable-tips">
+<title>Lidt andre gode råd</title>
+
+<para>
+Hvis man følger udviklingen af Debian kan det værer en god ide at
+installere pakken apt-listchanges. Denne pakke giver mulighed for at
+læse changelog-filerne for de pakker apt ønsker at opdatere. Dermed
+kan man kyllinge ud hvis der er sket for store ændringer i en pakke.
+</para>
+
+<para>
+<emphasis>Og husk:</emphasis> Debian unstable bliver udviklet
+aktivt. At opdatere centrale pakker som glibc eller perl kan let gøre
+dit system ubrugligt. Brug derfor kun Debian Testing og Debian
+Unstable på produktionsmaskiner, du ike kan tåle at miste, når du er
+absolut sikker på at det vil virke.
+</para>
+</sect3>
+</sect2></sect1>
 </chapter>
 
