@@ -9,7 +9,7 @@
    ISBN 0-13-110362-8
    side 6 i second edition.
 
-  Kompiler: gcc -o hello hello.c
+  Oversætter: gcc -o hello hello.c
 
   Afvikling: ./hello
 */

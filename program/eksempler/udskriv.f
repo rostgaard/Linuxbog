@@ -8,7 +8,7 @@ C       ikke læse fra to enheder samtidig. Fortran77 er og bliver et
 C       sprog, der er udviklet til numeriske beregninger af diverse
 C       naturvidenskablige problemer.
 C       
-C       Kompile: g77 -o udskriv udskriv.f
+C       Oversætter: g77 -o udskriv udskriv.f
 C
 C       Afvikling: ./udskriv
 

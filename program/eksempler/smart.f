@@ -44,7 +44,7 @@ C     ---------------------------------------------------------------
 C     -------------------------------------------------------------
 C     Det farlige ved fortran er, at der er en hel masse
 C     forud definerede variable. Dette betyder, at programmet
-C     fint kan kompilere selvom et par variable ikke er defineret.
+C     fint kan oversættes selvom et par variable ikke er defineret.
 C     Under brug kan det derfor være vanskeligt at finde ud af,
 C     hvorfor der opstår underlige resultater.
 C
