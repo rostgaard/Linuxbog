@@ -2429,14 +2429,17 @@ echo 1 >> /proc/sys/net/ipv4/ip_forward
 
 <para>
 Der er mange andre ting, man kan foretage sig, for at maskinen
-bliver sikret. Sidst i kapitlet vises nogle af disse tiltag for
-"hardening" af et system. System hærdning kan forbedre alene ved
-at fjerne de tools, som en systemadministrator bruger til
-diskformatering, oprettelse af filsystemer mv. men det vil for de
-fleste private være at gå for vidt og vil medføre
-irritationsmomenter i det daglige arbejde. Man kunne selvfølgelig
-have en supplements-server stående, som man lige kunne hooke op
-når man havde brug for det ...
+bliver sikret: <ulink url="http://www.bastille-linux.org/">
+http://www.bastille-linux.org/</ulink>. Det kaldes også
+"hardening", hærdning, af et system. For eksempel anbefales det
+på udsatte systemer at fjerne de tools, som en
+systemadministrator bruger til sletning, kopiering og omdøbning
+af filer, mount, diskformatering, oprettelse af filsystemer mv.
+Hvis en cracker opnår root-privilegier, vil aktionsmulighederne
+derved være begrænset. Men det vil for de fleste private medføre
+irritationsmomenter i det daglige arbejde.  Man kunne
+selvfølgelig have en supplements-server stående, som man lige
+kunne hooke op når man havde brug for det ...
 </para>
 
 <para>
@@ -3004,6 +3007,43 @@ Hvis du er usikker, så svar Y.
 netfilter, idet man også på et lokalnet kan have fordel af at
 kunne spærre af for uønskede pakker udefra. De store
 distributioner har det altid med.]
+</para>
+
+</sect1>
+
+
+<sect1 id="sikkerhed-hardening">
+<title>System hærdning</title>
+
+<para>
+Hærdning af kernen er relevant på en firewall. Man kan for
+eksempel tilføje flg. til sit firewall script:
+</para>
+
+<programlisting>
+# Svar ikke på ping
+/bin/echo "1" > /proc/sys/net/ipv4/icmp_echo_ignore_all
+
+# undgå at være med til smurf angreb
+/bin/echo "0" > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+# Tillad ikke source routing
+/bin/echo "0" > /proc/sys/net/ipv4/conf/all/accept_source_route
+/bin/echo "0" > /proc/sys/net/ipv4/conf/all/accept_redirects
+/bin/echo "1" > /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses
+for i in /proc/sys/net/ipv4/conf/*; do
+    /bin/echo "1" > $i/rp_filter
+done
+# Log forsøg på source routing samt redirect
+/bin/echo "1" > /proc/sys/net/ipv4/conf/all/log_martians
+/bin/echo "0" > /proc/sys/net/ipv4/ip_forward
+
+</programlisting>
+
+<para>
+Det kræver en speciel kerne, hvor de forskellige nødvendige
+features er aktiveret. Man kan fx. godt køre en firewall på en
+kerne, som ikke har logging af fremmede (spoofede) pakker, også
+kaldet mars-boere, "Martians".
 </para>
 
 </sect1>
