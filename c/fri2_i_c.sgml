@@ -1,46 +1,95 @@
 
 <chapter id="c-programmering-start"><title>C Programmering</title>
-<sect1 id="tour"><title>Hello-world programmer</title>
 
 <abstract><para>
-Hello-world programmer, beregningsprogrammer, filter-programmer,
-tilstandsprogrammer, netværksprogrammer, client server
-programmer, systemprogrammer, databaseprogrammer,
-værktøjsprogrammer - betegnelser af praktisk art, ikke
-systematiske kategorier.
+Resume: Hello-world programmer isolerer og afprøver en speciel teknik.
+For at konstruere og lære nye teknikker er det en god ting at
+kunne isolere hver eneste lille funktionalitet i det nye program,
+man ønsker at bygge. Denne teknik kan man kalde terrasse-teknik.
 </para></abstract>
 
-<sect2 id="brohoved">
-<title>Et brohoved.</title>
 <para>
 Et C program består af en serie definitioner af eksterne
 objekter. Et eksternt objekt kan være en funktion eller en
-datadefinition. For at kunne arbejde frit med opbygning af et
-program, er det vigtigt at have en fornemmelse for, hvordan man
-deler sin opgave op i mindre dele.
+datadefinition, d.v.s. en variabel. For at få overblik over en
+opgave fra begyndelsen af, er det godt at vide, hvordan man
+opdeler en opgave i mindre dele. Ikke blot hvilke
+funktionaliteter, som lader sig isolere, men også en ide om,
+hvordan man bærer sig ad med at opdele et program i mindre
+programdele. Det er hovedemnet for dette kapitel.
 </para>
 
 <indexterm><primary>objekt, eksternt</primary></indexterm>
 
 <para>
-Det er også rart at have prøvet nogle gange at opbygge en
-datarepræsentation af noget, man kender godt, f.eks. et
-medlemskartotek eller en database over CD-skiver.
-Derefter kan man gå i gang med at opdele sine operationer. Det
-ville jeg kalde aktions-orienteret programmering ;-)
+En opdeling forudsætter, at der er mulighed for at koble
+forskellige moduler sammen igen på et senere tidspunkt ved hjælp
+af libraries, header filer og make filer. Det vil nærværende
+kapitel give nogle eksempler på.
 </para>
 
 <para>
-Altså, gå igang med at repræsentere de data, man ønsker at
-arbejde med, og med at definere operationer på disse data. Det
-lyder måske som objekt-orienteret programmering - og det er det
-også!  Men sådan gør man jo også, selv om man ikke vil anvende
-C++. Der er mange situationer, hvor C er mere effektivt.
+I C er funktioner grundlaget for opdelingen af programmer i
+mindre dele. Som Kernighan siger: funktioner gør det muligt
+at genbruge kode, gør det muligt, at en programmør bygger videre
+på en anden programmørs arbejde.
+</para>
+
+<para>
+Det er vel at mærke sådan at forstå, at jeg, i mit nye program,
+kan includere al funktionalitet fra noget, som er skrevet i
+forvejen <emphasis> uden at jeg skal ændre eller kopiere fra den
+oprindelige kode. </emphasis>
+</para>
+
+<para>
+Grundlaget for genbrug er som sagt funktionen, men ved hjælp af
+separat kompilering, statiske variable og evt. dynamisk
+allokering af mere hukommelse kan denne teknik forfines, således
+at man reelt set råder over objektorienterede metoder. Det bedst
+kendte eksempel er ANSI C bibliotekets Input Output del, som
+bygger på begrebet en FILE. Man kan erklære en variabel af typen
+<literal> FILE* </literal> uden at ane, hvad den indeholder. Det
+varierer også fra system til system. Men fælles for alle
+<literal> FILE* </literal> er, at man kan åbne dem, <literal>
+fopen() </literal>, læse fra dem <literal> fread() </literal> og
+skrive til dem <literal> fwrite() </literal> finde en position,
+lukke igen og meget andet.
+</para>
+
+<sect1 id="tour"><title>ANSI prototyper og modularitet</title>
+<para>
+I dette kapitel ser vi på hvordan man opdeler en lille opgave i
+en beregningsdel og en hoveddel. Undervejs eksperimenteres
+med funktioner og prototyper.
+</para>
+
+<para>
+Derefter ses på filter programmer, som er programmer, der læser
+noget input og transformerer dette til en bestemt slags output.
+For et givet input vil output altid være det samme.
+</para>
+
+<para>
+Dette princip udstrækkes til et forholdsvis kompliceret program,
+som parser sgml tags og formaterer lidt på en sgml tekst. Endelig
+er der forslag til mange øvelser undervejs, og den interesserede
+læser vil sikkert ikke kunne lade være med at eksperimentere
+yderligere. God fornøjelse!
+</para>
+
+<para>
+Men allerførst skal vi lige se på, hvilken betydning returværdien
+fra en funktion kan have på et helt andet program, nemlig en
+shell eller kommandofortolkeren. Vi bruger et minimal program til
+at isolere fænomenet.
 </para>
 
 <indexterm><primary>Kernighan, Brian</primary></indexterm>
 <indexterm><primary>Ritchie, Dennis</primary></indexterm>
 
+<sect2 id="brohoved">
+<title>Et brohoved.</title>
 <para>
 Forhåbentlig kender du Kernighan &amp; Ritchies bog The
 C Programming Language. Det første kapitel, den berømte "tour"
@@ -49,13 +98,13 @@ World!" på en uddataenhed (altså en skærm eller
 lignende).<footnote><para>
 Hvis du ikke kender bogen "The C Programming Language" af Kernighan &
 Ritchie, og hvis du ikke er en øvet C programmør, så vil jeg anbefale,
-at du køber den og bruger ca. 14 dage til at arbejde kapitel 1 igennem
-- lav så mange af de ekstra øvelser, som du kan nå. Nærværende kapitel
-er en ikke en erstatning for den oprindelige "tour", men et supplement. 
-Man kalder det for learning by doing eller deduktiv
-spiralpædagogik; vi udleder, hvordan C sproget fungerer ved at
-prøve det mange gange og ved at gøre øvelser lidt sværere hver
-gang.
+at du køber eller låner den og bruger nogle uger til at arbejde
+kapitel 1 igennem - lav så mange af de ekstra øvelser, som du kan
+nå. Nærværende kapitel er en ikke en erstatning for den
+oprindelige "tour", men et supplement. Man kalder det for
+learning by doing eller deduktiv spiralpædagogik; vi udleder,
+hvordan C sproget fungerer ved at prøve det mange gange og ved at
+gøre øvelser lidt sværere hver gang.
 </para>
 
 <para>
@@ -219,7 +268,7 @@ rækkefølge, oppefra nedefter.
 Et kald til en funktion, som f.eks. flg.: <literal>
 abs(-5); </literal> er også et expression, i dette tilfælde med
 værdien 5.  Kald til en funktion vil ofte returnere en variabel
-af typen heltal <emphasis> integer </emphasis>, og en integer i
+af typen heltal, <emphasis> integer </emphasis>, og en integer i
 et expression kan erstattes af et kald til en funktion, som
 returnerer en integer.
 </para>
@@ -259,11 +308,11 @@ return 255;
 
 <para>
 Tallet kan i Unix-kommandofortolker-sammenhæng læses i variabelen $?,
-som kan styre processtrømmen i et Unix-skalprogram.<footnote><para>
-I Microsoft miljøer som "errorlevel", der kan bruges af if-sætninger i
-batch-filer. </para> </footnote>
-Øvelse: Ret, så programmet returnerer 117 og se, om
-du kan udskrive systemvariablen $? med kommandoen 
+som kan styre processtrømmen i et Unix-skalprogram <emphasis> (en
+shell) </emphasis>.<footnote><para> I Microsoft miljøer som
+"errorlevel", der kan bruges af if-sætninger i batch-filer.
+</para> </footnote> Øvelse: Ret, så programmet returnerer 117 og
+se, om du kan udskrive systemvariablen $? med kommandoen 
 </para>
 
 <screen>
@@ -400,9 +449,12 @@ int main(int, char *[], char *[]);
 
 <para>
 Men det er oplagt at finde navne, som giver læseren en hjælp
-til at forstå meningen med funktionen. Når vi ikke bruger
-parametrene til main, kan vi nøjes med at skrive main(), altså en
-tom funktions-parentes.
+til at forstå meningen med funktionen. Argc står for argument
+count, argv for argument vector, en liste med alle parametre fra
+det program, som har startet vores program op; env står for
+environment variable, her kan vi aflæse brugerpreferencer og
+ligenende. Når vi ikke bruger parametrene til main, kan vi nøjes
+med at skrive main(), altså en tom funktions-parentes.
 </para>
 
 <example id="ex-char-ptr"><title>En character pointer</title>
@@ -414,8 +466,8 @@ tom funktions-parentes.
 
 int main()
 {
-    char *message = "Hallo! Programmet frame3 kører nu...";
-    puts(message);
+    char *charpointer = "Hallo! Programmet frame3 kører nu...";
+    puts(charpointer);
     return 0;
 }
 
@@ -432,8 +484,8 @@ Det er simpelthen en praktisk skrivemåde. Det svarer til:
 <programlisting role="C">
 main()
 {
-    char * message;
-    message = "Hallo etc... ";
+    char * charptr;              /* charptr er en variabel */
+    charptr = "Hallo etc... ";
 </programlisting>
 
 <para>
@@ -447,9 +499,9 @@ bruge den: <literal> puts("Hallo etc.."); </literal>
 
 <para>
 En gengivelse af dette system af RAM-adresser og indhold
-kunne tegnes som en reol hvor hver hylde har et indhold, der
-enten kan være 4 bytes eller 4 bogstaver, eller én adresse (32
-bits).
+kunne tegnes som en reol. Her er det en reol, hvor hver hylde har
+et indhold, der enten kan være 4 bytes eller 4 bogstaver, eller
+én adresse (32 bits).
 </para>
 
 <programlisting role="C">
@@ -457,6 +509,8 @@ bits).
         eller
         hylde-nr.      Indhold
 
+                    ~             ~
+                    :             :
                     +-------------+
                     |             |
                     |  o !   P    |
@@ -468,17 +522,14 @@ bits).
                     |             |
                     +-------------+
                     |             |
-                    |             |
-                    +-------------+
-                    |             |
                     :             :
                     :             :
                     :             :
                     |             |
-           120808   +-------------+
-                    |             |  Adressevariabel, indeholder
-                    |  &lt;800436>   |  adresse på string Hallo! Prog...
-           120804   +-------------+
+           120808   +-------------+  charptr er en adressevariabel,
+                    |             |  som indeholder adressen
+                    |  &lt;800436>   |  på en string, "Hallo! Prog...etc."
+ charptr:  120804   +-------------+
                     |             |
                     |             |
            120800   +-------------+
@@ -502,14 +553,25 @@ for bogstav ligger i programmets data-del.
 <para>
 Lad os nu gå over til beregningsprogrammer. Hvis de ikke har
 noget input, er de en slags "hello" programmer, fordi de isolerer
-de aritmetiske muligheder. Selv om vi begynder med simple
-eksempler, kan det sandelig godt være nyttige programmer!
+de aritmetiske operationer. Selv om vi begynder med simple
+eksempler, kan det sandelig godt være nyttige programmer. Den
+oprindelige ide om computere var jo blot at de skulle beregne
+ting, som var trælse at beregne i hånden, planetbaner,
+skatteopgørelser og lignende ;-)
 </para>
 </sect2>
 </sect1>
 
 <sect1 id="s1-datatyper">
-<title>Datatyper</title>
+<title>Parameterlister og datatyper</title>
+
+<para>
+I foregående afsnit afleverede vi én oplysning til en funktion. I
+dette afsnit skal vi aflevere flere oplysninger og desuden se,
+hvordan en funktion kan udføre sit arbejde på en så robust og
+fornuftig måde, så vi ikke behøver at spekulere på, om programmet
+bliver ustabilt, hvis brugeren foretager sig noget tåbeligt.
+</para>
 
 <para>
 De indbyggede datatyper er grundlaget for de brugerdefinerede
