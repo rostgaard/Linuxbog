@@ -1035,6 +1035,61 @@ Samba (<filename>/etc/smb.conf</filename>).
 
 </sect1>
 
+
+<sect1 id="DPMS">
+<title>DPMS - aktiv strømstyring</title>
+<indexterm><primary>DPMS</primary></indexterm>
+<indexterm><primary>Advanced Power Management BIOS support</primary></indexterm>
+<indexterm><primary>Strømstyring</primary></indexterm>
+<indexterm><primary>Skærm</primary><secondary>automatisk sluk</secondary></indexterm>
+<indexterm><primary>Sluk for skærm</primary><secondary>automatisk</secondary></indexterm>
+
+<para>
+Dette afsnit omhandler at få maskinen kan slukke skærmen automatisk og
+generelt prøve at spare strøm.  For at få strøm-styring til at virke
+under X skal man tilføje  <literal>Option "DPMS"</literal>
+til filen <filename>/etc/X11/XF86Config-4</filename>
+</para> 
+
+<screen>
+Section "Monitor"
+        Identifier   "Monitor0"
+        VendorName   "Monitor Vendor"
+        ModelName    "Monitor Model"
+        HorizSync   30.0-64.0
+        VertRefresh 50.0-110.0
+        Option "DPMS"
+...
+</screen>
+
+<para> 
+I brugerens <filename>.tcshrc</filename>/<filename>.bashrc</filename>
+eller <filename>/etc/bashrc</filename> tilføjet <literal>xset dpms 120
+200 0</literal>.  Dermed får jeg skærmen til at blanke efter 120
+sekunder (standby) og slukke (suspend) efter 200 - det sidste nul
+skulle få maskinen til ikke at slukke.  
+</para>
+
+<para>
+Du skal også have oversat din kerne, så den understøtter "Power Management"
+</para>
+
+
+<screen>
+[*] Power Management support
+[ ]   ACPI support
+<*>   Advanced Power Management BIOS support
+[ ]     Ignore USER SUSPEND
+[*]     Enable PM at boot time
+[*]     Make CPU Idle calls when idle
+[*]     Enable console blanking using APM
+[*]     RTC stores time in GMT
+[ ]     Allow interrupts during APM BIOS calls
+[ ]     Use real mode APM BIOS call to power off
+</screen>
+</sect1>
+
+
 <SECT1 ID="sysadm-afslutning">
 <TITLE>Tips og tricks</TITLE>
 
