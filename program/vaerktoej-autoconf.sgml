@@ -89,12 +89,12 @@ vi senere skal have distribueret til brugeren.
 Første fil vi kommer til at mangle når <command>configure</command>
 kører er <filename>aclocal.m4</filename>. Vi skal have den fil
 liggende og den fås nemmest med <command>aclocal</command>.
---- <command>aclocal</command> skal kun køres en gang, så lad
-os starte med den.
+<command>aclocal</command> skal køres ved visse ændringer
+i <filename>configure.in</filename>.
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>aclocal</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>aclocal</userinput>
 </screen>
 
 <para>
@@ -104,7 +104,7 @@ kommandoen <command>automake -a</command>.
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>automake -a</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>automake -a</userinput>
 </screen>
 
 <para>
@@ -113,9 +113,9 @@ automatisk får med, med option '-a' (--add-missing).
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoconf</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>./configure</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>autoconf</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make</userinput>
 </screen>
 
 <para>
@@ -154,10 +154,10 @@ Dernæst kan <command>./configure</command> køres igen og der oprettes en
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>aclocal</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoheader ; autoconf</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>./configure</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make clean ; make</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>aclocal</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>autoheader ; autoconf</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make clean ; make</userinput>
 </screen>
 
 <para>
@@ -168,6 +168,31 @@ Vi kan nu teste i <filename>hello.c</filename> om der er en
 Dernæst cheker vi om PACKAGE og VERSION er defineret og udskriver
 disse værdier.
 Tag et kig på <filename>config.h</filename> og se hvad den indeholder.
+</para>
+
+<programlisting>
+/* Filnavn: hello.c */
+<emphasis>#ifdef HAVE_CONFIG_H
+#include &lt;config.h&gt;
+#endif</emphasis>
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+<emphasis>#ifdef PACKAGE
+#ifdef VERSION
+  printf("Bygget med pakken: %s-%s\n\n", PACKAGE, VERSION);
+#endif
+#endif</emphasis>
+  printf("Hello, world!\n");
+  return 0;
+}
+</programlisting>
+
+<para>
+Der er en del filer i et autoconf-system og som nybegynder kan det
+være noget svært at få et overblik. Listen herunder giver en
+beskrivelse af de mest almindelige filer.
 </para>
 
 <table id="autoconf-filer">
@@ -197,25 +222,6 @@ Tag et kig på <filename>config.h</filename> og se hvad den indeholder.
    </tbody>
   </tgroup>
 </table>
-
-<programlisting>
-/* Filnavn: hello.c */
-<emphasis>#ifdef HAVE_CONFIG_H
-#include &lt;config.h&gt;
-#endif</emphasis>
-#include &lt;stdio.h&gt;
-
-int main(void)
-{
-<emphasis>#ifdef PACKAGE
-#ifdef VERSION
-  printf("Bygget med pakken: %s-%s\n\n", PACKAGE, VERSION);
-#endif
-#endif</emphasis>
-  printf("Hello, world!\n");
-  return 0;
-}
-</programlisting>
 
 <para>
 Du har nu fået oprettet de to mest basale filer
@@ -261,8 +267,8 @@ når man senere kører kommandoen <command>make dist</command>.
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>touch NEWS README AUTHORS ChangeLog</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>automake</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>touch NEWS README AUTHORS ChangeLog</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>automake</userinput>
 </screen>
 
 <para>
@@ -302,26 +308,22 @@ og denne er placeret i roden af projektet.
 </para>
 
 <para>
-aclocal opretter aclocal.m4 på basis af <filename>configure.in</filename>,
-og bliver senere læst af <command>autoconf</command> for at
-danne <filename>configure</filename>.
+Der kan komme mange underlige fejl undervejs, hvilket kan afhjælpes
+ved at køre de forskellige programmer igen.
+For alle programmer gælder at det ikke skader at køre dem igen,
+og det tager heller ikke ret lang tid at gøre det.
+Så går noget galt, så kør denne stribe programmer igen:
 </para>
 
-<para>
-............
-automake -a opretter Makefile.in på basis af Makefile.am og configure.in
-Ændres noget i Makefile.am skal automake køres igen.
-Hvis visse ting ændres i configure.in skal automake køres igen.
-
-autoconf læser configure.in og opretter configure.
-
-configure læser Makefile.in og aclocal.m4 og opretter Makefile.
-..........
-</para>
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>automake -a; aclocal; autoheader; autoconf; ./configure</userinput>
+</screen>
 
 <para>
 Læs mere:
 <ULINK URL="http://sources.redhat.com/automake/automake.html">http://sources.redhat.com/automake/automake.html</ULINK>
+<ULINK URL="http://www.andamooka.org/reader.pl?section=autobook">http://www.andamooka.org/reader.pl?section=autobook</ULINK>
+og "info automake" lokalt på dit system.
 </para>
 
 <sect2 id="autoconf-ceks2">
@@ -357,14 +359,14 @@ Herefter er det blot at køre nogle kommandoer:
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>automake -a</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>aclocal</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoconf</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>./configure</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make install</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make uninstall</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make dist # o.s.v...</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>automake -a</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>aclocal</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>autoconf</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make install</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make uninstall</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make dist # o.s.v...</userinput>
 </screen>
 
 <para>
@@ -432,8 +434,8 @@ Herefter kan man se resultatet i <filename>config.h</filename>.
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoheader ; autoconf ; ./configure</userinput>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>cat config.h</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>autoheader ; autoconf ; ./configure</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>cat config.h</userinput>
 </screen>
 
 <para>
