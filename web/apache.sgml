@@ -932,6 +932,7 @@ filen til PHP.
 
 <screen>
 <COMMAND>&lt;?php
+   // Filnavn: test.php
    header("Content-type: text/vnd.wap.wml");
 ?&gt;</COMMAND>&lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN"
@@ -946,7 +947,34 @@ filen til PHP.
 </screen>
 
 <para>
-SSLUG har eksempelvis siden november 1999 vist sin kalender i WAP-format.
+I Perl skrives headeren i starten og efterfølges af to '\n'.
+Dette eksempel skal placeres i <filename>/cgi-bin/</filename> kataloget.
+</para>
+
+<screen>
+#!/usr/bin/perl -w
+# Filnavn: test.pl
+ 
+# Bemærk to gange '\n' som afslutter headeren
+<COMMAND>print "Content-type: text/vnd.wap.wml\n\n";</COMMAND>
+ 
+print "&lt;?xml version=\"1.0\"?&gt;\n";
+print "&lt;!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.1//EN\"\n";
+print "  \"http://www.wapforum.org/DTD/wml_1.1.xml\"&gt;\n";
+print "&lt;wml&gt;\n";
+print "  &lt;card id='home'&gt;\n";
+print "  &lt;p&gt;\n";
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
+    = localtime(time);
+my $today=sprintf("%04d-%02d-%02d",$year+1900,$mon+1,$mday);
+<COMMAND>print "  Dato idag er $today\n";</COMMAND>
+print "  &lt;/p&gt;\n";
+print "  &lt;/card&gt;\n";
+print "&lt;/wml&gt;\n";
+</screen>
+
+<para>
+SSLUG har eksempelvis siden november 1999 vist sin kalender i WAP/PHP-format.
 Kildeteksten findes på
 <ulink url="http://www.sslug.dk/adict/wap.phps">http://www.sslug.dk/adict/wap.phps</ulink>
 og kan ses med en almindelig browser.
@@ -957,44 +985,6 @@ browser.
 Alternativt kan <ulink url="http://gelon.net/">http://gelon.net</ulink> bruges til
 at se WAP-kalenderen.
 </para>
-
-<!-- Jeg mener ikke vi skal have efterfølgende med /chlor -->
-<para>
-I stedet for at sende en anden <EMPHASIS>header</EMPHASIS>, kan Apaches
-konfigurationsfil ændres.
-Det første du skal gøre er at få Apache til at kalde PHP-fortolkeren,
-når den anmodes om en <filename>.wml</filename>-side. Find dette sted
-i <filename>/etc/httd/httpd.conf</filename>, nok omkring linie 780.
-</para>
-
-<screen>
-&lt;IfModule mod_php4.c&gt;
-  AddType application/x-httpd-php .php4 .php3 .phtml .php
-  AddType application/x-httpd-php-source .phps
-&lt;/IfModule&gt;
-</screen>
-
-<para>
-Har du kun PHP3, så vil du ikke have <filename>mod_php4.c</filename>
-med, men har en tilsvarende PHP3-del. Vi tilføjer nu
-<filename>.wml</filename>, så i dette tilfælde får vi
-</para>
-
-<screen>
-&lt;IfModule mod_php4.c&gt;
-  AddType application/x-httpd-php .php4 .php3 .phtml .php .wml
-  AddType application/x-httpd-php-source .phps
-&lt;/IfModule&gt;
-</screen>
-
-<para>
-Og endelig skal du tilføje dennem for at kunne generere WML via PHP
-</para>
-
-<screen>
-# For PHP4
-AddType application/x-httpd-php .wml 
-</screen>
 
 </sect1>
 
