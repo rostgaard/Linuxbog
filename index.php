@@ -25,7 +25,7 @@ if (!$b && !$t && !$matrix) { ?>
 <?php } ?>
 
 <h1>SSLUG - Friheden til at skrive bøger</h1>
-
+ 
 <?php
 
 // Funktion til at lave hyperlink
