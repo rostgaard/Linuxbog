@@ -269,8 +269,8 @@ html.clean:
 ################################################################################
 .PHONY : pdf
 if BUILD_PDF
-pdf: $(targetname)-pdf-$(version).pdf
-$(targetname)-pdf-$(version).pdf: $(dep_sgml_filer) eksempler-sgml-PDF
+pdf: $(targetname)-pdf-$(version).pdf.gz
+$(targetname)-pdf-$(version).pdf.gz: $(dep_sgml_filer) eksempler-sgml-PDF
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pdf"
 	@echo ".........................................."
@@ -309,6 +309,7 @@ $(targetname)-pdf-$(version).pdf: $(dep_sgml_filer) eksempler-sgml-PDF
 #	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
 	mv PdfBuildDir/bog.pdf $(targetname)-pdf-$(version).pdf
 	pdfinfo $(targetname)-pdf-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
+	gzip -9 $(targetname)-pdf-$(version).pdf
 #	rm -rf PdfBuildDir
 	@echo "Done PDF (pdf)"
 	@echo ""
