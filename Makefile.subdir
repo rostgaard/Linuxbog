@@ -123,7 +123,7 @@ ifneq   ("$(plucker)","")
 	cp ../misc/*.pdb palm
 	cp ../misc/gpl.txt palm
 	cp ../misc/plucker.txt palm
-	(zip $(targetname)-palm--$(version).zip palm/*.prc palm/*.pdb palm/*txt )
+	(zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb palm/*txt )
 else
 	@echo "Du bør installere plucker for at kunne lave palm-udgaven"
 endif
@@ -212,12 +212,11 @@ $(targetname)-pdf-$(version).zip: $(sgmlfiler)
 	cp images/*png tempdir
 	(cd tempdir;jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
 	(cd tempdir;collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
-	(cd tempdir; echo `db2pdf bog.xml >& /dev/null`)
-	(cd tempdir; echo `db2pdf bog.xml >& /dev/null`)
-	(cd tempdir; echo `db2pdf bog.xml >& /dev/null`)
+	(cd tempdir; db2pdf bog.sgml; db2pdf bog.sgml)
 	mv tempdir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-pdf-$(version).zip $(targetname)-$(version).pdf
+	rm -rf tempdir
 	@echo "Done PDF (pdf)"
 	@echo ""
 
