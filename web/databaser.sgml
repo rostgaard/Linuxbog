@@ -26,18 +26,20 @@ grafisk-, og web-baserede løsninger samtidigt.
 
 <PARA>
 De to absolut mest brugte SQL-databaser på Linux er PostgreSQL og MySQL.
-Til kommercielt brug koster MySQL en smule, men til privat brug er
-både PostgreSQL og MySQL gratis. For begge databaser gælder at du frit
+Begge databaser er i Open Source og er af høj kvalitet.
+For begge databaser gælder at du frit
 kan vælge de programmeringssprog og omgivelser du kender fra Linux.
 Perl, PHP, Python, C, Tcl/Tk, Java og foretrækker du shell-scripts, er
 det også en mulighed.
 </PARA>
 
 <PARA>
-Da MySQL kun fås i Open Source i en ældre version, har vi valgt at
-bruge PostgreSQL i de senere eksempler. Til læsning og skrivning af
-data er MySQL en lille smule hurtigere end PostgreSQL, men 'prisen'
-er så at MySQL mangler transactions (roll-back).
+PostgreSQL er med her fordi den er meget avanceret
+og meget udbredt. PostgreSQL har SQL-funktionerne sub-select,
+stored procedures, transactions og ikke mindst brugerdefinerede
+objekter i databasen.
+MySQL er lidt hurtigere end PostgreSQL i mange situationer
+og er den mest udbredte af de to databaser.
 </PARA>
 
 <PARA>
@@ -363,7 +365,7 @@ PostgreSQL har sin hjemmeside på
 </PARA>
 
 <SECT2 id="db-pgsql-shell">
-<TITLE>Shell programmering</TITLE>
+<TITLE>Shell programmering - PostgreSQL</TITLE>
 <INDEXTERM>
  <PRIMARY>Shell programmering</PRIMARY>
  <SECONDARY>PostgreSQL</SECONDARY>
@@ -528,7 +530,7 @@ PHP er Open Source og kan hentes på
 </SECT2><!-- db-pgsql-php -->
 
 <SECT2 id="db-pgsql-perl">
-<TITLE>Perl</TITLE>
+<TITLE>Perl - PostgreSQL</TITLE>
 <INDEXTERM><PRIMARY>Perl</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
 <INDEXTERM><PRIMARY>PostgreSQL</PRIMARY><SECONDARY>Perl</SECONDARY></INDEXTERM>
 <PARA>
@@ -586,6 +588,7 @@ bruger den tabel der blev oprettet i
 <XREF LINKEND="db-pgsql"> om PostgreSQL.
 Tabellen <DATABASE>linuxbog</DATABASE> åbnes og alle poster udskrives.
 </PARA>
+
 <SCREEN>
 #!/usr/bin/perl
 # Inkluder DBI-modulet
@@ -625,7 +628,7 @@ og
 </SECT2><!-- db-pgsql-perl -->
 
 <SECT2 ID="db-pgsql-python">
-<TITLE>Python</TITLE>
+<TITLE>Python - PostgreSQL</TITLE>
 <INDEXTERM><PRIMARY>Python</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
 <INDEXTERM><PRIMARY>PostgreSQL</PRIMARY><SECONDARY>Python</SECONDARY></INDEXTERM>
 
@@ -721,7 +724,8 @@ mirror-site, <ULINK URL="http://sunsite.auc.dk/mysql/">sunsite.auc.dk/mysql/</UL
 version af MySQL er en udviklingsversion, og bør derfor undgås. Den version, der er benævnt "last
 stable", eller "recommended" (i skrivende stund version 3.22.32) er den du ønsker at hente. På MySQL
 website angives, hvilket versionsnummer der er det anbefalede. For at installere MySQL skal du som
-minimum hente følgende pakker </PARA>
+minimum hente følgende pakker
+</PARA>
 
 <ITEMIZEDLIST MARK="bullet" SPACING="compact">
 <LISTITEM><PARA>MySQL-X.XX.XX.i386.rpm</PARA></LISTITEM>
@@ -864,99 +868,6 @@ rpm-pakker (to styk; program og plug-in). MySQL-GUI kan hentes fra MySQL's egne 
 KMySQL kan hentes fra <ULINK URL="http://ksql.sourceforge.net">ksql.sourceforge.net </ULINK>
 </PARA>
 
-<!-- pto: Skal vi have source-inst med? Jeg synes ikke, hva mæ dej? /chlor -->
-<!--
-SOURCE-INSTALLATION:
-Hvis du hører til de mere eventyrlystne, har behov for kontrol over, hvor MySQL skal installeres,
-eller er du bare gør-det-selv-typen som ikke er bange for at få jord under neglene, kan du downloade
-source-koden (som "tarball"). Den finder du også på MySQL's website (eller sunsites mirror). Her
-gælder det også, at du bør undgå den nyeste udgave og i stedet hente den anbefalede. Der er nogle
-værktøjer, som skal være tilstede på din maskine, for at kompileringen kan finde sted:
-
-tar
-gcc
-make
-
-Du kan checke om de er til stede med
-
-[root@linus /root]# rpm -q tar gcc make
-
-Hvis du får positivt svar på forespørgslen (pakkenavn med versionsnummer for alle tre pakker), er du
-klar til at fortsætte. Hvis ikke må du først installere de manglende rpm-pakker (de findes på
-din distributions cd-rom).
-
-Filen med source-koden skal først pakkes ud. En hurtig måde at gøre det på er som følger:
-
-[root@linus /root]# cd /sti/til/download
-[root@linus /download]# tar xvfz mysql-X.XX.XX.tar.gz
-
-Herved skabes en mappe, der hedder mysql-X.XX.XX, hvor alle source-filerne er placeret. skift til
-denne mappe og kør configure-scriptet.
-
-
-[root@linus /root]# cd mysql-X.XX.XX
-[root@linus /mysql-X.XX.XX]# ./configure
-
-Configure-scriptet checker dit system og prøver at sikre, at du har installeret, hvad der er
-nødvendigt, for at programmet kan kompileres. Hvis du ikke får fejlmeddelelser fra
-configure-scriptet, kan du gå videre med
-
-[root@linus /mysql-X.XX.XX]# make
-
-Selve kompileringen tager lidt tid, så læn dig tilbage, tag en kop kaffe og nyd forestillingen.
-Når kompileringen er færdig, og du ikke har fået fejlmeddelelser, taster du:
-
-[root@linus /mysql-X.XX.XX]# make install
-
-Dette installerer alt på sin rette plads, og du er nu tæt på målet.
-
-Hvis din maskine er på internet, bør du nu gøre et par sikkerhedsmæssige sidespring.
-Først og fremmest skal du sørge for, at MySQL ikke køres af root. Opret derfor den bruger på dit
-system, som skal køre MySQL (for en nemheds skyld kan vi jo kalde brugeren "mysql")
-
-[root@linus /mysql-X.XX.XX]# adduser mysql
-[root@linus /mysql-X.XX.XX]# passwd mysql
-
-indtast nu et password for bruger "mysql".
-
-Herpå åbner du din favorit-editor, og du skriver
-
-[mysqld]
-user=mysql
-
-og gemmer filen som /etc/my.cnf.
-
-Nu skal de nødvendige brugere og rettigheder oprettes. Dette gøres nemt ved at køre det medfølgende
-script, "mysql_install_db". Hvis du har valgt at oprette en bruger "mysql" og en "my.cnf"-fil, som
-vist ovenfor, så "su" til denne bruger før du kører scriptet. Hvis ikke, kan du blot køre det som
-root.
-
-[root@linus /mysql-X.XX.XX]# su mysql
-[mysql@linus /mysql-X.XX.XX]# scripts/mysql_install_db
-[mysql@linus /mysql-X.XX.XX]# exit
-
-Nu skal MySQL startes, men først skal det script, der starter MySQL gøres eksekverbart
-
-[root@linus /mysql-X.XX.XX]# chmod 744 /support-files/mysql.server
-[root@linus /mysql-X.XX.XX]# /support-files/mysql.server start &
-
-Nu kører MySQL, og du bør som nævnt i "rpm-afsnittet" vælge et password for brugeren root
-
-Hvis du ønsker at MySQL skal starte automatisk ved opstart, kan du kopiere scriptet
-"mysql.server" i mappen "support-files" til mappen, hvor dine opstarts-scripts er placeret
-(RedHat: /etc/rc.d/init.d SuSE: /etc/rd.d) og skabe de relevante links til rcX.d mapperne (hvor X
-er det runlevel du starter din maskine i - som oftest 3 eller 5).
-
-[root@linus /mysql-X.XX.XX]# cp /support-files/mysql.server /etc/rc.d/init.d/mysql.server
-[root@linus /mysql-X.XX.XX]# chmod 744 /etc/rc.d/init.d/mysql.server
-[root@linus /mysql-X.XX.XX]# ln -s /etc/rc.d/init.d/mysql.server /etc/rc.d/rcX.d/S55mysql
-
-Hermed har du en spritny hjemmebagt MySQL og er parat til at arbejde videre herfra. Du kan jo starte
-med (My)SQL gymnastikken beskrevet i "rpm-afsnittet"
-
- -->
-
-
 <!-- YDERLIGERE OPLYSNING -->
 <PARA>
 MySQL er mere end blot et database program; det er en database-server. 
@@ -978,7 +889,7 @@ et par tutorials på bl.a
 
 <PARA>
 PHP er et script-sprog, der kan bruges til at skabe dynamiske websider. En af de helt store fordele
-ved PHP er evnen til at kommunikere med forskellige databaseprogrammer, og PHPi
+ved PHP er evnen til at kommunikere med forskellige databaseprogrammer, og PHP
 "taler" usædvanlig godt med MySQL.
 </PARA>
 
@@ -1061,64 +972,8 @@ mysql_close($conn);
 <PARA>
 Kopier eventuelt dette eksempel, og indsæt det i et tomt dokument, som du gemmer som "test.php3" i
 Apaches dokumentrod (/home/httpd/html/test.php3). Kald filen igennem en web-browser, og se hvad der
-sker. </PARA>
-
-<!-- Følgende bør ikke være med, hvis source-afsnittet ikke er med, FMGJ -->
-<!--
-<PARA>
-Nu kan det ske, at du får en fejl som ligner denne:
+sker.
 </PARA>
-
-<SCREEN>
-Warning: MySQL Connection Failed: Can't connect to local MySQL server through socket
-'/var/lib/mysql/mysql.sock' (111)...
-</SCREEN>
-
-<PARA>
-Denne fejl er mest sandsynlig, hvis du selv har kompileret MySQL. 
-Den opstår, hvis PHP ikke finder
-"mysql.sock" på den forventede placering. 
-Først skal du sikre dig at MySQL kører. 
-Er
-det ikke tilfældet, så start programmet og se om fejlmeddelelsen forsvinder. 
-Gør den ikke det,
-eller har MySQL kørt hele tiden, kan du oprette en lille konfigurations-fil, 
-der sikrer, at MySQL
-placerer "mysql.sock", så PHP kan finde den. 
-Samtidig guider filen klientprogrammer til den nye
-placering. 
-Åbn din favorit-editor og skriv følgende (har du allerede oprettet en "my.cnf"-fil,
-tilføjer du blot disse linier under de relevante [overskrifter] i filen)
-</PARA>
-
-<SCREEN>
-[mysqld]
-socket=/sti/til/mysql.sock  (i eksemplet ovenfor ville det blive /var/lib/mysql/mysql.sock)
-
-[client]
-socket=/sti/til/mysql.sock
-</SCREEN>
-
-<PARA>
-Gem filen som /etc/my.cnf
-</PARA>
-
-<PARA>
-Herefter skal du oprette mappen til "mysql.sock", skifte ejerskab og genstarte MySQL
-</PARA>
-
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mkdir /sti/til</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chown mysql.mysql /sti/til</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/mysql.server stop</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/mysql.server start &amp;</USERINPUT>
-</SCREEN>
-
-<PARA>
-Og så skulle du være kørende igen.
-</PARA>
-
--->
 
 <PARA>
 Du kan læse meget mere om PHP på <ULINK URL="http://www.php.net">www.php.net</ULINK>, og du kan
