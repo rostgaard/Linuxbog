@@ -57,7 +57,7 @@ cygnus:=$(firstword $(wildcard /usr/share/sgml/docbook/utils-0.6.9/docbook-utils
 ImageMagickconvert:=$(firstword $(wildcard /usr/bin/convert /usr/X11R6/bin/convert))
 
 # her er det der skal laves
-all: start ekstra html pspdf palmpilot sgml eksempelbackup stop
+all: start ekstra html sgml eksempelbackup stop
 
 start:
 	@echo "-------------------------------------------"
@@ -108,16 +108,17 @@ pakhtml:
 	echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
 	echo Version: `cat version.sgml` >> bog/$(targetname).spec
 	echo Release: 1mdk >>  bog/$(targetname).spec
-	cat ../linuxbog.spec >> bog/$(targetname).spec
+	cat linuxbog.spec >> bog/$(targetname).spec
 	mv bog $(targetshortname)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html.tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
-	(cd ..;zip $(targetshortname)/$(targetname)-$(version)_html.zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html-ub.tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
+	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
-	(cd ..;tar cvzf  $(targetshortname)/$(targetname)-$(version).png.tar.gz $(targetshortname)/$(targetshortname)_images/ )
+	(cd ..;tar cvzf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
 	mv $(targetshortname)_images images 
 	@echo "Done HTML pakning (pakhtml)"
+	@echo ""
 	@echo ""
 
 # Build the html
@@ -245,16 +246,16 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 test:
 	echo $(eksfiler)
 
-eksempelbackup:  $(targetname)-$(version)_eksempler.tar.gz
-$(targetname)-$(version)_eksempler.tar.gz : $(eksfiler)
+eksempelbackup:  $(targetname)-eksempler-$(version).tar.gz
+$(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
-	rm -f $(targetname)-$(version)_eksempler.tar.gz  
-	touch $(targetname)-$(version)_eksempler.tar
+	rm -f $(targetname)-eksempler-$(version).tar.gz  
+	touch $(targetname)-eksempler-$(version).tar
 	cat dato.sgml > eksempler/BACKUPDATO
-	(cd ..;tar cvf  $(targetshortname)/$(targetname)-$(version)_eksempler.tar $(targetshortname)/eksempler/BACKUPDATO)
+	(cd ..;tar cvf  $(targetshortname)/$(targetname)-eksempler-$(version).tar $(targetshortname)/eksempler/BACKUPDATO)
 	rm -f eksempler/BACKUPDATO
-	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-$(version)_eksempler.tar =
-	gzip -9 $(targetname)-$(version)_eksempler.tar
+	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-eksempler-$(version).tar =
+	gzip -9 $(targetname)-eksempler-$(version).tar
 else
 	@echo "Bogen" $(targetname) "har ikke nogen eksempler";
 endif
