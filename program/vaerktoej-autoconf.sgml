@@ -4,6 +4,7 @@
 <title>Autoconf og automake</title>
 <indexterm><primary>autoconf</primary></indexterm>
 <indexterm><primary>automake</primary></indexterm>
+<indexterm><primary>make</primary><secondary>autoconf</secondary></indexterm>
 
 <para>
 Makefiles er en stor hjælp til selv små projekter.
@@ -321,7 +322,7 @@ Så går noget galt, så kør denne stribe programmer igen:
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$</prompt> <userinput>automake -a; aclocal; autoheader; autoconf; ./configure</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>aclocal; automake -a; autoheader; autoconf; ./configure</userinput>
 </screen>
 
 <para>
@@ -330,7 +331,116 @@ Læs mere:
 <ULINK URL="http://sources.redhat.com/autoconf/autoconf_toc.html">http://sources.redhat.com/autoconf/autoconf_toc.html</ULINK>
 <ULINK URL="http://www.andamooka.org/reader.pl?section=autobook">http://www.andamooka.org/reader.pl?section=autobook</ULINK>
 og "info automake" lokalt på dit system.
+Se også autoconf-filerne fra andre distributioner såsom: Samba, PHP og fileutils.
 </para>
+
+<sect2 id="autoconf-underkatalog">
+<title>Autoconf, underkataloger</title>
+<indexterm><primary>autoconf</primary><secondary>underkataloger</secondary></indexterm>
+<indexterm><primary>autoconf</primary><secondary>man filer</secondary></indexterm>
+<indexterm><primary>man-filer</primary><secondary>eksempel på indhold</secondary></indexterm>
+
+<para>
+Til større projekter er det en fordel at lægge afgrænsede dele af projektet i underkataloger.
+Som tidligere nævnt består et autoconf system af en <filename>configure.in</filename>
+og evt. flere <filename>Makefile.am</filename>.
+I roden af projektet lægges en <filename>Makefile.am</filename> der fortæller hvilke
+underkataloger der skal med, og i hvert katalog en <filename>Makefile.am</filename>
+der beskriver hvilke kildetekster der skal med i dette katalog.
+I dette eksempel er der et katalog med en C-fil og et katalog med en man-fil.
+Her er listen af filerne før vi går igang med at kører autoconf-programmerne.
+</para>
+
+<screen>
+./Makefile.am
+./configure.in
+man/Makefile.am
+man/hello.1
+src/Makefile.am
+src/hello.c
+</screen>
+
+<para>
+De enkelte filer ser således ud:
+</para>
+
+<programlisting>
+## Filnavn: ./Makefile.am
+AUTOMAKE_OPTIONS = foreign
+SUBDIRS = man src
+</programlisting>
+
+<programlisting>
+# Filnavn: ./configure.in
+AC_INIT(src/hello.c)
+AM_INIT_AUTOMAKE( katalog-hello, 1.0 )
+AC_PROG_CC
+AC_STDC_HEADERS
+AC_OUTPUT(Makefile man/Makefile src/Makefile)
+</programlisting>
+
+<programlisting>
+## Filnavn: man/Makefile.am
+man_MANS = hello.1
+man_aux = $(man_MANS:.1=.x)
+EXTRA_DIST = $(man_MANS)
+</programlisting>
+
+<programlisting>
+.\" Filnavn: man/hello.1
+.TH HELLO 1 "1 August 2001" "Hello" "Friheden til at programmere"
+.SH NAME
+hello \- en hilsen
+.SH SYNOPSIS
+hello
+.SH DESCRIPTION
+.B hello
+skriver "Hello, world!" til standard out.
+.SH USAGE
+hello
+.SH COPYRIGHT
+Copyright \(co 2001 Friheden til at programmere.
+.SH SEE ALSO
+goodbye(1)
+</programlisting>
+
+<programlisting>
+## Filnavn: src/Makefile.am
+bin_PROGRAMS = hello
+hello_SOURCES = hello.c
+</programlisting>
+
+<programlisting>
+/* Filnavn: src/hello.c */
+#include &lt;stdio.h&gt;
+int main(void)
+{
+  printf("Hello, world!\n");
+  return 0;
+}
+</programlisting>
+
+<para>
+Med alle filer på plads, er det blot at køre autoconf-programmerne:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>aclocal; automake -a; autoconf</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make</userinput>
+</screen>
+
+<para>
+Anvendelse af underkataloger kræver altså ikke meget mere end at have
+alle filer i samme katalog.
+<filename>./Makefile.am</filename> har <command>AUTOMAKE_OPTIONS</command> som så
+ikke er i de andre <filename>Makefile.am</filename>-filer, <command>SUBDIRS</command>
+angiver i hvilke underkataloger der ligger flere <filename>Makefile.am</filename>'s.
+Specielt for <filename>./configure</filename> skal det bemærkes at alle
+<filename>Makefile</filename>r skal angives i <command>AC_OUTPUT()</command>.
+</para>
+
+</sect2> <!-- autoconf-underkatalog -->
 
 <sect2 id="autoconf-ceks2">
 <title>Autoconf/automake eksempel</title>
