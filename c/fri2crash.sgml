@@ -2,51 +2,50 @@
 <title>Crash course i C sproget</title>
 <titleabbrev>C-sprogelementer</titleabbrev>
 <para>
-C sproget består som andre sprog af:
+ C består som andre programmeringssprog af:
 </para>
+
 <itemizedlist>
+ <listitem>
+  <para>
+   Datatyper. Vi vil gerne bruge maskinen til at behandle vores
+   tal, tekster og billeder.
+  </para>
+ </listitem>
 
-<listitem>
-<para>
-Data typer. Vi vil gerne bruge maskinen til at behandle vores
-tal, tekster og billeder.
-</para>
-</listitem>
+ <listitem>
+  <para>
+   Operatorer. Det ville være rart, hvis vi kunne regne med vores data.
+  </para>
+ </listitem>
 
-<listitem>
-<para>
-Operatorer. Det ville være rart, hvis vi kunne regne med vores data
-</para>
-</listitem>
+ <listitem>
+  <para>
+   Løkker og betingede sætninger (<emphasis>if</emphasis>,
+   <emphasis>while</emphasis> m.fl.). Vi vil gerne kunne reagere på, at
+   vores tal er blevet for stort.
+  </para>
+ </listitem>
 
-<listitem>
-<para>
-Flow-kontrol, <emphasis>if</emphasis> og 
-<emphasis>while</emphasis> etc. Vi vil gerne kunne reagere på, at
-vores tal er blevet for stort, f.x
-</para>
-</listitem>
-
-<listitem>
-<para>
-Modularitet. Vi vil gerne kunne genbruge kode, som fx. beregning af
-sinus eller udskrift til terminalvindue.
-</para>
-</listitem>
+ <listitem>
+  <para>
+   Modularitet. Vi vil gerne kunne genbruge kode, som fx. beregning af
+   sinus eller udskrift til terminalvindue.
+  </para>
+ </listitem>
 </itemizedlist>
 
 <sect1 id="C-hvad-er">
-<title>C sproget i få ord.</title>
+<title>C i få ord</title>
 <para>
-C sproget blev oprindeligt lavet for at kunne skrive
-operativsystemet Unix ved hjælp af et højniveau sprog. C er derfor et
-effektivt sprog, som har nemt ved at interface til maskinsprog,
-<emphasis> assembly language</emphasis>.
+ Programmeringssproget C blev oprindeligt lavet for at kunne skrive
+ styresystemet Unix i et højniveausprog. C er derfor et effektivt sprog, som
+ har nemt ved at snakke med maskinkode (eng. assembly language).
 </para>
 
 <para>
-C sproget er også et lille sprog, der er kun 32 reserverede ord
-<emphasis> keywords </emphasis>. Det gør det nemt at lære.
+ C er også et lille sprog, hvis man måler det i antallet af reserverede ord
+ (kun 32). Det gør det nemt at lære syntaksen.
 </para>
 
 <sidebar>
@@ -66,27 +65,25 @@ do		  if		    static	      while
 <para>
 Anvendt på rette måde bliver koden meget læseligt, og derfor 
 anvendes C sproget til mange forskellige slags opgaver, fra
-hardware-niveau til højniveau opgaver.
+hardware-niveau til højniveauopgaver.
 </para>
 
 <para>
-C++ er en udvidelse af C sproget. C++ er et bedre C, som
-supporterer objektorienteret programmering, data abstraction og
-generiske algoritmer. Der er dog et par forskelle mellem C og den
-grundlæggende C-syntax i C++. De beror på det oprindelige C sprogs
-manglende typecheck af funktioners returværdier - det var altid heltal,
-<emphasis> integers </emphasis>.
+ C++ er en udvidelse af C. C++ er tænkt som et bedre C. Det understøtter
+ objektorienteret programmering, dataabstraktion og generiske algoritmer. Der
+ er dog et par forskelle mellem C og den grundlæggende C-lignende syntaks i
+ C++. De beror på det C's manglende typecheck af funktioners returværdier.
 </para>
 
 <para>
-Et minimal C program:
+ Et minimalt C-program:
 </para>
 
 <example id="hello-world">
 <title>Hello world! programmet.</title>
 
 <programlisting>
-/* Dette program skriver Hello, world! i terminal vindue. */
+/* Dette program skriver Hello, world! i et terminalvindue. */
 
 main(){
      printf("Hello, world!\n");
@@ -97,31 +94,30 @@ main(){
 <para>
 Vores program definerer en funktion, d.v.s. et stykke kode, som
 udfører en opgave. Navnet på vore funktion er main. main er det sted,
-hvor et C program begynder eksekvering. Parenteserne efter ordet main
+hvor et C program begynder at køre. Parenteserne efter ordet main
 fortæller, at det er en funktion.
 </para>
 
 <para>
-Koden, det, som bliver til maskin instruktioner, står mellem to
-krøllede parenteser <emphasis> braces </emphasis>. Koden består af et
+Koden, det, som bliver til maskininstruktioner, står mellem to
+krøllede parenteser (eng. braces). Koden består af et
 kald til en anden funktion, printf, som får til opgave at skrive vores
 tekst mellem double quotes på skærmen. "\n" er måden at skrive
 linieskift mellem doublequotes.
 </para>
 
 <para>
-Ovenstående program-text bør kunne oversættes, <emphasis> kompilere,
-</emphasis> til et eksekverbart program. De fleste moderne compilere vil
-dog klage over udeladelser. En helt korrekt version (også C++) vil se
-ud som følger:
+ Ovenstående kildetekst bør kunne oversættes (eng. compile) til et
+ kørbart program. De fleste moderne oversættere vil dog klage over
+ udeladelser. En helt korrekt version (også C++) ser ud som følger:
 </para>
 
 <example id="ex-hello-types">
 <title>Hello, World! med type-specifikationer.</title>
 <programlisting>
-/* Dette program skriver Hello, world! i terminal vindue. */
+/* Dette program skriver Hello, world! i et terminalvindue. */
 
-#include &lt;stdio.h>
+#include &lt;stdio.h&gt;
 
 int main(){
      (void) printf("Hello, world!\n");
@@ -140,7 +136,7 @@ gang. Man siger, at caller får return value.
 <para>
 printf er ligeledes en funktion, som returnerer en integer til
 caller; det er antallet af bogstaver, den har skrevet ud. Da vi ikke har
-brug for denne integer, fortæller vi compileren, at det er "med vilje",
+brug for denne integer, fortæller vi oversætteren, at det er "med vilje",
 at vi ignorer return value ved at skrive <emphasis> (void) </emphasis>.
 Det kaldes et cast - støbeform, vi omstøber funktionens type!
 </para>
@@ -181,7 +177,7 @@ eller som lokale variable, indenfor funktionsbraces.
 
 <sidebar>
 <para>
-Jeg har med vilje udeladt en del grumsede detailler i ovenstående
+Jeg har med vilje udeladt en del grumsede detaljer i ovenstående
 type-oversigt. Hvis du, kære læser, er sur over det, så er her et resume
 af det udeladte:
 </para>
@@ -189,7 +185,7 @@ af det udeladte:
 <para>
 En long integer er lige så stor - måske større - end en int. I gcc i386
 er de begge 32 bit. Nye standarder vil indeholde forskrift om at
-compilere skal supportere _int8, _int16, _int32, _int64 etc. hvilket vil
+oversættere skal understøtte _int8, _int16, _int32, _int64 etc. hvilket vil
 være praktisk for mange opgaver. Man kan i dag definere sådanne typer
 selv v.hj.a. typedef, fx. 
 </para>
@@ -201,7 +197,7 @@ typedef long long int _int64;
 <para>
 Integer typerne (char, int, short int, long int, _int64 eller long long)
 kan foranstilles signed (det er default) eller unsigned. Erklærer man en
-unsigned integer vil man i mange compilere alligevel kunne tilskrive den
+unsigned integer vil man i mange oversættere alligevel kunne tilskrive den
 en negativ value. Unsigned vinder overfor signed i type coercion i
 expression evaluering.
 </para>
@@ -239,7 +235,7 @@ Med struct konstruktionen kan vi selv definere de datatyper, vi har brug
 for, deraf betegnelse <emphasis> brugerdefinerede typer. </emphasis>
 Notationen kræver lidt øvelse. Først bygger man en type op, man
 <emphasis> erklærer en type </emphasis>, derefter defineres objekter,
-d.v.s. der reserveres memory til objekter af den oprettede struct-type.
+dvs. der reserveres hukommelse til objekter af den oprettede struct-type.
 </para>
 
 <para>
@@ -272,7 +268,7 @@ typedef struct &lt;type_tag> {
 
 <para>
 Min opfattelse er den, at ordet struct gør programmerne lettere at læse.
-Og compileren kan lettere finde fejl.
+Og oversætteren kan lettere finde fejl.
 </para>
 
 <programlisting>
@@ -639,7 +635,7 @@ andres arbejde i stedet for at begynde på bar bund hver gang.
 
 <para>
 Et C program består typisk af mange forskellige filer, der kan
-compileres hver for sig. En fil - evt. med tilhørende header files - der
+oversættes hver for sig. En fil - evt. med tilhørende header files - der
 kan oversættes alene til et objekt modul, kaldes en oversættelses-unit
 eller en translation-unit.
 </para>
