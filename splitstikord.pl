@@ -38,7 +38,7 @@ for $t_file2 (@ARGV) {
     my $tree2 = HTML::TreeBuilder->new_from_file($t_file2);
     new_base_href($tree2,$base);
     merge($tree1,$tree2);
-    $tree2->delete;
+    #$tree2->delete;
 }
 print_as_files($tree1);
 #$debug and do {
