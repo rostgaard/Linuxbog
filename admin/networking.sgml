@@ -836,8 +836,6 @@ brugervejledning. Den finder du på
 <ulink url="http://www.gnupg.org/docs.html">http://www.gnupg.org/docs.html</ulink>.
 </para>
 </sect2>
-
-
 </sect1>
 
 <sect1 id="postfix">
@@ -1276,4 +1274,72 @@ stedet for den gamle newsserver.
 </sect2>
 </sect1>
 
+<sect1 id="ntp">
+<title>NTP - tidssynkronisering</title>
+<indexterm><primary>NTP</primary></indexterm>
+<indexterm><primary>Tid</primary><secondary>NTP tidssynkronisering</secondary></indexterm>
+
+<para>
+(x)ntp er et værktøj til synkronisering af tiden på computere. Dette program
+sørger for hele tiden at holde systemuret synkroniseret med en anden ntpserver
+et sted på internettet, derfor er det mest oplagt at benytte det på maskiner
+der konstant er på internettet.
+</para>
+
+<para>
+På installations CD'erne til de fleste distributioner ligger (x)ntp pakker lige
+til at installere ellers kan programmet hentes på <ulink url="http://www.ntp.org">http://www.ntp.org</ulink>.
+</para>
+
+<para>
+ntp pakken består af 2 værktøjer <command>ntpd</command> (ntp-dæmonen)
+og <command>ntpdate</command>, den sidste kører manuelt før man
+starter <command>ntpd</command> for at få tiden synkroniseret fra
+start da ntpd <command>nægter</command> at starte hvis tidsforskellen mellem de 2
+maskiner er for stor.
+</para>
+
+<para>
+Denne kan også kaldes fra ens internet opkaldsscripts hvis man har en
+opkaldsforbindelse og syntaxen er bare: <command>ntpdate -s
+ntp-server-navn</command>. NTP-servere er der en hel del af rundt
+omkring på nettet og din internetudbyder har højest sandsynligt en:
+</para>
+
+<screen>
+Worldonline/Tascali: ntp.worldonline.dk
+TeleDK/TDC: ntp.inet.tele.dk
+</screen>
+
+<para>
+Har ud fast internetforbindelse på din server så kan det være
+fordelagtigt at sætte dæmonen op så uret hele tiden holdes
+synkroniseret, denne dæmon kompenserer for hardwareuret drift der er
+afhængigt af varme og andre ting.  Dette gøres meget nemt ved blot at
+tilføje til filen <filename>/etc/ntp.conf</filename>.
+</para>
+
+<screen>
+server NTP-SERVER-NAVN
+driftfile /etc/ntp/drift
+</screen>
+
+<para>
+og ntp serverens navn i <filename>/etc/ntp/step-tickers</filename> så
+kører ntpdæmonen en <command>ntpdate</command> mod serveren inden den
+starter synkroniseringen.
+</para>
+
+<para>
+Også skal dæmonen blot startes med:
+<command>/etc/rc.d/init.d/ntpd start</command>
+og hakkes af så den starter automatisk i "ntsysv" så den starter i det runlevel
+du normalt starter i. 
+</para>
+
+<para>
+Dette er beskrevet ud fra en Mandrake 8.0 og filernes placering kan afhænge af
+distribution og installations metode. 
+</para>
+</sect1>
 </chapter>
