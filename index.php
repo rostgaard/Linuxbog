@@ -422,7 +422,7 @@ if ($matrix) { ?>
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
-[<a href="http://cvs.sslug.dk/linuxbog/search">Søg i sgml-filer</a>]
+[<a href="search.php">Søg i sgml-filer</a>]
 [<a href="alle/bog/stikord.html">Stikord</a>]
 </font>
 
