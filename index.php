@@ -100,7 +100,7 @@ function form_filename( $bookname, $format ) {
       )
     ),
     "c" => array(
-      title => "Linux - Friheden til programmere i C",
+      title => "Linux - Friheden til at programmere i C",
       comment => "Programmering i C",
       auth => array(
         "Donald Axel" => "donald_j_axel@get2net.dk"
@@ -315,6 +315,11 @@ Vores arbejdskopi kan findes på <a
 href="http://cvs.sslug.dk/linuxbog/">http://cvs.sslug.dk/linuxbog/</a>,
 men indtil endelig release, kan der være graverende fejl i den.  
 </p>
+
+<?php
+  include($DOCUMENT_ROOT."/sidsteudgave.incl");
+?>
+
 
 <hr>
 <a name="matrix"></a>
