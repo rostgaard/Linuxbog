@@ -779,13 +779,8 @@ og Debian.
 <sect1 id="tripwire">
 <title>Tripwire</title> 
 <indexterm><primary>tripwire</primary></indexterm>
-<para>
-Tripwire er et program, der kan checke filsystemet for ændringer. Der
-genereres en database for alle filer i filtræet. For hver fil gemmes
-informationer om sidste ændringsdato, størrelse, indhold, ejer osv. Når
-først databasen er genereret, er det nemt at checke og opdatere for
-ændringer.
 
+<para>
 Tripwire var oprindeligt et kommercielt produkt (se <ulink
 url="http://www.tripwire.com">http://www.tripwire.com</ulink>), men
 til Linux findes der nu også en Open Source udgave, som er udgivet
@@ -794,9 +789,496 @@ under GNU General Public Licence. Open Source udgaven kan hentes fra
 </para>
 
 <para>
-Du kan finde en vejledning til at installere og bruge Tripwire på
+Tripwire er et program, der kan checke filsystemet for ændringer. Der
+genereres en database for alle filer i filtræet. For hver fil gemmes
+informationer om sidste ændringsdato, størrelse, indhold, ejer osv. Når
+først databasen er genereret, er det nemt at checke og opdatere for
+ændringer.
+</para>
+
+<para>
+Den database, der genereres med Tripwire sker ud fra en konfigurationsfil
+<filename>/etc/tripwire/twpol.txt</filename>, som beskriver hvilke dele
+af filsystemet, som er med i overvågningen og den opførsel de enkelte filer
+må tillades. Til eksempel må filen <filename>/etc/shadow</filename> godt 
+ændre sig - da dette sker hver gang en bruger ændrer password. Modsat 
+så ville det være højst underligt hvis filen 
+<filename>/bin/ps</filename> har ændret sig over en nat. Det program bruges
+til at vise hvilke processer, der kører på systemet.
+Ergo skal opsætningen af overvågningen være skræddersyet til det enkelte 
+system. I praksis betyder det at den Red Hat-opsætningsfil, der kommer med 
+Tripwire skal sandsynligvis modificeres, hvis man vil køre med Debian eller 
+lign.
+</para>
+
+<para>
+Tankegangen med Tripwire er at man sætter programmet op 
+<emphasis>før</emphasis> maskinen kommer på netværket og før brugere
+kommer på - dvs. før maskinen er i risiko-zonen. På dette tidlige
+tidspunkt genereres en "snapshot" af hvordan det oprindelige system
+ser ud. For hver af de vigtige filer på systemet gemmes information 
+om fil-størrelse, ændringsdatoer og checksummer på filerne, så man
+kan afgøre om filerne er ændret. 
+</para>
+
+<para>
+Når maskinen så kommer i drift skal man køre Tripwire hver dag, time
+eller hvad der nu passer systemadministratoren bedst. Hver eneste gang
+genereres en rapport typisk via email til systemadministratoren over
+systemets status i forhold til systemets oprindelige "snapshot" - denne
+rapport skal der være tid til at læse roligt igennem!
+</para>
+
+<para>
+Hvis rapporten viser at der er ændringer, så må systemadministratoren 
+tage stilling til om det er i orden eller om der er tegn på indbrud -
+hvis det sidste er tilfældet, bør maskinen tages af netværket med det samme. 
+</para>
+
+<para>
+Det kan også ske at der er ændringer på systemet, som er i orden. Hvis 
+man f.eks. installerer en ny RPM-pakke (fra en betroet kilde) så vil Tripwire
+melde at der er nye programmer typisk i <filename>/usr/bin</filename>. 
+I dette tilfælde skal man så opdatere Tripwire-databasen med ens "snapshot".
+</para>
+
+<sect2 id="twpol">
+<title>Tripwite installation og opsætning</title>
+<para>
+Tripwire installeres på Red Hat ved at man downloader en 
+<filename>.tar.gz</filename>-fil, der indeholder en RPM-pakke, som kan 
+installeres. Check at den fil du downloader har den rigtige checksum - jfr.
+<ulink url="http://www.tripwire.org/downloads/index.php">http://www.tripwire.org/downloads/index.php</ulink>. Kør <command>md5sum</command> på 
+<filename>.tar.gz</filename>-filen.
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>md5sum tripwire-2.3-47.i386.tar.gz </userinput>
+661a54a6429d4ecb0d756de5046da48f  tripwire-2.3-47.i386.tar.gz  
+<prompt>[root@sherwood /root]#</prompt> <userinput>tar xvzf tripwire-2.3-47.i386.tar.gz </userinput>
+<prompt>[root@sherwood /root]#</prompt> <userinput>rpm -ivh tripwire-2.3-47.i386.rpm</userinput>
+</screen>
+
+
+<para>
+Derefter kommer der tekst på skærmen om hvad der skal gøres følgende:
+Først skal filen <filename>/etc/tripwire/twpol.txt</filename> ses
+igennem og rettes til. Det vigtigste at starte med i denne fil er
+følgende sektion (som startes med @@). Her er kommentarerne oversat til
+dansk.
+</para>
+
+<screen>
+@@section FS
+SEC_CRIT      # Kritiske filer, der ikke må ændre sig
+SEC_SUID      # Binære SUID eller SGID-filer, der ikke må ændre sig
+SEC_BIN       # Binære filer, der ikke må ændre sig
+SEC_CONFIG    # Opsætningfiler, der tilgås ofte og ændres sjældent
+SEC_LOG       # Filer, der vokser i størrelse - ændrer ikke ejerskab
+SEC_INVARIANT # Kataloger, som aldrig ændrer ejerskab eller rettigheder
+</screen>
+
+<para>
+I slutningen af afsnittet er der også inddelinger efter 
+risiko-niveau. 
+</para>
+
+<screen>
+SIG_LOW       # Ikke-kritiske filer med lav sikkerheds-risiko
+SIG_MED       # Ikke-kritiske filer med væsentlig sikkerheds-risiko
+SIG_HI        # Kritiske filer med væsentlig sikkerheds-risiko
+</screen>
+
+<para>
+Ideen er at man kan betegne filer og kataloger med de ovennævnte risiko-niveau.
+Til eksempel kan vi fortsætte ned i opsætningsfilen til "OS-Utilities":
+</para>
+
+<screen>
+  ################
+ #              ##
+################ #
+#              # #
+# OS Utilities # #
+#              ##
+################
+(
+  rulename = "Operating System Utilities",
+  severity = $(SIG_HI)
+)
+{
+  /bin/cat                             -> $(SEC_CRIT) ;
+  /bin/date                            -> $(SEC_CRIT) ;
+  /bin/dd                              -> $(SEC_CRIT) ;
+...
+}
+</screen>
+
+
+<para>
+Afsnittet er forkortet her. Forståelsen er at filer såsom
+<filename>/bin/cat</filename> er meget kritiske og må aldrig
+ændre sig i indhold, ejerskab eller rettigheder. Den lille tekst box
+over "rulename" er kun til pynt.
+</para>
+
+<para>
+Opsætningsfilen <filename>/etc/tripwire/twpol.txt</filename> bør
+redigeres svarende til det enkelte system - dette kræver
+systemkendskab. Alternativet er at bruge den originale fil og måske
+opnå en falsk sikkerhed. Så tag lige tiden til at se filen igennem. Bemærk at
+der flere steder står anført linier med hash-tegn foran, f.eks. 
+</para>
+
+<screen>
+# /dev/printer -> $(SEC_CONFIG) ; # Uncomment if you have a printer device   
+</screen>
+
+<para>
+Ideen er at man bør se disse linier igennem specifikt for at se om du har
+de filer eller ej. Har man filen, så skal linien typisk med ved at fjerne
+udkommenteringen.
+</para>
+
+<para>
+Filer såsom 
+<filename>/proc/rtc</filename>, <filename>/proc/mdstat</filename> og 
+<filename>/usr/sbin/fixrmtab</filename> findes ikke på Red Hat 7.1 i
+standard installation - det er eksempler på filer, dermed linier i
+opsætningsfilen som skal fjernes.
+</para>
+
+
+<sect3 id="twinstall">
+<title>Opstart af Tripwire databasen</title>
+<para>
+Efter opsætningsfilen er rettet til, så skal Tripwire opsætningen krypteres.
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/etc/tripwire/twinstall.sh</userinput>
+</screen>
+
+<para>
+Det første der nu skal vælges er et udvidet passwords
+(<emphasis>passphrases</emphasis>) som anvendes til at kryptere
+databasen så andre ikke kan ændre den.
+</para>
+
+<para>
+Nu skal der vælges fire passphrases.  De fire passphrases bør
+principielt vælges forskellige, men en doven systemadministrator vil
+nok vælge dem ens (læs; dette er langt det nemmeste).  
+Først for ens <emphasis>site</emphasis>, dvs.  for
+hele maskin-parken. Dernæst for den enkelte maskine. Dernæst skal
+opsætningsfilen også signeres med en passphrase - ideen er at man
+heller ikke skal have lov til at kunne ændre den opsætningfil, som
+databasen er laves til <filename>/etc/tripwire/tw.cfg</filename>
+(Gemmes også i klar tekst i
+<filename>/etc/tripwire/twcfg.txt</filename>). Denne fil gemmer kun på
+systemparametre, såsom hvilet program der anvendes når
+tripwire-rapportering skal sendes til systemadministratoren.  Til slut
+skal der vælges en passphrase for resten af opsætningen, dvs.
+"policy"-delen, dvs. hvilke filer skal skannes og hvordan.  Filen der
+gemmes er <filename> /etc/tripwire/tw.pol</filename> (Gemmes også i
+klar tekst under <filename>/etc/tripwire/twpol.txt</filename>).  De to
+filer i klar tekst, mens <filename>
+/etc/tripwire/tw.pol</filename> og
+<filename>/etc/tripwire/tw.cfg</filename> endelig ikke må ændres
+manuelt - de er binære og krypterede.
+</para>
+
+<para>
+For at resultater af skanning af filsystemet kan sendes til
+systemadministatoren via email så skal man indsætte emailadressen
+for hver af de afsnit, der er defineret i filen. Bemærk at der er 
+et komma til at afslutte linien før <literal>emailto = EMAIL_PÅ_MODTAGER</literal>. Hvis man har tænkt sig at køre tripwire check via crontab, så er
+dette ikke nødvendigt, da man får output i en email alligevel.
+</para>
+
+
+<screen>
+# Tripwire Binaries
+(
+  rulename = "Tripwire Binaries",
+  severity = $(SIG_HI),
+  emailto = sysadm@sherwood.dk
+)
+{
+  $(TWBIN)/siggen                      -> $(SEC_BIN) ;
+  $(TWBIN)/tripwire                    -> $(SEC_BIN) ;
+  $(TWBIN)/twadmin                     -> $(SEC_BIN) ;
+  $(TWBIN)/twprint                     -> $(SEC_BIN) ;
+}
+</screen>
+
+<para>
+Nu skal Tripwire databasen genereres og du skal bruge din passphrase 
+til den lokale maskine, som blev sat lige før dette. Det kan let tage 
+5-10 minutter alt efter maskin-type og disk-kapacitet.
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/usr/sbin/tripwire --init</userinput>
+</screen>
+
+<para>
+Det mest sandsynlige er at man får ca. 50 fejl af filer, der ikke
+findes på systemet. De filer bør man nu udkommentere i
+<filename>/etc/tripwire/twpol.txt</filename> og lave en ny database.
+Dette kunne man have undgået ved at gennemgå
+<filename>/etc/tripwire/twpol.txt</filename> meget forsigtigt.
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/usr/sbin/twadmin --create-polfile /etc/tripwire/twpol.txt</userinput>
+Please enter your site passphrase:
+Wrote policy file: /etc/tripwire/tw.pol
+<prompt>[root@sherwood /root]#</prompt> <userinput>rm -f /var/lib/tripwire/*.twd</userinput>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/usr/sbin/tripwire --init</userinput>
+Please enter your local passphrase:
+Parsing policy file: /etc/tripwire/tw.pol
+Generating the database...
+*** Processing Unix File System ***
+</screen>
+</sect3>
+
+<sect3 id="tripwire-check">
+<title>Check af maskinen med Tripwire</title>
+<para>
+Nu er man klar til at checke maskinen - dette kan køres manuelt (dette
+kan man gøre uden brug af passphrase - men man skal dog være root).
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/usr/sbin/tripwire --check</userinput>
+</screen>
+
+<para>
+Det er lidt bøvlet at se gamle tripwire rapporter, da disse også er
+krypterede. Kommandoen er som følger, hvor XX skal erstattes af det filnavn,
+man har på disken. De er navngivet efter maskinnavn og dato.
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/usr/sbin/twprint -m r --twrfile /var/lib/tripwire/report/XX.twr</userinput>
+</screen>
+
+
+<para>
+Lad os nu prøve at lave om på maskinen. Vi opgraderer procmail RPM-pakken og
+se hvad Tripwire finder. Bemærk de 5 modificerede "user binaries", som dernæst
+vises nedenfor.
+</para>
+
+<screen>
+Note: Report is not encrypted.
+Tripwire(R) 2.3.0 Integrity Check Report
+
+Report generated by:          root
+Report created on:            Wed Oct 31 00:29:46 2001
+Database last updated on:     Never
+
+===============================================================================
+Report Summary:
+===============================================================================
+
+Host name:                    k6.sslug
+Host IP address:              192.168.1.3
+Host ID:                      None
+Policy file used:             /etc/tripwire/tw.pol
+Configuration file used:      /etc/tripwire/tw.cfg
+Database file used:           /var/lib/tripwire/k6.sslug.twd
+Command line used:            /usr/sbin/tripwire --check 
+
+===============================================================================
+Rule Summary: 
+===============================================================================
+
+-------------------------------------------------------------------------------
+  Section: Unix File System
+-------------------------------------------------------------------------------
+
+  Rule Name                       Severity Level    Added    Removed  Modified 
+  ---------                       --------------    -----    -------  -------- 
+  Invariant Directories           66                0        0        0        
+  Temporary directories           33                0        0        0        
+* Tripwire Data Files             100               1        0        0        
+  Critical devices                100               0        0        0        
+* User binaries                   66                0        0        5        
+  Tripwire Binaries               100               0        0        0        
+  Libraries                       66                0        0        0        
+  File System and Disk Administraton Programs
+                                  100               0        0        0        
+  Kernel Administration Programs  100               0        0        0        
+  Networking Programs             100               0        0        0        
+  System Administration Programs  100               0        0        0        
+  Hardware and Device Control Programs
+                                  100               0        0        0        
+  System Information Programs     100               0        0        0        
+  Application Information Programs
+                                  100               0        0        0        
+  Shell Releated Programs         100               0        0        0        
+  (/sbin/getkey)
+  Critical Utility Sym-Links      100               0        0        0        
+  Critical system boot files      100               0        0        0        
+  Critical configuration files    100               0        0        0        
+  System boot changes             100               0        0        0        
+  OS executables and libraries    100               0        0        0        
+  Security Control                100               0        0        0        
+  Login Scripts                   100               0        0        0        
+  Operating System Utilities      100               0        0        0        
+  Shell Binaries                  100               0        0        0        
+  Root config files               100               0        0        0        
+
+Total objects scanned:  19398
+Total violations found:  6
+
+===============================================================================
+Object Detail: 
+===============================================================================
+
+-------------------------------------------------------------------------------
+  Section: Unix File System
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Rule Name: User binaries (/usr/bin)
+Severity Level: 66
+-------------------------------------------------------------------------------
+  ----------------------------------------
+  Modified Objects: 5
+  ----------------------------------------
+
+Modified object name:  /usr/bin
+
+  Property:            Expected                    Observed                    
+  -------------        -----------                 -----------                 
+* Modify Time          Sat Oct 20 17:15:27 2001    Wed Oct 31 00:29:44 2001    
+
+
+Modified object name:  /usr/bin/formail
+
+  Property:            Expected                    Observed                    
+  -------------        -----------                 -----------                 
+* Inode Number         443138                      442309                      
+* Size                 26736                       26900                       
+* Modify Time          Sat Jan  6 23:13:11 2001    Wed Jul  4 00:55:12 2001    
+* CRC32                CB/Sfy                      DJdys6                      
+* MD5                  A4Lbe9dcQUPMqvFeZQ/qnF      CazhNDHWCoxKh46uXHElej      
+
+
+Modified object name:  /usr/bin/lockfile
+
+  Property:            Expected                    Observed                    
+  -------------        -----------                 -----------                 
+* Inode Number         443139                      442310                      
+* Size                 11124                       12440                       
+* Modify Time          Sat Jan  6 23:13:11 2001    Wed Jul  4 00:55:12 2001    
+* Blocks               24                          32                          
+* CRC32                CWnVmO                      A6qdab                      
+* MD5                  C2Lvt5A+Kx3cjOYgGCdHd9      BQpFs92xGV/D+G+aPGbG8T      
+
+
+Modified object name:  /usr/bin/mailstat
+
+  Property:            Expected                    Observed                    
+  -------------        -----------                 -----------                 
+* Inode Number         443140                      442311                      
+* Modify Time          Sat Jan  6 23:13:10 2001    Wed Jul  4 00:55:11 2001    
+
+
+Modified object name:  /usr/bin/procmail
+
+  Property:            Expected                    Observed                    
+  -------------        -----------                 -----------                 
+* Inode Number         443141                      442312                      
+* Size                 63484                       75420                       
+* Modify Time          Sat Jan  6 23:13:11 2001    Wed Jul  4 00:55:12 2001    
+* Blocks               136                         160                         
+* CRC32                A4Xs3q                      D/ZVXm                      
+* MD5                  Af2+FBsxRo0LTeWeLim2iB      Bez1qNLwdxqPMYR4GPq8EB      
+
+
+
+-------------------------------------------------------------------------------
+Rule Name: Tripwire Data Files (/var/lib/tripwire)
+Severity Level: 100
+-------------------------------------------------------------------------------
+  ----------------------------------------
+  Added Objects: 1
+  ----------------------------------------
+
+Added object name:  /var/lib/tripwire/k6.sslug.twd
+
+===============================================================================
+Error Report: 
+===============================================================================
+
+No Errors
+
+-------------------------------------------------------------------------------
+*** End of report ***
+
+Tripwire 2.3 Portions copyright 2000 Tripwire, Inc. Tripwire is a registered
+trademark of Tripwire, Inc. This software comes with ABSOLUTELY NO WARRANTY;
+for details use --version. This is free software which may be redistributed
+or modified only under certain conditions; see COPYING for details.
+All rights reserved.
+</screen>
+
+<para>
+Nu er der selvfølgelig problemer - er det rimeligt at de filer at
+ændret?  I dette tilfælde er det, da filerne kommer fra den nye
+RPM-pakke.  Generelt skal man køre Tripwire-skanningen før man
+installerer en RPM-pakke for at være sikker på at der ikke er andre
+ændringer. Dernæst skal man så opdatere databasen med systemets
+snapshot, så man ikke længere ser de opgraderede pakker med i
+listen. Igen skal XX erstattes med den seneste .twr-fil for maskinen.
+</para>
+
+<screen>
+<prompt>[root@sherwood /root]#</prompt> <userinput>/usr/sbin/tripwire --update --twrfile /var/lib/tripwire/report/XX.twr</userinput>
+</screen>
+
+<para>
+Op kommer en fil startet i <command>vi</command>-editoren, hvor en bid af den
+er som følger:
+</para>
+
+<screen>
+Remove the "x" from the adjacent box to prevent updating the database
+with the new values for this object.
+ 
+Modified:
+[x] "/usr/bin"
+[x] "/usr/bin/formail"
+[x] "/usr/bin/lockfile"
+[x] "/usr/bin/mailstat"
+[x] "/usr/bin/procmail"
+</screen>
+
+<para>
+Ideen er således at Tripwire foreslår at man opdaterer alle de
+ændrede filer, så Tripwire ikke brokke sig over dem igen.
+Hvis du ikke vil ændre så fjern det kryds (dvs. x) som er i tekst-boksen.
+Når du forlader editoren skal man igen angive passphrase for at opdatere.
+Herefter vil Tripwire ikke brokke sig over den opdaterede procmail pakke.
+</para>
+
+<para>
+Tripwire bør indsættes i <filename>/etc/cron.daily</filename>,
+dvs. det bliver kørt en gang hver dag.  Resultatet bliver sendt til
+root på maskinen via email.
+</para>
+
+<para>
+Du kan finde en anden vejledning til at installere og bruge Tripwire på
 <ulink url="http://www.net-security.org/text/articles/tripwire.shtml">http://www.net-security.org/text/articles/tripwire.shtml</ulink>.
 </para>
+</sect3>
+</sect2>
+
 
 </sect1>
 
@@ -806,7 +1288,7 @@ Du kan finde en vejledning til at installere og bruge Tripwire på
 <indexterm><primary>Aide</primary></indexterm>
 
 <para>
-Et interessant alternativ til Tripwire er Aide (Advanced Intrusion
+Et interessant alternativ til Tripwire var Aide (Advanced Intrusion
 Detection Environment), der kan findes på <ulink
 url="http://www.cs.tut.fi/~rammer/aide.html">http://www.cs.tut.fi/~rammer/aide.html</ulink>.
 Versionsnummeret på Aide er 0.7, hvilket indikerer, at Aide ikke er
@@ -890,28 +1372,6 @@ da en cracker så vil kunne ændre i din gemte database, filcheck programmet
 eller i selve Linux-kernen.
 </para>
 
-
-<sect2 id="epilog3">
-<title>Epilog</title>
-<indexterm><primary>Gog &amp; Magog</primary></indexterm>
-
-<para>
-Som afslutning kan vi nævne at der er mange spændende ting på Internet
-omkring emnet "Intrusion Detection", som dette kapitel omhandler. 
-Programmet Gog&amp;Magog 
-<ulink url="http://www.multimania.com/cparisel/gog">http://www.multimania.com/cparisel/gog</ulink>
-er værd at se på som et gratis alternativ til 
-Tripwire, når et netværk af maskiner skal overvåges. Blot er det et problem,  
-(se <xref linkend="remote-login">) at man skal køre ftp mellem maskinerne. 
-</para>
-
-<para>
-Men uanset hvor mange fine programmer, du installerer, er det ikke en 
-erstatning for at være vågen og kende sit system.
-Hold øje med dine log-filer, tag backup, og lad dig aldrig lulle ind i 
-en falsk tro på, at dit system er helt sikkert. Det er det ikke.
-</para>
-</sect2>
 </sect1>
 </chapter>
 
