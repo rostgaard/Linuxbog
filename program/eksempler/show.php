@@ -14,7 +14,7 @@
 	*/
   echo "<p>\n";
 	echo $examp[$file];
-  echo "<p>Download <a href=\"$filename\">$filename</a>\n";
+  echo "<p>Hent <a href=\"$filename\">$filename</a>\n";
 ?>
 <p>
 <table border="0" cellspacing="0" width="80%" bgcolor="#F0F0F0">

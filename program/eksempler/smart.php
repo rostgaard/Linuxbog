@@ -34,7 +34,7 @@ $tar_eksempler = "linux-program-$version[0]_eksempler.tgz";
 ?>
  Programeksempler til "Linux - Friheden til at programmere".
 </h2>
-Download tar-ball
+Hent tar-ball
 <a href="../<?php echo $tar_eksempler ?>"><?php echo $tar_eksempler ?></a>
 med alle eksempler.
 <p>
