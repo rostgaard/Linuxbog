@@ -284,11 +284,12 @@ opsætning.
 Senere bliver kommandoerne til en firewall beskrevet og forklaret
 grundigt, men for den utålmodige, som bare vil i gang, kan vi
 lige vise "Rusty's Really Quick Guide To Packet Filtering" fra
-packet-filtering-HOWTO:
+packet-filtering-HOWTO. Vi antager, at maskinen har en
+modemforbindelse til en ISP og ikke ønsker, at man skal kunne
+tilgå maskinen udefra:
 </para>
 
 <programlisting>
-
 
   ## Insert connection-tracking modules (not needed if built into kernel).
   # insmod ip_conntrack
@@ -1015,12 +1016,17 @@ der understøtter det.
 
 <para>
 I dette afsnit ser vi på Linux kernens netfilter modul og hvad 
-man kan gøre med det.
+man kan gøre med det. Det er en forudsætning, at man er godt
+kender til begreberne IP adresse, netværksadresse, netmaske,
+routing og DNS. Hvis du ikke gør, så se på <ulink 
+url="http://www.netfilter.org/documentation/index.html#HOWTO">
+http://www.netfilter.org/documentation/index.html#HOWTO</ulink>
+efter Networking Concepts HOWTO.
 </para>
 
 <para>
 Desuden vil vi kigge nærmere på proxy opsætning med squid, samt
-snuse lidt til Network Address Translation.
+se på Network Address Translation.
 </para>
 
 
@@ -1032,12 +1038,460 @@ snuse lidt til Network Address Translation.
 <indexterm><primary>Iptables</primary></indexterm>
 <indexterm><primary>Netfilter</primary></indexterm>
 
-<para></para>
+<para>
+I Linux er pakkefiltrering i en avanceret version indbygget i
+kernen; kernedelen kaldes netfilter, og programmet <command>
+iptables </command> kommunikerer vores ønsker om hvad kernen skal
+foretage sig fra user-space til kerne-space.
+</para>
+
+<para>
+For at kunne bruge kernens netfilter og <command> iptables
+</command> kommandoen, skal kernen være bygget med netfilter, og,
+hvis man planlægger at sikre en maskine må det stærkt anbefales
+at man også inkluderer connection tracking. Det koster lidt
+belastning, men giver mange fordele.  De fleste standard kerner
+fra distributioner med kerne 2.4.18 og frem har den slags. Det
+kan kontrolleres med <command>ls -l /proc/net/ip_conntrack
+</command>
+</para>
+
+<graphic fileref="kconf-netfilt.&magic;"  scale="40"></graphic>
+<graphic fileref="kconf-netfilt-2.&magic;"  scale="40"></graphic>
+<graphic fileref="kconf-netfilt-hlp.&magic;"  scale="40"></graphic>
+
+<para>
+iptables kommandoen skal bygges, så den passer til den kerne, man
+bruger, eller rettere, så den passer til den version af
+netfilter, som er i kernen. Også det er gjort i alle
+distributioner.
+</para>
+
+<para>
+iptables indsætter som nævnt regler i kernens pakke-filter
+tabeller, hvilket betyder, at reglerne går tabt ved reboot. Du
+kan prøve at bruge kommandoerne iptables-save og
+iptables-restore (oprindeligt var det scripts).
+</para>
+
+<para>
+Alternativt sætter man alle iptables kommandoerne ind i et
+start/stop script, som køres af rc kommandoen ved opstart. Man
+skal i så fald huske at få den til at foretage sig noget
+fornuftigt, hvis en af iptables kommandoerne fejler; normalt vil
+det være at starte <command> /sbin/sulogin </command>
+</para>
+
+
+
+<sect3 id="sikkerhed-traverse">
+<title>Hvordan pakker rejser igennem filtrene</title>
+
+<para>
+Navnet iptables hentyder til, at kernen har tre tabeller:
+</para>
+
+<itemizedlist mark="bullet" id="sikkerhed-list-iptables">
+<listitem><para>
+Filter tabellen, som bruges, hvis man udelukkende skal stoppe
+uvedkommende trafik.
+</para></listitem>
+<listitem><para>
+NAT-tabellen, som bruges, hvis man skal foretage mapning /
+spejling af interne adresser, obligatorisk, hvis der er tale om
+private adresser som fx. 192.168.x.x.
+</para></listitem>
+<listitem><para>
+Mangle-tabellen, som bruges, hvis man vil pille ved bits i
+pakkerne for at kunne klare vanskelige situationer.
+</para></listitem>
+</itemizedlist>
+
+<para>
+Kernen begynder med at have 3 lister med regler i "filter"
+tabellen. Disse lister kaldes firewall kæder eller blot kæder,
+chains. De tre kæder kaldes INPUT, OUTPUT og FORWARD (pakker-ind,
+pakker-ud og pakker-til-videresendelse).<!-- Af hensyn til Jacobs
+læsere/-->
+</para>
+
+<para>
+Her er en ASCII-kunstnerisk gengivelse af kædernes organisation
+(med tak til Rusty Russell's packet-filtering-HOWTO).  Det er
+væsentligt forskelligt fra arrangementet i kerne 2.0 og 2.2.
+</para>
+
+<programlisting>
+                            _____
+  Incoming                 /     \         Outgoing
+         -->[Routing ]--->|FORWARD|------->
+            [Decision]     \_____/        ^
+                 |                        |
+                 v                       ____
+                ___                     /    \
+               /   \                   |OUTPUT|
+              |INPUT|                   \____/
+               \___/                      ^
+                 |                        |
+                  ----> Local Process ----
+</programlisting>
+
+<para>
+Det ses, at en pakke kan komme fra to principielt forskellige
+kilder. Enten kommer pakkerne fra et netkort (rettere interface -
+men prøv at oversætte det til dansk) eller også kommer de fra et
+program, en lokal proces.
+</para>
+
+<para>
+De tre "cirkler" repræsenterer de tre kæder nævnt ovenfor. Når en
+pakke ankommer til en cirkel i diagrammet, undersøges reglerne i
+denne kæde for at afgøre pakkens skæbne. Hvis kæden siger DROP
+pakken bliver den elimineret på stedet, men hvis kæden siger
+ACCEPT vil den fortsætte sin rejse gennem diagrammet.
+</para>
+
+<para>
+En kæde er en checkliste med regler. Hver regel siger "hvis
+pakke-headeren ser ud på denne-hersens-måde, så se her hvad der
+skal gøres med pakken".  Hvis en regels pakke-beskrivelse passer
+på pakken, kalder man det et match. Det svarer selvfølgelig til
+en masse betingelser, som er opfyldt. Hvis pakken ikke matcher
+reglen fortsætter man til næste regel. Endelig når vi til et
+punkt, hvor der ikke er flere regler at undersøge. Nu ser kernen
+på kæde-policy for at afgøre, hvad der skal ske. I et
+sikkerheds-bevidst system siger denne policy som regel at kernen
+skal DROPpe pakken.
+</para>
+
+<para>
+1. Når en pakke kommer ind, lad os sige fra ethernet-kortet ser
+kernen på pakkens destination: Dette kaldes routing (rutning
+eller bedre, ruting?)
+</para>
+
+<para>
+2. Hvis den er til denne box bliver pakken sendt videre ned i
+diagrammet til INPUT kæden. Hvis den passerer denne, så vil alle
+processer, som venter på denne pakke, få den.
+</para>
+
+<para>
+3. I modsat fald, hvis kernen ikke har videresendelse aktiveret,
+eller den ikke ved, hvordan pakken skal sendes videre, vil pakken
+blive droppet. Hvis videresendelse er aktiveret, og pakken er
+tiltænkt til et andet netværks-interface (hvis du har sådan et),
+så vil pakken gå fremad til FORWARD kæden. Hvis den accepteres
+her, bliver den sendt ud.
+</para>
+
+<para>
+4. Sluttelig kan et program, som kører på boxen, sende
+netværkspakker. Disse passerer gennem OUTPUT kæden straks: Hvis
+den siger ACCEPT, så fortsætter pakken til hvad nu end det måtte
+være for et interface, som den er bestemt for.
+</para>
+
+</sect3>
 
 </sect2>
 <sect2 id="sikkerhed-iptables-cmd">
-<title><command>iptables</command> kommandoen</title>
+<title>Anvendelse af <command>iptables</command> kommandoen</title>
+
+<para>
+<command> iptables </command> kommandoen har en ret detailleret
+manual side (<command> man iptables </command>) hvis du har brug
+for oplysninger om specielle ting.
+</para>
+
+<para>
+Der er mange ting, man kan gøre med <command> iptables </command>
+kommandoen. Man begynder med at have de tre indbyggede kæder,
+INPUT, FORWARD og OUTPUT, som man ikke kan slette. Lad os først
+se på hvordan man administrerer hele kæder.
+</para>
+
+
+<itemizedlist mark="bullet">
+<listitem><para>
+<command> -N </command>: Opretter en ny kæde.
+</para></listitem>
+<listitem><para>
+<command> -X </command>: Sletter en tom kæde.
+</para></listitem>
+<listitem><para>
+<command> -P </command>: Ændrer policy for en kæde.
+</para></listitem>
+<listitem><para>
+<command> -L </command>: Lister regler i en kæde.
+</para></listitem>
+<listitem><para>
+<command> -F </command>: Flusher, sletter reglerne i en kæde.
+</para></listitem>
+<listitem><para>
+<command> -Z </command>: Nulstiller tællerne for en kæde.
+</para></listitem>
+</itemizedlist>
+
+
+<para>
+Der er været vist nogle eksempler ovenfor, her er et til, som
+nulstiller tællerne i INPUT kæden. Prøv at liste før og efter med
+<command> iptables -L INPUT -v </command>:
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -Z INPUT</userinput>
+</screen>
+
+<para>
+Der er mange kommandoer til at manipulere reglerne i en kæde.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>-A &lt;kæde&gt; Tilføj (append) regel</para></listitem>
+<listitem><para>-D &lt;kæde&gt; [nummer] Slet (delete) regel</para></listitem>
+<listitem><para>-R &lt;kæde&gt; [nummer] Erstat (replace) regel</para></listitem>
+<listitem><para>-I &lt;kæde&gt; [nummer] Indsæt (insert) regel</para></listitem>
+</itemizedlist>
+
+
+<para>
+En regel består af en eller flere kommandoparametre, som
+beskriver en egenskab ved en netværkspakke, samt (som regel) en
+besked om, hvad der skal ske med pakker, som beskrivelsen passer på.
+Hvis en beskrivelse passer, siger man at pakken matcher.
+</para>
+
+<para>
+Kommandoparameteren -j står for jump. Det, man hopper til, kaldes
+mål eller target, og to af de indbyggede targes er de samme som de
+policy, vi tidligere har set, DROP, ACCEPT; endvidere kan man
+hoppe til en anden, brugeroprettet kæde, eller man kan returnere
+fra en kæde (med RETURN). Desuden er der et REJECT target, som
+dog kræver at kernen er kompileret med support for det. Der er
+mange andre inbyggede targets, som kræver tilvalg i kernen: QUEUE
+beder kernen om at sende pakkerne til en pseudo-device, som et
+program i userspace kan lytte på, og så er der bl.a. også
+REDIRECT, SNAT, DNAT og LOG targets. Se manual page for komplet
+listning. Lige nu er de vigtigste ACCEPT, DROP og SNAT, som kun
+kan bruges i nat-tabellens POSTROUTING chain.
+</para>
+
+<para>
+De vigtigste kommandoparametre til match er
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+<para>
+<command> --protocol [icmp|tcp|udp|all] </command> 
+</para>
+<para>
+Man kan også bruge et navn fra <filename> /etc/protocols
+</filename>. Hvis man ønsker at matche alle pakker, som ikke
+tilhører en bestemt protokol, negeres med udråbstegn. Fx.
+<command> iptables -A INPUT --protocol ! tcp -j ACCEPT</command>
+accepterer alt undtagen TCP-pakker.  Kan forkortes til -p.
+</para>
+</listitem>
+<listitem>
+<para>
+<command> --source [!] adresse[/netmaske] </command>
+</para>
+<para>
+Angiver oprindelsesadressen. Kan forkortes til -s. Eksempel:
+<command> iptables -A INPUT --source 123.45.67.89 -j ACCEPT
+</command> vil bevirke at vi accepterer alt, hvad der kommer fra
+123.45.67.89 - og formentlig dropper alt andet.
+</para>
+</listitem>
+<listitem>
+<para>
+<command> --destination [!] address[/mask] </command>
+</para>
+<para>
+matcher på slutadressen, destinationen. Forkortes -d.
+</para>
+
+</listitem>
+<listitem>
+<para>
+<command> -i, --in-interface [!] name </command>
+</para>
+<para>
+hvor <emphasis>name</emphasis> kan være eth0, eth1, ppp0 m.v. kan
+bruges til at selektere alle pakker, som kommer fra ydersiden eller
+indersiden af firewallen.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command> -o, --out-interface [!] name </command>
+</para>
+<para>
+som -i, bruges til at selektere på alle pakker, der skal sendes
+ud via et bestemt interface.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command> -m state </command>
+</para>
+<para>
+bruges til at fortælle kernen at tilstandsmodulet (connection
+tracking) skal bruges. Derefter kan man specificere, at pakker,
+som er ESTABLISHED eller RELATED til en forbindelse, som er i
+gang, skal have lov at passere. Det er den måde, man åbner for al
+trafik indefra.
+</para>
+</listitem>
+
+</itemizedlist>
+
+
+<para>
+Nu til hands on! Vi antager, at vi har fem maskiner i huset og et
+en ADSL forbindelse på en af maskinerne. ADSL er på et separat
+netkort, som har betegnelsen eth1. De andre maskiner er forbundet
+via eth0 og vil gerne have lov at få del i ADSL forbindelsen.
+</para>
+
+<para>
+Lad os lave en kæde af regler, som skal inspicere al trafik, der
+kommer ind på vores box, men kun, hvis det er fra ADSL
+interfacet, altså eth1.
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -N eth1-rules </userinput>
+</screen>
+
+<para>
+Man kan liste den nye kæde sammen med de andre: <command>
+iptables -L </command> Kæden er ikke taget i brug, så der står "0
+references". For at bruge den til noget må vi instruere kernen
+yderligere med en jump kommando. Vi laver en regel 1 for INPUT
+kæden.
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -A INPUT -i eth1 -j udefra </userinput>
+</screen>
+
+
+<programlisting>
+                  __________
+                _|eth1-rules|__> eth1 rule 1 __> eth1 rule 2 ..._
+               ^ |__________|                                    |
+              _|_____                                            |
+             /if eth1\                                           |
+            |  else   |                                          |
+             \_______/ _    _____________________________________|
+               ^        |  |
+   ______      |        v  v
+__|input |__> rule 1    rule 2 __> rule 3
+  |______|
+   ______
+__|output|
+  |______|
+   _______
+__|forward|
+  |_______|
+</programlisting>
+
+<para>
+Det svarer til en sammensat if-sætning. Vi tester for om det var
+fra eth1 og hvis det er det, så undersøg også lige dit og dat.
+</para>
+
+<para>
+Lad os inspicere pakkerne udefra for, om de er til vores http
+server. Hvis de er det, så slip dem igennem, ellers skal de
+droppes.
+</para>
+
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -A eth1-rules -p tcp --dport 80 -j ACCEPT </userinput>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -A eth1-rules -j DROP </userinput>
+</screen>
+
+<para>
+Svarpakker til brugerne inde på lokalnettet vil imidlertid også
+blive stoppet af denne stop-regel, så nu vil vi benytte
+connection tracking og indsætte en regel, som siger, at alle
+pakker, som er beslægtede med en forbindelse, som allerede er
+oprettet, skal accepteres.
+</para>
+
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -I eth1-rules -m state --state ESTABLISHED,RELATED -j ACCEPT </userinput>
+</screen>
+
+<para>
+Denne regel bliver nu nummer 1, og de andre rykker ned som 2 og
+tre. Hvis vi hellere vil sætte denne regel ind som nummer 2, skal
+kommandoen hedde <command> iptables -I eth1-rules 2 -m state
+--state ESTABLISHED,RELATED -j ACCEPT </command> 
+</para>
+
+<para>
+<command> -m state </command> fortæller kernen, at den skal
+benytte tilstandsmodulet, ip_conntrack. Derefter er det
+nødvendigt at bruge --state parameteren til at fortælle, hvilke
+tilstande, der skal accepteres. Ud over ESTABLISHED og RELATED er
+der bl.a. NEW og INVALID, som betyder at en pakke ikke tilhører
+nogen kendt forbindelse.
+</para>
+
+<para>
+Læg mærke til, at der ikke er mellemrum efter kommaet mellem de
+to tilstande, det må der ikke være.
+</para>
+
+<para>
+Lad os nu antage, at vi slet ikke kan lide telnet protokollen,
+heller ikke internt på det lille net, og derfor vil blokere for
+al telnet. Nu er det jo så en applikationsprotokol, så vi kan
+ikke bruge --protocol. Med andre ord, telnet står ikke i
+<filename> /etc/protocols </filename> og derfor må vi "sigte
+efter telnet" på en anden måde, fx. ved at stoppe al trafik, som
+har destination port 23.
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -I INPUT -p tcp --dport 23 -j DROP </userinput>
+</screen>
+
+<para>
+Der benyttes -I, insert, fordi reglen skal komme før
+eth1-reglerne, hvis det skal nytte noget. Der står jo en accept
+inde i eth1-reglerne, som kunne forstyrre billedet (lidt).
+Nyere versioner af iptables vil kunne matche generelt på --ports
+23, så det både er afsender/modtager pakker, som stoppes.
+</para>
+
+<para>
+Eksemplet er ikke fuldkomment endnu, hvis de andre lokalnet
+maskiner har "private IP-adresser" - så næste opgave går ud på at
+opsætte NAT for de 4 lokalmaskiner.
+</para>
+
+</sect2>
+
+<sect2 id="sikkerhed-start-nat">
+<title>Opsætning af NAT</title>
+
 <para></para>
+
+
+
+
+
 </sect2>
 
 </sect1>
