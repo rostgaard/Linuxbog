@@ -156,7 +156,7 @@ function vistype($type) {
     // Bognavn, forkortet
     "friheden" => array(
       title => "Linux - Friheden til at vælge installation",
-      comment => "En god begynderbog",
+      comment => "Hjælp til installation",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
