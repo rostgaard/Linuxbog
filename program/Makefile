@@ -1,12 +1,12 @@
-all:	html 1fil pdf palmpilot txt 
+locdirname=$(shell pwd)
+targetname=linux-$(notdir $(locdirname))
 
-palmpilot:	
-	(cd palm; python /usr/lib/python1.5/site-packages/PyPlucker/Spider.py -v -p . -f Linuxbog)
-	(cd palm; zip linuxbog_palm.zip README Linuxbog.pdb viewer_en.prc )
-	mv palm/linuxbog_palm.zip .
+all:	statusfiler html pspdf
 
-tidy:
-	(cd bog; tidy -f err.txt -imu *html)
+statusfiler:
+	@$(shell date +%d/%m-%Y> dato.sgml)
+	@echo Version er `cat version.sgml`
+	@echo Dato sat til `cat dato.sgml`
 
 html:
 	rm -rf tempdir stikord.sgml magic.sgml
@@ -21,21 +21,28 @@ html:
 	cp linuxbog.css bog
 	cp images/*.png bog
 
-txt:
-	lynx -dump -hiddenlinks=ignore bog/book.html > linuxbog.txt
-
-1fil:
-	rm -rf stikord.sgml tempdir magic.sgml
-	echo '<!ENTITY magic "png">' > magic.sgml
+pspdf:
+	rm -rf bogps bospdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
-	perl /usr/local/bin/collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	perl /usr/local/bin/collateindex.pl  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V html-index -V nochunks bog.sgml > ged.html)
+	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl /usr/local/bin/collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-	jade -t sgml -i html -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > bog/book.html
-	cp linuxbog.css bog
-	cp images/*.png bog
-
+	mkdir bogps
+	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% convert -antialias images/%.png eps2:bogps/%.eps
+	cp *.sgml bogps
+	(cd bogps; db2ps bog.sgml)
+	mv bogps/bog.ps $(targetname).ps
+	rm -f $(targetname).ps.gz
+	gzip -9 $(targetname).ps
+	mkdir bogpdf
+	cp *.sgml bogpdf
+	cp images/*.png bogpdf
+	(cd bogpdf; db2pdf bog.sgml)
+	mv bogpdf/bog.pdf $(targetname).pdf
+	rm -f $(targetname).pdf.gz
+	gzip -9 $(targetname).pdf
 
 ps:
 	rm -rf bogps stikord.sgml tempdir magic.sgml
@@ -49,10 +56,12 @@ ps:
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% convert -antialias images/%.png eps2:bogps/%.eps
 	cp *.sgml bogps
 	(cd bogps; db2ps bog.sgml)
-	mv bogps/bog.ps linuxbog.ps
-	rm -rf bogps
+	mv bogps/bog.ps $(targetname).ps
+	rm -f $(targetname).ps.gz
+	gzip -9 $(targetname).ps
 
 pdf:
+	@echo "Target is" $(targetname).pdf.gz
 	rm -rf bogpdf tempdir magic.sgml
 	mkdir tempdir
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -64,14 +73,11 @@ pdf:
 	cp *.sgml bogpdf
 	cp images/*.png bogpdf
 	(cd bogpdf; db2pdf bog.sgml)
-	mv bogpdf/bog.pdf ./linuxbog.pdf
-	rm -rf linuxbog.pdf.gz
-	gzip -9 linuxbog.pdf
-
-tags:
-	etags *.sgml
+	mv bogpdf/bog.pdf $(targetname).pdf
+	rm -f $(targetname).pdf.gz
+	gzip -9 $(targetname).pdf
 
 clean:
-	rm -rf *.html magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog/* linuxbog.ps bog *.dvi stikord.sgml tempdir bogps bogpdf linuxbog.pdf linuxbog.pdf.gz images/*.eps linuxbog_palm.zip  linuxbog.txt.gz
+	rm -rf magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname).pdf.gz $(targetname).ps.gz
 
 

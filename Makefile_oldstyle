@@ -1,4 +1,11 @@
-all: clean html pdf cvs2html mail
+all: clean statusfiler html pspdf cvs2html mail
+
+statusfiler:
+	make -C friheden statusfiler
+	make -C admin statusfiler 
+	make -C program statusfiler
+	make -C web statusfiler 
+	make -C sikkerhed statusfiler 
 
 html:
 	make -C friheden html
@@ -8,12 +15,12 @@ html:
 	make -C sikkerhed html 
 	       
 	       
-pdf:	       
-	make -C friheden pdf
-	make -C admin pdf 
-	make -C program pdf
-	make -C web pdf 
-	make -C sikkerhed pdf 
+pspdf:	       
+	make -C friheden pspdf
+	make -C admin pspdf 
+	make -C program pspdf
+	make -C web pspdf 
+	make -C sikkerhed pspdf 
 	       
 	       
 clean:	       
