@@ -112,8 +112,9 @@ lrwxrwxrwx   1 root root 5 Sep  5 04:37 /dev/modem -> /dev/ttyS1
 Det ser godt ud. Nu peger <filename>/dev/modem</filename> på den anden
 serielport.
 </para>
-
 </sect2>
+
+
 <sect2 id="usernetppp">
 <title>Internet-opkobling med modem</title>
 <indexterm><primary>usernet</primary></indexterm>
@@ -186,7 +187,6 @@ sig. Disse filer ligger i <filename>/etc/ppp</filename>.
 url="http://www.sslug.dk/artikler/ppp-info.html">http://www.sslug.dk/artikler/ppp-info.html</ulink>,
 hvis du har problemer med at få din modem-opkobling til at virke.
 </para>
-
 </sect2>
 
 <sect2 id="kppp">
@@ -317,7 +317,6 @@ Når man sætter kppp op som root, findes opsætningen i
 findes i roots home-folder, har andre usere ingen adgang og kan dermed
 kun bruge opsætningen hvis de har root-password.  Genialt ikke!
 </para>
-
 </sect2>
 
 <sect2 id="wvdial">
@@ -410,7 +409,97 @@ netværksansvarlige.
 <TITLE>Opsætning af ethernet interface</TITLE>
 <GRAPHIC FILEREF="linuxconf-eth0.&magic;"  SCALE="40"></GRAPHIC>
 </FIGURE>
+</sect1>
 
+<sect1 id="ADSL">
+<title>ADSL opkobling</title>
+<indexterm><primary>ADSL</primary></indexterm>
+
+<para>
+ADSL og Linux kan være meget enkelt eller meget svært.  Flere udbydere
+tilbyder en router-løsning, hvor man får installeret en router
+hjemme (f.eks. TDC Netexpress II, TDC ProAccess eller CyberCity). 
+Routeren kobles direkte til en PC eller til en hub/switch hvorfra man kan
+koble flere maskiner på. Denne løsning er glimrende, idet man kun har
+brug for et ethernet kort og evt. en hub for at komme igang.
+Normalt laver man et hjemmenetværk (med IP-adresser 192.168.0.X) og
+routeren har endda ofte en DHCP-server med, der går det rigtig nemt.
+</para>
+
+<para>
+Andre udbydere (TDC netexpress) tilbyder ATM-kort, som skal sættes i
+din PC. Her skal man være omhyggelig med at checke om der findes
+drivere til netop det kort du får. 
+</para>
+
+<!-- Flemming Danielsen fd@cvusyd.edu -->
+<para>
+Orange (tidligere Mobilix) tilbyder også ADSL, med en speciel boks,
+der sættes på UBS-porten. Mange har haft problemer med manglende
+drivere, men nu er der i hvertfald en som har det til at virke under Linux.
+</para>
+
+<orderedlist>
+
+<listitem><para>
+Indsat IP med et hostnavn i <filename>/etc/hosts</filename> 
+</para>
+<screen>
+10.0.0.138	router
+</screen>
+</listitem>
+
+<listitem><para>
+Sikrede mig at jeg kan lave ping til den, og så sikre mig at der er
+ppp enablet i kernen, samt at pppd er installeret. Jeg har brugt
+RedHat 7.1, og der virker det i standard udgaven.
+</para></listitem>
+
+<listitem><para>
+Indsætte mit login og password i <filename>/etc/ppp/pap-secrets</filename>
+</para>
+
+<screen>
+username	server	password
+
+"waiXXXXX" 	*	"xvxvxvx"
+</screen>
+</listitem>
+
+<listitem><para>
+Kompilering pptp klienten fra dette site
+<ulink url="http://cag.lcs.mit.edu/~cananian/Projects/PPTP/">http://cag.lcs.mit.edu/~cananian/Projects/PPTP/</ulink>
+</para></listitem>
+
+<listitem><para>
+Kør programmet pptp
+</para>
+
+<screen>
+./pptp &lt;HOSTNAME-OF-VPN&gt; name waiXXXX remoteserver &lt;HOSTNAME-OF-VPN&gt; \
+&lt;localip&gt;:&lt;remoteip&gt;
+</screen>
+
+<para>
+local IP og remote ip kan man se ved at vælge egenskaber på sin
+connection, når der kører en windows session over forbindelsen.
+</para></listitem>
+
+<listitem><para>
+opsætte default route via den oprettet VPN-PPP
+</para>
+
+<screen>
+route del default
+route add default ppp0
+</screen>
+</listitem>
+</orderedlist>
+
+<para>
+Håber dette kan være til hjælp, og husk at ADSL med en åben router kan
+være et kæmpe sikkerhedshul - læs derfor <xref linkend="sikkerhed">.
+</para>
 
 </sect1>
 
@@ -1022,9 +1111,13 @@ HOWTO-dokumenter om dette.
 Listen ser dramatisk ud og er ikke så relevant for dem, som lige logger på
 Internettet via modem for at checke epost og surfe lidt. For dem, som
 vil lave missionskritiske forretningssystemer på Internettet, er
-det nok så relevant. Du kan læse meget mere i en artikel-serie du
-finder på 
-<ulink url="http://www.sslug.dk/artikler/Linux_sikkerhed">http://www.sslug.dk/artikler/Linux_sikkerhed</ulink>.
+det nok så relevant. Du kan læse meget mere i bogen "Linux - friheden
+til sikkerhed på Internettet", der findes på 
+<ulink
+url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
+</para>
+
+<para>
 Tilsvarende bør du læse <ulink url="http://www.sslug.dk/sikkerhed">http://www.sslug.dk/sikkerhed</ulink>.
 </para>
 
