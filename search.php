@@ -13,13 +13,13 @@
    $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
    $maintain_name = "Hans Schou";       // Skriv dit navn her
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
-   @include($DOCUMENT_ROOT."/includes/top.phtml");
+   include($DOCUMENT_ROOT."/includes/top.phtml");
 
    list($width,$height) = @getimagesize("front.png");
 
    # \\ skal laves om til \
-   if (isset($q))
-     $q = preg_replace("|\\\\\\\|", "\\", $q);
+   #if (isset($q))
+   #  $q = preg_replace("|\\\\\\\|", "\\", $q);
 
 ?>
 
@@ -98,5 +98,5 @@ if ($q) {
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  @include($DOCUMENT_ROOT."/includes/bottom.phtml");
+  include($DOCUMENT_ROOT."/includes/bottom.phtml");
 ?>
