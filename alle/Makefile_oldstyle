@@ -37,19 +37,19 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 # her er det der skal laves
 all:	html palmpilot exit
 
-sgml: $(targetname)-$(version).sgml.tgz
+sgml: $(targetname)-$(version).sgml.tar.gz
 
-$(targetname)-$(version).sgml.tgz: $(sgmlfiler)
-	tar cvzf $(targetname)-$(version).sgml.tgz *.sgml Makefile collateindex.pl
+$(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
+	tar cvzf $(targetname)-$(version).sgml.tar.gz *.sgml Makefile collateindex.pl
 
-palmpilot: $(targetname)-$(version).palm.tgz
+palmpilot: $(targetname)-$(version).palm.tar.gz
 
-$(targetname)-$(version).palm.tgz: $(sgmlfiler)
+$(targetname)-$(version).palm.tar.gz: $(sgmlfiler)
 	make html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
-	tar cvzf $(targetname)-$(version).palm.tgz palm/*.prc palm/*.pdb
+	tar cvzf $(targetname)-$(version).palm.tar.gz palm/*.prc palm/*.pdb
 
 statusfiler:
 	@$(shell date +%d/%m-%Y> dato.sgml)
@@ -77,7 +77,7 @@ billeder:
 
 htmlfiler: 
 	@echo "Target er HTML i" $(targetshortname)/bog
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz bog
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -110,12 +110,12 @@ reparerhtml:
 
 pakhtml:
 	mv bog $(targetshortname)
-	tar cvzf $(targetname)-$(version).html.tgz $(targetshortname)
+	tar cvzf $(targetname)-$(version).html.tar.gz $(targetshortname)
 	zip $(targetname)-$(version)_html.zip $(targetshortname)/*
-	tar cvzf $(targetname)-$(version).html-ub.tgz $(targetshortname)/*.html $(targetshortname)/*.css
+	tar cvzf $(targetname)-$(version).html-ub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
-	tar cvzf $(targetname)-$(version).png.tgz $(targetshortname)_images/
+	tar cvzf $(targetname)-$(version).png.tar.gz $(targetshortname)_images/
 	mv $(targetshortname)_images images 
 	@echo "Done HTML pakning (pakhtml)"
 	@echo ""
