@@ -37,6 +37,77 @@ verdenen.
 <title>Installation</title>
 <para>
 Puppy kræver en pentium II med 128 MB RAM.
+Hvis man vil gemme sin konfiguration fra gang til gang, kræves der
+desuden en ext2, ext2, vfat eller resierfs partition med min. 128 MB fri. 
+</para>
+<para>
+Man downloader og brænder et iso image til en CD. PuppyLinux downloads
+fra <ulink url="
+ftp://ftp.ibiblio.org/pub/linux/distributions/puppylinux/">
+ftp://ftp.ibiblio.org/pub/linux/distributions/puppylinux/</ulink> -
+version 0.7.8 under ligger under puppy-0.7.8/ og hedder cd-puppy.iso.
+Version 0.7.6 ligger under puppy-0.7.6 og hedder også cd-puppy.iso, men
+til den ligger der moduler under modules-0.7.6/modules.tgz. Dette vender
+vi tilbage til senere.
+
+Så, vi downloader og brænder et image med kommandoerne
+<screen>
+wget --passive-ftp ftp.ibiblio.org/pub/linux/distributions/puppylinux/puppy-0.7.8/cd-puppy.iso
+cdrecord -v speed=8 dev=0,0,0 -data cd-puppy.iso
+</screen>
+Iso imaget til version 0.7.8 fylder 42 MB, version 0.7.6 fylder 35 MB.
+</para>
+
+<para>
+Boot fra cd'en. Der kommer et par fejl, f.eks. at den ikke kan indlæse
+usb-storage modulet. Denne fejl er i flg. websiden kendt af udvikleren
+og vil sikkert blive rettet i næste version. På mit system brokker den
+sig også over at der ikke er fri plads nok på den forreste ext2
+partition, hvor den gerne vil have lov at lægge sin root fil. Den første
+ext2 partition er tilfældigvis en /boot fra en Red Hat installationm, som er 50 MB. Den laver så vidt jeg kan se en fil på den første egnede partition den kan finde, og kalder den pup078. Denne fil vil iflg. dokumentationen blive mounted som /root, hvor al konfiguration bliver gemt.
+Det lykkes så ikke i mit tilfælde, selvom der er masser af fri plads
+på den næste partition - den checker åbenbart ikke om der er plads nok,
+før den vælger hvilken partition den vil bruge,
+</para>
+
+
+<para>
+/etc er et symbolsk link til /root/.etc. Så hvis /root er en rigtig fil
+i stedet for en RAMdisk gemmes konfiguration i /etc på denne måde.
+</para>
+
+<para>
+Efter lidt tid bliver man spurgt om keyboard (us er default) og om mus
+(ps/2 er default). Så starter X op i en lav opløsning, og man kan vælge
+x opløsning. Nu startes X op i den nye opløsning, og man er kørende.
+</para>
+
+<para>
+Problemer:
+Emulate3buttons virker ikke. Har ikke fået mulighed for at vælge det.
+Mit netkort er ikke understøttet som std. Dette kan løses ved at køre
+0.7.6 og loade modules fra modules.tgz, mere om dette senere. Jeg kan
+ikke få lov at køre "Remaster live-Puppy CD" fordi den ikke har fået lov
+at lave sin 128 MB fil på /dev/hda1. Jeg lavede een på /dev/hda2 i
+stedet og mountede den, men det kan Puppy ikke rigtig finde ud af :(
+Og hvis jeg ikke kan køre remaster programmet ved jeg ikke hvordan jeg
+skal ændre konfigurationen. Man kan muligvis lave imaget i hånden - så
+noget på websiden - prøver i morgen.
+
+Dokumentationen er ikke ret opdateret - i version 0.7.4 brugte den en
+floppy til at gemme /root på, og det er stadig den besked cd remaster
+programmet giver, men det hjælper ikke at sætte en floppy i og reboote
+som der står. Flere steder på websiden kan dokumentationen heller ikke
+følge med.
+</para>
+<para>
+</para>
+<para>
+</para>
+<para>
+</para>
+
+<para>
 </para>
 
 </sect1>
@@ -45,23 +116,14 @@ Puppy kræver en pentium II med 128 MB RAM.
 <title>Brugen af Puppy Linux</title>
 
 <para>
-Puppy starter en fin fvwm95 op. Man kører som root. Der er i ikoner i
-højre hjørne: Rox file manager, Rxvt, Gnotepad og Kill. Man får en menu
-med flere programmer ved at venstreklikke på skærmen eller ved at klikke
-på start menuen.
-</para>
+Puppy starter en fin fvwm95 op. Man kører som root, uden password. Der
+er i ikoner i højre hjørne: Rox file manager, Rxvt, Gnotepad og Kill.
+Man får en menu med flere programmer ved at venstreklikke på skærmen
+eller ved at klikke på start menuen.  </para>
 
 <para>
-Under Puppy Linux kører man som root hele tiden. Den nyeste version (live) bruger 128 MB på harddisken til en RAMDISK eller lign. Dokumentationen siger at den autom,atisk genereres. Forummet siger at det kun sker hvis man explicit beder om det. Jeg har ikke fundet ud af hvor filen lægges. Eller om der forventes et bestemt filsystem.
-</para>
-<para>
-Går man tilbage til version 0.76 er det vist standard at man sætter en
-floppy i som bruges til permanent storage. Har ikke prøvet den ældre
-version endnu.
-
-Der er ikke ret mange moduler med (mit netkort mangler!).
-
-
+Der er Konqueror med som web browser. Det er et meget begrænset sæt
+applikationer der er med.
 </para>
 
 <para>
@@ -99,8 +161,10 @@ som oftest ville være en gammel maskine, jeg ville ønske mig at køre en
 "mini distro" på.
 </para>
 <para>
-Puppy er nemt at komme i gang med, men for de fleste er det først
-brugbart når man har rettet det til med de drivere man har brug for.
+Puppy er nemt at komme i gang med hvis det virker efter hensigten, men
+for de fleste er det først brugbart når man har rettet det til med de
+drivere man har brug for, og stien til et sted hvor root filen kan
+ligge.
 Så er det pludselig ikke så nemt for begyndere mere. Manglen på drivere
 og det faktum, at den lægger en permanent fil på harddisken, gør at den
 heller ikke er særlig egnet til at have med i lommen som system-cd,
@@ -109,6 +173,13 @@ ikke med flash-Puppy, som gemmer på flash-kortet, men til gengæld er det
 nok kun ret nye maskiner, der kan boote fra sådan et.
 </para>
 
+<para>
+Dokumentationen er mange steder fra version 0.7.4 og passer ikke mere.
+Dette kunne man tage som sjusk, men det kan godt være, at det bare er
+tegn på at det er et projekt i rivende udvikling lige nu. Der er mange
+nye datoer i deres nyheder og diskussionsforum. Når projektet bliver
+mere færdigt vil dokumentationen forhåbentlig få højere prioritet.
+</para>
 
 <para>
 Det at puppy kun kører som root er heller ikke den mest betryggende
@@ -117,6 +188,13 @@ Puppy Linux ikke noget for dig. Det skal dog siges til Puppy Linux'
 forsvar at det kun er en version 0.78, og at hvis man har en maskine
 hvor al hardwaren er understøttet i standard udgaven af live-puppy,  er
 det utrolig nemt at komme i gang med.
+</para>
+
+<para>
+Den korte: Pt. er puppy ikke egnet til målgruppen, hvis de vil ret meget
+mere end at se en Linux desktop (f.eks. gemme deres filer) - det er alt for
+svært. Det er stadig i et tidligt udviklingstadium og kan godt gå hen at
+udvikle sig til noget ganske brugbart.
 </para>
 </sect1>
 
