@@ -54,12 +54,12 @@ Det kan gøres med følgende lille script som kan udføres direkte
 i kommandofortolkeren.
 </para>
 
-<programlisting>
-[anne@linus ~]$ for I in *.txt
+<screen>
+<PROMPT>[anne@linus ~]$</PROMPT> <userinput>for I in *.txt
  do
    perl -pi.bak -e 's/Windows/Linux/g' $I
- done
-</programlisting>
+ done</userinput>
+</screen>
 
 <para>
 Denne operation efterlader en .bak-fil for hver fil du laver
@@ -288,12 +288,13 @@ Windows-system automatisk blive tilføjet som en valgmulighed i LILO.
 <para>
 Har du allerede installeret Linux, kan et Windows-system føjes til LILO's
 menu ved at føje følgende linjer til <filename>/etc/lilo.conf</filename>:
+</para>
+
 <programlisting>
 other=/dev/hda1
         label=dos
         table=/dev/hda
 </programlisting>
-</para>
 
 <para>
 Husk, at hver gang opsætningen af LILO ændres skal du køre
@@ -307,7 +308,7 @@ mellem 'linux' og 'dos'. Når du vælger 'dos', kalder LILO Windows' "OS
 Loader". Med ældre udgaver af LILO er det nødvendigt at trykke på
 tabulatortasten for at blive præsenteret for valgmulighederne.
 </para>
-  </sect3>
+</sect3>
 
 <sect3 ID="WindowsiMBR">
 <title>Windows styrer opstarten</title>
@@ -906,6 +907,99 @@ I stedet for de 5 tidsangivelser kan linien starte med '@reboot',
 hvorefter den udføres når systemet genstartes. Denne mulighed virker
 ikke for kommandoer, som er skrevet direkte i
 <filename>/etc/crontab</filename>.
+</para>
+
+</sect2>
+
+<sect2 id="at">
+<title>Kør ikke-gentagne jobs med at</title>
+<para>
+Som det er forklaret i de forrige afsnit så vil
+<command>crontab</command> primært anvendes til at køre automatiske
+scripts eller egentlige programmer på fastlagte tidspunkter gentaget
+hver time, dag, uge eller måned.
+</para>
+
+<indexterm><primary>at</primary></indexterm>
+<indexterm><primary>Køre jobs på givet tidspunkt</primary><secondary>at</secondary></indexterm>
+<indexterm><primary>free</primary></indexterm>
+<indexterm><primary>Fri hukommelse</primary><secondary>mængde af</secondary></indexterm>
+<indexterm><primary>Hukommelse</primary><secondary>mængde af</secondary></indexterm>
+<indexterm><primary>RAM</primary><secondary>forbrug af</secondary></indexterm>
+
+<para>
+Nogle gange har man desuden brug for at køre programmer en enkelt
+gang, men man har måske ikke mulighed for selv at starte programmet på
+det tidspunkt man ønsker. Det kunne være at man lige ville starte en
+ekstra backup midt i den kommende nat.  Linux-maskinen har ligesom
+andre UNIX-maskiner mulighed for at køre programmer når man selv
+ønsker dette. Vil man køre en kompleks serie af kommandoer bør man
+skrive kommandoerne ind i en fil, men ellers er den almindelige måde
+at indskrive kommandoerne interaktivt. Hvis vi gerne vil vide hvem som
+er logget ind på maskinen kl. 03:00 og hvor meget hukommelse der er
+brugt på maskinen på det tidspunkt, dvs. man vil gerne køre
+<command>who &gt; ~/login_info.txt</command> kl. 3 om natten og næste
+morgen kan man lige gennemse filen <filename>~/login_info.txt</filename>.
+Derudover vil man gerne lige køre <command>free</command>, der viser 
+hvor meget af den fysiske hukommelse samt swap-filen der er brugt.
+Dette gøres ved at køre kommandoen <command>free</command>. 
+</para>
+
+<para>
+Kommandoerne indskrives efter at man skriver <command>at</command> og
+tidspunktet. Antallet af kommandoer, som indskrives på de
+efterfølgende linier en for en, er ikke begrænset. Kommandoerne
+afsluttes med <command>Ctrl-d</command> på en linie for sig.
+</para>
+
+<screen>
+<PROMPT>[anne@linus ~]$</PROMPT> <userinput>at 3:00</userinput>
+<PROMPT>at></PROMPT> <userinput>who &gt; ~/login_info.txt</userinput>
+<PROMPT>at></PROMPT> <userinput>free &gt;&gt; ~/login_info.txt</userinput>
+<PROMPT>at></PROMPT> <userinput>Ctrl-d</userinput>
+</screen>
+
+<para>
+Næste morgen vil filen <command>~/login_info.txt</command> indeholde følgende:
+</para>
+
+<screen>
+ 3:00am  up 23:03,  8 users,  load average: 0.00, 0.04, 0.08
+USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU  WHAT
+pto      :0       console          Sat 2pm   ?     0.00s   ?     -
+pto      pts/0    -                Sat 2pm 14:03m  0.00s   ?     -
+pto      pts/2    -                 2:17pm  2:57m  3.45s  0.56s  /bin/bash
+pto      pts/3    -                 1:21pm  8:18m  0.10s  0.10s  /bin/bash
+pto      pts/4    -                 2:26pm  8:06m  0.52s  0.07s  bash
+pto      pts/5    -                10:36pm  1.00s  0.27s  0.27s  /bin/bash
+pto      pts/6    -                10:37pm  2:07   1.61s  1.51s  pine
+             total       used       free     shared    buffers     cached
+Mem:        190896     185820       5076          0      37244      76432
+-/+ buffers/cache:      72144     118752
+Swap:       329324      19936     309388
+</screen>
+
+<para>
+De sidste fire linier kommer fra <command>free</command> og de første
+kommer fra <command>who</command>. Eksemplet illustrerer at det er nemt at
+anvende <command>at</command>, og det skal nævnes at hvis kommandoerne der
+udføres bringer tekst til stdout (standard output - dvs. tekst til skærm), så
+vil dette blive sendt som en email til brugeren.
+</para>
+
+<indexterm><primary>atq</primary></indexterm>
+<indexterm><primary>atrm</primary></indexterm>
+<indexterm><primary>batch</primary></indexterm>
+
+<para>
+Har man brug for at se hvilke kommandoer man har i
+<command>at</command>-køen kan <command>atq</command> anvendes. Vil
+man slette jobs, da gøres dette med <command>atrm</command>.  Endelig
+kan det nævnes at Linux-maskiner også har en
+<command>batch</command>-funktion, der fungerer som
+<command>at</command>, men er designet til at køre jobs, når der er
+ledig CPU-plads på maskinen. Det er efterhånden de færreste som
+anvender dette.
 </para>
 
 </sect2>
