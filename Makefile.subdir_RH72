@@ -1,0 +1,16 @@
+# Dette er en Makefile til de enkelte bøger som kan anvendes på 
+# Red Hat 7.2 
+#
+# Skrevet af Peter Toft <pto@sslug.dk> 22/1-2002 - er ikke færdig :)
+#
+# Mangler - håndtering af billeder, PS/RTF/PDF-output, setindex mv.
+
+html:
+	rm -rf bog
+	mkdir -p bog
+	cp *sgml bog
+	/usr/bin/collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o bog/stikord.sgml
+	(cd bog;jw -b html --dcl "-V html-index" bog.sgml)
+	/usr/bin/collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o bog/stikord.sgml bog/HTML.index
+	(cd bog;jw -b html  bog.sgml)
+	rm bog/*.sgml
