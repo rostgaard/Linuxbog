@@ -173,10 +173,14 @@ til dit system.
 
 Det mest almindelige er at gå efter nogle netværksservice-programmer, 
 der er fundet fejl i. Disse fejl udnyttes ofte for at få fuld adgang
-til maskinen (Se <xref linkend="root-access"/>). Som 
+til maskinen (Se nedenfor og <xref linkend="root-access"/>). Som 
 tidligere nævnt skal man holde øje med annoncerede sikkerhedsfejl,
-og få opdateret de anfægtede programmer. Vi vil i <xref linkend="services"/> se på hvorfor og hvordan, du minimerer disse problemer.
-</para></listitem>
+og få opdateret de anfægtede programmer. Vi vil i <xref
+linkend="services"/> se på hvordan du minimerer disse problemer.
+</para>
+
+
+</listitem>
 
 <listitem><para>
 <emphasis>Password angreb</emphasis>
@@ -343,18 +347,58 @@ Den eneste sikre kur er geninstallation af hele systemet.
 </para></listitem>
 </itemizedlist>
 
+<sect3 id="proof-of-concept">
+<title>Remote og local exploit</title>
+
+<para>
+Når der findes en fejl i et program kan der ofte laves et lille
+program der demonstrerer effekten af fejlen. Disse programmer
+kaldes ofte for proof-of-concept kode. Hackeren kan bruge samme
+metode til at lave et exploit program, d.v.s. et program, som
+udnytter fejlen, sårbarheden.
+</para>
+
+<para>
+Disse exploit programmer kan fungere via netværk eller afvikles
+lokalt. Ideen med lokale programmer er typisk at få flere
+rettigheder på systemet (privilege escalation). Derfor skal
+programmer som Apache webserveren afvikles med så få privilegier 
+som muligt. Så skal der være to sårbarheder for at få magt over
+maskinen, - en for at få adgang til maskinen, og en lokal
+sårbarhed, som kan give root privilegier.
+</para>
+</sect3>
+
 <sect3 id="DOS">
 <title>Denial of Service angreb</title>
 <indexterm><primary>DOS</primary></indexterm>
 <indexterm><primary>Denial of service angreb</primary></indexterm>
+
+
+
+<!-- dax: TODO: Find bedre formuleringer, gerne kortere /-->
+
 <para>
-Denial of Service (DoS) angreb har til formål at få din maskine til at
-holde op med at gøre det, den er sat til. Dette er knap så alvorligt
-som et reelt indbrud på systemet, men kan alligevel godt koste meget
-tid og mange penge.  Eksempler på DoS angreb er <emphasis>Pentium 
-F00F-fejlen</emphasis>, <emphasis>ping of death</emphasis> eller
-<emphasis>teardrop</emphasis>, som får maskinen til at låse. Disse
-fejl er rettet i nyere Linux-systemer.
+Ude-af-drift angreb (eng. Denial of Service - DoS) har til formål
+at få din maskine til at holde op med gøre det, den er sat til.
+Hackeren prøver at forhindre maskinen i at yde den service den
+skal ved at overbelaste nettet eller maskinens netsoftware. Ofte
+medfører den slags overbelastning at systemerne crasher.  Dette
+er knap så alvorligt som et reelt indbrud på systemet, men kan
+alligevel godt koste meget tid og mange penge.  Eksempler på DoS
+angreb er <emphasis>Pentium F00F-fejlen</emphasis>,
+<emphasis>ping of death</emphasis> og
+<emphasis>teardrop</emphasis>, som får maskinen til at låse.
+Disse fejl er rettet i nyere Linux-systemer.
+</para>
+
+<para>
+Man kan ikke lokalt i en virksomhed beskytte sig mod almindelig,
+lovlig, men massivt overbelastende og unyttig traffik til en
+bestemt server og man ser derfor virksomheder, som opsætter
+alternative web-sites med nye IP-numre/navne som kan overtage
+arbejdet mens der køres DoS mod virksomhederne. Andet er der ikke
+at gøre.
 </para>
 </sect3>
 
@@ -654,14 +698,17 @@ have et sikkert computersystem, er at være en lille smule paranoid.
 <indexterm><primary>Honeypot</primary></indexterm>
 <indexterm><primary>DHP</primary></indexterm>
 <para>
-På <ulink url="http://www.honeynet.org/">http://www.honeynet.org/</ulink>
-forfølges en interessant tankegang. Man sætter "honeypots" dvs. lækker 
-honningkrukke op og derefter studerer de bier som angriber honningen. I 
-netværks-sammenhæng er det en computer man sætter op uden egentlig dataværdi
-men med det setup man har tænkt sig at køre sidenhen. I en 
-periode lader man crackere angribe maskinen og holder meget øje med
-maskinen. Erfaringerne deles og diskuteres gerne med andre for på den måde at 
-få lavet endnu mere sikre maskiner.
+På <ulink
+url="http://www.honeynet.org/">http://www.honeynet.org/</ulink>
+forfølges en interessant tankegang. Man sætter en "honeypot",
+dvs. en krukke med lækker honning, op, og derefter studeres de
+bier som går i lag med honningen. I netværks-sammenhæng opsætter
+man en computer, som ikke har nogen data af værdi, men med det
+setup man har tænkt sig at køre sidenhen. I en periode lader man
+crackere angribe maskinen og holder meget øje med den, så man kan
+se, hvad der sker. Erfaringerne deles og diskuteres gerne med
+andre, og erfaringerne bruges til at lave endnu mere sikre
+maskiner.
 </para>
 
 </sect2>

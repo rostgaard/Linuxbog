@@ -186,7 +186,17 @@ såsom telnet- og ftp-forbindelser, mellem maskinerne på netværket. Det
 kommer an på konfiguration af routere, firewalls, switche og hubs,
 hvor meget man reelt får at se.  Sniffit kan hentes fra 
 <ulink url="http://reptile.rug.ac.be/~coder/sniffit/sniffit.html">http://reptile.rug.ac.be/~coder/sniffit/sniffit.html</ulink>. 
-Sniffit skal køres som root.
+</para>
+
+<para>
+Det er en udbredt misforståelse at man ikke kan aflytte switchede
+netværk - men kun netværk med hubs. Dette er forkert og
+aflytningen kan typisk foretages ved hjælp af ARP spoofing -
+eksempelvis med arpspoof programmet der følger med dsniff. Link:
+<ulink url="http://www.monkey.org/~dugsong/dsniff/">
+http://www.monkey.org/~dugsong/dsniff/</ulink>.
+Dsniff kan opsamle og afkode traffik fra mange usikre protokoller.  
+Sniffit og dsniff skal køres som root.
 </para>
 
 <para>
@@ -703,8 +713,11 @@ Har du problemer med SSH, så læs
 <para>
 OpenSSH kan hentes fra <ulink
 url="http://www.openssh.com">http://www.openssh.com</ulink>. Version
-bør være højere end 3.4 og openssl bør være nyere end 0.9.6g,
-hvis man vil undgå sårbarhed for buffer overflow.
+bør være nyeste version. Du bør følge med i opdateringer fra
+<ulink url="http://www.openssl.org">www.openssl.org</ulink> og
+openssh.org, idet der gennem tiderne er fundet flere sårbarheder
+i disse programpakker. Her installationen vist med openssh-3.4 og
+det fungerer på samme måde med nyeste version.
 </para>
 
 <para>
@@ -1043,7 +1056,9 @@ brugeren tyge prøver at logge ind på maskinen bohr med brugernavn tuck.
 </para>
 
 <para>
-<emphasis>Tip:</emphasis> Hvis du permanent vil anvende SSH2 (SSH version 2), så kan du skrive følgende ind i din <filename>~/.ssh/config</filename>
+<emphasis>Tip:</emphasis> Du bør udelukkende anvende SSH2 (SSH
+version 2); skriv følgende ind i din
+<filename>~/.ssh/config</filename>
 </para>
 
 <programlisting>
@@ -1194,6 +1209,25 @@ skal du ændre "startkde" til "ssh-agent startkde" og kun en
 enkelt gang køre "ssh-add". Derefter kan du slippe for at indtaste dit 
 løsen i resten af den X session. Brug "ssh-agent" med omtanke.
 </para>
+
+<para>
+Tip: Det anbefales at du flytter SSH til en anden port end port
+22 - hvis det kun er dig som benytter denne. Den valgte port kan
+på klienten skrives ind i ~/.ssh/config således at det stadig er
+nemt at logge ind. Eksempel:
+</para>
+
+<programlisting>
+
+~/.ssh/config:
+
+host tyge
+     port 22123
+
+host steno
+     port 955
+
+</programlisting>
 
 <indexterm><primary>xauth</primary></indexterm>
 <indexterm><primary>SSH</primary><secondary>grafiske programmer gennem sikker tunnel</secondary></indexterm>
