@@ -39,8 +39,133 @@ for Debian, eller for at rekompilere en softwarepakke selv.
 <para>
 </para>
 
+
+<sect2 id="distro-adamantix-baseinstallation">
+<title>Installation af Debian basesystem</title>
+
 <para>
+Adamantix bygger på Debian, og for at installere den, skal man først
+installere et debian base-system (woody) uden sikkerhedsopdateringer
+eller pakker. Da Debians installationvejledning er meget indvilket,
+kommer den korte udgave her:
 </para>
+
+<para>
+Download følgende floppy images: 
+
+<filename>rescue.bin</filename>
+<filename>root.bin</filename>
+<filename>driver-1.bin</filename>
+<filename>driver-2.bin</filename>
+<filename>driver-3.bin</filename>
+<filename>driver-4.bin</filename>
+
+fra f.eks. <ulink
+url="ftp://ftp.dk.debian.org/dists/woody/main/disks-i386/current/images-1,44">ftp://ftp.dk.debian.org/dists/woody/main/disks-i386/current/images-1,44</ulink>, og læg dem på disketter.
+</para>
+
+<para>
+Boot fra rescue.bin. Tryk enter ved boot prompten. Når den spørger efter
+root.bin, indsættes denne og der trykkes enter. Man får mulighed for at
+vælge keyboard, partitionere disken med cfdisk mv. 
+</para>
+
+<para>
+Når man når til punktet "Install kernel and modules" beder dem først om
+rescue.bin igen, og derefter de 4 driver-disketter, en ad gangen. Her
+bemærkede jeg til min glæde at debian installationen ikke crasher fordi
+der er fejl på een af disketterne. Den meddeler blot sine problemer og
+beder om den samme diskette igen, og når man har lavet en ny diskette,
+trykker man enter og den fortsætter glad.  
+</para>
+
+<para>
+Nu kan man vælge moduler, hvis man har brug for nogle der ikke er med
+standard. Kontrollér at driveren til dit netkort kommer med. Hvis den
+ikke er på listen, er det måske fordi den er med som standard. Herefter
+konfigureres netværket, og man skal vælge, hvorfra man vil installere
+sit basesystem. Jeg valgte at installere fra <ulink
+url="ftp://ftp.dk.debian.org/debian">ftp://ftp.dk.debian.org/debian</ulink>.
+
+Derefter tilbyder den at køre Lilo. Så fjerner man disketten og rebooter
+systemet.
+</para>
+
+<para>
+Efter første reboot stiller man tiden, og vælger root password, opretter
+en lokal bruger mv. Herefter begynder den at stille spørgsmål om
+programpakker. Hold tungen lige i munden. Til Adamantix skal vi ikke
+installere nogle debianpakker, ikke engang sikkerhedsopdateringer. 
+Først tilbød den at fjerne pcmcia fordi det ikke findes på mit system.
+Det sgade jeg ja til. Så skulle jeg vælge apt metode (cd, http, ftp
+eller file system). Det er ligemeget for nu, hvad der vælges. Så spørger
+den om security upgrades, tasksel og dselect. Svar nej til dem alle.
+Til sidst tilbød den at konfigurere exim, det svarede jeg nej til.
+Nu er installationen af debian base færdig, og man får en login-prompt.
+</para>
+</sect2>
+
+<sect2 id="distro-adamantix-videreinstallation">
+<title>Opgradering til Adamantix</title>
+<para>
+Indsæt en linie á la
+<screen>
+deb ftp://ftp.szczepanek.de/adamantix stable main contrib
+</screen> 
+i din <filename>/etc/apt/sources.list</filename>. Listen over mirrors
+findes på <ulink
+url="http://adamantix.org/mirrors.html">http://adamantix.org/mirrors.html</ulink>
+</para>
+
+<para>
+Kør nu kommandoerne
+<screen>
+apt-get update
+apt-get install libncurses5
+apt-get dist-upgrade
+</screen>
+Den klager lidt over at pakkerne ikke er valid debian pakker [check lige
+hvad den sagde], men det er nok ok, for Adamantix bliver da i hvert fald
+installeret. 
+</para>
+
+<para>
+På værste debian-vis spørger den om alt muligt man ikke ved
+undevejs.  Dette kan muligvis slås fra. Man bliver bedt om at vælge
+interface, her valgte jeg non-interactive fordi der stod, at så fik jeg
+ingen spørgsmål. Derefter skal man vælge, hvor kritisk et spørgsmål skal
+være før man vil se det. Her valgte jeg dumt nok "medium", fordi jeg
+troede jeg allerede havde valgt spørgsmålene fra. havde jeg valgt
+"Critical" her var det nok gået bedre. Under alle omstændigheder er der
+ikke så mange pakker der skal installeres når det kun er et basesystem,
+man opgraderer.
+</para>
+
+<para>
+Vi er ikke færdige med at installere Adamantix, før vi også har fået en
+ny kerne.
+<screen>
+apt-get install kernel-image-2.4.22-1-386
+</screen>
+Der var ikke nogen 2.4.23 images. Jeg ved ikke om den kernefejl der var
+for nylig findes i Adamantix kerner og om rettelsen i så fald er
+back-ported. Der er kerner med -soft og -sec endelser. Lad dem være,
+medmindre du har læst mere om Adamantix end jeg har.
+Apt-get advarer om at det er en initrd kerne, det betyder at man skal
+indsætte flg. linie i sin <filename>/etc/lilo.conf</filename>:
+<screen>initrd=/initrd.img</screen>
+og derefter køre
+<screen>/sbin/lilo</screen>
+</para>
+
+<para>
+Reboot systemet, og du kører Adamantix!
+</para>
+
+</sect2>
+
+
+</sect1>
 
 <sect1 id="distro-adamantix-brug">
 <title>Brugen af Adamantix</title>
@@ -55,6 +180,9 @@ for Debian, eller for at rekompilere en softwarepakke selv.
 <sect1 id="distro-adamantix-pakker">
 <title>Installation af ekstra programmel</title>
 <para>
+Adamantix kører apt-get ligesom Debian. Hvis der er en pakke der ikke er
+i Adamantix' apt repository, skal man selv rekompilere den med de
+rigtige libs [Læs lige på dette].
 </para>
 
 </sect1>
@@ -63,6 +191,7 @@ for Debian, eller for at rekompilere en softwarepakke selv.
 <sect1 id="distro-adamantix-killer">
 <title>Killer-feature</title>
 <para>
+Sikkerhed
 </para>
 
 </sect1>
