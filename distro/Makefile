@@ -93,7 +93,19 @@ bog.pdf: $(sgmlfiler)
 	cp images/*png tempdir
 	(cd tempdir;jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
 	(cd tempdir;collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
-	(cd tempdir; db2pdf bog.sgml; db2pdf bog.sgml)
+	@cd tempdir && \
+	db2pdf -V %use-id-as-filename% bog.sgml ; \
+	if test $$? -eq 9 ; then \
+		echo Kører db2pdf igen ; \
+		db2pdf -V %use-id-as-filename% bog.sgml ; \
+		if test $$? -eq 9 ; then \
+			echo Kører db2pdf igen ; \
+			db2pdf -V %use-id-as-filename% bog.sgml ; \
+			if test $$? -eq 9 ; then \
+				true ; \
+			fi \
+		fi \
+	fi
 	mv tempdir/bog.pdf bog.pdf
 	rm -rf tempdir
 	@echo "Done PDF (pdf)"
