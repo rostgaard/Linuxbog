@@ -102,7 +102,7 @@
    et sådant system.
    <!--  Også låsning af filer?  -->
    CVS er et af de systemer der er frit tilgængeligt under GNU-licensen (GPL).
-   CVS findes som oversatte programmer til de mest gængse Unix-systemer på 
+   CVS findes som oversatte programmer til de mest gængse Unix-systemer på
    <ulink
    url="http://prep.ai.mit.edu/pub/gnu">http://prep.ai.mit.edu/pub/gnu</ulink>
    (og afspejlinger), samt til Windows-platformen (se <ulink
@@ -198,11 +198,24 @@
    projekt du skal til at arbejde på i et CVS-arkiv (se <xref
    linkend="opsaet-cvs">, hvis du selv skal gøre det) er det forholdsvis
    enkelt at komme igang. Du skal blot kende CVS-arkivets adresse og
-   projektets navn i arkivet.
+   projektets navn i arkivet. De første tre af de følgende eksempler viser
+   hvordan du går i gang med at arbejde med filer, der ligger i et CVS-arkiv,
+   afhængigt af hvilken form for adgang du har til det
+   (<xref linkend="cvs-kom-i-gang-lokalt">,
+   <xref linkend="cvs-kom-i-gang-anonym"> og
+   <xref linkend="cvs-kom-i-gang-ssh">). Dernæst følger
+   eksempler, der viser hvordan du opdaterer din personlige kopi af arkivet
+   (<xref linkend="cvs-kom-i-gang-update">),
+   hvordan du lægger rettede filer tilbage i det fælles arkiv
+   (<xref linkend="cvs-kom-i-gang-commit">),
+   hvordan du tilføjer filer (<xref linkend="cvs-kom-i-gang-add">) og
+   hvordan du sletter filer (<xref linkend="cvs-kom-i-gang-rm">).
   </para>
 
   <example id="cvs-kom-i-gang-lokalt">
-   <title>Brug af et lokalt CVS-arkiv</title>
+   <title>
+    Gå i gang med at <emphasis>bruge</emphasis> et lokalt CVS-arkiv
+   </title>
 
    <indexterm>
     <primary>cvs</primary>
@@ -338,6 +351,174 @@
    </itemizedlist>
   </example>
 
+  <example id="cvs-kom-i-gang-update">
+   <title>Opdatér din personlige kopi af et CVS-arkiv</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>opdatér personlig kopi</secondary>
+   </indexterm>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cd webspell/</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs update</userinput>
+</screen>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      Du skal stå <emphasis>i</emphasis> kataloget med din lokale kopi af
+      CVS-arkivet for at kunne opdatere filerne. Herover bliver det gjort
+      med kommandoen <command>cd webspell</command>.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Argumentet "update" betyder at du vil have <emphasis>opdateret</emphasis>
+      den personlige kopi af et CVS-arkiv, der allerede ligger i det katalog
+      du står i.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+  <example id="cvs-kom-i-gang-commit">
+   <title>Læg en rettet fil tilbage i det fælles CVS-arkiv</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>læg en rettelse tilbage i det fælles arkiv</secondary>
+   </indexterm>
+
+   <para>
+    Vi antager nu at vi som efter forrige eksempel står i kataloget med
+    den personlige kopi af CVS-arkivet og at vi har rettet en
+    HTML-syntaksfejl i filen <filename>tjek.php</filename>.
+   </para>
+
+<screen>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs commit -m 'validator.w3.org brokkede sig' tjek.php</userinput>
+</screen>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      "commit" betyder at du vil kopiere din rettede udgave af en fil ind i
+      det fælles CVS-arkiv.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "-m 'validator.w3.org brokkede sig'" betyder at rettelserne i
+      CVS-arkivets logbog skal have kommentaren "validator.w3.org brokkede
+      sig".
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Og endelig er "tjek.php" navnet på den fil du har rettet og vil kopiere
+      ind i det fælles arkiv.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+  <example id="cvs-kom-i-gang-add">
+   <title>Tilføj en ny fil til et CVS-arkiv</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>tilføj en ny fil</secondary>
+   </indexterm>
+
+   <para>
+    Hvis vi nu har skrevet en ny fil ved navn "tak.html" og den ligger sammen
+    med vores personlige kopi af projektet kan vi tilføje den med kommandoen:
+<screen>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs add -m 'lidt almindelig høflighed' tak.html</userinput>
+</screen>
+   </para>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      "add" betyder at du vil føje din rettede udgave af en fil til
+      det fælles CVS-arkiv.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "-m 'lidt almindelig høflighed'" betyder at tilføjelsen i
+      CVS-arkivets logbog skal have kommentaren "lidt almindelig høflighed".
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Og endelig er "tak.html" navnet på den fil du har skrevet og vil føje
+      til det fælles arkiv.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+  <example id="cvs-kom-i-gang-rm">
+   <title>Fjern en fil fra et CVS-arkiv</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>fjern en fil</secondary>
+   </indexterm>
+
+   <para>
+    Vi har nu eksperimenteret lidt med en fil "tjek-eksp.php" og fundet ud
+    af at der alligevel ikke er brug for den i projektet, så vi vil fjerne
+    den fra den synlige del af CVS-arkivet (arkivet husker alle ændringer, så
+    du vil stadig kunne gå tilbage til en udgave hvor filen fandtes). Det
+    klares med kommandoerne:
+<screen>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>rm -f tjek-eksp.php</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs rm -m 'det gik ikke' tjek-eksp.php</userinput>
+</screen>
+   </para>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      CVS vil ikke fjerne en fil fra arkivet, hvis du stadig har en kopi af
+      den i din personlige kopi af CVS-arkivet, så vi starter med kommandoen
+      <command>rm -f tjek-eksp.php</command>, der fjerner filen fra kataloget.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "rm" betyder at du vil fjerne filen fra det fælles CVS-arkiv.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "-m 'det gik ikke'" betyder at bortfjernelsen i CVS-arkivets logbog
+      skal have kommentaren "det gik ikke".
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Og endelig er "tjek-eksp.php" navnet på den fil der skal fjernes fra
+      det fælles arkiv.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+
+
 <para>
 Antag at man laver en ændring af kildeteksten som så skal kunne tilgå de andre på
 projektet. Dette gøres ved at skrive
@@ -468,7 +649,7 @@ log-beskeder direkte
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs diff FILNAVN</userinput>
 </screen>
    og her kan et revisionsnummer tilføjes, så man kan se, hvordan den lokale
-   kildetekst afviger fra kildeteksten med den valgte revision. 
+   kildetekst afviger fra kildeteksten med den valgte revision.
   </para>
  </sect2>
 
@@ -627,7 +808,7 @@ internetbaserede samarbejdsprojekter er dette virkeligt smart.
 
    <para>
     Lad os se på opsætningen af dette. Først skal du lave en fil i
-    $CVSROOT, som dit projekt kan læse og skrive. 
+    $CVSROOT, som dit projekt kan læse og skrive.
    </para>
 
 <para>
@@ -695,7 +876,7 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
       1.1.1 - VENDOR_TAG
      </para>
     </listitem>
-    <listitem> 
+    <listitem>
      <para>
       1.1.1.1 - RELEASE_TAG
      </para>
@@ -834,12 +1015,12 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout projektnavn</userinput>
 </screen>
   </para>
- 
+
   <para>
    Men for folk, der deltager i mange projekter er det interessant at man
    faktisk også kan angive variablen <literal>CVSROOT</literal> som argument
    på kommandolinien:
-  
+
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs -d USER@tux.hjemme:/usr/local/CVSROOT checkout projektnavn</userinput>
 </screen>
@@ -856,13 +1037,13 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
       <filename>Repository</filename> indeholder projekt-navn på CVS-serveren.
      </para>
     </listitem>
-    <listitem> 
+    <listitem>
      <para>
       <filename>Root</filename> indeholder <literal>CVSROOT</literal> for det
       pågældende projekt.
      </para>
     </listitem>
-    <listitem> 
+    <listitem>
      <para>
       <filename>Entries</filename> indeholder listen over de filer og
       kataloger som er registreret i CVS.
@@ -876,7 +1057,7 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
    Man kan få ssh til at understøtte komprimering i
    <filename>~/.ssh/config</filename>:
 
-<screen> 
+<screen>
 Compression yes
 CompressionLevel 6
 </screen>
@@ -885,7 +1066,7 @@ CompressionLevel 6
   <para>
    Men vær opmærksom på at visse servere ikke kan finde ud af at anvende
    komprimering, så er der uforklarlige problemer med at få forbindelse, så
-   slå det fra. 
+   slå det fra.
   </para>
  </sect2>
 </sect1>
