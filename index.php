@@ -293,9 +293,18 @@ function vistype($type) {
         "Peter Toft" => "pto@linuxbog.dk"
      )
     ),
+   "samling" => array(
+     title => "Linux - Friheden til at skrive bøger",
+     comment => "En pakke med alle bøgerne i",
+     auth => array(
+       "Peter Toft" => "pto@linuxbog.dk",
+       "Henrik Christian Grove" => "grove@sslug.dk",
+       "Hans Schou" => "chlor@sslug.dk"
+     )
+    ),
    "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
-     comment => "Samling af alle bøgerne",
+     comment => "Alle bøgerne samlet til én stor bog",
      auth => array(
        "Peter Toft" => "pto@linuxbog.dk",
        "Hans Schou" => "chlor@sslug.dk"
