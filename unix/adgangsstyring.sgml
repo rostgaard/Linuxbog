@@ -1,0 +1,178 @@
+<?xml encoding="ISO-8859-1" ?>
+
+<chapter id="unix-adgangsstyring">
+ <title>Adgangsstyring</title>
+
+ <para>
+  -- rationale --
+ </para>
+
+ <para>
+  I Unix har man mulighed for at styre hvilke brugere der har adgang
+  til at gøre bestemte ting og se bestemte data.  Brugerne er opdelt i
+  et hierarki med to niveauer.  Øverst er der systemadministratoren
+  (bruger nummer nul) der typisk, men ikke nødvendigvis, har
+  brugernavnet "root".  Nederst er der alle de andre brugere
+  (brugernumre større end nul).  Systemadministratoren har adgang til
+  at gøre alt på systemet og kan dermed lave større ulykker end de
+  almindelige brugere.  Derfor er det vigtigt at man kun udfører
+  programmer med systemadministratorrettigheder i det omfang det er
+  strengt nødvendigt.
+ </para>
+
+ <para>
+  Udover brugere arbejder Unix' adgangsstyring også med grupper.  Hver
+  bruger er medlem af en eller flere grupper.  Ligesom man for en
+  enkelt bruger kan styre hvad han skal have adgang til, så kan man
+  også gøre det for en hel gruppe ad gangen.
+ </para>
+
+ <para>
+  Unix styrer adgangen til ressourcer på filniveau.  Det betyder at
+  den mest detaljerede opdeling af rettigheder som Unix kan håndtere
+  er enkelte dokumenter, kataloger eller eksterne enheder.  Hvis man
+  har brug for en mere detaljeret opdeling af adgangen til data,
+  klarer man det typisk ved at køre et databasesystem ovenpå Unix.
+ </para>
+
+ <para>
+  Hver ressource tilhører i Unix én bestemt bruger og én bestemt
+  gruppe.  Man styrer adgangen til ressourcen ved at sætte eller
+  stryge ni flag.  De ni flag er delt ind i tre kategorier efter hvem
+  de gælder for:
+
+  <itemizedlist>
+   <listitem>
+    <para>
+     brugeren som ressourcen tilhører (engelsk: "user")
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     gruppen som ressourcen tilhører (engelsk: "group")
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     andre (engelsk: "others")
+    </para>
+   </listitem>
+  </itemizedlist>
+
+  og tre kategorier efter hvilken form for adgang de tillader:
+
+  <itemizedlist>
+   <listitem>
+    <para>
+     læse fra ressourcen (engelsk: "read")
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     skrive i ressourcen (engelsk: "write")
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     bruge ressourcen (engelsk: "execute")
+    </para>
+   </listitem>
+  </itemizedlist>
+
+  Tabel <xref linkend="tabel-unix-adgangsstyringsflag"/> giver en
+  oversigt over de ni almindelige flag, samt nogle specialflag man
+  også kan sætte eller stryge.
+ </para>
+
+ <table id="tabel-unix-adgangsstyringsflag">
+  <title>Flag til adgangsstyring</title>
+
+  <tgroup cols="2">
+   <thead>
+    <row>
+     <entry>Talværdi</entry>
+     <entry>Symbol</entry>
+     <entry>Betydning</entry>
+    </row>
+   </thead>
+
+   <tbody>
+    <row>
+     <entry>0400</entry>
+     <entry>u+r</entry>
+     <entry>Brugeren som ressourcen tilhører har adgang til at læse fra ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0200</entry>
+     <entry>u+w</entry>
+     <entry>Brugeren som ressourcen tilhører har adgang til at skrive i ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0100</entry>
+     <entry>u+x</entry>
+     <entry>Brugeren som ressourcen tilhører har adgang til at bruge ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0040</entry>
+     <entry>g+r</entry>
+     <entry>Gruppen som ressourcen tilhører har adgang til at læse fra ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0020</entry>
+     <entry>g+w</entry>
+     <entry>Gruppen som ressourcen tilhører har adgang til at skrive i ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0010</entry>
+     <entry>g+x</entry>
+     <entry>Gruppen som ressourcen tilhører har adgang til at bruge ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0004</entry>
+     <entry>o+r</entry>
+     <entry>Andre har adgang til at læse fra ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0002</entry>
+     <entry>o+w</entry>
+     <entry>Andre har adgang til at skrive i ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>0001</entry>
+     <entry>o+x</entry>
+     <entry>Andre har adgang til at bruge ressourcen.</entry>
+    </row>
+
+    <row>
+     <entry>4000</entry>
+     <entry>u+s</entry>
+     <entry>Hvis ressourcen er et program, så vil det blive kørt med de rettigheder som brugeren det tilhører har.</entry>
+    </row>
+
+    <row>
+     <entry>2000</entry>
+     <entry>g+s</entry>
+     <entry>Hvis ressourcen er et program, så vil det blive kørt med de rettigheder som gruppen det tilhører har.</entry>
+    </row>
+
+    <row>
+     <entry>1000</entry>
+     <entry>o+t</entry>
+     <entry>Hvis ressourcen er et program, så vil det blive kopieret til "swap", så det kan starte hurtigere.</entry>
+    </row>
+   </tbody>
+  </tgroup>
+ </table>
+</chapter>
