@@ -35,7 +35,7 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
 
 # her er det der skal laves
-all:	billeder html palmpilot pspdf sgml exit
+all:	billeder html palmpilot sgml exit
 
 sgml: $(targetname)-$(version).sgml.tar.gz
 
@@ -131,7 +131,7 @@ html: bog/index.html
 
 pspdf:	$(targetname)-$(version)_pdf.zip
 
-$(targetname)-$(version)_pdf.zip: $(sgmlfiler)
+$(targetname)-$(version)_pdf.zip: $(sgmlfiler) billeder
 	make statusfiler
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
