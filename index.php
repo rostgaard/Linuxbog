@@ -42,7 +42,7 @@ function href($url,$desc) {
 // Returner filstørrelse i human readable format
 function fsize_text( $filename ) {
   // ISO filstørrelser, ex: 5.5 MB
-  $ISO = array("","Ki","Mi","Gi","Ti","Pi");
+  $ISO = array("","k","M","G","T","P");
   $filesize = filesize($filename);
   if (! $filesize) {
       return "000 B";  // file_exists() skulle være checket her
