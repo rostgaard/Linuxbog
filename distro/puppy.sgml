@@ -2,8 +2,7 @@
 <title>Om Puppy Linux</title>
 <para>
 Ideen med Puppy Linux er at have en lille Linux som man nemt kan have med sig, f.eks. på en CD eller et flash-kort, og bruge hvor man er. 
-Pt. kan man få Puppy til cdrom (live-Puppy), til flash kort (flash-Puppy) samt en puppy til at installere på harddisken (hard-Puppy). Desuden har forfatteren planer om en floppy-Puppy og en zippy-Puppy, men disse findes ikke endnu.
-Vi tester her live-cd'en.
+Pt. kan man få Puppy til cdrom (live-Puppy), til flash kort (flash-Puppy) samt en puppy til at installere på harddisken (hard-Puppy). Desuden har forfatteren Barry Kauler planer om en floppy-Puppy og en zippy-Puppy, men disse findes ikke endnu.  Vi tester her live-cd'en.
 
 </para>
 <para>
@@ -11,9 +10,7 @@ Vi tester her live-cd'en.
 
  Puppys hjemmeside er
 <ulink
-url="http://www.goosee.com/puppy/index.shtml">http://www.goosee.com/puppy/index.shtml</ulink>.
-Det er lavet ef en privatperson ved navn Barry Kauler, og er
-tilsyneladende aktivt under udvikling.
+url="http://www.goosee.com/puppy/index.shtml">http://www.goosee.com/puppy/index.shtml</ulink>. Puppy er tilsyneladende aktivt under udvikling.
 
 </para>
 
@@ -38,10 +35,10 @@ verdenen.
 <para>
 Puppy kræver en pentium II med 128 MB RAM.
 Hvis man vil gemme sin konfiguration fra gang til gang, kræves der
-desuden en ext2, ext2, vfat eller resierfs partition med min. 128 MB fri. 
+desuden en ext2, ext3, vfat eller resierfs partition med min. 128 MB fri. 
 </para>
 <para>
-Man downloader og brænder et iso image til en CD. PuppyLinux downloads
+Man downloader og brænder et iso image til en CD. PuppyLinux downloades
 fra <ulink url="
 ftp://ftp.ibiblio.org/pub/linux/distributions/puppylinux/">
 ftp://ftp.ibiblio.org/pub/linux/distributions/puppylinux/</ulink> -
@@ -61,19 +58,11 @@ Iso imaget til version 0.7.8 fylder 42 MB, version 0.7.6 fylder 35 MB.
 <para>
 Boot fra cd'en. Der kommer et par fejl, f.eks. at den ikke kan indlæse
 usb-storage modulet. Denne fejl er i flg. websiden kendt af udvikleren
-og vil sikkert blive rettet i næste version. På mit system brokker den
-sig også over at der ikke er fri plads nok på den forreste ext2
-partition, hvor den gerne vil have lov at lægge sin root fil. Den første
-ext2 partition er tilfældigvis en /boot fra en Red Hat installationm, som er 50 MB. Den laver så vidt jeg kan se en fil på den første egnede partition den kan finde, og kalder den pup078. Denne fil vil iflg. dokumentationen blive mounted som /root, hvor al konfiguration bliver gemt.
-Det lykkes så ikke i mit tilfælde, selvom der er masser af fri plads
-på den næste partition - den checker åbenbart ikke om der er plads nok,
-før den vælger hvilken partition den vil bruge,
-</para>
+og vil sikkert blive rettet i næste version. 
 
-
-<para>
-/etc er et symbolsk link til /root/.etc. Så hvis /root er en rigtig fil
-i stedet for en RAMdisk gemmes konfiguration i /etc på denne måde.
+På mit system brokker den sig også over at der ikke er fri plads nok på
+den forreste ext3 partition, hvor den gerne vil have lov at lægge sin
+root fil. Mere hreom senere.
 </para>
 
 <para>
@@ -83,9 +72,29 @@ x opløsning. Nu startes X op i den nye opløsning, og man er kørende.
 </para>
 
 <para>
+/etc er et symbolsk link til /root/.etc. Så hvis /root er en rigtig fil
+i stedet for en RAMdisk gemmes konfiguration i /etc på denne måde.
+</para>
+
+<para>
+Puppy vil under første boot forsøge at lægge en 128 MB fil på
+harddisken, som den så vil mounte som root, og hvor al konfiguration
+bliver gemt.
+Den første brugbare partition på mit system er tilfældigvis en ext3
+partition på 50 MB (/boot fra en Red Hat installation)
+Puppy laver så vidt jeg
+kan se en fil på den
+første egnede partition den kan finde, og kalder den pup078.
+Det lykkes så ikke i mit tilfælde, selvom der er masser af
+fri plads
+på den næste partition - den checker åbenbart ikke om der er plads nok,
+før den vælger hvilken partition den vil bruge,
+</para>
+
+<para>
 Problemer:
-Emulate3buttons virker ikke. Har ikke fået mulighed for at vælge det.
-Mit netkort er ikke understøttet som std. Dette kan løses ved at køre
+Emulate3buttons virker ikke, og jeg har ikke fået mulighed for at vælge det.
+Mit netkort er ikke understøttet. Dette kan løses ved at køre
 0.7.6 og loade modules fra modules.tgz, mere om dette senere. Jeg kan
 ikke få lov at køre "Remaster live-Puppy CD" fordi den ikke har fået lov
 at lave sin 128 MB fil på /dev/hda1. Jeg lavede een på /dev/hda2 i
@@ -132,6 +141,16 @@ applikationer der er med.
 <sect2 id="distro-puppy-customize">
 <title>Tilpasning af Puppy</title>
 <para>
+Til 0.7.6 kan man downloade moduler. Jeg fik mit netkort til at virke
+med sis900 dirveren under 0.7.6 på følgende måde:
+Download 
+
+<ulink url="ftp.ibiblio.org/pub/linux/distributions/puppylinux/modules-0.7.6/modules.tgz">ftp.ibiblio.org/pub/linux/distributions/puppylinux/modules-0.7.6/modules.tgz</ulink> til harddisken under en distro hvor netkortet virker. Boot puppy. Mount den harddisk partition hvor driverne ligger, og udpak tgz filen (<command>mkdir /mnt/data; mount -t ext3 /dev/hda2 /mnt/data; cd /mnt/data; tar xvzf modules.tgz </command>). Driverne ligger under kernel:
+<command>cd kernel/drivers/net; depmod ./sis900.o; insmod ./sis900.o,
+ifconfig eth0 up; dhcpcd</command>
+
+For at få dette til at virke automatisk er det nødvendigt at brænde en
+puppy cd hvor modulet er med.
 </para>
 </sect2>
 <sect2 id="distro-puppy-upgrade">
@@ -168,17 +187,19 @@ ligge.
 Så er det pludselig ikke så nemt for begyndere mere. Manglen på drivere
 og det faktum, at den lægger en permanent fil på harddisken, gør at den
 heller ikke er særlig egnet til at have med i lommen som system-cd,
-eller som sin llle transportable desktop. Harddisk-problemet eksisterer
-ikke med flash-Puppy, som gemmer på flash-kortet, men til gengæld er det
-nok kun ret nye maskiner, der kan boote fra sådan et.
+eller som sin lille transportable desktop. Harddisk-problemet burde ikke
+være relevant med flash-Puppy, som gemmer på flash-kortet, men til
+gengæld er det nok kun ret nye maskiner, der kan boote fra sådan et.
 </para>
 
 <para>
 Dokumentationen er mange steder fra version 0.7.4 og passer ikke mere.
-Dette kunne man tage som sjusk, men det kan godt være, at det bare er
-tegn på at det er et projekt i rivende udvikling lige nu. Der er mange
+Dette kunne man tage som sjusk, men det ser mere ud somom det bare er
+fordi det er et projekt i rivende udvikling lige nu. Der er mange
 nye datoer i deres nyheder og diskussionsforum. Når projektet bliver
-mere færdigt vil dokumentationen forhåbentlig få højere prioritet.
+mere færdigt vil dokumentationen forhåbentlig få højere prioritet, eller
+der vil være længere imellem nye udgaver, og dermed bedre tid til at
+dokumentationen kan følge med.
 </para>
 
 <para>
@@ -191,10 +212,11 @@ det utrolig nemt at komme i gang med.
 </para>
 
 <para>
-Den korte: Pt. er puppy ikke egnet til målgruppen, hvis de vil ret meget
-mere end at se en Linux desktop (f.eks. gemme deres filer) - det er alt for
-svært. Det er stadig i et tidligt udviklingstadium og kan godt gå hen at
-udvikle sig til noget ganske brugbart.
+Den korte: Ligenu er puppy ikke egnet særlig til målgruppen, hvis de vil
+ret meget mere end at se hvordan en Linux desktop ser ud. Bare at få sat
+den op så man kan gemme sine filer er alt for svært. Puppy er
+stadig i et tidligt udviklingstadium og kan godt gå hen at udvikle sig
+til noget ganske brugbart.
 </para>
 </sect1>
 
