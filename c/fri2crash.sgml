@@ -9,7 +9,7 @@
  <listitem>
   <para>
    Datatyper. Vi vil gerne have forskellige slags variable
-   til at opbevare tal, tekst og billeder i.
+   til at opbevare tal, tekst og billeder.
   </para>
  </listitem>
 
@@ -52,16 +52,23 @@
 <programlisting>
 Reserverede ord:
 
-auto		  double	    int		      struct
-break		  else		    long	      switch
-case		  enum		    register	      typedef
-char		  extern	    return	      union
-const		  float		    short	      unsigned
-continue	  for		    signed	      void
-default		  goto		    sizeof	      volatile
-do		  if		    static	      while
+auto              double            int               struct
+break             else              long              switch
+case              enum              register          typedef
+char              extern            return            union
+const             float             short             unsigned
+continue          for               signed            void
+default           goto              sizeof            volatile
+do                if                static            while
 </programlisting>
 </sidebar>
+
+<para>
+C99 standarden tilføjer flg. reserverede ord:
+<literal>inline, restrict, _Bool, _Complex, _Imaginary.
+</literal>
+</para>
+
 <para>
 Anvendt på rette måde bliver koden meget læseligt, og derfor 
 anvendes C sproget til mange forskellige slags opgaver, fra
@@ -636,11 +643,11 @@ Et eksempel på en for-løkke:
 
 <programlisting>
 main()
-    int i, celsius;
+    int fahr, celsius;
 
-    for (i = 0; i < 200; i = i + 20) {
-        celsius = 5 * (32 - i) / 9;
-        printf("Fahrenheit %3d svarer til celsius %3d\n", i, celsius);
+    for (fahr = 0; fahr < 200; fahr = fahr + 20) {
+        celsius = 5 * (32 - fahr) / 9;
+        printf("Fahrenheit %3d svarer til celsius %3d\n", fahr, celsius);
     }
 }
 </programlisting>
@@ -770,8 +777,216 @@ forbedret version, som håndterer linieskift, krypter2.c og
 afkrypt2.c
 </para>
 
+<para>
+Det var små eksempler på anvendelse af datatyper, operatorer,
+flowkontrol statements og modularisering. De næste fire afsnit
+af crash course i C programmering går lidt mere i dybden med
+disse emner.
+</para>
+
+<para>
+Først et spørgsmål: Lagde du mærke til, at variabelen 'keylen'
+havde fået ordet <emphasis>static</emphasis> stillet foran? Det
+er en storage specifikation. Læs videre!
+</para>
+
 </sect2>
 </sect1>
+
+<sect1 id="data-del-2">
+<title>Program sektioner</title>
+
+<para>
+Emner:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+<para>
+scope (synlighed), 
+</para>
+</listitem>
+<listitem>
+<para>
+lokale variable (auto),
+</para>
+</listitem>
+<listitem>
+<para>
+programsektioner, stak, heap, bss, data, text.
+</para>
+</listitem>
+<listitem>
+<para>
+kontrolvariable for løkker eller loops,
+</para>
+</listitem>
+<listitem>
+<para>
+lokale static variabel,
+</para>
+</listitem>
+<listitem>
+<para>
+rekursion og statics,
+</para>
+</listitem>
+<listitem>
+<para>
+funktioner som returnerer pointer til buffer,
+</para>
+</listitem>
+<listitem>
+<para>
+volatile,
+</para>
+</listitem>
+<listitem>
+<para>
+register variable.
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+Der er forskellige måder at organisere et kørselen af et program.
+Vi kører på Linux, et operativsystem med virtual memory
+management, og det giver nogle fordele, som er ret store. Vi kan
+simpelt hen lade vores program benytte 3 GB memory - også selv om
+vi ikke har installeret så meget.
+</para>
+
+<para>
+For at gøre det lettere for operativsystemet at optimere
+anvendelsen af memory er et program delt op i forskellige
+sektioner. Nogle sektioner skal kun læses, fx. er det dårlig
+programmerings praksis at modificere CPU instruktioner mens
+programmet kører, så kode-delen, instruktionerne til CPU'en, er
+altid READ-ONLY. Hvis nu vores program alligevel forsøger at
+skrive på fx. adressen for en funktion, så skal Linux kernens
+memory management modul reagere ved at stoppe programmet.
+</para>
+
+<para>
+På samme måde er der dele af memory med data, som ikke må
+overskrives. Fx. streng-konstanten "Hello, world!\n" i eks.
+<xref LinkEnd="hello-world">
+</para>
+
+
+<sect2 id="storage-specifikation">
+<title>Storage specifikation</title>
+
+<para>
+En af de lidt morsomme ting i C sprogets anvendelse af ordene er,
+at ordet <emphasis>static</emphasis> har fået flere betydninger.
+</para>
+
+<para>
+Den oprindelige betydning er, at de de data, som klassificeres
+som <emphasis>static</emphasis> skal anbringes i sektionen for
+globale data.
+</para>
+
+<para>
+Hvis man nu inde i en funktion havde brug for en variabel, fx.
+sidetaeller, som
+ingen andre skulle pille ved, men som alligevel gerne måtte huske
+fra gang til gang, hvor vi var kommet til, så at sige, så var det
+en god ide at erklære en static variabel INDE i en funktion. Det
+betyder, at funktionen kan regne med, at denne variabel "husker"
+fra gang til gang.
+</para>
+
+<para>
+Hvis en funktion som fx. strftime(3) gerne vil aflevere en text
+string med datoen formateret efter callers behov, så er det også
+nødvendigt at returnere i en buffer, som ligger UDEN for
+funktionen.
+</para>
+
+<para>
+Når nu en funktion gerne vil have sådan en buffer "for sig selv"
+så er det jo rimeligt at variabelen kun har scope i funktionen.
+Static kommer derfor til at angive en indskrænkning i synlighed,
+scope. Man kunne somme tider ønske sig, at ordet static blev
+erstattet af "modul-specifik" eller "privat", men det kan man jo
+bare gøre selv ved hjælp af typedef, hvis man virkelig er bidt af
+det!
+</para>
+
+<para>
+Husk at et C program består af eksterne objekter, som kan være
+enten funktioner eller variable.  Oversigt over anvendelsen af
+static:
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem>
+<para>
+En variabel erklæret uden for funktioner er en global variabel.
+Det er egentlig det samme som at sige, at den er statisk, den
+bliver stående som den er, gennem hele programmets levetid, 
+på linie med funktionsobjekter.
+</para>
+</listitem>
+
+<listitem>
+<para>
+En variabel erklæret udenfor funktioner får, hvis den er
+initialiseret, plads i "data" sektionen, og i "bss" sektionen,
+hvis den ikke er initialiseret. I så fald kan man regne med, at
+den er nulstillet.
+</para>
+</listitem>
+
+<listitem>
+<para>
+static for external object: specifikation af, at variabelen
+<emphasis> kun </emphasis> skal være synlig i det oversættelses
+modul (translation unit) hvori den forekommer.
+</para>
+</listitem>
+
+<listitem>
+<para>
+static for variabel i en funktion (kaldes lokal static) betyder,
+at den kun er synlig i den funktion, hvori den er erklæret.
+</para>
+</listitem>
+
+</itemizedlist>
+
+<para>
+Her er en præcisering af, hvordan man kan bruge de
+forskellige slags lokale variable.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+<para>
+Uden storage spec: En lokal variabel allokeres på
+funktionsstakken. Skal initialiseres hver gang funktionen køres.
+</para>
+</listitem>
+<listitem>
+<para>
+keyword auto (samme som ovenfor).
+</para>
+</listitem>
+<listitem>
+<para>
+Listen fortsættes i næste revision.
+</para>
+</listitem>
+
+</itemizedlist>
+
+
+</sect2>
+</sect1>
+
 </appendix>
 
 
