@@ -368,11 +368,13 @@ function vistype($type) {
       form => "-html-",
       last => ".tar.gz"
     ),
+    /* zipzip - lad os få slettet dem
     "HTML zip" => array(
       first => "linuxbog-",
       form => "-html-",
       last => ".zip"
     ),
+    */
     "PNG billeder" => array(
       first => "linuxbog-",
       form => "-png-",
@@ -384,15 +386,29 @@ function vistype($type) {
       last => ".tar.gz"
     ),
     // Eks: linuxbog-frihed-pdf.zip
+    /* zipzip - lad os få slettet dem
     "PDF" => array(
       first => "linuxbog-",
       form => "-",
       last => ".pdf"
     ),
+    */
+    "PDF" => array(
+      first => "linuxbog-",
+      form => "-",
+      last => ".pdf.tar.gz"
+    ),
+    /* zipzip - lad os få slettet dem
     "PalmPilot" => array(
       first => "linuxbog-",
       form => "-palm-",
       last => ".zip"
+    ),
+    */
+    "PalmPilot" => array(
+      first => "linuxbog-",
+      form => "-palm-",
+      last => ".tar.gz"
     ),
     "eksempler" => array(
       first => "linuxbog-",
