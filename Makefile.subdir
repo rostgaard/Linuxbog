@@ -148,6 +148,33 @@ bog/index.html: $(sgmlfiler)
 
 html: gemversion bog/index.html
 
+
+bog1/index.html: statusfiler
+	@echo "Target er HTML i" $(targetshortname)/bog1
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz bog1
+	echo '<!ENTITY magic "png">' > magic.sgml
+	mkdir bog1
+	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	cp *.sgml bog1
+	(cd bog1; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
+	(cd bog1; perl ../collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
+	(cd bog1; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > index.html)
+	cp linuxbog.css bog1
+	cp images/*.png bog1
+ifneq   ("$(imagesize)","")
+	(cd bog1;perl ../../misc/insertimagesize)
+else
+	echo "Du bør installere Perl-modulet Image:Size"
+endif
+ifneq   ("$(tidy)","")
+	(cd bog1;tidy -f err.txt -imu *html;rm -f err.txt)
+else
+	echo "Du bør installere tidy"
+endif
+
+enhtmlfil: gemversion bog1/index.html
+
+
 pspdf:	gemversion $(targetname)-$(version)_pdf.zip
 
 $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
@@ -155,22 +182,13 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
+
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	perl ./collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
 	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-	mkdir bogps
-	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
-	echo '<!ENTITY magic "eps">' > magic.sgml
-	cp *.sgml bogps
-	(cd bogps; perl ../../httpsplit.pl *.sgml)
-	(cd bogps; db2ps bog.sgml )
-	mv bogps/bog.ps $(targetname)-$(version).ps
-	rm -f $(targetname)-*.ps.gz
-	@echo "Done PS (pspdf)"
-	@echo ""
-	gzip -9 $(targetname)-$(version).ps
+
 	@echo "Target er" $(targetname).pdf
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
@@ -182,10 +200,26 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
-	rm -f $(targetname)-$(version).pdf
-	rm -rf bogps bogpdf
+
 	@echo "Done PDF (pspdf)"
 	@echo ""
+
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	mkdir bogps
+	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	cp *.sgml bogps
+	(cd bogps; perl ../../httpsplit.pl *.sgml)
+	(cd bogps; db2ps bog.sgml )
+	mv bogps/bog.ps $(targetname)-$(version).ps
+	gzip -9 $(targetname)-$(version).ps
+	@echo "Done PS (pspdf)"
+	@echo ""
+
+	rm -f $(targetname)-*.ps.gz
+	rm -f $(targetname)-$(version).pdf
+	rm -rf bogps bogpdf
+
 
 test:
 	echo $(eksfiler)
