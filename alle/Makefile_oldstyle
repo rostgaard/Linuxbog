@@ -43,6 +43,7 @@ all: html palmpilot sgml flytalle
 
 
 flytalle:
+	@rm -rf bog/
 	@mv alle/ bog/
 
 versionfil:
