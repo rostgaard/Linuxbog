@@ -131,7 +131,7 @@ function form_filename( $bookname, $format ) {
     ),
     "office" => array(
       title => "Linux - Friheden til at bruge Office-programmel",
-      comment => Office under Linux",
+      comment => "Office under Linux",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
