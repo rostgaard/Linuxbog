@@ -145,13 +145,13 @@ dørvogteren må have lov til at gøre på internettet.
 
 <para>
 For at lave en dørvogter mod internettet kræver det at du har, mindst
-en statisk (fast) IP adresse, at du benytter en LAN router eller at du
-ringer op via et modem og derved får en dynamisk IP adresse fra din
+en statisk (fast) IP-adresse, at du benytter en LAN router eller at du
+ringer op via et modem og derved får en dynamisk IP-adresse fra din
 udbyder.
 </para>
 
 <para>
-Hvis du har en fast IP adresse eller LAN router kan du sætte to
+Hvis du har en fast IP-adresse eller LAN router kan du sætte to
 netkort i din linux maskine. Det ene skal være synligt fra internettet
 af (din router) og det andet skal kunne ses fra dit lokale net.
 </para>
@@ -324,7 +324,7 @@ fortæller at pakken er afvist.</para>
 
 <para>
 MASQ betyder at sende adressen for nogle maskiner
-blev omskrevet til dørvogterens IP adresse. MASQ kan
+blev omskrevet til dørvogterens IP-adresse. MASQ kan
 kun benyttes med FORWARD reglen.</para>
 
 <para>
@@ -337,7 +337,7 @@ ipchains -A forward -s 192.168.0.1/255.255.255.255 \
 </screen>
 
 <para>
-Dette betyder at adressen 192.168.0.1 som skal til eth0 får eth0's IP adresse.
+Dette betyder at adressen 192.168.0.1 som skal til eth0 får eth0's IP-adresse.
 </para>
 
 
@@ -407,7 +407,7 @@ ipchains -A input -p tcp -s 192.168.0.0/255.255.255.0 1024:65535 \
 
 
 <para>
-Dette betyder at alle web trafik anmodninger fra IP adresserne
+Dette betyder at alle web trafik anmodninger fra IP-adresserne
 192.168.0.0-255 vil blive sendt til port 8080 på dørvogteren. Dette kan
 være nyttigt til at lave en transparent proxy.
 </para>
@@ -707,7 +707,7 @@ EXTIF="ppp0"
 # Eksempel INTIF="eth0"
 INTIF="eth0"
 
-# Hvis man via sit netkort eller ppp adapter får en dynamisk IP addresse fra
+# Hvis man via sit netkort eller ppp adapter får en dynamisk IP-addresse fra
 # sin internetudbyder skal DHCP stå til yes.
 DHCP="yes"
 
@@ -715,22 +715,22 @@ DHCP="yes"
 # blive tilladt ind til EXTIF på dørvogteren.
 UDPINOK=""
 
-# Ens IP adresse på ens eksterne netkort eller ppp adapter.
+# Ens IP-adresse på ens eksterne netkort eller ppp adapter.
 EXTIP=`ifconfig | grep -A 4 $EXTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`
 
 if [ "$EXTIP" = '' ]; then
-   echo "Kan ikke finde IP adressen på $EXTIF "
+   echo "Kan ikke finde IP-adressen på $EXTIF "
    exit 1
 fi
 
-# Alle IP adresser.
+# Alle IP-adresser.
 ANYIP="0.0.0.0/0.0.0.0"
 
-# IP adresse på det interne netværk.
+# IP-adresse på det interne netværk.
 INTLAN=`ifconfig | grep -A 4 $INTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`"/"`ifconfig | grep -A 4 $INTIF | awk '/Mask/ { print $4 } ' | sed -e s/Mask://`
 
 if [ "$INTLAN" = '' ]; then
-   echo "Kan ikke finde IP adressen på $INTLAN ..."
+   echo "Kan ikke finde IP-adressen på $INTLAN ..."
    echo
    exit 1
 fi
@@ -853,25 +853,25 @@ if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_icq.o ]; then
   fi
 fi
 
-# IP adresse som siger den har local loopback's IP adresse skal nægtes og logges
+# IP-adresse som siger den har local loopback's IP-adresse skal nægtes og logges
 ipchains -A input -s 127.0.0.1/32 -i $EXTIF -l -j DENY
 
-# IP adresse som siger den har EXTIP IP adresse skal nægtes og logges
+# IP-adresse som siger den har EXTIP IP-adresse skal nægtes og logges
 ipchains -A input -s $EXTIP -i $EXTIF -l -j DENY
 
-# IP adresse som siger den har en IP adresse i det "private" og multicast områdeskal nægtes og logges.
+# IP-adresse som siger den har en IP-adresse i det "private" og multicast områdeskal nægtes og logges.
 ipchains -A input -s 10.0.0.0/8 -i $EXTIF -l -j DENY
 ipchains -A input -s 172.16.0.0/12 -i $EXTIF -l -j DENY
 ipchains -A input -s 192.168.0.0/16 -i $EXTIF -l -j DENY
 ipchains -A input -s 224.0.0.0/4 -i $EXTIF -l -j DENY
 ipchains -A input -s 240.0.0.0/5 -i $EXTIF -l -j DENY
 
-# Acceptere DHCP retur trafik ind hvis man ikke har fast IP adresse
+# Acceptere DHCP retur trafik ind hvis man ikke har fast IP-adresse
 if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
   ipchains -A input -i $EXTIF -p udp -s $ANYIP 67 -d 255.255.255.255/0 68 -j ACCEPT
 fi 
 
-# Acceptere DHCP retur trafik ud hvis man ikke har fast IP adresse
+# Acceptere DHCP retur trafik ud hvis man ikke har fast IP-adresse
 if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
   ipchains -A output -i $EXTIF -p udp -s 255.255.255.255/0 68 -d $ANYIP 67 -j ACCEPT
 fi 
@@ -901,7 +901,7 @@ if [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
    ipchains -A input -i $EXTIF -s $ANYIP -d $EXTIP 55000:65535 -p udp -j ACCEPT
 fi
 
-# Tillad kun trafik ud fra EXTIF fra EXTIP IP adresse.
+# Tillad kun trafik ud fra EXTIF fra EXTIP IP-adresse.
 ipchains -A output -i $EXTIF -p tcp -s $EXTIP 55000:65535 -d 0/0 -j ACCEPT
 ipchains -A output -i $EXTIF -p udp -s $EXTIP 55000:65535 -d 0/0 -j ACCEPT
 
@@ -1000,9 +1000,9 @@ if [ -f /etc/firewall.debug ]; then
   echo "Du får dynamisk IP tildelt fra din ISP til dit interface $EXTIF"
  fi
   echo "Dit interface ud mod internettet er: $EXTIF"
-  echo "IP adressen på dit interface $EXTIF ud mod internettet er: $EXTIP"
+  echo "IP-adressen på dit interface $EXTIF ud mod internettet er: $EXTIP"
   echo "Dit interface ud mod dit LAN er: $INTIF"
-  echo "IP adressen og netmasken på dit LAN interface er: $INTLAN"
+  echo "IP-adressen og netmasken på dit LAN interface er: $INTLAN"
  if ! [ "$DNS1" = "" ]; then
    if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
     echo "Din 1. DNS server i resolv.conf er: $DNS1"
@@ -1071,7 +1071,7 @@ modem normalt være ppp0, hvis man har ISDN modem ippp0 og hvis man har
 LAN router være eth0 eller eth1. 
 INTIF er det interface som er ud mod ens lokale netværk og vil som
 regel være eth0 eller eth1. Hvis man har modem og ikke har en statisk
-IP adresse skal variablen DHCP sættes til yes.
+IP-adresse skal variablen DHCP sættes til yes.
 Hvis man har en LAN router skal denne variabel ikke sættes. Den sidste
 variabel er UDPINOK som tillader ALT UDP trafik ind til dørvogteren på
 portene 55000 til 65535. Denne variabel er ikke sat som standard og
@@ -1110,11 +1110,11 @@ ipchains -A input -i $EXTIF -p udp -s 0.0.0.0/0.0.0.0 port \
 </screen>
 
 <para>
-Parameteren "host" i første linje er lig med en IP adresse og port er
+Parameteren "host" i første linje er lig med en IP-adresse og port er
 lig med den port som tjenesten kører på. Første linje betyder at du
-accepterer trafik fra IP adressen "host" og som har porten
+accepterer trafik fra IP-adressen "host" og som har porten
 "port". Anden linje betyder at du acceptere trafik fra hvilken som
-helst IP adresse som har porten "port".
+helst IP-adresse som har porten "port".
 </para>
 
 <para>
@@ -1149,9 +1149,9 @@ skrives <command>chkconfig --add firewall</command> (med dobbelt
 minus), og til sidst <command>chkconfig --level 3 firewall
 on</command> (med dobbelt minus). Dette betyder, at dørvogteropsætningen
 bliver kørt hver gang Linux startes i runlevel 3.  Dette skal dog kun
-gøres hvis man har en LAN router eller har en statisk IP adresse. Da
+gøres hvis man har en LAN router eller har en statisk IP-adresse. Da
 man på dette tidspunkt i opstarten af linux ikke har lavet et opkald
-til sin internetudbyder, kan programmet ikke finde IP adressen på ens
+til sin internetudbyder, kan programmet ikke finde IP-adressen på ens
 interface.  Hvis man benytter et modem skal man i stedet, hvis man
 kører med Red Hat, indsættes <command>/etc/rc.d/init.t/firewall
 start</command> nederst i filen
@@ -1311,9 +1311,9 @@ IPMASQADM portfw syntakser: <command>ipmasqadm portfw -a -P PROTO -L LADDR LPORT
 Vis alle regler i listen uden at lave et reverse lookup.</para></listitem>
 <listitem><para><command>-p PREF</command> Prioritet, er som standard 10.</para></listitem>
 <listitem><para><command>-P PROTO</command> PROTO kan være tcp eller udp.</para></listitem>
-<listitem><para><command>LADDR</command> Den IP adresse som modtager de pakker som skal sendes videre til intern maskine.</para></listitem>
+<listitem><para><command>LADDR</command> Den IP-adresse som modtager de pakker som skal sendes videre til intern maskine.</para></listitem>
 <listitem><para><command>LPORT</command> Den port der lyttes på.</para></listitem>
-<listitem><para><command>RADDR</command> Den interne IP adresse som skal modtage pakkerne.</para></listitem>
+<listitem><para><command>RADDR</command> Den interne IP-adresse som skal modtage pakkerne.</para></listitem>
 <listitem><para><command>RPORT</command> Den port som den interne maskine lytter på.</para></listitem>
 </itemizedlist>
 
