@@ -1,130 +1,156 @@
 <?xml encoding="ISO-8859-1" ?>
-<chapter id="ctwm">
-<title>CTWM</title>
 
 <!-- Originalfil http://www.sslug.dk/julekalender/10.php3 -->
 
-<indexterm><primary>ctwm</primary></indexterm>
-<indexterm><primary>Windowmanager</primary><secondary>ctwm</secondary></indexterm>
+<chapter id="ctwm">
+ <title>CTWM</title>
 
-<para>
-Ctwm (Claude's Tab Window Manager) er en viderebygning på twm som kan alt det man savner i twm.
-</para>
+ <indexterm>
+  <primary>ctwm</primary>
+ </indexterm>
 
-<para>
-Sådan ser ctwm ud (klik for en større version):
-</para>
+ <indexterm>
+  <primary>Windowmanager</primary>
+  <secondary>ctwm</secondary>
+ </indexterm>
 
+ <para>
+  Ctwm (Claude's Tab Window Manager) er en viderebygning på twm som
+  kan alt det man savner i twm.
+ </para>
 
-<figure id="ctwm-fig" float="1">
-<title>ctwm</title>
-<graphic fileref="ctwm.&magic;" scale="60"></graphic>
-</figure>
+ <para>
+  <indexterm>
+   <primary>udseende af</primary>
+   <secondary>CTWM</secondary>
+  </indexterm>
 
+  Sådan ser ctwm ud:
 
-<sect1 id="wm-ctwm-installation">
+  <figure id="ctwm-fig" float="1">
+   <title>ctwm</title>
+   <graphic fileref="ctwm.&magic;" scale="60"></graphic>
+  </figure>
+ </para>
+
+ <sect1 id="wm-ctwm-installation">
   <title>Installation</title>
-<para>
-Man kan hente ctwm fra <ulink url="http://ctwm.dl.nu/">http://ctwm.dl.nu/</ulink>.
-Den nyeste version er 3.6. 
-Først forsøgte jeg mig med kildeteksten, men den gav lidt problemer, derfor
-anbefales det at bruge source RPM'en i stedet.  
-</para>
 
-<sect2  id="wm-ctwm-source-rpm">
-  <title>Source RPM</title>
-<para>
-Source RPM'en: <filename>ctwm-3.6-2jv.src.rpm</filename> kan på Red Hat bygges med
-</para>
+  <indexterm>
+   <primary>installation af</primary>
+   <secondary>CTWM</secondary>
+  </indexterm>
+
+  <para>
+   Man kan hente ctwm fra <ulink
+   url="http://ctwm.dl.nu/">http://ctwm.dl.nu/</ulink>.  Den nyeste
+   version er 3.6.  Først forsøgte jeg mig med kildeteksten, men den
+   gav lidt problemer, derfor anbefales det at man bruger
+   kildetekst-RPM-filen i stedet.
+  </para>
+
+  <sect2  id="wm-ctwm-source-rpm">
+   <title>Kildetekst-RPM-filen</title>
+
+   <para>
+    Kildetekst-RPM-filen, <filename>ctwm-3.6-2jv.src.rpm</filename>,
+    kan på Red Hat bygges og installeres med kommandoerne:
 
 <screen>
 rpm --rebuild ctwm-3.6-2jv.src.rpm
 rpm -Uvh /usr/src/redhat/RPMS/i386/ctwm-3.6-2jv.i386.rpm
 </screen>
+   </para>
 
+   <para>
+    I filen "<filename>$HOME/.xsession</filename>" indsættes:
 
-<para>
-I <filename>.xsession</filename> indsættes 
-</para>
-
-<screen>
+<programlisting>
 exec /usr/X11R6/bin/ctwm
-</screen>
-</sect2>    <!--   Source RPM -->
+</programlisting>
+   </para>
+  </sect2>    <!--   Source RPM -->
 
-<sect2  id="wm-ctwm-kildetekst">
-  <title>Kildetekst</title>
-<para>
-Kildeteksten: ctwm-3.6.tar.gz
-</para>
+  <sect2  id="wm-ctwm-kildetekst">
+   <title>Kildetekst</title>
+
+   <para>
+    Kildeteksten: ctwm-3.6.tar.gz
+   </para>
 
 <screen>
 tar xvzf ctwm-3.6.tar.gz
 </screen>
 
-<para>
-Hvis man har hentet den oprindelige source, kan man ikke kompilere før man
-indsætter et manglende semikolon i filen <filename>gram.y</filename> i linje 686. 
-</para>
+   <para>
+    Hvis man har hentet den oprindelige kildetekst, kan man ikke
+    oversætte før man indsætter et manglende semikolon i filen
+    <filename>gram.y</filename> i linje 686.
+   </para>
 
-<screen>
+   <para>
+<programlisting>
 wingeom_entry   : string string { AddToList (&amp;Scr->WindowGeometries, $1, $2) }
-</screen>
+</programlisting>
 
-<para>
-rettes til
-</para>
+    rettes til
 
-<screen>
+<programlisting>
 wingeom_entry   : string string { AddToList (&amp;Scr->WindowGeometries, $1, $2); }
-</screen>
+</programlisting>
+   </para>
 
-<para>
-Herefter køres
-</para>
+   <para>
+    Herefter køres kommandoerne:
 
 <screen>
 cd ctwm-3.6
 xmkmf
 make
 </screen>
+   </para>
 
-<para>
-Køer man <command>make install</command> så er der brok over at
-<literal>No rule to make target `xpm'</literal>.  Der står heller ikke
-noget om <command>make install</command> i <filename>README filen</filename>.  Så jeg har valgt at beholde
-den i mit hjemmekatalog.
-</para>
+   <para>
+    Kører man <command>make install</command> så er der brok over at
+    <literal>No rule to make target `xpm'</literal>.  Der står heller
+    ikke noget om <command>make install</command> i <filename>README
+    filen</filename>.  Så jeg har valgt at beholde den i mit
+    hjemmekatalog.
+   </para>
 
-<para>
-Dvs. at der i .xsession kommer til at stå:
-</para>
-<screen>
+   <para>
+    Dvs. at der i "<filename>$HOME/.xsession</filename>" kommer til at
+    stå:
+
+<programlisting>
 exec ctwm-3.6/ctwm
-</screen>
-</sect2>    <!--   Kildetekst -->
-</sect1>    <!--   Installation -->
+</programlisting>
+   </para>
+  </sect2>    <!--   Kildetekst -->
+ </sect1>    <!--   Installation -->
 
-<sect1  id="wm-ctwm-opsaetning">
+ <sect1  id="wm-ctwm-opsaetning">
   <title>Opsætningsfiler</title>
 
+  <indexterm>
+   <primary>opsætning af</primary>
+   <secondary>CTWM</secondary>
+  </indexterm>
 
-<para>
-Filen <filename>$HOME/.ctwmrc</filename> styrer opsætningen
-</para>
+  <para>
+   Filen <filename>$HOME/.ctwmrc</filename> styrer opsætningen
+  </para>
 
-<para>
-Start med at kopiere systemopsætningsfilen til dit hjemmekatalog:
-</para>
+  <para>
+   Start med at kopiere systemopsætningsfilen til dit hjemmekatalog:
 
 <screen>
 cp /usr/X11R6/lib/X11/twm/system.ctwmrc ~/.ctwmrc
 </screen>
 
-<para>
-(eller <command>cp ctwm-3.6/system.ctwmrc ~/.ctwmrc</command>, hvis du
-har installeret i dit hjemmekatalog).  
-Derefter kan du redigere i den.
+   (eller <command>cp ctwm-3.6/system.ctwmrc ~/.ctwmrc</command>, hvis
+   du har installeret i dit hjemmekatalog).  Derefter kan du redigere
+   i den.
 </para>
 </sect1>
 
@@ -382,21 +408,27 @@ Der findes en håndfuld temaer til ctwm der kan downloades på:
 </para>
 </sect2>    <!--   Temaer -->
 
-<sect2 id="wm-ctwm-dokumentation">
-  <title>Dokumentation</title>
+  <sect2 id="wm-ctwm-dokumentation">
+   <title>Dokumentation</title>
 
-<para>
-Dokumentation kan findes på 
-<ulink url="http://ctwm.dl.nu/#docs<">http://ctwm.dl.nu/#docs</ulink>
-</para>
-</sect2>    <!--   Dokumentation -->
-</sect1>
+   <indexterm>
+    <primary>dokumentation til</primary>
+    <secondary>CTWM</secondary>
+   </indexterm>
 
-<sect1  id="wm-ctwm-fed">
+   <para>
+    Dokumentation kan findes på <ulink
+    url="http://ctwm.dl.nu/#docs<">http://ctwm.dl.nu/#docs</ulink>
+   </para>
+  </sect2>    <!--   Dokumentation -->
+ </sect1>
+
+ <sect1  id="wm-ctwm-fed">
   <title>Hvad er det fede ved ctwm?</title>
-<para>
-Det virker. Ikke så meget overflødig grafik. Det er twm plus alle de ting
-man savnede (undtagen click to focus.)
-</para>
-</sect1>
+
+  <para>
+   Det virker. Ikke så meget overflødig grafik. Det er twm plus alle
+   de ting man savnede (undtagen click to focus.)
+  </para>
+ </sect1>
 </chapter>
