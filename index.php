@@ -47,6 +47,7 @@ function fsize_text( $filename ) {
 // Online versionen skal kun have bookname een gang
 // "Ændringer" skal navnet med to gange, men uden version
 function form_filename( $bookname, $format ) {
+  global $books;
   switch ($format[online]) {
     case 1:
       // Onlinebøger, Eks: admin/bog/index.html
@@ -58,10 +59,7 @@ function form_filename( $bookname, $format ) {
       break;
     default:
       // Eks: admin/linux-admin-1.0.ps.gz
-      $fp = fopen("$bookname/version.sgml", "r");
-      $version = trim(fgets($fp, 80));
-      fclose($fp);
-      return "$bookname/$format[first]$bookname-$version$format[last]";
+      return "$bookname/$format[first]$bookname-".$books[$bookname][version]."$format[last]";
   }
 }
 
@@ -140,6 +138,14 @@ function form_filename( $bookname, $format ) {
    )
   );
 
+  // Sæt versionsnumre på bøgerne
+  reset($books);
+  while (list($bookname) = each($books)) {
+    $ver = file($bookname."/version.sgml");
+    $pgs = file($bookname."/sideantal.txt");
+    $books[$bookname][version] = $ver[0];
+    $books[$bookname][sideantal] = $pgs[0];
+  }
 
   // Bogpakker pakket på forskellige måder
   // <first><$books><last>
@@ -331,7 +337,7 @@ men indtil endelig release, kan der være graverende fejl i den.
       } else {
         $filesize = fsize_text($filename);
         $date = date("Y-m-d",filemtime($filename));
-        echo "version "; 
+        echo "version $desc[version]"; 
         include($short."/version.sgml");
 
         //echo "<br>$date<br>$filesize";
@@ -360,13 +366,15 @@ men indtil endelig release, kan der være graverende fejl i den.
       include($short."/dato.sgml");
     }
     if (file_exists($short."/version.sgml")) {
-      echo "- version ";
-      include($short."/version.sgml");
+      echo "- version $desc[version]";
     }
+    /*
     if (file_exists($short."/sideantal.txt")) {
       echo "- Antal sider: ";
       include($short."/sideantal.txt");
     }
+    */
+    echo "- Antal sider: ".$desc[sideantal];
     echo "<p>";
     echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
