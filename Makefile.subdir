@@ -202,10 +202,9 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	cp images/*.png bogpdf
 	(cd bogpdf; perl ../../httpsplit.pl *.sgml)
 	(cd bogpdf; jade -t tex -d $(cygnus)\#print -o bogpre.tex bog.sgml )
-	(cd bogpdf; cat bogpre.tex | sed 's#--#-{}-#' > bog.tex)
-	(cd bogpdf; pdfjadetex bog.tex )
-	(cd bogpdf; pdfjadetex bog.tex )
-	(cd bogpdf; pdfjadetex bog.tex )
+#	(cd bogpdf; cat bogpre.tex | sed 's#--#-{}-{}#g' > bog.tex)
+	(cd bogpdf; cat bogpre.tex > bog.tex)
+	(cd bogpdf; pdfjadetex bog;pdfjadetex bog;pdfjadetex bog )
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
