@@ -221,10 +221,10 @@ disken.
 </para>
 
 <SCREEN>
-<PROMPT>[root@linus /root]# mkdir /mnt/nydisk</PROMPT>
-<PROMPT>[root@linus /root]# mount /dev/hdb1 /mnt/nydisk</PROMPT>
-<PROMPT>[root@linus /root]# cd /home</PROMPT>
-<PROMPT>[root@linus /root]# tar cvf - . | (cd /mnt/nydisk; tar xpf -)
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>mkdir /mnt/nydisk</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>mount /dev/hdb1 /mnt/nydisk</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>cd /home</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>tar cvf - . | (cd /mnt/nydisk; tar xpf -)</userinput>
 </PROMPT>
 </SCREEN>
 
@@ -1212,6 +1212,216 @@ installeret.
 </sect2>
 </sect1>
 
+<sect1 id="quota">
+<title>Kontrol af diskforbrug med quota</title>
+<indexterm><primary>diskforbrug</primary></indexterm>
+<indexterm><primary>quota</primary></indexterm>
+
+<para>
+Hvis man driver en server med mange brugere, sker det fra tid til
+anden at en bruger bevidst eller ubevidst kommer til at fylde disken
+op med filer. For at et sådant uheld ikke skal kunne påvirke de andre
+brugere på systemet, så kan man installere quota. Quota gør det muligt
+at sætte en disk forbrugs-grænse for den enkelte bruger eller evt. for
+en gruppe. 
+</para>
+
+<para>
+Systemet er så fleksibelt, så man yderligere kan sætte en ekstra-pulje
+op, så brugeren i en fast tidsperiode (kaldet grace-perioden) godt må
+"svine" med pladsen bare der ryddes op igen; f.eks. kan man have 10 MB
+diskplads, men kan få lov til i en periode på to timer ekstra at bruge
+yderligere 10 MB.
+</para>
+
+<para>
+Både den almindelige kvote og den ekstra diskkvote virker ved at man
+pludselig ikke kan gemme filer, når man er oppe på maksimum. Brugeren
+må derefter selv slette filer.
+</para>
+
+<para>
+Derfor er det vigtigt at systemadministratoren forklarer brugeren
+hvilke grænser, der er sat og hvad man gør for at følge eget forbrug -
+og endelig hvordan man rydder op.
+</para>
+
+<para>
+Installation: Der skal være quota-understøttelse i Linux-kernen og
+quota-pakken skal være installeret. Normalt vil en Linuxdistribution
+have quota understøttet. 
+</para>
+
+<para>
+Quota sættes på de enkelte partitioner,
+dvs. <filename>/etc/fstab</filename> skal redigeres, så man i
+<literal>options</literal>-feltet tilføjer <literal>usrquota</literal>
+til hver partition man ønsker at køre quota på.
+</para>
+
+<para>
+F.eks. ændres linien i <filename>/etc/fstab</filename> fra
+<para>
+
+<screen>
+/dev/hda2   /home   ext2    defaults 1 1
+</screen>
+<para>
+til
+</para>
+<screen>
+/dev/hda2   /home   ext2    defaults,usrquota 1 1
+</screen>
+
+<para>
+Til at starte quota skal der nu indekseres og quota-programmet skal startes. 
+Kør følgende som root
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>/bin/mount -v -o remount /home </userinput> <-- for at gen-montere den ændrede partition
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>/sbin/quotacheck -a -m</userinput> <--- for at lave et index over brugernes forbrug
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>/sbin/quotaon -uv</userinput> <--- start quota
+</screen>
+
+<para>
+De to første kommandoer skal blot køres en gang for alle, og den sidste
+kommando skal køres hver gang maskinen startes op (indsæt kommandoen i 
+<filename>/etc/rc.local</filename> eller lign).
+</para>
+
+<para>
+Nu kan man redigere grænsen for en bruger - hvis man har mange
+brugere, så opret en test-bruger "quotauser" og lave følgende som
+skabelon og sidenhen kan man kopiere test-brugerens quota-opsætning
+til alle andre brugere.
+</para>
+
+<para>
+Grænser redigeres ved at køre edquota for brugeren. Grænser
+for diskforbrug anføres i kbytes, dvs. 10000 er 10MB.
+Hvis quota ikke sættes op er standard-indstillingen 
+at der ingen grænse er (dette anføres som et nul i opsætningsfilen). 
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>/usr/sbin/edquota -u quotauser</userinput>
+Disk quotas for user petoft (uid 500):
+Filesystem      blocks       soft       hard     inodes     soft   hard       
+/dev/hda2       695879         0          0       6741        0      0
+</screen>
+
+<para>
+Ret nu tallene til det brugeren må. Det er vi-editoren som kommer frem.
+</para>
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+"soft" betyder antal kilobytes som brugeren må bruge indenfor 
+"grace"-perioden, hvis man ønsker at tillade dette ekstraforbrug.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+"hard" betyder maksimum forbrug.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Til højre for de første soft/hard står der inodes og igen soft/hard - 
+dette er antal filer man kan lave. Dette bruges kun sjældent. Hvis man 
+ønsker at brugeren fast kan bruge 10 MB og 10 MB ekstra under grace-perioden 
+skrives
+</para>
+
+<screen>
+Disk quotas for user petoft (uid 500):
+Filesystem      blocks       soft       hard     inodes     soft   hard       
+/dev/hda2       695879       20000      10000     6741        0      0
+</screen>
+
+<para>
+Afslut med at skrive <command>:wq!</command>
+</para>
+
+<para>
+Hvis man derefter vil sætte "grace"-perioden hvor ekstra diskforbrug er
+tolereret, så kan dette indstilles ved at skrive
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput># /usr/sbin/edquota -t<userinput> 
+Grace period before enforcing soft limits for users:
+Time units may be: days, hours, minutes, or seconds
+Filesystem      Block grace period      Inode grace period
+/dev/hda2        7 days                    7days
+</screen>
+
+<para>
+Hvis man ønsker en grace-periode på to timer rettes teksten til
+</para>
+
+<screen>
+Grace period before enforcing soft limits for users:
+Time units may be: days, hours, minutes, or seconds
+Filesystem      Block grace period      Inode grace period
+/dev/hda2        2hours                     2hours
+</screen>
+
+<para>
+Afslut med at skrive <command>:wq!</command>
+</para>
+
+<para>
+Tanken med at tildele en test-bruger "quotauser" er at man relativt 
+nemt kan tildele samme quota til alle almindelige brugere ved at køre
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <userinput>edquota -p quotauser `awk -F: '$3 &gt; 499 {print $1} /etc/passwd`</userinput> 
+</screen>
+
+<para>
+Tricket er her at man finder alle almindelige brugere ved
+bruger-nummer på 500 eller større.
+</para>
+
+<para>
+Andre interessante kommandoer:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<command>repquota -a</command> <-- viser status på diskforbrug
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<command>warnquota</command> <-- bruges til at alarmere brugere som er over kvote
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Flere information om quota kan findes på 
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<ulink url="http://www.linuxdoc.org/HOWTO/mini/Quota.html">http://www.linuxdoc.org/HOWTO/mini/Quota.html</ulink>
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<ulink url="http://www.gnuskole.dk/bog/quota.html">http://www.gnuskole.dk/bog/quota.html</ulink>
+ </para>
+</listitem>
+</itemizedlist>
+
+</sect1>
 
 </chapter>
 
