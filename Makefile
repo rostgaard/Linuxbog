@@ -1,7 +1,7 @@
 # $Id$
 all: Makefiler filer
 
-release : all cvs2html eksempler mail
+release : cvs2html eksempler all  mail
 
 Makefiler:
 	cp Makefile.subdir friheden/Makefile
@@ -21,6 +21,16 @@ filer:  Makefiler
 	make -C sikkerhed
 	make -C alle html
 	make -C alle palmpilot
+
+statusfiler:  Makefiler
+	make -C friheden statusfiler
+	make -C applikationer  statusfiler
+	make -C admin  statusfiler
+	make -C program  statusfiler
+	make -C web  statusfiler
+	make -C sikkerhed  statusfiler
+	make -C alle  statusfiler
+
 
 clean: Makefiler
 	make -C friheden clean
