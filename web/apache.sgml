@@ -9,6 +9,7 @@ som i dag anvendes af ca. 60% af alle webservere på Internet.
 <sect1 id="apache">
 <title>Apache</title>
 <indexterm><primary>Webserver</primary><secondary>Apache</secondary></indexterm>
+<indexterm><primary>Server</primary><secondary>Apache</secondary></indexterm>
 <indexterm><primary>Apache</primary></indexterm>
 
 <para>
@@ -801,7 +802,7 @@ fornuftig drift af serveren.
 <title>Apache som WAP-server</title>
 <indexterm><primary>WAP</primary></indexterm>
 <indexterm><primary>WML</primary></indexterm>
-<indexterm><primary>WAP-server</primary></indexterm>
+<indexterm><primary>Server</primary><secondary>WAP</secondary></indexterm>
 <indexterm><primary>Webserver</primary><secondary>WAP</secondary></indexterm>
 
 <para>
@@ -809,6 +810,13 @@ Det seneste år er WAP-telefoner ved at blive en udbredt standard for
 at hente mobile Internet-sider. Siderne er ikke formatteret i HTML,
 men i WML (<emphasis>Wireless Markup Language</emphasis>), som er en
 XML-variant. 
+</para>
+
+<para>
+I al sin enkelthed er WAP set fra serverens side blot et nyt filformat; WML.
+Det der skal tilføjes på din hjemmeside for at understøtte WAP, er så kun 
+de samme data i WML, og så formateret i et format så de kan ses på en meget
+lille skærm.
 </para>
 
 <para>
@@ -847,7 +855,7 @@ Det enkleste eksempel på en WAP-side er nok denne
 &lt;wml&gt;
  &lt;card id='home'&gt;
   &lt;p&gt;
-Her kommer teksten på min første WAP-side
+Her kommer teksten på min f&amp;oslash;rste WAP-side
   &lt;/p&gt;
  &lt;/card&gt;
 &lt;/wml&gt;
@@ -856,7 +864,7 @@ Her kommer teksten på min første WAP-side
 <para>
 Det vigtigste, der skal bemærkes sammenlignet med HTML, er at næsten alle
 tags skal afsluttes, dvs. &lt;p&gt; <emphasis>skal</emphasis> 
-efterfølges af &lt;p&gt;. Dog skal et billede ikke afsluttet, som det
+efterfølges af &lt;/p&gt;. Dog skal et billede ikke afsluttet, som det
 kan ses i næste eksempel
 </para>
 
@@ -867,7 +875,6 @@ kan ses i næste eksempel
 
 <para>
 &lt;img&gt; skal anvendes med / til sidst og alt-tag skal med.
-
 </para>
 
 
@@ -877,9 +884,9 @@ kan ses i næste eksempel
    "http://www.wapforum.org/DTD/wml_1.1.xml"&gt;
  
 &lt;wml&gt;
-  &lt;card id="demo" title="Peters søn"&gt;
+  &lt;card id="demo" title="Peters s&amp;oslash;n"&gt;
     &lt;p&gt;
-    Her er min søde søn Frederik
+    Her er min s&amp;oslash;de s&amp;oslash;n Frederik
     &lt;img src="F2.wbmp" alt="Frederik"/&gt;
     &lt;/p&gt;
   &lt;/card&gt;
@@ -894,6 +901,9 @@ WML er en ret stor standard, som man kan læse mere på på
 på 
 <ulink url="http://www.anywhereyougo.com/ayg/ayg/Content.po?name=wap/Wmlidx">http://www.anywhereyougo.com/ayg/ayg/Content.po?name=wap/Wmlidx</ulink>
 få mere hjælp om de enkelte tags.
+Har du ingen WAP-telefon kan du med fordel bruge
+<ulink url="http://gelon.net/">http://gelon.net</ulink>
+som har en Java-baseret WAP-simulator der er velegnet til test.
 </para>
 
 <para>
@@ -906,12 +916,53 @@ eller
 
 <para>
 I det følgende går vi dog lidt længere, idet vi viser hvordan man også
-får PHP-understøttelse til WAP. Vi antager at du har installerer
+får PHP-understøttelse til WAP. Vi antager at du har installeret
 Apache og PHP4.
 </para>
 
 <para>
-Det første du kan gøre er at få Apache til at kalde PHP-fortolkeren,
+Når et PHP-script starter med at sende data tilbage til modtageren,
+sender PHP først noget <EMPHASIS>header</EMPHASIS> information.
+Headeren indeholder dato, server version og meget andet, men især
+hvilken type data der vil blive sendt.
+Hvis intet er anført i headeren sendes <EMPHASIS>Content-type: text/html</EMPHASIS>,
+og dette kan ændres med en enkelt kommando: 
+<EMPHASIS>Content-type: text/vnd.wap.wml</EMPHASIS>.
+Herunder er eksemplet fra før hvor filen hedder <FILENAME>test.php</FILENAME> i stedet
+for <FILENAME>test.wml</FILENAME>, hvorefter Apache vil overgive kontrollen med
+filen til PHP.
+</para>
+
+<screen>
+<EMPHASIS>&lt;?php
+   header("Content-type: text/vnd.wap.wml");
+?&gt;</EMPHASIS>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN"
+   "http://www.wapforum.org/DTD/wml_1.1.xml"&gt;
+&lt;wml&gt;
+ &lt;card id='home'&gt;
+  &lt;p&gt;
+  Dato idag er <EMPHASIS>&lt;?php echo date("Y-m-d"); ?&gt;</EMPHASIS>
+  &lt;/p&gt;
+ &lt;/card&gt;
+&lt;/wml&gt;
+</screen>
+
+<para>
+SSLUG har eksempelvis siden november 1999 vist sin kalender i WAP-format.
+Kildeteksten findes på
+<ulink url="http://www.sslug.dk/adict/wap.phps">http://www.sslug.dk/adict/wap.phps</ulink>
+og kan ses med en almindelig browser.
+Resultatet af scriptet findes på
+<ulink url="http://www.sslug.dk/adict/wap.php">http://www.sslug.dk/adict/wap.php</ulink>,
+hvor du så skal bede browseren om at gemme indholdet på din disk hvis du prøver med din
+browser.
+</para>
+
+<para>
+I stedet for at sende en anden <EMPHASIS>header</EMPHASIS>, kan Apaches
+konfigurationsfil ændres.
+Det første du skal gøre er at få Apache til at kalde PHP-fortolkeren,
 når den anmodes om en <filename>.wml</filename>-side. Find dette sted
 i <filename>/etc/httd/httpd.conf</filename>, nok omkring linie 780.
 </para>
