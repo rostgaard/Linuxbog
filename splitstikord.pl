@@ -17,7 +17,15 @@
 #   stikord.pl */bog/stikord.html
 
 use HTML::TreeBuilder;
-use Data::Dumper;
+#use Data::Dumper;
+
+my $html_start="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/html40/loose.dtd\">
+<html><head><title>Stikord - Friheden Til At Vælge</title>
+<meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">
+<meta name=\"robots\" content=\"noindex\"><!-- indekser ikke denne side, men følg links -->
+</head><body>
+";
+my $html_end="</body></html>";
 
 my $t_file1 = shift;
 my $base=$t_file1; $base=~s:(^.*/)[^/]+:$1:;
@@ -30,12 +38,13 @@ for $t_file2 (@ARGV) {
     my $tree2 = HTML::TreeBuilder->new_from_file($t_file2);
     new_base_href($tree2,$base);
     merge($tree1,$tree2);
+    $tree2->delete;
 }
 print_as_files($tree1);
-$debug and do {
-    open (FIL,">/tmp/dump.html");
-    print FIL $tree1->as_HTML;
-};
+#$debug and do {
+#    open (FIL,">/tmp/dump.html");
+#    print FIL $tree1->as_HTML;
+#};
 $tree1->delete;
 
 sub print_as_files {
@@ -44,9 +53,14 @@ sub print_as_files {
     
     for (@$arr) {
 	my $overskrift=lc(overskrift($_));
-	open (FIL, ">idx-${overskrift}.html") || die;
-	print FIL $_->as_HTML;
-	close FIL;
+	$overskrift=~s/\.//;
+	if ($overskrift) {
+		open (FIL, ">idx-${overskrift}.html") || die;
+		print FIL $html_start;
+		print FIL $_->as_HTML;
+		print FIL $html_end;
+		close FIL;
+	}
     }
 }
 
@@ -60,7 +74,6 @@ sub merge {
     $overskrift1=overskrift($index1->{_content}[$bogstav1]);
     $overskrift2=overskrift($index2->{_content}[$bogstav2]);
     while($overskrift1 and $overskrift2) {
-	print "$overskrift1 $overskrift2\n";
 	if($overskrift1 eq $overskrift2) {
 	    # o1 og o2 er samme bogstav: kombiner dem
 	    my($p1,$p2)=($index1->{_content}[$bogstav1]{_content}[1],
@@ -76,10 +89,10 @@ sub merge {
 		push @{$groups->[$i]}, $_;
 	    }    
 	    #  sorter grupper
-	    $debug and do { 
-		print map { "//". "${$_}[0]->{_content}[0]" } @{$groups} ;
-		print "\n";
-	    };
+	    #$debug and do { 
+	    #	print map { "//". "${$_}[0]->{_content}[0]" } @{$groups} ;
+	    #	print "\n";
+	    #};
 	    @{$groups} = sort { 
 		    my ($la,$lb)=(lc(${$a}[0]->{_content}[0]),
 				  lc(${$b}[0]->{_content}[0]));
