@@ -50,7 +50,7 @@ er selvfølgelig ikke så effektivt som en almindelig linked liste.
 
 
 <para>
-Hvis vi fx. skal liste et directory, kan vi samle de oplysninger,
+Hvis vi fx. skal liste et katalog, kan vi samle de oplysninger,
 som vi ønsker at gemme, op i en struct. I nedenstående eksempel
 ønsker vi at sortere filerne på i-node nummer. Det kan gøres med
 <literal> ls -i | sort </literal>, men for at få nogle ægte
@@ -62,8 +62,8 @@ bærer sig ad.
 <para>
 Når man skal finde en funktion i manual - pages, så kan man
 benytte man -k (keyword). prøv fx. man -k printf. Der kommer
-mange svar-linier. En af dem siger printf(1) - det er
-kommando-linie versionen af printf. Men den vi bruger til C
+mange svar-linjer. En af dem siger printf(1) - det er
+kommando-linje versionen af printf. Men den vi bruger til C
 programmer hedder printf(3). Tallene i parenteserne henviser til
 manual-sektioner. Disse sektioner kan man læse mere om med
 kommandoen <command> man 7 man </command>.
@@ -78,15 +78,15 @@ blot skriver kommandoen <literal> man readdir </literal>.
 
 <para>
 readdir(3) er en POSIX funktion, som læser en entry fra et
-directory og returnerer en pointer til en struct, der indeholder
+katalog og returnerer en pointer til en struct, der indeholder
 navn og det tilhørende i-node nummer. Hvis man benytter
 i-node-nummeret, er programmet ikke posix-compliant, men det er
 der jo ikke noget at gøre ved (og det er ikke så vigtigt her).
 </para>
 
 <para>
-Før man kan bruge readdir(3) skal man åbne directory-filen (et
-directory er en fil på linie med alle andre filer, bestående af
+Før man kan bruge readdir(3) skal man åbne katalog-filen (et
+katalog er en fil på linje med alle andre filer, bestående af
 filnavne og tilhørende i-node nummer. En fil kan have mange
 navne, men i-node nummeret er en entydig definition af de
 datablokke, som tilsammen udgør abstraktionen en fil. En fil er
@@ -97,7 +97,7 @@ en ordnet sekvens af bytes.)
 opendir(3) får blot et navn (default ".", current dir, ligesom
 programmet <emphasis>ls</emphasis>.) Når den returner, giver den
 enten et "håndtag" til dir-filen, i stil med fopen(3). Hvis den
-ikke kan finde et directory med det navn, som vi giver den,
+ikke kan finde et katalog med det navn, som vi giver den,
 returnerer den NULL. Det er en indikation af en fejlsituation, og
 vi lader simpelthen programmet dø med en exitkode, som fortæller,
 at det ikke gik godt.
@@ -216,9 +216,9 @@ sådan som vi forventer.
 </para>
 
 <example id="ex-dirlist1">
-<title>Listning af filnavne i et directory</title>
+<title>Listning af filnavne i et katalog</title>
 <programlisting role="C">
-/* dirlist1.c læser alle navne i et directory */
+/* dirlist1.c læser alle navne i et katalog */
 #include &lt;stdio.h>
 #include &lt;stdlib.h>
 #include &lt;dirent.h>
@@ -254,7 +254,7 @@ int showdir(char *name)
 </example>
 
 <para>
-Hvordan kan programmøren nu vide, at navnefeltet i directory -
+Hvordan kan programmøren nu vide, at navnefeltet i katalog -
 entry'en har betegnelsen d_name? Det kan man finde ud af på to
 eller tre måder. Først benyttes man (manual) systemet. Hvis dette
 ikke indeholder oplysning om readdir(3) funktionen, må man finde
@@ -292,15 +292,15 @@ i-node nummer (og eventuelt flere andre oplysninger).
 <example id="ex-linked-liste">
 <title>Linked liste, oprettelse og gennemløb</title>
 <programlisting role="C">
-/* dirlist2.c læser og gemmer alle filnavne i et directory */
+/* dirlist2.c læser og gemmer alle filnavne i et katalog */
 
 #include  ... /* main er den samme som dirlist1.c */
 
 
 /* et liste element indeholder en pointer til næste element samt data eller
  * som her en pointer til allokeret blok der kan variere i størrelse.
- * Som navnet antyder, kunne man save flere oplysninger om hver directory
- * entry, men her er det kun navnet, som saves. For et mere fuldkomment
+ * Som navnet antyder, kunne man gemme flere oplysninger om hver indgang i
+ * kataloget, men her er det kun navnet, som saves. For et mere fuldkomment
  * eksempel på, hvordan man gemmer alle oplysninger om en fil, se fileutils
  * source - eller nogle af de talrige andre eksempler, som kan findes på
  * nettet (fx. metalab.unc.edu - søg efter ydir).
