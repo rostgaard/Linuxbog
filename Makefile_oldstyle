@@ -9,9 +9,9 @@ release : cvs2html filer
 start:
 	@for dir in $(SUBDIRS); do \
 		cp -f Makefile.subdir $$dir/Makefile; \
-		cp -f faelles-filer/* $$dir; \
+		cp faelles-filer/*.sgml $$dir; \
 	done;
-	echo "Installerer Makefiler osv til alle bøger"
+	echo "Installerer Makefiler og fælles SGML-filer til alle bøger"
 
 filer:  start
 	@for dir in $(SUBDIRS); do \
