@@ -5,6 +5,8 @@
 <indexterm><primary>autoconf</primary></indexterm>
 <indexterm><primary>automake</primary></indexterm>
 <indexterm><primary>make</primary><secondary>autoconf</secondary></indexterm>
+<indexterm><primary>Makefile</primary><secondary>autoconf</secondary></indexterm>
+<indexterm><primary>configure</primary><secondary>autoconf</secondary></indexterm>
 
 <para>
 Makefiles er en stor hjælp til selv små projekter.
@@ -436,7 +438,7 @@ alle filer i samme katalog.
 <filename>./Makefile.am</filename> har <command>AUTOMAKE_OPTIONS</command> som så
 ikke er i de andre <filename>Makefile.am</filename>-filer, <command>SUBDIRS</command>
 angiver i hvilke underkataloger der ligger flere <filename>Makefile.am</filename>'s.
-Specielt for <filename>./configure</filename> skal det bemærkes at alle
+Specielt for <filename>./configure.in</filename> skal det bemærkes at alle
 <filename>Makefile</filename>r skal angives i <command>AC_OUTPUT()</command>.
 </para>
 
@@ -444,6 +446,7 @@ Specielt for <filename>./configure</filename> skal det bemærkes at alle
 
 <sect2 id="autoconf-ceks2">
 <title>Autoconf/automake eksempel</title>
+<indexterm><primary>C</primary><secondary>Makefile til C-filer</secondary></indexterm>
 
 <para>
 I eksemplet i <xref linkend="vaerktoej-make">
@@ -488,10 +491,102 @@ Herefter er det blot at køre nogle kommandoer:
 <para>
 Det er lidt mere besværligt end det oprindelige eksempel,
 men vi fik også en <command>make install</command> plus et par andre
-ting for besværet.
+gode ting for besværet.
 </para>
 
 </sect2> <!-- autoconf-ceks2 -->
+
+<sect2 id="autoconf-andre-filer">
+<title>Installation af andre filer</title>
+<indexterm><primary>autoconf</primary><secondary>installation af andre filer</secondary></indexterm>
+<indexterm><primary>configure</primary><secondary>installation i andet katalog</secondary></indexterm>
+
+<para>
+I de andre eksempler er vist hvordan C-programmer kan kompileres
+og installeres i <filename>/usr/local/bin</filename> ved at
+bruge makroen <command>bin_PROGRAMS</command>.
+Har man programmer der skal lægges i <filename>/usr/local/sbin</filename>
+er det makroen <command>sbin_PROGRAMS</command> man skal bruge.
+HTML-filer, shell-scripts og perl-filer skal håndteres anderledes.
+Her et et lille eksempel på hvad der skal tilføjes for at klare disse
+fil-typer.
+</para>
+
+<programlisting>
+## Filnavn: Makefile.am
+...
+bin_SCRIPTS = hello.pl hello.sh
+sbin_SCRIPTS = minbackup.sh
+sysconfdir_DATA = hello.conf
+htmldir = /var/www/html/hello
+html_DATA = index.html
+...
+</programlisting>
+
+<para>
+I ovennævnte eksempel er de først tre makroer prædefinerede.
+Til <command>bin_PROGRAMS</command> er allerede defineret
+<command>bindir</command>, hvilket kan ændres af den bruger
+der installere programmet.
+Hvis bin-filerne skal ned i <filename>/bin</filename> vil
+brugeren skrive:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure --bindir=/bin</userinput>
+</screen>
+
+<para>
+Listen over prædefinerede kataloger fås nemmest med:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure --help | grep DIR</userinput>
+</screen>
+
+<para>
+I førnævnte eksempel er opfundet et nyt katalog med navnet <filename>htmldir</filename>.
+Skal brugeren selv have lov til at bestemme hvilket katalog det er, skal der lidt
+mere til, og vi skal over og rette i <filename>configure.in</filename>.
+Der skal ske det at der kommer en ny option som bliver listet sammen med
+<command>./configure --help</command>, og en variabel der kan sættes.
+</para>
+
+<programlisting>
+# Filnavn: configure.in
+...
+htmldir=/var/www/html/hello
+AC_MSG_CHECKING(htmldir)
+AC_ARG_WITH(htmldir,
+[  --with-htmldir=DIR      Where to put html/php files],
+[ case "$withval" in
+  yes|no)
+  ;;
+  * )
+    htmldir="$withval"
+    ;;
+  esac])
+AC_SUBST(htmldir)
+AC_MSG_RESULT(${htmldir})
+...
+</programlisting>
+
+<para>
+Prøv herefter følgende kommandoer:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure --help</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>./configure --htmldir=/home/www</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>make -n install | more</userinput>
+</screen>
+
+<para>
+Eksemplet med <filename>htmldir</filename> er inspireret af automake-manualen
+og <filename>configure.in</filename> fra Samba.
+</para>
+
+</sect2> <!-- autoconf-andre-filer -->
 
 <sect2 id="autoconf-chkfunc">
 <title>Check at en funktion er til stede</title>
