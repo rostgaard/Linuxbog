@@ -7,77 +7,20 @@
 # Dele af Peter Toft, mfl.
 
 # bootstrap forventer at følgende linier er til stede:
+# Bøger der er konfigureret
 SUBDIRS=@SUBDIRS@
+# Om alle bogen skal bygges
 ALLE=@ALLE@
-
-# TODO: Det med fælles filer og bootstrap er stadig ikke helt godt...
-
 
 ################################################################################
 #
 # Default target er "Usage" :-)
 default:
-	if test "x$(ALLE)" != "xalle" ; then \
-		@echo "Følgende targets er tilgængelige: bootstrap, clean, dist, all" ; \
+	@if test "x$(ALLE)" != "xalle" ; then \
+		echo "Mulige mål: all html pdf pakhtml palmpilot clean dist" ; \
 	else \
-		@echo "Følgende targets er tilgængelige: bootstrap, clean, dist, all alle" ; \
+		echo "Mulige mål: all html pdf pakhtml palmpilot clean dist alle" ; \
 	fi
-################################################################################
-#
-# Faelles - opsætning af de fælles filer
-# Det her er ikke helt godt nok, men bedre end ingenting...
-# Tanken er at der skelnes lidt imellem bootstrap - som er en slags "tvang" target, og
-# faelles, som forsøger at være en anelse smartere.
-# NB: Det her target skal laves om, sort of... måske...
-#faelles: faelles-filer/*.css faelles-filer/*.sgml
-faelles:	
-	@echo "TODO: Ville være rart om faelles kunne afhænge af tidsstempler, noget"
-#	@for dir in $(SUBDIRS) ; do \
-#		echo "*** Installerer fælles filer i $$dir" && \
-#                cp --update faelles-filer/*.css $$dir && \
-#                cp --update faelles-filer/*.sgml $$dir && \
-#		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
-#		      > $$dir/linuxbogurl.sgml || exit; \
-#	done
-#	@if test "x$(ALLE)" != "x" ; then \
-#		echo "*** Installerer fælles filer i $(ALLE)" && \
-#                cp --update faelles-filer/*.sgml $(ALLE) && \
-#		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
-#		      > $(ALLE)/linuxbogurl.sgml || exit; \
-#	fi
-
-
-################################################################################
-#
-# bootstrap
-# Kopierer en række nødvendige filer, kører dernæst bootstrap i de
-# relevante biblioteker.
-.PHONY: bootstrap
-bootstrap:	faelles
-	@echo "TODO: Ville være rart om bootstrap kunne afhænge af tidsstempler, noget"
-#	@for dir in $(SUBDIRS); do \
-#		echo "*** Kører bootstrap i $$dir" && \
-#		cp --update bootstrap.subdir $$dir/bootstrap && \
-#		cp --update Makefile.subdir $$dir/Makefile.am && \
-#		cp --update configure.ac.subdir $$dir/configure.ac && \
-#		cp --update linuxbog.spec $$dir/linuxbog.spec && \
-#		mkdir -p $$dir/misc && \
-#		cp --update misc/insertimagesize $$dir/misc/ && \
-#		cd $$dir && ./bootstrap && cd .. || exit ;\
-#	done ;
-#	@if test "x$(ALLE)" != "x" ; then \
-#		echo "*** Kører bootstrap i $(ALLE)" && \
-#		cp --update bootstrap.subdir $(ALLE)/bootstrap && \
-#		sed "s/@SUBDIRSALLE@/$(SUBDIRS)/" < Makefile.alle > $(ALLE)/Makefile.am && \
-#		cp --update configure.ac.subdir $(ALLE)/configure.ac && \
-#		cp --update linuxbog.spec $(ALLE)/linuxbog.spec && \
-#		mkdir -p $(ALLE)/misc && \
-#		cp --update misc/insertimagesize $(ALLE)/misc/ && \
-#		cd $(ALLE) && ./bootstrap && cd .. || exit ;\
-#	fi
-##		cp --update faelles-filer/*.sgml $$dir && \
-##		cp --update faelles-filer/*.css $$dir && \
-
 ################################################################################
 #
 # Makefile target
@@ -86,10 +29,11 @@ bootstrap:	faelles
 # underbiblioteker - dermed autolaves disse, hvis nogen filer ændres.
 # Der en lille detalje; Hvis man ikke har konfigureret for alle, køres configure
 # alligevel hvis Makefile.alle er blevet ændret. Sådan er det bare.
-Makefile:	faelles-filer/*.css faelles-filer/*.sgml \
-		linuxbog.spec misc/insertimagesize \
-		configure \
+FAELLES_FILER:=faelles-filer/*.css faelles-filer/*.sgml
+BYGGE_FILER:=linuxbog.spec misc/insertimagesize \
+		configure Makefile.in Makefile.alle \
 		bootstrap.subdir Makefile.subdir configure.ac.subdir
+Makefile:	$(FALLES_FILER) $(BYGGE_FILER)
 	./configure @CONFIGUREARGS@
 
 
@@ -107,12 +51,28 @@ configure:
 	done ;
 
 
+################################################################################
+#
+# subdir configure targets
+# Bruges primært af dist target
+$(addsuffix /configure,$(SUBDIRS) $(ALLE)):	$(BYGGE_FILER)
+	./configure @CONFIGUREARGS@
+
+################################################################################
+#
+# subdir Makefile targets
+# Disse er f.eks. nødvendige når man skal lave noget der kalder make i et
+# underbibliotek.
+$(addsuffix /Makefile,$(SUBDIRS) $(ALLE)):	$(BYGGE_FILER)
+	./configure @CONFIGUREARGS@
+
+
 
 ################################################################################
 #
 # distclean
 # Cleaner i alle subdirs, så det passer til en dist
-distclean:	configure 
+distclean:	$(addsuffix /Makefile,$(SUBDIRS))
 	@for dir in $(SUBDIRS) $(ALLE) ; do \
 		echo "*** Kører make distclean i $$dir" && \
 		cd $$dir && make distclean && cd .. || exit ;\
@@ -123,44 +83,38 @@ distclean:	configure
 #
 # clean
 # cleaner i alle subdirs == tilbage til før bootstrap, stort set.
-clean:	configure
+clean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE))
 	rm -f *.tar.gz *~
 	@for dir in $(SUBDIRS) $(ALLE) ; do \
-		echo "*** Kører make clean i $$dir" && \
-		cd $$dir && make clean && cd .. || exit ;\
+		echo "*** Kører make $@ i $$dir" && \
+		cd $$dir && make $@ ; cd .. ;\
 	done ;
 
 
 ################################################################################
 #
-# all
-# All i alle underkataloger
-all:	makefile
+# all, html, pdf, palmpilot, pakhtml
+# Makefilen her skal være uptodate, samt alle underbibliotekers Makefile skal 
+# være i orden.
+.PHONY : all html pakhtml pdf palmpilot 
+all html pakhtml pdf palmpilot :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(ALLE))
 	@for dir in $(SUBDIRS) $(ALLE) ; do \
-		echo "*** Kører make all i $$dir" && \
-		cd $$dir && make all && cd .. || exit ;\
-	done ;
-
-################################################################################
-#
-# html
-# html i alle underkataloger
-html:	makefile
-	@for dir in $(SUBDIRS) $(ALLE) ; do \
-		echo "*** Kører make all i $$dir" && \
-		cd $$dir && make all && cd .. || exit ;\
+		echo "*** Kører make $@ i $$dir" && \
+		cd $$dir && make $@ ; cd .. ;\
 	done ;
 
 
 ################################################################################
 #
 # dist
-# Laver en tar fil med indholdet i hvert katalog. Laver først en clean...
+# Laver en tar fil med indholdet i hvert katalog.
+# Makefile skal være up-to-date
+# Indholdet i subdir skal være distcleanet + indholde en configure
 DATE=`date +"%F"`
-dist:	distclean
+dist:	Makefile distclean $(addsuffix /configure,$(SUBDIRS))
 	@for dir in $(SUBDIRS) ; do \
 		echo "*** Laver distributionspakke: $$dir.$(DATE).tar.gz" && \
-		tar --exclude CVS --exclude .cvsignore -zcf $$dir.$(DATE).tar.gz $$dir || exit ; \
+		tar --exclude CVS --exclude .cvsignore -zcf $$dir.$(DATE).tar.gz $$dir ; \
 	done ;
 
 
