@@ -29,6 +29,7 @@ html:
 	cp linuxbog.css bog
 	cp images/*.png bog
 	tar cvzf $(targetname)-$(version).html.tgz bog
+	tar cvzf $(targetname)-$(version).html-ub.tgz bog/*.html bog/*.css
 	@echo "Done HTML (html)"
 	@echo ""
 
