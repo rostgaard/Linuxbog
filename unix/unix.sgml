@@ -2653,9 +2653,9 @@ ofte meget nyttigt at kunne redigere i en tekstfil. Der er nok mange,
 som har vænnet sig til at bruge simple teksteditorer til Windows som
 WordPad, og installeres <command>nedit</command>, har man næsten samme
 enkle brugerflade, men <command>nedit</command> kan mere end WordPad,
-bl.a. har den oplysning af C kodesyntaks, så du nemt kan finde rundt i dine
+bl.a. har den syntaksfremhævning af C-kode, så du nemt kan finde rundt i dine
 programmer. I KDE findes KWrite (skriv <command>kwrite</command>) som
-bl.a. har syntaksoplysning og er meget enkel at bruge. Til Gnome
+bl.a. har syntaksfremhævning og er meget enkel at bruge. Til Gnome
 findes <command>gedit</command> og <command>gnp</command>. Sidstnævnte
 minder nok mest om Microsoft Windows Notepad, men den er samtidig en
 simpel HTML-editor. Se i øvrigt <xref linkend="editorer"/> 
@@ -3299,48 +3299,57 @@ kommer med.
 </example>
 </sect2>
 
-<sect2 id="patch">
-<title>patch</title>
+  <sect2 id="patch">
+   <title>Lappe på filer</title>
 
-<indexterm><primary>patch</primary></indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>patch</secondary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>patch</tertiary>
-</indexterm>
+   <indexterm>
+    <primary>lapper</primary>
+   </indexterm>
 
-<para>
-Vi fortsætter ud fra <xref linkend="ex-diff-dir"/>.  Hvad der nu er
-smart er at en anden bruger tyge, der har den gamle katalog-struktur
-<filename>tux</filename>, og denne skal opgraderes med
-ændringerne fra brugeren tyge. Først gemmer tyge ændringerne i en 
-fil <filename>patch_file</filename> og sender denne til tyge.
-</para>
+   <indexterm>
+    <primary>patch</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>patch</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>patch</tertiary>
+   </indexterm>
+
+   <para>
+    Vi fortsætter ud fra <xref linkend="ex-diff-dir"/>.  Hvad der nu er smart er
+    at en anden bruger, <literal>tyge</literal>, der har den gamle
+    katalog-struktur <filename>tux</filename>, og denne skal opgraderes med
+    ændringerne fra brugeren <literal>tyge</literal>. Først gemmer
+    <literal>tyge</literal> ændringerne i en fil, <filename>lap</filename> og
+    sender denne til <literal>tyge</literal>:
 
 <screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>diff -ur --new-file tux tux-ny &gt; patch_file</userinput>
+<prompt>[tyge@hven ~]$</prompt> <userinput>diff -ur --new-file tux tux-ny &gt; lap</userinput>
 </screen>
+   </para>
 
-<para>
-Brugeren tyge kan derefter tage filen og køre <command>patch</command>
-for at få opdateret underkataloget <filename>tux</filename>.
-</para>
+   <para>
+    Brugeren <literal>tyge</literal> kan derefter tage filen og køre
+    <command>patch</command> for at få opdateret underkataloget
+    <filename>tux</filename>:
 
 <screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>patch -p0 -u &lt; patch_file</userinput>
+<prompt>[tyge@hven ~]$</prompt> <userinput>patch -p0 -u &lt; lap</userinput>
 patching file tux/README
 </screen>
+   </para>
 
-<para>
-Nye filer skabes og slettede filer forsvinder automatisk. Det er på
-denne måde rettelser (patches) til Linux-kernen distribueres.
-</para>
-
-</sect2>
+   <para>
+    Nye filer skabes og slettede filer forsvinder automatisk. Det er på
+    denne måde rettelser og tilføjelser (lapper) til Linux-kernen distribueres.
+   </para>
+  </sect2>
 
 <sect2 id="cat-og-uniq">
 <title>cat, uniq, wc og cmp</title>
@@ -3421,21 +3430,19 @@ tæller den ord i en fil. <command>wc</command> har nogle tilvalg:
 
 <para>
 Eller hvis du vil vide, hvor mange kataloger der er i
-<filename>/etc</filename>
-</para>
+<filename>/etc</filename>:
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>ls -l /etc | grep ^d | wc -l</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>find /etc -type d -maxdepth 1 | wc -l</userinput>
   23
 </screen>
 
-<para>
-Forklaringen er som følger: <command>ls -l</command> giver den lange
-liste med egenskaberne for filerne med en fil pr. linje. Det
-allerførste tegn på linjen angiver filtypen. <filename>d</filename>
-betyder, at det er et katalog (eng. »directory«). <command>grep
-^d</command> lader kun de linjer, der starter med
-<filename>d</filename> passere. <command>wc -l</command> tæller
+Forklaringen er som følger: <command>find /etc</command> finder alle filer og
+kataloger under <filename>/etc</filename>.  Tilvalget <literal>-type d</literal> gør at kun kataloger bliver vist.  Og tilvalget <literal>-maxdepth 1</literal>
+gør at søgningen bliver begrænset til <filename>/etc</filename> (ellers ville
+<filename>/etc</filename>s underkataloger og underkatalogers underkataloger også
+blive gennegået).  Uddata fra <command>find</command> kommer som standard
+med et filnavn per linje.  <command>wc -l</command> tæller
 antallet af linjer den modtager.
 </para>
 </sect2>
@@ -3693,7 +3700,7 @@ et andet special-tegn.
 <indexterm><primary>echo</primary></indexterm>
 <indexterm><primary>chown</primary></indexterm>
 <indexterm><primary>date</primary></indexterm>
-<indexterm><primary>xhost</primary></indexterm>
+<!--indexterm><primary>xhost</primary></indexterm-->
 <indexterm><primary>lpr</primary></indexterm>
 <indexterm><primary>lpq</primary></indexterm>
 <indexterm><primary>lprm</primary></indexterm>
@@ -3767,7 +3774,7 @@ et andet special-tegn.
 </row>
 
 <!-- her fra -->
-<row>
+<!--row>
  <entry>xhost</entry>
  <entry>Anvendes til at tillade/begrænse andre maskiner at
       koble til maskinens X-server, dvs. om de må vise grafik
@@ -3776,7 +3783,7 @@ et andet special-tegn.
       <command>xhost -maskinnavn</command> til at forhindre, at den
       pågældende maskine viser grafik.
  </entry>
-</row>
+</row-->
 
 <row>
  <entry>lpr</entry>
@@ -3872,7 +3879,7 @@ et andet special-tegn.
 
 <row>
  <entry>sort</entry>
- <entry>Sorterer en tekstfil.
+ <entry>Sorterer linjerne i en tekstfil.
  </entry>
 </row>
 
@@ -3881,11 +3888,40 @@ et andet special-tegn.
  <entry><command>ssh saltholm.sslug.dk date</command> 
  betyder, at du udfører kommandoen
 <command>date</command> på maskinen
-<command>saltholm.sslug.dk</command>, dvs. en anden Unix-maskine.
+<literal>saltholm.sslug.dk</literal>, dvs. en anden Unix-maskine.
 Linux kan udføre kommandoer på andre maskiner og så vise
-grafik (og tekst) på din egen maskine. Kræver at <command>OpenSSH</command>
-installeres.
+grafik (og tekst) på din egen maskine.
 </entry>
+</row>
+
+<row>
+ <entry>
+  <command>telnet</command>
+ </entry>
+ <entry>
+  Opretter en ukrypteret netværksforbindelse til en anden maskine.  Nyttig
+  til afprøvning og fejlsøgning af netværksforbindelser.
+ </entry>
+</row>
+
+<row>
+ <entry>
+  <command>ping</command>
+ </entry>
+ <entry>
+  Undersøger om der er forbindelse til en anden maskine.  Nyttig
+  til afprøvning og fejlsøgning af netværksforbindelser.
+ </entry>
+</row>
+
+<row>
+ <entry>
+  <command>traceroute</command>
+ </entry>
+ <entry>
+  Viser hvilke maskiner forbindelsen til en anden maskine går over.  Nyttig
+  til afprøvning og fejlsøgning af netværksforbindelser.
+ </entry>
 </row>
 
 </tbody>
@@ -4496,12 +4532,12 @@ Alle parametre er adskilt af mellemrum: Hej Linus Torvalds
 
 <para>
 Et program der kører under Linux har tildelt et
-<emphasis>process id</emphasis> &ndash; et nummer.
+<emphasis>proces-id</emphasis> &ndash; et nummer.
 Det er de numre som ses med fx <command>ps</command>
 og <command>pstree -p</command>.
 Skal man stoppe et program der kører, kan det
-gøres ved brug af dette process id.
-Process id på det script der kører,
+gøres ved brug af dette proces-id.
+Proces-id på det script der kører,
 findes i variablen <emphasis>$$</emphasis>.
 Denne værdi kan gives videre til et andet program
 eller script, men i dette eksempel vil vi blot stoppe
@@ -4510,7 +4546,7 @@ scriptet selv.
 
 <programlisting>
 #! /bin/sh
-echo "Dette script har process id: $$"
+echo "Dette script har proces-id: $$"
 echo "Det kan også ses med 'ps' kommandoen:"
 ps | grep $$
 kill $$
@@ -4521,7 +4557,7 @@ Starter man et program i baggrunden, så man har
 to programmer kørende samtidigt, kan det være
 interessant pludseligt at stoppe programmet
 i baggrunden.
-Process id for baggrundsprogrammer findes i
+Proces-id for baggrundsprogrammer findes i
 <emphasis>$!</emphasis> variablen.
 </para>
 
@@ -4529,7 +4565,7 @@ Process id for baggrundsprogrammer findes i
 #! /bin/sh
 # Start et program i baggrunden der tager tid
 sleep 10 &amp;
-echo "'sleep' har process id: $!"
+echo "'sleep' har proces-id: $!"
 echo "Det kan også ses med 'ps' kommandoen:"
 ps | grep $!
 kill $!
