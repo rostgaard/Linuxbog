@@ -21,7 +21,7 @@ filer:  start
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done;
-	$(MAKE) -C alle -f Makefile
+#	$(MAKE) -C alle -f Makefile
 
 pspdf:	start
 	@for dir in $(SUBDIRS); do \
@@ -60,7 +60,7 @@ cvs2html:
 	chmod +x /home/pto/utils/cvs2html
 	rm -rf cvs2html
 	mkdir cvs2html
-	/home/pto/utils/cvs2html -i ../linux.png  -l http://cvs.sslug.dk/linuxbog -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
+	/home/pto/utils/cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
 
 
 mail:
