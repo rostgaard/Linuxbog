@@ -16,10 +16,12 @@
    @include($DOCUMENT_ROOT."/includes/top.phtml");
 
    list($width,$height) = getimagesize("front.png");
-?>
 
+if (!$b && !$t && !$matrix) { ?>
 <img src="front.png" alt="Friheden til at skrive bøger"
  align="right" width="<? echo $width ?>" height="<? echo $height ?>">
+<?php } ?>
+
 <h1>SSLUG - Friheden til at skrive bøger</h1>
 
 <?php
