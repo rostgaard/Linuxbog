@@ -3,7 +3,7 @@
 --  procedure Smart (body)
 --
 --  Ada er temmelig praktisk til at skrive programmer der skal lave flere ting
---  på en gang ("tasking") og så kan det håndtere maskinnære ting som
+--  på en gang ("tasking"), og så kan det håndtere maskinnære ting som
 --  bitmønstre på en abstrakt måde, så det er lettere at overskue hvad
 --  programmet laver.
 --
@@ -85,16 +85,16 @@ procedure Smart is
                  (1 => (Tændt => (Rød =>  True, Gul => False, Grøn => False),
                         Tid   => 3.0),
                   2 => (Tændt => (Rød =>  True, Gul =>  True, Grøn => False),
-                        Tid   => 0.5),               
+                        Tid   => 0.5),
                   3 => (Tændt => (Rød => False, Gul => False, Grøn =>  True),
-                        Tid   => 3.0),               
+                        Tid   => 3.0),
                   4 => (Tændt => (Rød => False, Gul =>  True, Grøn => False),
                         Tid   => 0.5));
 
    ---------------------------------------------------------------------------
    --  procedure Sæt_Port:
    --
-   --  For at vi kan se hvad der sker skriver vi bitmønsteret til skærmen i
+   --  For at vi kan se hvad der sker, skriver vi bitmønsteret til skærmen i
    --  stedet for at sende det ud på en port.
 
    procedure Sæt_Port (Tændt : in     Lyssignal_Lamper) is

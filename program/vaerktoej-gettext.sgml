@@ -23,18 +23,79 @@
   at oversætte menutekster m.m. i dine programmer til andre sprog.
   Princippet i Gettext er at man skriver sit program med alle
   teksterne til brugergrænsefladen på ét sprog (typisk amerikansk),
-  men indkapsler dem i et funktionskald til Gettext-biblioteket, der
+  men indkapsler dem i et funktionskald til Gettext-biblioteket der
   slår oversættelsen af teksten op i en database for det sprog
   brugeren har valgt.
  </para>
+
+ <example id="program-gettext-posix-shell">
+  <title>Eksempel på brug af Gettext fra et POSIX Shell-program</title>
+
+  <para>
+   Selv i et POSIX Shell-program kan vi bruge Gettext til at håndtere
+   oversættelsen af de tekster brugeren skal se.  Vi bruger et
+   program, <command>hej</command>, der bare skriver "Hej Verden." som
+   eksempel:
+<programlisting>
+#! /bin/sh
+echo "Hej Verden."
+</programlisting>
+  </para>
+
+  <para>
+   Det er gængs praksis at bruge amerikansk engelsk som det
+   grundlæggende sprog i programmer der skal kunne oversættes til alle
+   mulige sprog, så nu bruger vi i stedet for teksten "Hello World."
+   samtidig med at vi erstatter <command>echo</command> med
+   <command>gettext --domain gettext-example -s</command>:
+<programlisting>
+#! /bin/sh
+gettext --domain eksempel -s "Hello World."
+</programlisting>
+   Hvis man bare uden videre kører dette program, skulle det gerne
+   skrive "Hello World.".
+  </para>
+
+  <para>
+   Nu laver vi så en oversættelse af programmet til færøsk.
+   Kildeteksten er filen <filename>eksempel.fo.po</filename>:
+<programlisting>
+msgid "Hello World."
+msgstr "Hey Verð."
+</programlisting>
+   Den kan vi oversætte til Gettexts interne format med programmet
+   <command>msgfmt</command>:
+<screen>
+% msgfmt --output-file=eksempel.fo.mo eksempel.fo.po
+</screen>
+   For at vi kan bruge den skal den helst flyttes til systemets
+   standardkatalog for færøske oversættelser,
+   <filename>/usr/share/locale/fo/LC_MESSAGES/</filename>:
+<screen>
+% su -c 'cp eksempel.fo.mo /usr/share/locale/fo/LC_MESSAGES/eksempel.mo'
+Password:
+</screen>
+   Hvis du nu stiller om til at dine programmer skal være på færøsk
+   (kun i den aktive kommandofortolker) vil programmet skrive "Hey
+   Verð." i stedet for "Hello World.":
+<screen>
+% ./hej
+Hello World.
+% export LANG=fo_FO.ISO8859-1
+% ./hej
+Hey Verð.
+</screen>
+  </para>
+ </example>
 
  <para>
   ...
  </para>
 
  <para>
-  Når et program er forberedt til oversættelse med "gettext" er det næste
-  skridt at oversætte det. Til det formål er KBabel (<ulink url="http://www.klid.dk/dansk/kbabel.html">http://www.klid.dk/dansk/kbabel.html</ulink>) nok
-  det bedste værktøj.
+  Når et program er forberedt til oversættelse med "gettext", er det
+  næste skridt at oversætte det. Til det formål er KBabel (<ulink
+  url="http://www.klid.dk/dansk/kbabel.html">http://www.klid.dk/dansk/kbabel.html</ulink>)
+  nok det bedste værktøj.
  </para>
 </sect1>

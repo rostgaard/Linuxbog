@@ -5,12 +5,12 @@
 --  Eksempel på brug af betingede strukturer:
 --
 --    Programmet undersøger hvor lang tids barselsorlov en person har ret til
---    udfra vedkommendes CPR-nummer.
+--    ud fra vedkommendes CPR-nummer.
 --
 --  Oversættelse og prøvekørsel:
 --
---    Hvis du har installeret GNU Ada på dit system og denne fil har navnet
---    "barselsorlovslængde.ada" kan du oversætte programmet med kommandoen:
+--    Hvis du har installeret GNU Ada på dit system, og denne fil har navnet
+--    "barselsorlovslængde.ada", kan du oversætte programmet med kommandoen:
 --
 --      gnatchop -w barselsorlovslængde.ada; gnatmake barselsorlovslængde
 --
@@ -18,7 +18,7 @@
 --
 --      ./barselsorlovslængde
 --
---  Filen indeholder udover selve programeksemplet også en pakke med nogle
+--  Filen indeholder ud over selve programeksemplet også en pakke med nogle
 --  definitioner der er specifikke for eksemplet, samt den generelt meget
 --  nyttige pakke UStrings der kommer David A. Wheelers AdaCGI-pakke.
 --
@@ -120,7 +120,7 @@ package body CPR_numre is
 
    begin --  CPR_nummerets_løbenummer
       Put (Item => "Indtast venligst personens CPR-nummer efterfulgt af et " &
-                   "linieskift: ");
+                   "linjeskift: ");
       Get_Line (Item => CPR_nummer);
       New_Line;
 

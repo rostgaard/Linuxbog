@@ -9,8 +9,8 @@
 --
 --  Oversættelse og prøvekørsel:
 --
---    Hvis du har installeret GNU Ada på dit system og denne fil har navnet
---    "supermarkedsåbningstider.ada" kan du oversætte programmet med
+--    Hvis du har installeret GNU Ada på dit system, og denne fil har navnet
+--    "supermarkedsåbningstider.ada", kan du oversætte programmet med
 --    kommandoerne:
 --
 --      gnatchop -w supermarkedsåbningstider.ada
