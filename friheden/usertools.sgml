@@ -35,9 +35,16 @@ superbrugeren (eng. "super user"). Du kan enten logge ind som
 programmet <command>su</command> (ordet hemmelig vises ikke på skærmen).
 </PARA>
 
-
-<indexterm><primary>su</primary></indexterm>
-<indexterm><primary>root</primary></indexterm>
+<indexterm>
+ <primary>su</primary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>su</secondary>
+</indexterm>
+<indexterm>
+ <primary>root</primary>
+</indexterm>
 <SCREEN>
 <PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su - root</USERINPUT>
 Passwd: <USERINPUT>hemmelig</USERINPUT>
@@ -76,8 +83,18 @@ System V familien, men låner lidt fra BSD.
 
 <SECT1 ID="Mount">
 <TITLE>Få adgang til andre diskdrev, cd-rom og diskettedrev</TITLE>
-<indexterm><primary>mount</primary></indexterm>
-
+<indexterm>
+ <primary>mount</primary> 
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt, Samba</primary>
+ <secondary>mount</secondary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>Grundlæggende kommandobeskrivelse</secondary>
+ <tertiary>mount</tertiary>
+</indexterm>
 <sect2 id="mounte-filsystemer">
 <title>Montering af filsystemer</title>
 
@@ -97,7 +114,7 @@ parameter, der fortæller at filsystemet skal monteres under opstarten.
 </para>
 
 <SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -a</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mount -a</USERINPUT>
 </SCREEN>
 
 <para> 
@@ -331,6 +348,18 @@ henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
 <para>
 Eksempel:
 </para>
+<indexterm>
+ <primary>umount</primary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>umount</secondary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>Grundlæggende kommandobeskrivelse</secondary>
+ <tertiary>umount</tertiary>
+</indexterm>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /dev/fd0 #(afmonterer disketten)</USERINPUT>
@@ -469,7 +498,8 @@ cd-rom-drev, og skriv
 <PROMPT>[anne@linus ~]$ </PROMPT> <USERINPUT>mount /mnt/cdrom</USERINPUT>
 </SCREEN>
 
-<para>Nu bør du kunne skrive <userinput>df /mnt/cdrom</userinput> for at se, hvor
+<para>
+Nu bør du kunne skrive <userinput>df /mnt/cdrom</userinput> for at se, hvor
 meget data der ligger på skiven. Du kan nu kopiere og læse fra din cd-rom.
 Når du er færdig med at læse din cd-rom, kan du ikke bare tage den ud. Du skal
 først skrive
@@ -506,8 +536,8 @@ du skal bruge (her vises for disk C og D):
 <SCREEN>
 <PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su</USERINPUT>
 Passwd: <USERINPUT>hemmelig</USERINPUT>
-<PROMPT>[root@linus /root]# mkdir /dosc </PROMPT>
-<PROMPT>[root@linus /root]# mkdir /dosd </PROMPT>
+<PROMPT>[root@linus /root]# </PROMPT><userinput>mkdir /dosc</userinput>
+<PROMPT>[root@linus /root]# </PROMPT><userinput>mkdir /dosd</userinput>
 </SCREEN>
 
 
@@ -554,6 +584,27 @@ typisk skal i Windows.
 <sect2 id="mount-floppy">
 <TITLE>Diskettedrev</TITLE>
 <indexterm><primary>Disketter</primary></indexterm>
+<indexterm>
+ <primary>mdir</primary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>mdir</secondary>
+</indexterm>
+<indexterm>
+ <primary>mcopy</primary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>mcopy</secondary>
+</indexterm>
+<indexterm>
+ <primary>mcd</primary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>mcd</secondary>
+</indexterm>
 <para>
 For at kunne læse dine DOS-disketter skal du gentage ovenstående
 med få ændringer (<filename>msdos</filename> i stedet for
@@ -661,6 +712,39 @@ maskinen dykker.kongeh.dk, hvis dette er eksporteret korrekt.
 
 </sect2>
 
+<sect2 id="smbmount">
+<title>Montering af SAMBA/Windows-drev</title>
+<indexterm><primary>smbmount</primary></indexterm>
+<indexterm><primary>smbmount</primary></indexterm>
+<indexterm><primary>SAMBA-drev</primary></indexterm>
+<indexterm><primary>Windows-drev fra nettet</primary></indexterm>
+
+<para>
+Mange steder har man en Windows-filserver, eller en Linux-maskine med SAMBA
+(se bogen "Linux - friheden til systemadministration"), som eksporterer
+netværksdrev til Windows-maskiner. Denne kan Linux-maskinen sagtens anvende
+til at få adgang til data.
+</para>
+
+<para>
+Brugeren root kan montere en SMB-share (SHARE_NAVN) fra maskinen SERVER_NAVN
+på Linux-maskinens katalog <emphasis>/mnt/smb_katalog</emphasis> ved at
+skrive følgende.
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mount -t smbfs -o username=BRUGERNAVN,password=MIT_PASSWORD //SERVER_NAVN/SHARE_NAVN /mnt/smb_katalog</USERINPUT>
+</SCREEN>
+<!--$ Gerne et eksempel, af kød og blod, helst med forklaring $ -->
+<para>
+Der findes også kommandoerne <command>smbmnt</command> og
+<command>smbmount</command>, som basalt set kan det samme, men de kan
+anvendes til at brugere selv kan montere Windows-shares (dette kræver
+dog at der køres <command>chmod +s /usr/bin/smb*</command>, hvilket
+svækker system-sikkerheden noget).
+</para>
+
+</sect2>
 </SECT1>
 
 
@@ -1282,10 +1366,16 @@ Windows NT kommer der i det følgende en vejledning i at anvende Linux sammen
 med Windows NT's "OS Loader". 
 </para>
 
+> Et alternativ til dette er at benytte "bootpart" programmet - så kan du have
+> LILO liggende på din Linux-partition i stedet for at ligge den i master boot
+> record (MBR) - se http://www.winimage.com og
+> http://www.winimage.com/bootpart.htm.
+
+
 <para>
 Et alternativ til dette er at benytte "bootpart" programmet - så kan
-du have LILO liggende på din Linux-partition i stedet for at ligge den i master
-boot record (MBR) - se
+du have LILO liggende på din Linux-partition i stedet for at lægge 
+den i master boot record (MBR) - se
 <ulink url="http://www.winimage.com">http://www.winimage.com</ulink> og
 <ulink url="http://www.winimage.com/bootpart.htm">http://www.winimage.com/bootpart.htm</ulink>.
 </para>
@@ -1298,15 +1388,19 @@ boot record (MBR) - se
 GRUB er et nyere alternativ til LILO-opstartsprogrammet (se <xref
 linkend="lilo">), dvs. et program som kan håndtere opstarten af et
 eller flere styresystemer på maskinen (eng: boot loader).  GRUB er en
-del af bl.a. Red Hat 7.2.
+del af bl.a. Red Hat 7.2. Se f.eks. <ulink url="http://www.redhat.com/docs/manuals/linux/RHL-7.2-Manual/ref-guide/ch-grub.html">http://www.redhat.com/docs/manuals/linux/RHL-7.2-Manual/ref-guide/ch-grub.html</ulink>.
 </para>
 
 <para>
 Fordelene med GRUB i forhold til LILO er at man ikke behøver at køre
 nogen kommando for at installere en ny kerne (Med LILO skal man køre
-<command>/sbin/lilo</command>. Man får også muligheden for at gøre
-opstart-menuen lidt mere appetitvækkende, ved at kunne lægge et
-baggrundbillede ind bag menuen (den virker mere grafisk orienteret).
+<command>/sbin/lilo</command> - nogle vil med rette mene at dette ikke
+er en fordel når man tænker på fejlmulighederne :) Man får også
+muligheden for at gøre opstart-menuen lidt mere appetitvækkende, ved
+at kunne lægge et baggrundbillede ind bag menuen (den virker mere
+grafisk orienteret). Endelig understøtter GRUB LBA fuld ud - dvs. der
+er problemer med at opstartspartitionen skal ligge før cylinder 1024 (som 
+LILO har haft problemer med).
 </para>
 
 <para>
@@ -1320,7 +1414,9 @@ blive startet efter 10 sekunder. Parameteren
 <literal>splashimage</literal> angiver stien til at billede som lægges
 bag ved menuen. Det skal være et billede i VGA-størrelse dvs. 640x480
 og man har kun 14 farver at gøre godt med. Filen skal gemmes i
-XPM-format og derefter skal man køre <command>gzip</command> på filen
+XPM-format (f.eks. lavet med GIMP eller ImageMagick) 
+og derefter skal man køre 
+<command>gzip</command> på filen
 idet den ellers vil fylde <emphasis>meget</emphasis> mere. Stien til
 filen er interessant. <literal>(hd0,0)</literal> betyder den første
 harddisk og første partition - dvs. <literal>/dev/hda1</literal> hvor
@@ -1335,7 +1431,11 @@ Linux (2.4.7-10)" og "Windows".
 Bemærk at man igen her angiver den lidt specielle
 notation for hvilken Linux-kerne der skal hentes ved at skrive
 harddisk og partition som <literal>root
-(hd&lt;DREV&gt;,&lt;PARTITION&gt;)</literal>. Under det første
+(hd&lt;DREV&gt;,&lt;PARTITION&gt;)</literal>.
+</para>
+
+<para> 
+Under det første
 menupunkt "Dell" hentes kernen fra
 <filename>/boot/bzImage.417</filename> og filsystemets rod
 (dvs. <filename>/</filename>) bliver sat til
@@ -1346,7 +1446,7 @@ read-only fra start (sådan er det bare).
 <para> 
 Man kan også se at det andet menupunkt "Red Hat Linux (2.4.7-10)"
 har en initiel RAM-disk <filename>/boot/initrd-2.4.7-10.img</filename>.
-I eksemplet er der den originale Red Hat 7.2 kerne 
+I eksemplet er den originale Red Hat 7.2 kerne lagt
 under menupunktet "Red Hat Linux (2.4.7-10)", mens "Dell" er en nyere 
 Linux-kerne uden initiel RAM-disk.
 </para>
