@@ -76,13 +76,76 @@
     </listitem>
    </itemizedlist>
   </para>
+
+  <note id="distro-arch-linux-installation-x">
+   <title>Opsætning af X</title>
+
+   <para>
+    Opsætningen af X er desværre en lille smule besværlig.  Først installerede
+    jeg FVXM (og dermed automatisk også XFree86) med:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>pacman -Sy fvwm</userinput>
+</screen>
+   </para>
+
+   <para>
+    Så forsøgte jeg at få XFree86 til at sætte sig selv op med:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>XFree86 -configure</userinput>
+</screen>
+    men det virkede ikke helt, da XFree86s opsætningsrutine antager at musen
+    kan findes som <filename>/dev/mouse</filename>.  Da det ikke var tilfældet
+    på mit system, måtte jeg rette <filename>/dev/mouse</filename> til
+    <filename>/dev/psaux</filename> (PS/2-mus) i opsætningsfilen:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>sed -i 's:/dev/mouse:/dev/psaux:' XF86Config.new</userinput>
+</screen>
+    før jeg kunne afprøve opsætningen:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>XFree86 -xf86config XF86Config.new</userinput>
+</screen>
+    (brug Ctrl-Alt-Backspace for at lukke <command>XFree86</command> ned igen).
+   </para>
+
+   <para>
+    Det virkede, så jeg kunne flytte opsætningsfilen på plads:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>mv XF86Config.new /etc/X11/XF86Config</userinput>
+</screen>
+    og afprøve X endnu en gang:
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>startx</userinput>
+</screen>
+    Denne gang med dette resultat:
+    <graphic fileref="arch_linux-twm.&magic;" scale="60"></graphic>
+   </para>
+
+   <para>
+    Hvis man har et dansk tastatur, vil man nok også lige rette linjerne:
+<programlisting>
+Section "InputDevice"
+        Identifier  "Keyboard0"
+        Driver      "keyboard"
+EndSection
+</programlisting>
+    i <filename>/etc/X11/XF86Config</filename> til:
+<programlisting>
+Section "InputDevice"
+        Identifier  "Keyboard0"
+        Driver      "keyboard"
+        Option      "XkbLayout"  "dk"
+        Option      "XkbVariant" "nodeadkeys"
+EndSection
+</programlisting>
+   </para>
+  </note>
  </sect1>
 
  <sect1 id="distro-arch-linux-brug">
   <title>Brug</title>
 
   <para>
-   ...
+   ... hvad skal jeg skrive her? ...
   </para>
  </sect1>
 
@@ -90,7 +153,8 @@
   <title>Samlet vurdering</title>
 
   <para>
-   ...
+   Jeg må indrømme at jeg er positivt overrasket over Arch Linux.  Den har
+   grundlæggende været let at få op at køre.
   </para>
  </sect1>
 </chapter>
