@@ -1120,8 +1120,8 @@ der understøtter det.
 I dette afsnit ser vi på Linux-kernens netfilter modul og hvad 
 man kan gøre med det. Det er en forudsætning, at man kender til
 begreberne IP-adresse, netværksadresse, netmaske, routing og DNS.
-Hvis du ikke gør, så læs i det mindste indledningen til dette
-kapitel og se på <ulink
+Hvis du ikke gør, så læs i det mindste indledningen til denne
+bog, eller se på <ulink
 url="http://www.netfilter.org/documentation/index.html#HOWTO">
 http://www.netfilter.org/documentation/index.html#HOWTO</ulink>
 efter Networking Concepts HOWTO.  </para>
@@ -1255,6 +1255,26 @@ tilbyder at justere på trafikken af forskellige typer. Denne form
 for justering vil blive meget mere almindelig i fremtiden, fordi
 mange typer service kræver en jævn datastrøm, men som
 udgangspunkt kan man blot acceptere default indstillingerne.
+</para>
+
+<para>
+Ønsker man dansk tekst i sin GUI er guarddog (GPL) det klare valg.
+Gunner Poulsen har oversat til dansk, og man kan hente denne fra
+<ulink
+url="http://www.simonzone.com/software/guarddog/#download">
+http://www.simonzone.com/software/guarddog/#download</ulink>
+Guarddog kan skelne mellem lokalnet og <emphasis>
+demilitariseret zone, </emphasis> som er et område udenfor
+lokalnettet, hvor man har anbragt sine servere - tilbørligt
+sikrede, men der skal jo være en åben dør, for at folk kan komme
+ind og se på éns dejlige web-sider. Man kan selv definere flere
+zoner og zonetyper.
+</para>
+
+<graphic fileref="guarddog2_protocol.&magic;"  scale="40"></graphic>
+
+<para>
+Læg mærke til, at guarddog styrer protokollerne pr. zone. 
 </para>
 
 <para>
@@ -1909,10 +1929,19 @@ opsætte NAT for de 4 lokalmaskiner.
 
 <para>
 NAT og Masquerading sker i nat-tabellens FORWARD kæde, når en
-datapakke skal til at forlade maskinen. 
+datapakke skal til at forlade maskinen. Source adressen, som skal
+NATtes, er den interne eller private adresse, men man kan også
+angive netværket ved at skrive 0 for den sidste byte i en
+almindelig 192.168 - adresse og også angive netmaske, typisk
+192.168.1.0/24, så vil alle de lokale adresser blive NAT-ede.
 </para>
 
-
+<para>
+iptables har mange måder at angive adresser på, så hvis
+der opstår specielle behov, så kig lige en gang ekstra på manual
+page for iptables. Det er bedre at nøjes med én regel, som dækker
+flere adresser, end at have flere regler med hver deres adresse.
+</para>
 
 <screen>
 <prompt>[root@hven /]#</prompt> <userinput>iptables -t nat -A POSTROUTING --src 192.168.1.0/24  -o eth1 -j SNAT --to x.y.w.z   </userinput>
