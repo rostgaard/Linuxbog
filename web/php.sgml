@@ -1,0 +1,878 @@
+<chapter id="web-php">
+<!-- Skrevet af Michael Rasmussen mir@miras.org -->
+
+<title>Sessioner i PHP med brug af database</title>
+<sect1 id="Indledning">
+ <title>Indledning</title>
+
+  <para>
+   Har du af og til spekuleret over hvordan de forskellige sites, du
+   besøger, kan genkende dig, når du vender tilbage? Forklaringen er
+   enkel, og når du har læst denne kapitel, ved du hvorfor og hvordan,
+   du selv kan gøre noget tilsvarende.
+  </para>
+
+  <para>
+   For at benytte dette eksempel, kræves der, så vidt jeg ved, ikke
+   PHP version 4.0, da vi netop udvikler vores egen sessionsstyring,
+   og derfor kræver det altså ikke understøttelse af sessions, som er
+   nyskabelsen med PHP 4.0.
+   </para>
+
+
+  <para>
+   Du skal nu til at begive dig ind i en spændende verden, hvor næsten
+   alt kan lade sig gøre mht.  dynamiske websider. Hvad der gør dette
+   muligt, vil du få en introduktion til i denne artikel.
+  </para>
+  <para>
+   Denne artikel viser dig hvordan, du kan holde styr på dine
+   besøgende, og på baggrund af gemte oplysninger, har mulighed for,
+   at dirigere dine besøgende rundt på sider, der er af relevans for
+   netop dem. Det der gør det muligt, er, at vi har oprettet en
+   database med oplysninger om de besøgende. Oplysninger indeholder i
+   vores eksempel kun de enkelte brugeres status - gæst, medlem, eller
+   administrator, men det kunne sagtes udbygges til at have
+   oplysninger om alt muligt andet; kun fantasien sætter grænser.
+  </para>
+
+  <para>
+   Hvorfor nu udvikle sin egen sessionsstyring? Til det spørgsmål
+   findes der mange svar, men de mest åbenlyse for mig er følgende:
+  </para>
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>
+    Faciliteten sessioner er først medtaget i PHP 4.x, og der er
+    stadig mange websites skrevet til PHP 3.x.
+  </para>
+  </listitem>
+  <listitem>
+   <para>
+    Sessioner i standardversionen kræver understøttelse af cookies hos
+    klienterne. Mange har fravalgt muligheden for at modtage cookies
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Man kan godt nok skrive en databasehandler til PHP, så den ikke
+    kræver understøttelse af cookies hos klienterne, men af interesse
+    ville jeg lave min egen, uden at skulle begrænse mig til PHP
+    4.x. Eksemplet er også samtidigt en glimrende indgangsvinkel til
+    PHPs verden.
+   </para>
+  </listitem>
+  </itemizedlist>
+
+  <para>
+   For at du skal kunne afvikle eksemplerne i artiklen, skal du have
+   følgende software installeret:
+  </para>
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>En webserver - jeg bruger apache version 1.3.12</para>
+  </listitem>
+  <listitem>
+   <para>PHP installeret på webserveren - jeg bruger PHP version 4.0.1.pl2</para>
+  </listitem>
+  <listitem>
+   <para>MySQL installeret på serveren - jeg bruger MySQL version 3.23.10-alpha</para>
+  </listitem>
+  </itemizedlist>
+</sect1>
+
+<sect1 id="Sessioner">
+<title>Sessioner - hvad er det</title>
+ <para>
+  Sessioner er en metode til at holde rede på ens besøgende, for på
+  den måde at kunne vise sider, som den pågældende person
+  <emphasis>ønsker</emphasis> det, eller som middel til at kunne
+  bestemme, hvilke sider en person må se.
+ </para>
+
+ <para>
+  Hvordan fungerer sessioner:
+ </para>
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>
+    En person besøger din hjemmeside, og bliver registreret som
+    bruger. Registreringen har som resultat, at personen får tildelt
+    et entydigt BrugerID.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Når brugeren kommer tilbage, og logger sig på, får vedkommende
+    tildelt et entydigt SessionsID, som han medtager rundt på dine
+    sider.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Ved hjælp af SessionID kan du krydsreferere brugerens profil for
+    på den måde at finde ud af, hvilke præferencer eller
+    adgangsmuligheder denne person har.
+   </para>
+  </listitem>
+  </itemizedlist>
+</sect1>
+</chapter>
+
+<chapter id="Tutorial">
+<title>Her kommer en gennemgang trin for trin</title>
+ <para>
+  Denne tutorial er inddelt i 4 afsnit. I første afsnit viser jeg,
+  hvordan det tager sig ud for brugeren, samt kort introducerer dig
+  for problemstillingen. Afsnit indeholder en kort gennemgang af
+  begrebet sessioner samt en overordnet gennemgang af den database,
+  vores eksempel bygger på.
+ </para>
+
+ <para>
+  I andet snit gennemgås, hvordan du opretter databasen i MySQL. I
+  afsnittet vil du få vist, hvordan du opretter databasen og de
+  nødvendige tabeller. For en egentlig gennemgang af MySQL kan du med
+  fordel læse i <xref linkend="db-mysql">.
+ </para>
+
+ <para>
+  I tredje afsnit vil jeg så gennemgå, hvordan tingene hænger sammen,
+  og det er her, jeg vil vise dig, hvordan man får PHP til at arbejde
+  i baggrunden. I afsnittet vil du kunne se kildekoden til eksemplet,
+  og jeg vil prøve efter bedste evne, at forklare hvordan det virker.
+ </para>
+
+ <para>
+  I fjerde og sidste afsnit vil jeg kort komme ind på, hvad der endnu
+  mangler i eksemplet samt komme med anvisninger på, hvor du kan finde
+  yderligere materiale om PHP.
+ </para>
+
+ <para>
+  For at du ikke skal skrive det hele ind selv, kan du her hente en
+  fil med alle eksempel-filerne. Adressen hvor de ligger er Linuxbogens
+  hjemmeside hos SSLUG:
+  <ulink url="http://www.sslug.dk/linuxbog/">http://www.sslug.dk/linuxbog/</ulink>
+ </para>
+
+<sect1 id="wysiwyg">
+<title>Problemstillingen, og hvad brugeren ser</title>
+ <para>
+  Det følgende afsnit er en kort introduktion til begrebet databaser,
+  og hvordan du kan drage nytte af dem, når du skal lave dynamiske
+  websider. Afsnittet gennemgår begrebet sessioner, og illustrerer det
+  med et konkret eksempel.
+ </para>
+
+<sect2 id="intro">
+<title>Databasen i vores gennemgående eksempel</title>
+ <para>
+  Inden vi kan begynde, skal vi have oprettet vores database, og alle de tabeller vi skal bruge.
+  Se figur 2-1.
+ </para>
+ <para>
+  Vores eksempel kræver to tabeller. En til at gemme brugerprofiler, og en anden til at gemme
+  oplysninger om sessioner.
+ </para>
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>Users: Brugernes profiler</para>
+  </listitem>
+  <listitem>
+   <para>Session: Oplysninger om sessioner</para>
+  </listitem>
+  </itemizedlist>
+
+  <para>
+   <figure id="DB" float="1">
+    <title>Vores eksempeldatabase</title>
+    <graphic fileref="db.&magic;" scale="60"></graphic>
+   </figure>
+  </para>
+
+  <para>
+   Af vores eksempel kan vi se, at feltet Brugernavn i tabellen
+   <emphasis>Session</emphasis> er en fremmednøgle til feltet
+   Brugernavn i tabellen <emphasis>Users</emphasis> - det faglige ord
+   er Foreign Key constraint (FK).  At jeg har vist denne grafisk
+   bunder i teorien om relationelle databaser, men da denne facilitet
+   ikke er implementeret ordentligt i MySQL, og da konsortiet bagved
+   også fraråder brugen af FK, er brugen af FK ikke med i vores
+   eksempel. Hvis du benytter Oracle i stedet for MySQL, vil jeg
+   kraftigt opfordre dig til at benytte dig af FK, da de gør arbejdet
+   med at vedligeholde en database væsentligt nemmere. Men til vores
+   brug har det ikke den store betydning, udover at vi bare skal være
+   klar over det og tage forbehold for det, når vi tilføjer eller
+   opdaterer i databasen.
+  </para>
+
+  <para>
+   Dette eksempel er ikke særlig avanceret, da resultatet af brugerens
+   indtastning kun er en side, hvor vedkommende bliver præsenteret for
+   de oplysninger, vi har gemt om personen, men det har heller ikke
+   været formålet med denne gennemgang, at vi skulle ende op med en
+   stort eksempel, men mere har det været formålet at anskue hvilke
+   muligheder, man har med kombinationen PHP og MySQL, og muligvis
+   kunne være til inspiration for dig i din egen udvikling af
+   dynamiske websider. Eksemplet illustrerer dog, hvilket kraftfuldt
+   værktøj du har mellem hænderne, og kan let udbygges til en mere
+   omfattende hjemmeside. Nu har du i hvertfald fået en skabelon, du
+   kan bygge videre på.
+  </para>
+
+</sect2>
+
+<sect2 id="Sessions">
+<title>Hvordan starter vi en session</title>
+ <para>
+  Det første brugeren møder, når har kommer til vores website, er en simpel login formular.
+ </para>
+ <para>
+   Her er hvad brugeren ser.
+   <figure id="Login" float="1">
+    <title>Loginbilledet</title>
+    <graphic fileref="login.&magic;" scale="60"></graphic>
+   </figure>
+  </para>
+
+  <para>
+   Når brugeren har indtastet sit brugernavn og password, skal de
+   indtastede oplysninger valideres, og alt efter resultatet af
+   valideringen bliver brugeren præsenteret for et velkomstbillede
+   eller en meddelelse om, at der er opstået en fejl.
+  </para>
+
+  <para>
+   Hvis ellers det tekniske er i orden, vil der typisk være to udfald:
+   Enten er den besøgende registreret, som bruger på vores system,
+   eller også er vedkommende det ikke. Figur 2.3 viser det
+   skærmbillede, der er resultatet af, at en registreret bruger har
+   logget sig ind, mens figur 2.4 viser det skærmbillede, der er
+   resultatet af at en bruger uden rettigheder, har forsøgt at logge
+   sig ind.
+  </para>
+
+ <para>
+   Her er hvad brugeren ser hvis han godkendes.
+   <figure id="Godkendt" float="1">
+    <title>Velkomstbilledet</title>
+    <graphic fileref="velkommen.&magic;" scale="60"></graphic>
+   </figure>
+  </para>
+
+ <para>
+   Her er hvad brugeren ser hvis han ikke godkendes.
+   <figure id="Fejl" float="1">
+    <title>Fejlbilledet</title>
+    <graphic fileref="fejl.&magic;" scale="60"></graphic>
+   </figure>
+  </para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="database">
+<title>Vores database oprettes i MySQL</title>
+<sect2 id="Create">
+<title>Opret databasen og tildel en bruger rettigheder</title>
+ <para>
+  Det første vi skal gøre, er at oprette vores database i MySQL,
+  hvorefter vi skal have tildelt en bruger rettighed til, at indsætte,
+  opdatere, slette og udtrække data fra databasen. For at gøre dette
+  skal du logge dig ind på databaserveren og udføre følgende
+  kommandoer:
+ </para>
+
+<screen>
+<prompt>[tux@friheden tux]$</prompt><userinput>mysql</userinput>
+<prompt>Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 254 to server version: 3.22.32
+
+Type 'help' for help.
+
+
+mysql></prompt><userinput>create database friheden;</userinput>
+<prompt>Query OK, 1 row affected (0.00 sec)
+
+mysql></prompt><userinput>use friheden;</userinput>
+<prompt>Database changed
+mysql></prompt><userinput>grant insert, delete, update, select on friheden.*
+    -> to webuser@localhost identified by "WebVer1.00";</userinput>
+<prompt>Query OK, 0 rows affected (0.12 sec)
+
+mysql></prompt>
+</screen>
+</sect2>
+
+<sect2 id="Tables">
+<title>Opret tabellerne</title>
+  <para>
+   Når vi nu har fået oprettet vores database, og har givet en bruger adgang hertil, mangler vi kun
+   at få oprettet vores tabeller. Dette gøres med følgende kommandoer:
+  </para>
+
+<screen>
+<prompt>mysql></prompt><userinput>create table Users (
+    -> Brugernavn varchar(50) primary key,
+    -> Password varchar(50) not null,
+    -> Navn varchar(50),
+    -> Email varchar(30) unique not null,
+    -> Status varchar(15) not null,
+    -> Oprettet datetime);</userinput>
+<prompt>Query OK, 0 rows affected (0.02 sec)
+
+mysql></prompt><userinput>create table Session (
+    -> SessionID char(32) primary key,
+    -> Brugernavn varchar(50) not null,
+    -> SessionDato datetime);</userinput>
+<prompt>Query OK, 0 rows affected (0.01 sec)
+
+mysql></prompt>
+</screen>
+</sect2>
+
+<sect2 id="Insert">
+<title>Indsæt de første brugere i databasen</title>
+  <para>
+   Vi har nu oprettet databasen, og herefter mangler vi kun at indsætte en administrator og en
+   almindelig bruger, som vi skal bruge som test. Kommandoerne kommer her:
+  </para>
+
+<screen>
+<prompt>mysql></prompt><userinput>insert into Users (Brugernavn, Password,
+    -> Navn, Email, Status, Oprettet)
+    -> values
+    -> ("admin", "admin", "Michael Rasmussen",
+    -> "admin@friheden.dk", "Administrator",
+    -> "2001-02-06");</userinput>
+<prompt>Query OK, 1 row affected (0.02 sec)
+
+mysql></prompt><userinput>insert into Users (Brugernavn, Password,
+    -> Navn, Email, Status, Oprettet)
+    -> values
+    -> ("sten", "sten", "Sten Larsen",
+    -> "sten@larsen.dk", "Medlem",
+    -> "2001-02-06");</userinput>
+<prompt>Query OK, 1 row affected (0.01 sec)
+
+mysql></prompt>
+</screen>
+</sect2>
+
+<sect2 id="Kryptering">
+<title>Kryptering</title>
+  <para>
+   Vi har nu fået oprettet vores database, og fået lagt de første
+   brugere ind i databasen. Der er dog en ting, du skal være opmærksom
+   på her. I mine eksempler benytter jeg mig af funktionen <emphasis>
+   MD5</emphasis>, som er en krypteringsfunktion, der er indbygget i
+   PHP.
+  </para>
+
+  <para>
+   Nu vil du sikkert stille det spørgsmål: "Hvorfor
+   det?". Forklaringen er ligetil: Uden kryptering er det <quote>alt
+   for let</quote> for udenforstående at kompromitere dine
+   sikkerhedsrutiner, og derfor har jeg medtaget faciliteten i mit
+   eksempel. Send blot et indlæg til newslisten sikkerhed, og du skal
+   få alle dine spørgsmål besvaret.
+  </para>
+
+  <para>
+   Det har den konsekvens, at hvis du har brugt mine scripts, vil alle
+   de passwords, du har indtastet manuel, være "forkerte". Hvis du vil
+   undgå denne fejl, skal du enten skrive alle PHP scripts selv, eller
+   fuldt ud benytte dig af mine - valget er dit.
+  </para>
+</sect2>
+
+</sect1>
+
+<sect1 id="koden">
+<title>Hvordan laver vi koden i PHP</title>
+ <para>
+  I dette afsnit afslører jeg, hvordan vores eksempel kodes i PHP. Gennemgangen struktures på følgende måde:
+ </para>
+
+ <para>
+  Først viser jeg kildekoden, hvorefter jeg vil gennemgå den. Jeg
+  antager, at du er bekendt med HTML, men har ingen eller næsten igen
+  erfaring med PHP. Hvis du ikke har erfaring med HTML, vil jeg råde
+  dig til, at hente denne viden et andet sted, inden du læser
+  videre. Eksemplerne er dog ikke sværere end at man med et minimalt
+  kendskab til HTML, vil kunne følge med i gennemgangen.
+ </para>
+
+<sect2 id="loginbilledet">
+<title>Login</title>
+ <para>
+  Her har du koden til login billedet. Bemærk, at det er skrevet i rent HTML.
+ </para>
+
+<screen>
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+     "http://www.w3.org/TR/REC-html40/loose.dtd">
+&lt;HTML>
+&lt;HEAD>
+        &lt;TITLE>Login på Friheden - vinduet til PHP's forunderlige verdenen&lt;/TITLE>
+&lt;META NAME="Generator" CONTENT="Stone's WebWriter 3">
+&lt;/HEAD>
+&lt;BODY BGCOLOR="#999999" TEXT="#000000" LINK="#0000FF" VLINK="#660066"
+  ALINK="#FF0000">
+&lt;CENTER>
+&lt;H1>Login p&aring; Friheden&lt;/H1>
+&lt;H2>Dit vindue til PHP&lt;/H2>
+&lt;HR>
+&lt;FORM ACTION="login.php" METHOD="POST" NAME="login">
+Brugernavn:&nbsp;&lt;INPUT TYPE="text" NAME="user">&lt;BR>
+Password:&nbsp;&nbsp;&nbsp;&lt;INPUT TYPE="password" NAME="password">
+&lt;P>&lt;INPUT TYPE="submit" VALUE="Log on" NAME="submit">
+&lt;/FORM>
+&lt;/CENTER>
+&lt;BR>
+&lt;P>&lt;HR>
+&lt;CENTER>&lt;FONT FACE="Times New Roman" SIZE="-2">
+Copyright &copy Michael Rasmussen&lt;/FONT>&lt;/CENTER>
+&lt;/BODY>
+&lt;/HTML>
+</screen>
+
+  <para>
+   Brugeren indtaster sit brugernavn og password.
+  </para>
+</sect2>
+
+<sect2 id="valid">
+<title>Brugervalidering</title>
+  <para>
+   Her se koden for valideringen af brugerinput:
+  </para>
+<screen>
+&lt;?
+  require("Config.php");
+  /*
+  Denne fil indeholder definitionen på alle databasevariable. Variabelnavnene er skrevet med stort,
+  og første tegn begynder med "_". Henvisningen tilføjes i starten af alle filer, der tilgår MySQL.
+  */
+
+  $link = mysql_connect(_MYSQL_SERVER_NAME, _MYSQL_USER_NAME, _MYSQL_PASSWORD);
+  if ($link == 0) {
+     header("Location: Fejl.php?Kode=1");
+     exit;
+  }
+
+  mysql_selectdb(_MYSQL_DATABASE_NAME, $link);
+
+  $password = md5($password);
+  $SQLQuery = "SELECT Brugernavn FROM Users ";
+  $SQLQuery .= "WHERE Brugernavn='$user' and ";
+  $SQLQuery .= "Password='$password'";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+     header("Location: Fejl.php?Kode=2");
+     exit;
+  }
+  else{
+       if (mysql_fetch_row($result)){
+           $bruger_id = mysql_result($result,'Brugernavn');
+           $session_id = md5(uniqid(rand()));
+           $SQLQuery = "INSERT INTO Session (Brugernavn, SessionID, SessionDato) ";
+           $SQLQuery .= "VALUES ('$bruger_id', '$session_id', '" . date("Y-m-d H:i:s") . "')";
+           $result = mysql_query($SQLQuery);
+           if ($result == 0) {
+                header("Location: Fejl.php?Kode=3");
+                exit;
+           }
+           mysql_close($link);
+           header("Location: Velkommen.php?SessionID=$session_id");
+           exit;
+       }
+  else header("Location: Fejl.php?Kode=4");
+?>
+</screen>
+
+  <para>
+   Først skal vi erklære vores databasevariable. Dette foregår i filen <emphasis>Configure.php</emphasis>
+   <footnote>
+   <screen>
+&lt;?
+   //Database configs
+   define("_MYSQL_SERVER_NAME", "localhost");
+   define("_MYSQL_USER_NAME", "webuser");
+   define("_MYSQL_PASSWORD", "WebVer1.00");
+   define("_MYSQL_DATABASE_NAME", "friheden");
+?>
+</screen>
+</footnote>.  Herefter skal vi skabe en forbindelse til MySQL, og
+   dette gøres med funktionen <emphasis>mysql_connect( MySQL server,
+   MySQL brugernavn, MySQL password)</emphasis>. Hvis alt går vel, for
+   vi returneret en handle til database serveren. For at finde ud af
+   om alt gik godt, laver vi en test på den returnerede handle. Har
+   den en værdi &lt;> 0, er alt i den skønneste orden, ellers er der
+   opstået en fejl. Til at håndtere fejlmeddelelser til brugerne har
+   jeg skrevet en fil, som udskriver den rigtige fejlmeddelelse til
+   brugerne baseret på en medsendt kode. Dette har jeg gjort for at
+   holde styr på alle fejlmeddelelser, og samtidig sikrer man sig også
+   mod at udskrive den samme fejlmeddelelse hver gang. Efter vi har
+   fået forbindelse til MySQL, forestår blot at bede den om at
+   aktivere vores database. Dette gøres med funktionen
+   <emphasis>mysql_selectdb( MySQL database,
+   databasehandle)</emphasis>.
+  </para>
+
+  <para>
+   Vi har nu fået forbindelse til databasen, og kan herefter begynde
+   at trække oplysninger ud fra den. Det første vi skal gøre, er, at
+   få krypteret det indtastede password med
+   <emphasis>MD5</emphasis>. Herefter skal vi blot bede om at få
+   brugernavnet i tabellen Users, hvis password er lig med, det
+   indtastede. Det gøres med funktionen <emphasis>mysql_query(SQL
+   forespørgsel)</emphasis> <footnote><para> Et glimrende opslagsværk,
+   til den overkommelige pris af 69 kr, der kan købes i alle
+   boghandler, er et lille hæfte fra IDG Forlag. (Rolland, 1999: Start
+   på SQL) </para></footnote>.  Hvis det returnerede resultat er &lt;>
+   0, er der opstået en fejl, i modsat fald får vi en handle til de(n)
+   række(r), som opfylder vores betingelser - SQL forespørgslen. Da vi
+   ved, at vi kun vil få returneret en række, behøver vi kun at læse
+   indholdet af den første række. Til det formål benytter vi os af
+   funktionen <emphasis>mysql_fetch_row(handle)</emphasis>. Havde vi
+   kunnet få flere rækker returneret, måtte vi for at se alle
+   rækkerne, benytte os af en løkkestruktur
+   <footnote><para>F.eks. while (mysql_fetch_row(result))
+   </para></footnote>.  Funktionen returnerer den første række i vores
+   handle, og de enkelte felter hentes med funktionen
+   <emphasis><command>mysql_result(handle,
+   feltnavn)</command></emphasis>.
+  </para>
+
+  <para>
+   Det vi mangler, er blot at genere et SessionID og indsætte det i
+   tabellen Sessions sammen med vores brugernavn.  For at generere et
+   SessionID skal vi bruge funktionen
+   <emphasis>uniqid(værdi)</emphasis>. For at gøre det endnu mere
+   tilfældigt bruger jeg funktionen <emphasis>rand([min [,
+   max]])</emphasis>. Da jeg ikke har nogen krav til uddata, bruger
+   jeg funktionen uden angivelse af min og max. Det returnerede tal
+   skal nu konverteres til et SessionID, og derfor sender vi
+   resultatet fra uniqid til funktionen MD5. At jeg bruger kryptering
+   her, hænger sammen med, at antallet af mulige SessionID bliver
+   forøget fra (9+31^10) til (32^37) - jeg skulle dermed mene, at
+   chancen for at to brugere får tildelt samme SessionsId, er
+   forsvindende lille.
+  </para>
+
+  <para>
+   Vi har nu et brugernavn og et SessionID, og vi kan derfor tildele
+   det til vores ny besøgende, og indsætte ham i tabellen over
+   tildelte sessions. Herefter forestår kun at lukke vores forbindelse
+   til MySQL, og sende brugeren videre til den første side sammen med
+   hans tildelte SessionsID. Dette gøres med kommandoen
+   <emphasis>header("Location:
+   Velkommen.php?SessionID=$session_id");</emphasis>
+  </para>
+</sect2>
+
+<sect2 id="HentInformation">
+<title>Hvordan henter vi information på baggrund af et SessionID</title>
+  <para>
+   For at hente oplysninger ud af databasen, baseret på et aktuelt SessionID, bruges følgende fremgangsmåde:
+  </para>
+   <screen>
+&lt;?
+  include("session.php");
+
+  if ($SessionID == "") {
+       header("Location: login.html");
+       exit;
+  }
+  $SQLQuery = "SELECT Brugernavn FROM Session WHERE SessionID = '$SessionID'";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+    header("Location: Fejl.php?Kode=2");
+    exit;
+  }
+  else {
+    $field = mysql_fetch_row($result);
+    $bruger_id = $field['Brugernavn'];
+  };
+
+  $SQLQuery = "SELECT Brugernavn, Navn, Email, Status, Oprettet from Users ";
+  $SQLQuery .= "WHERE Brugernavn='$bruger_id'";
+  $result = mysql_query($SQLQuery);
+  if ($result == 0) {
+    header("Location: Fejl.php?Kode=2");
+    exit;
+  }
+  else {
+    $field = mysql_fetch_row($result);
+    $bruger = $field['Brugernavn'];
+    $navn = $field['Navn'];
+    $email = $field['Email'];
+    $status = $field['Status'];
+    $oprettet = $field['Oprettet'];
+  }
+?>
+&lt;!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN \">
+&lt;HTML>
+&lt;HEAD>
+        &lt;TITLE>Website Friheden&lt;/TITLE>
+&lt;META NAME=Generator CONTENT=Stone's WebWriter 3>
+&lt;/HEAD>
+&lt;BODY BGCOLOR="#999999" TEXT=#000000 LINK=#0000FF VLINK=#660066 ALINK=#FF0000>
+&lt;BR>&lt;BR>&lt;BR>&lt;BR>
+&lt;CENTER>
+&lt;H2>Hvilke oplysninger har vi registreret om den pågældende person&lt;/H2>
+&lt;TABLE BORDER=1 BGCOLOR=#CCFFFF>
+&lt;TH COLSPAN="2" BGCOLOR="YELLOW">Følgende er registreret om &lt;? print "$bruger" ?>&lt;/TH>
+&lt;/TR>
+&lt;TR>
+        &lt;TD>Navn&lt;/TD>
+        &lt;TD>&lt;? echo "$navn" ?>&lt;/TD>
+&lt;/TR>
+&lt;TR>
+        &lt;TD>Email adresse&lt;/TD>
+        &lt;TD>&lt;? echo "$email" ?>&lt;/TD>
+&lt;/TR>
+&lt;TR>
+        &lt;TD>Status&lt;/TD>
+        &lt;TD>&lt;? echo "$status" ?>&lt;/TD>
+&lt;/TR>
+&lt;TR>
+        &lt;TD>Oprettet&lt;/TD>
+        &lt;TD>&lt;? echo "$oprettet" ?>&lt;/TD>
+&lt;/TR>
+&lt;/TABLE>
+&lt;BR>
+&lt;BR>
+&lt;?
+if ($bruger == 'admin'){
+    print
+    "&lt;BR>
+    &lt;A HREF='NyBruger.php?SessionID=$SessionID'>Opret ny bruger&lt;/A>";
+}
+?>
+&lt;/CENTER>
+&lt;BR>
+&lt;P>&lt;HR>
+&lt;CENTER>&lt;FONT FACE="Times New Roman" SIZE="-2">
+Copyright &copy Michael Rasmussen&lt;/FONT>&lt;/CENTER>
+&lt;/BODY>
+&lt;/HTML>
+   </screen>
+
+   <para>
+    Vi er nu nået til det punkt, hvor vi skal til at se resultatet af
+    vores anstrengelser. Det første vi selvfølgelig skal gøre, er, at
+    kontrollere om vores bruger har logget sig ind. Har han ikke det,
+    bliver han sendt til login siden. Denne kontrol foregår i filen
+    <emphasis>session.php</emphasis>, og resultatet af kontrollen har
+    to udfald: Vi har en godkendt bruger - 1) SessionID medsendt, 2)
+    SessionID er valid, eller vi har en ikke godkendt bruger - 1)
+    SessionID er ikke medsendt, 2) SessionID er ikke valid. Mere om
+    denne fil senere. For nu antager vi blot, at vi har at gøre med en
+    godkendt bruger.
+   </para>
+
+   <para>
+    I filen <emphasis>session.php</emphasis> fandt vi ud af, om
+    brugeren var godkendt. Ved samme lejlighed hentede vi samtidig
+    denne brugers brugernavn, og på baggrund af dette brugernavn har
+    vi nu mulighed for, at hente de resterende oplysninger i tabellen
+    Users. Opbygningen af forespørgslerne og hentningen af
+    informationerne foregår på præcis samme måde som beskrevet under
+    <link linkend="valid">Brugervalidering</link>.
+   </para>
+
+   <para>
+    Her kommer den lovede gennemgang af filen
+    <emphasis>session.php</emphasis>. Først kommer kilden:
+   </para>
+
+   <screen>
+&lt;?
+  include("Config.php");
+
+  $link = mysql_connect(_MYSQL_SERVER_NAME, _MYSQL_USER_NAME, _MYSQL_PASSWORD);
+  if ($link == 0) {
+     $SessionID = "";
+  }
+  else {
+     mysql_selectdb(_MYSQL_DATABASE_NAME, $link);
+     if (!isset($SessionID) or ($SessionID == "")) {
+     $SessionID = "";
+      }
+     else {
+        $SQLQuery = "SELECT Brugernavn from Session ";
+        $SQLQuery .= "WHERE SessionID='$SessionID'";
+        $result = mysql_query($SQLQuery);
+        if ($result == 0) {
+             $SessionID = "";
+        }
+        else {
+              if (mysql_fetch_row($result)) {
+                  $bruger_id = mysql_result($result,'Brugernavn');
+              }
+              else {
+                   $SessionID = "";
+              };
+              mysql_free_result($result);
+        }
+     }
+  }
+?>
+   </screen>
+
+   <para>
+    Først undersøges der, om vi kan etablere en forbindelse til
+    databaseserveren. Kan vi ikke det, sættes SessionID = "" - hvis
+    der ikke er forbindelse til databasen, vil vi af sikkerhedsgrunde,
+    ikke tillade login til sikrede sider. Hvis vi kan få etableret en
+    forbindelse, undersøges der, om brugeren har logget sig på -
+    <command>if (!isset($SessionID) or ($SessionID == ""))</command>:
+    Hvis SessionID ikke er aktiveret, eller hvis det ikke er tildelt
+    nogen værdi, sættes SessionID = "". Hvis SessionID er tildelt en
+    værdi, skal vi hente, det tilknyttede brugernavn. Hvis vi får en
+    tom række tilbage, er det fordi, der ikke er blevet medsendt et
+    valid SessionID, og derfor sættes SessionID = "". Inden vi
+    afslutter, frigives vores handle.
+   </para>
+
+</sect2>
+</sect1>
+
+<sect1 id="videre">
+<title>Hvad mangler, og hvordan kommer vi videre med vores eksempel</title>
+   <para>
+    Vores eksempel er nu færdigt, og nu henstår blot en
+    perspektivering af vores eksempel. En ting er åbenbar: Vi mangler
+    faciliteter til at administrere vores database. Administrationen
+    kunne selvfølgelig foregå manuelt, men det bliver temmelig
+    besværligt i længden, og derudover har vi også
+    krypteringsproblemet, så min anbefaling ville være, at dette
+    problem løses via en passende side, hvortil kun administratoren
+    har adgang. Jeg har anvist, hvordan man kan løse problemet i mit
+    eksempel, hvor man, hvis man har status af administrator, får en
+    mulighed for at oprette nye brugere, når velkomstbilledet vises. I
+    et konkret eksempel kunne man forestille sig, at når en
+    administrator loggede sig på, ville han blive præsenteret for en
+    særlig side, hvorfra han kunne gå til en administrationsside. Her
+    skulle det være muligt at
+   </para>
+
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>
+    oprette og slette brugere
+  </para>
+  </listitem>
+  <listitem>
+   <para>
+    Ændre de oplysninger vi har om brugerne
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Læse og udskrive statistik for vores website
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    .... Mulighederne er legio, kun din egen fantasi - og 
+    dine evner, sætter grænser
+   </para>
+  </listitem>
+  </itemizedlist>
+
+  <para>
+   En anden ting jeg lige må påpege, er, at vores database vil vokse
+   uafladeligt, da vi gemmer alle oplysninger om sessioner, så hvis du
+   vil undgå dette fænomen, må du finde ud af hvordan, og hvornår, du
+   vil slette sessionsoplysninger. Du kan eventuelt klare det med et
+   cron-job, eller på anden hvis automatisere det. Har du ikke brug
+   for historik, kan du lade webserveren klare det selv, ved at du
+   sørger for at udarbejde et script, som sletter alle oplysninger i
+   sessionstabellen, når brugeren forlader dit website.
+  </para>
+
+  <para>
+   Hvis PHP har fanget din interesse, kan du med stor fordel finde
+   yderligere informationer her:
+  </para>
+
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>
+    <ulink url="http://webcafe.dk">Webcafe.dk</ulink>
+  </para>
+  </listitem>
+  <listitem>
+   <para>
+    <ulink url="http://netcoders.dk">Netcoders.dk</ulink>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <ulink url="http://weberdev.com">Weberdev.com</ulink>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <ulink url="http://phpbuilder.com">Phpbuilder.com</ulink>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Sidst men ikke mindst: <ulink url="http://php.net">PHP.net</ulink>
+   </para>
+  </listitem>
+  </itemizedlist>
+
+</sect1>
+</chapter>
+
+<chapter id="afslutning">
+<title>Afsluttende bemærkninger</title>
+   <para>
+    Jeg håber, du har fået interesse for PHP gennem denne artikel, men
+    inden du slipper den, mangler jeg lige at forklare forskellen
+    mellem <emphasis>include()</emphasis> og
+    <emphasis>require()</emphasis>. Forskellen er umiddelbart ikke
+    stor, men i virkelighedens verden er der en væsentlig
+    forskel. Require() fungerer meget lig metoden #include &lt;file> i
+    C, og betyder blot, at nævnte fil skal indsættes på det kaldte
+    sted.  Indsættelsen foregår altid, og betingelsesløst. Med
+    include() forholder det sig anderledes, da filen kun indsættes,
+    når den pågældende linie udføres, og dermed har man mulighed for
+    at includere forskellige filer alt efter programforløbet.
+   </para>
+
+   <para>
+    Hvis du ønsker at diskutere PHP med andre ligesindede, kommr her
+    en liste med diskussionsgrupper. Som du ser, findes der ikke en
+    diskussionsgruppe på news.sslug.dk, men her må du i stedet ty til
+    gruppen prog, men hvem ved om ikke der snart kommer en for
+    diskussioner omkring PHP? Du kan jo tilslutte dig gruppen af
+    personer, som ønsker det, og når vi engang bliver lige så store
+    som C-folket, kan det jo være SSLUG bøjer sig for kravet :-):
+   </para>
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>
+    news://alt.php
+  </para>
+  </listitem>
+  <listitem>
+   <para>
+    news://dk.edb.internet.webdesign.serverside.php
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    news://dk.worldonline.mysql-php
+   </para>
+  </listitem>
+  </itemizedlist>
+
+</chapter>
