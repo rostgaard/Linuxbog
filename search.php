@@ -47,7 +47,7 @@ Søg efter:
 <input type="text" name="q" value="<?php echo $q ?>" size="40">
 <input type="submit" name="s" value="Submit">
 <br>
-<font size="-1">Der søges med <a href="http://www.linuxbog.dk/unix/bog/joker-redir-pipe.html#regexp">regulære udtryk</a> - case insentive</font>
+<font size="-1">Der søges med <a href="unix/bog/joker-redir-pipe.html#regexp">regulære udtryk</a> - case insentive</font>
 </form>
 
 <?php
@@ -81,7 +81,7 @@ function searchdir( $dir, $ext, $q ) {
   $count = 0;
   $d = dir($dir);
   while ($fil = $d->read())
-    if (is_file($dir."/".$fil) && preg_match("|^[a-z0-9-_]+.+\.${ext}$|", $fil))
+    if (is_file($dir."/".$fil) && preg_match("|^[a-z0-9-_]+.+\.${ext}(.php)?$|", $fil))
       $count += searchinfile("$dir/$fil", $q);
   $d->close();
   return $count;
