@@ -32,7 +32,7 @@ txt:
 	cp *.sgml tempdir
 	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V html-index -V nochunks bog.sgml > ged.html)
 	perl /usr/local/bin/collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-	jade -t sgml -i html -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks start.sgml > bog/book.html
+	jade -t sgml -i html -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > bog/book.html
 	cp linuxbog.css bog
 	cp images/*.png bog
 
