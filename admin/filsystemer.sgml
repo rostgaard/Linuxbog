@@ -8,7 +8,7 @@
 Linux bruger som standard et filsystem kaldet
 <emphasis>ext2</emphasis> (Extended file system version 2), men kan
 også læse fra og skrive til mange andre filsystemer, f.eks. FAT-baserede
-filsystemer der bruges af DOS og Windows.
+filsystemer, der bruges af DOS og Windows.
 </para>
 
 <indexterm><primary>mkfs</primary></indexterm>
@@ -21,6 +21,9 @@ partition (her <filename>/dev/hda5</filename>), som du ønsker at
 formatere, sker formateringen ved at skrive (som root):
 </para>
 
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>mkfs /dev/hda5</userinput>
+</screen>
 
 <para>
 Programmet <command>mkfs</command> finder selv ud af, hvilket filsystem
@@ -30,7 +33,7 @@ partitionstabellen.
 
 <para>
 Når din computer går ned (ja, det sker, f.eks. når strømmen går), kan
-du komme ud for at dine filsystemer er i en fejlbehæftet tilstand. Dette
+du komme ud for at dine filsystemer er i en fejlbehæftet tilstand. Det
 kan dog ofte reddes af programmet <command>fsck</command> (File
 System ChecK). Faktisk
 køres dette program altid ved opstart for at sikre at alle filsystemer
@@ -38,7 +41,7 @@ er i en god tilstand.
 </para>
 
 <para>
-Vi du køre fil-check manuelt på en ext2-partition, så kan du direkte
+Vi du køre filcheck manuelt på en ext2-partition, så kan du direkte
 bruge <command>e2fsck</command>:
 </para>
 <indexterm><primary>fsck</primary></indexterm>
@@ -60,7 +63,7 @@ bruge <command>e2fsck</command>:
 <para>
 ReiserFS er et af de nyere filsystemer til Linux. Faktisk er det så nyt,
 at det endnu ikke er en del af den officielle kerne. Før kerne
-2.4 var det kun være det gamle velprøvede ext2-filsystem, som 
+2.4 var det kun være det gamle velafprøvede ext2-filsystem, som 
 kernen understøttede officielt, men med kerne
 2.4.1 og senere er ReiserFS også med.
 </para>
@@ -79,8 +82,8 @@ virkelige serververden).
 </para>
 
 <para>
-Tidligere versioner af ReiserFS ville ikke virke med Lilo boot fra en
-ReiserFS-partition.  Dette kunne løses ved at lægge
+Tidligere versioner af ReiserFS ville ikke virke med Lilo-boot fra en
+ReiserFS-partition.  Det kunne løses ved at lægge
 <filename>/boot</filename> på en ext2-partition, og hvis
 <filename>/boot</filename> er en lille selvstændig partition, kan
 <filename>/</filename>-partitionen være ReiserFS-formateret.
@@ -98,7 +101,7 @@ flag, "<literal>notail</literal>":
 ReiserFS følger med Mandrake (fra version 7.1) og SuSE (fra
 6.4) og under disse distributioner er det let at vælge
 formatering med ReiserFS i stedet for ext2 under
-installation.
+installationen.
 Men selv under andre distributioner er det ikke
 svært. Du skal sikre dig, at kernen understøtter ReiserFS som
 filsystem. Måske skal du omkonfigurere din kerne (se også <xref
@@ -180,7 +183,7 @@ nyere ext3, ReiserFS og endelige XFS kan læses på
 </sect1>
 
 <sect1 id="software-raid">
-<title>Software RAID</title>
+<title>Software-RAID</title>
 <indexterm><primary>RAID</primary></indexterm>
 <!-- Skrevet af peter_frederiksen@danbbs.dk -->
 <!-- sprog rettet lidt til : pto -->
@@ -188,8 +191,8 @@ nyere ext3, ReiserFS og endelige XFS kan læses på
 <sect2 id="hvad-er-raid">
 <title>Hvad er RAID?</title>
 <para>
-RAID er en metode til at slå flere diske sammen til en
-<emphasis>volume</emphasis> (dvs. en logisk disk); det kan gøres for
+RAID er en metode til at slå flere diske sammen til én
+<emphasis>volume</emphasis> (dvs. én logisk disk); det kan gøres for
 at opnå et større brugerdrev eller for at højne sikkerheden ved
 redundans.
 </para>
@@ -204,7 +207,7 @@ derfor vedtaget nogle RAID-levels.
 <title>Forskel mellem hardware- og software-RAID</title>
 
 <para>
-RAID kan laves hardware- eller software-mæssigt, det sikreste
+RAID kan laves hardware- eller software-mæssigt. Det sikreste
 er via hardware eller med andre ord en RAID-controller.
 </para>
 
@@ -258,7 +261,7 @@ disk står af, så kører den anden videre.
 
 <para>
 Hvis man ønsker yderligere sikkerhed, kan man benytte en ekstra
-reservedisk som vil kunne erstatte en nedbrudt disk i spejlet, på den
+reservedisk som vil kunne erstatte en nedbrudt disk i spejlet. På den
 måde undværer man kun sikkerheden i den tid som det tager
 RAID-softwaren at opbygge et nyt spejl på reservedisken.
 </para>
@@ -267,18 +270,19 @@ RAID-softwaren at opbygge et nyt spejl på reservedisken.
 <title>Fremgangsmåde</title>
 
 <para>
-Start i singleusermode - (<command>linux s</command> ved opstart eller
+Start i singleuser-mode - (<command>linux s</command> ved opstart eller
 <command>init 1</command>).
 </para>
 
 <para>
-Opret partition med fdisk på begge diske, filsystemet skal være
-(Linux RAID autodetect), og skriv devicenummeret ned.
+Opret partition med fdisk på begge diske. Filsystemet skal være
+"Linux RAID autodetect". Skriv device-nummeret ned.
 </para>
 
 <para>
-Opret en <filename>/etc/raidtab</filename> fil, med indhold som
-kunne se således ud:</para>
+Opret en <filename>/etc/raidtab</filename>-fil, med indhold som
+kunne se således ud:
+</para>
 
 <screen>
 raiddev               /dev/md0
@@ -295,16 +299,16 @@ nr-spare-disks               0
 
 
 <para>
-Opret RAID devicen med kommandoen <command>mkraid /dev/md0</command>.
+Opret RAID-devicen med kommandoen <command>mkraid /dev/md0</command>.
 </para>
 
 <para> 
-Opret filsystem til din logiske enhed
+Opret filsystemet til din logiske enhed
 <filename>/dev/md0</filename> med kommandoen <command>mkfs /dev/md0</command>.
 </para>
 
 <para> 
-Monter det logiske drev eks. <command>mount /dev/md0 /spejl</command>
+Montér det logiske drev med f.eks. <command>mount /dev/md0 /spejl</command>
 </para>
 
 <para> 
@@ -325,7 +329,7 @@ none       /dev/pts    devpts  gid=5,mode=620  0 0
 
 
 <para>
-Har du tidligere haft et RAID system sat op på diskene, skal du bruge
+Har du tidligere haft et RAID-system sat op på diskene, skal du bruge
 <command>mkraid --really-force /dev/md0</command> til at initialisere 
 diskene igen, også selvom de er slettede med fdisk. Husk dog at tage
 backup (f.eks. <command>tar pcfz data.tar.gz /mount/data</command>, 
@@ -340,25 +344,29 @@ derved.
 <sect2 id="linear-raid">
 <title>Opsætning af linear RAID</title>
 <indexterm><primary>linear RAID</primary></indexterm>
+<indexterm><primary>RAID</primary><secondary>linear</secondary></indexterm>
 
 <para>
-Linear RAID er når man ønsker at slå flere diske sammen til en logisk
-enhed og udnytte den samlede kapacitet.  Eks. på 2 diske som slås
-sammen <filename>/etc/raidtab</filename>
+Betegnelsen <emphasis>Linear RAID</emphasis> betyder, at man 
+ønsker at slå flere diske sammen til én logisk
+enhed og udnytte den samlede disk kapacitet. Det giver ikke større 
+data-sikkerhed - kun større samlet plads.
+Et eksempel på en <filename>/etc/raidtab</filename>
+hvor 2 diske som slås sammen er følgende:
 </para>
 
 
 <screen>
-raiddev              /dev/md0
-raid-level                  linear
-nr-raid-disks               2
-chunk-size                  8
-persistent-superblock       1
-nr-spare-disks              0
-    device           /dev/sdc1
-    raid-disk               0
-    device           /dev/sdd1
-    raid-disk               1         
+raiddev                /dev/md0
+raid-level             linear
+nr-raid-disks          2
+chunk-size             8
+persistent-superblock  1
+nr-spare-disks         0
+    device             /dev/sdc1
+    raid-disk          0
+    device             /dev/sdd1
+    raid-disk          1         
 </screen>
 </sect2>
 
@@ -371,7 +379,7 @@ nr-spare-disks              0
 Det er muligt at tilføje og fjerne diske fra RAID-systemet medens systemet
 kører. Det kan være en god ting, hvis filsystemet af en eller anden
 grund er gået i stykker på den ene af diskene. Det kan
-ske uden, at disken rent fysisk har fejlet.
+ske uden at disken rent fysisk har fejlet.
 </para>
 
 <para> 
@@ -379,7 +387,7 @@ ske uden, at disken rent fysisk har fejlet.
 </para>
 
 <para>
-F.eks. fjern disk <filename>/dev/hdd1</filename> fra RAID-systemet:
+F.eks. fjern disken <filename>/dev/hdd1</filename> fra RAID-systemet:
 </para>
 
 <screen>
@@ -387,7 +395,7 @@ F.eks. fjern disk <filename>/dev/hdd1</filename> fra RAID-systemet:
 </screen>
 
 <para>
-Nu kan man arbejde på disken med <command>fdisk</command>
+Nu kan man arbejde på disken med <command>fdisk</command>.
 </para>
 
 <para> 
@@ -395,7 +403,7 @@ Nu kan man arbejde på disken med <command>fdisk</command>
 </para>
 
 <para>
-Disken som er blevet repartioneret, kan tages i brug således:
+Disken som er blevet repartitioneret, kan tages i brug således:
 </para>
 
 <screen>
@@ -404,7 +412,7 @@ Disken som er blevet repartioneret, kan tages i brug således:
 
 <para>
 RAID-systemet vil automatisk blive opdateret, og et evt. spejl vil blive
-genopbygget medens produktionen kører, performancenedgangen er lille
+genopbygget medens produktionen kører, performance-nedgangen er lille
 selv ved IDE-diske.
 </para>
 
@@ -423,7 +431,7 @@ Har du brug for at få ekstra "tryk" på din IDE-harddisk,
 så kan du bruge <command>hdparm</command> til at tune hastigheden.
 Her er givet de to vigtigste parametre (bruge DMA og lookahead), som
 nærmest alle nyere diske understøtter. Der kan tunes endnu mere - have
-fun :-)
+fun! :-)
 </para>
 
 <para>
@@ -442,17 +450,17 @@ køres når systemet startes op. I Red Hat f.eks. i bunden af
 
 <para>
 Den første og sidste kommando måler hastigheden på harddisken. Der kommer to 
-tal. Det første "byffer-cache" er reelt et mål for processor og bushastighed, 
+tal. Det første "buffer-cache" er reelt et mål for processor- og bushastighed, 
 mens det andet tal angiver I/O fra disken. 
 </para>
 
 <para>
-For de fleste diske er den standard opsætning du har fin, men får du væsentligt
-mindre på det andet tal (se ovenfor), så skal du igang med at lege :)
+For de fleste diske er den standardopsætning du har fin, men får du væsentligt
+mindre på det andet tal (se ovenfor), så skal du i gang med at lege :-)
 </para>
 
 <para>
-Start med at noter hvordan dine parametre er nu (som virker)
+Start med at notere hvordan dine parametre er nu (og som virker):
 </para>
 
 <screen>
@@ -485,7 +493,7 @@ Nogle af de parametre du kan dreje på er følgende:
 
 <listitem>
  <para>
--m[tal] Multiple sector mode (dvs. IDE Block Mode), er om man kan hente mere data per gang. De fleste chipsæt understøtter nu dette. 2, 4, 8, 16 og 32 er lovlige værdier. 16 eller 32 er nok interessant for de fleste. 
+-m[tal] Multiple sector mode (dvs. IDE Block Mode), er om man kan hente mere data pr. gang. De fleste chipsæt understøtter nu dette. 2, 4, 8, 16 og 32 er lovlige værdier. 16 eller 32 er nok interessant for de fleste. 
  </para>
 </listitem>
 
@@ -500,17 +508,17 @@ oftest automatisk, og sættes default til -d1 hvis det er muligt.
 <listitem> 
  <para>
 -X[mode] sættes til højest mulige hastighed pr. default.
-Anvend -X66 er UltraDMA mode 2. -X67 for UltraDMA mode 3 osv. 
+Anvend -X66 for UltraDMA mode 2, -X67 for UltraDMA mode 3 osv. 
 Dog er UltraDMA mode 3, 4 og 5 meget eksperimentelle.
  </para>
 </listitem>
 
 <listitem> 
  <para>
--c[0|1|2|3] E)IDE 32-bit I/O support. 
-0  for at fravælge 32-bit I/O support, 
-1 for at tilkoble  32-bit data overførsel og 
-3 for 32 bit dataoverførsel med synkroninsering (mange chipsæt kræver dette. 
+-c[0|1|2|3] E)IDE 32-bit I/O-support. 
+0  for at fravælge 32-bit I/O-support, 
+1 for at tilkoble  32-bit dataoverførsel og 
+3 for 32-bit dataoverførsel med synkronisering (mange chipsæt kræver dette. 
  </para>
 </listitem>
 </itemizedlist>
@@ -541,16 +549,16 @@ Dog er UltraDMA mode 3, 4 og 5 meget eksperimentelle.
 I eksemplet giver jeg kommandoer
 som passer til de nyere Ultra DMA 66-controllere, og få lidt højere hastighed.
 Målefunktionen bør dog køres en del gange før man kan få en statistisk korrekt
-vurdering af ydelsen. Du skal være opmærksom på at du kan låse din maskine, 
+vurdering af ydelsen. Du skal være opmærksom på, at du kan låse din maskine, 
 hvis du angiver mere end hvad din maskine kan yde. I praksis ser du nok 
 et reboot hvis du går for langt. Tilføj den endelige optimale opsætning til 
 <filename>/etc/rc.local</filename> eller tilsvarende opstartsfil, når du er 
-sikker på maskinen kører godt. Se også <command>man hdparm</command>.
+sikker på at maskinen kører godt. Se også <command>man hdparm</command>.
 </para>
 
 <para>
 Red Hat 7.1 kan du justere i filerne:  <filename>/etc/sysconfig/harddiskhd[a-h]</filename> og så gør <filename>/etc/rc.sysinit</filename> resten ved 
-system start. Udfør <command>cp /etc/sysconfig/harddisks /etc/sysconfig/harddiskhdX</command>, hvor X er a,b,c osv for hda, hdb, hdc osv.
+systemstart. Udfør <command>cp /etc/sysconfig/harddisks /etc/sysconfig/harddiskhdX</command>, hvor X er a, b, c osv. for hda, hdb, hdc osv.
 Der er følgende parametre: 
 </para>
 
@@ -580,7 +588,7 @@ generel opsætning kan laves for alle diske.
 <para>
 Samme program, <command>hdparm</command>, kan bruges til at få
 harddisken til at spinne ned i hastighed - f.eks. efter 5
-sekunder. Dette betyder mere slid på harddisken, men din maskine
+sekunder. Det betyder mere slid på harddisken, men din maskine
 bliver stille.  
 </para>
 
@@ -590,9 +598,9 @@ bliver stille.
 
 <para>
 Hvis man har et eller flere programmer der jævnligt checker om nogle filer
-er ændret skal disse filers access tid også opdateres jævnligt - det
-giver skrivninger til disken selvom filsystemets egtl. data ikke ændres
-(kun dets metadata).  Det kan være en god ide at montere disken via <filename>/etc/fstab</filename> noget i stil med
+er ændret skal disse filers access-tid også opdateres jævnligt - det
+giver skrivninger til disken selvom filsystemets egentlige data ikke ændres
+(kun dets meta-data).  Det kan være en god idé at montere disken via <filename>/etc/fstab</filename> noget i stil med
 </para>
 
 <screen>
@@ -601,8 +609,8 @@ giver skrivninger til disken selvom filsystemets egtl. data ikke ændres
 
 
 <para>
-Kernens IDE-driver skal supportere det IDE chipsæt, der anvendes af
-bundkortet, og ikke alle IDE chipsæt er supporteret med (U)DMA.  Så
+Kernens IDE-driver skal understøtte det IDE-chipsæt, der anvendes af
+bundkortet, og ikke alle IDE-chipsæt er understøttet med (U)DMA.  Så
 hvis en given funktion ikke tillades af <command>hdparm</command>, så
 kan det være forklaringen.
 </para>
@@ -619,7 +627,7 @@ drift.  Et nyttigt grafisk værktøj til at tune scsi-diske er
 <para>
 Du kan måske også være interesseret i at se mere på 
 <ulink url="http://www.iozone.org/">http://www.iozone.org/</ulink>
-hvor der er program til at benchmark-teste harddisk-ydelse.
+hvor der er et program til at benchmark-teste harddisk-ydelse.
 </para>
 
 </sect1>
@@ -664,7 +672,7 @@ ping   9149 root mem  REG    3,5  246652  16061 /lib/libnss_files-2.1.3.so
 </screen>
 
 <para>
-Så man kan se at programmer har fat i mange filer.  Det skal nævnes at
+Så man kan se, at programmer har fat i mange filer.  Det skal nævnes at
 <command>pidof</command> kræver at SysVinit-pakken er installeret og
 stien til <command>pidof</command> varierer desværre alt efter
 Linux-distribution. Det skal også nævnes, at <command>ps aux</command>
@@ -694,8 +702,8 @@ systemadministrator.
 </para>
 
 <para>
-Et tilsvarende nyttigt program til ca. samme formål er
-<command>/sbin/fuser DEVICE</command>, f.eks. kan man se hvilket
+Et tilsvarende nyttigt program til nogenlunde samme formål er
+<command>/sbin/fuser DEVICE</command>. F.eks. kan man se hvilket
 proces-ID, som låser <filename>/dev/audio</filename> ved at skrive
 <command>/sbin/fuser /dev/audio</command>.
 </para>
