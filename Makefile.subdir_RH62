@@ -1,0 +1,262 @@
+#
+# Vi kræver SGML DocBook 3.1
+# ImageMagick skal installeres
+# tidy og Perl modulet Image::Size er ønskelige
+##
+#
+# Peter Toft <pto@sslug.dk> 
+# $Id$
+
+# Lokalt katalog (fuld sti)
+
+locdirname:=$(shell pwd)
+
+# Kort navn
+targetshortname:=$(notdir $(locdirname))
+
+# Med linuxbog- foran
+targetname:=linuxbog-$(notdir $(locdirname))
+
+# version
+version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
+
+# dato
+dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)
+
+# Her er en liste af sgml-filer der ændres automatisk
+badsgmlfiles=dato.sgml version.sgml magic.sgml stikord.sgml bogoversigt.sgml ophavsret.sgml
+
+# Her er  en liste af alle sgml
+allesgmlfiles:=$(wildcard *.sgml *.xml)
+
+# Her er en liste af sgml-filer der skal checkes
+sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+
+# Her er  en liste af alle eksempler
+alleeksfiles:=$(wildcard eksempler/*)
+
+# Lokal Makefile ?
+lokmake:=$(wildcard Makefile_local)
+
+# Her er en liste af sgml-filer der skal checkes
+eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
+
+# Har vi Perl-modulet Image::Size installeret
+imagesize:=$(wildcard /usr/lib/perl5/site_perl/5.005/Image/Size.pm)
+
+# Har vi Plucker inde
+plucker:=$(wildcard /usr/bin/plucker-build)
+
+# Har vi tidy installeret?
+tidy:=$(wildcard /usr/bin/tidy)
+
+# Cygnus path
+# cygnus:=$(firstword $(wildcard /usr/share/sgml/docbook/utils-0.6.9/docbook-utils.dsl /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheet/dsssl/docbook/cygnus/cygnus-both.dsl))
+cygnus:=$(firstword $(wildcard /usr/share/sgml/docbook/utils-*/docbook-utils.dsl /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheet/dsssl/docbook/cygnus/cygnus-both.dsl))
+
+# Image Magick convert
+ImageMagickconvert:=$(firstword $(wildcard /usr/bin/convert /usr/X11R6/bin/convert))
+
+# her er det der skal laves
+all: start ekstra html pspdf palmpilot sgml eksempelbackup stop
+
+start:
+	@echo "-------------------------------------------"
+	@echo "Starter oversættelser af $(targetshortname)"
+	@echo "-------------------------------------------"
+	@echo Version er $(version)
+	@echo Dato sat til $(dato)
+
+stop:
+	@echo "-------------------------------------------"
+	@echo "Slut på $(targetshortname) $(version)      "
+	@echo "-------------------------------------------"
+	@echo 
+
+version:
+	@echo $(targetshortname) $(version)
+
+ekstra:
+	make -f Makefile_local
+
+# Build the sgml package
+sgml: $(targetname)-sgml-$(version).tar.gz
+$(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
+	(cd ..;ln -sf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/$(targetname).sgml.tar.gz)
+	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
+
+# Build the Palm Pilot Package
+palmpilot: $(targetname)-palm-$(version).zip
+$(targetname)-palm-$(version).zip: $(sgmlfiler)
+ifneq   ("$(plucker)","")
+	rm -f $(targetname)-palm-$(version).zip $(targetname)-palm-$(version).tar.gz
+	$(MAKE) html
+	rm -f palm/*.prc palm/*.pdb
+	(cd palm;plucker-build -v -P . -f $(targetname))
+	cp ../misc/*.prc palm
+	cp ../misc/*.pdb palm
+	cp ../misc/gpl.txt palm
+	cp ../misc/plucker.txt palm
+	(zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb palm/*txt )
+else
+	echo "Du bør installere plucker for at kunne lave palm-udgaven"
+endif
+
+pakhtml: 
+	echo %define buildname $(targetshortname) > bog/$(targetname).spec
+	echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
+	echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
+	echo Version: `cat version.sgml` >> bog/$(targetname).spec
+	echo Release: 1mdk >>  bog/$(targetname).spec
+	cat linuxbog.spec >> bog/$(targetname).spec
+	mv bog $(targetshortname)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
+	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+	mv $(targetshortname) bog 
+	mv images $(targetshortname)_images
+	(cd ..;tar cvzf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
+	mv $(targetshortname)_images images 
+	@echo "Done HTML pakning (pakhtml)"
+	@echo ""
+
+# Build the html
+html: bog/index.html 
+bog/index.html: $(sgmlfiler) 
+	@echo "Target er HTML i" $(targetshortname)/bog
+	rm -rf $(targetname)*
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-html-*.tar.gz bog
+	echo '<!ENTITY magic "png">' > magic.sgml
+	mkdir tempdir
+	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	cp *.{sgml,xml} tempdir
+	(cd tempdir; jade -t sgml -E 1 -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
+	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml tempdir/HTML.index
+	rm -rf tempdir
+	db2html bog.sgml
+	cp linuxbog.css bog
+	cp images/*.png bog
+ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
+	(cd bog;perl ../../misc/insertimagesize)
+else
+	@echo "Du bør installere Perl-modulet Image:Size"
+endif
+ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
+	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
+else
+	@echo "Du bør installere HTML Tidy"
+endif
+	footer=../bottom.incl; if [ -e $${footer} ]; then perl -i -pe 'use locale; BEGIN { $$file=`cat '$${footer}'` } s:^\s*</body>\s*$$:$$file:gi' bog/*.html; echo "Found footer: '$${footer}'"; else echo "Could not find footer: '$${footer}'"; fi
+	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
+	make pakhtml
+	rm -rf tempdir 
+	@echo "Done HTML (html)"
+	@echo ""
+
+enhtmlfil: bog/enfil.html
+bog/enfil.html: $(sgmlfiler)
+	@echo "Target er HTML i" $(targetshortname)/bog1
+	@rm -rf tempdir stikord.sgml magic.sgml $(targetname)-html-*.tar.gz bog1
+	@echo '<!ENTITY magic "png">' > magic.sgml
+	mkdir bog1
+	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	cp *.{sgml,xml} bog1
+	(cd bog1; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
+	(cd bog1; perl ../collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
+	(cd bog1; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > index.html)
+	cp linuxbog.css bog1
+#	cp images/*.png bog1
+ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
+	(cd bog1;perl ../../misc/insertimagesize)
+else
+	echo "Du bør installere Perl-modulet Image:Size"
+endif
+ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
+	(cd bog1;tidy -f err.txt -imu *html;rm -f err.txt)
+else
+	echo "Du bør installere tidy"
+endif
+	cp bog1/index.html bog/enfil.html
+	rm -rf bog1
+
+# Build pdf package.
+pspdf: $(targetname)-pdf-$(version).zip
+$(targetname)-pdf-$(version).zip: $(sgmlfiler)
+	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
+	rm -f $(targetname)-pdf*    
+	rm -f $(targetname)-pdf-*.zip
+	rm -f $(targetname)-ps-*.gz              
+	rm -f $(targetname)-*.ps              
+	mkdir tempdir
+
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	perl ./collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	cp *.{sgml,xml} tempdir
+	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
+	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
+
+	@echo "Target er" $(targetname)-pdf.zip
+	echo '<!ENTITY magic "png">' > magic.sgml
+	mkdir bogpdf
+	cp *.{sgml,xml} bogpdf
+	rm -f $(targetname)-*.pdf
+	cp images/*.png bogpdf
+	(cd bogpdf; perl ../../httpsplit.pl *.{sgml,xml})
+#	(cd bogpdf; jade -t tex -d $(cygnus)\#print -o bogpre.tex bog.sgml )
+#	(cd bogpdf; cat bogpre.tex | sed 's#--#-{}-{}#g' > bog.tex)
+#	(cd bogpdf; cat bogpre.tex > bog.tex)
+#	(cd bogpdf; pdfjadetex bog;pdfjadetex bog;pdfjadetex bog ) > /dev/null
+	(cd bogpdf; db2pdf bog.sgml )
+	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
+	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
+	zip $(targetname)-pdf-$(version).zip $(targetname)-$(version).pdf
+	@echo "Done PDF (pspdf)"
+	@echo ""
+
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	mkdir bogps
+	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
+	echo '<!ENTITY magic "eps">' > magic.sgml
+	cp *.{sgml,xml} bogps
+	(cd bogps; perl ../../httpsplit.pl *.{sgml,xml})
+	(cd bogps; db2ps bog.sgml )
+	mv bogps/bog.ps $(targetname)-$(version).ps
+	zip $(targetname)-ps-$(version).zip $(targetname)-$(version).ps
+	@echo "Done PS (pspdf)"
+	@echo ""
+
+	rm -f $(targetname)-$(version).pdf
+#	rm -f $(targetname)-*.ps              
+	rm -rf bogps bogpdf tempdir
+
+
+test:
+	echo $(eksfiler)
+
+eksempelbackup:  $(targetname)-eksempler-$(version).tar.gz
+$(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
+ifneq    ("$(eksfiler)","")
+	rm -f $(targetname)-eksempler-$(version).tar.gz  
+	touch $(targetname)-eksempler-$(version).tar
+	cat dato.sgml > eksempler/BACKUPDATO
+	(cd ..;tar cvf  $(targetshortname)/$(targetname)-eksempler-$(version).tar $(targetshortname)/eksempler/BACKUPDATO)
+	rm -f eksempler/BACKUPDATO
+	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-eksempler-$(version).tar =
+	gzip -9 $(targetname)-eksempler-$(version).tar
+else
+	@echo "Bogen" $(targetname) "har ikke nogen eksempler";
+endif
+
+
+clean:
+	@echo clean $(targetshortname)
+	@rm -rf dato.sgml version.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9]
+ifeq ($(lokmake),Makefile_local)
+	echo X $(lokmake) X
+	@make -f Makefile_local clean
+else
+	echo "Ingen lokal Makefile"
+endif
+	@echo "Færdig med clean $(targetshortname)"
+
