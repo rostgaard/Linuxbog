@@ -41,7 +41,7 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 SUBDIRS = applikationer admin program unix web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html  pakhtml sgml
+all: html  pakhtml sgml palmpilot
 
 
 versionfil:
@@ -68,7 +68,7 @@ palmpilot: $(targetname)-palm-$(version).zip
 
 $(targetname)-palm-$(version).zip: alle/index.html
 	rm -f palm/*.prc palm/*.pdb
-	(cd palm;plucker-build -v -P . -f $(targetname))
+	(cd palm;plucker-build -v -P . -f $(targetname) `pwd`/home.html)
 	cp ../misc/*.prc palm
 	zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb
 	rm -f  palm/*.prc palm/*.pdb
