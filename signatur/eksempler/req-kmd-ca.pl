@@ -3,6 +3,7 @@
 # Script der laver en kmd-ca request.
 
 # Følgende oplysninger kræves fra brugeren:
+# Æ Ø Å eller ae oe aa i certifikatet?
 # givenName
 # surname
 # email
@@ -75,7 +76,28 @@ do {
 	    $keyUsage = "Digital Signature, Data Enchiperment";
 	}
     }
-    
+
+    printf "Nogle Certifikat udstedere understøtter ikke ÆØÅ (såsom KMD) og skal\n";
+    printf "du bruge certifikatet med en sådan udsteder skal du svare J her, så\n";
+    printf "konverterer jeg Æ, Ø, Å, til henholdsvis Ae, Oe, Aa.\n";
+    $prompt = "Ønsker du at få konverteret ÆØÅ? [J/N] : ";
+    $convert = $term->readline($prompt);
+
+    #Konverter æøå og ÆØÅ hvis der blev valgt J ovenfor.
+    if ($convert eq "J")  # do ÆØÅ conversions
+    {
+       foreach ($givenName,$surname,$emailAddress)
+       {
+	  printf "Converting ÆØÅ...\n";
+          $_ =~ s/Æ/Ae/g;  # 
+          $_ =~ s/Ø/Oe/g;  # 
+          $_ =~ s/Å/Aa/g;  # 
+          $_ =~ s/æ/ae/g;  # 
+          $_ =~ s/ø/oe/g;  # 
+          $_ =~ s/å/aa/g;  # 
+       }
+    }
+
     printf "Det anbefales at man beskytter sin private nøgle med en adgangskode\n";
     printf "Indtast en sådan - bemærk at den vil blive skrevet til skærmen\n";
     $prompt = "Angiv adgangskode : ";
@@ -85,12 +107,15 @@ do {
 # Bekræft 
     
     printf "\nHer er de informationer du indtastede.\n\n";
+    printf "NB. Bemærk at hvis du svarede J til Konverter ÆØÅ, vil alle ÆØÅ og\n";
+    printf "    æøå være repræsenteret som Ae,Oe,Aa og ae, oe, aa nedenfor.\n\n";
     
-    printf "Fornavn     : $givenName\n";
-    printf "Efternavn   : $surname\n";
-    printf "Email       : $emailAddress\n";
-    printf "Nøglebrug   : $keyUsage\n";
-    printf "Adgangskode : $output_password\n\n";
+    printf "Fornavn       : $givenName\n";
+    printf "Efternavn     : $surname\n";
+    printf "Email         : $emailAddress\n";
+    printf "Nøglebrug     : $keyUsage\n";
+    printf "Konverter ÆØÅ : $convert\n";
+    printf "Adgangskode   : $output_password\n\n";
     
     $prompt = "Er informationerne korrekte? [J/n] : ";
     $OK = "J";
