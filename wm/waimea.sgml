@@ -2,7 +2,164 @@
 <chapter id="waimea">
 <title>Waimea</title>
 
+<!-- Originalfil http://www.sslug.dk/julekalender/16.php3 -->
+
+<chapter>
+  <title>Waimea</title>
+
 <para>
-X
+Waimea er en forholdsvis ny windowmanager, der stiler efter at være
+den mest effektive. Derfor har udviklerne valgt at gøre den ekstremt
+konfigurerbar. De påstår på hjemmesiden at man kan få Waimea til at
+opføre sig som enhver anden windowmanager.</para>
+
+</chapter>    <!--   Waimea -->
+
+<chapter>
+  <title>Installation</title>
+
+<para>Der er vist endnu ingen distributioner der kommer med en
+waimea-pakke, så man må hente kildeteksten fra 
+<ulink url="http://www.waimea.org/">Waimeas hjemmeside</ulink> og oversætte
+den. Proceduren for det er den sædvandlige <command>./configure && make
+&& sudo make install</command> . Det oversatte program bliver som standard lagt
+i <command>/usr/local/bin<code>.</para>
+
+<para>På hjemmesiden kan man også finde kildeteksten til en lille pager
+kaldet wampager. Der er ikke noget <code>configure</command> -script til
+den, så hvis du ikke vil have den i <command>/usr/local/bin</command> , er du
+nødt til at rette i (den meget lille) <command>Makefile</command> . Installationen er derefter blot <command>make &&
+sudo make install</command> .</para>
+
+<para>Der er tale om den mest primitive pager jeg nogensinde har set, den
+viser kun hvilken del af det virtuelle skrivebord der er synligt, men
+ikke hvor dine vinduer er.</para>
+
+</chapter>    <!--   Installation -->
+
+<chapter>
+  <title>Brug af waimea</title>
+<sect3>
+  <title>Udseende</title>
+<div align="center">
+<ulink url="2002pix/waimea-hel.png">
+<figure float="1">
+<graphic fileref="2002pix/waimea-halv.png" scale="60"></graphic>
+</figure>
+</ulink>
+<br>
+Waimea med en "shadet" emacs, en xterm, galeon og wampager.
+</div>
+</sect3>    <!--   Udseende -->
+
+<sect3>
+  <title>Standard funktionalitet</title>
+
+<para>Standarden er følger musen med mindre musen bevæger sig ud af alle
+vinduer ("sloppy" fokus). Dette er ikke kombineret med at vinduerne
+automatisk hæves, det er to måder at gøre på, enten kan man klikke med
+venstre museknap i vinduets titellinie eller man kan trykke Alt ned og
+klikke med venstre museknap et vilkårligt sted i vinduet.
+Alt+tab skifter vindue (og på den måde bliver det nye vindue
+hævet).</para>
+
+<para>Man kan få en menu frem ved et tryk på højre museknap på
+skrivebordet, eller med Ctrl+Esc. Hvis man trykker midterste museknap
+ned et sted på skrivebordet kan man trække hele skrivebordet rundt.
+</sect3>    <!--   Standard funktionalitet -->
+
+<sect3>
+  <title>Konfiguration</title>
+<!--
+
+<para>Kort fortalt: Et helvede.</para>
+
+-->
+
+<para>Prisen for de ekstreme konfigurationsmuligheder er
+uoverskuelighed. Hvordan windowmanageren opfører sig er overladt til
+et "action"-system
+</sect3>    <!--   Konfiguration -->
+
+<sect3>
+  <title>Fokus</title>
+
+<para>I standard action-filen <command>/usr/local/share/waimea/actions/action</command> kan jeg lige
+overskue hvordan fokus er konfigureret til at følge musen, men jeg
+kunne ikke regne ud hvordan jeg ændrede det. Det eneste jeg opnåede
+var en konfiguration hvor jeg ikke kunne ændre fokus på andre måder
+end med Alt+Tab. Heldigvis er der i kataloget <command>/usr/local/share/waimea/actions</command> flere action-filer,
+hvoraf en hedder <command>action.click-to-focus</command> . Så man kan få
+click-to-focus ved at kopiere <command>/usr/local/share/waimea/config</command> til <command>.waimearc</command> og så ændre linien
+<screen>
+screen0.actionFile:         /usr/local/share/waimea/actions/action
+</screen>
+
+til
+<screen>
+screen0.actionFile:         /usr/local/share/waimea/actions/action.click-to.focus
+</screen>
 </para>
-</chapter>
+</sect3>    <!--   Fokus -->
+
+<sect3>
+  <title>Waiconfig</title>
+
+<para>
+Hos <ulink url="http://www.socialistsoftware.com/">Socialist Software</ulink>
+kna man finde programmet <ulink url="http://www.socialistsoftware.com/waiconfig.php">waiconfig</ulink>.</para>
+
+<para>
+Waiconfig er nået til version 0.0.3, så det er endnu ikke den store
+funktionalitet man får.<br>
+Style- menu- og action-filer skal man lave i hånden med sin
+favoriteditor, men waiconfig kan bruges til at vælge mellem dem.</para>
+
+</para>
+
+<div align="center">
+<figure float="1">
+<graphic fileref="2002pix/waimea_waiconfig.png" scale="60"></graphic>
+</figure>
+
+<br>
+Waiconfig kan også vælge fokus-model
+</div>
+
+<para>
+Waiconfig kan være lidt besværlig at få til at fungere.</para>
+
+<para>
+Waiconfig er et python-script.<br>
+Og af uransagelige årsager er der en import-linie i starten:<br> <command>import pygtk ; pygtk.require('2.0')</command> .<br>
+Julekalendermafiaens pythonkyndige påstår at det er en linie der 
+ikke bruges i scriptet, så den kan trygt udkommenteres, hvilket på Red
+Hat 8 også er nødvendigt for at waiconfig overhovedet kan starte.</para>
+
+<para>
+Installations beskrivelsen angiver fint hvordan man kan ændre hvor
+waiconfig skal installeres. Men desværre slår ændringerne ikke
+igennem. Og samtidig kan installationen ikke finde ud af hvor waimea er
+installeret.<br>
+Jeg ville installere under <command>/usr/local</command> , men den insisterede
+på at finde sine oplysninger under <command>/usr/share</command> fremfor under <command>/usr/local/share</command> . Waiconfig er dog et python-script, så det
+er ganske let at lokalisere og rette dens søgesti. Jeg rettede til <command>/usr/local/share/waiconfig/</command> i <command>datadir</command> -definitionen samt <command>/usr/local/share/waimea</command> i linierne der definerer <command>stylesDir</command> og <command>actionsDir</command> .</para>
+</sect3>    <!--   Waiconfig -->
+</chapter>    <!--   Brug af waimea -->
+
+<chapter>
+  <title>Opsummering</title>
+
+<para>
+Efter min mening er standardopsætningen af waimea ikke alene
+underlig men også ubrugelig, og konfigurationssystemet er for
+komplekst til at jeg kan få den til at opføre sig som jeg ønsker det.</para>
+
+<!-- .... og slutter her --></entry>
+</row>
+</tbody>
+
+</tgroup>
+</table>
+</chapter>    <!--   Opsummering -->
+

@@ -1,8 +1,187 @@
 <?xml encoding="ISO-8859-1" ?>
 <chapter id="pawm">
-<title>PAWM</title>
+
+<!-- Originalfil http://www.sslug.dk/julekalender/13.php3 -->
+
+
+<chapter>
+  <title>PAWM</title>
 
 <para>
-X
+PAWM er en af de efterhånden mange windowmanagere der slår sig op på kun
+at have nødvendige funktioner og ingen "Eye Candy" og derfor kører
+hurtigere end de efterhånden allestedsnærværende GNOME- og KDE-miljøer
+der jo præger de fleste Linuxdistributioner.</para>
+
+<para>Jeg vil tro at PAWM er en af de mest bizarre windowmanagere jeg har
+været i nærheden af. Ikke fordi den er svær at konfigurere, men den er
+temmelig anderledes.</para>
+
+<sect3>
+  <title>Installation</title>
+
+<para>
+Der eksisterer vist ikke RPM'er eller andre færdigpakkede udgaver af
+PAWM.<br>
+Kildekoden kan downloades fra <ulink url="http://www.pleyades.net/~pawm/down.shtml">
+http://www.pleyades.net/~pawm/down.shtml</ulink>.</para>
+
+<para>
+At PAWM ikke er fyldt med gode ting til øjnene konstarerer man straks
+ved at se på størrelsen på den pakkede kildekode:<br> <command>-rw-r--r--    1 kvi      teknik        75K Dec  8 20:15
+pawm-1.8.2.tar.bz2</command> .</para>
+
+<para>
+Den pakkede sourcedistribution består af 14 filer(!) og konfigureres
+efter eget system med kommandoen <command>./0</command> .<br>
+Herefter kompileres på normal vis med <command>make</command> og <command>su -c
+"make install"</command></para>
+
+<para>
+Når PAWM er installeret vil det være logisk at indsætte en enkelt
+linie i <command>.xsession</command> :
+<screen>
+kvi@snake ~ -> cat .xsession
+#!/bin/bash
+exec /usr/local/bin/pawm
+kvi@snake ~ ->
+</screen>
+
+
+Men når X er startet bliver man temmelig skuffet. Udover det lille
+dødningehovede der fungerer som logout-knap, er der intet der virker;
+museknapperne har ingen funktion og der er ingen menu til at starte
+noget fra.</para>
+</sect3>    <!--   Installation -->
+
+<sect3>
+  <title>Dokumentation</title>
+
+<para>
+Altså må dokumentationen læses. Og den er nogenlunde lige så sparsom som
+PAWM selv.</para>
+
+<para>
+INSTALL-filen beskriver hvordan man opretter application-launchers ved
+hjælp af noget der kaldes pimp, som iøvrigt ikke er nærmere beskrevet.
+Tilgengæld beskrives det hvordan man i kataloget <command>/usr/share/pawm/apps</command> skal oprette filer til pimp.<br>
+Det viste sig dog at det katalog man faktisk skal oprette filer i er <command>/usr/local/lib/pawm/apps/</command> .<br>
+Nyttig viden!</para>
+
+<para>
+Jeg havde problemer med at starte modulet PAclock. INSTALL-filen var
+ikke til meget hjælp, så jeg downloadede version 1.7 af PAWM i stedet.<br>
+Her er dokumentationen meget anderledes, og jeg fandt ud af at PAclock
+er afhængig af at real-time-clock er kompileret ind i kernen.<br>
+Mere nyttig viden!</para>
+</sect3>    <!--   Dokumentation -->
+
+<sect3>
+  <title>Konfiguration</title>
+
+<para>
+PAWM har en enkelt konfigurationsfil: <command>/usr/local/etc/pawm.conf</command> . Ifølge dokumentationen er det
+vigtigt at paramtre kun ændres og ikke slettes fra den.</para>
+
+<para>
+Så vidt jeg har kunne finde ud af, er det ikke muligt for den enkelte
+bruger at konfigurere PAWM anderledes.</para>
+
+<para>
+Min kerne er RedHat's standard kerne, og der er RTC-support i den,
+men jeg måtte bede PAWM om at lade være med at starte PAclock. I den
+sidste sektion i <command>pawm.conf</command> satte jeg <command>paclock_module
+Off</command> . jeg har så ikke noget ur, men man kan selvfølgelig starte et
+af de gængse ure fra <command>.xsession</command> .</para>
+
+<para>
+I <command>pawm.conf</command> kan man konfigurere farver, fonte og ikoner til
+vinduerne. Men det er ikke muligt at ændre fokus-opførsel;
+click-to-focus er eneste mulighed.</para>
+
+<para>
+For at få mulighed for at starte applikationer skal der som tidligere
+nævnt oprettes filer i kataloget <command>/usr/local/lib/pawm/apps/</command> .<br>
+Formatet er simpelt:
+<screen>
+Ikon                     - skal være 32x32 pixels xpm-format)
+Placering                - i pixels regnet fra øverste venstre hjørne
+Navn                     - Applikationens navn
+Sti			 - Sti til applikationen
+</screen>
+
+
+Der skal være fire linier i hver fil.<br>
+Hvert filnavn starter med <command>app</command> .</para>
+
+<para>
+Jeg snuppede nogle ikoner fra GNOME og skalerede dem ned til 32x32
+pixels. 
+<br>
+Ikoner skal placeres i <command>/usr/local/lib/pawm/icons/</command> .<br></para>
+
+<para>
+Den første applikation skal selvfølgelig være en xterm:
+<screen>
+kvi@snake /usr/local/lib/pawm/apps -> cat app-xterm 
+xterm.xpm
+15 10
+Xterm
+/usr/X11R6/bin/xterm -ls -geometry +100+30
+kvi@snake /usr/local/lib/pawm/apps ->
+</screen>
+
+
+Læg mærke til at disse filer ligger et sted, hvor det kun er <command>root</command> der har skrive adgang.
+
+Jeg lavede et par stykker til:
+<screen>
+kvi@snake /usr/local/lib/pawm/apps -> ls
+app-emacs      app-galeon  app-gv        app-xterm
+app-evolution  app-gimp    app-netscape 
+kvi@snake /usr/local/lib/pawm/apps ->
+</screen>
 </para>
-</chapter>
+
+<para>
+pas på med ikke at sætte ikonerne for tæt sammen, da de så vil forsvinde
+på mystisk vis.</para>
+
+<div align="center">
+<ulink url="2002pix/pawm1_fullscreen.png"><figure id="[ pawm ]" float="1">
+<title>[ pawm ]</title>
+<graphic fileref="2002pix/pawm1_halfsize.png" scale="60"></graphic>
+</figure>
+</ulink><br>
+PAWM med applikationsikoner i venstre side.</div></para>
+</sect3>    <!--   Konfiguration -->
+
+<sect3>
+  <title>Kan PAWM bruges?</title>
+
+<para>
+Jo... såmænd.<br>
+Dog synes jeg at en windowmanager bør have en lidt smartere måde at
+kalde programmer på end blot nogle ikoner på baggrunden.<br>
+Og processen med at oprette ikonerne er for tung.</para>
+
+<para>
+Jeg har haft lidt problemer med Evolution. Drag and drop mellem mine
+mailbokse fungerer ikke under PAWM, ligesom ImageMagick nogle gange
+viser sine menuer på nogle højst besynderlige steder på desktoppen.<br>
+Jeg vil tro det er en bug i PAWM, da jeg ikke har oplevet det med andre
+windowmanagere.</para>
+
+<para>
+Men den er flot, og bruger omtrent samme mængde hukommelse som Fluxbox,
+så mindre maskiner med en specifik anvendelse kunne få god brug
+af den.</para>
+
+<!-- .... og slutter her --></entry>
+</row>
+</tbody>
+
+</tgroup>
+</table>
+</sect3>    <!--   Kan PAWM bruges? -->
+</chapter>    <!--   PAWM -->

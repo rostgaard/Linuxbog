@@ -2,7 +2,372 @@
 <chapter id="afterstep">
 <title>Afterstep</title>
 
+<!-- Originalfil http://www.sslug.dk/julekalender/17.php3 -->
+
+<chapter>
+  <title>AfterStep</title>
+
 <para>
-X
+AfterStep hører til blandt veteranerne. Den har eksisteret længe, og er
+egentlig en fortsættelse af et endnu ældre projekt, BowMan, der
+for længst er stoppet.<br>
+AfterStep er ikke lavet specifikt til Linux, og den er da også omtrent lige så
+gammel som de første Linux-distributioner.<br>
+Jeg har tidligere brugt AfterStep på HP-UX som erstatning for det meget
+lidt funktionelle CDE-miljø, ligesom AfterStep tidligere var fast
+inventar på mine Linux-maskiner.</para>
+
+<para>
+Meningen er at AfterStep skal ligne og opføre sig som Nextstep der blev
+lavet af NeXT Software, Inc., der havde Steve Jobs fra Apple som en af
+grundlæggerne.</para>
+
+<sect3>
+  <title>Installation</title>
+
+<para>Fra <ulink url="http://www.afterstep.org/download.php">AfterSteps
+download-side</ulink> kan man hente en SRPM af den seneste version, men den
+lod sig ikke bygge til brugbar RPM på Red Hat 8, så jeg hentede <ulink url="ftp://ftp.afterstep.org/stable/afterstep-1.8.11.tar.bz2">kildekoden</ulink>
+i stedet.</para>
+
+<para>
+AfterStep kompilerer let på Red Hat 8. Den sædvanlige <command>./configure
+&& make && make install</command> virker fint, men det er også muligt at
+benytte det medfølgende <command>./install.script</command> .<br>
+Resultatet er det samme: AfterStep installeres under <command>/usr/local</command> .</para>
+</sect3>    <!--   Installation -->
+
+<sect3>
+  <title>Konfiguration</title>
+<sect5>
+  <title>Konfigurationsfiler</title>
+
+<para>
+AfterSteps konfigurationfiler ligger under <command>/usr/local/share/afterstep</command> .</para>
+
+<para>
+Den enkelte brugers AfterStep-konfiguration kan lægges i <command>$HOME/GNUstep/Library/AfterStep/</command> , og har samme
+katalogstruktur som <command>/usr/local/share/afterstep</command> .<br>
+Man kan lige så godt starte med at kopiere det meste af <command>/usr/local/share/afterstep</command> , da jeg har svært ved at
+forestille mig at nogen vil have AfterStep i default-konfigurationen.
+Indholdet af katalogerne <command>looks</command> , <command>desktop</command> og <command>backgrounds</command> skal ikke kopieres da en del entries i menuerne
+så vil dukke op to gange. Men katalogerne selv må gerne eksistere under <command>$HOME/GNUstep/Library/AfterStep/</command> , da man så her kan lægge
+egne menu-punkter og ikoner.</para>
+
+<para>
+Mængden af konfigurationsfiler og -kataloger kan ved første øjekast se
+temmelig uoverskuelig ud:
+<screen>
+kvi@snake ~/GNUstep/Library/AfterStep -> ls -F
+animate       base.15bpp  clean          feels/  non-configurable/  themes/
+asetroot      base.16bpp  compatibility  forms   pager              wharf
+audio         base.24bpp  database       Gnome   scripts/           winlist
+autoexec      base.32bpp  desktop/       ident   scroll             zharf
+backgrounds/  base.8bpp   doc/           looks/  start/  
+kvi@snake ~/GNUstep/Library/AfterStep ->
+</screen>
+
+Men når man har vænnet sig til det, er det egentlig ganske logisk.
+AfterStep har ingen kilometer lang <command>.noget</command> -fil. Der er een fil til 
+hver funktion, hvilket selvfølgelig øger overskueligheden væesentligt
+når man først har fundet ud af hvilke filer der styrer hvad.</para>
+
+<para>
+Jeg har ikke været dem alle igennem, men for mig at se er de væsentlige
+filer og kataloger:
+<dl>
+ <dt> <command>autoexec</command> <dd>bestemmer hvilke AfterStep-moduler der skal køres ved start og
+genstart</dd>
+ <dt> <command>wharf</command> <dd>konfigurering af Wharf</dd>
+ <dt> <command>pager</command> <dd>styrer pagerens udseende og størrelse</dd>
+ <dt> <command>start/</command> <dd>i dette katalog styres menuen</dd>
+ <dt> <command>desktop/</command> <dd>herunder ligger ikoner, temaer, baggrunde og lignende</dd>
+ <dt> <command>looks/</command> <dd>udseende og placering af forskellige elementer</dd>
+</dl></para>
+</sect5>    <!--   Konfigurationsfiler -->
+
+<sect5>
+  <title>Winlist</title>
+
+<para>
+Winlist er et lille panel hvormed man kan holde styr på åbne vinduer - i stil med
+GNOME-panelets ......... eller Taskbar i Windows.</para>
+
+<div align="center">
+<figure float="1">
+<graphic fileref="2002pix/afterstep_winlist.png" scale="60"></graphic>
+</figure>
+<br>
+Winlist
+</div>
+
+<para>
+Jeg synes den er overflødig, så jeg fjernede <command>Module  "I"
+WinList</command> fra <command>$HOME/GNUstep/Library/AfterStep/autoexec</command> og gjorde ikke mere ved winlist. Men den kan konfigureres gennem filen <command>winlist</command> .</para>
+</sect5>    <!--   Winlist -->
+
+<sect5>
+  <title>Pager</title>
+
+<para>
+Når man starter AfterStep første gang får man en pager der efter min
+smag er lidt vel overdimensioneret.</para>
+
+<div align="center">
+<figure id="[ winlist ]" float="1">
+<title>[ winlist ]</title>
+<graphic fileref="2002pix/afterstep_pager.png" scale="60"></graphic>
+</figure>
+<br>
+pager
+</div>
+
+<para>
+Jeg synes den fylder for meget, og iøvrigt kan jeg sjældent hitte rundt i
+mere end 4 desktops.</para>
+
+<para>
+I <command>$HOME/GNUstep/Library/AfterStep/pager</command> udkommenterede jeg
+Desktop 1,2 og 3 og ændrede lidt på størrelsen for at få den til at
+passe ind i Wharf.<br>
+I <command>module</command> udkommenterede jeg pager-linierne - også af hensyn
+til Wharf. Mere om Wharf i næste afsnit.<br>
+For sjov skyld ændrede jeg på farverne på de pop-up-lister der kommer 
+når man kører musen hen over pageren.<br>
+Her er uddrag af min <command>pager</command> -fil:
+<screen>
+..
+..
+BalloonBorderWidth      1
+BalloonBorderColor      Green
+..
+..
+*PagerDecoration  DeskBorderWidth 1, GridColor green, NoDeskLabel
+..
+..
+*PagerGeometry       54x54+0+0
+..
+..
+*PagerStyle     0       DeskStyle
+#*PagerStyle     1       DeskStyle
+#*PagerStyle     2       DeskStyle
+#*PagerStyle     3       DeskStyle
+..
+..
+#*PagerDontDrawBg    
+#*PagerAlign          0
+#*PagerLabel          0       Desktop
+#*PagerLabel          1       WWW
+#*PagerLabel          2       Mail
+#*PagerLabel          3       Games
+*PagerRows           1
+*PagerColumns        1
+..
+</screen>
 </para>
-</chapter>
+
+</entry>
+</row>
+
+<row>
+  <entry>
+</sect5>    <!--   Pager -->
+
+<sect5>
+  <title>Wharf</title>
+<table align="left" width="100%" border=0>
+<row>
+<td rowspan="5" valign="top">
+    <figure id="[ wharf ]" float="1">
+<title>[ wharf ]</title>
+<graphic fileref="2002pix/afterstep_wharf.png" scale="60"></graphic>
+</figure></entry>
+<td valign="top">
+    Wharf er et "programpanel" i stil med The Slit fra FluxBox eller
+"Docken" i WindowMaker (der faktisk er lavet med inspiration fra
+AfterStep).<br>
+    Wharf kan sluge applicationer, og AfterStep har en <ulink url="http://www.tigr.net/afterstep/long.php">stor samling</ulink> netop til
+Wharf. Jeg hentede det <ulink url="http://www.tigr.net/cgi-bin/as-apps-snapshot.cgi">komplette
+tar-arkiv</ulink> af dem alle og kompilerede efterhånden som jeg fik brug for dem.</entry>
+</row>
+
+<row>
+<td valign="top">
+  Først i filen <command>$HOME/GNUstep/Library/AfterStep/wharf</command> er
+der en del options der bestemmer hvordan Wharf skal opføre sig:
+farveranimering, pop-up-lister o.lign.<br>
+Det har jeg ikke pillet ved.<br>
+Men jeg ændrede <command>*WharfGeometry</command> til <command>-1+1</command> for at
+få den til at tage udgangspunkt i øverste højre hjørne.<br>
+Hvis man hellere vil have en liggende Wharf kan <command>*WharfColumns</command> erstattes af <command>*WharfRows</command> .</entry>
+</row>
+
+<row>
+<td valign="top">
+  Syntaksen for de dockede applicationer kan være lidt tricky, men med
+nogle eksempler vil det nok falde naturligt efter et stykke tid.<br>
+Jeg vil have Emacs let tilgængelig, så jeg indsatte følgende linie:
+<screen>
+*Wharf Emacs emacs.xpm Exec "-" (exec emacs)
+</screen>
+
+AfterStep kommer ikke med et Emacs-ikon, så jeg huggede et fra GNOME, og
+lagde det i XPM-format under <command>$HOME/GNUstep/Library/AfterStep/desktop/icons/16bpp</command> .</entry>
+</row>
+
+<row>
+<td valign="top">
+  Wharf kommer hurtigt til at fylde den del, så man kan med fordel bruge
+de indbyggede skuffer.<br>
+  Jeg har lavet en skuffe til audio-ting og en til programmer jeg ikke bruger så ofte:<br>
+<screen>
+## Applications-folder
+*Wharf Applications FileFolders.xpm,3_dots.xpm Folders
+        *Wharf gimp Paint.xpm Exec "-" gimp &
+        *Wharf OOo Publish.xpm Exec "-" ooffice &
+*Wharf ~Folders
+
+## Audio-folder
+*Wharf Audio gnome-audio2.xpm,3_dots.xpm Folders
+        # Mixer
+        *Wharf asmixer - Swallow "asmixer" asmixer -g -1-1 &
+        *Wharf asMix - Swallow "asMix" asmix -shape &
+        # CD player
+        *Wharf ascd - Swallow "ascd" ascd &
+*Wharf ~Folders
+</screen>
+ <command>FileFolders.xpm,3_dots.xpm</command> giver to XPM-billeder på
+skuffeknappen: Et af nogle fine hængemapper og et af tre prikker, der
+symboliserer at det er en skuffe og ikke et normalt program.<br> <command>Folders</command> definerer en ny skuffe.</entry>
+</row>
+
+<row>
+<td valign="top">
+  Min endelige konfigurationsfil der laver den wharf her til venstre kan
+findes i <ulink url="17-wharf.txt">min wharf-fil</ulink>.</entry>
+</row>
+</tbody>
+
+</tgroup>
+</table>
+
+
+
+</td></tr>
+<tr><td>
+</sect5>    <!--   Wharf -->
+
+<sect5>
+  <title>Menuen</title>
+
+<para>
+Menuen konfigureres i kataloget <command>~/GNUstep/Library/AfterStep/start</command> . Strukturen herunder
+afspejles i menuen. I kataloget <command>Applications</command> har jeg:</para>
+
+<screen>
+kvi@snake ~/GNUstep/Library/AfterStep/start/Applications -> ls -1F
+Accessories/
+a_nop
+b_aterm
+c_xiterm
+d_xterm
+Editors/
+Emulators/
+e_rxvt
+Eterra/
+f_Eterm
+Multimedia/
+Network/
+Office/
+System/
+kvi@snake ~/GNUstep/Library/AfterStep/start/Applications ->
+</screen>
+
+
+<para>
+Kataloger angiver en undermenu med katalogets navn, og filer angiver
+menupunkter. Menupunkterne navngives med et bogstav eller et tal
+efterfulgt af en underscore og herefter menupunktets navn. Det første
+bogstav eller tal bestemmer menupunkternes rækkefølge.</para>
+
+<para>
+Selve menupunkternes filer er ganske simple:
+<screen>
+kvi@snake ~/GNUstep/Library/AfterStep/start/Applications -> cat b_aterm 
+Exec "AfterStep terminal" exec aterm -tr -sh 60 -bg black -fg white &
+MiniPixmap "mini-app.xpm"
+kvi@snake ~/GNUstep/Library/AfterStep/start/Applications ->
+</screen>
+
+Først angives der at dette er et eksekvertbart program der kaldes for
+&quot;AfterStep terminal&quot;. Derefter angives selve kommandolinien
+til det program der skal startes.</para>
+
+<div align="center">
+<figure float="1">
+<graphic fileref="2002pix/afterstep_menu.png" scale="60"></graphic>
+</figure>
+<br>
+Udfoldet menu
+</div>
+</sect5>    <!--   Menuen -->
+
+<sect5>
+  <title>Ikoner</title>
+
+<para>
+Da jeg ikke synes om Winlist har jeg i stedet brug for at have ikoner på
+dektoppen. I filen <command>~/GNUstep/Library/AfterStep/looks/look.Vilmann</command> har jeg angivet <command>IconBox                  10 -100 600 -10</command> , for
+at få ikonerne til at ligge nederst til venstre.</para>
+
+<para> <command>look.Vilmann</command> er en kopi af en af filerne i <command>/usr/local/share/afterstep/looks/</command> , som jeg har rettet lidt
+til så udseeendet passer mig lidt bedre.</para>
+</sect5>    <!--   Ikoner -->
+</sect3>    <!--   Konfiguration -->
+
+<sect3>
+  <title>Udseeende</title>
+<div align="center">
+<ulink url="2002pix/afterstep_fullscreen.png">
+<figure float="1">
+<graphic fileref="2002pix/afterstep_halfsize.png" scale="60"></graphic>
+</figure>
+</ulink>
+</div>
+</sect3>    <!--   Udseeende -->
+
+<sect3>
+  <title>Er AfterStep stadig brugbar?</title>
+
+<para>
+Jep!<br>
+Jeg har her kun været inde på en lille del af AfterStep. Der er meget
+mere at lege med, hvis man har tid og lyst. Temaer og baggrunde kan
+ændres efter behov, og der eksisterer en erstatning for wharf ved navn
+zharf.<br>
+Men AfterStep <emphasis>har</emphasis> overstået børnesygdommene. Og når man har
+forstået opbygningen af konfigurationskataloget, er den ikke specielt
+indviklet at arbejde med.</para>
+
+<para>
+Den gør sig godt som flot alternativ til GNOME eller KDE.<br>
+Jeg har nu (igen) den sidste uges tid brugt AfterStep. Og flere gange
+har jeg fået kommentaren: Hvad er det? Den er flot!</para>
+
+<para>
+Eneste anke er at wharf'en fylder en del på skærmen. Der er ingen tvivl
+om at AfterStep kommer fra miljøer hvor skærmene har højere opløsning
+end de 1024x768 min bærbare kan præstere.<br>
+Og så kræver den et godt grafikkort. Det burde ikke være et problem
+idag, men på ældre maskiner kan man "løbe tør" for farver, fordi
+ikonerne er meget farverige.</para>
+
+<!-- husk ogsÅ at rette datoen i linie 11 og 12 -->
+
+<!-- .... og slutter her -->
+
+  </td>
+  </tr>
+</table>
+</sect3>    <!--   Er AfterStep stadig brugbar? -->
+</chapter>    <!--   AfterStep -->

@@ -2,7 +2,359 @@
 <chapter id="aewm">
 <title>Aewm</title>
 
+<!-- Originalfil http://www.sslug.dk/julekalender/11.php3 -->
+
+
 <para>
-X
+<ulink url="http://sapphire.sourceforge.net/">aewm++</ulink> sigter højt med sit 
+navn - det står for <emphasis>Aesthetic Window Manager</emphasis> - 
+altså en æstetisk Window manager. Plusserne stammer fra det
+valgte programmeringssproc (C++).
 </para>
+
+<para>
+aewm++ stammer fra <emphasis>Sapphire</emphasis> projektet, og hed
+tidligere Sapphire. Den er kraftigt inspireret af aewm (uden
+plusserne), som så har hentet en del inspiration for Plan9 
+projektets window manager - se <xref linkend="the-9wm"> hvis du
+vil kende lidt til baggrunden for aewm++.
+</para>
+
+<para>
+Plan9 projektet kan vel nok karakteriseres som "minimalistisk",
+og det skinner tydeligt igennem i aewm++. Når man har hentet
+<ulink url="http://sourceforge.net/project/showfiles.php?group_id=1077">
+sourcefilen til aewm++</ulink> og kørt <command>make; su -c make install</command> kan man forsøge sig med at starte aewm++ op ved at sætte <command>/usr/bin/aewm++</command> ind i $HOME/.xsession. Når man
+så genstarter X, bliver man noget overrasket - det går stærkt,
+og der sker absolut ingenting! Ingen ikoner, ingen menuer - man
+skulle næsten tro der ikke var nogen window manager overhovedet.
+</para>
+
+<para>
+Men det er der. aewm++ holder sig blot til at være en
+<emphasis>ren</emphasis> Window Manager, så alt hvad der har med ikoner
+og den slags at gøre må håndteres af andre programmer.
+En brugbar måde at køre aewm++ på kræver derfor at man
+også henter <ulink url="http://sourceforge.net/project/showfiles.php?group_id=1077">aewm++_goodies</ulink> pakken og installerer de forskellige 
+hjælpeprogrammer som følger med der. Det er:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+<emphasis>ae_fspanel</emphasis> som laver et panel i bunden hvor de
+    aktive programmer kan ses
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+<emphasis>appbar</emphasis> som giver en "Launch Pad" med 
+    nogle ikoner, hvorfra man kan starte programmer
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+<emphasis>setrootimage</emphasis> der kan lave en gradient farvet
+    baggrund på din desktop
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+<emphasis>xsession</emphasis>, der bruges til opstart af aewm++.
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Så det er ikke så lidt, der skal ind i ens <filename>$HOME/.xsession</filename>
+for at køre aewm++:
+</para>
+
+<screen>
+aewm++ &amp;
+ae_fspanel &amp;
+appbar &amp;
+setrootimage -from 708090 -to cccccc
+exec xsession
+</screen>
+
+<para>
+Sådan ser aewm++ ud når man starter den på denne vis 
+(klik på billedet for en større version):
+</para>
+
+
+<figure id="aewm-fig" float="1">
+<title>aewm</title>
+<graphic fileref="aewm.&magic;" scale="60"></graphic>
+</figure>
+
+<sect1>
+  <title>Installation</title>
+
+<para>
+Der er ikke nogen smart automatiseret installation - efter at
+have hentet source-filerne, er det lige på med at oversætte
+programmerne. Og det kan faktisk være lidt vanskeligt, hvis man
+(som jeg) har en gcc i version 3.
+</para>
+
+<para>
+<emphasis>aewm++</emphasis> og <emphasis>ae_fspanel</emphasis>
+programmerne er der ingen problemer med.
+</para>
+
+<para>
+<emphasis>appbar</emphasis> programmet fejler med
+</para>
+
+<screen>
+icon.cc:109: `cerr' undeclared (first use this function)
+</screen>
+
+<para>
+og tilsvarende fejl i appbar.cc og linkedlist.cc. Det løses 
+ved at tilføje <command>#include &lt;iostream.h&gt;</command> til <filename>icon.cc</filename>.
+</para>
+
+<para>
+<emphasis>setrootimage</emphasis> fejler på samme måde med at cerr ikke
+kendes - det rettes ved at ændre <command>include &lt;iostream&gt;</command> til <command>include &lt;iostream.h&gt;</command> i filen setrootimage.cc.
+</para>
+
+<para>
+<emphasis>xsession</emphasis> programmet har slet ikke nogen Makefile med,
+men det er meget simpelt: <command>gcc -o xsession xsession.c</command> ,
+og så kopieres xsession over i /usr/bin, eller hvor man vil 
+have det liggende.
+</para>
+</sect1>    <!--   Installation -->
+
+<sect1>
+  <title>Opsætningsfiler</title>
+
+<para>
+<emphasis>aewm++</emphasis> i sig selv har ingen konfigurations-fil. Der er nogle
+kommando-linie options til at styre ting som fokus metode, bredden
+af vinduesrammerne, og antallet af virtuelle desktops. Igen er
+det meget minimalt hvad man kan gøre, men for at få sat fokus
+til at følge musen kan man altså tilføje <command>-fm follow</command> eller <command>-fm sloppy</command> til starten af aewm++.
+</para>
+
+<para>
+En ting man måske vil ændre på er de funktioner, der standard
+er bundet til museknaps-tryk på desktop'en - det styres med <command>-new1 KOMMANDO</command> og <command>-new2 KOMMANDO</command> optionerne for hvad der skal ske ved tryk på hhv. venstre og
+højre musetast. KOMMANDO kan være en vilkårlig kommando-linie,
+default funktionen er at venstre musetast ikke gør noget, mens
+højre musetast starter et nyt xterm vindue.
+</para>
+
+<para>
+<emphasis>appbar</emphasis> programmet har en konfigurations-fil, hvor man
+kan definere ikonerne og hvilke programmer de skal starte.
+Default er det <command>/etc/X11/appbar/appbar.rc</command> som læses,
+men hver bruger kan have sin egen fil, som så skal hedde <command>$HOME/.appbar</command>
+</para>
+
+<para>
+Syntaksen er beskrevet i README filen, som kommer med appbar,
+men er ganske enkel. Her er et eksempel på hvordan man får en
+ikon til at starte Galeon web-browseren:
+</para>
+
+<screen>
+icon { 
+        image = /usr/X11/share/appbar/images/galeon.xpm; 
+	execute = galeon;
+}
+</screen>
+
+<para>
+<command>image</command> definerer den 16x16 pixmap fil, der bruges som
+ikon - appbar kommer med nogle få ikoner, der installeres 
+i <filename>/usr/X11/share/appbar/images/</filename> når man kører 
+<command>make install</command>, og <command>execute</command> er det program, der skal startes.
+</para>
+
+<para>
+Udover ikoner og tilhørende programmer, definerer .appbar
+filen også hvordan appbar skal vises - vandret eller lodret,
+hvilket hjørne på skærmen den skal placeres i, og hvilken
+baggrunds-farve eller gradient der skal lægges på appbar'en:
+</para>
+
+<screen>
+vertical_placement
+northwest_placement
+
+appbar_color_from { 
+	red=99;
+	green=99;
+	blue=99;
+}
+
+appbar_color_to {
+	red=cc;
+	green=cc;		
+	blue=cc;	
+}
+</screen>
+
+<sect2>
+  <title>Vindueshåndtering</title>
+
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+     <emphasis>Flytte et vindue:</emphasis>
+     Træk i titelbaren med venstre museknap.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+     <emphasis>Ændre størrelse på et vindue:</emphasis>
+     Dette foregår lidt pudsigt. Man trykker midterste museknap ned
+         i det lille felt, der er i højre side af titel-baren på det
+	 aktive vindue. Så flytter man musen rundt, og ændrer dermed
+	 vinduets størrelse. Bemærk: Det er den højre og den nederste
+	 kant af vinduet, der ændres - toppen og venstre side er
+	 faste. Så man kan være nødt til at flytte vinduet førend
+	 man ændrer størrelse!
+ </para>
+</listitem>
+<listitem>
+ <para>
+     <emphasis>Ændre størrelse på et vindue:</emphasis>
+     Dette foregår lidt pudsigt. Man trykker midterste museknap ned
+         i det lille felt, der er i højre side af titel-baren på det
+	 aktive vindue. Så flytter man musen rundt, og ændrer dermed
+	 vinduets størrelse. Bemærk: Det er den højre og den nederste
+	 kant af vinduet, der ændres - toppen og venstre side er
+	 faste. Så man kan være nødt til at flytte vinduet førend
+	 man ændrer størrelse!
+ </para>
+</listitem>
+<listitem> 
+ <para>
+     <emphasis>Maksimere et vindue:</emphasis>
+     Dobbeltklik med venstre museknap i titel-baren
+ </para>
+</listitem>
+<listitem>
+ <para>
+     <emphasis>Minimere et vindue:</emphasis>
+     Klik med venstre museknap på det lille felt til højre
+         i titel-baren.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+     <emphasis>Skygge et vindue:</emphasis>
+     aewm++ har en facilitet der minder om at minimere vinduet,
+         hvor kun selve titel-baren bliver på skærmen - det kaldes
+	 et "shaded" vindue. Det gøres ved at klikke med
+	 midterste museknap i titelbaren. For at "un-shade"
+	 vinduet klikker man igen i titelbaren med midterste museknap.
+ </para>
+</listitem>
+<listitem>
+ <para>
+     <emphasis>Lukke et vindue:</emphasis>
+     Klik med højre musetast i det lille felt til højre i
+         titel-baren.
+ </para>
+</listitem>
+</itemizedlist>
+
+</sect2>    <!--   Vindueshåndtering -->
+
+<sect2>
+  <title>Fokus</title>
+
+<para>
+Default har aewm++ click-to-focus. Dette kan kun ændres med
+kommandolinie-optionen <command>-fm [follow|sloppy|click]</command> når man starter aewm++.
+</para>
+</sect2>    <!--   Fokus -->
+
+<sect2>
+  <title>Workspaces/virtuelle skriveborde</title>
+
+<para>
+aewm++ understøtter virtuelle desktops - standard er der 4, men
+man kan vælge antallet med <command>-md ANTAL</command> optionen når
+man starter aewm++.
+</para>
+
+<para>
+Hvis man bruger ae_fspanel er de virtuelle desktops små ikoner 
+i panelet, med numre fra 0 til (antal desktops - 1). Hvis man ikke
+bruger ae_fspanel, må man skifte med ALT+CTRL+PageUp eller
+ALT+CTRL+PageDn.
+</para>
+
+<para>
+Man kan flytte et åbent vindue over på en anden virtuel desktop
+ved at højreklikke i titel-baren - når du slipper musetasten kommer
+der en lille menu frem, hvor man vælger den virtuelle desktop,
+vinduet skal flyttes til.
+</para>
+
+
+</sect2>    <!--   Workspaces/virtuelle skriveborde -->
+
+<sect2>
+  <title>Baggrundsbilleder og den slags</title>
+
+<para>
+Baggrunds-billeder må man klare selv - setrootimage som følger
+med i goodies pakken kan lave nydelige farve-gradienter, og
+ellers må man have fat i programmer som <command>display</command> fra ImageMagick pakken for at få sit favoritbillede ind som
+baggrunds-billede.
+</para>
+
+<para>
+Der er ikke noget der bare ligner temaer i aewm++.
+</para>
+</sect2>    <!--   Baggrundsbilleder og den slags -->
+</sect1>
+
+<sect1>
+  <title>Dokumentation</title>
+
+<para>
+Den er sparsom - der er lidt på <ulink url="http://sapphire.sourceforge.net/">
+sapphire.sourceforge.net</ulink>, og nogle spredte README filer. Men
+da der ikke er så mange faciliteter i aewm++, er den beskedne
+dokumentation alligevel dækkende.
+</para>
+</sect1>    <!--   Dokumentation -->
+
+<sect1>
+  <title>Hvad er det fede ved aewm++ ?</title>
+
+<para>
+Tjah - det er en lille og effektiv Window Manager. Trods sin
+størrelse har den en vis funktionalitet til at kende GNOME
+og KDE programmer, så man kan bruge aewm++ som Window Manager
+i disse miljøer - det har jeg dog ikke prøvet.
+</para>
+
+<para>
+Ellers tror jeg mest aewm++ appellerer til "feinschmeckere";
+der gerne vil køre en Window Manager som meget få kender til.
+</para>
+</sect1>
 </chapter>
