@@ -1,4 +1,5 @@
 <chapter id="lyd">
+<title>Lyd under Linux</title>
 <para>
 I dette kapitel ser vi på programmer til at håndtere lyd, dvs. 
 afspille cd'er, MP3 og Ogg Vorbis.
@@ -349,4 +350,323 @@ et patch (mod_mp3) til Apache, så man kan streame MP3 eller OGG-filer.
 
 </sect2>
 </sect1>
+
+<!-- =================================================================== -->
+<!-- =================================================================== -->
+<!-- Lyd redigering -->
+<!-- =================================================================== -->
+<!-- =================================================================== -->
+
+<sect1 id="lydredigering">
+<title>Lyd- og musikredigering</title>
+<indexterm><primary>Lydredigering</primary></indexterm>
+<indexterm><primary>Musikredigering</primary></indexterm>
+
+<para>Til Linux findes der mange gode lydredigeringsprogrammer og
+programmer til at redigere musik (midi/sequencers) med. Denne sektion
+indeholder referencer og beskrivelser af forskellige nyttige
+programmer, lige fra kommandoliniebaserede lydprogrammer til
+programmer der kan skrive noder pænt.</para>
+
+<sect2 id="ladspa">
+<title>LADSPA moduler</title>
+<indexterm><primary>LADSPA</primary></indexterm>
+<indexterm><primary>LADSPA moduler</primary></indexterm>
+<indexterm><primary>Linux Audio Developers</primary></indexterm>
+
+<para>Inden de forskellige programmer beskrives nævnes kort "Linux
+Audio Developer's Simple Plugin API" (LADSPA). Dette er et API for
+programmering af lyd "plugins" (moduler) som flere og flere Linux
+applikationer der arbejder med lyd understøtter.</para>
+
+<para>Hjemmesiden for LADSPA er på <ulink
+url="http://www.ladspa.org/">http://www.ladspa.org/</ulink> hvor man
+kan downloade en række moduler i "pakker", som kan anvendes af de
+programmer der nævnes i det følgende, såfremt det fremgår af
+beskrivelsen af dem. LADSPAs hjemmeside er i øvrigt et godt
+udgangspunkt for at finde interessante lydredigeringsprogrammer. Hvis
+man er interesseret i at vide mere om lydinfrastruktur under Linux,
+kan man også besøge "Linux Audio Developers" på <ulink
+url="http://www.linuxdj.com/audio/lad/">http://www.linuxdj.com/audio/lad/</ulink>.
+Det er dog absolut mest for programudviklere.</para>
+</sect2>
+<!-- =================================================================== -->
+<!-- sox -->
+<!-- =================================================================== -->
+<sect2 id="sox">
+<title>sox - Sound eXchange</title>
+<indexterm><primary>sox</primary></indexterm>
+<indexterm><primary>Lydredigering</primary>
+           <secondary>med sox</secondary></indexterm>
+
+<para>
+Sox er et kommandolinie program. Fra den danske beskrivelse i
+Mandrake: 'Sox betegner sig selv som "Lyd-programmernes
+schweizer-kniv". Det kan konvertere mellem mange lydformater og udføre
+simple manipulationer'. Bliver installeret som default i langt de
+fleste distributioner. Sox's anvendelighed ligger først og fremmest i
+konverteringen mellem formater, men kan også anvendes til f.eks. at
+filtrere forskellige frekvenser fra i en snæver
+vending. (F.eks. mikrofonstøj fra optageudstyr). Altså måske især
+anvendeligt som en form for pre/postprocessingværktøj i forbindelse
+med optagelser. Nedenfor kan du se et kald til sox - du kan komme
+videre med man siden.</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>sox -h</userinput>
+sox: Version 12.17.1
+
+Usage: [ gopts ] [ fopts ] ifile [ fopts ] ofile [ effect [ effopts ] ]
+
+gopts: -e -h -p -v volume -V
+
+fopts: -r rate -c channels -s/-u/-U/-A/-a/-i/-g -b/-w/-l/-f/-d/-D -x
+
+effect: avg band bandpass bandreject chorus compand copy cut deemph
+earwax echo echos fade filter flanger highp highpass lowp lowpass map
+mask pan phaser pick pitch polyphase rate resample reverb reverse
+speed split stat stretch swap vibro vol trim
+
+effopts: depends on effect
+
+Supported file formats: aiff al alsa au auto avr cdr cvs dat vms gsm
+hcom maud ossdsp raw sb sf sl smp sndt sph 8svx sw txw ub ul uw voc
+wav wve
+</screen>
+</sect2>
+
+<!-- =================================================================== -->
+<!-- DAP -->
+<!-- =================================================================== -->
+<sect2 id="dap">
+<title>DAP - Digital Audio Processor</title>
+<indexterm><primary>DAP</primary></indexterm>
+<indexterm><primary>Lydredigering</primary>
+           <secondary>med DAP</secondary></indexterm>
+<para>DAP er en "gammel traver" inden for lydredigering på Unix
+platforme. Den understøtter de mest almindelige former for redigering
+af lyd, herunder en del dspeffekter, som flanger, phaser, distortion,
+mv. <xref linkend="dap-fig"> viser DAPs forskellige vinduer.</para>
+
+<figure id="dap-fig" float="1">
+<title>DAP</title>
+<graphic fileref="dap.&magic;" scale="50"></graphic>
+</figure>
+
+<para>DAPs hjemmeside er på <ulink
+url="http://www.cee.hw.ac.uk/~richardk/">http://www.cee.hw.ac.uk/~richardk/</ulink>
+og DAP kommer med nogen distributioner, dog ikke ret mange.</para>
+</sect2>
+
+<!-- =================================================================== -->
+<!-- SND -->
+<!-- =================================================================== -->
+<sect2 id="snd">
+<title>snd</title>
+<indexterm><primary>snd</primary></indexterm>
+<indexterm><primary>Lydredigering</primary>
+           <secondary>med snd</secondary></indexterm>
+<indexterm><primary>LADSPA moduler</primary>
+           <secondary>med snd</secondary></indexterm>
+
+<para>Snd er en lydeditor, der blandt andet har sin styrke inden for
+Fourier-fremstillinger. Snd kan tilrettes/scriptes med guile og
+guile-gtk, hvilket giver gode muligheder for at udvikle egne moduler
+til programmet. Ligesom der findes en lang række moduler til snd
+allerede. Snd understøtter desuden LADSPA. Som det kan ses på <xref
+linkend="snd-1-fig"> understøtter snd desuden optagelse fra
+flere lydkort samtidig.</para>
+
+<figure id="snd-1-fig" float="1">
+<title>Snd - flere lydkort understøttes</title>
+<graphic fileref="snd-1.&magic;" scale="50"></graphic>
+</figure>
+
+
+<para>Snd har flere forskellige fremstillinger der kan visualisere lyden
+og bruges til at redigere den i. <xref linkend="snd-2-fig"> viser
+blandt andet en Fourier-fremstilling.
+</para>
+
+<figure id="snd-2-fig" float="1">
+<title>Snd - flere fremstillinger understøttes</title>
+<graphic fileref="snd-2.&magic;" scale="50"></graphic>
+</figure>
+
+<para>Snds hjemmeside er på <ulink
+url="http://www-ccrma.stanford.edu/software/snd/">http://www-ccrma.stanford.edu/software/snd/</ulink>
+hvor der blandt andet er en omfattende manual.</para>
+</sect2>
+
+<!-- =================================================================== -->
+<!-- GLAME -->
+<!-- =================================================================== -->
+<sect2 id="glame">
+<title>Glame - GNU/Linux Audio Mechanics</title>
+<indexterm><primary>Glame</primary></indexterm>
+<indexterm><primary>Lydredigering</primary>
+           <secondary>med Glame</secondary></indexterm>
+<indexterm><primary>LADSPA moduler</primary>
+           <secondary>med Glame</secondary></indexterm>
+
+<para>Glame forsøger at blive "the GIMP of sound". Programmet er
+stadig noget umodent, men inkluderes allerede nu i flere Linux
+distributioner da det er et meget interessant program der allerede nu
+tilbyder megen funktionalitet.</para>
+
+<para>Glame er opbygget omkring en engine skrevet i guile, og en lang
+række af plugins. Denne arkitektur har tidligere vist sig at være
+meget fremmende for udvikling, for f.eks. Gimp. Glame understøtter blandt andet
+LADSPA. På <xref linkend="glame-1-fig"> vises et typisk Glame projekt
+under almindelig waveform redigering.</para>
+
+<figure id="glame-1-fig" float="1">
+<title>Glame - waveform redigering</title>
+<graphic fileref="glame-1.&magic;" scale="50"></graphic>
+</figure>
+
+<para>En interessant funktionalitet Glame har, er muligheden for at
+lave netværk af de forskellige filtre/plugins. Dette er illustreret på
+<xref linkend="glame-2-fig">.</para>
+
+<figure id="glame-2-fig" float="1">
+<title>Glame - opbygning af filternetværk</title>
+<graphic fileref="glame-2.&magic;" scale="50"></graphic>
+</figure>
+
+<para>Glame kommer som nævnt med flere Linux distributioner, men
+ellers er hjemmesiden på <ulink
+url="http://glame.sourceforge.net/">http://glame.sourceforge.net/</ulink>.</para>
+</sect2>
+
+<!-- =================================================================== -->
+<!-- AUDACITY -->
+<!-- =================================================================== -->
+<sect2 id="audacity">
+<title>Audacity</title>
+<indexterm><primary>Audacity</primary></indexterm>
+<indexterm><primary>Lydredigering</primary>
+           <secondary>med Audacity</secondary></indexterm>
+<indexterm><primary>LADSPA moduler</primary>
+           <secondary>med Audacity</secondary></indexterm>
+
+<para>Audacity er endnu et lydredigeringsprogram. En fordel ved
+Audacity er at programmet findes til både Linux, Mac og Windows og at
+der findes en dansk oversættelse. Her er teksten fra hjemmesidens
+danske beskrivelse: "Audacity er en fri og gratis lydeditor. Du kan
+indspille lyd, afspille lyd, importere og eksportere filer i WAV,
+AIFF, mp3 med mere. Brug Audacity til at redigere lyd med Klip, Kopiér
+og Indsæt (og ubegrænset fortrydelse), mix spor sammen, eller tilføj
+effekter til dine indspilninger. Det har også en indbygget
+styrkekonvolutering, en justerbar spektogramfremstilling, og et
+frekvensanalysevindue til brug for egentlig lydanalyse. Indbyggede
+effekter omfatter blandt andet Bas boost, Wahwah, støjfjernelse, og
+programmet kan bruge VST-udvidelser."</para>
+
+<para>De VST udvidelser der omtales, er pendanten til LADSPA, men
+under Windows og Mac. I Audacitys nyeste udgave (1.1 som dette
+skrives) understøttes LADSPA også (under Linux). På <xref
+linkend="audacity-1-1-fig"> vises et skærmskud af Audacity 1.1.</para>
+
+<figure id="audacity-1-1-fig" float="1">
+<title>Audacity</title>
+<graphic fileref="audacity-1-1.&magic;" scale="50"></graphic>
+</figure>
+
+<para>Audacity kommer med flere Linux distributioner, men
+ellers er hjemmesiden på <ulink
+url="http://audacity.sourceforge.net/">http://audacity.sourceforge.net/</ulink>.
+</para>
+</sect2>
+
+<!-- =================================================================== -->
+<!-- lilypond -->
+<!-- =================================================================== -->
+<sect2 id="lilypond">
+<title>Nodeudskrivning med Lilypond</title>
+<indexterm><primary>Lilypond</primary></indexterm>
+<indexterm><primary>Noderedigering</primary></indexterm>
+
+<para>
+Hvis man vil lave sine egne noder, bør man kigge lidt på
+Lilypond. Lilypond er et meget omfattende program til at producere
+noder til udprint i høj kvalitet. Programmet bruger TeX som backend,
+hvilket betyder, at det er forholdsvist nemt at integrere
+musikeksempler lavet i lilypond i et LaTeX-dokument. Det betyder også
+at det er nødvendigt at have en fungerende TeX-installation inden
+lilypond installeres.
+</para>
+
+<para>
+Programmet kan hentes på hjemmesiden <ulink
+url="http://www.gnu.org/software/lilypond/">http://www.gnu.org/software/lilypond/</ulink>,
+enten som en (lidt forældet) rpm, eller som en tarball du selv skal
+kompilere. Debian-brugere kan installere med 
+<screen><prompt>[milesdavis@localhost ~]$</prompt> <userinput>apt-get install lilypond</userinput></screen>
+Inkluderet i distributionen er en glimrende emacs-mode, som letter
+arbejdet med lilypond meget.
+
+</para>
+
+<para>
+Når du har installeret programmet, skal du igennem to trin for at lave
+dine egne noder. Først skal du lave en inputfil med din
+favorit-teksteditor,
+og derefter skal du køre lilypond for at konvertere den
+til en postscript-fil.
+</para>
+
+<para>
+Her er et simpelt eksempel på en inputfil:
+<screen>
+\score{
+    \notes<
+	\context Staff = staffA{
+	    \time 4/4
+	    \clef violin
+	    \relative c''{
+		c4 c c d e e e2
+		d4 d d e c2 c2
+	    }
+	}
+	\context Staff = staffB{
+	    \clef bass
+	    c1 e2. ees4 d1 c
+	}
+    >
+    \paper{}
+}
+</screen>
+Den skal så gemmes som f.eks. <filename>edderkop.ly</filename>.
+</para>
+
+<para>
+Nu kan den konverteres til en postscriptfil ved hjælp af kommandoen
+<screen>
+<prompt>[milesdavis@localhost ~]$</prompt> <userinput>ly2dvi -P edderkop.ly</userinput>
+</screen>
+og så skulle du meget gerne få følgende resultat når du åbner
+edderkop.ps med ghostview (<filename>gv</filename>):
+<figure ID="lilypond-fig" FLOAT="1">
+<title>Resultatet af lilypond-kørsel</title>
+<graphic fileref="lilypond.&magic;" scale="60"></graphic>
+</figure>
+Hvis du hellere vil have det i PDF, kan du bruge <filename>ps2pdf</filename>
+til at konvertere filen.
+</para>
+
+<para>
+For at lære hvordan du bruger lilypond er det en rigtig god ide at
+læse den temmelig omfattende tutorial der findes på hjemmesiden
+(<ulink
+url="http://www.gnu.org/software/lilypond/">http://www.gnu.org/software/lilypond/</ulink>). Der
+er også nogle fulde eksempler som bliver gennemgået trin for trin, så
+du let kan lære at bruge programmet.
+</para>
+
+</sect2>
+
+</sect1>
+
+
 </chapter>
