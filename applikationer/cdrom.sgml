@@ -1,7 +1,7 @@
 <!-- $Id$ -->
 <chapter id="cdrombraending">
 <title>Brænding af cd'er</title>
-<indexterm><primary>Brænde cd-rom</primary></indexterm>
+<indexterm><primary>Brænde cd</primary></indexterm>
 <indexterm><primary>cd-rom</primary><secondary>brænde</secondary></indexterm>
 
 <para>
@@ -37,7 +37,7 @@ som det skal. Ved at give kommandoen <userinput>cdrecord
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
 Cdrecord 1.11a12 (i586-mandrake-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
 Linux sg driver version: 3.1.22
 Using libscg version 'schily-0.5'
@@ -144,17 +144,17 @@ benyttes moduler.
 
 <para>
 Når man har fået bygget sig en kerne med de rette elementer, skal man
-sørge for at fjerne den normale IDE-cd-rom understøttelse. Det skal
+sørge for at fjerne den normale IDE-cd understøttelse. Det skal
 ske i opstarten af Linux, hvor man skal give parametren
 <userinput>hdX=ide-scsi</userinput>, forudsat at ens brænder har
 navnet <userinput>hdX</userinput>. Hvis man er i tvivl, hvilket navn,
 brænderen har, kan man bruge følgende kommando, som vil udskrive en
-liste over de cd-rom-drev (brænder eller ej), der er fundet af Linux:
+liste over de cd-drev (brænder eller ej), der er fundet af Linux:
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>
-(cd /proc/ide; for d in hd* ; do [ `<$d/media` == 'cdrom' ] && echo $d; done)
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>
+for d in /proc/ide/hd*; do [ $(<$d/media) = cdrom ] && echo ${d##*/}; done
 </USERINPUT>
 hdc
 hdd
@@ -201,7 +201,7 @@ c:\linux\loadlin c:\linux\vmlinuz.244 root=/dev/hdb5 ro hdc=ide-scsi hdd=ide-scs
 Hvis du har <command>loadlin.exe</command> i
 <filename>c:\linux</filename> og vil bruge en kerne
 <filename>vmlinuz.244</filename> med system-roden på
-<filename>/dev/hdb5</filename> og du har de to cd-rom-drev
+<filename>/dev/hdb5</filename> og du har de to cd-drev
 <filename>hdc</filename> og <filename>hdd</filename>.
 </para>
 
@@ -214,8 +214,8 @@ Efter genstart af systemet kan man nu skrive
 <indexterm><primary>cd-rom</primary><secondary>modprobe</secondary></indexterm>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe sg</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-scsi</USERINPUT>
+<PROMPT>[root@linus /]# </PROMPT><USERINPUT>/sbin/modprobe sg</USERINPUT>
+<PROMPT>[root@linus /]# </PROMPT><USERINPUT>/sbin/modprobe ide-scsi</USERINPUT>
 </screen>
 
 <para>
@@ -245,8 +245,8 @@ almindeligt cd-rom-drev også, skal der lige laves en sidste lille
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
-lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> hdb
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
+lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> hdc
 </screen>
 
 <para>
@@ -260,9 +260,9 @@ sted hen.
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>rm /dev/cdrom</USERINPUT>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ln -s /dev/scd0 /dev/cdrom</USERINPUT>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>rm /dev/cdrom</USERINPUT>
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>ln -s /dev/scd0 /dev/cdrom</USERINPUT>
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
 lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 </screen>
 
@@ -280,14 +280,14 @@ lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 På <ulink
 url="http://www.xcdroast.org">http://www.xcdroast.org</ulink> kan du
 finde X-CD-Roast. Få fat i den og installér den. Skal man kunne brænde
-cd-rom'er uden at være root bliver man nødt til at sætte suid-bitten på
+cd'er uden at være root bliver man nødt til at sætte suid-bitten på
 <filename>xcdroast</filename>. Dette gøres:
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>which xcdroast</USERINPUT>
+<PROMPT>[root@linus /]# </PROMPT><USERINPUT>which xcdroast</USERINPUT>
 /usr/local/bin/xcdroast
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chmod +s /usr/local/bin/xcdroast</USERINPUT>
+<PROMPT>[root@linus /]# </PROMPT><USERINPUT>chmod +s /usr/local/bin/xcdroast</USERINPUT>
 </screen>
 
 <para>
@@ -303,7 +303,7 @@ en ret morsom "disclaimer".
 </FIGURE>
 
 <para>
-Det antages nu at cd-rom-brænderen er sat op til at virke. Det testes
+Det antages nu at brænderen er sat op og virker. Det testes
 med "Setup".  Under "CD Setup" vælges brænderen som cd-writer-device,
 og speed sættes. Eksisterer brænderen ikke under dette punkt, så
 skyldes det, at brænderen enten ikke er tilsluttet ordentligt (scsi)
@@ -344,7 +344,7 @@ heller ikke noget krav til at de faktisk skal ligge i
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l</USERINPUT>
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>ls -l</USERINPUT>
 total 1
 lrwxrwxrwx 1 root root   38 Jun 14 20:32 Mandrake-7.1-ext.raw -> /var/ftp/pub/iso/Mandrake-7.1-ext.iso
 lrwxrwxrwx 1 root root   39 Jun 14 19:32 Mandrake-7.1inst.raw -> /var/ftp/pub/iso/Mandrake-7.1-inst.iso
@@ -386,7 +386,7 @@ nu ellers installerede <command>xcdroast</command>.
 </sect1>
 
 <sect1 id="cdrecord">
-<title>Brænde cd-rom med cdrecord</title>
+<title>Brænde cd med cdrecord</title>
 <!-- Skrevet af Gert Holtoft <holtoft@get2net.dk> -->
 <indexterm><primary>cdrecord</primary></indexterm>
 <indexterm><primary>cd-rom</primary><secondary>brændeprogram, cdrecord</secondary></indexterm>
@@ -400,7 +400,7 @@ hjælp af kommandoen <command>cdrecord -scanbus</command>.
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
+<PROMPT>[root@linus /]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
 Cdrecord 1.11a12 (i586-mandrake-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
 Linux sg driver version: 3.1.22
 Using libscg version 'schily-0.5'
@@ -423,20 +423,80 @@ andet nummer, som man selv kan finde med <command>cdrecord
 -scanbus</command>.
 </para>
 
-<sect2 id="cdrom-skrivning">
-<title>Skrivning og brænding af et data-image</title>
+<sect2 id="cdrecord-braende">
+<title>Cd brændes</title>
+	
+<indexterm><primary>cdrecord</primary></indexterm>
 
 <para>
-Læg alle libs og filer i et bibliotek (eks. <filename>/test</filename>)
-Vedtag et navn for dit cd-image (f.eks. <filename>mine_ting</filename>).
+For at kunne brænde en cd skal man typisk have en såkaldt iso-fil,
+også kaldet et cd-image. En iso-fil indeholder alle de filer, der skal
+ende på cd'en, pakket sammen i en enkelt fil. Man kan hente en del
+iso-filer på nettet; fx består mange Linux-distributioner af omkring 3
+iso-filer, som man kan hente og siden brænde. Da en iso-fil indeholder
+alt det, der skal ende på en cd, vil den ofte være ret stor - op til
+de omkring 700MB, der kan være på en cd.
 </para>
 
 <para>
-Lav dit cd-rom-image med <command>mkisofs</command>:
+Man kan også lave sine egne iso-filer, hvor man helt selv bestemmer
+indholdet, og dermed hvad der kommer på cd'en. Mere om dette senere.
+</para>
+
+<para>
+Når man har en iso-fil, man gerne vil have brændt, sker det ved hjælp
+af en kommando som følgende:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -o  mine_ting  /test/</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord speed=8 dev=0,1,0 iso-fil</USERINPUT>
+</screen>
+
+<para>
+Dette starter <command>cdrecord</command>, som med 8 gange hastighed
+vil bruge brænderen med nummer <userinput>0,1,0</userinput> til at
+brænde indholdet af filen <filename>iso-fil</filename>. Selve
+<filename>iso-fil</filename> kan være hvad som helst, men navnet vil
+ofte ende på <filename>.iso</filename>; eksempelvis går den først cd
+til en Red Hat 7.3 installation under navnet
+<filename>valhalla-i386-disc1.iso</filename>.
+</para>
+
+<para>
+Der er mange muligheder for at ændre virkemåden af
+<command>cdrecord</command>. Specielt kan det være interessant at
+udvide kommandoen ovenfor med <userinput>-v</userinput>. Herved vil
+<command>cdrecord</command> fortælle lidt mere om, hvad der foregår
+under brændingen. Endvidere kan <userinput>-eject</userinput> være
+nyttig, da den bevirker at drevet spytter cd'en ud når den er brændt
+færdig. Gennem <userinput>man cdrecord</userinput> kan man læse om
+alle de øvrige muligheder.
+</para>
+
+
+<sect2 id="cdrom-iso-fremstilling">
+<title>Fremstilling af en iso-fil</title>
+
+<para>
+Det kan være nyttigt nok at brænde iso-filer, man har hentet, men det
+er også meget rart selv at kunne bestemme indholdet af den cd, man
+brænder. For at kunne det, må man selv lave en iso-fil. Til det formål
+bruges programmet <command>mkisofs</command>, som er nært knyttet til
+<command>cdrecord</command> - men <command>mkisofs</command> skal
+installeres som et seperat program.
+</para>
+
+<para>
+Læg alle biblioteker og filer i et katalog (eks. <filename>/test</filename>)
+Vedtag et navn for dit cd-image (f.eks. <filename>min.iso</filename>).
+</para>
+
+<para>
+Lav dit cd-image med <command>mkisofs</command>:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -o  min.iso  /test/</USERINPUT>
 </screen>
 
 
@@ -445,7 +505,7 @@ Lav dit cd-rom-image med <command>mkisofs</command>:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -J  -o  mine_ting /test/</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs -r -J -o min.iso /test/</USERINPUT>
 </screen>
 
 <para>
@@ -453,136 +513,22 @@ Test indholdet med følgende kommando:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t iso9660 -o ro,loop=/dev/loop0  mine_ting /mnt</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t iso9660 -o ro,loop=/dev/loop0  min.iso /mnt</USERINPUT>
 </screen>
 
 <para>
 I <filename>/mnt</filename> kan indholdet checkes. Afmontér dernæst
-med kommandoen <command>umount mine_ting /mnt</command>.
+med kommandoen <command>umount min.iso /mnt</command>.
 </para>
 </sect2>
 
-<sect2 id="braende-cdrom">
-<title>Cd-rom brændes</title>
-	
-<para>
-Du kan nu brænde din cd-rom med kommandoen:
-</para>
-
-<indexterm><primary>cdrecord</primary></indexterm>
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,1,0 -data mine_ting</USERINPUT>
-</screen>
-
-<para>
-Man kan også være smart og kombinere <command>mkisofs</command> og
-<command>cdrecord</command> via en fifo-fil (dvs. en bufferfil, så man
-kommer aldrig til at fylde en hel cd-rom på harddisken):
-</para>
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkfifo image.iso</USERINPUT>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs -r -J -o image.iso STI_TIL_DATA  &</USERINPUT>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,1,0 -eject speed=4 -data image.iso</USERINPUT>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>rm image.iso</USERINPUT>
-</screen>
-
-<para>
-I dette eksempel skal du selv rette <filename>STIL_TIL_DATA</filename>
-til der hvor dine data-filer ligger. Til
-<command>cdrecord</command>-kommandoen anvendes 4 gange
-skrivehastighed og cd-rom'en skubbes ud efter skrivning (-eject).
-</para>
-
-<para>
-En langt mere interessant metode er at oprette en fil på 650/700 Mb
-(alt efter mediestørrelse), som så fyldes med diverse ting og sager og
-derefter brændes som et iso-image.
-</para>
-
-<para>
-Oprettelse af filen  <filename>test.iso</filename>:
-</para>
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>dd if=/dev/zero of="test.iso" bs=1024k count=650/700</USERINPUT>
-</screen>
-
-<para>
-Opret et ext2-filsystem på denne fil:
-</para>
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>/sbin/mke2fs -b 2048 test.iso</USERINPUT>
-</screen>
-
-<para>
-Til spørgsmålet "test.iso is not a block device", skal du bare sige
-"y" for "yes - proceed anyway".
-</para>
-
-<para>
-Montér filen med:	
-</para>
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t ext2 -o loop=/dev/loop1 test.iso /mnt</USERINPUT>
-</screen>
-	
-<para>
-Kopiér hvad du har lyst til, til <filename>/mnt</filename> og afmontér
-den med kommandoen <command>umount test.iso /mnt</command>.
-</para>
-
-
-<para>
-Du kan nu brænde en cd-rom med kommandoen:
-</para>
-
-
-<indexterm>
- <primary>cdrom</primary>
- <secondary>brænde</secondary>
-</indexterm>
-
-<indexterm>
- <primary>cdrecord</primary>
-</indexterm>
-
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,1,0 -data test.iso</USERINPUT>
-</screen>
-
-
-<para>
-Det er jo dejligt at kunne redigere frit i et "iso-image" der jo kun
-er "read only". Den sidste gode ting med data-medier er direkte og rå
-kopiering fra cd-rom (her <filename>/dev/hdb</filename>) til brænder. 
-Kommandoen er:
-</para>
-
-
-<screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,1,0 speed=2 -isosize /dev/hdb</USERINPUT>
-</screen>
-
-
-
-<para>
-Skulle kildemediet være større end modtagermediet, kommer der automatisk en
-fejlmelding fra cdrecord, og der bliver ikke brændt noget.
-Denne detalje virker ikke med en musik-cd.
-</para>
+<sect2 id="musik-cd">
+<title>Musik cd brændes</title>
 
 <indexterm><primary>cd-rom</primary><secondary>brændeprogram, cdparanoia</secondary></indexterm>
 <indexterm><primary>musik-cd</primary><secondary>cdparanoia</secondary></indexterm>
 <indexterm><primary>cdparanoia</primary></indexterm>
 </sect2>
-
-<sect2 id="musik-cd">
-<title>Musik cd brændes</title>
 
 <para>
 Hvis man vil lave en musik cd, som kan afspilles i et normalt
@@ -624,11 +570,11 @@ der skal med på cd'en.
 Hvis musikken, der skal brændes, forefindes på en musik cd i forvejen
 (og der altså skal laves en kopi) kan programmet
 <command>cdparanoia</command> bruges til at danne de nødvendige
-wav-filer ud fra original cd'en. Med originalen i cd-rom-drevet kan
+wav-filer ud fra original cd'en. Med originalen i cd-drevet kan
 man med følgende kommando få de enkelte numre gemt i filerne
 <filename>track01.cdda.wav</filename>,
 <filename>track02.cdda.wav</filename> og så videre. Operationen kan
-tage lang tid; dette afhænger meget af hvilken model cd-rom-drev, der
+tage lang tid; dette afhænger meget af hvilken model cd-drev, der
 anvendes.
 </para>
 
@@ -655,7 +601,7 @@ af det hele. Wav-filerne kan brændes til en cd med følgende kommando:
 </para>
 
 <screen>
-<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,1,0 track01.cdda.wav track02.cdda.wav</USERINPUT>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=8 dev=0,1,0 track01.cdda.wav track02.cdda.wav</USERINPUT>
 </screen>
 
 <para>
@@ -680,7 +626,7 @@ og det tidligere eksempel ser så ud som følger:
 </para>
 
 <screen>
-<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,1,0 -dao track01.cdda.wav track02.cdda.wav</USERINPUT>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=8 dev=0,1,0 -dao track01.cdda.wav track02.cdda.wav</USERINPUT>
 </screen>
 
 
@@ -694,7 +640,66 @@ en god resurse omkring brænding af cd'ere.
 
 </sect2>
 
+<sect2 id="cd-extra">
+<title>Brænding af cd med både musik og data (CD-Extra)</title>
+
+<para>
+Man kan lave en cd, som indeholder både musik og data. Når sådan en cd
+bruges i en almindelig cd-afspiller virker den som en musik-cd, og når
+den bruges i en computer er den en data-cd. Princippet kendes fra
+kommercielle musik-cd'er, som af og til indeholder lidt ekstra guf
+hvis man sætter dem i en computer (der dog som oftest skal køre
+operativsystemet Windows). Denne måde at fremstille en cd på kaldes
+CD-Extra, og foregår i to omgange.
+</para>
+
+<para>
+Først laves en musik-cd som normalt, men der skal tilføjes
+<userinput>-multi</userinput> ved brændingen. Dette bevirker, at cd'en
+ikke bliver lukket, og det er derfor muligt at tilføje mere senere hen:
+</para>
+
+<screen>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=8 dev=0,1,0 -multi track01.cdda.wav track02.cdda.wav</USERINPUT>
+</screen>
+
+<para>
+I forlængelse af musikken skal der brændes en iso-fil. Denne iso-fil
+skal laves på en speciel måde, således at den ikke bliver placeret i
+starten af cd'en. Derfor skal man først finde ud af, nøjagtig hvor
+musikken slutter. Det kan <command>cdrecord</command> heldigvis klare,
+når man har brændt første del af cd'en. Til det formål skal man bruge
+<command>-msinfo</command>:
+</para>
+
+<screen>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord dev=0,1,0 -msinfo</USERINPUT>
+0,25654
+</screen>
+
+<para>
+Der udskrives to tal, som udtrykker størrelsen på den allerede brændte
+del af cd'en. Man behøver ikke bekymre sig om tallenes værdi, men blot
+overføre dem direkte til <command>mkisofs</command> med
+<userinput>-C</userinput> argumentet:
+</para>
+
+<screen>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>mkisofs -r -J -o min.iso -C 0,25654
+</screen>
+
+<para>
+På denne måde bliver iso-filen lavet så den passer ind netop efter den
+allerede brændte musik. Filen kan derfor brændes som normalt, uden at
+den vil forsøge at lægge sig oveni musikken:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord speed=8 dev=0,1,0 min.iso</USERINPUT>
+</screen>
+
+</sect2>
+
 </sect1>
 
 </chapter>
-
