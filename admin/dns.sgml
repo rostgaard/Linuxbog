@@ -2805,26 +2805,31 @@ restriktive dørvogter.
 </para>
 </sect2>
 
- <sect2 id="dns-upriviligeret-test">
-  <title>Testkørsel af DNS serveren.</title>
+  <sect2 id="dns-upriviligeret-test">
+   <title>Testkørsel af DNS serveren.</title>
 
-  <!-- Dette afsnit skal flyttes til nogle af de foregående afsnit i
-       det det handler egentlig ikke om chroot. Jeg vil dog vente lidt
-       med det indtil vi har set hvordan alle disse ændringer fungerer
-       sammen.  -->
+   <!-- Dette afsnit skal flyttes til nogle af de foregående afsnit i
+        det det handler egentlig ikke om chroot. Jeg vil dog vente
+        lidt med det indtil vi har set hvordan alle disse ændringer
+        fungerer sammen.  -->
 
-  <para>
-   Hvis serveren kører, bør den kunne svare på forespørgsler. Der
-   findes flere værktøj til dette men her skal nævnes det nu snart
-   forældede "<command>nslookup</command>" samt
-   "<command>dig</command>". Man kan bede "<command>dig</command>" om
-   at forespørge en vilkårlig DNS server ved blot at angive dens
-   IP-nummer med parameteren <literal>@</literal>.  I det følgende
-   eksempel, skal den nyopsatte DNS-server give os oplysninger om
-   domænet "sslug.dk".
+   <indexterm>
+    <primary>kommandooversigt</primary>
+    <secondary>dig</secondary>
+   </indexterm>
+
+   <para>
+    Hvis serveren kører, bør den kunne svare på forespørgsler. Der
+    findes flere værktøj til dette men her skal nævnes det nu snart
+    forældede "<command>nslookup</command>" samt
+    "<command>dig</command>". Man kan bede "<command>dig</command>" om
+    at forespørge en vilkårlig DNS server ved blot at angive dens
+    IP-nummer med parameteren <literal>@</literal>.  I det følgende
+    eksempel, skal den nyopsatte DNS-server give os oplysninger om
+    domænet "sslug.dk".
 
 <screen>
-<prompt>[robin@sherwood robin]$ </prompt><userinput>dig @192.168.8.1 sslug.dk</userinput>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig @192.168.8.1 sslug.dk</userinput>
 ; &lt;&lt;&gt;&gt; DiG 9.2.0  &lt;&lt;&gt;&gt; @192.168.8.1 sslug.dk
 ;; global options:  printcmd
 ;; Got answer:
@@ -2852,29 +2857,105 @@ ns-soa.darenet.dk.      71539   IN      A       130.226.1.4
 ;; WHEN: Sat Apr 13 18:11:17 2002
 ;; MSG SIZE  rcvd: 161
 </screen>
-  </para>
+   </para>
 
-  <para>
-   Sådan kan man afprøve serveren ved at pege den på forskellige
-   domæner. Hvid den er authoritativ/primær DNS-server for et domæne
-   bør man selvfølgelig forespørge DNS-serveren om dette domæne. Man
-   kan konkludere at "chroot" opsætningen er korrekt hvis serveren
-   svarer.
-  </para>
- </sect2>
-</sect1>
+   <para>
+    Sådan kan man afprøve serveren ved at pege den på forskellige
+    domæner. Hvid den er authoritativ/primær DNS-server for et domæne
+    bør man selvfølgelig forespørge DNS-serveren om dette domæne. Man
+    kan konkludere at "chroot" opsætningen er korrekt hvis serveren
+    svarer.
+   </para>
 
+   <para>
+    En af de ting der gør <command>dig</command> interessant
+    sammenlignet med <command>nslookup</command> er at man let kan få
+    fat i alle de forskellige oplysninger der ligger i DNS.  Til
+    gengæld giver <command>dig</command> også en masse oplysninger man
+    normalt ikke er interesseret i, så det kan være nødvendigt at
+    filtrere programmets uddata lidt.
+   </para>
+
+   <para>
+    Hvis man vil vide hvor post til en bestemt maskine afleveres giver
+    man, udover maskinens navn, <command>dig</command> argumentet
+    <literal>MX</literal>:
+
+<screen>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig kaoslx07.nbi.dk MX</userinput>
+
+; <<>> DiG 9.2.1 <<>> kaoslx07.nbi.dk MX
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 28989
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 3, ADDITIONAL: 3
+
+;; QUESTION SECTION:
+;kaoslx07.nbi.dk.               IN      MX
+
+;; ANSWER SECTION:
+kaoslx07.nbi.dk.        86400   IN      MX      10 alf.nbi.dk.
+
+;; AUTHORITY SECTION:
+nbi.dk.                 86400   IN      NS      alf.nbi.dk.
+nbi.dk.                 86400   IN      NS      garm.adm.ku.dk.
+nbi.dk.                 86400   IN      NS      sarastro.nbi.dk.
+
+;; ADDITIONAL SECTION:
+alf.nbi.dk.             86400   IN      A       130.225.212.55
+garm.adm.ku.dk.         8272    IN      A       130.225.127.34
+sarastro.nbi.dk.        86400   IN      A       130.225.212.46
+
+;; Query time: 24 msec
+;; SERVER: 130.225.212.46#53(130.225.212.46)
+;; WHEN: Thu Sep  5 11:36:33 2002
+;; MSG SIZE  rcvd: 164
+
+</screen>
+
+    Der kommer altså en hel masse data, hvoraf det eneste vi egentlig
+    er interesserede i er "ANSWER SECTION".  Med tilvalget
+    <literal>+short</literal> kan vi få <command>dig</command> til kun
+    at give os det egentlige svar:
+
+<screen>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig kaoslx07.nbi.dk MX +short</userinput>
+10 alf.nbi.dk.
+</screen>
+   </para>
+
+   <para>
+    Man kan også bruge <command>dig</command> til at få oplysninger
+    som maskinens IP-adresse:
+
+<screen>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig kaoslx07.nbi.dk A +short</userinput>
+130.225.212.98
+</screen>
+
+    Hvilke maskiner der står for et domænes navnetjeneste:
+
+<screen>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig linuxlab.dk NS +short</userinput>
+www.itu.dk.
+ns-soa.darenet.dk.
+</screen>
+
+    Eventuelt også lidt oplysninger om selve isenkrammet:
+
+<screen>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig kaoslx07.nbi.dk HINFO +short</userinput>
+"Pentium 4/1.5GHz" "Linux 7.3/2.4.18"
+</screen>
+
+    Endelig kan man også få lidt løse uformaterede oplysninger om
+    domænet:
+
+<screen>
+<prompt>[anne@linus anne]$ </prompt><userinput>dig nbi.dk TXT +short</userinput>
+"Niels Bohr Institute, Copenhagen University"
+</screen>
+   </para>
+  </sect2>
+ </sect1>
 </chapter>
-
-
-
-
-
-
-
-
-
-
-
-
-
