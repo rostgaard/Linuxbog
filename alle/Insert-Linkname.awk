@@ -3,10 +3,11 @@
 BEGIN {
     "basename $PWD" | getline currentDir;
     if (currentDir != "alle") {
+       printf("Length %s - string >>%s<<\n",length(currentDir),currntDir);
        fatal_dir();
     }
     "basename $(dirname $PWD)" | getline parentDir;
-    if (parentDir != "linuxbog"){
+    if (parentDir != "linuxbog" && parentDir != "htdocs"){
        fatal_parentDir();
     }
     iostat = getline < "bog/index.html.php-1";
@@ -38,7 +39,7 @@ function fatal_dir()
 
 function fatal_parentDir()
 {
-    printf("Current directory must be alle/ \n");
+    printf("Current directory must be linuxbog or htdocs/ \n");
     exit (102);
 }
 
