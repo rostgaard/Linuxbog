@@ -53,20 +53,20 @@ fi
 #--  Read configuration:
 
 if [ -r ${HOME}/.pinespellrc ]; then
-   base_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*base_dicts:[[:space:]]+' | perl -pe 's/^[[:space:]]*base_dicts:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
-   ignore_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*ignore_dicts:[[:space:]]+' | perl -pe 's/^[[:space:]]*ignore_dicts:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
-   can_compose=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*can_compose:[[:space:]]+' | perl -pe 's/^[[:space:]]*can_compose:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
-   da_nutids_r=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*da_nutids_r:[[:space:]]+' | perl -pe 's/^[[:space:]]*da_nutids_r:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   base_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*base_dicts:[[:space:]]+' | perl -pe 'use locale; s/^[[:space:]]*base_dicts:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
+   ignore_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*ignore_dicts:[[:space:]]+' | perl -pe 'use locale; s/^[[:space:]]*ignore_dicts:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   can_compose=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*can_compose:[[:space:]]+' | perl -pe 'use locale; s/^[[:space:]]*can_compose:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   da_nutids_r=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*da_nutids_r:[[:space:]]+' | perl -pe 'use locale; s/^[[:space:]]*da_nutids_r:[[:space:]]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
 fi
 
 #-----------------------------------------------------------------------------
 #--  Locate spell checking dictionary directories:
 
 if [ ${spell} = "aspell" ]; then
-   dict_dirs=`aspell dump config | egrep '^# dict-dir (current|default): ' | perl -pe 's/^#[[:space:]]+dict-dir[[:space:]]+(current|default):[[:space:]]+(.*)$/$2/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
+   dict_dirs=`aspell dump config | egrep '^# dict-dir (current|default): ' | perl -pe 'use locale; s/^#[[:space:]]+dict-dir[[:space:]]+(current|default):[[:space:]]+(.*)$/$2/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
    dict_ext=
 elif [ ${spell} = "ispell" ]; then
-   dict_dirs=`ispell -vv | egrep '^[[:space:]]*LIBDIR[[:space:]]*=' | perl -pe 's/^[[:space:]]*LIBDIR[[:space:]]*=[[:space:]]*(.*)$/$1/' | perl -pe 's/^"(.*)"$/$1/'`
+   dict_dirs=`ispell -vv | egrep '^[[:space:]]*LIBDIR[[:space:]]*=' | perl -pe 'use locale; s/^[[:space:]]*LIBDIR[[:space:]]*=[[:space:]]*(.*)$/$1/' | perl -pe 's/^"(.*)"$/$1/'`
    dict_ext=[.]hash
 
    if [ -d ${HOME}/.ispell ]; then
