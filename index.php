@@ -9,11 +9,11 @@
    */
    $htmltitle_en="SSLUG - Liberty of writing books";
    $htmltitle_da="SSLUG - Friheden til at skrive bøger";
-   $htmltitle_sv="SSLUG - Friheden til at skrive bøger";
+   $htmltitle_sv="SSLUG - Friheden til at skrive böcker";
    $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
    $maintain_name = "Hans Schou";       // Skriv dit navn her
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
-   include($DOCUMENT_ROOT."/includes/top.phtml");
+   @include($DOCUMENT_ROOT."/includes/top.phtml");
 
    list($width,$height) = getimagesize("front.png");
 ?>
@@ -61,6 +61,86 @@ function form_filename( $bookname, $format ) {
       // Eks: admin/linux-admin-1.0.ps.gz
       return "$bookname/$format[first]$bookname-".$books[$bookname][version]."$format[last]";
   }
+}
+
+function visbog( $short ) {
+  global $books, $packs;
+  $desc = $books[$short];
+  echo "<a name=\"$short\"></a><h3>$desc[title] \n";
+  echo "</h3>\n<i>$desc[comment]</i><p>";
+
+  if ($desc[dato])
+    echo $desc[dato];
+  if ($desc[version])
+    echo " - version $desc[version]";
+  if ($desc[sideantal])
+    echo " - Antal sider: ".$desc[sideantal];
+
+  echo "<p>";
+  echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
+  echo "<th>Bøger</th>\n";
+  echo "<th>Link</th>\n";
+  echo "<th>Dato</th>\n";
+  echo "<th>Bytes</th>\n";
+  echo "</tr>\n";
+  // Her kommer listen over filtyper
+  reset($packs);
+  while (list($type,$attr) = each($packs)) {
+    echo "<tr>\n";
+    $filename = form_filename($short, $attr );
+    echo "<td><b>$type</b></td>\n";
+    if (file_exists($filename)) {
+      echo "<td>".href($filename,"<b>$filename</b>")."</td>\n";
+      $date = date("Y-m-d",filemtime($filename));
+      $filesize = fsize_text($filename);
+    } else {
+      echo "<td><i>$filename</i></td>\n";
+      $date = " - ";
+      $filesize = " - ";
+    }
+    echo "<td align=\"center\">$date</td>\n";
+    if ($attr[online])
+      echo "<td>&nbsp;</td>\n";
+    else
+      echo "<td align=\"right\">$filesize</td>\n";
+    echo "</tr>\n";
+  }
+  echo "</table>\n";
+  echo "<p><hr align=\"left\" width=\"70%\">\n";
+}
+
+function vistype($type) {
+  global $books, $packs;
+  $attr = $packs[$type];
+  echo "<a name=\"".rawurlencode($type)."\"></a><h3>$type</h3>\n";
+  echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#E0F8F8\">\n<tr>\n";
+  echo "<th>Bøger</th>\n";
+  echo "<th>Link</th>\n";
+  echo "<th>Dato</th>\n";
+  echo "<th>Bytes</th>\n";
+  echo "</tr>\n";
+  reset($books);
+  while (list($short,$desc) = each($books)) {
+    echo "<tr>\n";
+    $filename = form_filename($short, $attr );
+    echo "<td><b>$short</b></td>\n";
+    if (file_exists($filename)) {
+      echo "<td>".href($filename,"<b>$filename</b>")."</td>\n";
+      $date = date("Y-m-d",filemtime($filename));
+      $filesize = fsize_text($filename);
+    } else {
+      echo "<td><i>$filename</i></td>\n";
+      $date = " - ";
+      $filesize = "00 B";
+    }
+    echo "<td>$date</td>\n";
+    if ($attr[online])
+      echo "<td>&nbsp;</td>\n";
+    else
+      echo "<td align=\"right\">$filesize</td>\n";
+    echo "</tr>\n";
+  }
+  echo "</table>\n";
 }
 
   // Bøger
@@ -232,9 +312,91 @@ function form_filename( $bookname, $format ) {
 
   $bgcolor = array("#FFFFFF","#E8E8E8");
 
+  // Vis en bog med alle dens typer
+  if (is_array($books[$b])) {
+    visbog($b);
+    echo "<p>\n";
+  }
+
+  // Vis en type med alle dens bøger
+  if (is_array($packs[$t])) {
+    vistype($t);
+    echo "<p>\n";
+  }
+
+  // Vis alle bøger
+  if ($all == "b") {
+    echo "<h2>Bøger</h2>\n";
+    // Liste over alle bøger. Alle bøger har hver sin tabel med forskellig filtyper
+    reset($books);
+    while (list($short,$desc) = each($books)) {
+      visbog($short);
+    }
+  }
+
+  // Vis alle filtyper
+  if ($all == "t") {
+    echo "<h2>Filtyper</h2>\n";
+    // Liste over filtype. Hver filtype har sin egen tabel med alle bogtitler.
+    reset($packs);
+    while (list($type,$attr) = each($packs)) {
+      vistype($type);
+    }
+  }
+
+if ($matrix) { ?>
+<hr>
+<a name="matrix"></a>
+<h2>Samlet bogoversigt</h2>
+<table border="1" cellspacing="0" cellpadding="3">
+<tr bgcolor="#F0F0FF"><th>Bøger/filtype</th>
+<?php
+
+  // Stor tabel med alle bøger og filtyper samlet.
+  reset($packs);
+  list($type) = current($packs);
+  while (list($type) = each($packs)) {
+    echo " <th>$type</th>\n";
+  }
+  echo "</tr>\n";
+  
+  $c = 0;
+  reset($books);
+  while (list($short,$desc) = each($books)) {
+    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n <td valign=\"top\">";
+    echo "<b>$desc[title]</b><font size=\"-1\"><br>$desc[comment]</font></td>\n";
+    reset($packs);
+    while (list($type,$attr) = each($packs)) {
+      echo " <td valign=\"top\"><font size=\"-1\">";
+      $filename = form_filename( $short, $attr );
+      $filetext = "$short $type";
+      if (!file_exists($filename)) {
+        echo "<i>$filetext</i>";
+        $date = " - ";
+      } else {
+        $filesize = fsize_text($filename);
+        $date = date("Y-m-d",filemtime($filename));
+        echo "ver $desc[version] ";
+
+        //echo "<br>$date<br>$filesize";
+				$linktext = "$date<br>$filesize";
+        echo href($filename,$linktext);
+      }
+      echo "</font></td>\n";
+    }
+    echo "</tr>\n";
+  }
 ?>
+</table>
+<p>
+<?php } ?>
+
+[<a href="?matrix=1">Samlet bogoversigt</a>]
+[<a href="?all=b">Alle bøger</a>]
+[<a href="?all=t">Alle filtyper</a>]
+[<a href="alle/bog/stikord.html">Stikord for alle bøger</a>]
+
 <h2>Vi har følgende bøger</h2>
-<a href="#matrix">Samlet bogoversigt</a>
 <p>
 Filtyper: 
 <?php
@@ -243,7 +405,8 @@ Filtyper:
   reset($packs);
   while (list($type) = each($packs)) {
     // Nogle filtyper har mellemrum i navnet, derfor bruges rawurlencode()
-    echo "<a href=\"#".rawurlencode($type)."\">$type</a>\n";
+    $raw = rawurlencode($type);
+    echo "<a href=\"?t=$raw\">$type</a>\n";
   }
 
 ?>
@@ -255,7 +418,8 @@ Filtyper:
   reset($books);
   while (list($short,$desc) = each($books)) {
     echo "<li><b>$short:</b> ";
-    echo href("#$short","<b>$desc[title]</b>");
+    $raw = rawurlencode($short);
+    echo href("?b=$raw","<b>$desc[title]</b>");
     echo "<br> $desc[comment]";
     echo "</li>\n";
   }
@@ -340,142 +504,9 @@ href="http://cvs.sslug.dk/linuxbog/">http://cvs.sslug.dk/linuxbog/</a>,
 men indtil endelig release, kan der være graverende fejl i den.  
 </p>
 
-<hr>
-<a name="matrix"></a>
-<h2>Samlet bogoversigt</h2>
-<table border="1" cellspacing="0" cellpadding="3">
-<tr bgcolor="#F0F0FF"><th>Bøger/filtype</th>
-<?php
-
-  // Stor tabel med alle bøger og filtyper samlet.
-  reset($packs);
-  list($type) = current($packs);
-  while (list($type) = each($packs)) {
-    echo " <th>$type</th>\n";
-  }
-  echo "</tr>\n";
-  
-  $c = 0;
-  reset($books);
-  while (list($short,$desc) = each($books)) {
-    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n <td valign=\"top\">";
-    echo "<b>$desc[title]</b><font size=\"-1\"><br>$desc[comment]</font></td>\n";
-    reset($packs);
-    while (list($type,$attr) = each($packs)) {
-      echo " <td valign=\"top\"><font size=\"-1\">";
-      $filename = form_filename( $short, $attr );
-      $filetext = "$short $type";
-      if (!file_exists($filename)) {
-        echo "<i>$filetext</i>";
-        $date = " - ";
-      } else {
-        $filesize = fsize_text($filename);
-        $date = date("Y-m-d",filemtime($filename));
-        echo "ver $desc[version] ";
-
-        //echo "<br>$date<br>$filesize";
-				$linktext = "$date<br>$filesize";
-        echo href($filename,$linktext);
-      }
-      echo "</font></td>\n";
-    }
-    echo "</tr>\n";
-  }
-?>
-</table>
-<p>
-
-<?php
-
-  echo "<hr><h2>Bøger</h2>\n";
-
-  // Liste over alle bøger. Alle bøger har hver sin tabel med forskellig filtyper
-  reset($books);
-  while (list($short,$desc) = each($books)) {
-    echo "<a name=\"$short\"></a><h3>$desc[title] \n";
-    echo "</h3>\n<i>$desc[comment]</i><p>";
-
-    if ($desc[dato])
-      echo $desc[dato];
-    if ($desc[version])
-      echo " - version $desc[version]";
-    if ($desc[sideantal])
-      echo " - Antal sider: ".$desc[sideantal];
-
-    echo "<p>";
-    echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
-    echo "<th>Bøger</th>\n";
-    echo "<th>Link</th>\n";
-    echo "<th>Dato</th>\n";
-    echo "<th>Bytes</th>\n";
-    echo "</tr>\n";
-    // Her kommer listen over filtyper
-    reset($packs);
-    while (list($type,$attr) = each($packs)) {
-      echo "<tr>\n";
-      $filename = form_filename($short, $attr );
-      echo "<td><b>$type</b></td>\n";
-      if (file_exists($filename)) {
-        echo "<td>".href($filename,"<b>$filename</b>")."</td>\n";
-        $date = date("Y-m-d",filemtime($filename));
-        $filesize = fsize_text($filename);
-      } else {
-        echo "<td><i>$filename</i></td>\n";
-        $date = " - ";
-        $filesize = " - ";
-      }
-      echo "<td align=\"center\">$date</td>\n";
-      if ($attr[online])
-        echo "<td>&nbsp;</td>\n";
-      else
-        echo "<td align=\"right\">$filesize</td>\n";
-      echo "</tr>\n";
-    }
-    echo "</table>\n";
-    echo "<p><hr align=\"left\" width=\"70%\">\n";
-  }
-
-  echo "<hr><h2>Filtyper</h2>\n";
-
-  // Liste over filtype. Hver filtype har sin egen tabel med alle bogtitler.
-  reset($packs);
-  while (list($type,$attr) = each($packs)) {
-    echo "<a name=\"".rawurlencode($type)."\"></a><h3>$type</h3>\n";
-    echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#E0F8F8\">\n<tr>\n";
-    echo "<th>Bøger</th>\n";
-    echo "<th>Link</th>\n";
-    echo "<th>Dato</th>\n";
-    echo "<th>Bytes</th>\n";
-    echo "</tr>\n";
-    reset($books);
-    while (list($short,$desc) = each($books)) {
-      echo "<tr>\n";
-      $filename = form_filename($short, $attr );
-      echo "<td><b>$short</b></td>\n";
-      if (file_exists($filename)) {
-        echo "<td>".href($filename,"<b>$filename</b>")."</td>\n";
-        $date = date("Y-m-d",filemtime($filename));
-        $filesize = fsize_text($filename);
-      } else {
-        echo "<td><i>$filename</i></td>\n";
-        $date = " - ";
-        $filesize = "00 B";
-      }
-      echo "<td>$date</td>\n";
-      if ($attr[online])
-        echo "<td>&nbsp;</td>\n";
-      else
-        echo "<td align=\"right\">$filesize</td>\n";
-      echo "</tr>\n";
-    }
-    echo "</table>\n";
-  }
-
-?>
-
 <p>
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  include($DOCUMENT_ROOT."/includes/bottom.phtml");
+  @include($DOCUMENT_ROOT."/includes/bottom.phtml");
 ?>
