@@ -38,6 +38,9 @@ eksfiler=$(filter-out eksempler/CVS,$(alleeksfiles))
 # Har vi Perl-modulet Image::Size installeret
 imagesize=$(wildcard /usr/lib/perl5/site_perl/5.005/Image/Size.pm)
 
+# Har vi Plucker inde
+$plucker = $(wildcard /usr/bin/plucker-build)
+
 # Har vi tidy installeret?
 tidy=$(wildcard /usr/bin/tidy)
 
@@ -50,7 +53,12 @@ ImageMagickconvertf=$(wildcard /usr/bin/convert /usr/X11R6/bin/convert)
 ImageMagickconvert = $(firstword $(ImageMagickconvertf))
 
 # her er det der skal laves
-all:	html pspdf palmpilot sgml eksempelbackup exit
+all:	starter html pspdf palmpilot sgml eksempelbackup exit
+
+starter:
+	@echo "---------------------------------------------"
+	@echo "Starter oversættelser af " $(targetshortname)
+	@echo "---------------------------------------------"
 
 sgml: $(targetname)-$(version).sgml.tgz
 
@@ -60,11 +68,15 @@ $(targetname)-$(version).sgml.tgz: $(sgmlfiler)
 palmpilot: $(targetname)-$(version).palm.tgz
 
 $(targetname)-$(version).palm.tgz: $(sgmlfiler)
+ifneq   ("$(plucker)","")
 	make html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
 	tar cvzf $(targetname)-$(version).palm.tgz palm/*.prc palm/*.pdb
+else
+	echo "Du bør installere plucker for at kunne lave palm-udgaven"
+endif
 
 statusfiler:
 	@$(shell date +%d/%m-%Y> dato.sgml)
@@ -74,8 +86,9 @@ statusfiler:
 	@echo Checker $(sgmlfiler)
 
 exit:
+	@echo "---------------------------------------------"
 	@echo slut på $(targetshortname)
-	@echo --------------
+	@echo "---------------------------------------------"
 	@echo 
 
 htmlfiler: 
@@ -171,7 +184,9 @@ test:
 	echo $(eksfiler)
 
 
-eksempelbackup: statusfiler
+eksempelbackup:  $(targetname)-$(version)_eksempler.tgz
+
+$(targetname)-$(version)_eksempler.tgz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
 	rm -f $(targetname)-$(version)_eksempler.tar.gz  
 	touch $(targetname)-$(version)_eksempler.tar
