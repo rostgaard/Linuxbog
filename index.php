@@ -341,7 +341,11 @@ function vistype($type) {
     "SGMLzip" => array(
       first => "linuxbog-",
       last => ".sgml.zip"
-    )
+    ),
+    "TODO" => array(
+      first => "todo-",
+      last => ".html"
+    
   );
 
   $bgcolor = array("#FFFFFF","#E8E8E8");
