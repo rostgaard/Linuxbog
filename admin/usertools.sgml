@@ -783,46 +783,121 @@ mange pilfingre, f.eks. EDB-lokalet på en skole!
 </PARA>
 </sect1>
 
+
 <sect1 id="crontab">
 <title>Crontab</title>
+
 <indexterm><primary>Cron</primary><secondary>crontab</secondary></indexterm>
+
 <para>
 Crontab er et smart system til automatisk at køre programmer på givne
 tidspunkter, såsom daglig backup. Det er en standarddel af et
-Unix-system og er derfor altid med i Linux.
+Unix-system og er derfor altid med i Linux.  Man kan få kørt
+vilkårlige programmer på vilkårlige tidspunkter, f.eks. hvert minut,
+hver time, hver dag, ugedag eller månedsdag.
 </para>
 
 <para>
-Man kan få kørt vilkårlige programmer på vilkårlige tidspunkter,
-f.eks. hvert minut, hver time, hver dag, ugedag eller månedsdag.  I filen
-<filename>/etc/crontab</filename> retter man normalt ikke, men denne
-fil viser, at der køres jobs hver time fra
-<filename>/etc/cron.hourly</filename> til tilsvarende hver dag, uge og
-måned via <filename>/etc/cron.daily</filename>,
+Crontab-filerne omfatter <filename>/etc/crontab</filename>,
+<filename>/etc/cron.daily</filename>, <filename>/etc/cron.hourly</filename>,
 <filename>/etc/cron.monthly</filename> og
-<filename>/etc/cron.weekly</filename>.  For en almindelig bruger er
-det normalt, at man føjer de kommandoer man vil have kørt på et givet
-tidspunkt, til filen <filename>~/.crontab</filename> og kører
-kommandoen <command>crontab ~/.crontab</command>.
+<filename>/etc/cron.weekly</filename>, samt cron-filer
+til systemets brugere i <filename>/var/spool/cron/tabs</filename>.
 </para>
 
 <para>
-Syntaksen for alle disse crontab-filer er den samme: En kommando pr. linje
-og i rækkefølge fra venstre mod højre, minut (0-59), time (0-23),
-månedsdag (0-31), måned (0-12), ugedag (0-7, hvor 0 og 7 begge er søndag)
-og endelig den kommando du vil have udført. Hvert felt adskilles af et
-mellemrum, og hvis man vil have, at programmet køres alle dage,
-så indsæt en "*" for månedsdag og måned.</para>
+Syntaksen for crontab-filerne er den samme: En kommando pr. linje og i
+rækkefølge fra venstre mod højre, minut (0-59), time (0-23), månedsdag
+(0-31), måned (0-12), ugedag (0-7, hvor 0 og 7 begge er søndag) og
+endelig den kommando du vil have udført. Hvert felt adskilles af et
+mellemrum, og hvis man vil have, at programmet køres alle dage, så indsæt
+en "*" for månedsdag og måned. En kommando kan udføres f.eks. hvert
+5. minut med "*/5 * * * *" og til et tids-interval bruges "-"  som "1-5"
+for mandag til fredag. Flere tidspunkter adskilles med ",".
+</para>
 
-<para> Vi giver nu et eksempel, hvor vi hver morgen kl. 7 fra mandag
-til fredag sender brugeren "root" et brev med oplysninger om hvor meget
-belastning der er på maskinen.
+<para>
+
+Ofte udløser en crontab-kommando en email til root. Det kan være uheldigt
+med mange emails til root, som blot fortæller, at systemet opfører sig
+normalt. Hvis linien afsluttes med
+<literal>&gt;/dev/null 2&gt;&amp;1</literal> sendes meddelelsen
+i stedet ud i intetheden.
+</para>
+
+<para>
+Vi giver nu et eksempel, hvor vi hver morgen kl. 7 fra mandag til fredag sender
+brugeren "root" et brev med oplysninger om hvor meget belastning der er
+på maskinen.
+</para>
+
 <screen>
 0 7 * * 1-5 uptime | mail root
 </screen>
-Brug <command>man -a crontab</command> til at læse mere om
-crontab. Skift til næste man-fil ved at trykke 'q'.
+
+<para>
+Brug <command>man -a crontab</command> til at læse mere om crontab. Skift til
+næste man-fil ved at trykke 'q'. Kommandoen <command>man 1 crontab</command>
+fortæller om administration af crontab-filer og <command>man 5 crontab</command>
+om indholdet i crontab-filerne.
 </para>
+
+<sect2 id="etc-crontab">
+<title>/etc/crontab</title>
+<para>
+Systemadministrator kan skrive kommandoer direkte i filen <filename>/etc/crontab</filename>.
+For at opretholde adskillelsen imellem systemet og brugerne, bruger
+administrator normalt også en fil i <filename>/var/spool/cron/tabs</filename>.
+</para>
+
+<para>
+I /etc/crontab er defineret, hvordan der køres jobs hver time fra
+<filename>/etc/cron.hourly</filename> til tilsvarende hver dag, uge og måned via
+<filename>/etc/cron.daily</filename>,
+<filename>/etc/cron.monthly</filename> og <filename>/etc/cron.weekly</filename>.
+</para>
+
+<para>
+Skriver administrator kommandoer direkte i <filename>/etc/crontab</filename>, skal brugernavnet,
+som kommandoen skal udføres under, angives efter de 5 tidspunkts-kolonner og
+før selve kommandoen.
+</para>
+</sect2>
+
+<sect2 id="de-andre-crontab-filer">
+<title>/etc/cron.daily, hourly, monthly, weekly</title>
+
+<para>
+I de 4 biblioteker under <filename>/etc</filename> kan systemadministrator placere 
+scripts, som skal udføres på givne tidspunkter. Afviklingstidspunktet styres i 
+<filename>/etc/crontab</filename>, så selve scriptet skal ikke indeholde oplysninger 
+om tidspunkt, og da der er en fil til hver opgave, må scriptet brede sig over flere linier.
+</para>
+</sect2>
+
+<sect2 id="bruger-crontab">
+<title>Brugernes crontab-filer</title>
+<para>
+Den almindelige bruger har ikke adgang til <filename>/etc/crontab</filename>.
+Kommandoer, de vil have kørt på et givet tidspunkt, lægges i filer med brugerens navn
+i <filename>/var/spool/cron/tabs</filename>. Ofte bruger systemadministrator også denne fil.
+</para>
+
+<para>
+Med <command>crontab -e</command> kan brugeren skrive direkte i filen,
+men bla. for at kunne bruge sin normale editor isteder for at være tvunget til at
+bruge <command>vi</command>, er det normalt at skrive en kladde i en
+almindelig tekst-fil (oftest med navnet <filename>.crontab</filename> i sit
+hjemmekatalog), og køre kommandoen crontab <filename>~/.crontab</filename>.
+</para>
+
+<para>
+I stedet for de 5 tidsangivelser kan linien starte med '@reboot',
+hvorefter den udføres når systemet genstartes. Denne mulighed virker
+ikke for kommandoer, som er skrevet direkte i /etc/crontab.
+</para>
+
+</sect2>
 </sect1>
 
 
@@ -841,8 +916,8 @@ crontab. Skift til næste man-fil ved at trykke 'q'.
 </indexterm>
 
 <para>
-En vigtig del af systemadministration er sikkerhedskopiering, 
-så man i tilfælde af nedbrud, harddiskcrash, brand 
+En vigtig del af systemadministration er sikkerhedskopiering,
+så man i tilfælde af nedbrud, harddiskcrash, brand
 eller andre uheld kan fortsætte uden større tab af data.
 </para>
 
