@@ -738,9 +738,28 @@ systematiske kategorier.
 <sect2 id="brohoved">
 <title>Et brohoved.</title>
 <para>
-Det første skridt, som man foretager på en ny maskine, eller
-rettere en ny platform for programmeringsarbejde, bør altid være
-at skrive det simplest mulige program, der producerer output.
+Et C program består af en serie definitioner af eksterne
+objekter. Et eksternt objekt kan være en funktion eller en
+datadefinition. For at kunne arbejde frit med opbygning af et
+program, er det vigtigt at have en fornemmelse for, hvordan man
+deler sin opgave op i mindre dele.
+</para>
+
+<para>
+Det er også rart at have prøvet nogle gange at opbygge en
+datarepræsentation af noget, man kender godt, fx. et
+medlemskartotek eller en database over CD-skiver.
+Derefter kan man gå i gang med at opdele sine operationer. Det
+ville jeg kalde aktions-orienteret programmering ;-)
+</para>
+
+<para>
+Altså, gå igang med at repræsentere de data, man ønsker at
+arbejde med, og med at definere operationer på disse data. Det
+lyder måske som objekt-orienteret programmering - og det er det
+også!  Men sådan gør man jo også, når man ikke har C++ til
+rådighed. Der er mange situationer, hvor C er mere effektivt, og
+iøvrigt er C jo grundlaget for C++.
 </para>
 
 <para>
@@ -753,20 +772,36 @@ Hvis du ikke kender bogen "The C Programming Language" af Kernighan &
 Ritchie, og hvis du ikke er en øvet C programmør, så vil jeg anbefale,
 at du køber den og bruger ca. 14 dage til at arbejde kapitel 1 igennem
 - lav så mange af de ekstra øvelser, som du kan nå. Nærværende kapitel
-er en ikke en erstatning for den oprindelige "tour", men et supplement
-eller brush up, som man nu ser det. Man kalder det for learning by doing
-eller deduktiv spiralpædagogik; man udleder, hvordan C sproget fungerer
-ved at prøve det mange gange og ved at gøre
-øvelser lidt sværere hver gang.
+er en ikke en erstatning for den oprindelige "tour", men et supplement. 
+Man kalder det for learning by doing eller deduktiv
+spiralpædagogik; vi udleder, hvordan C sproget fungerer ved at
+prøve det mange gange og ved at gøre øvelser lidt sværere hver
+gang.
 </para>
 
 <para>
-Har du ikke det grundlag, vil du undre dig over, at bogen
-her ikke forklarer noget om de grundlæggende datatyper, om
-operatorerne, om flow-konstruktionerne - eller om opdeling af
+Hvis Kernighan &amp; Ritchie bogen også forekommer for vanskelig
+- den er nemlig heller ikke for helt grønne begyndere - så er der
+nogle andre introduktionsbøger, som kan guide dig igennem
+grundlæggende øvelser i programmering, fx. "Practical C" fra
+O'Reilly.
+</para>
+
+<para>
+Du kan få en ide om, hvad det handler om, ved at læse
+appendiks A, der giver en oversigt over C sprogets fire
+forskellige bestanddele, datatyper, operatorerne, 
+flow-konstruktionerne - og om opdeling af
 programmer i moduler. Disse fire dele af ethvert
-programmeringssprog bør man jo kende og forstå. (Hvis der er
-interesse, skriver vi et appendix A. Crash Course i C.)
+programmeringssprog bør man jo kende og forstå. 
+</para>
+
+<para>
+K&amp;R bogen giver imidlertid flere eksempler end jeg har med
+i Appendiks A, og forklarer variationer på programmerne,
+variationer, som er rigtig gode til at få én igang med selv at
+forsøge. Det kan du selvfølgelig også gøre med eksemplerne i
+denne bog.
 </para>
 
 <para>
@@ -784,14 +819,28 @@ ld.so, ldd /usr/bin/ls osv. (klassiske unix kommandoer).
 
 <para>
 Det program kunne man jo så udnævne til stamfaderen for en
-hel kategori, nemlig små programmer, som kun udfører en enkelt
-funktion. Det kan være det at skrive noget på skærmen. Det kan
-være at hente dato-information, så kan vi få bekræftet, om
+hel kategori. "Hello-world" programmer isolerer en feature og 
+afprøver, hvordan den virker. Et "hello-program" skal helst kunne
+køre, selv om vi nogen gange nøjes med at skrive en funktion for
+at se, om compileren accepterer den syntax, vi anvender.
+</para>
+
+<para>
+Et "hello-program" kan være et, som skriver noget på skærmen,
+eller det kan hente dato-information, så kan vi få bekræftet, om
 dato funktionerne opfører sig, som vi forventer, eller ej.
 </para>
 
 <para>
-Et endnu mere grundlæggende "Hello-world" program er et, som
+Det, vi skal i gang med nu, er at undersøge, hvordan funktioner
+afleverer data til hinanden, og hvordan C sproget gør det lettere
+at lave sådan nogle "kasser", ofte kaldet black box, om hvilken
+man ved, at den kan dit og dat, og at den er helt uafhængig af
+resten af vores program.  
+</para>
+
+<para>
+Et helt grundlæggende "Hello-world" program er et, som
 simpelt hen afslutter med det samme! Sådan et kommer her:
 </para>
 
@@ -833,6 +882,12 @@ parenteser, braces. Koden består af kun én sætning, eller
 <programlisting>
 return 0;
 </programlisting>
+
+<para>
+<emphasis> return </emphasis> er en specifikation af, at
+funktionen skal aflevere noget til den, som har bedt om at få
+udført funktionen (har <emphasis>kaldt</emphasis> den.)
+</para>
 
 <para>
 return er et <emphasis> reserveret ord </emphasis>, d.v.s.
@@ -1541,22 +1596,22 @@ man ikke har skrevet al koden.
 Men funktionen kr2dollar er <emphasis> erklæret </emphasis>
 inden den anvendes, det er linien lige neden under #include
 direktivet.  Erklæringen er en slags forklaring til compileren
-af, hvad det er for en slags funktion. Den bevirker, at
+af, hvad det er for en funktion. Den bevirker, at
 compileren opretter en entry i en symboltabel, så den kan slå
 op, hvad "kr2dollar" er for noget, næste gang den forekommer i
 kildeteksten. 
 </para>
 
 <para>
-Det bevirker, at compileren ved, hvad type der kommer ud af
-funktionen, det kunne jo være, at det var en flydendetals dims i
+Derfor ved compileren, hvad type der kommer ud af
+funktionen. Det kunne være, at det var en flydendetals dims i
 stedet for et heltal. (Ja forresten, det synes du nok, at det
 burde være!  Det ville være rart med flydende tal for at få
 decimaler på, se <xref LinkEnd="ex-dollar-double">. Men strengt
 taget kunne vi få en mere præcis beregning ved at anvende
 64-bits integers til at repræsentere 100-dele øre. For den
-avancerede: Prøv det! Og husk at indsætte et komma (på det
-rigtige sted) når du skriver det ud.
+avancerede: Prøv det! Og husk at indsætte et komma på det
+rigtige sted, når du skriver det ud.)
 </para>
 
 <para>
@@ -1688,7 +1743,8 @@ en meget simpel kommando, ar -rv libfinans.a &lt;objectfile> ...
 
 <para>
 Hvis vi skulle glemme prototypen for denne simple beregning,
-så vil der ikke opstå fejl. Det skyldes, at vi stadig har regelen
+så vil der ikke opstå fejl i dette eksempel. Det skyldes, 
+at vi stadig har regelen
 om implicit integer, når vi skriver standard C programmer.
 <footnote><para> Reglen kan være meget praktisk for den erfarne
 programmør, som i visse situationer kan gøre et program lidt mere
@@ -1827,7 +1883,6 @@ minimal eksempel her:
 /* File: dollar3.h, prototypes for finans-program ... */
 
 double kr2dollar(double kroner);
-
 </programlisting>
 </example>
 
@@ -1984,21 +2039,22 @@ filter? Ja, for det opfylder jo alle de ovenstående krav. Det
 sluger input fra en kilde og omformer det til output, som, ok,
 kan være det samme for flere forskellige slags input, men samme
 input -- altid samme output. Vi baserer vores program på en
-lille bemærkning i den Kernighan &amp; Ritchies berømte tour
+lille bemærkning i Kernighan &amp; Ritchies udmærkede "tour"
 version af word count: Nemlig at begrebet "et ord" egentlig bør
-forfines, så man kan skelne mellem tal, ord, tegnsætning og
-andre tegn.
+forfines, så man kan skelne mellem rigtige ord og tal,
+tegnsætning og lignende.
 </para>
 
 <para>
-Programmet starter med at være i en tilstand, som vi kalder UDE.
-Når vi ikke har læst noget, så må vi være UDE af ord, UDE af tal
-UDE af tegnsætning.
+Programmet starter med at være i en tilstand, som vi kalder HVID.
+Når vi ikke har læst noget, så må vi være på HVIDt papir.
 </para>
+
 <para>
 Vi skal benytte en variabel til at huske denne tilstand, og vi
 kalder den status.
 </para>
+
 <para>
 For at gøre det lettere at læse programmet, lader vi denne
 variabel være af enum - typen. Så kan en god compiler holde styr
@@ -2006,8 +2062,8 @@ på, om vi tilskriver den andet end symbolske navne som tilhører
 typen. Dog kun med warnings.
 </para>
 
-<programlisting>
 
+<programlisting>
 /*file ordtael.c */
 
 #include &lt;stdio.h>
@@ -2016,10 +2072,10 @@ typen. Dog kun med warnings.
 
 typedef long long _int64;
 
-/* taellere: char, words, num, punc, andet, lines */
-_int64 nc, nw, nn, np, na, nl; 
+/* taellere: char, words, num, andet, lines */
+_int64 nc, nw, nn, na, nl; 
 
-enum status_t { UDE, INDE };
+enum status_t { HVID, ALFA, TAL, PUNC };
 
 enum status_t status;
 
@@ -2030,30 +2086,36 @@ int main()
         ++nc;
         if (c == '\n')
             ++nl;
-        putchar(c);
         if (isspace(c)) {
-            status = UDE;
+            status = HVID;
         } else {
-            if (ispunct(c))
-                ++np;
-            if (status == UDE) {
-                status = INDE;
+            if (status == HVID) {
                 if (isalpha(c)) {
+                    status = ALFA;
                     ++nw;
-                } else if (isdigit(c))
+                } else if (isdigit(c)) {
+                    status = TAL;
                     ++nn;
-                else ++na;
+                } else ++na;
+            } else if (status == ALFA) {
+                if (!isalpha(c) && !isdigit(c))
+                    ++na;
+            } else if (status == TAL) {
+                if (!isdigit(c) && !isalpha(c))
+                    ++na;
             }
         }
     }
-    printf("Antal: chr %Ld, ord: %Ld, tal %Ld, tegn: %Ld, lin %Ld, andet %Ld\n",
-            nc, nw, nn, np, nl, na);
+    printf("Antal: chr %Ld, ord: %Ld, tal %Ld, andet %Ld, lin. %Ld\n",
+            nc, nw, nn, na, nl);
     return 0;
 }
 
+/* OBS: Der er lidt flere braces i ovenstående eksempel end
+ * nødvendigt, det er i håb om bedre læselighed.
+ */
+
 /* end of file ordtael.c */
-
-
 </programlisting>
 
 <para>
@@ -2066,19 +2128,26 @@ antal af ord (eller tal, tegnsætning, etc.) op.
 </para>
 
 <para>
-Det er imidlertid stadig et lidt primitivt program, idet vi
-forventer, at når vi kommer ind i et tal, så vil der være
-whitespace bagefter. Det er en spændende opgave at ændre dette
-program, så det kan håndtere overgang fra tilstand tal til
-tilstand tegnsætning, ord eller andet. Det kunne fx. være den
-første del af en compiler, som skelnede mellem reserverede ord,
-andre ord, tal og tegn.
+Programmet er udmærket til at danne sig et skøn over forholdet
+mellem tal og ord i en artikel, men det er immervæk et lidt naivt
+program, som forventer, at når vi kommer ind i et ord, så vil
+der være whitespace bagefter.
 </para>
 
 <para>
-Men lige nu i skrivende stund bliver jeg nødt til at overlade
-det til læseren (hallooooo ... er du der?)
+Ordtael.c er derfor ikke i stand til at taelle et funktionskald
+som fx. qwerty(6000) som et ord, 2 andre tegn og et tal. Til
+gengæld tæller det ikke "---***---" som et ord.
 </para>
+
+<para>
+Hvis vi skal forfine programmet, så er det klogt at skifte taktik.
+Løsningen ovenfor skalerer ikke godt, når antallet af tilstande
+vokser, og input indeholder mange flere kategorier. En
+tilstandstabel kan bedre håndtere opgaven.
+Se <xref LinkEnd="parser-filter-tilstandsmaskine">.
+</para>
+
 
 </sect1>
 
