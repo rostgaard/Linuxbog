@@ -402,15 +402,16 @@ if ($matrix) { ?>
 
 <font size="-1">
 [<a href="http://www.sslug.dk/linuxbog">Seneste udgaver</a>]
-[<a href="http://cvs.sslug.dk/linuxbog">Beta-upgaver</a>]<br>
+[<a href="http://cvs.sslug.dk/linuxbog">Beta-upgaver</a>]
+[<a href="laese-vejledning.html">Læsevejledning</a>]
+[<a href="hjaelpe.html">Om at hjælpe</a>]
+[<a href="http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html">Følg ændringer</a>]
+<br>
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
-[<a href="laese-vejledning.html">Læsevejledning</a>]<br>
 [<a href="http://cvs.sslug.dk/linuxbog/search">Søg i sgml-filer</a>]
-[<a href="hjaelpe.html">Om at hjælpe</a>]
 [<a href="alle/bog/stikord.html">Stikord</a>]
-[<a href="http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html">Følg ændringer</a>]
 </font>
 
 <h2>Vi har følgende bøger</h2>
