@@ -13,7 +13,6 @@
 <title>Friheden til at vælge</title>
 </HEAD>
 
-
 <body>
 <?php
    // $Id$
