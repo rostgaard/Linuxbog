@@ -90,19 +90,22 @@ vil styre netværks-konfigurationen centralt.
 </para>
 </sect2>
 
-<sect2 id="Valg af DHCP-server / -serverer">
-<title>Valg af DHCP-server / -serverer</title>
+<sect2 id="Valg-af-DHCP-server">
+<title>Valg af DHCP-server/servere</title>
 <para>
 Der følger naturligvis en DHCP-server med din Linux-distribution - 
 det er en server som er udviklet af ISC (Internet Software Consortium). 
-De har også udvikler navneserveren BIND. 
+De har også udviklet navneserveren BIND. 
 I næste afsnit kan du se, hvordan man sætter den op.
 </para>
 
-<para>
-Du kan have mere end en DHCP server på samme netværkssegment. 
-Dette forudsætter at de alle giver korrekte oplysninger til klienterne, 
-og at deres puljer af adresser ikke overlapper hinanden.
+<para> 
+Det anbefales derfor at du ikke har mere end én dhcp-server på
+et netværkssegment, og at du koordinerer hele opsætningen af DHCP i
+denne server. Du <emphasis>kan</emphasis> dog have mere end en DHCP server
+på samme netværkssegment.  Dette forudsætter at de alle giver korrekte
+oplysninger til klienterne, og at deres puljer af adresser ikke
+overlapper hinanden.  
 </para>
 
 <para>
@@ -110,7 +113,7 @@ Hvis du har en eller anden form for router på dit netværk,
 så kan det være at du allerede har en DHCP-server på nettet. 
 Små ISDN- og ADSL-routere har ofte en DHCP-server indbygget, 
 og den kan man sagtens bruge. 
-Man kan endda opleve at printere og anden udstyr med netværks tilslutning 
+Man kan endda opleve at printere og andet udstyr med netværkstilslutning 
 har en DHCP-server indbygget.
 </para>
 
@@ -119,7 +122,7 @@ Hvis ikke alle DHCP-serverne er konfigureret korrekt og koordineret
 kan du opleve at det kun virker en gang imellem.  Du skal være
 opmærksom på at du kan komme ud for udstyr som kun
 <emphasis>tænder</emphasis> for DHCP-serveren når det ikke kan finde
-en </emphasis>anden</emphasis> DHCP-server.  I praksis betyder det at
+en <emphasis>anden</emphasis> DHCP-server.  I praksis betyder det at
 du kan opleve at det kun virker, når du tænder / tilslutter
 netværksenhederne i en bestemt rækkefølge.
 </para>
@@ -368,21 +371,27 @@ DHCP-serveren at klienten kan bruge adressen "192.168.0.101". Den
 beder klienten så om, og serveren svarer tilbage at det er OK.
 </para>
 
-<para>
-De underlige adresser der står i hver linje, er Ethernet-adressen på
-det netkort, som spørger DHCP-serveren. Dem kan man bruge til at give
-servere en fast IP-adresse, selv om de får oplysningerne via DHCP.
-</para>
+<para> 
+De underlige adresser der står i hver linje, er
+Ethernet-adressen (MAC adressen) på det netkort, som spørger
+DHCP-serveren. Dem kan man bruge til at give servere en fast
+IP-adresse, selv om de får oplysningerne via DHCP.  
+</para> 
 </sect3>
 
 <sect3 id="dhcp-en-statisk">
 <title>Konfigurér en server med DHCP</title>
+<indexterm><primary>MAC adresse</primary></indexterm>
+<indexterm><primary>DHCP med fast IP allokering</primary></indexterm>
+
+
 <para>
-Hvis man ønsker at en bestemt maskine altid får den samme IP-adresse fra DHCP-serveren, 
-så kan man give den en statisk tildeling i DHCP-server-konfigurationen. 
-Her bruger man den maskinens netkorts ethernet-adresse, - 
+Hvis man ønsker at en bestemt maskine altid får den samme IP-adresse fra 
+DHCP-serveren, så kan man give den en statisk tildeling i 
+DHCP-server-konfigurationen. 
+Her bruger man den maskinens ethernet-kortets adresse, 
 hvis maskinen tidligere har fået en IP-adresse fra DHCP-serveren, 
-så kan man se ethernet-adressen i server-maskinens log-filen. 
+så kan man se ethernet-kortets -adresse i server-maskinens log-fil. 
 På en Linux-maskinen kan du se dens egen ethernet-adressen 
 med kommandoen <command>/sbin/ifconfig:</command>
 </para>
@@ -408,7 +417,7 @@ med kommandoen <command>/sbin/ifconfig:</command>
 </screen>
 
 <para>
-"HWaddr" er Ethernet-adressen. Hvis nu vi vil have at denne maskine
+"HWaddr" er Ethernet-kortets adresse. Hvis nu vi vil have at denne maskine
 altid får IP-adressen "192.168.0.4" selv om den får sin IP-adresse fra
 DHCP-serveren, så tilføjer vi nogle linjer til
 <filename>/etc/dhcpd.conf</filename>, inden i den "subnet"-blok som vi
