@@ -5,7 +5,7 @@
 
 
 ################################################################################
-# Inkluder Makefile.local hvis den findes
+# Inkluder Makefile.local hvis den findes + don't whine if it doesn't
 ################################################################################
 -include Makefile.local
 
@@ -41,7 +41,11 @@ allesgmlfiles:=$(wildcard *.sgml) $(wildcard *.xml)
 sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles)) 
 
 # Og her sætter vi up til at inkludere auto. Bemærk =, ikke :=
-dep_sgml_filer=$(auto_sgml_filer) $(sgmlfiler) version.sgml stikord.sgml
+# dax: det er version.sgml som ødelægger dependencies. Kan ikke
+# bare sættes ind her, da den laves automatisk et eller andet
+# sted. Måske bare som kopi, hvad ved jeg.
+# dep_sgml_filer=$(auto_sgml_filer) $(sgmlfiler) version.sgml stikord.sgml
+dep_sgml_filer=$(auto_sgml_filer) $(sgmlfiler) stikord.sgml
 
 # Her er  en liste af alle eksempler
 alleeksfiles:=$(wildcard eksempler/*)
@@ -57,9 +61,9 @@ eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
 ################################################################################
 .PHONY : test
 test:
-	@echo auto_sgml_filer = $(auto_sgml_filer)
-	@echo sgmlfiler       = $(sgmlfiler)
-	@echo dep_sgml_filer  = $(dep_sgml_filer)
+	@echo "auto_sgml_filer = " $(auto_sgml_filer)
+	@echo "sgmlfiler       = " $(sgmlfiler)
+	@echo "dep_sgml_filer  = " $(dep_sgml_filer)
 
 ################################################################################
 # her er det der skal laves
