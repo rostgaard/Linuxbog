@@ -500,7 +500,7 @@ f.eks. som det første eksperiment at se følgende fil.
 </para>
 
 <screen>
-<prompt>[anne@linus ~]$ </prompt><userinput>ls -l /proc/kcore</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>ls -l /proc/kcore</userinput>
 -r--------    1 root     root     134156288 jan 22 23:18 /proc/kcore   
 </screen>
 
@@ -889,22 +889,17 @@ række forskellige funktioner, og vi vil i dette afsnit diskutere,
 hvordan du kan omkonfigurere kernen, så den kommer til at passe bedre til
 din computer. Sagen er nemlig den, at den kerne, som følger med
 f.eks. Red Hat, indeholder en række funktioner, som du måske 
-ikke har brug for. Ved at omkonfigurere kernen slipper du for at spilde en
+ikke har brug for. 
+Ved at omkonfigurere kernen slipper du for at spilde en
 masse hukommelse (og måske tid). Du kan måske også mangle understøttelse for
 en hardware-del, f.eks. USB (Universal Serial Bus). USB er for
 nylig kommet med i Linux-kernen, hvorfor du kan blive nødt til at
 lave en ny Linux-kerne. 
 </para>
 
-<para>
-Vores gennemgang af kernekonfiguration er overfladisk, dvs. vi vil
-ikke gå i detaljer med, hvad de enkelte funktioner kan, men forklare
-dig, hvordan en konfiguration foregår.  Du kan installere den
-kernel HOWTO-guide som følger med flere af Linux-distributioner og
-lære meget mere om kernen.
-</para>
 
-<para>Et par bemærkninger omkring drivere til Linux er på sin
+<para>
+Et par bemærkninger omkring drivere til Linux er på sin
 plads. Drivere kan eksistere på to måder under Linux: Som
 en del af kernen eller som et modul. Hvis driveren er en
 del af kernen, ligger den fast i hukommelsen hele tiden, men et modul
@@ -928,11 +923,14 @@ klart en fordel at benytte moduler, hvis man ikke har megen hukommelse.
 <para>
 Første trin til at lave din egen kerne er at se, om du fik installeret
 hele kildeteksten til Linux-kernen. Der er to muligheder; enten fra den
-installations-cd-rom du har, eller fra en helt ny kildetekst.
+installations-cd-rom du har, eller fra en helt ny kildetekst. Du skal bruge
+ca. 150 MB diskplads.
 </para>
 
 <para>
 Hvis du vil installere kildeteksten til kernen, så skriv:
+</para>
+
 <indexterm>
  <primary>rpm</primary>
 </indexterm>
@@ -940,11 +938,13 @@ Hvis du vil installere kildeteksten til kernen, så skriv:
  <primary>Kommandooversigt</primary>
  <secondary>rpm</secondary>
 </indexterm>
+
 <screen>
 <prompt>[root@linus /root]# </prompt> <userinput>rpm -ivh /cdrom/RedHat/RPMS/kernel-headers-2.2.5-15.i386.rpm</userinput>
 <prompt>[root@linus /root]# </prompt> <userinput>rpm -ivh /cdrom/RedHat/RPMS/kernel-source-2.2.5-15.i386.rpm</userinput>
 </screen>
 
+<para>
 Dette gør, at kildeteksten lægges ind i <filename>/usr/src/linux</filename>.
 </para>
 
@@ -955,6 +955,7 @@ Dette gør, at kildeteksten lægges ind i <filename>/usr/src/linux</filename>.
  <primary>Kommandooversigt</primary>
  <secondary>ls -l</secondary>
 </indexterm> 
+
 <para>
 I øvrigt kan det tilrådes at lade <filename>/usr/src/linux</filename> være et
 symbolsk link til et versionsafhængigt underkatalog:
@@ -967,48 +968,33 @@ drwxr-xr-x  17 root root 1024 Jan 25 21:22 linux-2.0.36
 drwxr-xr-x  15 root root 1024 Jan 31 20:45 linux-2.2.5
 </screen>
 
+
 <para>
-På denne måde er det nemt at teste forskellige versioner af
-Linux-kernen. Antag, at du vil opgradere til kerne 2.3.1, som du
-henter hjem fra <ulink
+Antag, at du vil opgradere til kerne 2.3.1, som du henter hjem fra <ulink
 url="http://www.kernel.org">http://www.kernel.org</ulink> (eller et
 mirror - f.eks. <ulink url="ftp://ftp.sunsite.dk"></ulink>), dvs. nu
-vil du installere kildeteksten selv (uden RPM). Start med at lave en
-ny mappe og et symbolsk link til den nye mappe (du skal være root).
+vil du installere kildeteksten selv (uden RPM). Typisk henter man 
+kildeteksten i filformat tar-bzip, f.eks.
+<filename>linux-2.4.17.tar.bz2</filename>.
 </para>
-<indexterm>
- <primary>mkdir</primary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>mkdir</secondary>
-</indexterm>
-<indexterm>
- <primary>rm</primary>
-</indexterm> 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>rm</secondary>
-</indexterm>
-<indexterm>
- <primary>ln -s</primary>
-</indexterm> 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>ln -s</secondary>
-</indexterm>
-<screen>
-<prompt>[root@linus /root]# </prompt> <userinput>rm /usr/src/linux</userinput>
-<prompt>[root@linus /root]# </prompt> <userinput>mkdir /usr/src/linux-2.3.1</userinput>
-<prompt>[root@linus /root]# </prompt> <userinput>ln -s /usr/src/linux-2.3.1 /usr/src/linux</userinput>
+
+<para>
+Du behøver ikke at lægge kildeteksten ind som root - faktisk bør nu nok
+hellere lade være, da du så ikke ødelægger noget i
+<filename>/usr/src/linux</filename>. Pak filen ud et sted som passer dig 
+og oversæt kernen der.
+</para>
+
+<prompt>[anne@linus ~]$</prompt> <userinput>cd ~</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xvjf linux-2.4.17.tar.bz2</userinput>
 </screen>
 
 <para>
 Gå (brug <command>cd</command>) ned til
-<filename>/usr/src/linux</filename> og læs <filename>README</filename>
+<filename>linux</filename> og læs <filename>README</filename>
 (med <command>less README</command>). I denne fil er det forklaret, hvordan du
 oversætter kernen. Du bør også altid læse
-<filename>/usr/src/linux/Documentation/Changes</filename>, som
+<filename>linux/Documentation/Changes</filename>, som
 beskriver, hvordan dit system bør være konfigureret, for at du kan
 oversætte kernen.
 </para>
@@ -1018,7 +1004,7 @@ oversætte kernen.
 <sect2 id="oversaet-kerne">
 <title>Oversæt Linux-kernen</title>
 <para>For det første skal du skifte til kataloget
-<FILENAME>/usr/src/linux</FILENAME>, hvor kildeteksten til kernen er
+<FILENAME>linux</FILENAME>, hvor kildeteksten til kernen er
 placeret. Skriv nu <userinput>make xconfig</userinput>. Du vil nu se
 et vindue som det nedenfor.
 </para>
@@ -1044,7 +1030,7 @@ kernen, trykker du på "Save and exit".
 <ulink url="http://www.sslug.dk/linuxbog/admin/eksempler">http://www.sslug.dk/linuxbog/admin/eksempler</ulink>
 kan der findes en <filename>.config</filename>-fil under
 <filename>kerne/</filename>. Denne fil 
-(<filename>/usr/src/linux/.config</filename>) dannes når man kører
+(<filename>linux/.config</filename>) dannes når man kører
 <command>make xconfig</command> eller <command>make
 menuconfig</command> (tekstbaseret). Filen vil tilsvarende anvendes når
 man kører en af de to make-kommandoer.  
@@ -1072,21 +1058,33 @@ modules</command>) kan godt tage en rum tid afhængig af hvor meget
 du har taget med, og hvor hurtig din maskine er.
 </para>
 
+<para>
+Bemærk at det kun er ved selve installationen af eventuelle moduler 
+til sidst at du bliver nødt til at være root.
+</para>
+
 <screen>
-<prompt>[root@linus /root]# </prompt> <userinput>cd /usr/src/linux</userinput>
-<prompt>[root@linus linux]# </prompt> <userinput>make dep</userinput>
-<prompt>[root@linus linux]# </prompt> <userinput>make clean</userinput>
-<prompt>[root@linus linux]# </prompt> <userinput>make bzImage</userinput>
-<prompt>[root@linus linux]# </prompt> <userinput>make modules</userinput>
-<prompt>[root@linus linux]# </prompt> <userinput>make modules_install</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd linux</userinput>
+<prompt>[anne@linus ~/linux]$</prompt> <userinput>make dep</userinput>
+<prompt>[anne@linus ~/linux]$</prompt> <userinput>make clean</userinput>
+<prompt>[anne@linus ~/linux]$</prompt> <userinput>make bzImage</userinput>
+<prompt>[anne@linus ~/linux]$</prompt> <userinput>make modules</userinput>
+<prompt>[anne@linus ~/linux]$</prompt> <userinput>su root</userinput>
+<prompt>[root@linus /home/anne/linux]# </prompt> <userinput>make modules_install</userinput>
 </screen>
+
+<para>
+Bemærk at det kun er ved selve installationen af eventuelle moduler 
+til sidst at du bliver nødt til at være root.
+</para>
+
 
 <para> 
 Bagefter kan du finde den nye Linux-kerne i
-<filename>/usr/src/linux/arch/i386/boot/bzImage</filename> (hvis du
+<filename>linux/arch/i386/boot/bzImage</filename> (hvis du
 bruger en Intel-kompatibel maskine). Du kan teste den nye kerne ved at
 kopiere den til en diskette og så starte fra denne. Brug <command>dd
-if=/usr/src/linux/arch/i386/boot/bzImage of=/dev/fd0</command> for at
+if=linux/arch/i386/boot/bzImage of=/dev/fd0</command> for at
 teste på denne måde. Er du tilfreds med den nye kerne, kan du kopiere
 kernen til <filename>/boot</filename> og rette i LILO's
 konfigurationsfil (<filename>/etc/lilo.conf</filename>) og køre
@@ -1103,29 +1101,35 @@ modul, kan man hurtigt rette i modulets kildetekst, genoversætte
 kildeteksten og starte modulet på ny - uden at genstarte maskinen!
 </para>
 
+<para>
+<emphasis>Tip:</emphasis> Man kan også skrive <command>make
+menuconfig</command> i stedet for <command>make xconfig</command>. 
+Man får et hurtigere tekst-baseret program frem - og man 
+har eksakt de samme muligheder for at styre konfigurationen.
+</para>
+
 </sect2>
 
 
 <sect2 id="kerne-opgradering">
 <title>Opgradering af kernen</title>
 <para>
-Hvis man har lavet en god opsætning af Linux-kernen og noget 
-tid senere får brug for at opgradere til en ny kerne-version, så 
-kan det være irriterende at skulle afkrydse eksakt de samme valgmuligheder
-igen med risiko for at noget bliver gjort forkert. En god procedure
-er at gemme den gamle <filename>.config</filename>-fil, som ligger 
-i <filename>/usr/src/linux</filename> til et sted du vælger - og det kan være
-klogt at gemme den under et navn som viser hvilken dato og kerneversion,
-den passer med. F.eks. kan man køre <command>cp /usr/src/linux/ /root/kerne.config-DATO-KERNEVERSION</command>.
+Hvis man har lavet en god opsætning af Linux-kernen og noget tid
+senere får brug for at opgradere til en ny kerne-version, så kan det
+være irriterende at skulle afkrydse eksakt de samme valgmuligheder
+igen med risiko for at noget bliver gjort forkert. En god procedure er
+at kopiere den gamle <filename>.config</filename>-fil, som ligger i
+dit <filename>linux</filename>-katalog over til et sted du vælger - og
+det kan være klogt at gemme den under et navn som viser hvilken dato
+og kerneversion, den passer med. F.eks. kan man køre <command>cp
+~/linux/.config ~/kernecompile/kerne.config-DATO-KERNEVERSION</command>.
 </para>
 
 <para>
-Start med at hente den nye kerne-kildekode hjem (bemærk, at hvis du henter 
-et patch, så passer den typisk ikke til den Linux-version du fik med din 
-Linux-distribution). Hvis du hentede version 2.4.12, så lav kataloget
-<command>mkdir /usr/src/linux-2.4.12</command>, og kør følgende links i 
-stilling: <command>ln -sf /usr/src/linux-2.4.12 /usr/src/linux</command> og
-<command>ln -sf /usr/src/linux-2.4.12 /usr/src/linux-2.4</command>.
+Start med at hente den nye kerne-kildekode hjem (bemærk, at hvis du
+henter et patch, så passer den typisk ikke til den Linux-version du
+fik med din Linux-distribution). Hvis du hentede version 2.4.18, så
+flyt eller slet eventuelle andre kerne-kataloger.
 </para>
 
 <para>
@@ -1154,13 +1158,26 @@ stilling: <command>ln -sf /usr/src/linux-2.4.12 /usr/src/linux</command> og
  <primary>oversæt kerne</primary>
 </indexterm> 
 
-Gå nu til <filename>/usr/src/linux</filename> og kør følgende
+Gå nu til <filename>linux</filename> og kør følgende (I dette eksempel
+er brugeren root - men det er ikke nødvendigt). Pak først den nye
+kerne-kildetekst ud som vist lidt tidligere (<command>tar xvjf
+KERNE.tar.bz2</command>).
 </para>
 
 <screen>
-<prompt>[root@linus /root]#</prompt> <userinput>cd /usr/src/linux</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>cd linux</userinput>
 <prompt>[root@linus linux]#</prompt> <userinput>make mrproper</userinput>
 <prompt>[root@linus linux]#</prompt> <userinput>cp /root/kerne.config-DATO-KERNEVERSION .config</userinput>
+</screen>
+
+<para>
+I den sidste linie anvender vi den forrige kernes parametre som grundsten for
+den nye - sagen er at vi nu kører <command>make oldconfig</command>, hvor 
+man kun skal svare på om de nye drivere skal være med i den nye kerne. 
+Alt der er uændret spørges man ikke om.
+</para>
+
+<screen>
 <prompt>[root@linus linux]#</prompt> <userinput>make oldconfig</userinput>
 <prompt>[root@linus linux]#</prompt> <userinput>make dep</userinput>
 <prompt>[root@linus linux]#</prompt> <userinput>make bzImage</userinput>
