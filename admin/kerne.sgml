@@ -571,6 +571,216 @@ alle, mens f.eks. firewallfilerne (for kerne 2.2)
 </para>
 </sect1>
 
+<!-- Devfs skrevet af Rasmus Laursen dsl13480@vip.cybercity.dk -->
+<sect1 id="devfs">
+<title>Devfs</title>
+
+<indexterm><primary>Devfs</primary></indexterm>
+
+<para>
+En af de nye ting i kerne 2.4.x er devfs, som er et godt alternativ
+til <filename>/dev</filename>-katalog-systemet.
+</para>
+
+<sect2 id="hvad-er-dev">
+<title>Hvad er /dev</title>
+<para>
+<filename>/dev</filename>'s funktion er at strukturere
+alle mulige (og umulige) devices, som <emphasis>filer</emphasis>. Hver
+enkelt <emphasis>fil</emphasis> definerer et enkelt device vha. 2
+pointere (også kaldet major & minor number). Major angiver type af
+device (f.eks: disk-, terminal-, seriel-enhed), minor angiver det
+enkelte device, indenfor den enkelte type (f.eks: tty1, tty2,...hda1,
+hda2). Disse 2 pointere benytter kernen til at "slå op" i en
+device-driver tabel, for at finde den rigtige driver til et givent
+device.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>ls -la /dev/hda*</userinput>
+brw------- 1 root root 3, 0 jan 1 1970 /dev/hda
+brw------- 1 root root 3, 1 jan 1 1970 /dev/hda1
+.
+.
+<prompt>[root@linus /root]#</prompt> <userinput>ls -la /dev/tty?</userinput>
+crw------- 1 root root 4, 1 maj 24 05:38 tty0
+crw------- 1 root root 4, 2 maj 24 05:38 tty1
+.
+.
+</screen>
+
+<para>
+Hvor 1. nummer efter gruppe er Major og 2. nummer er Minor.
+</para>
+
+<para>
+For at være sikker på at et givent device vil virke, skal der altså
+være en device-fil i <filename class=directory>/dev</filename>. Da der
+er mange forskellige (typer) devices, skal der også være mange
+filer. Og for at mindske administrationen, er de oprettet på forhånd.
+I et typisk system, som f.eks Redhat 7.0, er der godt 12000 filer. Og
+det er nok de færreste filer, det enkelte system har brug for. Det er
+ikke fordi de fylder noget (omkring 300kb ialt), men de optager hver
+en <ulink
+url="http://e2fsprogs.sourceforge.net/ext2intro.html">inode</ulink>.
+Hvis device-filen for et bestemt device nu ikke lige er oprettet, kan
+man benytte programmet <command>/dev/MAKEDEV</command> som kender til
+(næsten) alle devices og deres respektive major og minor numre.
+</para>
+
+<para>
+Hvorfor denne redundans, kan man så spørge? At både <filename
+class=directory>/dev</filename>, <command>MAKEDEV</command> programmet
+og kernen skal have alle disse informationer? Det har nok været den
+mest indlysende og overskuelige måde at designe det på i tidernes
+morgen. Men som antallet af devices stiger, bliver det mere og mere
+uoverskueligt og tidskrævende at administrere.  Og det kan Devfs gøre
+noget ved.
+</para>
+</sect2>
+
+<sect2 id="hvad-er-devfs">
+<title>Hvad er Devfs</title> 
+<para>
+Devfs er et virtuelt filsystem, som har
+samme funktion som <filename class=directory>/dev</filename>, men som
+ikke ligger fysisk på harddisken. Umiddelbart vil det ligne <filename
+class=directory>/dev</filename>, da man tilgår device-filer igennem
+kataloget <filename>/dev</filename>. Linket går bare
+ikke ned på disken, men direkte ind i kernen (efter samme princip 
+<filename>/proc</filename>.
+Dermed er man fri for administrationen og redundans, da filerne altid
+svarer til de devices som kernen har fundet.
+</para>
+
+<sect3 id="installation-af-devfs">
+<title>Installation af Devfs</title>
+<para>
+Devfs kræver en Linux-kerne oversat med parametrene CONFIG_DEVFS_FS og
+CONFIG_DEVFS_MOUNT, og user-space deamonen <command>devfsd</command>
+fra <ulink
+url="ftp://ftp.atnf.csiro.au/pub/people/rgooch/linux/daemons/devfsd/">Richard
+Gooch's ftp site</ulink>. Se i øvrigt <xref linkend="kernelcompile">.
+</para>
+
+<para>
+Udpak devfs deamonen et sted og kør følgende:
+</para>
+
+<screen>
+<prompt>[root@linus devfs]#</prompt> <userinput>make</userinput>
+<prompt>[root@linus devfs]#</prompt> <userinput>make install</userinput>
+</screen>
+
+<para>
+Som default vil <command>devfsd</command> ligge i
+<filename>/sbin</filename>.
+</para>
+
+<para>
+For at et system kan gøre brug af devfs, er det noget af det første
+<command>init</command> skal starte. Det er rimeligt system specifikt
+hvor opstart af devfsd skal ske, da systemfilerne (se <xref
+linkend="etcrcdfilen"> er forskellige. I System-V baserede systemer er
+det <command>/etc/rc.d/rc.sysinit</command>, hvor det i BSD baserede
+er i <command>/etc/rc</command>. Men under alle omstændigheder skal
+den første linje i disse filer være:
+</para>
+
+<screen>
+/sbin/devfsd /dev
+</screen>
+
+<para>
+Bemærk: Fra og med Redhat 7.0 er følgende linje allerede indsat i
+<command>/etc/rc.d/rc.sysinit</command>:
+</para>
+
+<screen>
+[ -e /dev/.devfsd -a -x /sbin/devfsd ] &amp;&amp; /sbin/devfsd /dev
+
+</screen>
+
+<para>
+Lidt forklaring. Hvis der ligger en fil ved navn
+<filename>.devfs</filename> i <filename>/dev</filename> og en
+eksekverbar fil ved navn <command>devfsd</command> i
+<filename>/sbin</filename>, så start devfs deamonen. Så det eneste
+man behøver for at aktivere devfs på Red Hat system er at eksekvere
+følgende kommando:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>touch /dev/.devfsd</userinput>
+</screen>
+
+<para>
+Også er det bare at reboote. Så enkelt er det.
+</para>
+</sect3>
+
+<sect3 id="problemer-med-devfs">
+<title>Problemer med Devfs</title>
+<para>
+Forhåbentligt skulle der ikke opstå problemer, men det kan være at der
+i enkelte tilfælde er device-drivere som ikke er understøttet af Devfs
+endnu. Her er der 2 løsniger. Den ene er at hvis det kun drejer sig om
+nogle få device-filer, kan de oprettes under opstart
+vha. <command>mknod</command> programmet. Den anden er at pakke alle
+de ikke devfs kompatible device-filer ind i en tar fil, som pakkes ud
+i <filename>/dev</filename> under opstart.
+</para>
+
+<para>
+Man kan også komme ud for at programmer benytter
+<emphasis>letforståelige</emphasis> links til device-filer. Som
+f.eks. muse programmet <command>gpm</command>. <command>Gpm</command>
+benytter som default device-filen <filename>/dev/mouse</filename>. I
+dette tilfælde vil det være en god ide at sørge for at
+<command>gpm</command> gør brug af <filename>/dev/psaux</filename>
+direkte (eller anden "rigtig" device-fil for mus).  Da der ikke er en
+konfigurationsfil til <command>gpm</command> bliver man nød til at gå
+direkte ind i scriptet for startup scriptet til <command>gpm</command>
+(se <xref linkend="etcrcdfilen">) og tilføje parametren:
+"<parameter>-m /dev/psaux</parameter>".  Redhat 7.1 har forbedret det
+lidt, ved at kunne specificere et device i
+<filename>/etc/sysconfig/gpm</filename>.  Opstarts scriptet
+<filename>/etc/rc.d/init/gpm</filename>, indeholder dog en fejl som
+gør at devicet altid vil være <filename>/dev/mouse</filename>. Ændrer
+derfor følgende i <filename>/etc/rc.d/init/gpm</filename>:
+</para>
+
+<screen>
+if [ -n "$DEVICE" ]; then
+        DEVICE="/dev/mouse"
+fi
+</screen>
+
+<para>
+til følgende:
+</para>
+
+<screen>
+if [ -z "$DEVICE" ]; then
+        DEVICE="/dev/mouse"
+fi
+</screen>
+
+<para>
+Som tester om miljø-variablen "DEVICE" er tom. Hvis den er det,
+er der ikke angivet noget device i
+<filename>/etc/sysconfig/gpm</filename>, og "DEVICE" sættes til
+<filename>/dev/mouse</filename>.
+</para>
+
+<para>
+Vi du vide mere om Devfs, så kan vi anbefale 
+Richard Gooch's Linux Devfs (Device File System) FAQ, som findes på <ulink url="http://www.atnf.csiro.au/~rgooch/linux/docs/devfs.html">http://www.atnf.csiro.au/~rgooch/linux/docs/devfs.html</ulink>.
+</para>
+</sect3>
+</sect2>
+</sect1>
+
 <SECT1 ID="kernelcompile">
 <TITLE>Omkonfigurere Linux-kernen</TITLE>
 <indexterm><primary>Linux</primary><secondary>kernen</secondary></indexterm>
@@ -1020,7 +1230,7 @@ kerner fra 2.2-serien? Svaret er - mange ting.
 <para>
 For det første så er antallet af processorer som understøttes, gået
 meget i vejret. Nu understøttes hele spektret fra 386 til Pentium IV,
-dvs. Intels nye Itanium-processor. Tilsvarende er AMD-processorerne
+dvs. Intels nye 64 bit processor. Tilsvarende er AMD-processorerne
 understøttet.  Selv den specielle Crusoe-processor er med og 64 bit
 MIPS processorer.  En spændende nyhed er at S/390 nu er understøttet.
 Mange af os har nok ikke lige en mange-millioner kroner S/390-maskine,
@@ -1032,14 +1242,14 @@ Nu er det så bare at vente på at de kommer i butikkerne
 </para>
 
 <para>
-Kerne 2.4 skulle umiddelbart ikke kræve mere hukommelse
-end kerne 2.2-serien - men den understøtter meget mere hukommelse.
-En af de ting, som nogle var utilfredse med i kerne 2.2-serien, var
-mængden af hukommelse, som Linux-kernen kunne bruge. Når man
-konfigurerer 2.4.0-kernen, er der spørgsmål om hvor meget hukommelse
-man har. To grænser kan man vælge - enten under 4 GB eller 64 GB
+Kerne 2.4 skulle umiddelbart ikke kræve mere hukommelse end kerne
+2.2-serien - men den understøtter meget mere hukommelse.  En af de
+ting, som nogle var utilfredse med i kerne 2.2-serien, var mængden af
+hukommelse, som Linux-kernen kunne bruge. Når man konfigurerer
+2.4-kernen, er der spørgsmål om hvor meget hukommelse man har. Tre
+grænser kan man vælge - under 1 GB (off), op til 4 GB eller 64 GB
 RAM. Det er efter sigende en 5-6% mindre ydelse, hvis man vælger 64 GB
-hukommelse. 
+hukommelse.
 </para>
 
 <para>
@@ -1109,7 +1319,7 @@ firewallen.  I kerne 2.4 er hele firewall-kontrollen omskrevet til et
 meget stærkere koncept kaldet <emphasis>netfilter</emphasis>, som kan
 styre tilstandshåndterende firewalls. Dette er forklaret i bogen
 "Linux - friheden til sikkerhed på Internet", som kan findes på <ulink
-url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
+url="http://www.sslug.dk/linuxbog/">http://www.sslug.dk/linuxbog</ulink>.
 </para>
 
 <para>
