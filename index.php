@@ -150,7 +150,7 @@ function form_filename( $bookname, $format ) {
     reset($ext_files);
     while (list($ftype,$fname) = each($ext_files)) {
       if (file_exists($bookname.$fname)) {
-        $num = file($bookname."/version.sgml");
+        $num = file($bookname.$fname);
         $books[$bookname][$ftype] = $num[0];
       }
     }
