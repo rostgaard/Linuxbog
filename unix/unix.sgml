@@ -1358,7 +1358,7 @@ for at få det samme resultat.
 </screen>
 
 <para>
-I datoer anvendes ret få tal, da der fx. kun er 12 måneder,
+I datoer anvendes ret få tal, da der for eksempel kun er 12 måneder,
 og maksimum 31 dage i en måned. Hvis man dertil også kun
 ønsker årstal imellem 2000 og 2099, kan dette skrives som:
 </para>
@@ -2160,9 +2160,9 @@ Læs om den under <command>man test</command>.
  <primary>Sub-shell</primary>
 </indexterm>
 <para>
-Når man starter en ny shell, får man nye omgivelser (environment)
+Når man starter en ny shell, får man nye omgivelser (eng. environment)
 som scriptet køres i. Dette ses når man har et schell-script hvor
-environment-variable ændres og tilføjes, eller der skiftes til
+systemvariable ændres og tilføjes, eller der skiftes til
 et andet sub-dir.
 Når shell-scriptet er færdig med at køre, er alt tilbage ved det gamle.
 Til tider kan det være nemmere ikke at skulle oprette et shell-script først,
@@ -2482,6 +2482,7 @@ rm -f fil-1 fil-2
  <secondary>Grundlæggende kommandobeskrivelse</secondary>
  <tertiary>export</tertiary>
 </indexterm>
+<indexterm><primary>systemvariable</primary></indexterm>
 <indexterm><primary>miljø-variable</primary></indexterm>
 <indexterm><primary>environment-variable</primary></indexterm>
 <indexterm><primary>variable</primary></indexterm>
@@ -3972,84 +3973,80 @@ En mere udførlig gennemgang findes på:
 <ulink url="http://www.tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html">http://www.tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html</ulink> .
 </para>
 
-<sect2 id="shell-hello">
-<title>Simpelt shell-script</title>
-<indexterm><primary>Shell script</primary><secondary>simpelt</secondary></indexterm>
-<para>
-Alle shell kommandoer man kan udfører på kommando-linjen,
-kan udføres i et shell script.
-Først skrives shell-fortolkeren og kommandoen i en fil, dernæst skal filen gøres eksekverbar.
-Kommandoen skal skrives i en fil, og denne kan så efterfølgende køres med en fortolker.
-Et simpelt eksempel er udskrivning af "Hello, world".
-På kommando-linjen skrives blot:
-</para>
+  <example id="shell-hello">
+   <title>Simpelt kommandofortolkerprogram</title>
 
-<screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>echo "Hello, world"</userinput>
-Hello, world
-</screen>
-
-<para>
-I shell-scriptet skal der så blot stå det samme.
-</para>
-
-<programlisting>
-echo "Hello, world"
-</programlisting>
-
-<para>
-Nu kan scriptet så køres ved at angive en kommando-fortolker
-til start og så scriptet.
-Her vælger vi at bruge den simple shell, der blot hedder <command>sh</command>.
-</para>
-
-<screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>sh hello</userinput>
-Hello, world
-</screen>
-
-<para>
-Nu er det mest almindeligt at man angiver kommando-fortolkeren
-inde i scriptet, således at brugeren ikke skal tænke over dette.
-Alternativt kunne fortolkeren være <command>bash</command>
-eller <command>tcsh</command>, så brugeren skal vide dette.
-Fortolkeren <emphasis>skal</emphasis> skrives på første linje i filen.
-</para>
+   <indexterm>
+    <primary>kommandofortolkerprogram</primary>
+    <secondary>simpelt</secondary>
+   </indexterm>
+ 
+   <para>
+    Alle kommandoer man kan udføre på kommandolinjen, kan også udføres i et
+    kommandofortolkerprogram (eng. »shell script«).  Et
+    kommandofortolkerprogram er blot en tekstfil der starter med at angive
+    hvilken kommandofortolker der skal bruges til at køre det.  Resten af
+    tekstfilen indeholder kommandoer til kommandofortolkeren.  For at
+    styresystemet skal betragte filen som et program, skal den gøres kørbar
+    (med <command>chmod</command>).  Her er der et simpelt eksempel, der bare
+    skriver »Hej med dig.«:
 
 <programlisting>
 #! /bin/sh
-# Filnavn: hello (denne linje er en kommentar)
-echo "Hello, world"
+echo Hej med dig.
 </programlisting>
+   </para>
 
-<para>
-Bemærk de første 4 tegn i filen er <command>#! /</command> .
-De angiver at der bruges en fortolker til at køre dette script.
-I dette tilfælde er det så <command>sh</command> der er placeret
-i kataloget <command>/bin/</command> .
-</para>
-
-<para>
-Nu kan programmet gøres eksekverbart med <command>chmod</command>.
-</para>
+   <para>
+    Hvis de to linjer står i filen "<filename>hej</filename>", så gør du den
+    kørbar med kommandoen:
 
 <screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>chmod +x hello</userinput>
-</screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chmod +x hej</userinput>
+</screen
+   </para>
 
-<para>
-Hvis dit system er sat fornuftigt op, kan du ikke bare køre
-programmer fra det subdir du står i.
-Derfor skal der angives en <emphasis>./</emphasis> foran
-filnavnet når scriptet skal køres.
-</para>
+   <para>
+    Når du har gjort filen kørbar, så er den et program og kan køres som
+    enhver anden kommando (næsten):
 
 <screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>./hello</userinput>
-Hello, world
+<prompt>[tyge@hven ~]$ </prompt><userinput>./hej</userinput>
+Hej med dig.
 </screen>
 
-</sect2><!-- shell-hello -->
+    <literal>./</literal> fortæller din kommandofortolker at det er et program
+    der ligger i det katalog du står i, og ikke et kommandofortolkeren skal
+    lede efter i kommandostien (systemvariablen "<literal>PATH</literal>").
+   </para>
+
+   <para>
+    Hvis du bare udfører kommandoen i filen "<filename>hej</filename>" direkte
+    på kommandolinjen får du samme resultat:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>echo Hej med dig.</userinput>
+Hej med dig.
+</screen>
+   </para>
+
+   <para>
+    I dette eksempel valgte vi at bruge "<filename>/bin/sh</filename>" som
+    fortolker til programmet.  Alternativt kunne fortolkeren blandt andet
+    have været <filename>/bin/bash</filename>,
+    <filename>/usr/bin/gnuplot</filename> (så ville
+    "<command>echo</command>"-kommandoen dog ikke blive forstået) eller
+    <filename>/bin/zsh</filename>.  Henvisningen til fortolkeren
+    <emphasis>skal</emphasis> skrives på første linje i filen.
+   </para>
+
+   <para>
+    Bemærk de første 4 tegn i filen er "<command>#! /</command>".  Det er
+    Unix-koden for at der bruges en fortolker til at køre dette program.  I
+    dette tilfælde er det så <command>sh</command> der er placeret i
+    kataloget <filename>/bin/</filename>.
+   </para>
+  </example><!-- shell-hello -->
 
 <sect2 id="shell-flere-kom">
 <title>Flere kommandoer</title>
@@ -4284,7 +4281,7 @@ Udskift alle 'bcd' med 'X': aXefaXef
     Den første del af en tekst-streng kan slettes ved brug af '#'.
     Den tekst der skal fjernes, kan evt. matches ved brug af globbing,
     på samme måde som man kan liste filer med <command>ls</command>:
-    *?[].  Dette kan fx bruges til at slette den første del af
+    *?[].  Dette kan for eksempel bruges til at slette den første del af
     hostname.
 
 <programlisting>
@@ -4406,7 +4403,7 @@ starten af en tekst der matcher <emphasis>#*.</emphasis>.
 Kommandoen ${X%%.*} sletter den sidste del der matcher
 <emphasis>%%.*</emphasis>.
 Hvis disse to regler kombineres lidt, kan tekststrengen
-splittes ved fx tegnet punktum.
+splittes ved for eksempel tegnet punktum.
 </para>
 
 <screen>
@@ -4533,7 +4530,7 @@ Alle parametre er adskilt af mellemrum: Hej Linus Torvalds
 <para>
 Et program der kører under Linux har tildelt et
 <emphasis>proces-id</emphasis> &ndash; et nummer.
-Det er de numre som ses med fx <command>ps</command>
+Det er de numre som ses med for eksempel <command>ps</command>
 og <command>pstree -p</command>.
 Skal man stoppe et program der kører, kan det
 gøres ved brug af dette proces-id.
@@ -4963,7 +4960,7 @@ Del-streng: 31
 For-løkker kan også bruges med fil-navne.
 Har man en masse filer der skal gøres noget med,
 skal man stå i katalog hvor filerne er, og så
-lave en globbing med fx <emphasis>*.html</emphasis>.
+lave en globbing med for eksempel <emphasis>*.html</emphasis>.
 </para>
 
 <programlisting>
@@ -5042,7 +5039,7 @@ done
 
 <para>
 En af fordelene ved <command>seq</command> er at tallene
-kan formateres, fx. med nuller foranstillet:
+kan formateres, for eksempel med nuller foranstillet:
 </para>
 
 <programlisting>
@@ -5238,7 +5235,7 @@ echo "Navnet er: $REPLY"
 En anden parameter man kan give <command>read</command> er hvor
 mange tegn der skal indlæses.
 Det gøres med parametren <command>-n #</command>.
-Det kunne fx. bruges på følgende simple måde:
+Det kunne for eksempel bruges på følgende simple måde:
 </para>
 
 <programlisting>
@@ -5251,7 +5248,7 @@ read -n 1 -p "Tast en vilkårlig tast for at forsætte"
 Hvis man afslutter indtastning med Enter er returkoden
 "0" og afslutter man med Ctrl-D er den "1".
 "0" svarer til "true" og "1" til false, og det kan kombineres 
-med fx while. Se følgende eksempel:
+med for eksempel while. Se følgende eksempel:
 </para>
 
 <programlisting>
