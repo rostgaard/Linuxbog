@@ -335,7 +335,7 @@
 
 <screen>
 <prompt>[daisy@linus daisy]$ </prompt><userinput>cd webspell/</userinput>
-<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs update</userinput>
+<prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs update -d</userinput>
 </screen>
 
    <itemizedlist>
@@ -352,6 +352,7 @@
       Argumentet "update" betyder at du vil have
       <emphasis>opdateret</emphasis> den personlige kopi af et
       CVS-arkiv, der allerede ligger i det katalog du står i.
+      Argumentet "-d" gør at også nye underkataloger bliver opdateret.
      </para>
     </listitem>
    </itemizedlist>
@@ -454,6 +455,42 @@
    </itemizedlist>
   </example>
 
+  <example id="cvs-kom-i-gang-rm-katalog">
+   <title>Fjern et helt katalog i et CVS-arkiv</title>
+
+   <indexterm>
+    <primary>CVS</primary>
+    <secondary>fjerne katalog</secondary>
+   </indexterm>
+
+   <para>
+    CVS er ikke ret god til at slette kataloger. Måden at håndtere
+    sletning af hele underkataloger er at slette alle filer i 
+    kataloget og derefter køre <command>cvs update -d -P</command>.
+    Her vil <literal>-d</literal> gøre at kataloger opdateres med, og 
+    <literal>-P</literal> er at fjerne ("prune") tomme kataloger.
+   </para>
+
+   <para>
+    I nedenstående eksempel fjerner vi <filename>mit_katalog</filename>
+    som er et underkatalog af <filename>projekt</filename>.
+   </para>
+
+<screen>
+<prompt>[daisy@linus projekt]$</prompt> <userinput>cd mit_katalog</userinput>
+<prompt>[daisy@linus projekt/mit_katalog]$</prompt> <userinput>ls</userinput>
+CVS      Makefile    prg.c      prg.h
+<prompt>[daisy@linus projekt/mit_katalog]$</prompt> <userinput>rm prg.c prg.h Makefile</userinput>
+<prompt>[daisy@linus projekt/mit_katalog]$</prompt> <userinput>cvs remove prg.c prg.h Makefile</userinput>
+<prompt>[daisy@linus projekt/mit_katalog]$</prompt> <userinput>cvs commit -m "Farvel til gamle filer"</userinput>
+<prompt>[daisy@linus projekt/mit_katalog]$</prompt> <userinput>cd ..</userinput>
+<prompt>[daisy@linus projekt]$</prompt> <userinput>cvs update -d -P</userinput>
+</screen>
+
+
+  </example>
+
+
   <example id="cvs-kom-i-gang-rm">
    <title>Fjern en fil fra et CVS-arkiv</title>
 
@@ -511,7 +548,9 @@
      </para>
     </listitem>
    </itemizedlist>
+
   </example>
+
 
   <example id="cvs-commit-emacs">
    <title>
