@@ -1,8 +1,8 @@
 <chapter id="html">
 <title>HTML</title>
 <para>
-At skrive dokumentation i HTML er ofte smart, idet HTML forstås på
-alle platforme. Ideen med HTML er at man skriver en fil i ren tekst og
+Det er ofte smart at skrive dokumentation i HTML, fordi HTML forstås på
+alle platforme. Ideen med HTML er, at man skriver en fil i ren tekst og
 tilføjer nogle "tags" svarende til at skrive i SGML/DocBook.  De tags
 gør at man kan håndtere overskrifter, have referencer til andre sider
 og inkludere billeder. Tags kan være skrevet med store bogstaver eller
@@ -117,7 +117,8 @@ kan valideres. Derfor gennemgår vi dele af at skrive HTML manuelt.
 <sect2 id="henvisninger-i-html">
 <title>Henvisninger i HTML</title>
 <para>
-Man kan tilføje 
+Hvis man ønsker at lave en henvisning (et link) til et dokument, som ligger på 
+en anden server, kan man tilføje 
 </para>
 
 <screen>
@@ -125,20 +126,110 @@ Man kan tilføje
 </screen>
 
 <para>
-for at få en henvisning (et
-link) til http://www.sslug.dk indsat. Teksten mellem 
+for at få en henvisning til http://www.sslug.dk indsat. Teksten mellem 
 <literal>&lt;a href="http://www.sslug.dk"&gt;</literal> og 
 <literal>&lt;/a&gt;</literal> bliver normalt vist med en anden farve
 evt. understreget i en browser.
 </para>
+
+<para>
+Hvis man ønsker at lave en henvisning til et andet dokument, som ligger samme 
+sted som ens eget dokument, kan man tilføje
+</para>
+
+<screen>
+&lt;a href="filnavn.html"&gt;Se mere på i dette dokument&lt;/a&gt;
+</screen>
+
+<para>
+for at få en henvisning til dokumentet med navnet filnavn.html
+</para>
+
+<para>
+Hvis dokumentet ligger i et andet bibliotek på serveren skal man 
+huske at gøre opmærk som på det:
+</para>
+
+<para>
+Hvis det dokument, som man vil henvise til, ligger i et underbibliotek
+i forhold til ens eget dokument, skriver man
+</para>
+
+<screen>
+&lt;a href="underbibliotek/filnavn.html"&gt;Se mere på i dette 
+dokument&lt;/a&gt;
+</screen>
+
+<para>
+Hvis det dokument, som man vil henvise til, ligger i et overbibliotek
+i forhold til ens eget dokument, skriver man
+</para>
+
+<screen>
+&lt;a href="../filnavn.html"&gt;Se mere på i dette dokument&lt;/a&gt;
+</screen>
+
+<para>
+Hvis det dokument, som man vil henvise til, ligger i et andet bibliotek 
+på samme niveau som til ens eget dokument, skriver man
+</para>
+
+<screen>
+&lt;a href="../bibliotek/filnavn.html"&gt;Se mere på i dette 
+dokument&lt;/a&gt;
+</screen>
+
+<para>
+Hvis man vil lave en henvisning til et andet sted i ens eget dokument,
+skal man både lave en henvisning samt navngive det sted, som man ønsker 
+at henvise til. Man skriver
+</para>
+
+<screen>
+&lt;a href="#navngivet"&gt;Se mere på på dette sted&lt;/a&gt;
+</screen>
+
+<para>
+hvor henvisningen skal være. Desuden navngiver man det sted, hvor 
+der henvises til, på denne måde
+</para>
+
+<screen>
+&lt;a name="#navngivet"&gt;Se mere på på dette sted&lt;/a&gt;
+</screen>
+
+<para>
+Husk at det skal være det samme ord, som man henviser med, som man 
+navngiver henvisningsstedet med. Dette kaldes at lave et ankerlink.
+</para>
+
+<para>
+Man kan også kombinere en ekstern henvisning med et ankerlink, så 
+man henviser til et bestemt sted i et andet dokument. Det gør man 
+på denne måde
+</para>
+
+<screen>
+&lt;a name="filnavn.html#navngivet"&gt;Se mere på på dette sted&lt;/a&gt;
+</screen>
+
+<para>
+Man skal selvfølgelig også huske at navngive dette sted i den nye fil. 
+Hvis man henviser til et bestemt sted i et dokument på en anden server, 
+som en anden har lavet, skal man huske være opmærksom på, at 
+forfatteren til dette dokument kan ændre sin navngivning, så virker 
+ens henvisning ikke længere. Man skal derfor passe på med at henvise til 
+bestemte steder i andres dokumenter.
+</para>
+
 </sect2>
 
 <sect2 id="adskille-tekst-i-html">
 <title>Adskillelse i HTML</title>
 <para>
 I modsætning til SGML/DocBook er det nemt at få teksten på en linie
-til at stoppe og fortsætte på næste linie. Med
-<literal>&lt;br&gt;</literal> opnås dette.
+til at stoppe og fortsætte på næste linie. Det gør man med
+<literal>&lt;br&gt;</literal>. Hvis man skriver 
 </para>
 
 <para>
@@ -152,9 +243,10 @@ Har man et afsnit der skal højrejusteres kan man afgrænse afsnittet med
 &lt;p align=right&gt;
 Teksten her vil blive højrejusteret.
 &lt;/p&gt;
+&lt;p&gt;
 Mens denne er venstrejusteret som normalt.
+&lt;/p&gt;
 </screen>
-
 
 <para>
 Vil man have en vandret linie som adskillelse mellem to afsnit anvendes
@@ -181,9 +273,27 @@ Som det ses så indsættes billedet fra
 <filename>underkatalog/sslug.png</filename> og den første 
 <literal>&lt;br&gt;</literal> for at billedet starter i ventre side og
 ikke der hvor forrige linie sluttede. 
-<literal>alt</literal>-tagget anvendes til at skrive en hjælpe-tekst for dem 
-som ikke kan se billedet (f.eks. meget venligt at indsætte dette for at hjælpe
-blinde personer).
+<literal>alt</literal>-tagget anvendes til at beskrive billedet for 
+dem, som ikke kan se billedet. Det er en stor hjælp for blinde og dem, der 
+læser ens HTML i en tekstbaseret browser.
+</para>
+
+
+<para>
+Hvis man desuden ønsker at gøre billedet til et link, der henviser til 
+SSLUG's hjemmeside, skal man blot kombinere de forskellige tags
+</para>
+
+<screen>
+&lt;br&gt;
+&lt;a href="http://www.sslug.dk"&gt;
+&lt;img src="underkatalog/sslug.png" alt="Billede fra SSLUG"&gt;
+&lt;/a&gt;
+</screen>
+
+<para>
+Man skal huske at opretholde den rigtige rækkefølge på de forskellige 
+tags. &lt;a&gt;&gt;&lt;/a&gt; skal omslutte &lt;img&gt;.
 </para>
 
 </sect2>
@@ -191,7 +301,7 @@ blinde personer).
 <sect2 id="lister-i-html">
 <title>Lister i HTML</title>
 <para>
-Skal man lave en liste over en række emner med enten
+Man kan lave unummererede (uordnede) lister som denne
 </para>
 
 <itemizedlist mark="bullet">
@@ -209,7 +319,7 @@ Skal man lave en liste over en række emner med enten
 
 
 <para>
-Listen laves ved
+med
 </para>
 
 <screen>
@@ -218,6 +328,93 @@ Listen laves ved
  &lt;li&gt;Element 2&lt;/li&gt;
 &lt;/ul&gt;
 </screen>
+
+
+<para>
+Det er faktisk valgfrit, om man vil afslutte &lt;li&gt; med &lt;/li&gt;.
+</para>
+
+<para>
+Man kan lave nummererede (ordnede) lister som denne
+</para>
+
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  Element 1
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  Element 2
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+med
+</para>
+
+<screen>
+&lt;ol&gt;
+ &lt;li&gt;Element 1&lt;/li&gt;
+ &lt;li&gt;Element 2&lt;/li&gt;
+&lt;/ol&gt;
+</screen>
+
+<para>
+Man kan også lave lister inden i lister. Det kaldes nesting.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  Element 1
+ </para>
+  <itemizedlist mark="bullet">
+  <listitem>
+   <para>
+    Element 1a
+   </para>
+  </listitem>
+  <listitem> 
+   <para>
+    Element 1b
+   </para>
+  </listitem>
+  </itemizedlist>
+</listitem>
+<listitem> 
+ <para>
+  Element 2
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+med
+</para>
+
+<screen>
+&lt;ul&gt;
+ &lt;li&gt;Element 1&lt;/li&gt;
+  &lt;ul&gt;
+   &lt;li&gt;Element 1a&lt;/li&gt;
+   &lt;li&gt;Element 1b&lt;/li&gt;
+  &lt;/ul&gt;
+ &lt;li&gt;Element 2&lt;/li&gt;
+&lt;/ul&gt;
+</screen>
+
+<para>
+Man skal være meget påpasselig, når man bruger nesting. Det er 
+nemt at lave fejl, og ens fejl bliver ikke altid afsløret med det 
+samme i browserne. Man skal altid lukke sine tags i den modsatte 
+rækkefølge af den, som man åbnede dem i.
+</para>
+
+
 </sect2>
 </sect1>
 
@@ -239,3 +436,4 @@ opdatering af flere PERL-pakker.
 </sect1>
 
 </chapter>
+
