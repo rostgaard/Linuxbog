@@ -1117,13 +1117,12 @@ der understøtter det.
 
 <para>
 I dette afsnit ser vi på Linux kernens netfilter modul og hvad 
-man kan gøre med det. Det er en forudsætning, at man er godt
-kender til begreberne IP adresse, netværksadresse, netmaske,
-routing og DNS. Hvis du ikke gør, så se på <ulink 
+man kan gøre med det. Det er en forudsætning, at man kender til
+begreberne IP adresse, netværksadresse, netmaske, routing og DNS.
+Hvis du ikke gør, så se på <ulink
 url="http://www.netfilter.org/documentation/index.html#HOWTO">
 http://www.netfilter.org/documentation/index.html#HOWTO</ulink>
-efter Networking Concepts HOWTO.
-</para>
+efter Networking Concepts HOWTO.  </para>
 
 <para>
 Desuden vil vi kigge nærmere på proxy opsætning med squid, samt
@@ -1486,13 +1485,13 @@ kæden.
 <programlisting>
                   __________
                 _|eth1-rules|__> eth1 rule 1 __> eth1 rule 2 ..._
-               ^ |__________|                                    |
-              _|_____                                            |
-             /if eth1\                                           |
-            |  else   |                                          |
-             \_______/ _    _____________________________________|
-               ^        |  |
-   ______      |        v  v
+               ^ |__________|                                    
+              _|_____                                            
+             /if eth1\                                           
+            |  else   |                                          
+             \_______/ _                                         
+               ^        |   
+   ______      |        v   
 __|input |__> rule 1    rule 2 __> rule 3
   |______|
    ______
@@ -1504,9 +1503,22 @@ __|forward|
 </programlisting>
 
 <para>
-Det svarer til en sammensat if-sætning. Vi tester for om det var
-fra eth1 og hvis det er det, så undersøg også lige dit og dat.
+Det svarer til en if-sætning. Vi tester for om det var
+fra eth1 og hvis det er det, så fortsæt med regelkæden
+eth1-rules.
 </para>
+
+<programlisting>
+
+   if (pakke_source == device_eth1) {
+       check_reglerne_i_kaede_eth1();
+   }
+   else {
+       fortsaet_med rule2();
+   }
+
+</programlisting>
+
 
 <para>
 Lad os inspicere pakkerne udefra for, om de er til vores http
