@@ -17,7 +17,11 @@ som en universel bootdisk.
 <para>
 Alle os der somme tider kommer til at lave noget dumt, og har brug for
 en boot diskette. Og som er for dovne eller selvsikre til at lave en
-boot disk under installationen, hvergang vi installerer en maskine.
+boot disk under installationen, hvergang vi installerer en maskine. Som
+gerne vil have en floppy med de mest almindelige programmer på, som man
+f.eks. kan anvende som "sikre" kendte værktøjer, hvis man analyserer en
+maskine der er blevet brudt ind på. Eller som bare gerne vil rende rundt
+med en meget lille Linux distribution på en diskette.
 </para>
 
 <figure id="distro-toms-figname" float="1">
@@ -98,12 +102,25 @@ keyboard type. Så logger man ind som root, default passwordet står på skærmen.
 
 <para>
 Der er rimelig mange systemværktøjer med, taget i betragtning at det kun
-fylder en enkelt lille diskette. Til gengæld er der ret få drivere. Af systemværktøjer kan bl.a nævnes badblocks, e2fsck, insmod, lsmod,
+fylder en enkelt lille diskette. Til gengæld er der ret få drivere. 
+
+Af systemværktøjer kan bl.a nævnes badblocks, e2fsck, insmod, lsmod,
 traceroute, nslookup, dhcpcd, wget, nc og enddog httpd. Der er desuden
 telnet og telnetd, men ingen ssh. Som shell er valgt sh. Ash er også
-med, men ingen af dem har tab completion som i bash. Der er også man
-sider med på disketten. Man kan downloade add-on pakker på <ulink
-url="http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/">http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/programs/</ulink>, disse kan f.eks, lægges på en diskette nummer to. Der er heller ingen ssh at finde her.
+med, men ingen af dem har tab completion som i bash. Dette er temmelig
+irriterende, men der er trods alt command history, så man kan trykke pil
+op og få tidligere udførte kommandoer frem igen. Der er også man-sider med på disketten. 
+
+Man kan downloade add-on pakker på <ulink
+url="http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/">http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/programs/</ulink>,
+disse kan f.eks, lægges på en diskette nummer to. Der er mange af de
+moduler jeg savner, men ikke så mangeprogrammer, f.eks. er der heller
+ingen ssh at finde her. Det er naturligvis også muligt at kopilere
+programmer til tomsrtbt selv. Se under <xref
+linkend="distro-toms-customize"/>, hvordan man lægger ændringer ind.
+</para>
+
+<para>
 Tomstrbt kører pt. kerne 2.2.20 med ext3. Reiserfs er ikke
 understøttet, hvilket gør det lidt meningsløst at bruge tomsrtbt som
 rescue diskette for systemer, der benytter dette. Det er muligt at
@@ -111,19 +128,76 @@ downloade en 2.4 kerne inde på deres wikiwiki under "Contributed
 Things".
 </para>
 
+<sect2 id="distro-toms-customize">
 <para>
-Det er beskrevet kort i FAQ'en, del 7, hvordan man tilpasser sin tomsrtbt, ved
-at lægge andre programmer eller moduler ind, eller ændre i konfigurationen (f.eks. skifte passwordet). Ideen er at man udpakker med ./unpack.s . Så får man et 1 og et 2 directory. Under 1 ligger der et par konfigurationsfiler, under 2 ligger filsystemet med /bin, /lib osv., hvor man kan lægge programmer ind. Derefter bygger man disketten igen med ./buildit.s . Det virker bare ikke på mit system. Så foreslår de i FAQ'en at man bygger under tomsrtbt selv, men dette kræver at man kan tilgå den udpakkede tomsrtbt på harddisken. Da den ikke understøtter reiserfs havde jeg ikke lige noget harddiskplads, jeg kunne mounte. Så det projekt må læseren selv eksperimentere med.
+Hvis man vil lave sin egen tilpassede udgave af tomsrtbt, starter man
+med at lægge den på harddisken og pakke den ud med tar, som beskrevet ved
+installationen. Det skal være på et filsystem tomsrtbt kan læse (jeg har
+kun prøvet med ext3, det virker i hvert fald). Download også de
+programmer eller moduler du vil lægge ind, og læg dem på samme harddisk
+partition.
 </para>
+<para>
+Nu bootes fra tomsrtbt, og man mounter den harddisk partition man lagde
+toms på, f.eks: <command>mount -t ext3 /dev/hda2 /mnt</command>.
+Derefter går man ned i det directory hvor man har udpakket tomsrtbt,
+f.eks. <command>cd /mnt/tomsrtbt-2.0.103</command>. I resten af dette
+afsnit er vi nede i dette katalog.
+</para>
+
+<para>
+Nu udpakkes filen tomsrtbt.raw med kommandoen 
+<screen>
+./unpack.s tomsrtbt.raw
+</screen>
+Der er nu kommet et katalog der hedder tomsrtbt-2.0.103.unpacked. Gå ned
+i det. Der ligger to kataloger: 1 og 2. I 1 ligger opstartsfiler og
+kerne, i 2 ligger filsystemet med programmer, f.eks. /bin/ /etc/ /lib
+osv.
+De konfigurationsfiler man kan ændre i er rc.custom.gz og settings.s.
+Udpak filen rc.custom.gz med <command>gunzip rc.custom.gz</command> hvis
+du ønsker at ændre i den. I De to filer kan man ændre hvordan tomsrtbt
+booter, f.eks. kan man kode ind hvilket keyboard man vil have, og slette
+de linier hvor den kommer ud og spørger. Men skulle kunne skifte
+passwordet i settings.s, men jeg har ikke lige fået det til at virke.
+
+Under 2 kan man så lægge de moduler eller programmer ind, man har
+downloadet. Det kan godt være nødvendigt at slette nogle andre
+programmer i stedet, ellers fylder det mere end der kan være på
+disketten.
+</para>
+
+<para>
+Når man er færdig med sine ændringer, bygger man diskette imaget. Husk
+først at pakke 1/rc.custom hvis du har pakket den ud tidligere: <command>gzip custom.rc</command>.
+Stil dig i tomsrtbt-2.0.103.unpacked kataloget (der hvor 1 og 2
+katalogerne ligger). Kør
+<screen>
+../buildit.s
+</screen>
+
+Nu bygger den et nyt image. Der er lavet et katalog der hedder
+tomsrtbt-tomsrtbt-2.0.104. Gå ned i dette katalog. Indsæt en ny tom
+floppy i diskettedrevet, og kør 
+<screen>
+./install.s
+</screen>
+for at installere den nye tomsrtbt på disketten.
+
+Se i øvrigt FAQ'en, del 7.
+</para>
+</sect2>
 
 </sect1>
 
 <sect1 id="distro-toms-killer">
 <title>Killer-feature</title>
 <para>
-Tomsrtbt kan være på en diskette og indeholder mange basale værktøjer.
-Det skulle være rimelig nemt at lægge modificere systemet, hvis man har
-behov for lidt andre programmer eller drivere. 
+Det særlige ved Tomsrtbt er at den udover at være en boot
+diskette også tilbyder en fungerende system root. Tomsrtbt er et godt
+udgangspunkt for den erfarne Linux bruger til at lave en bootbar
+værktøjsdiskette med kendte testede yndlingsværktøjer, eller til at
+boote systemer hvor root partitionen har taget skade.
 </para>
 
 </sect1>
@@ -132,11 +206,14 @@ behov for lidt andre programmer eller drivere.
 <sect1 id="distro-toms-vurdering">
 <title>Samlet vurdering af Tomsrtbt</title>
 <para>
-Tomsbtrt er god at have ved hånden, hvis man skal boote et system fra
-floppy, som ikke kan mounte sin root partition. Til de fleste andre ting
-er systemets egen bootdisk eller boot cdrom mindst lige så god. Roder
-man lidt med hvilke ting man vil have ind i toms, kan den blive et meget
-nyttigt værktøj at have i sin kasse.
+Tomsrtbt er ikke "bare" en boot disk men en rigtig Linux distribution,
+omend meget lille. Den kan være på en diskette og indeholder mange
+basale værktøjer. Hvis man er en erfaren Linux bruger, er det ikke alt
+for svært at modificere systemet, hvis man har behov for lidt andre
+programmer eller drivere, så man får en lækker værktøjsdiskette ud af
+det. For en begynder der bare skal bruge en rescue diskette, vil den
+boot diskette, de fleste distributioner tilbyder at lave ved
+installation, som regel være en bedre løsning.
 </para>
 </sect1>
 
