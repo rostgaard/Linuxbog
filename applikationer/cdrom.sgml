@@ -5,48 +5,93 @@
 <indexterm><primary>cd-rom</primary><secondary>brænde</secondary></indexterm>
 
 <para>
-Er man så heldig at man har en scsi-brænder, så skulle man bare kunne
-installere X-CD-roast og få det til at virke direkte. Har man en brænder
+De fleste distributioner idag sætter automatisk systemet op til 
+at der kan brændes cd'er fra det, hvis der under installationen
+detecteres at der er en brænder tilknyttet systemet.
+</para>
+
+<para>
+Idag understøtter Linux stort set alle nye brændere, da de alle
+implementere en standard indenfor CD brænder som er fint understøttet
+under linux. I følge <ulink
+url="http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html">http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html</ulink>
+skulle det være alle cdbrændere der er produceret i 1999 eller nyere. 
+</para>
+
+<para>
+Hvis det er en scsibrænder man ejer, så skal man bare sørge for at sin
+scsicontroller er understøttet af Linux, så virker cdbrændingen helt
+af sig selv. Har man derimod en ide-brænder, så skal der sættes
+ide-scsi emulering op. Dette lyder nok meget advanceret, men idag
+klarer de fleste distributioner det automatisk under installationen.
+</para>
+
+<para>
+Der er kun 1 brænder program under linux, det hedder cdrecord og kan
+findes på installationsmedierne til stort set alle distributioner og
+understøtter også fint teknologier som BURN-Proof, Just-link, etc. der
+sikrer mod at brænderens buffer løber tør for data under brændingen.
+</para>
+
+<para>
+Hvis ikke cdrecord er installeret på dit system, så start med at gøre
+dette. Så er det nemt at se om brænder systemet kører som det skal: 
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
+[jesper@luke cdbraending]$ cdrecord -scanbus
+Cdrecord 1.11a19 (i586-mandrake-linux-gnu) Copyright (C) 1995-2002 Jörg Schilling
+Linux sg driver version: 3.1.22
+Using libscg version 'schily-0.6'
+scsibus0:
+        0,0,0     0) *
+        0,1,0     1) 'PLEXTOR ' 'CD-R   PX-W1210S' '1.01' Removable CD-ROM
+        0,2,0     2) *
+        0,3,0     3) *
+        0,4,0     4) *
+        0,5,0     5) *
+        0,6,0     6) *
+        0,7,0     7) *
+</screen>
+
+<para>
+Her ses at systemet fint har genkendt brænderen og den er klar til
+brug. Det kan hvis kernedriverne ikke er indsat i kernen ( dette sker
+automatisk ), kan det være at kommandoen skal køres 2 gange før at de
+bliver initialiseret korrekt. 
+</para>
+
+<para>
+Nu er man så klar til at brænde CD'er. I de følgende afsnit vil der
+blive gennemgået hvad man kan gøre hvis ens cdbrænder ikke er genkent
+og et lille udpluk af frontends ( grafiske brugergrænseflader ) til
+cdrecord programmet, så man ikke nødvendigvis bliver nødt til at
+benytte det fra kommandolinien. Ligeledes er vist hvorledes cdrecord
+benyttes fra kommandolinien.
+</para>
+
+<sect1 id="Opsætning af ide-scsi emulering på hjemmebygget kerne">
+<para>
+Hvis man nu selv har hentet sin linuxkerne fra <link
+url="http://www.kernel.org">http://www.kernel.org</link> så er man
+ikke så heldig at det hele er sat op for en fra starten, dette skal
+man selv gøre, men dette giver så også lidt dybere kendskab til
+opbygningen af systemet. 
+</para>
+
+<para>
+Har man en scsi-brænder er det blot at finde den korrekt driver til
+sin scsicontroller også kører det. Har man en brænder
 af ide/atapi-typen, så er man nødt til at lave en ide-scsi-emuluering
 for at få det til at virke. Det er dog ikke så svært som det lyder
 og det fungerer fint. Det første kræver at kernen skal oversættes med 
-support for ide-scsi, scsi-cdrom, generic scsi og ide-cd. 
-I dag er de fleste standard-distributioner
-sat op og forberedt på dette. Derfor skal der blot
-loades nogle moduler for at det hele virker. Disse skal findes med:
+support for ide-scsi, scsi-cdrom, generic scsi og ide-cd. Når kernen
+er oversat med dette, enten som moduler eller bygget ind, følgende
+viser hvordan det bringes til at virke når de er oversat som moduler.
 </para>
 
-<screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>uname -r</USERINPUT>
-</screen>
-
 <para>
-Ovenstående kommando giver den kerne-version man i øjeblikket kører på. Så kan man se
-hvilket katalog i <filename>/lib/modules</filename>, der er
-interessant. For Mandrake 7.2 vil dette f.eks. være
-2.2.17-21mdk. Dette anvendes i det følgende:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /lib/modules/2.2.17-21mdk; ls </USERINPUT>
-alsa/   fs/    modules.dep             modules.parportmap  net/     usb/
-block/  ipv4/  modules.generic_string  modules.pcimap      pcmcia/
-cdrom/  misc/  modules.isapnpmap       modules.usbmap      scsi/
-</screen>
-
-<para>
-Her er det kataloget <filename>scsi</filename>, der er interessant.
-Se efter om følgende filer eksisterer:
-</para>
-
-<screen>
-scsi/sg.o
-scsi/ide-scsi.o
-</screen>
-
-<para>
-Hvis ja, så er kernen allerede klar til scsi-emuleringen.  Eksisterer
-de ikke så skal kernen omkonfigureres.  
 Det man skal være opmærksom på under kerne-oversættelsen
 er menupunkterne under "SCSI med SCSI generic" og "SCSI
 cdrom" som skal tilvælges (evt. som modul) og
@@ -165,6 +210,7 @@ pege det korrekte sted hen.
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
 lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 </screen>
+</sect1>
 
 <sect1 id="X-cdroast">
 <title>X-CD-roast</title>
