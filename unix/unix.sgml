@@ -1995,7 +1995,7 @@ entest: line 4: syntax error: unexpected end of file
 
 <para>
 Det er muligt at have flere programmer kørende i baggrunden samtidigt.
-Det kan hurtigt blive lidt overskueligt at gøre det, men det vil i
+Det kan hurtigt blive lidt uoverskueligt at gøre det, men det vil i
 nogle tilfælde være en fordel.
 For overskueligehedens skyld anvendes i det følgende blot kommandoen
 <command>sleep</command>, der holder en pause på nogle sekunder
@@ -2007,20 +2007,20 @@ tilbage til
 </para>
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>sleep 100 &amp;</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>sleep 100 &amp;</userinput>
 [1] 7533
-<prompt>[tyge@hven ~]$ </prompt> <userinput>sleep 200 &amp;</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>sleep 200 &amp;</userinput>
 [2] 7534
-<prompt>[tyge@hven ~]$ </prompt> <userinput>fg</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>fg</userinput>
 sleep 200
 </screen>
 
 <para>
-Ovenstående er helt som ønsket, hvis det altså ikke er process 2 man vil
+Ovenstående er helt som ønsket, hvis det altså er process 2 man vil
 tilbage til.
 Hvis man i stedet vil tilbage til process 1, skal kommandoen
 <command>%1</command> bruges, hvilket angiver baggrundsprocess
-nummer [1].
+nummer 1.
 </para>
 
 <screen>
@@ -2176,40 +2176,42 @@ Læs om den under <command>man test</command>.
 <indexterm>
  <primary>Sub-shell</primary>
 </indexterm>
-<para>
-Når man starter en ny shell, får man nye omgivelser (eng. environment)
-som scriptet køres i. Dette ses når man har et schell-script hvor
-systemvariable ændres og tilføjes, eller der skiftes til
-et andet sub-dir.
-Når shell-scriptet er færdig med at køre, er alt tilbage ved det gamle.
-Til tider kan det være nemmere ikke at skulle oprette et shell-script først,
-men blot skrive det hele på kommandolinjen.
-Først et lille simpelt eksempel som script, der først skifter til sub-dir
-<filename>/tmp</filename> og dernæst lister filerne.
-Tricket er, at når scriptet er færdig med at køre, står vi i samme sub-dir.
-</para>
+
+   <para>
+    Når man starter en ny kommandofortolker, får man nye omgivelser
+    (eng. environment) som programmet køres i.  Dette ses når man har et
+    kommandofortolkerprogram hvor systemvariable ændres eller tilføjes, eller
+    der skiftes til et andet katalog.  Når programmet er færdigt med at køre,
+    er alt tilbage ved det gamle.  Til tider kan det være nemmere ikke at
+    skulle oprette et program først, men blot skrive det hele direkte på
+    kommandolinjen.  Først et lille simpelt eksempel som et program, der
+    først skifter til kataloget <filename>/tmp</filename> og dernæst lister
+    filerne.  Tricket er, at når programmet er færdigt med at køre, står vi
+    igen i samme katalog som vi kaldte programmet fra.
 
 <programlisting>
 #! /bin/sh
 cd /tmp ; ls
 </programlisting>
+   </para>
 
-<para>
-For at gøre det samme på kommandolinjen skal der blot paranteser omkring:
-</para>
+   <para>
+    For at gøre det samme på kommandolinjen skal der blot paranteser omkring:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>(cd /tmp ; ls)</userinput>
 </screen>
+   </para>
 
-<para>
-Det eneste "ødelæggende" der skete ved ovenstående, var at der blev skiftet
-til et andet sub-dir, men det kunne også være en variabel der blev ændret:
-</para>
+   <para>
+    Det eneste "ødelæggende" der skete ved ovenstående, var at der blev
+    skiftet til et andet katalog, men det kunne også være en variabel der
+    blev ændret:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>(cd /tmp ; PATH=. ; min_test)</userinput>
 </screen>
+   </para>
 
 <para>
 Et mere praktisk eksempel der er besværligt at løse uden brug af "()",
@@ -2336,17 +2338,17 @@ skrive filnavnet ud på skærmen.
 /dev/fd/63
 </screen>
 
-<para>
-Her ses at der bare oprettes noget der ligner en midlertidig fil et eller andet sted,
-som <command>bash</command> selv holder styr på.
-Hvis man så er to gange <command>&lt;()</command> på kommandolinjen,
-kan <command>bash</command> stadig håndterer det:
-</para>
+   <para>
+    Her ses at der bare oprettes noget der ligner en midlertidig fil et
+    eller andet sted, som <command>bash</command> selv holder styr på.
+    Hvis man så er to gange <command>&lt;()</command> på kommandolinjen,
+    kan <command>bash</command> stadig håndtere det:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>echo &lt;(true) &lt;(true)</userinput>
 /dev/fd/63 /dev/fd/62
 </screen>
+   </para>
 
    <para>
     <command>&lt;()</command> ser ud som en fil, men er rent faktisk
