@@ -418,7 +418,7 @@ tastaturtryk bootes den første mulighed i listen af kerner.
 </para>
 
 <para>
-lba32 står for Logical Block Addressing 32-bit mode og bør
+lba32 står for Logical Block Addressing 32-bit-tilstand og bør
 anvendes på alle nyere harddiske. På ældre PC'er kan det være
 nødvendigt i stedet at skrive "linear".
 </para>
@@ -437,7 +437,7 @@ mulighed i eksemplet er, at noget andet startes (her kaldt MS-DOS
 <para>
 I eksemplet er der benyttet kommandoerne <command>restricted</command>
 og <command>password</command>. De linjer gør at man ikke kan starte
-op i enkeltbruger-tilstand (eng. single user mode) uden at give
+op i enkeltbrugertilstand (eng. »single user mode«) uden at give
 password "HEMLIPASSWORD". Husk at <command>/etc/lilo.conf</command>
 ikke bør kunne læses af andre end root. Sæt dens
 access-attributer så kun root kan læse den:
@@ -630,13 +630,15 @@ GOTO END
 <indexterm><primary>LILO</primary><secondary>append</secondary></indexterm>
 
 <para>
-Når din computer bootes med LILO, holdes der typisk en pause. Pausen kan
-enten bruges til at vælge en anden kerne at boote med, men kan også bruges
-til at indtaste ekstra parametre til Linux.
-En ofte brugt kommando er at boote Linux op i "single user mode", hvilket gør
-at man kan udfører systemarbejde uden alt for mange programmer kørende,
-eller hvis du har glemt password til <command>root</command>.
-Kommandoen er:
+Når din computer starter med LILO, holdes der typisk en pause. Pausen kan
+bruges til at vælge en anden kerne end standardkernen. Men den kan også bruges
+til at indtaste ekstra tilvalg til kernen.
+Et ofte brugt tilvalg er »single«, der får Linux til at starte i
+enkeltbrugertilstand.  Det er praktisk til systemvedligeholdelse, hvor man
+ikke vil have programmer kørende i baggrunden.  Med nogle opsætninger er det
+også en praktisk måde at komme til at rette adgangskoden på
+systemadministratorkontoen (<literal>root</literal>), hvis man skulle have
+glemt den.  Det ser sådan ud:
 </para>
 
 <screen>
@@ -652,8 +654,9 @@ Flere parametre angives med et mellemrum imellem:
 </screen>
 
 <para>
-Disse parametre kan også indsættes permanent i <filename>/etc/lilo.conf</filename>
-så de altid er med og man ikke skal taste dem ind hver gang computeren booter.
+Disse parametre kan også indsættes permanent i filen
+<filename>/etc/lilo.conf</filename>
+så de altid er med og man ikke skal taste dem ind hver gang computeren starter.
 Fra eksemplet om LILO i <xref linkend="lilo"/> er der tilføjet to parametre
 med linjen <command>append="max_loop=128 quiet"</command>:
 </para>
@@ -695,13 +698,14 @@ parametre som kan skrives enten på boot-prompten eller i lilo.conf i
   </para>
  </listitem>
  <listitem>
-  <para><command>init=3</command> - bestemmer i hvilken mode Linux booter.
-  <command>init=3</command> svarer til at Linux booter op i tekstmode,
-  og <command>init=5</command> er boot i grafisk mode. Init-level bestemmes
+  <para><command>init=&lt;nummer&gt;</command> - bestemmer i hvilken tilstand
+  Linux starter.
+  <command>init=3</command> svarer (på de fleste systemer) til at Linux starter i teksttilstand,
+  og <command>init=5</command> er start i grafiktilstand. Init-niveau bestemmes
   normalt i <filename>/etc/inittab</filename>, men hvis man f.eks. skifter skærmkort
   og dette ikke virker med den gamle grafik-opsætning bruges denne kommando.
-  <command>init=1</command> starter Linux i single user mode.
-  Denne kommando vil typisk blive tastet ind under boot.
+  <command>init=1</command> starter Linux i enkeltbrugertilstand.
+  Denne kommando vil typisk blive tastet ind under start.
   </para>
  </listitem>
  <listitem>
@@ -733,7 +737,7 @@ parametre som kan skrives enten på boot-prompten eller i lilo.conf i
   </para>
  </listitem>
  <listitem>
-  <para><command>single</command> - starter Linux i single user-mode
+  <para><command>single</command> - starter Linux i enkeltbrugertilstand
   hvilket er det samme som <command>init=1</command>.
   Denne kommando vil nok mest blive tastet ind, men kan også skrives
   i <filename>/etc/lilo.conf</filename>.

@@ -1032,10 +1032,11 @@ programmet skal have være udførbart og læsbart hvilket gøres med
 <command>chmod o+rx program.cgi</command>.</para>
 
 <para>Hvis programmet skal gemme en fil i et katalog som du ejer, så
-skal det kataloget være skrivebart af webserveren, det betyder at
-katalogets mode skal være executable, readable og writable for at
-CGI-programmet kan gemme en fil i det. (<command>chmod o+rwx
-katalog</command>). Hvis man ikke vil give alle og enhver adgang til
+skal det kataloget være skrivbart af webserveren. Det betyder at
+den bruger eller gruppe webserveren kører som (typisk »nobody« og »nobody«)
+skal have brugs og skrivetilladelse til kataloget. Det kan klares med
+kommandoen: <command>chmod o+rwx katalog</command>.
+Hvis man ikke vil give alle og enhver adgang til
 at gemme filer i det katalog kan man bruge suExec som forklaret i
 afsnittet om sikkerhedsaspekter.</para>
 </sect2>
@@ -1185,8 +1186,8 @@ sub tohash
 
 if (not $isDebug or $isDebug and $grabdata)
    {
-#hvis ikke i debug mode skal inddata fortolkes.
-#hvis i debug mode og grabdata så skal inddata også fortolkes.
+#hvis ikke i fejlsøgningsmodus skal inddata fortolkes.
+#hvis i fejlsøgningsmodus og grabdata så skal inddata også fortolkes.
 
         if ($ENV{'REQUEST_METHOD'} eq "POST") 
           {
