@@ -742,37 +742,39 @@ if ( -e ~/.complete.tcsh ) source ~/.complete.tcsh
    </para>
   </sect2>
 
-<sect2 id="unix-zsh">
-<title>Zsh</title>
+  <sect2 id="unix-zsh">
+   <title>Zsh</title>
 
-<para>
-Zsh er en af de mest avancerede kommando-fortolkere der findes. Den
-ligner Ksh, men har mange fordele over denne.  Som med Tcsh kan man
-selv indstille filnavnsekspansionen. Desuden er dens scriptsprog
-POSIX-kompatibelt.
-</para>
+   <para>
+    Zsh er en af de mest avancerede kommandofortolkere der findes. Den
+    ligner Bash og Ksh, men har &ndash; specielt ved interaktiv brug
+    &ndash; mange fordele fremfor dem.  Som med Tcsh kan man selv
+    indstille filnavnsekspansionen.  Desuden er den POSIX-kompatibel.
 
 <screen>
 <prompt>anne@linus:~% </prompt><userinput>ls -al /etc/sh&lt;TAB&gt;</userinput>
 -rw-r--r--    1 root     root          185 sep 28  2000 /etc/shells
 </screen>
+   </para>
 
-<para>
-En rigtig smart ting som ingen af de andre kommandofortolkere har er
-et specielt jokertegn, <literal>**</literal>, der betyder
-underkataloger i i en vilkårlig dybde:
+   <para>
+    En rigtig smart ting som ingen af de andre kommandofortolkere har
+    er et specielt jokertegn, <literal>**</literal>, der betyder
+    underkataloger i i en vilkårlig dybde:
+
 <screen>
 <prompt>anne@linus:~% </prompt><userinput>ls **/*.png</userinput>
 foldere/linux_på_dansk/friheden.png  foldere/sslug-folder/tux.png
 images/anne.png                      linuxbog/front.png
 images/hanne.png                     linuxbog/sslug.png
 </screen>
-</para>
+   </para>
 
-<para>
-Systemvariable sættes med <command>export VARIABELNAVN=VÆRDI</command>,
-mens almindelige variable bare sættes med
-<command>VARIABELNAVN=VÆRDI</command>:
+   <para>
+    Systemvariable sættes med <command>export
+    VARIABELNAVN=VÆRDI</command>, mens almindelige variable bare
+    sættes med <command>VARIABELNAVN=VÆRDI</command>:
+
 <screen>
 <prompt>anne@linus:~% </prompt><userinput>export PRINTER=minlpr</userinput>
 <prompt>anne@linus:~% </prompt><userinput>echo ${PRINTER}</userinput>
@@ -781,12 +783,13 @@ minlpr
 <prompt>anne@linus:~% </prompt><userinput>echo ${huskeseddel}</userinput>
 /tmp/husk
 </screen>
-</para>
+   </para>
 
-<para>
-Zsh bruger op til otte opsætningsfiler, hvoraf de fire ligger i ens
-eget hjemmekatalog, og de fire andre ligger i
-systemopsætningskataloget:
+   <para>
+    Zsh bruger op til otte opsætningsfiler, hvoraf de fire ligger i
+    ens eget hjemmekatalog, og de fire andre ligger i
+    systemopsætningskataloget:
+
 <orderedlist>
  <listitem><para>
   <filename>/etc/zshenv</filename>   (læses altid)
@@ -820,58 +823,62 @@ systemopsætningskataloget:
   <filename>~/.zlogin</filename>   (læses ved login)
  </para></listitem>
 </orderedlist>
-</para>
+   </para>
 
-<para>
-Første gang man starter en zsh op, har man overhovedet ingen regler
-for fuldstændiggørelse af kommandoer og filnavne. Det kan man ændre på
-ved at køre den indbyggede kommando <command>compinstall</command>
-(det kan være nødvendigt at lave en <command>autoload -U
-compinstall</command> først). Du bliver så præsenteret for et
-primitivt menusystem, hvor du kan konfigurere fuldstændiggørelsen. I
-første omgang vil du nok kunne klare dig med standardindstillingerne.
-</para>
+   <para>
+    Første gang man starter Zsh, har man overhovedet ingen regler for
+    fuldstændiggørelse af kommandoer og filnavne. Det kan man ændre på
+    ved at køre den indbyggede kommando <command>compinstall</command>
+    (det kan være nødvendigt at lave en <command>autoload -U
+    compinstall</command> først). Du bliver så præsenteret for et
+    primitivt menusystem, hvor du kan konfigurere
+    fuldstændiggørelsen. I første omgang vil du nok kunne klare dig
+    med standardindstillingerne.
+   </para>
 
-<para>
-Hvis de 500-600 fuldstændiggørelsesregler zsh kommer med som standard
-ikke er nok, kan man selvfølgelig lave flere. Hvis man f.eks. vil have
-zsh til kun at foreslå <filename>.ogg</filename>- og
-<filename>.mp3</filename>-filer når man har skrevet
-<command>music123</command>, kan man lægge fælgende fil:
+   <para>
+    Hvis de 500-600 fuldstændiggørelsesregler zsh kommer med som
+    standard ikke er nok, kan man selvfølgelig lave flere. Hvis man
+    f.eks. vil have zsh til kun at foreslå <filename>.ogg</filename>-
+    og <filename>.mp3</filename>-filer når man har skrevet
+    <command>music123</command>, kan man lægge en fil med indholdet:
+
 <programlisting>
 #compdef music123
 
 _files -g '*.(ogg|mp3)'
 </programlisting>
-i <filename>/usr/local/share/zsh/site-functions/</filename>.  <!--
-Hvor lægger man personlige funktioner? - HCG --> Den første linie
-fortæller at denne funktion skal bruges når det er argumenter til
-<command>music123</command> der fuldstændiggøres, og den anden linie
-at kun filer der passer til det angivne mønster skal bruges.
-</para>
 
-<para>
-Man kan naturligvis bladre tilbage gennem sine gamle kommandoer med
-pil op/ned, og ændre i en kommando inden man udfører den igen. Til
-dette formål kan man både få Emacs- og vi-tastebindinger, hvis end
-<filename>$EDITOR</filename>- eller
-<filename>$VISUAL</filename>-variabel er sat til en af tingene vælger
-zsh automatisk de tilsvarende tastebindinger.
-</para>
+    i <filename>/usr/local/share/zsh/site-functions/</filename>.  <!--
+    Hvor lægger man personlige funktioner? - HCG --> Den første linie
+    fortæller at denne funktion skal bruges når det er argumenter til
+    <command>music123</command> der fuldstændiggøres, og den anden
+    linie at kun filer der passer til det angivne mønster skal bruges.
+   </para>
 
-<para>
-Der er eksempler på hvordan de fire brugerdefinerede filer kan se ud i
-bogens eksempler
-(<ulink url="http://www.sslug.dk/linuxbog/unix/eksempler/shells/zsh/">http://www.sslug.dk/linuxbog/unix/eksempler/shells/zsh/</ulink>).
-<!-- Jacob burde kommentere disse -->
-</para>
+   <para>
+    Man kan naturligvis bladre tilbage gennem sine gamle kommandoer
+    med pil op/ned, og ændre i en kommando inden man udfører den
+    igen. Til dette formål kan man både få Emacs- og
+    vi-tastebindinger, hvis en <literal>EDITOR</literal>- eller
+    <literal>VISUAL</literal>-variabel er sat til en af tingene vælger
+    Zsh automatisk de tilsvarende tastebindinger.
+   </para>
 
-<para>
-Zshs hjemmeside findes SunSite.dk, hvor man også kan finde en
-brugsanvisning:
-<ulink url="http://zsh.sunsite.dk/Guide/">http://zsh.sunsite.dk/Guide/</ulink>.
-</para>
-</sect2>
+   <para>
+    Der er eksempler på hvordan de fire brugerdefinerede filer kan se
+    ud i bogens eksempler (<ulink
+    url="http://www.sslug.dk/linuxbog/unix/eksempler/shells/zsh/">http://www.sslug.dk/linuxbog/unix/eksempler/shells/zsh/</ulink>).
+    <!-- Jacob burde kommentere disse -->
+    <!-- Er det ikke bedre at en anden rydder op i dem først? -->
+   </para>
+
+   <para>
+    Zshs hjemmeside findes på SunSite.dk, hvor man også kan finde en
+    brugsanvisning: <ulink
+    url="http://zsh.sunsite.dk/Guide/">http://zsh.sunsite.dk/Guide/</ulink>.
+   </para>
+  </sect2>
 
 <sect2 id="unix-sh">
 <title>Bourne Shell (sh)</title>
@@ -932,5 +939,5 @@ På Internettet kan følgende steder være af interesse:
 </itemizedlist>
 
 
-</sect1> 
+ </sect1> 
 </chapter>
