@@ -7,12 +7,21 @@
 <indexterm><primary>bash</primary></indexterm>
 <para>
 Hvis du ofte har brug for at køre nogle bestemte programmer for at
-håndtere en tilbagevendende opgave, bør du sætte dig ind i at skrive
-<emphasis>shell-skript</emphasis>. Kender du til
+håndtere en tilbagevendende opgave, bør du sætte dig ind i hvordan man
+skrive et <emphasis>shell-skript</emphasis>. Kender du til
 batch-filer under DOS, har du en ide om, hvad det går ud på. Et
 shell-skript er i bund og grund blot en tekstfil, der indeholder en
 række kommandoer og måske nogle ekstra linjer til at vælge hvilke dele
 af scriptet, der skal udføres.
+</para>
+<para>
+Til forskel fra DOS' batchfiler er shell-sproget dog langt mere fuldt
+- det kan, sammen med alle standard-UNIX-kommandoerne, næsten det
+samme som et 'rigtigt' programmeringssprog. Ligesom alle andre sprog
+har det sine styrker og sine svagheder. Et shell-skript er generelt
+bedst til de store linjer -  de er gode til at fortælle andre
+programmer, hvad der skal gøres, men ikke så gode til at gøre det
+detaljerede arbejde selv.
 </para>
 
 <para>
@@ -43,10 +52,10 @@ arbejdskataloget.
 
 <screen>
 #!/bin/sh
-echo "Starter sikkerhedskopiéring..."
+echo "Starter sikkerhedskopiering..."
 mkdir backup
 cp *.txt backup
-echo "Sikkerhedskopiéring slut"
+echo "Sikkerhedskopiering slut"
 </screen>
 
 <para>
@@ -57,8 +66,8 @@ bu</userinput>. Nu kan du køre <filename>bu</filename> fra kommandolinjen:
 
 <screen>
 <prompt>$</prompt> <userinput>./bu</userinput>
-Starter sikkerhedskopiéring...
-Sikkerhedskopiéring slut
+Starter sikkerhedskopiering...
+Sikkerhedskopiering slut
 </screen>
 
 <para>
@@ -74,7 +83,7 @@ overskrive en eksisterende backup, kan du udvide skriptet en smule:
 
 <screen>
 #!/bin/sh
-echo "Starter sikkerhedskopiéring..."
+echo "Starter sikkerhedskopiering..."
 mkdir backup
 if [ $? -eq 0 ]
 then
@@ -93,9 +102,7 @@ echo "bu slut"
 I linje 4 i skriptet støder vi på en såkaldt shell-variabel, nemlig
 <filename>$?</filename>, der betyder "resultatet af sidst udførte
 kommando". Her bruges den til at vise, om <filename>mkdir</filename>
-lykkedes eller ej. I dette eksempel går vi enfoldigt ud fra, at hvis
-kommandoen <userinput>mkdir backup</userinput> ikke lykkedes, er det, fordi
-kataloget <filename>backup</filename> eksisterer i forvejen.
+lykkedes eller ej.
 </para>
 
 <para>
@@ -107,7 +114,7 @@ ligeglad med, om kataloget findes i forvejen:
 
 <screen>
 #!/bin/sh
-echo "Starter sikkerhedskopiéring..."
+echo "Starter sikkerhedskopiering..."
 mkdir backup
 if [ $? -eq 0 ]
 then
@@ -115,12 +122,12 @@ then
 else
     echo "kataloget ./backup kunne IKKE oprettes"
     OVERWRITE="-O"
-    if [ $# -eq 1 ]
+    if [ $# -eq 1 ]	        # $# angiver antallet af kommandolinjeparametre
     then
-    if [ $1 != $OVERWRITE ]
-	  then
-        echo "bu afsluttes"
-	  exit 1
+        if [ $1 != $OVERWRITE ] # $1 er første kommandolinjeparameter
+        then
+            echo "bu afsluttes"
+            exit 1
         else
             echo "der overskrives..."
         fi
@@ -139,7 +146,7 @@ hurtigt blive lidt kryptisk at læse. Kunsten er nok i virkeligheden at
 stoppe, mens legen er god, og vælge et "rigtigt" programmeringssprog, når
 opgaven kræver det. Alligevel bør du lære at skrive shell-programmer, dels
 for at lave dine egne små praktiske løsninger på dagligdagens problemer,
-dels for at kunne forstå andres skript.
+dels for at kunne forstå andres shell-programmer.
 </para>
 
 <para>
@@ -163,7 +170,7 @@ modificere tekst, såsom at uddrage eller ændre en mindre del af en
 tekstlinie. Ofte læses teksten fra en pipe-konstruktion eller fra en fil og
 tilsvarende afleveres resultatet i en fil eller til en pipe.
 Fordelen med <command>sed</command> i forhold til Perl (som kan meget
-mere) er at sed er et lille program.
+mere) er at sed er et lille program, og derfor hurtigere at udføre.
 </para>
 
 <para>
@@ -176,10 +183,10 @@ fuld sti kan man gøre følgende:
 <SCREEN>
   pathname=`echo $0 | sed 's#[^/]*$##'`
   progname=`echo $0 | sed 's#^.*/##'`
-  noext=`echo $0 | sed 's/\.[^\.]\+$//`
+  noext=`echo $0 | sed 's/\.[^\.]\+$//'`
 
   ext =`echo $progname | sed 's/^.\+\.//'`
-  ext2=`echo $progname | sed 's/^.*\././'`
+  ext2=`echo $progname | sed 's/^.\+\././'`
 </screen>
 
 <para>
@@ -188,6 +195,41 @@ men de plejer at virke for de fleste "normale" sti+filnavne man
 anvender.
 </para>
 
+<para>
+Alle 5 eksempler indeholder en enkelt sed-kommando, nemlig en
+'substitute'-kommando (erstat en del af inputtet med noget andet) -
+det er hvad s'et står for.
+Substitute-kommandoen har normalt formatet s/gammelt/nyt/
+(hvor <filename>gammelt</filename> er regulært udtryk, se <filename>man 7
+regex</filename>, og <filename>nyt</filename> er det der skal
+erstattes med), men som det er illustreret i de to første eksempler,
+kan man også bruge et andet tegn end skråstreg til at afgrænse de to
+felter med - her er brugt <filename>#</filename>.
+</para>
+
+<para>
+Lad os som eksempel tage filnavnet
+<filename>/home/peter/hello.c</filename> som eksempel.
+I de fire første sed-programmer fjernes en del af teksten - der
+erstattes med ingenting.
+I <filename>pathname</filename>-eksemplet findes stinavnet ved at
+fjerne den sidste del af filnavnet, til og uden den sidste
+skråstreg. Resultatet er <filename>/home/peter/</filename>.
+<filename>progname</filename>-eksemplet finder programfilens navn ved
+at fjerne starten, til og med den første skråstreg - resultatet er
+<filename>hello.c</filename>.
+<filename>noext</filename>-eksemplet fjerner extensionen, altså fra
+slutningen og tilbage til og med det sidste punktum - tilbage er
+<filename>/home/peter/hello</filename>.
+Endelig finder <filename>ext</filename>-eksemplet extensionen ved at
+fjerne fra starten og til og med det sidste punktum i filnavnet.
+</para>
+
+<para>
+Det sidste eksempel (<filename>ext2</filename>) virker som det næstsidste (<filename>ext</filename>) og finder
+filnavnets extension, bortset fra at ext2 lader et punktum stå - der
+erstattes med <filename>.</filename>.
+</para>
 
 <para>
 Vil du vide mere om <command>sed</command>, så kan du læse 
@@ -202,25 +244,53 @@ mere på <ulink url="http://2dos.homepage.dk/batutil/help/SED.HTM">http://2dos.ho
 <indexterm><primary>tcsh</primary></indexterm>
 
 <para>
-På de fleste UNIX-kompatible maskiner, såsom Linux findes andre
-kommando-shells (kommandofortolkere). Gamle kendinge er ksh 
-(Korn-shellen), sh (Bourne-shellen) og csh. De er meget udbredte, 
-men til daglig anvendelse
-mangler flere af dem funktioner, såsom vis forrige kommando, kommando
-og filnavn udfyldning (tryk på tabulator). Derfor er Bash (Bourne
-again-shellen) og tcsh bedre alternativer. I Linux er sh og bash links
-til hinanden, så man kan se mere om bash tidligere i dette
-kapitel. Her skal vi nævne lidt om tcsh.
+På de fleste UNIX-kompatible maskiner, såsom Linux, findes flere forskellige
+kommando-shells (kommandofortolkere).
+Nogle ad de mest kendte er <filename>ksh</filename> (Korn-shellen),
+<filename>sh</filename> (Bourne-shellen) og
+<filename>csh</filename>. De er meget udbredte, men til daglig anvendelse
+mangler flere af dem visse nyttige funktioner, såsom vis forrige
+kommando, kommando- og filnavn-udfyldning (tryk på tabulator). Derfor
+er <filename>Bash</filename> (Bourne Again-shellen) og
+<filename>tcsh</filename> bedre alternativer.
+</para>
+<para>
+I Linux er sh blot et link til bash. Dette går godt, fordi bash er
+bagud-kompatibel med sh (deraf navnet og ordspillet 'Bourne Again
+shell'), og afsnittet om shellprogrammering tidligere i dette kapitel
+gælder altså også for Bash.
+Her skal vi nævne lidt om tcsh, som er en videreudvikling af csh.
 </para>
 
 <para>
-Skal du brug tcsh som shell, så skal du ændre den del af linien for
-dig selv i <filename>/etc/passwd</filename> fra
-<filename>/bin/bash</filename> til <filename>/bin/tcsh</filename>.
-Tcsh vil anvende kommandoer skrevet i filerne 
-<filename>.login</filename> (ved login) og 
-<filename>.tcshrc</filename> (til hver shell, der startes). Et
-eksempel på <filename>.login</filename> kan være.
+<!-- dette kan med fordel flyttes et andet sted hen i kapitlet: -->
+Når man logger ind via kommandolinje, havner man normalt i en
+shell. For at finde ud  af, hvilken shell der skal startes, ser
+login-programmet i filen <filename>/etc/passwd</filename>, som indeholder en
+liste over alle brugernavne samt nogle oplysninger om hver, en linje
+pr. bruger. Det sidste felt på hver linje angiver hvilket program, den
+pågældende bruger har som standardshell
+(dette kan være et hvilket som helst program - det behøver ikke at
+være en shell, men kunne også være f.eks. 
+<filename>vi</filename> eller <filename>emacs</filename>).
+Hvis du har bestemt dig for at bruge tcsh som shell, skal dette felt
+altså ændres
+(typisk fra <filename>/bin/bash</filename>)
+til <filename>/bin/tcsh</filename>,
+afhængigt af hvor kommandofortolkeren ligger.
+</para>
+
+<para>
+Når tcsh startes, udfører den først kommandoerne skrevet i filerne
+<filename>/etc/csh.login</filename> (ved login) og
+<filename>/etc/csh.cshrc</filename> (ved hver shell, der startes). De
+bliver altså udført for alle brugere, der bruger tcsh.
+Derefter udføres tilsvarende kommandoer, der er angiver i
+<filename>~/.login</filename> og <filename>~/.tcshrc</filename> - disse
+filer kan tilpasses af og til den enkelte bruger.
+Når tcsh afsluttes, køres tilsvarende
+<filename>/etc/csh.logout</filename> og <filename>~/.logout</filename>.
+Et eksempel på <filename>.login</filename> er:
 <indexterm><primary>.login</primary></indexterm>
 </para>	
 
@@ -303,6 +373,11 @@ set matchbeep=nomatch
 # Er der er en .alias fil, så indlæs denne
 if ( -e ~/.alias ) source ~/.alias
 </screen>
+
+<para>
+Der er øvrigt en del eksempler og tips vedrørende opsætning af shells mv. på
+<ulink url="http://www.sslug.dk/artikler/begyndertips">http://www.sslug.dk/artikler/begyndertips</ulink>
+</para>
 
 </SECT2><!-- tcsh -->
 </SECT1><!-- shell -->
