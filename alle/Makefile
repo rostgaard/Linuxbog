@@ -35,13 +35,13 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
 
 # her er det der skal laves
-all:	html palmpilot pspdf sgml exit
+all:	billeder html palmpilot pspdf sgml exit
 
 sgml: $(targetname)-$(version).sgml.tar.gz
 
 $(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
-        (cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
+	(cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
 palmpilot: $(targetname)-$(version).palm.zip
 
