@@ -1705,6 +1705,180 @@ af problemet.
 </sect1>
 
 
+<sect1 id="logfiler">
+<title>Log-filer</title>
+<indexterm><primary>logfiler</primary></indexterm>
+<indexterm><primary>syslog</primary></indexterm>
+
+<para>
+En Linux-installation indeholder forskellige logfiler der registrerer
+forskellige ting der sker med systemet. Den vigtigste logfil er
+<filename>/var/log/messages</filename> der sammen med andre fortæller
+systemets tilstand.
+</para>
+
+<sect2 id="varlogmessages">
+<title>/var/log/messages</title>
+<indexterm><primary>/var/log/messages</primary></indexterm>
+<indexterm><primary>logfiler</primary><secondary>/var/log/messages</secondary></indexterm>
+<indexterm><primary>syslog</primary></indexterm>
+
+<para>
+Tekstfilen <filename>/var/log/messages</filename> indeholder beskeder
+fra kernen og andre programmer der rapporterer til syslogd.
+Herunder er vist noget af det man kan se i logfilen:
+</para>
+
+<programlisting>
+Jun 25 10:45:18 figus syslogd 1.4.1: restart (remote reception).
+Jun 25 10:45:22 figus sshd: sshd startup succeeded
+Jun 25 11:01:35 figus ntpdate[4053]: step time server 129.240.64.3 offset 26.235235 sec
+Jun 25 14:05:42 figus su(pam_unix)[4454]: session opened for user root by (uid=506)
+Jun 25 14:08:45 figus sshd[4521]: Failed password for root from 192.168.1.2 port 1050 ssh2
+</programlisting>
+
+<para>
+Logfilen indeholder mange informationer fra mange programmer.
+Disse kan være lidt svære at overskue, så det kræver noget træning
+at hvad der er som det skal være, og hvad der ikke er.
+I ovnævnte eksempel er det maskinen med hosname <emphasize>figus</emphasize>
+der ses i logfilen. Programmerne syslogd, sshd, ntpdate og su har skrevet i
+logfilen.
+Kun den sidste linie ser lidt mistænkelig ud, nogen prøvede at logge ind som
+root fra IP-nummer 192.168.1.2. Mistænkelig er den dog ikke, for ham der
+prøvede at logge ind havde ret til det, han havde bare glemt at root ikke kunne
+logge ind direkte, men skal først logge ind som en almindelig bruger.
+Så det kræver lidt træning at overskue denne logfil.
+</para>
+
+<para>
+De typiske værktøjer man bruger til at se var på
+<filename>/var/log/messages</filename> er: less, tail og grep.
+Med <command>less</command> kan man med fordel taste 'G' for at gå
+til bunden af filen, og 'F' for at følge hvad der kommer af nye beskeder.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>less /var/log/messages</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>tail -f /var/log/messages</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>grep restart /var/log/messages | less</userinput>
+</screen>
+
+<para>
+Se også "Friheden til sikkerhed på internettet" for mere information om
+<filename>/var/log/messages</filename>.
+</para>
+
+<sect3 id="syslogremote">
+<title>syslog remote</title>
+<indexterm><primary>syslog</primary><secondary>remote</secondary></indexterm>
+<indexterm><primary>/etc/sysconfig/syslog</primary></indexterm>
+<indexterm><primary>/etc/syslog.conf</primary></indexterm>
+<para>
+Der kan være flere fordele ved at logge syslog kommandoer til en anden server.
+En kunne være at samlet holde øje med flere servere, en anden kunne være
+for at sikre sig at en cracker ikke går ind og sletter
+<filename>/var/log/messages</filename> på den maskine der bliver kompromiteret.
+</para>
+<para>
+Først går man til den maskine der skal modtage syslog-beskeder fra andre maskiner.
+Her ændres syslog til at starte med kommandoen '-r' (remote).
+Dette kan enten gøre i <filename>/etc/sysconfig/syslog</filename>, eller
+<filename>/etc/init.d/syslog</filename>, afhængigt af hvilken distrinution
+man kører.
+</para>
+
+<programlisting>
+# Filnavn: /etc/sysconfig/syslog
+SYSLOGD_OPTIONS="-m 0 -r"
+</programlisting>
+
+<para>
+På klienter der skal logge til syslog-serveren kan der så rettes
+i <filename>/etc/syslog.conf</filename>.
+Vil man logge alt fra klienten over til serveren
+<filename>minlog.domain.dk</filename> skrives:
+</para>
+
+<programlisting>
+*.*  @minlog.domain.dk
+</programlisting>
+
+<para>
+Er det kun mail-log der skal sendes over kan man skrive:
+</para>
+<programlisting>
+mail.*  @minlog.domain.dk
+</programlisting>
+
+<para>
+Ovenstående ændringer kræver at
+<command>/etc/init.d/syslog</command> bliver genstartet.
+</para>
+</sect3> <!-- id="syslogremote" -->
+
+</sect2> <!-- id="varlogmessages" -->
+
+<sect2 id="dmesg">
+<title>dmesg</title>
+<indexterm><primary>dmesg</primary></indexterm>
+<indexterm><primary>Kerne</primary><secondary>logfil</secondary></indexterm>
+<indexterm><primary>logfiler</primary><secondary>kerne</secondary></indexterm>
+
+<para>
+<command>dmesg</command> er ikke en logfil, men et program der udskriver
+beskeder fra kernens ring-buffer.
+Her står al den information kernen skriver under boot, og hvad der efterfølgende
+sker af fejl i kernen.
+Vil man vide noget om hvilke IDE harddiske der er i systemet, kan man fx. bruge
+kommandoen <command>dmesg | grep hd</command> og få et output der minder om:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>dmesg | grep hd</userinput>
+ide0: BM-DMA at 0xfcf0-0xfcf7, BIOS settings: hda:pio, hdb:DMA
+hda: FUJITSU MHM2200AT, ATA DISK drive
+hdb: TOSHIBA DVD-ROM SD-C2502, ATAPI CD/DVD-ROM drive
+hda: 39070080 sectors (20004 MB) w/2048KiB Cache, CHS=2584/240/63, UDMA(33)
+hdb: ATAPI 24X DVD-ROM drive, 128kB Cache, UDMA(33)
+<!-- ups, der var vist også et par fejl der ikke behøves komme med /chlor
+hdb: packet command error: status=0x51 { DriveReady SeekComplete Error }
+hdb: packet command error: error=0x50
+--></screen>
+
+</sect2> <!-- id="dmesg" -->
+
+<sect2 id="varlogmail">
+<title>/var/log/mail/info</title>
+<indexterm><primary>/var/log/mail/info</primary></indexterm>
+<indexterm><primary>Postfix</primary><secondary>logfil</secondary></indexterm>
+<indexterm><primary>logfiler</primary><secondary>/var/log/mail/info</secondary></indexterm>
+
+<para>
+<filename>/var/log/mail/info</filename> er logfilen for ind- og udgående mail.
+Her står hvem der har modtaget filer, og hvem der er sendt filer til.
+Typisk er det ved fejl at man kigger i denne fil, og i mere sjældne tilfælde
+bruges den til at dokumenterer at en mail blevet sendt eller modtaget.
+Filen ses typisk med <command>less</command>, <command>tail</command> eller
+<command>grep</command>.
+I det viste eksempel herunder, er det <command>fetchmail</command> der henter
+mail fra en ISP, hvilket man ikke kan se, og afleverer denne mail til localhost.
+Afsenderen er &lt;chlor@sslug.dk&gt;, og modtageren er &lt;chlor@localhost.w0.dk&gt;.
+</para>
+
+<programlisting>
+Jun 26 07:44:44 figus postfix/smtpd[8079]: connect from localhost.localdomain[127.0.0.1]
+Jun 26 07:44:44 figus postfix/smtpd[8079]: 09BEC1326AE: client=localhost.localdomain[127.0.0.1]
+Jun 26 07:44:44 figus postfix/cleanup[8080]: 09BEC1326AE: message-id=&lt;20020626054426.20973.qmail@sslug.dk&gt;
+Jun 26 07:44:44 figus postfix/qmgr[1665]: 09BEC1326AE: from=&lt;chlor@sslug.dk&gt;, size=804, nrcpt=1
+  (queue active)Jun 26 07:44:44 figus postfix/local[8082]: 09BEC1326AE: to=&lt;chlor@localhost.w0.dk&gt;,
+  relay=local, delay=0, status=sent ("|/usr/bin/procmail -Y -a $DOMAIN")
+Jun 26 07:44:47 figus postfix/smtpd[8079]: disconnect from localhost.localdomain[127.0.0.1]
+</programlisting>
+
+</sect2> <!-- id="varlogmail" -->
+
+</sect1>
 
 <sect1 id="quota">
 <title>Kontrol af diskforbrug med quota</title>
