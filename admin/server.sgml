@@ -4,7 +4,7 @@
 <indexterm><primary>Netværk</primary></indexterm>
 
 <para>
-I dette kapitel vil vi se nærmere på Linux som server og det er på
+I dette kapitel vil vi se nærmere på Linux som server og det på
 et mere avanceret plan.  Vi har tidligere kommet ind på en mere grundlæggende
 forklaring af netværk, TCP/IP og netværksadresser, idet dette er helt
 centralt for alt med netværk. 
@@ -12,8 +12,7 @@ centralt for alt med netværk.
 
 <para>
 I dette kapitel ser vi nærmere på en række server-funktionaliteter
-DHCP, NFS (UNIX fildeling), NIS (adgangskode-deling), SAMBA (Windows
-fildeling), Apache webserver.
+DHCP, NFS (UNIX fildeling), NIS (adgangskode-deling), SAMBA (Windows-fildeling), Apache webserver.
 </para>
 
 <sect1 id="DHCP">
@@ -23,8 +22,8 @@ fildeling), Apache webserver.
 <para>
 Hvis man har mere end et par computere på sit netværk, eller hvis man
 ofte flytter computerne mellem forskellige netværk, så bliver det 
-hurtigt besværligt at skulle konfigurere deres IP adresse,
-default gateway adresse og DNS server hver gang man flytter dem rundt.
+hurtigt besværligt at skulle konfigurere deres IP-adresse,
+standard-gatewayadresse og navneserver hver gang man flytter dem rundt.
 </para>
 
 <para>
@@ -41,42 +40,42 @@ maskine.
 Når man tænder en computer der bruger DHCP, så vil den sende en
 forespørgsel ud på sit lokale netværk for at spørge efter en
 DHCP-server. Hvis der er en DHCP-server på nettet, så tager serveren en
-ubrugt IP adresse fra den pulje af adresser, den er konfigureret til
+ubrugt IP-adresse fra den pulje af adresser, den er konfigureret til
 at bruge, og sender et svar tilbage om at den nye computer kan bruge
-den pågældende IP adresse. Sammen med IP adressen sendes også andre
+den pågældende IP-adresse. Sammen med IP-adressen sendes også andre
 oplysninger som er nødvendige for at netværket kan fungere - som regel
-er det netmasken, IP adressen for default gateway og DNS servernes IP
-adresse som fås fra DHCP-serveren.
+er det netmasken, IP-adressen for default gateway og navneservernes 
+IP-adresse som fås fra DHCP-serveren.
 </para>
 
 <para>
-Den IP adresse som den nye computer får tildelt må den bruge i en
+Den IP-adresse som den nye computer får tildelt må den bruge i en
 begrænset tidsrum - den får det der kaldes et "lease" på adressen, som
 skal fornyes med jævne mellemrum. Hvis ikke computeren beder om at
 forny sit lease, så inddrager DHCP-serveren det igen, og kan dele det
-ud til andre maskiner der har brug for en IP adresse.
+ud til andre maskiner der har brug for en IP-adresse.
 </para>
 
 <para>
 Når man bruger DHCP kan man derfor ikke være sikker på, at ens
-computere altid har den samme IP adresse - det afhænger af, hvor længe
+computere altid har den samme IP-adresse - det afhænger af, hvor længe
 af gangen de er tændt. Så længe de er på nettet, så bliver de ved med
-at have den IP adresse de har fået fra serveren. Men hvis de bliver
+at have den IP-adresse de har fået fra serveren. Men hvis de bliver
 lukket ned eller taget af nettet så længe at deres lease udløber, så
-vil de sandsynligvis få en ny IP adresse næste gang de kontakter
+vil de sandsynligvis få en ny IP-adresse næste gang de kontakter
 serveren.
 </para>
 
 <para>
 Derfor er DHCP mest anvendelig på de systemer, som ikke kører nogen
-form for server funktion - d.v.s. almindelige arbejdsstationer. 
+form for server-funktion - d.v.s. almindelige arbejdsstationer. 
 </para>
 
 <para>
 Det er dog muligt at konfigurere sin DHCP-server på en måde, så visse
-IP adresser bliver reserveret til bestemte maskiner, og derved kan man
-sikre at den pågældende maskine altid har en bestemt IP
-adresse. Derfor kan man godt bruge DHCP til servere, f.eks. hvis man
+IP-adresser bliver reserveret til bestemte maskiner, og derved kan man
+sikre at den pågældende maskine altid har en bestemt IP-adresse. 
+Derfor kan man godt bruge DHCP til servere, f.eks. hvis man
 vil styre netværks-konfigurationen centralt.
 </para>
 </sect2>
@@ -86,7 +85,7 @@ vil styre netværks-konfigurationen centralt.
 <para>
 Der følger naturligvis en DHCP-server med din Linux-distribution - det
 er en server som er udviklet af ISC (Internet Software Consortium);
-det er også dem, der udvikler DNS serveren BIND. I næste afsnit kan du
+det er også dem, der udvikler navneserveren BIND. I næste afsnit kan du
 se, hvordan man sætter den op.
 </para>
 
@@ -100,7 +99,7 @@ man sagtens bruge.
 <para>
 Uanset om du vælger at køre en DHCP-server på din Linux-maskine, eller
 du vælger at bruge den der er indbygget i din router, så skal du passe
-på at der kun er <emphasis>en</emphasis> DHCP-server på dit
+på at der kun er <emphasis>én</emphasis> DHCP-server på dit
 netværk. Hvis der er flere, så vil du opleve at det kun virker en gang
 imellem - nemlig når klienten får svaret fra den server, der er
 konfigureret rigtigt.
@@ -114,7 +113,7 @@ konfigureret rigtigt.
 ISC's DHCP-server bruger een konfigurations-fil, normalt ligger den i
 <filename>/etc/dhcpd.conf</filename>. 
 Derudover bruger den en midlertidig fil til at holde
-styr på hvilke IP adresser den har uddelt til de forskellige maskiner
+styr på hvilke IP-adresser den har uddelt til de forskellige maskiner
 på nettet; den ligger normalt i /etc/dhcpd.leases, og den
 administrerer serveren selv. Du skal blot sørge for at filen
 eksisterer inden du starter serveren - f.eks. ved at give kommandoen
@@ -125,23 +124,23 @@ der følger med Red Hat 6.2 opretter selv filen, hvis den ikke findes).
 
 <para>
 For at konfigurere DHCP-serveren skal du bestemme dig for, hvilke
-oplysninger den skal uddele til de computere, der spørger den om en IP
-adresse. D.v.s. du skal vælge
+oplysninger den skal uddele til de computere, der spørger den om en 
+IP-adresse. D.v.s. du skal vælge
 </para>
 
 <ITEMIZEDLIST MARK="bullet" SPACING="compact">
 <LISTITEM><para>Hvor længe skal de have lov at bruge den tildelte adresse?</para></listitem>
-<LISTITEM><para>Hvilket IP adresse område skal der tages adresser fra?</para></listitem>
+<LISTITEM><para>Hvilket IP-adresse område skal der tages adresser fra?</para></listitem>
 <LISTITEM><para>Hvilken netmaske har dit netværk?</para></listitem>
 <LISTITEM><para>Hvad er default gateway for nettet?</para></listitem>
-<LISTITEM><para>Hvilken IP adresse bruges til DNS server?</para></listitem>
+<LISTITEM><para>Hvilken IP-adresse bruges til navneserver?</para></listitem>
 </itemizedlist>
 
 
 <para>
 Derudover er der en frygtelig masse oplysninger, som man kan levere
 via DHCP. Det er f.eks. domæne-navnet for maskinerne på dit netværk,
-navn på post-server, time-server, WINS server etc. Det er dog langt
+navn på post-server, time-server, WINS-server etc. Det er dog langt
 fra alle disse oplysninger, som rent faktisk bruges til noget af de
 maskiner som kontakter DHCP-serveren, så derfor er det ikke altid at
 man får noget ud af at konfigurere dem på DHCP-serveren. Du kan se
@@ -159,10 +158,10 @@ værdier til DHCP:
 <ITEMIZEDLIST MARK="bullet" SPACING="compact">
 <LISTITEM><para>Et lease skal være fornyet efter 10 timer, og er
 max. gyldigt i 24 timer.</para></listitem>
-<LISTITEM><para>IP adresser tildeles fra puljen 192.168.0.100 - 192.168.0.250</para></listitem>
+<LISTITEM><para>IP-adresser tildeles fra puljen 192.168.0.100 - 192.168.0.250</para></listitem>
 <LISTITEM><para>Netmasken er 255.255.255.0</para></listitem>
 <LISTITEM><para>Default gateway er 192.168.0.1</para></listitem>
-<LISTITEM><para>DNS serveren er 192.168.0.1</para></listitem>
+<LISTITEM><para>Navneserveren er 192.168.0.1</para></listitem>
 <LISTITEM><para>Domæne-navnet er "intranet"</para></listitem>
 </itemizedlist>
 
@@ -197,7 +196,7 @@ denne DHCP-pulje handler om.
 </para>
 
 <para>
-"range" fortæller så, hvilke IP adresser serveren kan tildele klienter
+"range" fortæller så, hvilke IP-adresser serveren kan tildele klienter
 på dette netværk - det er her, vi skriver at adresserne skal være i
 intervallet 192.168.0.100 til 192.168.0.250.
 </para>
@@ -207,23 +206,23 @@ intervallet 192.168.0.100 til 192.168.0.250.
 </para>
 
 <para>
-"option routers" definerer default gateway.
+"option routers" definerer standard-gateway.
 </para>
 
 <para>
 "option domain-name" og "option domain-name-servers" definerer DNS
-domæne-navnet og DNS serveren. Hvis du ikke selv har en DNS server på
-dit netværk, så kan du sagtens skrive adressen på din Internet
-udbyders DNS server her.
+domæne-navnet og navneserveren. Hvis du ikke selv har en navneserver på
+dit netværk, så kan du sagtens skrive adressen på din Internetudbyders 
+navneserver her.
 
 
 "option domain-name" og "option domain-name-servers" definerer DNS
-domæne-navnet og DNS serveren. Hvis du ikke selv har en DNS server på
+domæne-navnet og navneserveren. Hvis du ikke selv har en navneserver på
 dit netværk, så kan du sagtens skrive en eller flere IP-adresser på din
-Internet udbyders DNS server her. Man kan også bruge navnet på den DNS
-server man vil bruge, DHCP-serveren laver så et opslag inden den
-tildeler adressen til klienten. En smart ting hvis DNS serveren skulle
-skifte IP adresse.
+Internetudbyders navneserver her. Man kan også bruge navnet på den 
+navneserver man vil bruge, DHCP-serveren laver så et opslag inden den
+tildeler adressen til klienten. En smart ting hvis navneserveren skulle
+skifte IP-adresse.
 </para>
 
 <screen>
@@ -244,8 +243,8 @@ gyldigt. Herefter skal klienten forny sit lease hos DHCP-serveren.
 </para>
 
 <para>
-"max-lease-time" er det antal sekunder en IP adresse må bruges. Når den
-tid er gået SKAL klienten holde op med at bruge IP adressen.
+"max-lease-time" er det antal sekunder en IP-adresse må bruges. Når den
+tid er gået SKAL klienten holde op med at bruge IP-adressen.
 </para>
 
 <para>
@@ -253,17 +252,17 @@ Forskellen på "default-lease-time" og "max-lease-time".
 Funktionen af de to tider er defineret i RFC 2131, afsnit 4.4.5
 "Reacquisition and expiration". Kort fortalt går det ud på, at når
 default-lease-time ("T1" i RFC'en) udløber, skal klienten begynde at
-forsøge at forny sit lease på IP adressen ved at kontakte den
+forsøge at forny sit lease på IP-adressen ved at kontakte den
 DHCP-server, den oprindelig fik adressen fra. Det kan klienten så blive ved
 med at forsøge indtil den får svar, eller indtil "max-lease-time"
 ("T2" i RFC'en) udløber. Hvis T2 udløber SKAL klienten stoppe med at
-benytte IP adressen, og i stedet begynde at broadcaste efter en ny
+benytte IP-adressen, og i stedet begynde at broadcaste efter en ny
 DHCP-server.
 </para>
 
 <para>
 Tiden mellem default-lease-time og max-lease-time er altså den frist,
-som en klient har til at forny sit lease på en IP adresse. Da servere
+som en klient har til at forny sit lease på en IP-adresse. Da servere
 kan være nede, er det nødvendigt at der er lidt tid til at klare sådan
 en ekspeditions-sag - helst så længe, at klienterne ikke begynder at
 falde af nettet pga et enkelt nedbrud af DHCP-serveren.
@@ -296,8 +295,8 @@ det nemt. Du skal installere dhcp-pakken og køre
 </screen>
 
 <para>
-Så starter DHCP-serveren automatisk når maskinen booter. Det virker
-dog først efter en reboot, så hvis du vil have serveren i gang med det
+Så starter DHCP-serveren automatisk når maskinen starter op. Det virker
+dog først efter en genstart, så hvis du vil have serveren i gang med det
 samme, så kører du
 </para>
 
@@ -307,10 +306,10 @@ samme, så kører du
 
 <para>
 Du kan nu prøve at konfigurere enten en Linux-maskine eller en
-Windows-PC til at bruge DHCP, og så se om den får oplysningerne fra
-serveren. Hvis det er en Windows PC du bruger til at teste med, så kan
+Windows-maskine til at bruge DHCP, og så se om den får oplysningerne fra
+serveren. Hvis det er en Windows-maskine du bruger til at teste med, så kan
 man bruge "winipcfg" programmet (Win95 og Win98) eller "ipconfig /all"
-(Windows NT) til at se, hvordan maskinen er konfigureret af en
+(Windows NT) til at se, hvordan maskinen er blevet konfigureret af en
 DHCP-server.
 </para>
 
@@ -333,20 +332,20 @@ beder klienten så om, og serveren svarer tilbage at det er OK.
 </para>
 
 <para>
-De underlige adresser der står i hver linie er Ethernet adressen på
+De underlige adresser der står i hver linie er Ethernet-adressen på
 det netkort, som spørger DHCP-serveren. Dem kan man bruge til at give
-servere en fast IP adresse, selv om de får oplysningerne via DHCP.
+servere en fast IP-adresse, selv om de får oplysningerne via DHCP.
 </para>
 </sect3>
 
 <sect3 id="DHCP-en-statisk">
 <title>Konfigurer en server med DHCP</title>
 <para>
-Hvis man vil have at en bestemt maskine altid skal få den samme IP
-adresse fra DHCP-serveren, så kan man give den en statisk tildeling i
-DHCP-server konfigurationen. Her bruger man den Ethernet adresse, som
-maskinens netkort har - hvis maskinen tidligere har fået en IP adresse
-fra DHCP-serveren, så kan man se Ethernet adressen i log-filen. Man
+Hvis man vil have at en bestemt maskine altid skal få den samme 
+IP-adresse fra DHCP-serveren, så kan man give den en statisk tildeling i
+DHCP-server-konfigurationen. Her bruger man den Ethernet-adresse, som
+maskinens netkort har - hvis maskinen tidligere har fået en IP-adresse
+fra DHCP-serveren, så kan man se Ethernet-adressen i log-filen. Man
 kan også se den med <command>/sbin/ifconfig</command> kommandoen hvis
 det er en Linux-maskine:
 </para>
@@ -364,7 +363,7 @@ det er en Linux-maskine:
 
 <para>
 "HWaddr" er Ethernet adressen. Hvis nu vi vil have at denne maskine
-altid får IP adressen "192.168.0.4" selv om han får sin IP adresse fra
+altid får IP-adressen "192.168.0.4" selv om han får sin IP-adresse fra
 DHCP-serveren, så tilføjer man nogle linier til /etc/dhcpd.conf,
 indeni den "subnet" blok som vi lavede før - så kommer den til at se
 således ud:
@@ -394,29 +393,29 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
 
 <para>
 "host eric" indleder en særlig specifikation af hvordan en enkelt
-host skal konfigureres. For at DHCP-serveren kan kende host'en bruger
-vi Ethernet adressen - den tager vi fra ifconfig beskeden. For at
+vært skal konfigureres. For at DHCP-serveren kan kende værten bruger
+vi Ethernet-adressen - den tager vi fra ifconfig beskeden. For at
 tildele denne host en fast adresse bruges "fixed-address 192.168.0.4",
-og den adresse vil den pågældende host så altid få.
+og den adresse vil den pågældende vært så altid få.
 </para>
 
 <para>
-Bemærk at man godt kan tildele faste IP adresser, der ligger uden for
-det område af IP adresser, der står i "range" specifikationen.
+Bemærk at man godt kan tildele faste IP-adresser, der ligger uden for
+det område af IP-adresser, der står i "range"-specifikationen.
 </para>
 
 <para>
-Fordelen ved også at konfigurere servere med IP adresser fra en DHCP
-server er, at hvis nogle af de andre oplysninger ændrer sig -
-f.eks. DNS serveren eller default gateway - så skal man kun ændre det
+Fordelen ved også at konfigurere servere med IP-adresser fra en 
+DHCP-server er, at hvis nogle af de andre oplysninger ændrer sig -
+f.eks. navneserveren eller standard-gateway - så skal man kun ændre det
 eet sted, nemlig på DHCP-serveren. Alle andre servere og
 arbejdsstationer får oplysningerne fra den.
 </para>
 
 <para>
 Der er dog en enkelt undtagelse - DHCP-serveren kan ikke spørge sig
-selv om, hvilken IP adresse den skal have. Den er man nødt til at
-konfigurere manuelt med en statisk IP adresse, default gateway o.s.v.
+selv om, hvilken IP-adresse den skal have. Den er man nødt til at
+konfigurere manuelt med en statisk IP-adresse, standard-gateway o.s.v.
 </para>
 
 </sect3>
@@ -427,32 +426,32 @@ konfigurere manuelt med en statisk IP adresse, default gateway o.s.v.
 <indexterm><primary>DHCP</primary><secondary>DNS</secondary></indexterm>
 
 <para>
-DHCP-serveren deler IP adresser ud. IP adresser er normalt knyttet til
-hostnavne, men forbindelsen mellem et hostnavn og en IP adresse
-håndteres af DNS serveren. Hvordan hænger de to servere sammen?
+DHCP-serveren deler IP-adresser ud. IP-adresser er normalt knyttet til
+værtsnavne, men forbindelsen mellem et værtsnavn og en IP-adresse
+håndteres af navneserveren. Hvordan hænger de to servere sammen?
 </para>
 
 <para>
 Svaret er, at lige nu (april 2000) hænger de ikke særlig godt
 sammen. DHCP-serveren har endnu ikke nogen måde, hvor den kan fortælle
-DNS serveren at den lige har uddelt IP adresse 192.168.0.4 til en
-host, der gerne ville hedde "eric.intranet", og at DNS serveren
+navneserveren at den lige har uddelt IP-adresse 192.168.0.4 til en
+vært, der gerne ville hedde "eric.intranet", og at navneserveren
 skal sørge for at de to oplysninger bliver matchet.
 </para>
 
 <para>
 Det er noget der arbejdes på, men lige nu og her må man konfigurere
-sin DNS server og DHCP-server separat. Kommunikationen mellem DHCP
-serveren og DNS serveren skulle være klar med den næste version af
+sin navneserver og DHCP-server separat. Kommunikationen mellem DHCP
+serveren og navneserveren skulle være klar med den næste version af
 DHCP-server softwaren, version 3.
 </para>
 
 <para>
-Det er dog være en fordel at konfigurere en zone i DNS serveren, der
-mapper de IP adresser som DHCP-serveren uddeler til et hostnavn -
+Det er dog være en fordel at konfigurere en zone i navneserveren, der
+mapper de IP-adresser som DHCP-serveren uddeler til et hostnavn -
 f.eks. 192.168.0.101 mappet til "dhcp-101.intranet", 192.168.0.102
 mappet til "dhcp-102.intranet" o.s.v. En del services laver nemlig
-sådan et "reverse DNS" opslag når man forbinder sig til dem, og hvis
+sådan et "reverse DNS"-opslag når man forbinder sig til dem, og hvis
 ikke de kan få et eller andet hostnavn ud af det opslag, så tager det
 som regel længere tid at få forbindelse til den pågældende
 service. Det gælder f.eks. <command>telnet</command> og
@@ -476,7 +475,7 @@ være af interesse <ulink url="http://linuxfocus.org/English/May2000/article150.s
 
 <PARA>
 De fleste Linux-distributioner installerer automatisk en 
-ftp-server, hvis man har valgt en server installation.
+ftp-server, hvis man har valgt en server-installation.
 Har du valgt en skrabet installation til en gammel maskine,
 er det nemt senere at få ftp-serveren installeret efterfølgende.
 </PARA>
@@ -517,17 +516,22 @@ ind.
 Nu er maskinen åben for at alle kan hente filer fra din maskine, hvor
 brugerne logger ind som <COMMAND>anonymous</COMMAND> (eller
 <COMMAND>ftp</COMMAND>) og giver sin egen epost-adresse som
-adgangskode.  Skal du lægge filer brugerne kan downloade, lægges de i
-<FILENAME>/home/ftp/pub/</FILENAME> og kataloger under dette sted.
+adgangskode.  Skal du lægge filer, så brugerne kan hente dem ned, 
+skal de lægges i <FILENAME>/home/ftp/pub/</FILENAME> 
+eller et af dets underkataloger. Du kan evt. linke til 
+andre dele af filsystemet, hvis du f.eks. vil give 
+almindelige brugere lov til at ligger filer ud til 
+nedhentning.
 </PARA>
 
 <!--
 
 <PARA>
-Skal brugerne have lov til at uploade filer, gøres dette normalt
+Skal brugerne have lov til at lægge filer op, gøres dette normalt
 til <FILENAME>/home/ftp/incoming/</FILENAME>.
-Her er det vigtigt at sætte ftp op så man kun kan uploade filer
-og ikke downloade. Gør man ikke det, risikerer man at ens server bliver
+Her er det vigtigt at sætte ftp op så man kun kan lægge filer op
+og ikke hente fra det pågældende katalog. Gør man ikke det, 
+risikerer man at ens server bliver
 misbrugt til at rundsende pirat-programmer.
 Opsætningen af <FILENAME>/incoming/</FILENAME> gøres ved at ......
 </PARA>
@@ -538,7 +542,7 @@ Opsætningen af <FILENAME>/incoming/</FILENAME> gøres ved at ......
 
 
 <sect1 id="NFS">
-<title>NFS - Deling af filer mellem UNIX maskiner</title>
+<title>NFS - Deling af filer mellem UNIX-maskiner</title>
 <indexterm><primary>NFS</primary></indexterm>
 <para>
 I UNIX-verdenen og dermed også Linux har man i mange år kunnet dele
@@ -546,7 +550,11 @@ filer mellem forskellige maskiner i et netværk. Den mest udbredte
 protokol til dette er NFS (netværksfilsystem - eng. Networked File
 System).  Det er selvfølgelig et område, man skal være forsigtig med,
 hvis man har et alt for åbent netværk.  Her skal vi kun give et
-simpelt eksempel på, hvordan NFS virker. Hvis vi nu siger, at maskinen
+simpelt eksempel på, hvordan NFS virker.
+</para>
+
+<para>
+Hvis vi nu siger, at maskinen
 alfa skal dele <filename>/home</filename> med maskinen beta, så skal
 alfa-maskinen have installeret RPM-pakken <filename>knfsd</filename> I
 <filename>/etc/exports</filename> skriver du først, hvilken del af
@@ -588,7 +596,7 @@ RedHat 6.2 som NFS-server bør virke uden yderligere krumspring.
 </para>
 
 <para>
-Enhver der har prøvet at bruge en Linux NFS-server til lidt mere end en
+Enhver der har prøvet at bruge en NFS-server på Linux til lidt mere end en
 fil i ny og næ, ved at der har været performanceproblemer. Yderligere har
 det ikke været muligt, at benytte NFS-drev med programmer der
 bruger fillåsning.
@@ -620,7 +628,7 @@ CONFIG_NFSD_SUN=m
 </screen>
 
 <para>
-hvis linux-maskinenen skal være NFS-server for SUN's Solaris.
+hvis linux-maskinenen skal være NFS-server for SUN Solaris.
 </para>
 
 <para>
@@ -650,14 +658,14 @@ Executing: %clean
 
 
 <para>
-nfs-utils indeholder nye udgaver af nfs-programmer og daemonerne.
+nfs-utils indeholder nye udgaver af nfs-programmer og dæmonerne.
 </para>
 
 <para>
-nfs (dvs. daemonerne <filename>rpc.rquotad</filename>,
+nfs (dvs. dæmonerne <filename>rpc.rquotad</filename>,
 <filename>rpc.mountd</filename> og <filename>rpc.nfsd</filename>) og
-nfslock (dvs daemonerne <filename>rpc.lockd</filename> og
-<filename>rpc.statd</filename>) skal startes når maskinen booter:
+nfslock (dvs dæmonerne <filename>rpc.lockd</filename> og
+<filename>rpc.statd</filename>) skal startes når maskinen genstarter:
 </para>
 
 <screen>
@@ -696,7 +704,7 @@ Men de fleste programmer i NIS, starter stadig med yp.
 <para>
 NIS arbejder, ligesom DNS, med et domænenavn. Men disse to domænenavne har
 intet med hinanden at gøre. 
-I det følgende har vi to Red Hat maskiner i (DNS-)domænet
+I det følgende har vi to Red Hat-maskiner i (DNS-)domænet
 strangeparty.dk. De skal dele informationer om kodeord mv. i (NIS-)domænet
 spo.
 </para>
@@ -734,8 +742,9 @@ Starting YP server services:                               [  OK  ]
 <para>
 Det kan betale sig at gennemse, og måske tilrette, filen
 <filename>/var/yp/Makefile</filename>.  Du bør nok ændre MINUID og
-MINGID, så disse starter UID og GID ved 300, og ikke ved 500 som er
-standard i RedHat. Du kan også  udkommentere linien "GSHADOW =
+MINGID, så disse starter UID (bruger-ID) og GID (grupper-ID) ved 300, 
+og ikke ved 500 som er
+standard i Red Hat. Du kan også  udkommentere linien "GSHADOW =
 $(YPPWDDIR)/gshadow", og indsætte "MERGE_GROUP=false".
 </para>
 
@@ -793,7 +802,7 @@ Listening for an NIS domain server: supernaut.strangeparty.dk
 </screen>
 
 <para>
-Kommandoen <command>ypcat -x</command> viser de services serveren
+Kommandoen <command>ypcat -x</command> viser de tjenester serveren
 stiller til rådighed: 
 </para>
 
@@ -904,7 +913,7 @@ drwxr-xr-x   4 hanne    hjemme       1024 Mar 12 00:10 objectsystem1.0/
 </screen>
 
 <para>
-Det ser rigtigt ud. Læg mærke til at Hanne's hjemmekatalog er NFS-mounted
+Det ser rigtigt ud. Læg mærke til at Hannes hjemmekatalog er NFS-mounted
 fra serveren, og at hun derfor har samme hjemmekatalog på begge maskiner. 
 </para>
 
@@ -922,10 +931,10 @@ Hanne vil gerne skifte sit kodeord:
 <screen>
 <prompt>[hanne@omnitec ~]$</prompt> <userinput>yppasswd</userinput>
 Changing NIS account information for hanne on supernaut.strangeparty.dk.
-Please enter old password: GAMMELKODE
+Please enter old password: <userinput>GAMMELKODE</userinput>
 Changing NIS password for hanne on supernaut.strangeparty.dk.
-Please enter new password: NYKODE
-Please retype new password: NYKODE
+Please enter new password: <userinput>NYKODE</userinput>
+Please retype new password: <userinput>NYKODE</userinput>
 
 The NIS password has been changed on supernaut.strangeparty.dk.
 </screen>
@@ -942,8 +951,8 @@ Escape character is '^]'.
 
 Red Hat Linux release 6.0 (Hedwig)
 Kernel 2.2.14 on an alpha
-login: hanne
-Password: NYKODE
+login: <userinput>hanne</userinput>
+Password: <userinput>NYKODE</userinput>
 Last login: Wed Mar 29 13:02:19 from omnitec.strangeparty.dk
 </screen>
 
@@ -960,8 +969,8 @@ Escape character is '^]'.
 
 Red Hat Linux release 6.1 (Cartman)
 Kernel 2.2.12-20 on an i586
-login: hanne
-Password: NYKODE
+login: <userinput>hanne</userinput>
+Password: <userinput>NYKODE</userinput>
 Last login: Wed Mar 29 13:46:21 from supernaut.strangeparty.dk
 </screen>
 
@@ -978,7 +987,7 @@ at NIS-databaserne er konsistente efter ændringerne:
 
 <para>
 Og så skal vi lige sørge for at det starter næste gang maskinerne
-bootes: På serveren skal <command>ypserv</command>,
+genstartes: På serveren skal <command>ypserv</command>,
 <command>yppasswdd</command> og <command>ypbind</command> startes i
 runlevel 3, 4 og 5.
 </para>
@@ -1054,8 +1063,8 @@ Manualsiderne fra ypserv og  ypbind pakkerne. Find dem således:
 Selv om denne bog handler om Linux, skal man ikke glemme, at
 der findes andre styresystemer. Et af de mere udbredte er Windows -
 herunder wfw/95/98/NT/2000, som alle har indbygget muligheden for at
-fungere i netværk. Hvis man allerede har et lokalnet med både Linux og
-Windows computere, kan man med fordel kigge nærmere på SAMBA.
+fungere i netværk. Hvis man allerede har et lokalnet med både Linux- og
+Windows-computere, kan man med fordel kigge nærmere på SAMBA.
 </para>
 
 <para>
@@ -1069,27 +1078,34 @@ url="http://www.samba.org">http://www.samba.org</ulink>.
 <para> 
 Med SAMBA installeret får man stort set samme muligheder, som
 hvis man investerer i en langt dyrere og meget mere hardwarekrævende
-NT/2000 licens eller en OS/2 Lan Manager. Det, SAMBA først og fremmest kan
+løsning til Windows NT eller 2000 eller en OS/2 Lan Manager. 
+Det, SAMBA først og fremmest kan
 tilbyde, er at fungere som fil- og printerserver. Derudover kan SAMBA
 også fungere som Primary Domain Controller for Windows 95/98 klienter. Fuld
-domain control for Windows NT domæner findes i version 2.0 eller senere.
+domænestyring for Windows NT-domæner findes i version 2.0 eller senere.
+I version 2.2 kommer understøttelse for domænestyring af Windows 
+2000-klienter.
 </para>
 
 <para>
 Med SAMBA installeret (og ikke mindst konfigureret) vil
-serveren kunne ses, hvis man klikker på "network neighbourhood" (på
-dansk: "andre computere") eller på samme netværk i Windows 95/98/NT.
+serveren kunne ses, hvis man klikker på "andre computere" (på
+engelsk: "network neighbourhood") eller på samme netværk i Windows 95/98/NT.
 </para>
 
 <para>
-Den letteste måde at installere/opgradere SAMBA på er ved at
+Den letteste måde at installere eller opgradere SAMBA på er ved at
 bruge en færdig-oversat pakke. Sådanne pakker kan hentes på
 <ulink url="http://sunsite.auc.dk/samba/ftp/Binary_Packages/">http://sunsite.auc.dk/samba/ftp/Binary_Packages/</ulink>,
 og de findes til flere
 forskellige Linux-distributioner, bl.a. Red Hat, Caldera, Debian,
 Slackware og SuSE. Hvis man holder af at oversætte sin kildetekst
 selv, kan den hentes her:
-<ulink url="ftp://sunsite.auc.dk/pub/UNIX/networking/samba">ftp://sunsite.auc.dk/pub/UNIX/networking/samba</ulink>.
+<ulink url="ftp://sunsite.auc.dk/pub/UNIX/networking/samba"
+>ftp://sunsite.auc.dk/pub/UNIX/networking/samba</ulink>.
+</para>
+
+<para>
 Vi vil dog meget anbefale at bruge en færdigoversat pakke, og vi
 vil i eksemplet gå ud fra, at du har Red Hat installeret. Når du har
 hentet rpm-pakken, skriver du bare:
@@ -1100,18 +1116,22 @@ hentet rpm-pakken, skriver du bare:
 </screen>
 
 <sect2 id="SAMBA-UNIX">
-<title>Konfigurering af Sambaserveren i Linux</title>
+<title>Konfigurering af SAMBA-serveren i Linux</title>
 
 <para>
-Når du har fået installeret SAMBA serveren, skal du have den
-konfigureret. Dette kan gøres på flere måder. I sædvanlig UNIX stil kan
+Når du har fået installeret SAMBA-serveren, skal du have den
+konfigureret. Dette kan gøres på flere måder. I sædvanlig UNIX-stil kan
 man rette direkte i filen <filename>/etc/smb.conf</filename>. Denne
 fil kan virke meget skræmmende, da der er op mod 300 parametre, man
 kan sætte. Det skal du dog af to grunde ikke lade dig gå på af: For
 det første har de fleste parametre udmærkede forvalgte værdier, så dem
 behøver man slet ikke at bekymre sig om. For det andet bliver der
 installeret en udmærket standard <filename>/etc/smb.conf</filename>,
-som virker uden de store ændringer. Denne standard
+som virker uden de store ændringer.
+</para>
+
+<para>
+ Denne standard
 <filename>smb.conf</filename> er desuden meget velkommenteret, hvilket
 yderligere letter tilpasning. Her er et eksempel på en lille
 <filename>/etc/smb.conf</filename> fil, der ud over at sætte SAMBA op
@@ -1161,18 +1181,18 @@ som fil- og printerserver også konfigurerer SAMBA som domænekontroller.
 
 <para>
 For at dine windowsklienter skal få lov til at logge sig på
-sambaserveren, skal SAMBA kende til dem - ikke brugerne, men de
+SAMBA-serveren, skal SAMBA kende til dem - ikke brugerne, men de
 enkelte maskiner. For at SAMBA vil vedkende sig en maskine, skal den
 have en Machine Trust Account (MTA), og til dette formål skal man
-benytte kommandoen <command>smbpasswd</command>. Samba skelner mellem
+benytte kommandoen <command>smbpasswd</command>. SAMBA skelner mellem
 de enkelte maskiner vha. et Machine ID, som den henter fra den enkelte
 maskine, når den logger på første gang.
 </para>
 
 <para>
-Sådan tildeles vores windowsklient en MTA:
+Sådan tildeles vores Windows-klient en MTA:
 Først skal vi i filen <filename>/etc/passwd</filename> tilføje vores
-Windowsklient med det navn, som vi har givet den. Se hvordan
+Windows-klient med det navn, som vi har givet den. Se hvordan
 senere. Dette gøres på følgende måde:
 </para>
 
@@ -1191,13 +1211,13 @@ WS2$:*:802:800:Arbejdsstation 2:/dev/null:/bin/false
 
 
 <para>
-Bemærk: Der SKAL oprettes en tilsvarende MTA for hver Windowsklient,
+Bemærk: Der SKAL oprettes en tilsvarende MTA for hver Windows-klient,
 og hvis man f.eks opgraderer sit styresystem, eller ændrer
 computernavn, skal denne procedure gentages.
 </para>
 
 <para>
-Når vi har tilføjet vores Windowsklient i
+Når vi har tilføjet vores Windows-klient i
 <filename>/etc/passwd</filename>, skal vi få SAMBA til at generere
 vores MTA. Dette gøres med kommandoen
 </para>
@@ -1217,18 +1237,23 @@ WS1$:801:996FE3676928F4D8F500944B53168930:85363C212E7D5363159422805AA1BE70:[W   
 
 <para>
 Som noget nyt i version 2.x.x har man nu mulighed for at sætte SAMBA op som
-primær domænekontroller for et windows-netværk. Det vil dog føre for vidt at 
-komme ind på det her. Hvis man har mod på at prøve kan finde mere information her:
-<ulink url="http://sunsite.auc.dk/samba/docs/ntdom_faq/samba_ntdom_faq.html">http://sunsite.auc.dk/samba/docs/ntdom_faq/samba_ntdom_faq.html</ulink>,
+primær domænekontroller for et Windows-netværk med 95-, 98-, ME- og 
+NT-klienter. Det vil dog føre for vidt at komme ind på det her. 
+Hvis man har mod på at prøve kan finde mere information her:
+<ulink url="http://sunsite.auc.dk/samba/docs/ntdom_faq/samba_ntdom_faq.html"
+>http://sunsite.auc.dk/samba/docs/ntdom_faq/samba_ntdom_faq.html</ulink>,
 
-<ulink url="http://www.kneschke.de/projekte/samba_tng/index.php3">Samba TNG</ulink> og
+Samba TNG (<ulink url="http://www.kneschke.de/projekte/samba_tng/"
+>"http://www.kneschke.de/projekte/samba_tng/</ulink>) og
 
-<ulink url="http://www.linuxworld.com/linuxworld/lw-1998-10/lw-10-samba.html">Doing the NIS/NT Samba</ulink>
+Doing the NIS/NT Samba 
+(<ulink url="http://www.linuxworld.com/linuxworld/lw-1998-10/lw-10-samba.html"
+>http://www.linuxworld.com/linuxworld/lw-1998-10/lw-10-samba.html</ulink>)
 </para>
 
 <para>
 Sammen med SAMBA kommer der også et grafisk konfigurationsværktøj, der
-hedder <command>swat</command> (Samba Web Administration tool). 
+hedder <command>swat</command> (Samba Web Administration Tool). 
 Med dette værktøj er det muligt at klikke sig gennem
 opsætningen af SAMBA.
 </para>
@@ -1283,9 +1308,9 @@ første beslutning, der skal tages er, hvorvidt man ønsker at benytte
 krypterede adgangskoder eller ej. Opsætning af dette og en diskussion
 af fordele og ulemper følger i næste afsnit. Den anden beslutning
 angår, om man vil benytte TCP/IP eller Lanmanager (Netbios) til
-navneopslag. Hvis man vælger Lanmanager løsningen, er konfigureringen
-af Samba overstået på Linuxserveren, mens TCP/IP løsningen kræver, at
-der installeres DNS på Linuxserveren.
+navneopslag. Hvis man vælger Lanmanager-løsningen, er konfigureringen
+af SAMBA overstået på Linux-serveren, mens TCP/IP løsningen kræver, at
+der installeres DNS på Linux-serveren.
 </para>
 
 <para>
@@ -1299,7 +1324,7 @@ Hvordan man installerer DNS på Linux, kan du læse mere om her. Se
 <para>
 SMB bruger en krypteringsteknik, der ligner standard UNIX-kryptering. 
 Det er dog kun tilsyneladende, at de to teknikker er ens,
-UNIX variationen sender nemlig typisk kodeordet i klar tekst over
+UNIX-variationen sender nemlig typisk kodeordet i klar tekst over
 netværket, når man skal logge ind. SMB sender i modsætning hertil en
 kodet version af adgangskoden.
 </para>
@@ -1307,7 +1332,7 @@ kodet version af adgangskoden.
 <para>
 Hvorvidt man vælger at bruge krypterede adgangskoder eller ej, er op til
 den enkelte at afgøre, da der er både fordele og ulemper, som listet
-nedenfor. Bruger man nyere versioner af MS Windows og NT vil vi dog
+nedenfor. Bruger man nyere versioner af Microsoft Windows og NT vil vi dog
 anbefale at bruge kryptering, idet man slipper for at skulle
 konfigurere alle sine klienter. Som det vil fremgå lidt senere, er det uhyre
 enkelt at få SAMBA til at benytte krypterede adgangskoder.
@@ -1372,8 +1397,9 @@ linje til [global] sektionen i <filename>/etc/smb.conf</filename>
 <para>
 Hvis man gerne vil have flyttet sine UNIX-adgangskoder over til SAMBA,
 skal du lave en ny passwd-fil til brug for SAMBA alene. Der findes
-et program, der kan generere en SAMBA passwd-fil ud fra den
-eksisterende UNIX passwd-fil:
+et program, der kan generere en SAMBA-adgangskodefil 
+(<filename>/etc/smbpasswd</filename>) ud fra den
+eksisterende UNIX-adgangskodefil (<filename>/etc/passwd</filename>):
 </para>
 
 <SCREEN>
@@ -1388,11 +1414,11 @@ at kunne køres, hvilken den således skal tildeles, før kommandoen udføres.
 </para>
 
 <para>
-Kommandoen opretter filen til de krypterede adgangskoder, men den opretter ikke
-selve de krypterede adgangskoder. Uanset om du vælger, at brugerne skal have
-samme SAMBA-adgangskode, som de er tildelt som brugere i dit Linux-system, skal
-du alligevel bagefter tildele dem krypterede SAMBA-adgangskoder ved hjælp af
-kommandoen smbpasswd.
+Kommandoen opretter filen til de krypterede adgangskoder, men den opretter 
+ikke selve de krypterede adgangskoder. Uanset om du vælger, at brugerne 
+skal have samme SAMBA-adgangskode, som de er tildelt som brugere i dit 
+Linux-system, skal du alligevel bagefter tildele dem krypterede 
+SAMBA-adgangskoder ved hjælp af kommandoen <command>smbpasswd</command>.
 </para>
 
 <para>
@@ -1466,9 +1492,9 @@ En meget udførlig beskrivelse af brugen findes i filen
 <title>Konfigurering af klienterne</title>
 
 <para>
-Du har du konfigureret Samba på Linux-serveren samt besluttet dig for,
+Du har du konfigureret SAMBA på Linux-serveren samt besluttet dig for,
 om du vil benytte krypterede adgangskoder eller ej, så det eneste du
-mangler er at få windows-klienterne til at tilslutte sig domænet. I
+mangler er at få Windows-klienterne til at tilslutte sig domænet. I
 den følgende afsnit vil vi anvise en løsning på dette. Der knytter sig
 følgende forudsætninger til det efterfølgende eksempel:
 </para>
@@ -1476,9 +1502,9 @@ følgende forudsætninger til det efterfølgende eksempel:
 <para>
 Maskiner i vores netværk:
 <ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM><para>test.domain.net; Linuxserveren</para></LISTITEM>
+<LISTITEM><para>test.domain.net; Linux-serveren</para></LISTITEM>
 <LISTITEM><para>router.domain.net; Router til internet</para></LISTITEM>
-<LISTITEM><para>WS1.domain.net; Windows klient</para></LISTITEM>
+<LISTITEM><para>WS1.domain.net; Windows-klient</para></LISTITEM>
 </ITEMIZEDLIST>
 </para>
 
@@ -1535,7 +1561,7 @@ Indhold af filen <filename>/etc/smb.conf</filename>
 </para>
 
 <para>
-for at kunne få forbindelse til samba-serveren, kræves der en fungerende
+for at kunne få forbindelse til SAMBA-serveren, kræves der en fungerende
 løsning på navneopslag. Dette kan løses på 2 måder:
 </para>
 
@@ -1552,16 +1578,16 @@ senere. </para>
 
 <LISTITEM>
 <para>
-Sæt Linuxserveren til at køre named - TCP/IP way, 
-og fortæl windows at den skal bruge 
-linuxserveren som DNS. Åbn
+Sæt Linux-serveren til at køre named - TCP/IP-way, 
+og fortæl Windows at den skal bruge 
+Linux-serveren som navneserver (DNS). Åbn
 indstillinger-&gt;kontrolpanel-&gt;netværk. Åbn 
 egenskaber for TCP/IP. Under fanebladet "Gateway" tilføjes
 192.168.1.1. Under fanebladet DNS-konfiguration aktiveres DNS, i Vært skrives
 maskinens navn WS1 (det skal være det samme navn som blev angivet som
 Computernavn i fanebladet identifikation:
 Indstillinger->kontrolpanel->netværk). Domæne sættes til testdomain.
-Feltet Rækkefølge til søgning efter DNS-server tilføjes 192.168.1.1
+Feltet Rækkefølge til søgning efter navneserver tilføjes 192.168.1.1
 (hvis den står som den første, går det hurtigere).
 </para></LISTITEM>
 </ITEMIZEDLIST>
@@ -1729,7 +1755,8 @@ NT.
 
 <para>
 Ud over man-siderne og dokumentationen, der installeres i
-<filename>/usr/doc</filename>, findes der en bog om SAMBA. Den er ikke
+<filename>/usr/doc</filename>, findes der en række bøger om SAMBA. Den 
+første bog er ikke
 blændende godt redigeret hele vejen igennem, men er ualmindelig rar at
 have stående som opslagsværk, hvis du administrerer en server med SAMBA.
 Sidst i bogen er der et rigtig godt kapitel om fejlfinding.
@@ -1742,7 +1769,10 @@ Windows</emphasis>, Specialized Systems Consultants, Inc., ISBN:
 </para>
 <para>
 Der findes også en glimrende online bog fra O'Reilly, der 
-hedder <ulink url="http://sunsite.auc.dk/samba/oreilly/using_samba/">"Using Samba"</ulink> skrevet af Robert Eckstein, David Collier-Brown, Peter Kelly
+hedder "Using Samba"
+<ulink url="http://sunsite.auc.dk/samba/oreilly/using_samba/"
+>http://sunsite.auc.dk/samba/oreilly/using_samba/</ulink> 
+skrevet af Robert Eckstein, David Collier-Brown, Peter Kelly
 </para>
 
 <para>
@@ -1915,9 +1945,9 @@ en X-terminal.
 <sect2 id="linux-xserver">
 <title>Linux som X-server</title>
 <para>
-For at en Linux-maskine kan virke som grafisk login server, så skal
+For at en Linux-maskine kan virke som grafisk login-server, så skal
 der køre en X-server på maskinen. Normalt kræver dette, at man kører i
-runlevel 5, dvs. en ændrer linie i <filename>/etc/inittab</filename>
+runlevel 5, dvs. at man ændrer linie i <filename>/etc/inittab</filename>
 (eksemplet er fra Red Hat).
 </para>
 
@@ -1977,7 +2007,7 @@ Enable=1
 og root skal så genstarte i runlevel 5 ved at køre <command>init 5</command>.
 Den option <filename>-nodaemon</filename> der blev fjernet gør at
 andre maskiner kan koble sig ind på serveren. Der er således noget med
-sikkerhed, man måske skal tænke på. På et mindre lukket netværk
+sikkerhed, man bør tænke på. På et mindre lukket netværk
 spiller det ingen rolle. Nu har du en X-server, og lad os nu se på en
 Linux-klient.
 </para>
@@ -2020,25 +2050,25 @@ som en Mac-server.
 </PARA>
 
 <PARA>
-Okay, du har endelig fået installeret linuxmaskinen  og
+Okay, du har endelig fået installeret Linux-maskinen  og
 er nu parat til at netværke med den. 
 Dette er ikke så svært, hvis de andre klienter i
-netværket kører MS-Windows®, da Samba-protokollen (som
+netværket kører Microsoft-Windows®, da Samba-protokollen (som
 får før nævnt) følger med stort set alle distributioner
 af Linux. Dette er ikke så  lige til med
 Mac-protokollen, da du selv må dowloade denne.
-Til at forbinde et Mac-netværk med en linuxmaskine
+Til at forbinde et Mac-netværk med en Linux-maskine
 bruges et program/protokol der hedder Netatalk. Dette
-program får på listig vis din linuxmaskine til at se ud
-som en Macintosh filserver. Programmet understøtter to
-typer af AppleTalk protokollen; nemlig Classic
-AppleTalk og AppleShareIP (sidst-nævnte TCP/IP til
+program får på listig vis din Linux-maskine til at se ud
+som en Macintosh-filserver. Programmet understøtter to
+typer af AppleTalk-protokollen; nemlig Classic
+AppleTalk og AppleShareIP (sidstnævnte kaldes også TCP/IP til
 Mac). 
 </PARA>
 
 <PARA>
 Programmet blev oprindelig udviklet af University of
-Michigan's Research Systems Unix Group og understøttede
+Michigan's Research Systems UNIX Group og understøttede
 oprindelig kun Classic AppleTalk. Sidenhen er det
 blevet udviklet og vedligeholdt af Adrian Sun, der
 udover at debugge programmet også har implementeret
@@ -2072,7 +2102,7 @@ oversætte og installere den)
 </PARA>
 
 <PARA>
-Hvis du har downloadet en af .tar.gz filerne skal du
+Hvis du har hentet en af .tar.gz filerne skal du
 gøre sådan her: 
 </PARA>
 
@@ -2083,20 +2113,21 @@ gøre sådan her:
 </SCREEN>
 
 <PARA>
-Netatalk bor i biblioteket /usr/local/atalk/. Server
-binaries og config-filer ligger i /usr/local/atalk/etc
-og userland binaries i /usr/local/atalk/bin. Hvis du
+Netatalk bor i biblioteket /usr/local/atalk/. Server-binaries 
+og konfigurationsfiler ligger i /usr/local/atalk/etc
+og userland-binaries i /usr/local/atalk/bin. Hvis du
 ikke ikke kan finde netatalk efter du har installeret
-den, så gør følgende: find /* -name atalkd -print for
-at finde den. 
+den, så gør følgende: 
+<command>find /* -name atalkd -print</command> 
+for at finde den. 
 </PARA>
 
 <PARA>
-For at kunne bruge Classic AppleTalk protokollen, skal
+For at kunne bruge Classic AppleTalk-protokollen, skal
 understøttelsen af denne være slået til i kernen. For
 at finde ud af, om den er det, gør følgende: dmesg |
 grep -i apple  Hvis den ikke er der, skal du oversætte
-din kerne om, med denne option slået til. 
+din kerne om, med dette tilvalg slået til. 
 </PARA>
 
 <PARA>
@@ -2126,12 +2157,12 @@ min gæsteserver !"
 </SCREEN>
 
 <PARA>
-Forklaring over konfigurationsfilen:
+Forklaring af konfigurationsfilen:
 </PARA>
 
 <PARA>
 Den første linie kun med en bindestreg gør at
-linuxmaskinen laver en server med sit hostnavn.
+Linux-maskinen laver en server med sit hostnavn.
 Den anden linie laver en server ved navn MinLinuxMac på
 port 12000.
 Den tredje linie laver en server kaldet "Denne Linux
@@ -2157,13 +2188,13 @@ i &lt;path&gt; hvis du vil gøre dette.
 </PARA>
 
 <PARA>
-Lav et Classic AppleTalk share:
+Lav et Classic AppleTalk-share:
 </PARA>
 
 <PARA>
-For at lave et Classic AppleTalk share skal du editere
+For at lave et Classic AppleTalk-share skal du ændre i
 filen /usr/local/atalk/etc/AppleVolumes.system
-Eks.vis hvis du indsætter linien /data/www
+Eksempelvis hvis du indsætter linien /data/www
 "Webserver" laves der en volume kaldet Webserver, hvis
 indhold så vil kunne ses.
 </PARA>
@@ -2171,24 +2202,24 @@ indhold så vil kunne ses.
 <PARA>
 Den anden ting denne  fil styrer er "type-creator
 mappings". På Macintosh består alle filer (ulige af på
-Unix) af to dele. En "resource  fork" og en "data
+UNIX) af to dele. En "resource fork" og en "data
 fork". Resource forke'en gemmer på ting som ikoner,
 filtyper, og mapping til den applikation der i sin tid
 blev brugt til at lave filen. 
-Siden Linux filer generelt er en lang liste af
+Siden Linux-filer generelt er en lang liste af
 bogstaver, i stedet for delt i to forke/forks, skriver
 netatalk resource forkene i filer i et bibliotek kaldet
 .AppleDouble. Derfor skabes én Macintosh fil af to
-filer på Linuxmaskinen; eks.vis <FILENAME>enfil.txt</FILENAME> og
+filer på Linux-maskinen; eks.vis <FILENAME>enfil.txt</FILENAME> og
 .AppleDouble/<FILENAME>enfil.txt</FILENAME>. 
 Denne fil ville så, hvis det var en tekstfil og Word
 havde lavet den, skullet have haft følgende
 type-creator mapping i afpd.conf: .txt  TEXT
 MSWD for at fortælle afpd at .txt filer er  TEXT filer
-og at det var MS-Word der  blev brugt til at fremstille
+og at det var Microsoft Word der  blev brugt til at fremstille
 filen med. Afpd vil så fortælle dette til Macintosh
 maskiner der støder på filer der ender på .txt og som
-ikke er blevet oprettet på en Macintosh maskine. 
+ikke er blevet oprettet på en Macintosh-maskine. 
 </PARA>
 
 <PARA>
@@ -2197,10 +2228,10 @@ ATALKD daemonen:
 
 <PARA>
 Atalkd er det kernel interface der bruges til Classic
-Appletalk. Det vil agere forbindelse mellem AppleTalk
-kernemodulet og resten af Classic AppleTalk's
+Appletalk. Det vil agere forbindelse mellem 
+AppleTalk-kernemodulet og resten af Classic AppleTalk's
 funktioner i netatalk. Den vil sågar også tage sig af
-AppleTalk routing mellem flere netkort. 
+AppleTalk-routing mellem flere netkort. 
 </PARA>
 
 <PARA>
@@ -2208,7 +2239,7 @@ Atalkd er styret af konfigurationsfilen
 atalkd.conf. Den enkleste form for konfigurationsfil
 (og også den enkleste måde at konfigurere atalkd på) er
 en tom fil. Denne fil vil atalkd så selv overskrive med
-nogle ganske fornuftge opsætninger. Det er tilrådeligt
+nogle ganske fornuftige opsætninger. Det er tilrådeligt
 at specificere alle de netkort man har i atalkd.conf
 filen. Hvis man specificerer mere end et netkort vil
 atalkd selv route AppleTalk pakker mellem netkortene.
@@ -2224,17 +2255,21 @@ eth1 -net 175-200 \adr 182.318 -zone "På Landet" -seed
 </SCREEN>
 
 <PARA>
-Nå - men hvad betyder så dette ? Forklaringen er ret
+Hvad betyder så dette? Forklaringen er ret
 simpel; hver linie i filen atald.conf specificerer ét
 netkort. I dette eksempel betyder det at eth0 (første
-netkort i linuxmaskinen) bruges på et netværk med
+netkort i Linux-maskinen) bruges på et netværk med
 AppleTalk addresser mellem 153 og 174 (se eventuelt
 afsnittet om TCP/IP for nærmere forklaring om
 netværksadressering). Dette netkort (eth0) er her
 konfigureret til at bruge AppleTalk adressen 154.212 og
-eksisterer i zonen "Langt Ude". Næste linie betyder at
+eksisterer i zonen "Langt Ude".
+</para>
+
+<para>
+ Næste linie betyder at
 det sekundære (eth1; andet netkort på en
-linuxmaskine) eksisterer på et netværk mellem 175 og
+Linux-maskine) eksisterer på et netværk mellem 175 og
 200 med adressen 182.318 og pakker til zonen "På
 Landet". Derfor vil atalkd agerer router mellem på
 dette netværk og bridge mellem de to netværk
@@ -2288,13 +2323,13 @@ du:
 <COMMAND>./rc.atalk start</COMMAND> og venter et par sekunder på at
 Netatalk starter op.
 Dette vil så starte en filserver der kører Classic
-AppleTalk. Kun hvis du har specificeret nogle TCP/IP
-adresser i afpd.conf filen vil en tilsvarende Appletalk
-IP server blive startet også. Atalkd er den der tager
-længst tid at starte op, da den først checker netværket
+AppleTalk. Kun hvis du har specificeret nogle TCP/IP-adresser 
+i afpd.conf filen vil en tilsvarende Appletalk 
+IP-server blive startet også. Atalkd er den der tager
+længst tid at starte op, da den først kontrollerer netværket
 ud før den registrerer sig selv. 
-Alternativt kan du nøjes med kun at at starte en TCP
-server , hvis du på forhånd har konfigureret en i
+Alternativt kan du nøjes med kun at at starte en TCP-server, 
+hvis du på forhånd har konfigureret en i
 atalkd.conf filen. Dette gøres sådan her:
 </PARA>
 
@@ -2304,36 +2339,44 @@ atalkd.conf filen. Dette gøres sådan her:
 </SCREEN>
 
 <PARA>
-Bemærk ! Hvis du skal bruge flere end 5 connections til
+Bemærk! Hvis du skal bruge mere end 5 forbindelser til
 Netatalk-serveren  skal du angive et antal
 maximumforbindelser når du starter afpd. Dette gøres
 med -c argumentet, á là:
 <COMMAND>afpd -c 25</COMMAND>
 Dette vil så give mulighed for 25
-connections/forbindelser til Netatalk-serveren.   
+forbindelser til Netatalk-serveren.   
 </PARA>
 
 <PARA>
 Hvis denne kommando lykkedes uden at brokke sig, så gå
 hen til en Mac og åben "Chooser" (under Applemenuen i
 venstre side). Klik på AppleShare og se om din
-Netatalk-server  er hjemme. Hvis du bruger AppleShareIP
+Netatalk-server  er der. Hvis du bruger AppleShareIP
 skal du klikke på AppleShareIP knappen og manuelt
 indtaste mskinens navn eller IP-nummer. Hvis alt så er
 lykkedes vel, vil du blive bedt om at indtaste din
-adgangskode. Husk at du af sikkerhedsmæssige årsager ikke
+adgangskode.
+</para>
+
+<para>
+ Husk at du af sikkerhedsmæssige årsager ikke
 kan logge ind på filserveren, som root og kun hvis dit
 brugernavn har 8 eller færre karakterer - så fortvivl
 ikke hvis du ikke kan logge ind som root. Guest
-(gæsteadgang) access til filserveren vil være tilladt,
-hvis det ikke er blevet forbudt i afpd.conf. Hvis det
+access (gæsteadgang) til filserveren vil være tilladt,
+hvis det ikke er blevet forbudt i afpd.conf. 
+</para>
+
+<para>
+Hvis det
 lykkedes dig at logge ind vil du blive præsenteret for
 en liste af volumes du så  kan vælge - og mounte. Det
 er tilrådeligt at bruge en af de starup-scripts der
 følger med Netatalk til at starte denne med når
 maskinen booter. Alt afhængig af hvilken distribution
 du bruger skal du følge fremgangsmåden for hvordan din
-maskine gør. På en RedHat skal du nok kigge på
+maskine gør. På en Red Hat skal du nok kigge på
 /etc/rc.d/rc.local. Ellers er et andet godt bud
 /etc/init.d, for at finde ud af hvor dine
 startup-scripts befinder sig.
@@ -2373,7 +2416,7 @@ en gang for alle bare gøre sådan med .passwd filen:
 
 <PARA>
 Hvor bruger er brugerens gruppe og gruppe er brugerens
-default gruppe.
+standardgruppe.
 </PARA>
 
 
@@ -2382,17 +2425,21 @@ Udskrivning via Netatalk:
 </PARA>
 
 <PARA>
-Netatalk kan ikke bare agerer filserver for Mac's. Den
-kan også lave print spooling og endda printe til
-eksisterende AppleTalk spools. AppleTalk spooling opnås
-med et program der kaldes papd. Konceptet er at du
+Netatalk kan ikke kun agerer filserver for Mac-maskiner. Den
+kan også lave print-spooling og endda printe til
+eksisterende AppleTalk-spools. AppleTalk-spooling opnås
+med et program der kaldes papd.
+</para>
+
+<para>
+ Konceptet er at du
 allerede har en lokal (parralel eller seriel
 printer) der er sat op under Linux og som har Mac
 drivere installeret.  papd vil så annocere sig selv på
 netværket, som et print spool og acceptere jobs fra
 Mac-maskiner på netværket. Dette kan lade sig gøre, da
-printerjobs er Post Script filer, som papd så vil feede
-til Linux printsystem (lpd). Eksempler på hvordan papd
+printerjobs er PostScript-filer, som papd så vil føde
+Linux-printsystem (lpd) med. Eksempler på hvordan papd
 sættes op kan findes på:
 </PARA>
 
@@ -2403,8 +2450,8 @@ http://www.giub.unibe.ch/~eugster/appleprint.html</ULINK>
 
 <PARA>
 Det modsatte af dette - altså at printe fra en
-linuxmaskine til en Macintosh printer - kan opnås ved
-at bruge pap. Se hvordan med kommandoen man pap. 
+Linux-maskine til en Macintosh-printer - kan opnås ved
+at bruge pap. Se hvordan med kommandoen <command>man pap</command>. 
 </PARA>
 
 <PARA>
@@ -2412,14 +2459,18 @@ Andet nyttigt man skal vide:
 </PARA>
 
 <PARA>
-Just som på Linux og MS-Windows® er der værktøjer til
+Lige som på Linux og Microsoft-Windows® er der værktøjer til
 at pinge maskiner med.  Over TCP/IP findes der
 "aecho" til AppleTalk, der virker ligesom
 ping. Kommandoen "getzones" vil returnere en liste over
 de Macintosh zoner der findes på netværket. Ydermere
 vil kommandoen "nbplkup" uden options returnere en
 uddybende liste over alle de AppleTalk services der
-findes på det lokale netværk. Der findes et varia af
+findes på det lokale netværk.
+</para>
+
+<para>
+ Der findes et varia af
 mange andre programmer til at bruge med Netatalk - så
 vær ikke bange for at gå i gang med at udforske området
 - held og lykke !
