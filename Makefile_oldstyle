@@ -56,4 +56,4 @@ cvs2html:
 
 
 mail:
-	echo "Done bøger" | mail $(USER)-mobil
+	echo "Nu gik oversættelse af bøger på tyge fint igennem. Du gør det godt. Have a nice day" | mail linuxbog@sslug.dk
