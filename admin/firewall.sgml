@@ -9,7 +9,7 @@
 <para>
  En dørvogter er et stykke hardware eller programmel hvor sikkerheden
  håndhæves og som adskiller et eller flere sikre netværk fra et ikke-sikret
- netværk som f.eks. Internettet. Dørvogteren kontrollerer alle forbindelser
+ netværk som for eksempel internettet. Dørvogteren kontrollerer alle forbindelser
  mellem to netværk, og bestemmer hvilken trafik, der må komme hvorhen, og
  hvilken trafik der ikke må komme igennem. Det er så op til netværkets
  administrator at lave sikkerhedsreglerne, der bestemmer hvad der må komme
@@ -85,7 +85,7 @@ interne computer.
   En program gateway betragtes som den mest sikre dørvogter man kan lave. En
   ulempe ved denne type dørvogter er at den kræver en slags stedfortræder for
   hvert enkelt program (tjeneste) man har kørende på ens interne net for at
-  der kan komme trafik til værten. Et eksempel: Hvis du udefra på Internettet
+  der kan komme trafik til værten. Et eksempel: Hvis du udefra på internettet
   ønsker at komme i kontakt med en webserver kræver dette at der er en
   HTTP-stedfortræder på dørvogteren, for at det vil virke. En fordel ved denne
   type dørvogter er at hvis der eksempelvis er en person som sætter sin FTP
@@ -112,7 +112,7 @@ ikke vil have at man skal kunne se udefra. Desuden skal der også
 ændres på sikkerheden på selve netværket, så at det bliver endnu
 vanskeligere at stjæle eller ødelægge data hvis man er nået ind i
 systemet. Men uden en dørvogter, er et system som har fast forbindelse
-til Internettet fuld af huller som enhver hacker med rimelig forstand
+til internettet fuld af huller som enhver hacker med rimelig forstand
 på diverse smuthuller og systemer, kan komme ind i og gøre hvad de
 vil.
 </para>
@@ -144,7 +144,7 @@ dørvogteren må have lov til at gøre på internettet.
 </para>
 
 <para>
-For at lave en dørvogter mod Internettet kræver det at du har, mindst
+For at lave en dørvogter mod internettet kræver det at du har, mindst
 en statisk (fast) IP adresse, at du benytter en LAN router eller at du
 ringer op via et modem og derved får en dynamisk IP adresse fra din
 udbyder.
@@ -152,7 +152,7 @@ udbyder.
 
 <para>
 Hvis du har en fast IP adresse eller LAN router kan du sætte to
-netkort i din linux maskine. Det ene skal være synligt fra Internettet
+netkort i din linux maskine. Det ene skal være synligt fra internettet
 af (din router) og det andet skal kunne ses fra dit lokale net.
 </para>
 
@@ -699,7 +699,7 @@ Følgende eksempel kan hentes fra
 #!/bin/sh
 export PATH=/sbin:/usr/bin:/bin
 clear
-# Ens eksterne netkort ud mod Internettet.
+# Ens eksterne netkort ud mod internettet.
 # Eksempel EXTIF="ppp0", ippp0 eller "eth0"
 EXTIF="ppp0"
 
@@ -708,7 +708,7 @@ EXTIF="ppp0"
 INTIF="eth0"
 
 # Hvis man via sit netkort eller ppp adapter får en dynamisk IP addresse fra
-# sin Internet udbyder skal DHCP stå til yes.
+# sin internetudbyder skal DHCP stå til yes.
 DHCP="yes"
 
 # Hvis denne sættes til yes vil ALT udp trafik ind til portene 55000 til 65535
@@ -821,7 +821,7 @@ if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_irc.o ]; then
   fi
 fi
 
-# Bruges til Quake over Internettet
+# Bruges til Quake over internettet
 if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_quake.o ]; then
    QUAKE="yes"
   if ! [ "`cat /proc/modules | awk '/ip_masq_quake/ { print $1 }'`" = ip_masq_quake ]; then 
@@ -837,7 +837,7 @@ if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_raudio.o ]; then
   fi
 fi
 
-# Bruges til live video over Internettet
+# Bruges til live video over internettet
 #if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_vdolive.o ]; then
 #   VDOLIVE="yes"
 #  if ! [ "`cat /proc/modules | awk '/ip_masq_vdolive/ { print $1 }'`" = ip_masq_vdolive ]; then 
@@ -927,26 +927,26 @@ if ! [ "$DNS3" = "" ]; then
    fi
 fi    
 
-# Acceptere aktivt FTP-data fra Internet til dørvogter hvis FTP modul er loadet
+# Acceptere aktivt FTP-data fra internettet til dørvogter hvis FTP-modul er indlæst
 if [ "`cat /proc/modules | awk '/ip_masq_ftp/ { print $1 }'`" = ip_masq_ftp ]; then
     ipchains -A input -i $EXTIF -p tcp -s $ANYIP 20 -d $EXTIP 55000:65535 -y -j ACCEPT
 fi
 
-# Acceptere ICQ trafik fra Internet til dørvogter hvis ICQ modul er loadet
+# Acceptere ICQ trafik fra internettet til dørvogter hvis ICQ-modul er indlæst
 if [ "`cat /proc/modules | awk '/ip_masq_icq/ { print $1 }'`" = ip_masq_icq ]; then
    if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
     ipchains -A input -i $EXTIF -p udp -s $ANYIP 4000 -d $EXTIP 55000:65535 -j ACCEPT
    fi
 fi
 
-# Acceptere Real Audio trafik fra Internet til dørvogter hvis RAUDIO modul er loadet
+# Acceptere Real Audio-trafik fra internettet til dørvogter hvis RAUDIO-modul er indlæst
 if [ "`cat /proc/modules | awk '/ip_masq_raudio/ { print $1 }'`" = ip_masq_raudio ]; then
    if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
     ipchains -A input -i $EXTIF -p udp -s $ANYIP 6970:7170 -d $EXTIP 55000:65535 -j ACCEPT
    fi
 fi
 
-# Acceptere CUSEEME trafik fra Internet til dørvogter hvis CUSEEME modul er loadet
+# Acceptere CUSEEME-trafik fra internettet til dørvogter hvis CUSEEME-modul er indlæst
 if [ "`cat /proc/modules | awk '/ip_masq_cuseeme/ { print $1 }'`" = ip_masq_cuseeme ]; then
    if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
     ipchains -A input -i $EXTIF -p udp -s $ANYIP 7648:7649 -d $EXTIP 55000:65535 -j ACCEPT
@@ -954,7 +954,7 @@ if [ "`cat /proc/modules | awk '/ip_masq_cuseeme/ { print $1 }'`" = ip_masq_cuse
    fi
 fi
 
-# Acceptere QUAKE trafik fra Internet til dørvogter hvis QUAKE modul er loadet
+# Acceptere QUAKE-trafik fra internettet til dørvogter hvis QUAKE-modul er indlæst
 if [ "`cat /proc/modules | awk '/ip_masq_quake/ { print $1 }'`" = ip_masq_quake ]; then
    if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
     ipchains -A input -i $EXTIF -p udp -s $ANYIP 26000 -d $EXTIP 55000:65535 -j ACCEPT
@@ -999,8 +999,8 @@ if [ -f /etc/firewall.debug ]; then
  if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
   echo "Du får dynamisk IP tildelt fra din ISP til dit interface $EXTIF"
  fi
-  echo "Dit interface ud mod Internet er: $EXTIF"
-  echo "IP adressen på dit interface $EXTIF ud mod Internet er: $EXTIP"
+  echo "Dit interface ud mod internettet er: $EXTIF"
+  echo "IP adressen på dit interface $EXTIF ud mod internettet er: $EXTIP"
   echo "Dit interface ud mod dit LAN er: $INTIF"
   echo "IP adressen og netmasken på dit LAN interface er: $INTLAN"
  if ! [ "$DNS1" = "" ]; then
@@ -1066,7 +1066,7 @@ fi
 
 <para>
 Den eneste variabel man som regel skal ændre er EXTIF som er ens
-interface ud mod Internettet. Denne variabel vil hvis man har analogt
+interface ud mod internettet. Denne variabel vil hvis man har analogt
 modem normalt være ppp0, hvis man har ISDN modem ippp0 og hvis man har
 LAN router være eth0 eller eth1. 
 INTIF er det interface som er ud mod ens lokale netværk og vil som
@@ -1151,7 +1151,7 @@ on</command> (med dobbelt minus). Dette betyder, at dørvogteropsætningen
 bliver kørt hver gang Linux startes i runlevel 3.  Dette skal dog kun
 gøres hvis man har en LAN router eller har en statisk IP adresse. Da
 man på dette tidspunkt i opstarten af linux ikke har lavet et opkald
-til sin Internet udbyder, kan programmet ikke finde IP adressen på ens
+til sin internetudbyder, kan programmet ikke finde IP adressen på ens
 interface.  Hvis man benytter et modem skal man i stedet, hvis man
 kører med Red Hat, indsættes <command>/etc/rc.d/init.t/firewall
 start</command> nederst i filen
