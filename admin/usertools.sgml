@@ -2378,6 +2378,319 @@ ln -s quotas-1.eps quotas-1.ps
 
 </sect1>
 
+<<<<<<< usertools.sgml
+
+
+
+
+
+<!-- Skrevet af Niels Elgaard Larsen elgaard(paa)diku.dk -->
+<sect1 id="stille-maskine">
+<title>Hvordan man får sin linuxmaskine til at holde op med at bruge harddisken</title>
+
+<para>Jeg har en gammel bærbar i mit soveværelse. Den bliver brugt som
+printserver og gateway til et trådløst (802.11) netværk. Den skal være stille;
+især når jeg sover.
+</para>
+
+
+<para>Jeg har også en computer på arbejdet. Den er bl.a. ftp og
+webserver.  Mine kollegaer bryder sig ikke om at den larmer, når jeg
+ikke er det.  
+</para>
+
+
+<para>
+Det er acceptabelt og stort set uundgåeligt at en maskine larmer når man
+bruger selv den, fx skriver ud til printeren, retter i dokumenter osv, men så er man jo også vågen.
+</para>
+
+<para>
+Målet er at få den til at være stille når den ikke laver noget, eller laver
+simple timg (rutning,ftp af små filer osv)
+</para>
+
+<para>
+Det man kan gøre noget ved, er larmen fra harddisken.
+</para>
+
+<para>
+Først skal man have sat spin-down tiden på harddisken (eller harddiskene hvis
+der er mere end en). På nogle maskiner kan man gøre det i BIOS'en.
+</para>
+
+<para>
+Fra Linux kan man gøre det med hdparm-programmet. Følgende kommando sætter den
+første IDE til at lukke ned efter et minut:
+</para>
+
+
+<screen>
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>hdparm -S 12 /dev/hdc</userinput>
+</screen>
+
+<para>
+For at køre kommandoen hver gang computeren startes, kan man komme den i en
+opstartsfil, se <xref linkend="runlevel">.
+</para>
+
+
+<sect2 id="stille-programmer">
+<title>Problematiske Programmer</title>
+<para>
+Her er nogle af de programmer, der kan finde på at starte disken uden at det er nødvendigt.
+</para>
+
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  <emphasis>syslog</emphasis>
+  Skriver som default "-- MARK --" i log filerne hvert 20. minut.
+  </para>
+  <para>
+  <emphasis>Løsning</emphasis>
+  Start syslogd med "-m 0" optionen. Rettes i <filename>/etc/init.d/syslog</filename>
+ </para>
+</listitem>
+
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>modprobe</emphasis>
+modprobe kan finde på at lede i <filename>/lib/modules/kernerver/</filename> efter et
+ikke-eksisterende modul hvert minut.
+</para>
+
+<para>
+<emphasis>Løsning 1</emphasis>
+Se i  <filename>/var/log/ksymoops/20020702.log</filename> (brug den rigtige dato).
+F.eks. fandt jeg: <command>20020702 161032 start /sbin/modprobe -s -k -- char-major-6 safemode=1</command>
+</para>
+
+<para>
+Det var fordi jeg kørte "lpd" dæmonen uden en driver for parallelporten.
+</para>
+
+<para>
+<emphasis>Løsning 2</emphasis>
+Oversæt en kerne med alt hvad du skal bruge og lad være med at køre modprobe (modutils)
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  <title>ntp</title>
+<command>ntp</command> skriver som default i <command>/var/lib/ntp/ntp.drift</command> og 
+<command>/var/log/ntpstats/loopstats</command>
+med få minutters mellemrum.
+</para>
+
+<para>
+<emphasis>Løsning 1</emphasis>
+Man kan minimere problemet ved at sætte tiden mellem opdateringer af uret til
+det maksimale.
+</para>
+
+<para>
+I <filename>/etc/ntp.conf</filename> sæt for hver server:
+<command>server clock.server.com minpoll 16 maxpoll 17</command>
+</para>
+
+<para>
+<emphasis>Løsning 2</emphasis>
+Det er som regel ikke nødvendigt at bruge ntp.
+Brug "ntpdate" i stedet.
+</para>
+</listitem>
+
+<listitem> 
+ <para>
+  <emphasis>CUPS</emphasis>
+CUPS skriver et SSL certificate i <filename>/etc/cups/ssl/server.crt</filename> hver 5. minut.
+Den læser <filename>/etc/groups</filename> hver gang så det er ikke nok at lave <filename>/etc/cups/certs</filename> til et link på en RAM disk.
+</para>
+
+<para>
+<emphasis>Løsning 1</emphasis>
+Hent kileteksten. I <filename>scheduler/main.c</filename> ret de 300 i 
+<command>if ((time(NULL) - RootCertTime) >= 300)</command> til 
+noget meget større eller fjern helt if-sætningen.
+</para>
+
+<para>
+<emphasis>Løsning 2</emphasis>
+Fra og med CUPS version 1.1.16 kan man undgå skrivningen af 
+certificater at at indsætte kommandoen: "RootCertDuration 0" 
+i filen <filename>/etc/cups/cupsd.conf</filename>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>cron</emphasis>
+Cron kører en masse jobs som ikke er nødvendige.
+</para>
+
+<para>
+<emphasis>Løsning</emphasis>
+Fjern alt hvad du ikke behøver fra 
+<emphasis>/etc/cron.d</emphasis>, <filename>/etc/crontab</filename> og 
+<filename>/etc/cron.daily</filename>. Se også om mail senere.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<para>
+<emphasis>ftpd</emphasis>
+Ftp servere tilgår typisk /etc/{passwd,hosts,group}, hjemmekataloger osv.
+</para>  
+
+
+<para>
+  <emphasis>Løsning muddleftp og tmpfs</emphasis>
+Lav en tmpfs partition, og brug muddleftpd. 
+Sæt muddleftp op med <filename>/etc/muddleftpd.com</filename> på flg. måde:
+</para>
+
+<para>Sæt "logfile" og "scratch file" til filer i roden tmpfs partitionen.
+Sæt "rdnstimeout 0" i sektionen "main" for at slå "reverse DNS lookup" fra.
+Sæt "uid" og "gid" i sektionen "localusers" for at undgå brug af
+<filename>/etc/passwd</filename> og <filename>/etc/group</filename>.
+Sæt "authmethod internal" og "internal_passfile /fileontmpfs/" sektionen "localuser".
+Brug mudpasswd til at lave password filen. 
+Sæt root directory til noget på tmpfs partitionen.
+Password filen skal kopieres til tmpfs filsystemet hver gang muddleftp startes. 
+Det gøres i <filename>/etc/init.d/muddelftpd</filename> (Debian): 
+</para>
+
+<screen>
+case "$1" in
+    start)
+    cp -a /home/bruger/mpw /tfs/
+...
+</screen>
+
+<para>
+<ulink url="http://www.agol.dk/quietlinux/muddleftpd.conf">En muddleftpd.conf for een bruger (luser)</ulink>.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<emphasis>browsers</emphasis>
+Netscape 4.7 skriver dens cache index, selv når den ikke bliver brugt.
+Opera læser fra disken ca hvert 5. minut for at udskifte reklamen i den gratis version.
+</para>
+
+<para>
+<emphasis>Løsning</emphasis>
+Luk din browser, når du ikke bruger den.
+</para>
+
+<para>
+Eller brug browsere, der ikke skriver på disken, når de ikke bruges.
+Som erstatning for opera på små computere kan "dillo" anbefales.
+</para>
+</listitem>
+
+<listitem> 
+ <para>
+  <emphasis>mail</emphasis>
+MTA'er (sendmail, exim, postfix, etc) køres ofte ca hvert 15. minut fra /etc/cron.d/MTA,
+ hvor "MTA" er navnet på din MTA
+</para>
+
+<para>
+Check <filename>/etc/init.d/MTA</filename> for at se om en MTA, der
+checker spool-filerne, startes med et fast interval.  Det gøres som
+regel med en "-q time" (fx "-q 1h22m") option.
+</para>
+
+<para>
+  <emphasis>Løsning</emphasis>
+Det er sjældent nødvendigt at checke spool-filerne med faste intervaller. Brugere kan sende
+og modtage post uden dette.
+</para>
+<para>
+Fjern "/etc/cron.d/MTA" filen og "-q" optionen i <filename>/etc/init.d/MTA</filename>.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  <emphasis>updatedb</emphasis>
+kører find, mm. hver dag for at resultaterne af "locate" kommandor er up-to-date.
+</para>
+
+<para>
+  <emphasis>Løsning 1</emphasis>
+Afinstaller updatedb
+</para>
+
+<para>
+  <emphasis>Løsning 2</emphasis>
+Fjern <filename>/etc/cron.daily/find</filename>
+</para>
+
+<para>
+Hvis man har brug for "locate" kommandoen kan man altid manuelt køre "updated" som root.
+ </para>
+</listitem>
+
+<sect3 id="stille-andre-vink">
+<title>Andre vink</title>
+<para>
+<emphasis>Monter filsyster med "noatime" optionen</emphasis>
+Hvis man monterer et filsystem med "noatime" så bliver inode access tiden ikke opdateret.
+Det betyder at hvis en fil eller et katalog, der er cached, blive læst, så starter disken
+ikke fordi filen eller katalogets access tid skal skrives tilbage.
+</para>
+
+<para>
+Skriv flg i din <code>/etc/fstab</command> fil:
+</para>
+
+<screen>
+/dev/hda3	/home ext2 defaults,noatime	0	0
+</screen>
+</sect3>
+
+<sect3 id="stille-uskyld">
+<title>Hvordan man finder de skyldige programmer</title>
+<para>
+Nogen gange starter disken bare uden at man ved hvorfor. Det kan være ret frustrerende.
+</para>
+
+<para>
+Som en del af <ulink url="http://www.diku.dk/teaching/2002f/336/">DIKU Linux
+kerne kurset</ulink> blev en patch til 2.4.18 kernen udviklet.
+</para>
+
+<para>
+Denne patch får kernen til at logge alle filoperationer. Det logger PID, tid, programnavn, 
+filbavb osv.
+</para>
+
+<para>
+Få patchen <ulink url="http://www.agol.dk/quietlinux/noisylog.patch">her</ulink>.
+</para>
+
+<para>
+<para>
+Dette <ulink url="http://www.agol.dk/do_noisy_logging.c">brugerprogram</ulink> slår logging til og fra.
+Oversæt det med <command>cc -o do_noisy_logging -I /usr/src/linux/include do_noisy_logging.c</command>
+
+<para>
+Kør som "./do_noisy_logging 0" eller "./do_noisy_logging 1"
+ </para>
+</sect3>
+</sect2>
+</sect1>
+
+
+=======
 
 
 
@@ -2698,6 +3011,7 @@ Kør som "./do_noisy_logging 0" eller "./do_noisy_logging 1"
 </sect1>
 
 
+>>>>>>> 1.76
 <sect1 id="kickstart">
 <title>Kickstart</title>
 <indexterm><primary>Kickstart</primary></indexterm>
