@@ -29,6 +29,7 @@ clean: Makefiler
 	make -C program clean
 	make -C web clean 
 	make -C sikkerhed clean 
+	make -C alle clean 
 	rm -f friheden/Makefile
 	rm -f applikationer/Makefile
 	rm -f admin/Makefile
