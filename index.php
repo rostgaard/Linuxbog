@@ -79,6 +79,7 @@ function form_filename( $bookname, $format ) {
       comment => "Vælg programmer til Linux",
       auth => array(
         "Peter Toft" => "pto@sslug.dk",
+        "Jacob Sparre Andersen" => "sparre@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
@@ -275,7 +276,7 @@ Vil du modtage E-post om nye versioner af bogen?
 </p>
 
 <p>
-Bøgerne redigeres af Peter Toft og Hans Schou
+Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen og Hans Schou
 &lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
 <br>
 Indholdet af bøgerne diskuteres på
