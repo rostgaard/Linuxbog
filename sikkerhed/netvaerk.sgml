@@ -14,12 +14,12 @@
   En af de store styrker ved et Linux-system (eller et andet Unix-system)
   er, at man kan administrere den fra en anden maskine via netværk. For at være
 kompatibel med alle andre UNIX varianter følger de gode gamle værktøjer 
-telnet og ftp med i Linux-distributionerne, og de er meget anvendte 
+<command>telnet</command> og ftp med i Linux-distributionerne, og de er meget anvendte 
 til fjernadministration. Vi vil i dette kapitel se på, hvorfor 
-værktøjer som telnet og ftp ikke bør anvendes, hvis maskinen er koblet til 
+værktøjer som <command>telnet</command> og ftp ikke bør anvendes, hvis maskinen er koblet til 
 internettet eller et andet usikkert netværk. Vi skal se på, hvordan 
 netværkstrafik kan aflyttes. Derefter skal vi se nærmere på alternativer 
-til telnet og ftp, hvor datastrømmen bliver krypteret. Specielt 
+til <command>telnet</command> og ftp, hvor datastrømmen bliver krypteret. Specielt 
 fokuserer vi på OpenSsh (den frie version af secure shell) og 
 viser installation og anvendelse.
 Meget af det, der beskrives i artiklen, gælder ikke blot for Linux, men
@@ -47,8 +47,8 @@ kunne det være tre maskiner på internettet, hvor netværkstrafik mellem
 </para>
 
 <para>
-Resten af kapitlet vil handle om programmer til remote login, som telnet, 
-rlogin og ssh, samt programmer til filoverførsel (ftp og scp). Men hvad
+Resten af kapitlet vil handle om programmer til remote login, som <command>telnet</command>, 
+<command>rlogin</command> og ssh, samt programmer til filoverførsel (ftp og scp). Men hvad
 bruges det til? Med remote login kan man udføre tekstkommandoer på den
 maskine, man er logget ind på, men man kan også køre X-programmer over
 nettet.
@@ -61,25 +61,25 @@ nettet.
 
 <para>
 Hvis du på hven kører en X-baseret grafisk brugergrænseflade, og
-du vil køre X-programmer (grafiske programmer) fra maskinen bohr,
-skal du starte med at fortælle hven, at det er i orden, at
-bohr benytter dens display.  Dette gøres ved at føje bohr til
-listen over godkendte hosts med kommandoen xhost:
-</para>
+du vil køre X-programmer (grafiske programmer) fra maskinen "bohr",
+skal du starte med at fortælle maskinen "hven", at det er i orden, at
+maskinen "bohr" benytter dens display.  Dette gøres ved at føje "bohr" til
+listen med godkendte X-klienter med kommandoen <command>xhost</command>:
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt><userinput>xhost + bohr</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>xhost +bohr</userinput>
 bohr being added to access control list 
 </screen>
+</para>
 
-<para>Dermed vil grafiske programmer fra bohr vil blive accepteret af
-hven. Udelades maskinnavnet, betyder det, at alle maskiner kan vise
+<para>Dermed vil grafiske programmer fra "bohr" blive accepteret af
+"hven". Udelades maskinnavnet, betyder det, at alle maskiner kan vise
 grafik på din skærm. Lad være med det, da det sikkerhedsmæssigt er
-en dårlig ide. 
+en ekstremt dårlig ide. 
 </para>
 
 <para>
-Lad os nu logge ind på bohr med telnet,
+Lad os nu logge ind på "bohr" med <command>telnet</command>,
 </para>
 
 <screen>
@@ -130,9 +130,8 @@ alt grafik vises på hven, og programmet styres fra hven.
 
 <para>
 Problemet er ikke at du nu kan kalde grafik op på en anden skærm end
-din egen. Problemet er, at den adgang du har etableret med xhost så at
-sige går begge veje. I og med du har lavet <command>xhost +
-bohr</command> har alle brugere på bohr adgang til at læse og
+din egen. Problemet er, at den adgang du har etableret med <command>xhost</command> så at
+sige går begge veje. I og med du har lavet <command>xhost +bohr</command> har alle brugere på bohr adgang til at læse og
 skrive fra og til dit dislay på "hven". Er bohr et
 multibrugersystem, og har en cracker, eller blot en nysgerrig kollega
 konto på maskinen, kan vedkommende køre kommandoen <command>xwd -display
@@ -161,7 +160,7 @@ internettet.
 <para>
 Og værre: Programmet <command>xscan</command> skal efter sigende kunne
 lave et tilsvarende trick, men med tastetryk. Direkte til en logfil,
-alt hvad der tastes på maskinen, der har xhost: brugernavne,
+alt hvad der tastes på maskinen, der har <command>xhost</command>: brugernavne,
 adgangskoder, pgp-koder.
 </para>
 
@@ -237,7 +236,7 @@ adgangskoder ned i en fil over en periode, indtil der er gevinst.
 
 
 <para>
-Vi har vist, at man ikke skal bruge telnet til at kommunikere mellem
+Vi har vist, at man ikke skal bruge <command>telnet</command> til at kommunikere mellem
 to maskiner, hvis der er risiko for, at nogen lytter med, og slet ikke
 hvis man skal logge ind som root på maskinen. Det er simpelthen for
 nemt at lede efter loginnavn root og derefter få adgangskoden. Derfor
@@ -290,7 +289,7 @@ Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1299-192.168.0.2.21
 På den første af de tre data-linjer kan man se login navn (tyge), og som 
 vist på den sidste data-linje, vil man direkte kunne læse adgangskoden (qwe123). 
 Ser man lidt nøjere efter, vises også ftp-porten, port 21. Port 
-1299 er ligesom ved telnet en ledig port, der vælges til denne session.
+1299 er ligesom ved <command>telnet</command> en ledig port, der vælges til denne session.
 </para>
 
 <para>
@@ -300,7 +299,7 @@ For en systemadministrator er paranoia ikke en sygdom, men en kvalifikation...
 </para>
 
 <para>
-Det skal nævnes, at også resten af den nettrafik, du laver med telnet og
+Det skal nævnes, at også resten af den nettrafik, du laver med <command>telnet</command> og
 ftp, kan læses i klar tekst via f.eks. sniffit. Starter du andre
 programmer, kan man se det. Laver du "su - root" og skriver "root"s adgangskode, 
 er sikkerheden på den maskine væk, for "root"s adgangskode er ude, hvis du
@@ -317,7 +316,7 @@ bliver aflyttet.
 <indexterm><primary>rsh</primary></indexterm>
 
 <para>
-To andre velkendte programmer i samme kategori er "rlogin" og "rsh".
+To andre velkendte programmer i samme kategori er "<command>rlogin</command>" og "rsh".
 Programmerne virker næsten ens. Begge 
 giver interaktivt login på maskinen, men rsh kan udføre en kommando 
 samtidig med, at man logger ind. F.eks. vil den følgende kommando logge 
@@ -330,7 +329,7 @@ hvor fyldte dine diske er).
 </screen>
 
 <para>
-Nu prøver vi at køre sniffit på en rlogin session for at se, hvad man kan se.
+Nu prøver vi at køre sniffit på en <command>rlogin</command> session for at se, hvad man kan se.
 På maskinen "nottingham" kører vi sniffit:
 </para>
 
@@ -436,7 +435,7 @@ Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
 
 <para>
 Igen ser man tydeligt brugernavn og adgangskode blive sendt ukrypteret
-over nettet (se sidste tegn på hver linje).  Man kan se, at rlogin på
+over nettet (se sidste tegn på hver linje).  Man kan se, at <command>rlogin</command> på
 bohr bruger port 513, og at der på hven sendes fra port 1023.
 </para>
 
@@ -459,7 +458,7 @@ artiklen vende tilbage til et fuldt krypteret alternativ til
 </para>
 
 <para>
-Med rlogin, rsh og rcp kan man vælge, at login kan ske uden
+Med <command>rlogin</command>, rsh og rcp kan man vælge, at login kan ske uden
 adgangskode. Dette gøres ved at sætte sit hostnavn og evt. brugernavn ind
 i filen <filename>~/.rhosts</filename> i sit hjemmekatalog på den
 maskine, der skal logges ind på. Hvis du gerne vil kunne logge ind fra
@@ -530,7 +529,7 @@ ind</emphasis>, er begge dele nok lige dårligt.
 </para>
 
 <para>
-Vi vil anbefale, at man i stedet for rlogin bruger et program, der 
+Vi vil anbefale, at man i stedet for <command>rlogin</command> bruger et program, der 
 krypterer login såvel som selve dataoverførslen, som f.eks. SSH giver
 mulighed for.
 </para>
@@ -576,7 +575,7 @@ equivalence" via filen "/etc/hosts.equiv". Dine brugere har
 ikke adgang til denne fil, og kun root kan rette i den. Root kan
 vælge at sætte en række hostnavne ind i denne fil eller evt. bare et
 plus. Det betyder, at disse hosts (+ betyder alle maskiner)
-har adgang til at udføre rlogin og rsh kommandoer uden adgangskode. Dette
+har adgang til at udføre <command>rlogin</command> og rsh kommandoer uden adgangskode. Dette
 gælder alle brugere (dog ikke root) - brugeren skal dog findes på
 begge maskiner. Filen "/etc/hosts.equiv" kan være en bekvem løsning,
 men den er en bombe under systemsikkerheden - find en anden løsning,
@@ -609,8 +608,8 @@ Fortsættelsen kan findes på <ulink url="http://www.userfriendly.org/cartoons/arc
 
 <para>
 Hvis der er risiko for, at andre lytter med på netværkstrafikken,
-er der behov for erstatningsprogrammer for telnet,
-ftp og rlogin. Samtidig ønsker vi stadig at kunne afvikle programmer fra en
+er der behov for erstatningsprogrammer for <command>telnet</command>,
+ftp og <command>rlogin</command>. Samtidig ønsker vi stadig at kunne afvikle programmer fra en
 maskine og se resultater på en anden, naturligvis også de grafiske
 programmer. Med andre ord ønsker vi samme funktionalitet - men med sikkerheden
 i orden.
@@ -619,7 +618,7 @@ i orden.
 <para>
 Der findes flere sikre alternativer til de gamle, ukrypterede protokoller.
 Vi vil mest beskæftige os med SSH, men der findes også andre muligheder.
-Et alternativ til telnet er stelnet, som står for secure telnet. Programmet 
+Et alternativ til <command>telnet</command> er stelnet, som står for secure telnet. Programmet 
 baserer sig på SSL (Secure Sockets Layer), som er en måde at lave 
 krypterering af datatrafikken. Kombinationen af stelnet og SSL er ikke så 
 udbredt som SSH, og det er ikke så nemt at sætte op som SSH. 
@@ -633,14 +632,14 @@ Denne sidste URL har også en hel del dokumentation.
 </para>
 
 <para>
-Forhistorien er, at den gamle U.S. version af telnet
+Forhistorien er, at den gamle U.S. version af <command>telnet</command>
 allerede supporterede TELOPT_AUTHENTICATION og TELOPT_ENCRYPTION,
 men alle spor af krypteringskoden er fjernet fra den
-internationalt udbredte og anvendte telnet-kode.
+internationalt udbredte og anvendte <command>telnet</command>-kode.
 </para>
 
 <para>
-Et andet alternativ til telnet og ftp, som er på vej, er SRP. Se mere
+Et andet alternativ til <command>telnet</command> og ftp, som er på vej, er SRP. Se mere
 om SRP på 
 <ulink url="http://srp.stanford.edu/">
 http://srp.stanford.edu/</ulink>.
@@ -648,7 +647,7 @@ http://srp.stanford.edu/</ulink>.
 
 <para>
 Det, der umiddelbart i dag er det bedste valg som erstatning for
-telnet og rlogin, er SSH (Secure SHell). Programmet er oprindeligt
+<command>telnet</command> og <command>rlogin</command>, er SSH (Secure SHell). Programmet er oprindeligt
 lavet af et finsk firma med navn SSH Communications Security med
 hjemmesiden <ulink url="http://www.ssh.fi">http://www.ssh.fi</ulink>.
 SSH har bl.a. den store fordel fremfor stelnet, at grafiske vinduer
@@ -1249,7 +1248,7 @@ programmet <command>xauth</command> installeret.
 Anvender du ssh, kan andre med sniffit se, at der laves kommunikation
 på port 22, men prøver de at følge netværkstrafikken, kommer der
 ikke login navne, adgangskoder, eller efterfølgende kommandoer i klar
-tekst - alt er krypteret. Den lille boks i sniffit, som for telnet
+tekst - alt er krypteret. Den lille boks i sniffit, som for <command>telnet</command>
 viste login sekvensen med adgangskoder osv., vil med ssh være fyldt med en
 bunke tilfældige tegn uden sammenhæng - kun ssh selv kan i praksis
 afkode kommunikationen. 
