@@ -410,10 +410,10 @@ if ($matrix) { ?>
 <font size="-1">
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
-[<a href="?all=t">Alle filtyper</a>]
-[<a href="search">Søg i sgml-filer</a>]
-[<a href="">Søg i sgml-filer</a>]
+[<a href="?all=t">Alle filtyper</a>]<br>
+[<a href="http://cvs.sslug.dk/search">Søg i sgml-filer</a>]
 [<a href="hjaelpe.html">Om at hjælpe</a>]
+[<a href="http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html">Følg ændringer</a>]
 </font>
 
 <h2>Vi har følgende bøger</h2>
@@ -470,11 +470,6 @@ Værktøj til konvertering af bøgerne til Word 95 format kan findes her.
 </p>
 
 <p>
-Ændringerne der er sket med bøgerne kan ses på
-<a href="http://cvs.sslug.dk/linuxbog/cvs2html/">http://cvs.sslug.dk/linuxbog/cvs2html/</a>.
-</p>
-
-<p>
 <FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
 Vil du modtage E-post om nye versioner af bogen?
 <BR>Skriv din E-post adresse her
@@ -484,17 +479,11 @@ Vil du modtage E-post om nye versioner af bogen?
 </p>
 
 <p>
-Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen og Hans Schou
+Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen, Hans Schou, Donald Axel og Michael Rasmussen - 
 &lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
 <br>
 Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
-</p>
-
-<p>
-Der er altid ting vi gerne vil have skrevet om, eller skrevet mere på.<br>
-Du er meget velkommen til at komme med forslag. 
-<a href="todo.html">Vi efterlyser bla. disse ting</a>.
 </p>
 
 <p>
@@ -509,19 +498,7 @@ indeks-register.</a>
 </p>
 
 <p>
-Har du fundet fejl i en bog, så send venligst dette til 
-&lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.<br>
-Er du ikke medlem af SSLUG, så skriv til
-&lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.<br>
-Vi foretrækker direkte rettelser foretaget i SGML-kildeteksten, men
-kan også rette ud fra præcise angivelser for hvor rettelserne skal
-foretages.
-
-<p> 
-Bogen udvikles løbende med opdateringer et par gange om ugen.
-Vores arbejdskopi kan findes på <a
-href="http://cvs.sslug.dk/linuxbog/">http://cvs.sslug.dk/linuxbog/</a>,
-men indtil endelig release, kan der være graverende fejl i den.  
+Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
 </p>
 
 <p>
