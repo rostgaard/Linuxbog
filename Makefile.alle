@@ -64,7 +64,7 @@ test:
 ################################################################################
 # her er det der skal laves
 .PHONY : all
-all: html  pakhtml sgml palmpilot pdf
+all: html  pakhtml sgml palmpilot
 
 ################################################################################
 
@@ -157,7 +157,7 @@ html.stamp: $(dep_sgml_filer) bog.sgml
 	rm -rf stikord.sgml magic.sgml bog alle
 	echo '<!ENTITY magic "png">' > magic.sgml
 	collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	( cd bog && ln ../../*/*.sgml  ./ && jw -V %use-id-as-filename% -V html-index -f docbook -b html -o ./   bog.sgml )
+	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o ./bog  bog.sgml
 	collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
 	rm -rf bog/
 	db2html -V %use-id-as-filename% bog.sgml
@@ -198,7 +198,7 @@ html:
 	@echo "Overspring html"
 endif !BUILD_HTML
 
-# dax parkerede en linie fra make html: her.
+# dax parkerede en kopi af linie fra make html: her.
 #	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml
 ################################################################################
 # Byg PDF filen
@@ -206,8 +206,8 @@ endif !BUILD_HTML
 
 if BUILD_PDF
 pdf: $(targetname)-$(version).pdf
-# $(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.sgml
-$(targetname)-$(version).pdf: $(sgmlfiler) bog.sgml
+# $(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.2pdf.sgml
+$(targetname)-$(version).pdf: $(sgmlfiler) bog.2pdf.sgml
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pdf"
 	@echo ".........................................."
@@ -216,12 +216,12 @@ $(targetname)-$(version).pdf: $(sgmlfiler) bog.sgml
 	rm -rf PdfBuildDir
 	mkdir PdfBuildDir
 	cp *.{sgml,xml} PdfBuildDir
-	(cd PdfBuildDir && ln -s ../images/*png .)
-	(cd PdfBuildDir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
+	for dir in $(SUBDIRSALLE); do \
+		(cd PdfBuildDir && ln -sf ../../$$dir/images/*.png .) \
+	done;
+	(cd PdfBuildDir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.2pdf.sgml)
 	(cd PdfBuildDir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
-	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
-	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
-
+	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.2pdf.sgml; true)
 	mv PdfBuildDir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	rm -rf PdfBuildDir
@@ -229,6 +229,8 @@ $(targetname)-$(version).pdf: $(sgmlfiler) bog.sgml
 	@echo ""
 endif BUILD_PDF
 
+# dax: parkering af linie efter 1/2.
+# (cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
 ################################################################################
 # CLEAN targets
 ################################################################################
