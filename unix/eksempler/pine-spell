@@ -1,9 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 #-----------------------------------------------------------------------------
 #--  Check command line arguments:
 
 if [ $# -eq 1 ]; then
    if [ "$1" = "--help" -o "$1" = "-h" ]; then
+      echo "pine-spell, 20020605, © Jacob Sparre Andersen, 2001-2002."
+      echo "The program is distributed under the GNU GPL and comes with"
+      echo "ABSOLUTELY NO WARRANTY."
+      echo ""
       echo "Usage:"
       echo ""
       echo "   $0 <file name>"
@@ -14,8 +18,9 @@ if [ $# -eq 1 ]; then
       echo ""
       echo "The file '"'${HOME}/.pinespellrc'"' can be used to add "
       echo "dictionaries to and remove dictionaries from the list presented"
-      echo "to the user. The file can contain three lines:"
+      echo "to the user. The file can contain five lines:"
       echo ""
+      echo "   default_dict: <dictionary>"
       echo "   base_dicts:   <one dictionary> <another dictionary>"
       echo "   ignore_dicts: <hidden dictionary> <another hidden dictionary>"
       echo "   can_compose:  [ true | false ]"
@@ -41,34 +46,35 @@ fi
 
 for speller in ispell aspell
 do
-   which ${speller} 2>&1 > /dev/null && spell="${speller}"
+   type ${speller} > /dev/null 2>&1 && spell="${speller}"
 done
 
-if [ ${spell:-none} = "none" ]; then
+if [ "${spell}" = "none" ]; then
    echo "No spell checking program found."
    exit -1
 fi
-
-#echo "Using '${spell}' for spell checking."
 
 #-----------------------------------------------------------------------------
 #--  Read configuration:
 
 if [ -r ${HOME}/.pinespellrc ]; then
-   base_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*base_dicts:[[:space:]]+' | perl -pe 'use locale; s/^\s*base_dicts:\s+(.*)$/$1/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
-   ignore_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*ignore_dicts:[[:space:]]+' | perl -pe 'use locale; s/^\s*ignore_dicts:\s+(.*)$/$1/' | tr ' ' '\n' | sort -u`
-   can_compose=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*can_compose:[[:space:]]+' | perl -pe 'use locale; s/^\s*can_compose:\s+(.*)$/$1/' | tr ' ' '\n' | sort -u`
-   da_nutids_r=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*da_nutids_r:[[:space:]]+' | perl -pe 'use locale; s/^\s*da_nutids_r:\s+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   base_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*base_dicts:[[:space:]]+' | perl -pe 's/^[ 	]*base_dicts:[ 	]+(.*)$/$1/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
+   ignore_dicts=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*ignore_dicts:[[:space:]]+' | perl -pe 's/^[ 	]*ignore_dicts:[ 	]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   can_compose=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*can_compose:[[:space:]]+' | perl -pe 's/^[ 	]*can_compose:[ 	]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   default_dict=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*default_dict:[[:space:]]+' | perl -pe 's/^[ 	]*default_dict:[ 	]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
+   da_nutids_r=`cat ${HOME}/.pinespellrc | egrep '^[[:space:]]*da_nutids_r:[[:space:]]+' | perl -pe 's/^[ 	]*da_nutids_r:[ 	]+(.*)$/$1/' | tr ' ' '\n' | sort -u`
 fi
 
 #-----------------------------------------------------------------------------
 #--  Locate spell checking dictionary directories:
 
 if [ "${spell}" = "aspell" ]; then
-   dict_dirs=`aspell dump config | egrep '^# dict-dir (current|default): ' | perl -pe 'use locale; s/^#\s+dict-dir\s+(current|default):\s+(.*)$/$2/' | tr ' ' '\n' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
+   aspell_prefix=`aspell dump config | egrep '^# prefix current: ' | perl -pe 's/^#[ 	]+prefix[ 	]+current:[ 	]+(.*)$/$1/'`
+
+   dict_dirs=`aspell dump config | egrep '^# dict-dir (current|default): ' | perl -pe 's/^#[ 	]+dict-dir[ 	]+(current|default):[ 	]+(.*)$/$2/' | tr ' ' '\n' | perl -pe "s,^<prefix:(.*)>$,${aspell_prefix}/"'$1,' | sort -u | tr '\n' ' ' | perl -pe 's/[ ]*$//'`
    dict_ext=
 elif [ "${spell}" = "ispell" ]; then
-   dict_dirs=`ispell -vv | egrep '^[[:space:]]*LIBDIR[[:space:]]*=' | perl -pe 'use locale; s/^\s*LIBDIR\s*=\s*(.*)\s*$/$1/' | perl -pe 's/^"(.*)"$/$1/'`
+   dict_dirs=`ispell -vv | egrep '^[[:space:]]*LIBDIR[[:space:]]*=' | perl -pe 's/^[ 	]*LIBDIR[ 	]*=[ 	]*(.*)$/$1/' | perl -pe 's/^"(.*)"$/$1/'`
    dict_ext=[.]hash
 
    if [ -d ${HOME}/.ispell ]; then
@@ -76,12 +82,8 @@ elif [ "${spell}" = "ispell" ]; then
    fi
 fi
 
-#echo "dict_dirs = '${dict_dirs}'"
-
 #-----------------------------------------------------------------------------
 #--  Make dictionary list:
-
-#echo "base_dicts = '${base_dicts}'"
 
 all_dicts="${base_dicts}"
 
@@ -92,21 +94,25 @@ done
 
 all_dicts=`echo "${all_dicts}" | tr ' ' '\n' | sort -u`
 
-#echo "all_dicts = '${all_dicts}'"
-
 #-----------------------------------------------------------------------------
 #--  Spell checking dictionaries to ignore:
 
 ignore_dict_pattern=`echo "${ignore_dicts}" | tr '\n' ' ' | perl -pe 's/^[ ]*//' | perl -pe 's/[ ]+$//' | tr ' ' '|'`
 
-dicts=`echo "${all_dicts}" | egrep -v '^('"${ignore_dicts}"')$' | tr '\n' ' ' | perl -pe 's/^[ ](.*)[ ]$/$1/'`
+dicts=`echo "${all_dicts}" | egrep -v '^('"${ignore_dict_pattern}"')$' | tr '\n' ' ' | perl -pe 's/^[ ](.*)[ ]$/$1/'`
 
 #-----------------------------------------------------------------------------
 #--  Chose dictionary:
 
-echo "VÊlg ordbog (enter for dansk): ${dicts}"
+if [ "${default_dict}" = "" ]; then
+   default_dict=dansk
+fi
+
+echo "VÊlg ordbog (enter for ${default_dict}): ${dicts}"
 read dictionary
-dictionary=${dictionary:-dansk}
+if [ "${dictionary}" = "" ]; then
+   dictionary=${default_dict}
+fi
 
 found=false
 for directory in ${dict_dirs}
@@ -117,12 +123,14 @@ do
    fi
 done
 
-until [ ${found} = true ]
+until [ "${found}" = "true" ]
 do
    echo "Kunne ikke finde en '${dictionary}' ordbog."
-   echo "VÊlg ordbog (enter for dansk): ${dicts}"
+   echo "VÊlg ordbog (enter for ${default_dict}): ${dicts}"
    read dictionary
-   dictionary=${dictionary:-dansk}
+   if [ "${dictionary}" = "" ]; then
+      dictionary=${default_dict}
+   fi
 
    for directory in ${dict_dirs}
    do
@@ -136,7 +144,7 @@ done
 #-----------------------------------------------------------------------------
 #--  Start spell checking program:
 
-if [ ${spell} = ispell ]; then
+if [ "${spell}" = "ispell" ]; then
    #--------------------------------------------------------------------------
    #--  Ispell:
 
@@ -147,7 +155,7 @@ if [ ${spell} = ispell ]; then
       dictionary_file=${dictionary}
    fi
 
-   if [ ${can_compose:-false} = true ]; then
+   if [ "${can_compose}" = "true" ]; then
       ispell_flags='-b -S -w·¡‡¿–È…Ë»ÌÕÛ”˙⁄˝›¸‹Ê∆‰ƒ¯ÿˆ÷Â≈'
    else
       if [ ${dictionary} = dansk -o \
@@ -161,11 +169,11 @@ if [ ${spell} = ispell ]; then
       fi
    fi
 
-   speller=`which ${spell}`
+   speller=`type ${spell} | cut -d' ' -f3`
 
    case ${dictionary} in
       dansk)
-         if [ ${da_nutids_r:-off} = on ]; then
+         if [ "${da_nutids_r}" = "on" ]; then
             perl -i -pe 'use locale; s/(\W(at|vil|ville|kan|kunne|skal|skulle|mÂ|mÂtte) \w+)r(\W)/$1#$3/gim' $@
          fi
 
@@ -177,19 +185,22 @@ if [ ${spell} = ispell ]; then
    esac
 
    #--------------------------------------------------------------------------
-elif [ ${spell} = aspell ]; then
+elif [ "${spell}" = "aspell" ]; then
    #--------------------------------------------------------------------------
    #--  Aspell:
 
-   speller=`which ${spell}`
+   speller=`type ${spell} | cut -d' ' -f3`
 
    case ${dictionary} in
       dansk)
-         perl -i -pe 'use locale; s/(\W(at|vil|ville|kan|kunne|skal|skulle|mÂ|mÂtte) \w+)r(\W)/$1#$3/gim' $@
-         exec ${speller} --lang=dansk         check $@
+         if [ "${da_nutids_r}" = "on" ]; then
+            perl -i -pe 'use locale; s/(\W(at|vil|ville|kan|kunne|skal|skulle|mÂ|mÂtte) \w+)r(\W)/$1#$3/gim' $@
+         fi
+
+         exec ${speller} --master=${dictionary} check $@
          ;;
       *)
-         exec ${speller} --lang=${dictionary} check $@
+         exec ${speller} --master=${dictionary} check $@
          ;;
    esac
 
