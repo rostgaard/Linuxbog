@@ -228,6 +228,11 @@ Bøgerne redigeres af Peter Toft og Hans Schou
 Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
 <p>
+Der er altid ting vi gerne vil have skrevet om, eller skrevet mere på.
+Du er meget velkommen til at komme med forslag. 
+<a href="todo.html">Vi efterlyser bla. disse ting</a>.
+
+<p>
 
 Hvis du har noget du søger efter, så skal du nok <a
 href="alle/bog/stikord.html">starte i vores samlede
