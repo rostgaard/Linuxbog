@@ -15,7 +15,7 @@
 undef ($/);
 
  # Lav mailto om
- s!<ulink\s+url="mailto:(.*?)">.*?</ulink>!<ComMand>&lt;$1&gt;</ComMand>!gsi;
+ s!<ulink\s+url="mailto:(.*?)">.*?</ulink>!<command>&lt;$1&gt;</command>!gsi;
  
  # Lav http og ftp URLer om
  s!<ulink\s+url="     # <ulink url="
@@ -24,6 +24,6 @@ undef ($/);
     .*?</ulink>       # www.sslug.dk/linuxbog</ulink>
   !
     $http=$1;$path=$2;$path =~ s@/@ /@g;
-    "<FileName>$http$path</FileName>"
+    "<tilename>$http$path</filename>"
   !gsixe;             # Global SingleString IgnoreCase eXtentedComments Expression
 
