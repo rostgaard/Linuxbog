@@ -138,13 +138,22 @@ function form_filename( $bookname, $format ) {
    )
   );
 
-  // Sæt versionsnumre på bøgerne
+  $ext_files = array(
+    "version" => "/version.sgml",
+    "sideantal" => "/sideantal.txt",
+    "dato" => "/dato.sgml"
+  );
+
+  // Sæt versionsnumre, sideantal og dato på bøgerne
   reset($books);
   while (list($bookname) = each($books)) {
-    $ver = file($bookname."/version.sgml");
-    $pgs = file($bookname."/sideantal.txt");
-    $books[$bookname][version] = $ver[0];
-    $books[$bookname][sideantal] = $pgs[0];
+    reset($ext_files);
+    while (list($ftype,$fname) = each($ext_files)) {
+      if (file_exists($bookname.$fname)) {
+        $num = file($bookname."/version.sgml");
+        $books[$bookname][$ftype] = $num[0];
+      }
+    }
   }
 
   // Bogpakker pakket på forskellige måder
@@ -338,7 +347,6 @@ men indtil endelig release, kan der være graverende fejl i den.
         $filesize = fsize_text($filename);
         $date = date("Y-m-d",filemtime($filename));
         echo "version $desc[version]"; 
-        include($short."/version.sgml");
 
         //echo "<br>$date<br>$filesize";
 				$linktext = "$date<br>$filesize";
@@ -362,19 +370,13 @@ men indtil endelig release, kan der være graverende fejl i den.
     echo "<a name=\"$short\"></a><h3>$desc[title] \n";
     echo "</h3>\n<i>$desc[comment]</i><p>";
 
-    if (file_exists($short."/dato.sgml")) {
-      include($short."/dato.sgml");
-    }
-    if (file_exists($short."/version.sgml")) {
+    if ($desc[dato])
+      echo $desc[dato];
+    if ($desc[version])
       echo "- version $desc[version]";
-    }
-    /*
-    if (file_exists($short."/sideantal.txt")) {
-      echo "- Antal sider: ";
-      include($short."/sideantal.txt");
-    }
-    */
-    echo "- Antal sider: ".$desc[sideantal];
+    if ($desc[sideantal])
+      echo "- Antal sider: ".$desc[sideantal];
+
     echo "<p>";
     echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
