@@ -47,11 +47,11 @@ del af hukommelsen i "write mode", kopieres denne sektion før den
  <emphasis>Paging</emphasis>
 På trods af forsøg på at anvende fysisk hukommelse effektivt, kan det
 ske, at den tilstedeværende hukommelse er brugt op. Linux ser så efter
-4 kbyte hukommelses-pages, som kan frigives. Pages med deres indhold
-lagret på harddisk (f.eks. koden for programfiler) frigives. Alle
-andre pages kopieres ud på harddisken. Hvis der herefter søges adgang
-til en af disse hukommelses-pages, hentes den igen. Denne procedure
-kaldes paging. Den adskiller sig fra swapping, som anvendes i ældre
+4 kb hukommelsessider, som kan frigives. Sider med deres indhold
+lagret på harddisk (f.eks. programfiler) frigives. Alle
+andre sider kopieres ud på harddisken. Hvis der herefter søges adgang
+til en af disse hukommelsessider, hentes den igen. Denne procedure
+kaldes "paging". Den adskiller sig fra "swapping", som anvendes i ældre
 Unix-systemer, hvor hele hukommelsen for en proces skrives til
 harddisken, hvilket er betydeligt mindre effektivt.
  </para>
@@ -73,15 +73,16 @@ cachen for at frigive hukommelse. Når først hukommelse er frigivet,
 
 <listitem> 
  <para>
- <emphasis>Shared libraries</emphasis> Libraries (på dansk:
-biblioteker) er samlinger af rutiner, som er nødvendige for
-data-processing for et program. Linux har et antal standard libraries,
-der bruges af flere processer ad gangen. Det er derfor fornuftigt at
-indlæse programkoden for disse libraries i hukommelsen én gang for
-alle. Dette muliggøres ved hjælp af <emphasis>shared
-libraries</emphasis>. Da disse kun indlæses til programkoden når
-processen eksekveres, kendes de også som dynamiske linkede biblioteker
-(dll).
+<emphasis>Delte biblioteker</emphasis> - biblioteker (på engelsk
+"libraries") er samlinger af rutiner, som er kan bruges af forskellige
+programmer. Linux har et antal standardbiblioteker, der typisk bruges
+af mange programmer der kører samtidigt. Det er derfor fornuftigt at
+indlæse disse biblioteker i hukommelsen én gang for alle og lade alle
+programmerne deles om den samme kode. Dette muliggøres med
+<emphasis>delte biblioteker</emphasis> (på engelsk "shared libraries"). Da
+disse først indlæses og sammenkædes med et program, når det kører og
+har brug for dem, kendes de også som dynamisk sammenkædede biblioteker
+(på engelsk "dynamically linked libraries" eller "DLLs").
  </para>
 </listitem>
 
@@ -214,7 +215,7 @@ Linux var tidligere (før kerne 2.0) en monolitisk kerne, mens man med
 kerne 2.0 fik adgang til at lave kerne-moduler. Dette var en nødvendig
 måde at kunne understøtte meget forskellig hardware på. To brugere med
 forskelligt lydkort anvender hver sit kernemodul, og derfor har de to
-brugere ikke unødvendig meget program-kode læst ind i hukommelsen.
+brugere ikke unødvendig meget programkode læst ind i hukommelsen.
 </para>
 
 <indexterm><primary>PVM</primary></indexterm>
@@ -374,8 +375,8 @@ proces bliver barn-proces til den proces, der udførte
 Den nye proces bliver oprettet ved at lave en næsten identisk kopi af
 den proces der kaldte <command>fork()</command>. Ofte er det første,
 en ny proces gør, at udføre et execve-kald, som overskriver den
-nedarvede kode, stak, registre mv., så den ikke længere er en kopi af
-forælderprocessen, men en ny proces.
+arvede kode, stak, registre mv., så den ikke længere er en kopi af
+forældreprocessen, men en ny proces.
 </para>
 
 <para>
@@ -748,7 +749,7 @@ direkte ind i scriptet for startup scriptet til <command>gpm</command>
 (se <xref linkend="etcrcdfilen">) og tilføje parametren:
 "<parameter>-m /dev/psaux</parameter>".  Redhat 7.1 har forbedret det
 lidt, ved at kunne specificere et device i
-<filename>/etc/sysconfig/gpm</filename>.  Opstarts scriptet
+<filename>/etc/sysconfig/gpm</filename>.  Opstartsprogrammet
 <filename>/etc/rc.d/init/gpm</filename>, indeholder dog en fejl som
 gør at devicet altid vil være <filename>/dev/mouse</filename>. Ændrer
 derfor følgende i <filename>/etc/rc.d/init/gpm</filename>:
@@ -771,7 +772,7 @@ fi
 </screen>
 
 <para>
-Som tester om miljø-variablen "DEVICE" er tom. Hvis den er det,
+Som tester om miljøvariablen "DEVICE" er tom. Hvis den er det,
 er der ikke angivet noget device i
 <filename>/etc/sysconfig/gpm</filename>, og "DEVICE" sættes til
 <filename>/dev/mouse</filename>.
@@ -828,12 +829,12 @@ klart en fordel at benytte moduler, hvis man ikke har megen hukommelse.
 
 <PARA>
 Første trin til at lave din egen kerne er at se, om du fik installeret
-hele kildekoden til Linux-kernen. Der er to muligheder; enten fra den
+hele kildeteksten til Linux-kernen. Der er to muligheder; enten fra den
 installations-cdrom du har, eller fra en helt ny kildetekst.
 </PARA>
 
 <para>
-Hvis du vil installere kildekoden til kernen, så skriv
+Hvis du vil installere kildeteksten til kernen, så skriv
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh /cdrom/RedHat/RPMS/kernel-headers-2.2.5-15.i386.rpm</USERINPUT>
@@ -949,7 +950,7 @@ Moduler laves til kernen svarende til kernens versionsnummer under
 hvorfor man i det hele taget laver en kerne og så moduler. Dels kan
 kernen blive mindre og derfor ofte hurtigere. Men er der fejl i et
 modul, kan man hurtigt rette i modulets kildetekst, genoversætte
-koden og starte modulet på ny - uden at genstarte maskinen!
+kildeteksten og starte modulet på ny - uden at genstarte maskinen!
 </para>
 
 </sect2>
@@ -1346,7 +1347,7 @@ altså et niveau længere nede.
 For dem som laver hurtige web-servere er kHTTPd interessant. Man
 kan accelerere web-servere kraftigt for statiske web-sider, dvs. ikke
 for CGI-programmer eller PHP-løsninger, ved at kernen cacher sider 
-intelligent. Det er også markeret som eksperimentel kode.
+intelligent. Det er også markeret som eksperimentel kildetekst.
 </para>
 
 <para>
@@ -1369,7 +1370,7 @@ et must. Der er lavet meget inden for ATM-understøttelsen.
 
 <para>
 Og på de mere interne linier er store dele af kernen skrevet om,
-så selve koden skulle være meget lettere at læse. Der er arbejdet
+så selve kildeteksten skulle være meget lettere at læse. Der er arbejdet
 meget med at strukturen skulle forbedres, så man lettere kunne
 inkorporere nye ting, som ikke tidligere var med.
 </para>
