@@ -47,4 +47,12 @@ foreach $bog (@ARGV) {
 }
 
 # Afslut
-print "&stikord;\n\n</set>\n";
+print "<book id=\"alle-stikord\">\n";
+print "&stikord;\n";
+print "</book>\n\n\n";
+print "</set>\n";
+
+
+
+# end of file make.bog.sgml.pl
+
