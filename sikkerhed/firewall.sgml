@@ -107,19 +107,57 @@ Defence model, DoD 4-lags modellen her:
 <sect3 id="sikkerhed-layer">
 <title>Netværks-lag</title>
 
+<programlisting>
+
+                           Netværks lag
+
+                        +---------------------+
+                        | Applikations-laget  |
+                        +---------------------+
+                        | Transport eller     |
+                        | validering/flow     |
+                        +---------------------+
+                        | Globale adresser    |
+                        +---------------------+
+                        | Ethernet, backbone  |
+                        | tranceiver logik    |
+                        +---------------------+
+
+</programlisting>
+
+<para>
+Nogle vil måske foretrække at få en forklaring på, hvorfor man i
+det hele taget har lag, og så er det bedst at tage forklaringerne
+fra ledningerne, det fysiske netværk og opefter.
+</para>
+
 <itemizedlist mark="bullet" id="sikkerhed-network-layer">
 
 <listitem><para>
 Fysisk link-lag, d.v.s. ethernetkort og ledninger (der er
-egentlig også et par abstraktionslag her);
+egentlig også et par abstraktionslag her); ofte kaldes det for
+det nederste lag; det skyldes måske, at ledningerne som regel
+liger på gulvet og føres ud gennem kælderen - hvis man stadig
+brugte telefonstolper, ville man nok kalde det for det øverste
+lag;
 </para></listitem>
 
 <listitem><para>
 netværkslaget, her finder man IP-numre, ping programmet og ICMP;
+dette lag har ansvaret for at en pakke kan komme fra Jylland til
+Australien, d.v.s. ansvaret for at forbinde forskellige net med
+hinanden, herunder også fragmentering af pakker, som er for store
+til det underliggende/overliggende fysiske net;
 </para></listitem>
 
 <listitem><para>
-transportlaget, TCP;
+transportlaget, TCP, som er forskelligt fra IP laget derved at
+det sørger for at data er valide, d.v.s. at der oprettes
+handshake; nyere TCP implementationer kan også håndtere
+flow-kontrol, d.v.s. parametre på fysisk niveau kan styres
+indirekte af TCP oplysninger om, hvor meget modtageren kan klare,
+førend man får data galt i halsen; man kunne også kalde TCP laget
+for validerings- og flow control lag;
 </para></listitem>
 
 <listitem><para>
@@ -214,11 +252,21 @@ kaldes en socket.
 
 <programlisting>
 
-Afsender                                Modtager (http-server)
+SOCKET-illustration
+
+Afsender (browser)                      Modtager (http-server)
 
 IP-adresse  + portnummer                IP-adresse   + portnummer
 
 201.2.3.4     51001          &lt;----->    193.88.44.22   80
+
+En anden afsender (wget)                Modtager (samme http-server)
+
+201.2.3.4     47011          &lt;----->    193.88.44.22   80
+
+
+En socket definerer en forbindelse,
+typisk fra applikation til applikation.
 
 </programlisting>
 
@@ -866,22 +914,6 @@ bearbejder henholdsvis IP-adresse, TCP-oplysninger og, i sidste
 instans, flytter pakken til den applikation, som skal bruge data.
 </para>
 
-<programlisting>
-
-                           Protocol Layering
-
-                        +---------------------+
-                        |     higher-level    |
-                        +---------------------+
-                        |        TCP          |
-                        +---------------------+
-                        |  internet protocol  |
-                        +---------------------+
-                        |communication network|
-                        +---------------------+
-
-
-</programlisting>
 
 
 <sect2 id="sikkerhed-nat">
