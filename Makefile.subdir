@@ -95,6 +95,9 @@ ekstra:
 
 sgml: $(targetname)-sgml-$(version).tar.gz
 $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
+	@echo ".........................................."
+	@echo "Target $(targetshortname):sgml"
+	@echo ".........................................."
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile)
 	(cd ..;ln -sf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/$(targetname).sgml.tar.gz)
 	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile)
@@ -106,6 +109,9 @@ $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
 
 palmpilot: $(targetname)-$(version).palm.zip
 $(targetname)-$(version).palm.zip: $(sgmlfiler)
+	@echo ".........................................."
+	@echo "Target $(targetshortname):palmpilot"
+	@echo ".........................................."
 ifneq   ("$(plucker)","")
 	rm -f $(targetname)-$(version).palm.zip $(targetname)-$(version).palm.tar.gz
 	$(MAKE) html
@@ -126,6 +132,9 @@ endif
 ################################################################################
 
 pakhtml: 
+	@echo ".........................................."
+	@echo "Target $(targetshortname):pakhtml"
+	@echo ".........................................."
 	@echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	@echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
 	@echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
@@ -151,6 +160,9 @@ pakhtml:
 
 html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
+	@echo ".........................................."
+	@echo "Target $(targetshortname):html"
+	@echo ".........................................."
 	@@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf $(targetname)*
 	rm -rf stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
@@ -184,8 +196,11 @@ endif
 # Byg PDF filen
 ################################################################################
 
-pdf: $(targetname)-$(version)_pdf.zip
-$(targetname)-$(version)_pdf.zip: $(sgmlfiler)
+pdf: $(targetname)-pdf-$(version).zip
+$(targetname)-pdf-$(version).zip: $(sgmlfiler)
+	@echo ".........................................."
+	@echo "Target $(targetshortname):pdf"
+	@echo ".........................................."
 	@echo '<!ENTITY magic "png">' > magic.sgml
 	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	rm -rf tempdir
