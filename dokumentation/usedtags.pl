@@ -3,7 +3,7 @@
 # by Hans Schou and Ole Tange
 #
 # Usage:
-#   cat *.sgml | ./usedtags.pl | sort -nr > usedtags.inc
+#   cat *.sgml | ./usedtags.pl | sort -nr > usedtags_now.sgml
 
 while (<>) {
   if (/<([a-zA-Z][^>\s]+)[^>]*>/) {
