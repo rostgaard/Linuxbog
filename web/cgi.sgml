@@ -101,7 +101,7 @@ fra keybord, stdout (Standard output) der er output til skærmen, og stderr
 <para>
 Når webserveren udfører et CGI-program vil alle data der udskrives til
 stdout blive returneret til browseren. Data der skrives til stderr vil blive
-gemt i webserverens error log <filename>/var/log/httpd/error_log</filename>.
+gemt i webserverens fejllog <filename>/var/log/httpd/error_log</filename>.
 Programmet kan også modtage data på stdin fra webserveren, dette vil typisk være
 data der er indtastet i en webformular eller filer der skal oploades.
 CGI-programmet modtager også en række data igennem systemvariable.
@@ -219,34 +219,34 @@ formater.
 <tgroup cols="2" align="char">
   <thead>
     <row>
-      <entry>Media type</entry>
+      <entry>Datatype</entry>
       <entry>Beskrivelse</entry>
     </row>
   </thead>
   <tbody>
     <row>
       <entry>text/plain</entry>
-      <entry>ASCII formateret tekst (.txt)</entry>
+      <entry>Rå tekst - text (.text eller .txt)</entry>
     </row>
     <row>
       <entry>text/html</entry>
-      <entry>HTML formateret tekst (.html eller .htm)</entry>
+      <entry>HTML - tekst (.html eller .htm)</entry>
     </row>
     <row>
       <entry>image/jpeg</entry>
-      <entry>JPEG billed (.jpeg eller .jpg)</entry>
+      <entry>JPEG - billeder (.jpeg eller .jpg)</entry>
     </row>
     <row>
       <entry>image/png</entry>
-      <entry>PNG billed (.png)</entry>
+      <entry>PNG - billeder (.png)</entry>
     </row>
     <row>
       <entry>image/gif</entry>
-      <entry>GIF-billede (.gif)</entry>
+      <entry>GIF - billeder (.gif)</entry>
     </row>
     <row>
       <entry>application/postscript</entry>
-      <entry>Postscript-fil (.ps)</entry>
+      <entry>Postscript - præsentationer (.ps)</entry>
     </row>
     <row>
       <entry>application/x-dvi</entry>
@@ -368,12 +368,12 @@ kan finde svaret på den URL istedet. Syntaxen er "Location: URL".
 
 <para>
 Hver gang en browser forsøger at hente et katalog uden at specificere en
-index fil, så afsendes  index.html filen. Denne funktionalitet specificeres i
-srm.conf med linien:
+index fil, så afsendes "index.html"-filen. Denne funktionalitet specificeres i
+<filename>httpd.conf</filename> med linien:
 </para>
 
 <screen>
-DirectoryIndex index.htm index.html index.shtml index.cgi
+DirectoryIndex index.html index.shtml index.htm index.cgi
 </screen>
 
 <para>
@@ -390,7 +390,7 @@ HTML-filer, og hvor der ikke er nogen anden index-fil.
 #dvs. samme katalog som index.cgi selv
 opendir DIR, "./" or die "Can't list directory /.!\n";
 
-#filtrer listen så den kun indeholder .html filer
+#filtrér listen så den kun indeholder ".html"-filer
 my @files = grep /\.html$/, readdir(DIR);
 
 #vælg tilfældigt index i listen
@@ -400,8 +400,9 @@ my $no=int rand ($#files+1);
 print 'Location: ', $files[$no] ,"\r\n\r\n"; 
 </screen>
 
-<para>Programmet vil finde alle .html filer i samme katalog, og udskrive en
-redirektion til en filfældig .html fil.</para>
+<para>
+ Programmet vil finde alle filer med endelsen ".html" i samme katalog, og
+ udskrive en omdirigering til en tilfældig af dem.</para>
 
 <para>Den samme metode kan bruges til at returnere et tilfældigt baggrundbilled
 hver gang en person besøger en side. Hvis der ligger en masse JPEG-billeder i
@@ -983,7 +984,7 @@ sub Fejl
 }
 </screen>
 
-<para>CGI-program caveats der typisk giver fejl:</para>
+<para>Problemer med CGI-programmer, der typisk giver fejl:</para>
 
 <para>CGI-programmer køres af webserveren og ikke af dig. typisk er
 webserver-processen eget af brugeren 'nobody' i gruppen 'nobody', hvilket
@@ -1008,7 +1009,7 @@ for at generere en bestemt fejl, der typisk viser sig som en "Internal Server
 Error" eller "The document contained no data."  i browseren. Og problemet er
 nu at finde fejlen.</para>
 
-<para>Alt tekst der udskrives til stderr vil udskrives i Apache's error log. Dvs.
+<para>Al tekst der udskrives til stderr vil udskrives i Apaches fejllog. Dvs.
 opstår der en fejl i programmet og det udføre en die "Fatal error occured!",
 så vil der ikke udskrives nogen information til browseren men "tail 
 /var/log/httpd/error_log" vil udskrive fejl meddelelsen. Det er derfor
@@ -1356,7 +1357,7 @@ konfigureret for at undgå sikkerhedshuller og Apache genoversættes, det er
 derfor ikke inkluderet i den Apache version der normalt distribueres.
 Dokumentation hvordan Apache genoversættes med suEXEC indbygget er inkluderet i
 Apache dokumentationen og kan findes i /home/httpd/html/manual/suexec.html.
-suEXEC giver også mulighed for at hver bruger har sin egen error_log fil
+suEXEC giver også mulighed for at hver bruger har sin egen fejllog,
 hvilket letter debugging af scripts.</para>
 
 </sect3>
