@@ -1,40 +1,291 @@
 <chapter id="sikkerhedsrutiner">
-<title>Sikkerhedsrutiner og backup</title>
+<title>Sikkerhed</title>
 <para>
+I dette kapitel ser vi nærmere på sikkerhed på et niveau, der ikke
+kræver matematik eller større teknisk indsigt.
 </para>
+
 <sect1 id="whatis-sr">
-<title>Hvordan implementeres det i Linux</title>
+<title>Hvordan implementeres sikkerhed i Linux</title>
+<indexterm>
+  <primary>Sikkerhed</primary>
+  <secondary>Open Source</secondary>
+</indexterm>
+
 <para>
-Forskelle og ligheder med proprietær software.
+Først et par helt generelle betragninger. Der er et skel mellem den
+måde Open Source programmer og proprietære programmer udvikles. For
+programmer, der anvendes til at kommunikere mere eller mindre sikkert
+over netværk er dette vigtigt. Man kan finde en del firmaer som laver
+proprietære "sikre" løsninger til at kommunikere over usikre netværk.
+I praksis er det dog kun et fåtal af dem som faktisk kan anses for at
+være sikre når man går dem efter. Nogle løsninger vil være baseret på
+en eller flere hemmeligheder, hvor sikkerheden er ikke-eksisterende
+hvis blot man kender hemmelighederne (f.eks. et krypteringspassword) -
+typisk har bl.a. Microsofts såkaldt sikre løsninger ligget i denne
+dårlige kategori. Der er desværre kun et mindretal af firmaer som
+faktisk kan lave sikre proprietære sikre netværksløsninger baseret på
+egne lukkede protokoller og hemmelige tricks - og det er ikke altid
+oplagt hvilke firmaer som faktisk kan dette.
 </para>
+
+<para>
+Som alternativ til proprietære sikre netværksløsninger er der været en
+hel del udvikling på Internettet og gennem tekniske tidsskrifter og
+konferencer for at skabe sikre netværksløsninger gennem åbne
+protokoller og nøglesystemer, hvor sikkerheden ligger i den matematik
+der ligger bag. Man han bevidst diskuteret krypteringsmetoderne åbent,
+idet de skal kunne tåle dagens lys og "peer-review", dvs. den kritiske 
+analyse af eksperter på området. Flere af de systemer som er udviklet
+på denne åbne måde f.eks. 3DES og AES anses for at være meget sikre.
+</para>
+
+<para>
+Flere løsninger findes tilgængelige og integreret i systemer til
+Linux. De fleste er baseret på nøgle-par hvor hver bruger har en
+personlig del (der ikke vises til andre) og en offentlig nøgle (som
+man godt kan vise til andre). Ideen er typisk at man krypterer
+datatrafikken ud fra den offentlige nøgle og man kan kun dekryptere
+datatrafikken med den personlige nøgle. Dette system benyttes bla. af
+PGP, GnuPG og OpenSSH/SSH. 
+</para>
+
 </sect1>
 
 <sect1 id="economi-sr">
 <title>Økonomi</title>
 <para>
-Økonomiske konsekvenser.
+Open Source løsninger er generelt gratis - der skal ikke betales nogen
+"royalty", hvilket er meget økonomisk attraktivt hvis man har mange
+maskiner.
 </para>
+
+<para> 
+Der er flere glimrende systemværktøjer til Linux til at
+overvåge netværk, f.eks. Big Brother (se <xref linkend="bb-fig">), der
+på en enkel måde præsenterer en webside der for hver maskine viser
+status for CPU-aktivitet, disk-forbrug, service-aktivitet. Er en
+server-service stoppet - f.eks. en web-server - da vil Big Brother
+web-serveren vise en gul eller rød baggrund og med et tilsvarende ikon
+vise hvor problemet er. Systemet kan endda sættes op til at alarmere
+systemadministratoren hvis der er problemer.
+</para>
+
+<FIGURE ID="bb-fig" FLOAT="1">
+<TITLE>Big Brother overvåger maskiner på netværket</TITLE>
+<GRAPHIC FILEREF="bb.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>  
+
+<para>
+Hvis man skal implementere sikre netværksløsninger der det ofte ikke
+gratis, idet det er stærkt tilrådeligt at få enten konsulent-bistand
+eller hyre en kvalificeret person til det administrere sikkerheden på
+netværket. Det er aldrig nemt at lave et meget sikkert system - og man
+kan af vanvare komme til at lave en fatal sikkerhedsfejl. Dette
+er en helt generel betragtning, som holder uanset system.
+</para>
+
 </sect1>
 
-<sect1 id="security-sr">
+<sect1 id="sikkerhed-sr">
 <title>Sikkerhedsproblematikken</title>
 <para>
-Er det sikrere end proprietært software
+Sikkerhed er mange ting. Dels er der en diskussion om sikkerhed med
+hensyn til andres fysiske adgang til systemet (se 
+<xref linkend="sikkerhed-fysisk">), dels er der en emnet med
+netværkssikkerhed (se <xref linkend="sikkerhed-netvaerk">).
 </para>
+
+<indexterm><primary>Sikkerhed</primary><secondary>Fysisk adgang</secondary></indexterm>
+
+<sect2 id="sikkerhed-fysisk">
+<title>Fysisk adgang til maskinen</title>
+
+<para>
+Med hensyn til fysisk adgang til maskinen, så er der adgangskontrol på
+en Linux-maskine som der er kendt fra andre Unix-varianter eller
+Windows NT.  Dvs. man skal have et bruger-ID og et password for at
+kunne logge ind.  Dog kan den grafiske brugergrænseflade KDE sættes op
+til at man kan sætte systemet op til at man kan logge ind uden at
+blive konfronteret med bruger-ID og password (som det kendes fra
+f.eks. Windows 3.11 og 95). Dette kan kun sættes op af
+systemadministratoren 
+(i KDE-&gt; Preferences-& gt;System-&gt; Login manager-&gt Convenience).
+</para>
+
+<para>
+Systemadministratoren (kaldet root) er den eneste system-konto, der
+kan anvendes til at oprette konti. For en korrekt opsat Linux-maskine
+er der i praksis ikke muligt at få adgang til en Linux-maskine uden
+man har bruger-ID og password.
+</para>
+
+<para>
+Der er typisk mulighed for at man kan sætte en Linux-harddisk i en
+anden maskine og derved kunne tilgå data på harddisken. Hvis man har
+meget sensitive data på harddisken kan denne dog krypteres (med ppdd)
+og derved har man en god datasikkerhed.
+</para>
+</sect2>
+
+<sect2 id="sikkerhed-netvaerk">
+<title>Adgang til maskinen via netværk</title>
+<indexterm><primary>Sikkerhed</primary><secondary>Netværksadgang</secondary></indexterm>
+<para>
+Det er en række måder hvorpå man kan få adgang til en 
+Linux-maskine over netværket - og det er op til systemadministratoren
+til at definere hvad der er muligt.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+ Telnet - Gennemtestet men sikkerhedsmæssig usikker protokol til at få
+ en tekst-adgang til maskinen hvor man kan køre kommandoer fra ens
+ egen maskine. Denne type service bør aldrig udbydes på andet end
+ meget små netværk som ikke har nogen direkte eller indirekte tilgang
+ til Internet.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ Ftp - Gennemtestet men sikkerhedsmæssigt usikker protokol til at 
+ overføre filer mellem ens egen maskine og den anden maskine på netværket.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ SSH - også kaldet secure shell er en moderne og sikker måde at få
+ samme funktioner som telnet og ftp tilbyder - hvor al datatrafik
+ mellem de to maskiner krypteres på en måde der kan anses for at være
+ sikker. Der er endda mulighed for at få krypteret transport af grafiske
+ programmer fra en maskine til en anden. Det er således muligt at
+ fjernstyre en Linux-maskine over netværket fuldt ud.
+ </para>
+ <para>SSH kan evt. kombineres med SecurID kort, hvor man får en
+ personlig adgangskode, der er tidsafhængig. SSH findes dels i en kommerciel
+ version og en Open Source-variant OpenSSH, der er funktionsmæssigt og 
+ udviklingsmæssigt fuldt på højde med den kommercielle variant.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ SAMBA (SMB) - server-protokol til at tilbyde SMB-montering af
+ netværksdrev og netværksprinter-server. Windows-maskiner vil
+ se en Linux-maskine med SAMBA som om det er en Windows-server.
+ Det er en smart måde at integrere et heterogent netværk.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ NFS - Gammel og velgennemtestet protokol til at montere
+ netværksdiske mellem Unix-maskiner såsom Linux. Protokollen
+ er ikke særlig sikker, på samme niveau som SMB. NFS anvendes
+ typisk kun for stationære maskiner i netværket, så man kan
+ kontrollere adgang til data via maskinernes navne/IP-adresser.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ X-server - gennem dette kan man fra netværket få en grafisk login fra
+ en anden maskine. På denne måde anvender man ens egen maskine som
+ grafisk klient og al behandling af data udføres på serveren. Dette er
+ meget atraktivt hvis man vil bygge centraliserede løsninger, hvor man
+ anvender kraftige servere og tynde klienter. Dette er en løsning der
+ kan være meget pris-effektiv dels per klient, men også
+ vedligeholdelsesmæssigt.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ NIS - anvendes i Unix-netværk til at håndtere passwords for brugere centralt.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ Apache - verdens mest anvendte webserver med ca. 60% markedsandel på
+ Internettet.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ Sendmail, Postfix, Exim eller Qmail anvendes hvis man vil kunne sende
+ emails til ens maskine. Typisk er dette ikke nødvendigt på andet 
+ end en maskine (mail-serveren) i et netværk.
+ </para>
+</listitem>
+
+</itemizedlist>
+
+<para>
+Generelt skal man ikke udbyde nogen af de mange server-programmer
+(kaldet services) hvis man ikke skal bruge dem og vil vedligeholde
+dem (ved at følge annonceringer om eventuelle sikkerhedsfejl i dem på 
+<ulink url="http://www.linuxtoday.com">http://www.linuxtoday.com</ulink>)
+eller de enkelte Linux-distributioners post-lister med
+sikkerheds-annonceringer. 
+</para>
+
+<para>
+Der er en meget mere teknisk udredning for sikkerhedsaspekter i bogen
+"Linux - Friheden til sikkerhed på Internettet", der kan findes på
+<ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
+</para>
+
+</sect2>
+
+
 </sect1>
 
 <sect1 id="user-sr">
 <title>Brugervenlighed</title>
 <para>
-Standard set fra en brugersynspunkt
+Som det er beskrevet ovenfor så bør kommunikation mellem maskiner
+baseres på OpenSSH hvor det er muligt. Det er et tekst-baseret program
+hvor man kan logge ind på en fjernmaskine og udføre kommandoer - men
+det er ikke hele historien. Man kan også sætte OpenSSH op til at køre
+grafiske programmer eller få andre programmer til at bruge OpenSSH til 
+at danne en krypteret kanal mellem maskinerne og mellem maskinerne køre
+alle programmer transparent. Med Konqueror til KDE kan man f.eks. installere
+en lille udvidelse med navn <literal>fish</literal> 
+<ulink url="http://ich.bin.kein.hoschi.de/fish/">http://ich.bin.kein.hoschi.de/fish/</ulink>. Normalt angiver man i URL-feltet til Konqueror at man vil
+ser filerne i <filename>/usr/</filename> som <filename>file:/usr/</filename>. Vil man se filerne i kataloget <filename>/usr/</filename> på maskinen <literal>www.sslug.dk</literal> med bruger-ID "anne" skriver man i URL-feltet 
+<filename>fish://anne@www.sslug.dk/usr</filename>. Har man OpenSSH adgang til
+maskinen vil filoversigten blive vist som om det var på egen maskine med fuld
+mulighed for drag-and-drop kopiering og flytning mv.
 </para>
+<indexterm><primary>KDE</primary><secondary>fish</secondary></indexterm>
+<indexterm><primary>fish</primary><secondary>KDE</secondary></indexterm>
+<indexterm><primary>krypteret kanel</primary><secondary>Konqueror</secondary></indexterm>
+
+
 </sect1>
 
 <sect1 id="use-sr">
 <title>Drift</title>
 <para>
-Vedligeholdelse set fra systemadministratoren
+At drive en server koster tid og reelt penge, da man altid skal have
+en eller anden mulighed for at tilkalde en kvalificeret person hvis
+noget skulle gå galt. Dette er ikke anderledes end på andre
+platforme. Med Linux (generelt for Unix) er der gode muligheder for at
+effektivisere systemadministration til få centraliserede funktioner,
+hvilket kan gøres meget kost-effektivt. Fra flere sider peges der på
+at en Linux-systemadministrator kan håndtere mange gange flere
+maskiner end en tilsvarende Windows NT-administrator. Det er
+bla. fordi systemadministratoren på et Linux-system ret let kan
+distribuere program-opgraderinger og lave generel systemvedligehold
+over netværket. At Linux og tilhørende server-programmer er langt mere
+stabile end tilsvarende til Windows NT vil også gøre at drift-mæssigt
+vil der være store fordele i Linux.
 </para>
+
+<para>
+IDC har i januar 2002 sammen med Red Hat lavet en undersøgelse af
+drift-økonomi (TCO - Tocal Cost of Ownership) hvor man sammenligner
+kommercielle Unix-løsninger med tilsvarende Linux-løsninger. Udfaldet
+er at Linux ligger 40-80% under i pris.
+</para>
+
 </sect1>
 
 </chapter>
