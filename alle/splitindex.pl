@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 # $Id$
+# Script der splitter stiksordsregister op i en fil for hvert
+# bog, så stikord.html er ikke er så stor.
+# Link til primærfilen: idx.html
 
 my $state = 0;
 my $headerX = "";
