@@ -1,5 +1,5 @@
 <appendix id="A-crash">
-   <title>Crash course i C sproget</title>
+<title>Crash course i C sproget</title>
 <titleabbrev>C-sprogelementer</titleabbrev>
 <para>
 C sproget består som andre sprog af:
@@ -47,7 +47,6 @@ effektivt sprog, som har nemt ved at interface til maskinsprog,
 <para>
 C sproget er også et lille sprog, der er kun 32 reserverede ord
 <emphasis> keywords </emphasis>. Det gør det nemt at lære.
-
 </para>
 
 <programlisting>
@@ -90,7 +89,7 @@ while
 <para>
 Anvendt på rette måde bliver koden meget læseligt, og derfor 
 anvendes C sproget til mange forskellige slags opgaver, fra
-hardware-niveau til højniveau opgaver.A
+hardware-niveau til højniveau opgaver.
 </para>
 
 <para>
@@ -98,7 +97,7 @@ C++ er en udvidelse af C sproget. C++ er et bedre C, som
 supporterer objektorienteret programmering, data abstraction og
 generiske algoritmer. Der er dog et par forskelle mellem C og den
 grundlæggende C-syntax i C++. De beror på det oprindelige C sprogs
-manglende typecheck af funktioners returværdier - det var altid heltal
+manglende typecheck af funktioners returværdier - det var altid heltal,
 <emphasis> integers </emphasis>.
 </para>
 
@@ -108,6 +107,7 @@ Et minimal C program:
 
 <example id="hello-world">
 <title>Hello world! programmet.</title>
+
 <programlisting>
 /* Dette program skriver Hello, world! i terminal vindue. */
 
@@ -118,14 +118,14 @@ main(){
 </example>
 
 <para>
-     Vores program definerer en funktion, d.v.s. et stykke kode, som
+Vores program definerer en funktion, d.v.s. et stykke kode, som
 udfører en opgave. Navnet på vore funktion er main. main er det sted,
 hvor et C program begynder eksekvering. Parenteserne efter ordet main
 fortæller, at det er en funktion.
 </para>
 
 <para>
-     Koden, det, som bliver til maskin instruktioner, står mellem to
+Koden, det, som bliver til maskin instruktioner, står mellem to
 krøllede parenteser <emphasis> braces </emphasis>. Koden består af et
 kald til en anden funktion, printf, som får til opgave at skrive vores
 tekst mellem double quotes på skærmen. "\n" er måden at skrive
@@ -133,9 +133,9 @@ linieskift mellem doublequotes.
 </para>
 
 <para>
-     Ovenstående program-text bør kunne oversættes <emphasis> kompilere
+Ovenstående program-text bør kunne oversættes, <emphasis> kompilere,
 </emphasis> til et eksekverbart program. De fleste moderne compilere vil
-dog klage over mange mangler. En helt korrekt version (også C++) vil se
+dog klage over udeladelser. En helt korrekt version (også C++) vil se
 ud som følger:
 </para>
 
@@ -150,19 +150,18 @@ int main(){
      (void) printf("Hello, world!\n");
      return 0;
 }
-
 </programlisting>
 </example>
 
 <para>
-     Ovenstående eksempel erklærer, at main er en funktion, som
+Ovenstående eksempel erklærer, at main er en funktion, som
 returnerer en integer. Derfor returnerer den jo så altså netop også en
 integer! Return 0; betyder aflever et 0 til den, som satte funktionen i
 gang. Man siger, at caller får return value.
 </para>
 
 <para>
-     printf er ligeledes en funktion, som returnerer en integer til
+printf er ligeledes en funktion, som returnerer en integer til
 caller; det er antallet af bogstaver, den har skrevet ud. Da vi ikke har
 brug for denne integer, fortæller vi compileren, at det er "med vilje",
 at vi ignorer return value ved at skrive <emphasis> (void) </emphasis>.
@@ -203,6 +202,34 @@ Datatyperne kan erklæres udenfor en funktion, så er det globale objekter,
 eller som lokale variable, indenfor funktionsbraces.
 </para>
 
+<sidebar>
+<para>
+Jeg har med vilje udeladt en del grumsede detailler i ovenstående
+type-oversigt. Hvis du, kære læser, er sur over det, så er her et resume
+af det udeladte:
+</para>
+
+<para>
+En long integer er lige så stor - måske større - end en int. I gcc i386
+er de begge 32 bit. Nye standarder vil indeholde forskrift om at
+compilere skal supportere _int8, _int16, _int32, _int64 etc. hvilket vil
+være praktisk for mange opgaver. Man kan i dag definere sådanne typer
+selv v.hj.a. typedef, fx. 
+</para>
+
+<programlisting>
+typedef long long int _int64;
+</programlisting>
+
+<para>
+Integer typerne (char, int, short int, long int, _int64 eller long long)
+kan foranstilles signed (det er default) eller unsigned. Erklærer man en
+unsigned integer vil man i mange compilere alligevel kunne tilskrive den
+en negativ value. Unsigned vinder overfor signed i type coercion i
+expression evaluering.
+</para>
+</sidebar>
+
 <programlisting>
 /* ramme for eksperimenter med variable af indbyggede typer */
 
@@ -226,15 +253,24 @@ main()
 }
 </programlisting>
 
+
+<sect3 id="crash-struct">
+<title>Struct - forskellige typer grupperet i en klump</title>
+
 <para>
-Struct kræver lidt øvelse at læse. Ved en typisk struct erklæring bygger
-man først en type op, derefter udlægger man memory til de enkelte
-objekter af struct-typen. 
+Med struct konstruktionen kan vi selv definere de datatyper, vi har brug
+for, deraf betegnelse <emphasis> brugerdefinerede typer. </emphasis>
+Notationen kræver lidt øvelse. Først bygger man en type op, man
+<emphasis> erklærer en type </emphasis>, derefter defineres objekter,
+d.v.s. der reserveres memory til objekter af den oprettede struct-type.
 </para>
+
 <para>
-Ordet efter struct kaldes en tag. Det kan sammen med ordet struct bruges
-som type-specifikation.
+Navnet efter ordet struct kaldes en tag. Det kan sammen med ordet struct
+bruges som type-specifikation. I eksemplerne anvendes angles til meta
+ord - der skal indsættes et unikt navn på de pågældende positioner.
 </para>
+
 <programlisting>
 struct &lt;type_tag> {
    data-declarations ...
@@ -242,6 +278,7 @@ struct &lt;type_tag> {
 
 struct &lt;type_tag> new_var;
 </programlisting>
+
 <para>
 Alternativt kan man definere en struct type ved hjælp af typedef. Denne
 metode foretrækkes af mange, fordi man så ikke behøver at anvende ordet
@@ -251,13 +288,16 @@ struct.
 <programlisting>
 typedef struct &lt;type_tag> {
    &lt;data-definitions> ...
-} type-specifier;           /* <--- her er den nye types navn */
+} &lt;type-specifier>;           /* <--- her er den nye types navn */
+
+&lt;type-specifier> min_variabel;
 </programlisting>
 
 <para>
 Min opfattelse er den, at ordet struct gør programmerne lettere at læse.
 Og compileren kan lettere finde fejl.
 </para>
+
 <programlisting>
 struct hus_t {
    char adr[280];
@@ -273,6 +313,7 @@ main() {
 </programlisting>
 
 
+</sect3>
 </sect2>
 
 <sect2 id="operatorer">
@@ -280,6 +321,8 @@ main() {
 
 <para>
 Aritmetiske operatorer.
+</para>
+
 <programlisting>
 + plus, addition
 - minus, subtraktion
@@ -287,25 +330,37 @@ Aritmetiske operatorer.
 / stroke ell. slash, division
 % percent, modulus, rest af heltalsdivision.
 </programlisting>
-</para>
+
 
 <para>
 Assignments operatorer, tildeling.
 </para>
 
 <programlisting>
-=     a = b; læg værdien af b over i a.
-++    ++c;   læg en til c
---    c--;   brug værdien af c, men træk en fra inden den lægges på plads.
-Desuden kan lighedstegnet kombineres med de forskellige aritmetiske
-operatorer:
+Op.   ex.          Beskrivelse
+-------------------------------------------------------------------------------
+=     a = b     :  læg værdien af b over i a.
 
-x += megetlangt_navn; /* tael x op med vaerdien af megetlangt_navn */
+++    ++c       :  læg en til c, increment operator.
+
+                :  ++ operatoren kan stå efter identifieren:
+  if (c++ &lt; 42) :  sammenlign med 42 og læg bagefter 1 til c.
+
+--    --c       :  træk 1 fra c, decrement operator.
+-------------------------------------------------------------------------------
+
+Desuden kan lighedstegnet kombineres med de 
+forskellige aritmetiske operatorer:
+
+x += kaxi; /* tael x op med vaerdien af variabelen kaxi */
 </programlisting>
 
-<programlisting>
-Relationelle operatorer, sammenligning.
 
+<para>
+Relationelle operatorer, sammenligning.
+</para>
+
+<programlisting>
 &lt; mindre end
 > større end
 &lt;= mindre end eller lig med
@@ -350,13 +405,68 @@ bitkolonner efter den almindelige logik.
 &    bitvis AND               1 & 1 == 1; 17 & 1 == 1;
 |    bitvis OR                1 | 0 == 1; 17 | 1 == 17;
 ^    bitvis XOR               1 ^ 0 == 1; 17 ^ 1 == 16;
-~    bitvis NOT               ~1    == 0x[...]fffe;
+~    bitvis NOT               ~1    == 0xfffffffe;
 >>   shift right              1 >>1 == 0; 17 >>1 == 8;
-<<   shift left               1 <<1 == 2; 17 <<1 == 34;
+&lt;&lt;   shift left               1 &lt;&lt;1 == 2; 17 &lt;&lt;1 == 34;
 </programlisting>
 
 <para>
-Du kan afprøve de ovenstående beregninger med små programmer som
+Pas på NOT operatoren, det er en tilde. I almindelig netscape opsætning
+er den meget svær se.
+</para>
+
+<para>
+Bitvis NOT er det samme som bitvis invertering. I ovenstående
+eksempel er resultatet skrevet ud fra en antagelse af, at der er tale om
+en 32-bit størrelse. Hvis der er tale om 64 bit, så vil der være 15 f'er
+i stedet for "kun" 7. Hvis 32-bit størrelsen skulle skrives som
+bit-mønster, så er der selvfølgelig 32 "cifre" der enten er 0 eller 1.
+Det er en god ting at lave et mellemrum for hver fjerde. Så kan man
+bedre jævnføre med hexadecimal notation.
+</para>
+
+<programlisting>
+~1 == 1111 1111 1111 1111 1111 1111 1111 1110. 
+
+      f    f    f    f    f    f    f    e
+
+      15   15   15   15   15   15   15   14
+
+Så altså, det er lidt nemmere at læse hexadecimal notation:
+
+~1 == 0xffffffe
+</programlisting>
+
+<para>
+Der er desværre ikke nogen standard funktion, som udskriver bit-mønster
+for en integer. Hvis man vil skrive resultatet som BIT-mønster, så
+må man programmere en funktion, der tester med bitvis and og derefter
+foretager et shift, fx.
+</para>
+
+<programlisting>
+    /* udskriv x's bitmønster: */
+    { 
+        int i = 0;
+        char numstr[35];                    /* 2 + 32 + end of string */
+        strcpy(numstr,"b: ");               /* "b:" for binaert format */
+        numstr[34] = 0;                     /* End of string mærke */
+        while (i++ < 32) {
+            numstr[34-i] = (x & 1) + '0';
+            x >> 1;
+        }
+        printf("%s\n",numstr);
+    }
+</programlisting>
+
+<para>
+Du kan afprøve de ovenstående ved at sætte den ind i en main() funktion,
+hvor man allerøverst definerer en int x = 0xf0f0f0f0.
+(File: bitmonst.c).
+</para>
+
+<para>
+De andre bitmanipulationer kan også afprøves med små programmer som
 nedenstående, god øvelse:
 </para>
 
@@ -414,11 +524,37 @@ må anvendes efter forudgående aftale med type checking systemet. ;-)
  ,   Komma, listeoperator.
 </programlisting>
 
+<para>
+Her er et enkelt eksempel - men lav selv flere!
+</para>
+
+<programlisting>
+int charcnt[256];
+
+main()
+{
+    int yxi;
+    double kaxi;
+    long double kolme;
+
+    printf("Size of charcnt: %d\n",sizeof charcnt);
+
+    /* sizeof anvendes ofte som en pseudo funktion */
+    printf("Size of yxi....: %d\n",sizeof(yxi));
+
+    printf("Size of double.: %d\n",sizeof kaxi);
+    printf("long double....: %d\n",sizeof kolme);
+
+}
+</programlisting>
+
 </sect2>
 
 <sect2 id="flow-kontrol">
 <title>Flow kontrol</title>
-
+<para>
+Flow kontrol er maskinens måde at reagere på data. Ikke alle er nødvendige.
+</para>
 <programlisting>
     if (betingelse_opfyldt)
         do_dyt();
@@ -498,8 +634,6 @@ main()
 
     return k;
 }
-
-
 </programlisting>
 
 <para>
@@ -510,7 +644,7 @@ Et eksempel på en for-løkke:
 main()
     int i, celsius;
 
-    for (i = 0; i &lt; 200; i = i + 20) {
+    for (i = 0; i < 200; i = i + 20) {
         celsius = 5 * (32 - i) / 9;
         printf("Fahrenheit %3d svarer til celsius %3d\n", i, celsius);
     }
@@ -550,6 +684,7 @@ Det er muligt at have private variable i en translation unit.
  */
 
 #include &lt;stdio.h>
+
 main()
 {
     int c;
@@ -588,7 +723,8 @@ dele og indsæt printf statements, så du kan se, hvad der sker undervejs.
 </para>
 
 <programlisting>
-static char *keystring = "Under træerne var der stille og roligt."
+static char *keystring = "Under traeerne var der stille og roligt."
+static int keylen;
 static int first;
 static char *mv = keystring;
 
@@ -597,30 +733,40 @@ krypter(int inpchar)
    if (!inuse) {
        inuse = 1;
        mv = keystring;
+       keylen = strlen(keystring);
    }
-   if (mv - keystring > strlen(keystring))
+   if (mv - keystring > keylen)
        mv = keystring;
    return (inpchar + *mv++) % 93 + 33;
 }
 </programlisting>
 
 <para>
-Virker kun for ren ASCII tekster.
+Virker kun for ren ASCII tekster.<footnote>
+<para>
 I parentes bemærket, hvis du vil gøre krypteringen ovenfor ubrydelig
 skal du forbedre den lidt. Længere keystring (helst længere en
 gennemsnitsmeddelelsen), formater output i linier, som er lige lange,
-og sørg for, at hvis input består af lutter samme tegn, så vil denne
-version kunne afsløre keystring'en, dog ikke lige i klartekst, men
-alligevel! Endelig er der ikke support for såkaldte offentlige keys, der
-kan bruges til afkodning men ikke indkodning.
+og bemærk, at hvis input består af lutter samme tegn, så kan denne
+version ikke rigtigt skjule sin keystring. Ikke at den kommer i
+klartekst, men det er muligt at regne baglæns og finde keystringen.
+Man kan behandle sekvenser af samme char som et antal og en specielle
+koder. Algoritmen er en tilpasning af Kejser Augustus' og Livia's
+kode, som beskrevet i Robert Graves' "I, Claudius".
+</para>
+<para>
+Endelig er der ikke support for såkaldte offentlige keys, der kan
+bruges til afkodning men ikke indkodning.
+</para>
+</footnote>
 </para>
 
 <para>
 Hvis du blev bidt af ovenstående, så lav en dekryptering til den og gå
 derefter videre med fx. <xref LinkEnd="beregnings-filter">.
 </para>
-</sect2>
 
+</sect2>
 </sect1>
 </appendix>
 
