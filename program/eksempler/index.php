@@ -27,7 +27,7 @@ er så bare lavet en symbolic link til "smart.php".
 require("proglang.inc");
 
 ?><h2><?php
-	echo count($proglang);
+  echo count($proglang);
 ?>
  Programeksempler til "Linux - Friheden til at programmere".
 </h2>
@@ -72,18 +72,18 @@ eksempler samlet.
   while (list($ext,$lang) = each($proglang)) {
     // Start et row og skriv et programsprog
     echo "<tr>\n";
-		// Tæl op om alle eksempler er der
+    // Tæl op om alle eksempler er der
     reset($examp);
-		$gotall = 0;
+    $gotall = 0;
     while (list($file) = each($examp))
-			if (file_exists("$file.$ext"))
-				$gotall++;
+      if (file_exists("$file.$ext"))
+        $gotall++;
     echo " <td>";
-		if ($gotall == count($examp))
-    	echo "<a href=\"all?lang=$ext\"><b>$lang[navn]</b></a>";
-		else
-    	echo "$lang[navn]";
-		echo "</td>\n";
+    if ($gotall == count($examp))
+      echo "<a href=\"all?lang=$ext\"><b>$lang[navn]</b></a>";
+    else
+      echo "$lang[navn]";
+    echo "</td>\n";
     // Spol eksempel-navn listen tilbage
     reset($examp);
     // For alle eksempel-navne (der er 3)
