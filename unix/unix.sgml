@@ -4203,6 +4203,206 @@ og alle programmer kan hentes fra
 </sect2>
 </sect1>
 
+<sect1 id="shell-script">
+<title>Shell script</title>
+<indexterm><primary>Shell script</primary></indexterm>
+
+<para>
+Skal man udføre mange kommandoer efter hinanden eller
+vil man have en anden bruger til at gøre det, 
+kan det med fordel betale sig at lære at skrive shell scripts.
+I <xref linkend="koerflere"/> blev vist hvordan man afvikler
+flere kommandoer efter hinanden på kommando-linjen, men er det mere kompliceret
+eller der er 20 kommandoer, så vil et shell script med
+fordel kunne bruges.
+</para>
+
+<sect2 id="shell-hello">
+<title>Simpelt shell-script</title>
+<indexterm><primary>Shell script</primary><secondary>simpelt</secondary></indexterm>
+<para>
+Alle shell kommandoer man kan udfører på kommando-linjen,
+kan udføres i et shell script.
+Først skrives shell-fortolkeren og kommandoen i en fil, dernæst skal filen gøres eksekverbar.
+Kommandoen skal skrives i en fil, og denne kan så efterfølgende køres med en fortolker.
+Et simpelt eksempel er udskrivning af "Hello, world!".
+På kommando-linjen skrives blot:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ echo "Hello, world!"</prompt>
+Hello, world!
+</screen>
+
+<para>
+I shell-scriptet skal der så blot stå det samme.
+</para>
+
+<programlisting>
+# Filnavn: hello (denne linje er en kommentar)
+echo "Hello, world!"
+</programlisting>
+
+<para>
+Nu kan scriptet så køres ved at angive en kommando-fortolker
+til start og så scriptet.
+Her vælger vi at bruge den simple shell, der blot hedder <command>sh</command>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ sh hello</prompt>
+Hello, world!
+</screen>
+
+<para>
+Nu er det mest almindeligt at man angiver kommando-fortolkeren
+inde i scriptet, således at brugeren ikke skal tænke over dette.
+Alternativt kunne fortolkeren være <command>bash</command>
+eller <command>tcsh</command>, så brugeren skal vide dette.
+Fortolkeren <emphasis>skal</emphasis> skrives på første linje i filen.
+</para>
+
+<programlisting>
+#! /bin/sh
+# Filnavn: hello
+echo "Hello, world!"
+</programlisting>
+
+<para>
+Bemærk de første 4 tegn i filen er <command>#! /</command> .
+De angiver at der bruges en fortolker til at køre dette script.
+I dette tilfælde er det så <command>sh</command> der er placeret
+i kataloget <command>/bin/</command> .
+</para>
+
+<para>
+Nu kan programmet gøres eksekverbart med <command>chmod</command>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ chmod +x hello</prompt>
+</screen>
+
+<para>
+Hvis dit system er sat fornuftigt op, kan ikke bare køre
+programmer fra det subdir du står i.
+Derfor skal der angives en <emphasis>./</emphasis> foran
+filnavnet når scriptet skal køres.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Hello, world!
+</screen>
+
+</sect2>
+
+<sect2 id="shell-flere-kom">
+<title>Flere kommandoer</title>
+<indexterm><primary>Shell script</primary><secondary>flere kommandoer</secondary></indexterm>
+<para>
+Mumle -- flere linjer eller brug ;
+</para>
+</sect2>
+
+<sect2 id="shell-parametre">
+<title>Parametre til script</title>
+<indexterm><primary>Shell script</primary><secondary>parametre</secondary></indexterm>
+<para>
+Mumle $1 $2
+</para>
+</sect2>
+
+<sect2 id="shell-shift">
+<title>Parametre, tricks</title>
+<indexterm><primary>Shell script</primary><secondary>parametre, tricks</secondary></indexterm>
+<para>
+Mumle shift
+</para>
+</sect2>
+
+<sect2 id="shell-if">
+<title>if</title>
+<indexterm><primary>Shell script</primary><secondary>if</secondary></indexterm>
+<para>
+Mumle noget om if true;then;fi
+</para>
+</sect2>
+
+<sect2 id="shell-test">
+<title>Test [</title>
+<indexterm><primary>Shell script</primary><secondary>test [</secondary></indexterm>
+<para>
+Mumle noget om [
+</para>
+</sect2>
+
+<sect2 id="shell-case">
+<title>Case</title>
+<indexterm><primary>Shell script</primary><secondary>case</secondary></indexterm>
+<para>
+Mumle case $1; hej*); echo dav; ;; esac
+</para>
+</sect2>
+
+<sect2 id="shell-psubst">
+<title></title>
+<indexterm><primary>Shell script</primary><secondary>process erstatning</secondary></indexterm>
+<para>
+Mumle noget om `date` el. $(date)
+</para>
+</sect2>
+
+<sect2 id="shell-for">
+<title>For-løkker</title>
+<indexterm><primary>Shell script</primary><secondary>for-løkker</secondary></indexterm>
+<para>
+Mumle
+</para>
+</sect2>
+
+<sect2 id="shell-while">
+<title>Løkke, while</title>
+<indexterm><primary>Shell script</primary><secondary>while</secondary></indexterm>
+<para>
+Mumle while .. do done
+</para>
+</sect2>
+
+<sect2 id="shell-sleep">
+<title>Vent, sleep</title>
+<indexterm><primary>Shell script</primary><secondary>sleep</secondary></indexterm>
+<para>
+Mumle egentlig blot kommandoen sleep og lidt om at bruge den
+</para>
+</sect2>
+
+<sect2 id="shell-let">
+<title>Regne</title>
+<indexterm><primary>Shell script</primary><secondary>regne</secondary></indexterm>
+<para>
+Mumle let N=1+$NUM
+</para>
+</sect2>
+
+<sect2 id="shell-dc">
+<title>Regne, avanceret</title>
+<indexterm><primary>Shell script</primary><secondary>regne, avanceret</secondary></indexterm>
+<para>
+Mumle N=`dc -e "2 $N * p"`
+</para>
+</sect2>
+
+<sect2 id="shell-x">
+<title>x</title>
+<indexterm><primary>Shell script</primary><secondary>x</secondary></indexterm>
+<para>
+Mumle
+</para>
+</sect2>
+
+</sect1>
+
 <sect1 id="videre-med-Unix">
 <title>Videre med Linux</title>
 
