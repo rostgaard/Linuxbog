@@ -1,0 +1,171 @@
+<SECT1 ID="ada">
+<TITLE>Ada</TITLE>
+<INDEXTERM><PRIMARY>Ada</PRIMARY></INDEXTERM>
+
+<PARA>
+Ada er et sprog der er udviklet til store projekter, hvor det er vigtigt at
+der ikke er fejl i systemerne, men det kan også med fordel bruges til mindre
+projekter. Den nye GNU Visual Debugger er et eksempel på et "mindre"
+Ada-projekt. Blandt de større kan man for eksempel nævne Boeing 777-serien.
+</PARA>
+
+<indexterm><primary>GNU Ada</primary></indexterm>
+<para>
+GNU Ada oversætteren (også kendt som GNAT) blev udviklet parallelt med den
+seneste ISO-standard for Ada og var allerede da standarden udkom i februar 1995
+overordentlig brugbar. I dag er det en oversætter i en kvalitet, der gør at
+mange store firmaer vælger GNU Ada, når de har brug for en Ada-oversætter.
+GNU Ada fås blandt andet til Linux, DOS, Digital Unix, AIX, OS/2 og Windows.
+Udviklerne bag GNU Ada gør meget ud af at oversætteren følger ISO-standarden
+for Ada. - Det at følge standarderne er i det hele taget noget man går meget op
+i i Ada-miljøet.
+</para>
+
+<PARA>
+Du kan hente GNU Ada til Linux på 
+<ULINK URL="http://dk.gnuada.org/">http://dk.gnuada.org/</ULINK>.
+</PARA>
+
+<SECT2 ID="hello-ada">
+ <title>Hej verden!</title>
+ <INDEXTERM>
+  <PRIMARY>Hello, world!</PRIMARY>
+  <SECONDARY>Ada</SECONDARY>
+ </INDEXTERM>
+ <INDEXTERM>
+  <PRIMARY>Hej verden!</PRIMARY>
+  <SECONDARY>Ada</SECONDARY>
+ </INDEXTERM>
+
+ <para>
+  Vi følger traditionen og begynder med "Hello World"-programmet, der ofte er
+  det eksempel man bruger, når man skal præsentere et programmeringssprog.
+  Programmet skriver en kort tekst, Hej SSLUG, ud på skærmen og afslutter.
+  Indtast følgende tekst (brug <command>emacs</command>,
+  <command>pico</command> eller <command>vi</command>), og gem det som
+  <filename>hej_sslug.adb</filename>.
+ </para>
+
+<screen>
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Hej_SSLUG is
+begin
+   Put_Line ("Hej SSLUG");
+end Hej_SSLUG;
+</screen>
+
+<para>
+I kataloget, hvor filen er gemt, kan programmet nu oversættes ved at
+skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus ada]$ </prompt><userinput>gnatmake hej_sslug</userinput></screen>
+
+<indexterm><primary>gnatmake</primary></indexterm>
+<para>
+Ada-oversætteren kaldes med kommandoen <command>gnatmake</command>.
+</para>
+
+<para>
+Det oversatte Ada-program <filename>hej_sslug</filename> køres ved at skrive
+navnet i en <command>xterm</command> eller lignende:
+
+<screen>
+<prompt>[daisy@linus ada]$ </prompt><userinput>./hej_slug</userinput>
+Hej SSLUG
+<prompt>[daisy@linux ada]$ </prompt>
+</screen>
+</para>
+
+<para>
+Ada har, i modsætning til de fleste andre programmeringssprog, indbygget
+mulighed for at skrive programmer, hvor forskellige dele af programmet kører
+parallelt med hinanden. Som et enkelt eksempel kan du indtaste teksten
+nedenfor og gemme den i en fil med navnet
+<filename>hej_sslug_og_verden.adb</filename>.
+</para>
+
+<screen>
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Hej_SSLUG_Og_Verden is
+
+   task Hils_På_Verden;
+
+   task body Hils_På_Verden is
+   begin
+      Put_Line ("Hej Verden");
+   end;
+
+begin
+   Put_Line ("Hej SSLUG");
+end Hej_SSLUG_Og_Verden;
+</screen>
+
+<para>
+Programmet kan oversættes og køres på samme måde som "Hej SSLUG"-programmet.
+Med dette program kan man - principielt - ikke vide om det først vil skrive
+"Hej SSLUG" eller "Hej Verden". Parallelprogrammering, der af C-programmører
+typisk bliver kaldt trådprogrammering, benyttes normalt til lidt mere
+komplicerede ting end ovenstående. Man kan for eksempel benytte det, hvis man
+vil lade sit program fordele sig på alle computerens processorer eller hvis
+forskellige dele af programmet skal køre på forskellige maskiner.
+</para>
+
+<sect2 id="Ada-bøger">
+ <title>Bøger om Ada-programmering</title>
+
+ <para>
+  Der findes mange bøger om Ada-programmering. Jeg nøjes her med at nævne et
+  par stykker, der står på min egen bogreol:
+
+  <itemizedlist mark="bullet" spacing="compact">
+   <listitem>
+    <para>
+     Michael A. Smith: <emphasis>Object-Oriented Software in Ada 95</emphasis>,
+     Thomson Computer Press, ISBN 1-85032-185-X, 460 sider.
+    </para>
+    <para>
+     Bogen er skrevet som en introduktion for studerende og programmører, der
+     ønsker at lære om objektorienteret programmering.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     David J. Naiditch:
+     <emphasis>Rendezvous With Ada 95</emphasis> (second edition),
+     John Wiley &amp; Sons, Inc., ISBN 0-471-01276-9, 598 sider.
+    </para>
+    <para>
+     En grundig introduktion til Ada 95, men ikke nødvendigvis sagen for folk
+     der ikke har programmeret før.
+    </para>
+   </listitem>
+
+   <!--
+   <listitem>
+    <para>
+     forfatter &amp; forfatter: <emphasis>titel</emphasis>,
+     forlag, ISBN ..., # sider.
+    </para>
+    <para>
+     omtale
+    </para>
+   </listitem>
+   -->
+  </itemizedlist>
+
+  Du kan finde anmeldelser af bøger om Ada på <ulink
+  url="http://www.seas.gwu.edu/faculty/mfeldman/ada95books.html">http://www.seas.gwu.edu/faculty/mfeldman/ada95books.html</ulink>.
+ </para>
+
+ <para>
+  Hvis du har brug for Ada-referencemanualen, kan du hente den på internettet:
+  <ulink url="http://www.ada-auth.org/~acats/arm.html">http://www.ada-auth.org/~acats/arm.html</ulink>
+ </para>
+</sect2>
+
+</SECT1>
