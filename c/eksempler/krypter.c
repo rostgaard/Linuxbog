@@ -16,7 +16,7 @@ int krypter(int inpchar)
        mv = keystring;
    if (inpchar < ' ') inpchar = '.';
    if (inpchar > 126) inpchar = '~';
-   return (inpchar + *mv++) % 93 + 32;
+   return (inpchar + *mv++) % 93 + 33;
 }
 
 

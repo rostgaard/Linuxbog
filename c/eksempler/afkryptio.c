@@ -5,13 +5,16 @@
  */
 
 #include <stdio.h>
-main()
+int afkrypter(int);
+
+int main()
 {
     int c;
     while ( (c = getchar()) != EOF) {
         c = afkrypter(c);
         putchar(c);
     }
+    return 0;
 }
 
 
@@ -32,12 +35,12 @@ int afkrypter(int inpchar)
        mv = keystring;
    /* return (inpchar + *mv++) % 93 + 33; */
    /* return ((inpchar-33) - *mv++ + 2*93) % 93; */
-   m = inpchar - 32;
+   m = inpchar - 33;
    dc = m + 93 - *mv++;
-   if (dc > 31 && dc < 127)
+   if (dc > 31 && dc < 126)
        return dc;
    else if (dc < 32) return dc + 93;
-   else if (dc > 126) return dc - 93;
+   else if (dc > 125) return dc - 93;
    fprintf(stderr, "Error!\n");
    exit(224);
    return -1;
