@@ -284,14 +284,14 @@ function vistype($type) {
 //        "Mads Bondo Dydensborg" => "madsdyd@challenge.dk"
 //      )
 //    ),
-    "itplatform" => array(
-      title => "Linux - Friheden til at vælge IT-løsning",
-      comment => "Valg af Linux-baseret IT-løsning",
-      auth => array(
-        "Michael Rasmussen" => "mir@miras.org",
-        "Peter Toft" => "pto@linuxbog.dk"
-     )
-    ),
+//    "itplatform" => array(
+//      title => "Linux - Friheden til at vælge IT-løsning",
+//      comment => "Valg af Linux-baseret IT-løsning",
+//      auth => array(
+//        "Michael Rasmussen" => "mir@miras.org",
+//        "Peter Toft" => "pto@linuxbog.dk"
+//     )
+//    ),
    "samling" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "En pakke med alle bøgerne i",
