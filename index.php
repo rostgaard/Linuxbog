@@ -32,16 +32,19 @@
    $htmltitle_sv="Friheden til at skrive böcker";
    $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
    $maintain_name = "Hans Schou";       // Skriv dit navn her
-   $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
+   $maintain_email = "chlor@schou.dk";  // Skriv din email adresse her
    if (file_exists($DOCUMENT_ROOT."includes/top.phtml")) {
      include($DOCUMENT_ROOT."includes/top.phtml");
    } else if (file_exists($f="top.php")) {
-	include($f);
+     include($f);
    }
-   if (preg_match("/[cvsw]{3}\.linuxbog\.dk/", $_SERVER["HTTP_HOST"])) {
-	$USE_SUBMIT_INC = ".php";
-   } else {
-        $USE_SUBMIT_INC = "";
+   if (file_exists($f = "configureoptions.php")) {
+     include($f);
+     if (preg_match("/enable-submitbox/", $configureoptions)) {
+       $USE_SUBMIT_INC = ".php";
+     } else {
+       $USE_SUBMIT_INC = "";
+     }
    }
 
    list($width,$height) = getimagesize("front.png");
@@ -187,6 +190,7 @@ function vistype($type) {
 
 if (!file_exists("titleabstract.php")) {
 	echo "<h1>Panic! 'titleabstract.php' does not exist.</h1>"; /* $books mangler */
+	exit;
 } else {
 	require("titleabstract.php");
 	if (count($books) < 1) {
