@@ -5,6 +5,8 @@
 <chapter id="basal-unix">
  <title>Basal Unix</title>
 
+ <!-- her bør der nok lige komme en introduktion til kapitlet -->
+
  <sect1 id="filtraet">
   <title>Hvad ligger hvor på en Linux-maskine</title>
 
@@ -16,7 +18,13 @@
   <para>
    Linux har en meget velorganiseret måde at gemme forskellige filer.
    Der er kataloger til delte biblioteker, nogle til programmer, og
-   andre kataloger til brugerdata.
+   andre kataloger til brugerdata.  Dette afsnit bygger på <!--
+   MANGLER: Henvisning til FHS --> »Linux File-System Hierarchy
+   Standard« (FHS) der er en standard som de forlag der udgiver
+   linuxdistributioner har aftalt, for at det skal være lettere for
+   programhuse og individuelle programmører at pakke én udgave at et
+   program der vil virke på alle de forskellige linuxdistributioner
+   (der overholder FHS).
   </para>
 
   <table>
@@ -73,9 +81,9 @@ lignende filerne <filename>CONFIG.SYS</filename> og
 
 <row>
 <entry><filename>/home</filename></entry> 
-<entry>Dette er kataloget for alle brugerkonti. Ja, Linux giver
+<entry>Dette er kataloget for alle brugerkonti. <!-- Ja, Linux giver
 mulighed for, at mange personer kan arbejde på den samme
-computer samtidig &ndash; uden at blande dem sammen. Linux er et
+computer samtidig &ndash; uden at blande dem sammen. --> Linux er et
 flerbrugerstyresystem.  Vi kan anbefale, at man opretter en bruger til de mest
 normale jobs og <emphasis>kun</emphasis> bruger root til
 administration, da du som root ved en fejl kan komme til at slette
@@ -88,7 +96,7 @@ vigtige filer, hvilket ville være umuligt som almindelig bruger.
 <entry>Indeholder systemets delte
 filer. Linux sparer hukommelse ved at lægge
 kode, som bruges af mange programmer, ind i en fil, kaldet "shared
-library" &ndash; svarende til DLL'er i Windows. På
+library"<!-- &ndash; svarende til DLL'er i Windows-->. På
 den måde vil der kun eksistere én kopi af filen i hukommelsen,
 når den bliver brugt.
 </entry>
@@ -110,9 +118,9 @@ når den bliver brugt.
       <entry><filename>/lost+found</filename></entry>
 
       <entry>
-       Du har måske prøvet at bruge Norton Utilities til at genskabe
+       <!-- Du har måske prøvet at bruge Norton Utilities til at genskabe
        en fil, som er tabt i en defekt del af harddisken. Vær mere
-       rolig under Linux.  Hvis harddisken laver fejl, vil systemet
+       rolig under Linux. -->  Hvis harddisken laver fejl, vil systemet
        selv forsøge at genskabe filerne, og hvis det ikke kan finde ud
        af, hvor i filtræet filen var placeret, vil den blive placeret
        i <filename>/lost+found</filename>.
@@ -223,23 +231,20 @@ for mere information om filers placering.
 
 
  <sect1 id="vis">
-  <title>Indholdet af filer</title>
+  <title>Se indholdet af filer og kataloger</title>
 
-<para>
-Indtil nu har du arbejdet med filer, men du har stadig ikke
-set på deres indhold. Indholdet af tekstfiler kan let
-vises. Kommandoen <command>cat</command> viser indholdet af en fil,
-f.eks. kan du se indholdet af <filename>passwd</filename> ved at
-skrive:</para>
-
-<indexterm><primary>vis indholdet af filer</primary></indexterm>
+  <indexterm>
+   <primary>vis indholdet af filer</primary>
+  </indexterm>
 
 <indexterm>
  <primary>cat</primary>
 </indexterm>
+
 <indexterm>
   <primary>more</primary>
 </indexterm>
+
 <indexterm>
  <primary>less</primary>
 </indexterm>
@@ -277,8 +282,14 @@ skrive:</para>
  <tertiary>more</tertiary>
 </indexterm>
 
+  <para>
+   Indtil nu har du arbejdet med filer, men du har stadig ikke set på
+   deres indhold. Indholdet af tekstfiler kan let vises. Kommandoen
+   <command>cat</command> viser indholdet af en fil, f.eks. kan du se
+   indholdet af <filename>passwd</filename> ved at skrive:
+
 <screen>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>cat passwd</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cat passwd</userinput>
 daemon:*:2:2:daemon:/sbin:
 adm:*:3:4:adm:/var/adm:
 lp:*:4:7:lp:/var/spool/lpd:
@@ -293,8 +304,9 @@ games:*:12:100:games:/usr/games:
 gopher:*:13:30:gopher:/usr/lib/gopher-data:
 ftp:*:14:50:FTP User:/home/ftp:
 nobody:*:99:99:Nobody:/:
-tyge:x:501:501:Tyge Brahe,,,,:/home/tyge:/bin/bash
+tyge:x:501:501:Tyge Brahe&comma;,&comma;,:/home/tyge:/bin/bash
 </screen>
+  </para>
 
 <para>
 <command>cat</command> er, som du ser, meget let at bruge, men
@@ -302,188 +314,280 @@ kommandoen har en dårlig side: Hvis filens indhold fylder mere end en
 skærmside, kommer filen alt for hurtigt over skærmen, og bagefter ser du
 kun den sidste side (dvs. det antal linjer, som kan vises på din
 skærm). Du kan dog se nogle få sider tilbage ved at bruger Shift+PageUp.
+<!--  er det ikke afhængigt af ens (virtuelle) konsol?  -->
 Kommandoerne <command>less</command> og
 <command>more</command> er derfor mere velegnede, da det er muligt
 at bladre frem og tilbage i filen. Kommandoen viser en side ad gangen,
-og du kan bladre frem ved at trykke på <emphasis>f</emphasis>
+og du kan bladre frem ved at trykke på <keycap>f</keycap>
 (eng. "forward") eller mellemrum og tilbage ved at trykke på
-<emphasis>b</emphasis> (eng. "backward"), og i <command>less</command>
+<keycap>b</keycap> (eng. "backward"), og i <command>less</command>
 kan pil op og ned også anvendes. Det er også muligt at søge ved at 
-skrive <emphasis>/søgestreng</emphasis> og søgningen gentages ved 
-tryk på <emphasis>n</emphasis> (eng. "next"). Man forlader ved at 
-trykke <emphasis>q</emphasis> (eng. "quit").
+taste <keycap>/</keycap> efterfulgt af den tekst man leder efter og
+<keycap>return</keycap>.  Søgningen gentages ved
+tryk på <keycap>n</keycap> (eng. "next"). Man afslutter både <command>less</command> og <command>more</command> ved at 
+trykke <keycap>q</keycap> (eng. "quit").
 </para>
 </sect1>
 
-<sect1 id="mv-rm">
-<title>Et par små nyttige kommandoer</title>
+ <sect1 id="mv-rm">
+  <title>Oprette, kopiere, flytte og slette filer og kataloger</title>
 
-<indexterm><primary>flytte filer</primary></indexterm>
-<indexterm><primary>omdøbe filer</primary></indexterm>
+  <indexterm>
+   <primary>filer</primary>
+   <secondary>flytte</secondary>
+  </indexterm>
 
-<indexterm>
- <primary>mv</primary>
-</indexterm>
+  <indexterm>
+   <primary>kataloger</primary>
+   <secondary>flytte</secondary>
+  </indexterm>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>mv</secondary>
-</indexterm>
+  <indexterm>
+   <primary>filer</primary>
+   <secondary>omdøbe</secondary>
+  </indexterm>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>mv</tertiary>
-</indexterm>
+  <indexterm>
+   <primary>kataloger</primary>
+   <secondary>omdøbe</secondary>
+  </indexterm>
 
-<para>
-Du har allerede set, hvordan du kan kopiere filer og se indholdet
-af dem. Nu kan det tænkes, at du finder ud af, at en fil skal have
-et andet navn, dvs. den skal omdøbes. Til det formål har du
-kommandoen <command>mv</command> (eng. "move").
-</para>
+  <indexterm>
+   <primary>flytte filer</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>flytte kataloger</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>omdøbe filer</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>omdøbe kataloger</primary>
+  </indexterm>
+
+  <para>
+   <indexterm>
+    <primary>mv</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>mv</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>mv</tertiary>
+   </indexterm>
+
+   Du har allerede set, hvordan du kan kopiere filer og se indholdet
+   af dem. Nu kan det tænkes, at du finder ud af, at en fil skal have
+   et andet navn, dvs. den skal omdøbes. Til det formål har du
+   kommandoen <command>mv</command> (eng. "move"):
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>cp passwd nyFil</userinput>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>mv nyFil megetNyFil</userinput>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cp passwd nyFil</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>mv nyFil megetNyFil</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ls -l</userinput>
 -rw-rw-r--   1 tyge    tyge         652 Jul 14 22:32 passwd
 -rw-rw-r--   1 tyge    tyge         652 Jul 14 22:34 megetNyFil
 </screen>
 
-<para>
-I eksemplet ovenfor tager vi først en kopi af filen
-<filename>passwd</filename>, og kopien døber vi
-<filename>nyFil</filename>. Bagefter omdøber vi filen til
-<filename>megetNyFil</filename>. Som kommandoens navn antyder, kan den
-mere end bare omdøbe filer: den kan flytte dem til andre steder i
-filsystemet. Eksemplet nedenfor viser dig hvordan du flytter filen
-<filename>megetNyFil</filename> til kataloget
-<filename>MitKatalog</filename>.</para>
+   Først tager vi med <command>cp</command> en kopi af filen
+   <filename>passwd</filename> som vi kalder
+   <filename>nyFil</filename>.  Bagefter omdøber vi
+   <filename>nyFil</filename> til <filename>megetNyFil</filename>.
+   Som kommandoens navn antyder, kan den mere end bare omdøbe filer;
+   den kan flytte dem til andre steder i filsystemet.
+  </para>
+
+  <para>
+   Her flytter vi for eksempel filen <filename>megetNyFil</filename>
+   til kataloget <filename>MitKatalog</filename>:
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>mkdir MitKatalog</userinput>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>mv megetNyFil MitKatalog</userinput>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>cd MitKatalog</userinput>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>mkdir MitKatalog</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>mv megetNyFil MitKatalog</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cd MitKatalog</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls -l</userinput>
 -rw-rw-r--   1 tyge    tyge         652 Jul 14 22:34 megetNyFil
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>cd ..</userinput>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>cd ..</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ls -l</userinput>
 drwxrwxr-x   2 tyge    tyge        1024 Jul 14 22:34 MitKatalog
 -rw-rw-r--   1 tyge    tyge         652 Jul 14 22:32 passwd
 </screen>
+  </para>
 
-<indexterm><primary>slette filer</primary></indexterm>
+  <para>
+   <indexterm>
+    <primary>slette filer</primary>
+   </indexterm>
 
-<indexterm>
- <primary>rm</primary>
-</indexterm>
+   <indexterm>
+    <primary>filer</primary>
+    <secondary>slette</secondary>
+   </indexterm>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>rm</secondary>
-</indexterm>
+   <indexterm>
+    <primary>rm</primary>
+   </indexterm>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>rm</tertiary>
-</indexterm>
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>rm</secondary>
+   </indexterm>
 
-<para>Nu kan det tænkes, at du vil slette filen
-<filename>megetNyFil</filename>. Kommandoen <command>rm</command> er
-lige det, du mangler <command>rm</command> (eng. "remove").
-</para>
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>rm</tertiary>
+   </indexterm>
+
+   Nu kan det tænkes, at du vil slette filen
+   <filename>megetNyFil</filename>. Kommandoen <command>rm</command>
+   er lige det, du mangler <command>rm</command> (eng. "remove"):
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt> <userinput>cd MitKatalog</userinput>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cd MitKatalog</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls -l</userinput>
 -rw-rw-r--   1 tyge    tyge         652 Jul 14 22:34 megetNyFil
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>rm megetNyFil</userinput>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>rm megetNyFil</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls -l</userinput>
 <prompt>[tyge@hven MitKatalog]$ </prompt>
 </screen>
+  </para>
 
-<para>
-Du skal være meget forsigtig med at bruge <command>mv</command> og
-<command>rm</command>, idet der ikke er nogen mulighed for at
-fortryde. Hvis du vil blive spurgt, om det er rigtigt, at du vil
-flytte/slette, kan du tilføje et i-flag, og ovenstående eksempel
-bliver til
-</para>
+  <para>
+   Du skal være meget forsigtig med at bruge <command>mv</command> og
+   <command>rm</command>, idet der ikke er nogen mulighed for at
+   fortryde.  Hvis du vil blive spurgt, om det er rigtigt, at du vil
+   flytte/slette, kan du bruge tilvalget <literal>-i</literal>, så det
+   ovenstående eksempel bliver til:
 
 <screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>rm -i megetNyFil</userinput>
-rm: remove `megetNyFil'?
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>rm -i megetNyFil</userinput>
+rm: remove almindelig fil 'megetNyFil'? 
 </screen>
 
-<indexterm>
- <primary>alias</primary>
-</indexterm>
+   Her kan du så svare <keycap>j</keycap> for ja, og
+   <command>n</command> for nej.
+  </para>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>alias</secondary>
-</indexterm>
+  <note id="unix-kommandoer-alias">
+   <title>Kommandogenveje</title>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>alias</tertiary>
-</indexterm>
+   <indexterm>
+    <primary>alias</primary>
+   </indexterm>
 
-<para>
-Her kan du så svare <command>y</command> for ja, og
-<command>n</command> for nej. En videregående bemærkning: Du kan
-endda lave aliaser <command>alias rm='rm -i' ; alias mv='mv
--i'</command> og gemme dette i din <filename>~/.bashrc</filename>, og
-så vil det altid bruges sikkert. Semikolonet benyttes til at adskille 
-kommandoer, så man kan have flere kommandoer på samme linje.
-</para>
-<para>
-I visse tilfælde opstår der filer i havelåger <command>#en sær fil#</command>
-sådanne filer kan fjernes med følgende tilføjelse til <command>rm</command> 
-</para>
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>alias</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>alias</tertiary>
+   </indexterm>
+
+   <para>
+    Det kan være praktisk at lave en genvej til en kommando med nogle
+    bestemte tilvalg (et alias), så man ikke bliver nødt til at huske
+    på tilvalgene hver gang man bruger kommandoen.  Det er for
+    eksempel en god idé at lave aliaser svarende til <command>rm
+    -i</command> og <command>mv -i</command> som man lægger ind i
+    stedet for <command>rm</command> og <command>mv</command>, så man
+    altid bliver spurgt inden man kommer til at slette noget ved at
+    skrive <command>rm en_fil</command> eller lignende.
+   </para>
+
+   <para>
+    <command>alias rm='rm -i'</command> gør for eksempel at når du
+    senere skriver <command>rm et-eller-andet</command>, så laver
+    kommandofortolkeren det om til <command>rm -i
+    et-eller-andet</command> før det bliver udført.
+   </para>
+
+   <para>
+    Det kan også være rart at kunne køre <command>ls</command> med
+    tilvalget <literal>-l</literal> let.  Typisk laver man til det
+    formål aliaset <command>ll</command>:
 <screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>rm -i '#en sær fil#'</userinput>
-rm: remove `#en sær fil#'?
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>alias ls='ls -l'</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ll</userinput>
+-rw-rw-r--   1 tyge    tyge         652 Jul 14 22:34 megetNyFil
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls</userinput>
+megetNyFil
 </screen>
+   </para>
 
-<indexterm><primary>oprette filer</primary></indexterm>
+   <para>
+    Hvis du vil have Bash til at huske dine kommandogenveje fra gang
+    til gang, bør du skrive dem ind i filen <filename>~/.bashrc</filename>:
+<programlisting>
+alias rm='rm -i'
+alias mv='mv -i'
+alias ll='ls -l'
+</programlisting>
+   </para>
+  </note>
 
-<indexterm>
- <primary>touch</primary>
-</indexterm>
+  <para>
+   I visse tilfælde opstår der filer med i havelåger (#), mellemrum og
+   andre specielle tegn i.  Hvis man vil slette dem, kan man med
+   fordel skrive navnene i citationstegn:
+<screen>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>rm -i '#en sær fil#'</userinput>
+rm: remove almindelig fil '#en sær fil#'? 
+</screen>
+  </para>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>touch</secondary>
-</indexterm>
+  <para>
+   <indexterm>
+    <primary>oprette filer</primary>
+   </indexterm>
 
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>touch</tertiary>
-</indexterm>
+   <indexterm>
+    <primary>filer</primary>
+    <secondary>oprette</secondary>
+   </indexterm>
 
+   <indexterm>
+    <primary>touch</primary>
+   </indexterm>
 
-<para>
-Du kan også oprette nye (tomme) filer med kommandoen 
-<command>touch</command>, som tillige ændrer tidsstemplet 
-på en eksisterende fil.
-</para>
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>touch</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>touch</tertiary>
+   </indexterm>
+
+   Du kan også oprette nye (tomme) filer med kommandoen
+   <command>touch</command>, som tillige ændrer tidsstemplet på filen,
+   hvis den allerede var der i forvejen:
 
 <screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>touch myXYZoptioner.txt</userinput>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>touch myXYZoptioner.txt</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls -l</userinput>
 -rw-rw-r--   1 tyge    tyge           0 Jul 14 22:39 myXYZoptioner.txt
 <prompt>[tyge@hven MitKatalog]$ </prompt>
 </screen>
+  </para>
 
-<para>
-Hvis du så venter et par minutter og udfører <command>touch</command> 
-igen, så vil du se, at tidsstemplet ændres (brug pil-op et par gange).
-</para>
+  <para>
+   Hvis du så venter et par minutter og udfører
+   <command>touch</command> igen, så vil du se, at tidsstemplet
+   ændres: <!-- (brug pil-op et par gange) -->
 
 <screen>
 <prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>touch myXYZoptioner.txt</userinput>
@@ -491,58 +595,72 @@ igen, så vil du se, at tidsstemplet ændres (brug pil-op et par gange).
 -rw-rw-r--   1 tyge    tyge           0 Jul 14 22:42 myXYZoptioner.txt
 <prompt>[tyge@hven MitKatalog]$ </prompt>
 </screen>
-
-<indexterm>
- <primary>links</primary>
-</indexterm>
-<indexterm>
- <primary>lænker</primary>
-</indexterm>
-<indexterm>
- <primary>henvisninger</primary>
-</indexterm>
-<indexterm>
- <primary>ln</primary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>ln</secondary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>ln</tertiary>
-</indexterm>
-
-<para>
-Endelig skal vi også se på hvordan man kan lave links
-dvs. henvisninger. Har du ofte brug for at kunne redigere
-f.eks. <filename>~/myXYZoptioner.txt</filename> (et filnavn, du ikke
-gider at skrive mange gange), så kan du lave en symbolsk lænke (eng. link)
-med navnet <filename>o.txt</filename>
-</para>
-
-<screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ln -s myXYZoptioner.txt o.txt</userinput>
-</screen>
+  </para>
 
   <para>
-   Nu kan du redigere filen <filename>o.txt</filename> og via den
-   symbolske lænke, så er det faktisk
-   <filename>myXYZoptioner.txt</filename> der redigeres.  Du kan også
-   se at det er en symbolsk lænke,
+   <indexterm>
+    <primary>links</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>lænker</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>henvisninger</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>ln</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>ln</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>ln</tertiary>
+   </indexterm>
+
+   Endelig skal vi også se på hvordan man kan lave henvisninger (eng.
+   "links").  Hvis du har brug for at en fil, for eksempel
+   <filename>myXYZoptioner.txt</filename> også optræder med et andet
+   navn, så kan du altid lave en symbolsk henvisning (eng. "symbolic
+   link") til filen fra det andet navn:
+
 <screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ls -l o.txt</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ln -s myXYZoptioner.txt o.txt</userinput>
+</screen>
+
+   Her satte vi <filename>o.txt</filename> til at være en symbolsk
+   henvisning til <filename>myXYZoptioner.txt</filename>.  Det betyder
+   at hvis du nu giver et program besked om at gøre noget ved filen
+   <filename>o.txt</filename>, så vil det i virkeligheden være filen
+   <filename>myXYZoptioner.txt</filename> programmet arbejder med.
+  </para>
+
+  <para>
+   Med <command>ls</command> kan du se at <filename>o.txt</filename>
+   er en symbolsk henvisning og ikke en rigtig fil:
+
+<screen>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls -l o.txt</userinput>
 lrwxrwxrwx  1 tyge tyge  4 jul 15 20:35 o.txt -> myXYZoptioner.txt
 </screen>
   </para>
 
   <para>
-   Endelig kan det nævnes at der ud over symbolske lænker (-s) også
-   kan laves hårde lænker (uden -s). Effekten er den samme, men det er
-   sværere at se hvilke filer, der er koblet til hinanden.
+   Endelig kan det nævnes at man ud over symbolske henvisninger også
+   kan laves direkte henvisninger (eng. "hard links").  Effekten er
+   langt hen ad vejen den samme, men direkte henvisninger er begrænset
+   til at fungere indenfor samme filsystem og er bundet til selve
+   filerne og ikke til deres navne.
   </para>
 
+<!--  `rename` findes i to forskellige udgaver - det skal med
   <para>
    <indexterm>
     <primary>rename</primary>
@@ -556,75 +674,118 @@ lrwxrwxrwx  1 tyge tyge  4 jul 15 20:35 o.txt -> myXYZoptioner.txt
 <prompt>[tyge@hven ~]$ </prompt><userinput>rename htm html *</userinput>
 </screen>
   </para>
+-->
+
  </sect1>
 
-<sect1 id="joker-redir-kanaler">
-<title>Joker-tegn, omdirigering og kanaler</title>
-<indexterm><primary>Joker-tegn</primary></indexterm>
-<indexterm><primary>*</primary></indexterm>
-<para>
-Vi vil i dette afsnit se på et par af systemets mere smarte
-funktioner, som gør livet lettere for dig som bruger.
-</para>
+ <sect1 id="joker-redir-kanaler">
+  <title>Jokertegn, omdirigering og kanaler</title>
 
-<sect2 id="joker">
-<title>Joker-tegnet</title>
-<para>
-<indexterm><primary>*</primary></indexterm>
-Forestil dig, at du har mange filer, som du gerne vil slette. Du
-kan naturligvis skrive <command>rm filnavn</command> for hvert enkelt
-navn, men bare med 5-10 filer bliver du hurtigt træt af
-det. Redningen er joker-tegnet. Lad os antage, at du har tre filer i et
-katalog, og at du gerne vil slette dem alle. Nedenfor ser du
-hvordan:
-</para>
+  <para>
+   Vi vil i dette afsnit se på et par af systemets mere smarte
+   funktioner, som gør livet lettere for dig som bruger.
+  </para>
+
+  <sect2 id="joker">
+   <title>Jokertegnene</title>
+
+   <indexterm>
+    <primary>jokertegn</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>*</primary>
+    <secondary>jokertegn</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>?</primary>
+    <secondary>jokertegn</secondary>
+   </indexterm>
+
+   <para>
+    Forestil dig, at du har mange filer, som du gerne vil slette. Du
+    kan naturligvis skrive <command>rm den_ene_fil den_næste_fil den
+    tredje_fil</command> (osv.) med hvert enkelt navn, men bare med
+    5-10 filer bliver du hurtigt træt af det.  Redningen er
+    jokertegnene <literal>*</literal> og <literal>?</literal>.
+   </para>
+
+   <para>
+    Lad os antage, at du har tre filer i et katalog, og at du gerne
+    vil slette dem alle. Nedenfor ser du hvordan:
 
 <screen>
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>touch aaa abc ccc</userinput>
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>ls</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>touch aaa abc ccc</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>ls</userinput>
  aaa  abc   ccc  
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>rm *</userinput>
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>ls</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>rm *</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>ls</userinput>
 <prompt>[tyge@hven MitKatalog]$</prompt>
 </screen>
 
-<para>
-Alle filer er det samme som <filename>*</filename>. Hvis du
-i stedet havde skrevet <filename>a*</filename>, betyder det alle filer
-som begynder med a.
-</para>
+    Alle filer i kataloget er det samme som
+    <filename>*</filename>. Hvis du i stedet havde skrevet
+    <filename>a*</filename>, ville det betyde alle filer som begynder
+    med a.
 
 <screen>
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>touch aaa abc ccc</userinput>
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>ls</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>touch aaa abc ccc</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>ls</userinput>
  aaa  abc   ccc
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>rm a*</userinput>
-<prompt>[tyge@hven MitKatalog]$</prompt> <userinput>ls</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>rm a*</userinput>
+<prompt>[tyge@hven MitKatalog]$</prompt><userinput>ls</userinput>
  ccc
 <prompt>[tyge@hven NytKatalog]$</prompt>
 </screen>
+   </para>
 
-<para>
-Stjernen, også kaldet joker-tegnet, kan bruges overalt.
-F.eks. betyder <filename>a*b</filename> alle filer, der begynder med
-a og slutter på b, hvilket vil inkludere filerne
-<filename>ab</filename>, <filename>aDuErGodb</filename>, men ikke en
-fil med navnet <filename>abe</filename>. Joker-tegnet kan bruges
-sammen med alle de mest almindelige kommandoer i Linux. F.eks. viser
-nedenstående eksempel hvordan du viser alle filer, der  begynder med 'ad' i
-kataloget <filename>/usr/bin</filename>:
+   <para>
+    Asterisken (<literal>*</literal>) betyder helt generelt nul eller
+    flere tegn i et filnavn.  For eksempel betyder
+    <filename>a*b</filename> alle filer, der begynder med a og slutter
+    på b, hvilket vil inkludere filerne <filename>ab</filename>,
+    <filename>aDuErGodb</filename>, men ikke en fil med navnet
+    <filename>abe</filename>.
+   </para>
+
+   <para>
+    Sammen med asterisken fungere spørgsmålstegn
+    (<literal>?</literal>) også som jokertegn.  Et spørgsmålstegn står
+    for netop et vilkårligt tegn i et filnavn.
+   </para>
+
+   <example id="unix-jokertegn-asterisk-og-spoergsmaalstegn">
+    <title>Kombination af flere jokertegn</title>
+
+    <para>
+     Som et eksempel på hvordan jokertegnene kan kombineres med
+     hinanden beder vi <command>ls</command> om at give os en liste
+     med alle de filer i kataloget <filename>/usr/bin</filename>, hvis
+     tredje bogstav er et z:
 <screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>ls /usr/bin/ad*</userinput>
-/usr/bin/addftinfo /usr/bin/addr /usr/bin/addr2line
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls /usr/bin/??z*</userinput>
+/usr/bin/mozilla  /usr/bin/size86  /usr/bin/unzip
+/usr/bin/size     /usr/bin/tgz     /usr/bin/unzipsfx
 </screen>
-</para>
+    </para>
+   </example>
 
+   <para>
+    Da det er kommandofortolkeren og ikke de enkelte kommandoer der
+    tager sig af at fortolke jokertegnene, kan man bruge præcist de
+    samme mønstre til at angive samlinger af filer til alle
+    programmer på systemet.
+   </para>
+
+<!--
 <para>
 Det er værd at bemærke, at jokertegn ekspanderes af 
 kommandofortolkeren &ndash; <emphasis>ikke</emphasis> af
 applikationen. Det har bl.a. den store fordel, at jokertegn altid
 fungerer &ndash; og fungerer konsistent på tværs af applikationer.
 </para>
+-->
 
 <para>
 Et meget simpelt eksempel: Et katalog indeholder 3 filer:
@@ -635,62 +796,63 @@ kommandofortolkeren først ekspandere f* og derefter kalde
 </command>. Output fra <command>ls f*</command> er blot: 
 
 <screen>
-<prompt>[tyge@hven MitKatalog]$</prompt>  <userinput>touch fil1 fil2</userinput>
-<prompt>[tyge@hven MitKatalog]$</prompt>  <userinput>ls</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>touch fil1 fil2</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls</userinput>
 ccc   fil1   fil2
-<prompt>[tyge@hven MitKatalog]$</prompt>  <userinput>ls f*</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ls f*</userinput>
 fil1   fil2
 </screen>
 og <command>ls</command> laver således et yderst banalt arbejde.
 </para>
 
-<para>
+   <para>
+    <indexterm>
+     <primary>diff</primary>
+    </indexterm>
+
+    <indexterm>
+     <primary>Kommandooversigt</primary>
+     <secondary>diff</secondary>
+    </indexterm>
+
 Men der er flere muligheder i dette. Et eksempel: For at se forskellen
 mellem <filename>fil1</filename> og <filename>fil2</filename> kan
 du skrive: <command>diff fil1 fil2</command>. Men du kan også nøjes
-med at skrive: <command>diff f*</command> og således lade 
-kommandofortolkeren ekspandere 
-<command>f*</command> til <command>fil1 fil2</command>. 
-Da de to filer er ens (de indeholder ingenting nogen af dem), så 
-er der ingen forskel, og derfor intet at vise.
-</para>
-<indexterm>
- <primary>diff</primary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>diff</secondary>
-</indexterm>
+med at skrive: <command>diff fil?</command> og så lade 
+kommandofortolkeren regne ud at 
+<literal>f*</literal> betyder <literal>fil1 fil2</literal>. 
+Da de to filer er ens (de er begge tomme), så 
+er der ingen forskel, og derfor intet at vise:
+
 <screen>
-<prompt>[tyge@hven MitKatalog]$</prompt>  <userinput>diff f*</userinput>
-<prompt>[tyge@hven MitKatalog]$</prompt>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>diff f*</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt>
 </screen>
+   </para>
 
-<para>
-Somme tider kan denne konsekvente ekspansion af joker-tegn dog være
-en ulempe.
-</para>
-
-<para>
-Et tænkt eksempel: Et katalog indeholder 2 filer:
-</para>
+   <para>
+    Somme tider kan denne konsekvente ekspansion af jokertegn dog være
+    en ulempe.  For eksempel:  Et katalog indeholder 2 filer:
 
 <screen>
 <prompt>[tyge@hven film]$</prompt> <userinput>ls</userinput>
 dogme95.zip      film_index.html
 </screen>
+   </para>
 
-<para>
-Du kan også bruge zip-filer under Unix, og du kan se indholdet af
-zip-filen ved f.eks. at skrive:
-</para>
-<indexterm>
- <primary>unzip</primary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>unzip</secondary>
-</indexterm>
+   <para>
+    <indexterm>
+     <primary>unzip</primary>
+    </indexterm>
+
+    <indexterm>
+     <primary>Kommandooversigt</primary>
+     <secondary>unzip</secondary>
+    </indexterm>
+
+    Du kan også bruge zip-filer under Unix, og du kan se indholdet af
+    zip-filen ved f.eks. at skrive:
+
 <screen>
 <prompt>[tyge@hven film]$</prompt> <userinput>unzip -v d*</userinput>
 Archive:  dogme95.zip
@@ -702,6 +864,7 @@ Length Method Size Ratio Date    Time   CRC-32   Name
 ------       ----- ---                           -----
  31638       11649 63%                          3 files
 </screen>
+   </para>
 
 <para>
 Nu vil vi pakke <filename>festen.html</filename> ud af zip-filen. Det
@@ -748,7 +911,6 @@ Se også næste afsnit om regulære udtryk.
 Det skal også nævnes, at hvis du kun vil finde et tegn, så brug et
 spørgsmålstegn. Vil du f.eks. finde alle filer aaa, baa, caa osv. men
 ikke caaa, så kan du bruge følgende
-</para>
 
 <screen>
 <prompt>[tyge@hven MitKatalog]$</prompt> <userinput>touch aaa baa caa caaa</userinput>
@@ -757,98 +919,220 @@ aaa   baa   caa   caaa   ccc   fil1   fil2
 <prompt>[tyge@hven MitKatalog]$</prompt> <userinput>ls ?aa</userinput>
 aaa   baa   caa
 </screen>
-</sect2>
+   </para>
 
-<sect2 id="regexp">
-<title>Regulære udtryk (regex) og globbing</title>
-<indexterm><primary>Regulære udtryk</primary></indexterm>
-<indexterm><primary>Globbing</primary></indexterm>
+   <note id="unix-globbing-og-regexp">
+    <title>"Globbing" og regulære udtryk</title>
 
-<para>
-Det bør også nævnes at mange programmer understøtter en
-kraftfuld syntaks, kaldet <emphasis>regulære udtryk</emphasis>
-(eng. "regular expressions"), der er meget effektivt
-til at søge og erstatte i tekster.
-</para>
+    <para>
+     Jokertegnene <literal>?</literal> og <literal>*</literal> er en
+     lille del af et større system til at danne mønstre for filnavne.
+     Dette system kaldes "globbing".  Du kan finde en detaljeret
+     gennemgang af hvordan man bruger "globbing" i bøgerne »Unix in a
+     Nutshell« og »Linux in a Nutshell«.
+    </para>
 
-<para>
-På kommandolinjen i f.eks. <command>bash</command> kan
-man bruge noget der minder om regulære udtryk
-der kaldes <emphasis>globbing</emphasis>.
-Med globbing kan du f.eks. liste
-alle dine filer, der slutter med bogstavet a ved at skrive
-<command>ls *[a]</command>.
-For at liste filer der <emphasis>ikke</emphasis> slutter på a
-skrives <command>ls *[^a]</command>. 
-Det er vigtigt at skelne regex og globbing fra hinanden.
-</para>
+    <para>
+     Det er vigtigt ikke at komme til at blande "globbing" sammen med
+     det system man i Unix bruger til at danne mønstre for tekst i al
+     almindelighed &ndash; regulære udtryk (eng. "regular
+     expressions").  Regulære udtryk er et væsentligt stærkere system
+     end "globbing", men de bruges altså sædvanligvis ikke til mønstre
+     for filnavne.
 
-<table id="regex-vs-glob">
-<title>Forskel på globbing og regulære udtryk</title>
-<tgroup cols="3" align="char">
-<thead><row>
- <entry>Globbing</entry>
- <entry>Regulært udtryk</entry>
- <entry>Beskrivelse</entry>
-</row></thead>
-<tbody>
+     <!--  Er det fordi regulære udtryk er en nyere idé end globbing?  -->
+    </para>
+   </note>
+  </sect2>
 
-<row>
- <entry>*</entry>
- <entry>.*</entry>
- <entry>Match ingen eller mange tegn</entry>
-</row>
+  <sect2 id="unix-globbing">
+   <title>"Globbing"</title>
 
-<row>
- <entry>?</entry>
- <entry>.</entry>
- <entry>Match ét vilkårligt tegn</entry>
-</row>
+   <indexterm>
+    <primary>globbing (mønstre for filnavne)</primary>
+   </indexterm>
+   
+   <para>
+    Jokertegnene <literal>?</literal> og <literal>*</literal> (omtalt
+    i <xref linkend="joker"/>) er de grundlæggende elementer i
+    "globbing".
+   </para>
 
-<row>
- <entry>[a-d]</entry>
- <entry>[a-d]</entry>
- <entry>Match a, b, c eller d. Globbing i Mandrake matcher A, a, B, b, C, c, D eller d.</entry>
-</row>
+   <para>
+    På kommandolinjen i for eksempel Bash kan man bruge noget der minder om
+    regulære udtryk der kaldes "globbing".  Med
+    "globbing" kan du f.eks. liste alle dine filer, der slutter med
+    bogstavet a ved at skrive <command>ls *[a]</command>.  For at
+    liste filer der <emphasis>ikke</emphasis> slutter på a skrives
+    <command>ls *[^a]</command>.  Det er vigtigt at skelne regex og
+    globbing fra hinanden.
+   </para>
 
-<row>
- <entry>[^a-d]</entry>
- <entry>[^a-d]</entry>
- <entry>Match ikke a, b, c eller d</entry>
-</row>
 
-<row>
- <entry>{foo,bar}</entry>
- <entry>(foo|bar)</entry>
- <entry>Match 'foo' eller 'bar'</entry>
-</row>
+   <table id="unix-globbing-oversigt">
+    <title>Oversigt over "globbing"</title>
 
-<row>
- <entry>*foo??ba[rz]{fubar,qux}*quux</entry>
- <entry>.*foo..ba[rz](fubar|qux).*quux</entry>
- <entry><para>
-  <!-- Tak Ole Tange. Tak, det er rigeligt! /chlor -->
-  Match ingen eller et vilkårligt antal tegn, efterfulgt af 'foo'.
-  Så to vilkårlige tegn efterfulgt af 'bar' eller 'baz'.
-  Dernæst ordet 'fubar' eller 'qux' efterfulgt af ingen
-  eller et vilkårligt antal tegn og så 'quux' til sidst.
-  Med dette udtryk ses det (let) at man kan finde teksterne
-  'foo++barquxquux' og <filename></filename>'XYZfoo77bazfubarYESquux' i én og samme søgning.
- </para></entry>
-</row>
+    <tgroup cols="2" align="char">
+     <thead>
+      <row>
+       <entry>Syntaks</entry>
+       <entry>Beskrivelse</entry>
+      </row>
+     </thead>
 
-</tbody>
-</tgroup>
-</table>
+     <tbody>
+      <row>
+       <entry>*</entry>
+       <entry>Svarer til nul eller flere vilkårlige tegn.</entry>
+      </row>
 
-<para>
-På kommandolinjen understøttes altså globbing,
-hvorimod Emacs, vi, Perl, PHP, sed, ed, egrep og slocate understøtter
-regulære udtryk.
-Syntaksen til regulære udtryk er lidt forskellig i de nævnte programmer,
-så i det efterfølgende er nævnt regulære udtryk
-der virker med de fleste programmer:
-</para>
+      <row>
+       <entry>?</entry>
+       <entry>Svarer til netop ét vilkårligt tegn</entry>
+      </row>
+
+      <row>
+       <entry>[a-d]</entry>
+       <entry>
+        Svarer til et af tegnene <literal>a</literal>,
+        <literal>b</literal>, <literal>c</literal> eller
+        <literal>d</literal>.  Men pas på.  Nogle systemer kan
+        ignorere forskelle mellem store og små bogstaver og regne med
+        enten det danske eller det latinske alfabet.
+       </entry>
+      </row>
+
+      <row>
+       <entry>[^a-d]</entry>
+       <entry>
+        Svarer til at andet end tegnene <literal>a</literal>,
+        <literal>b</literal>, <literal>c</literal> eller
+        <literal>d</literal>.
+       </entry>
+      </row>
+
+      <row>
+       <entry>{Skåne,Sjælland,Hven}</entry>
+       <entry>
+        Svarer til netop én strengene <literal>Skåne</literal>,
+        <literal>Sjælland</literal> og <literal>Hven</literal>.
+       </entry>
+      </row>
+
+      <row>
+       <entry>*foo??ba[rz]{fubar,qux}*quux</entry>
+
+       <entry>
+        <para>
+         <!-- Tak Ole Tange. Tak, det er rigeligt! /chlor --> Svarer
+         til nul eller flere vilkårlige tegn, efterfulgt af strengen
+         <literal>foo</literal>.  Så to vilkårlige tegn efterfulgt af
+         strengen <literal>ba</literal> og et af tegnene
+         <literal>r</literal> eller <literal>z</literal>.  Dernæst
+         strengen en af strengene <literal>fubar</literal> eller
+         <literal>qux</literal> efterfulgt af nul eller flere
+         vilkårlige tegn og så strengen <literal>quux</literal> til
+         sidst.  Med dette udtryk ses det (let) at man kan finde
+         filnavnene <filename>foo++barquxquux</filename> og
+         <filename>XYZfoo77bazfubarYESquux</filename> i én og samme
+         søgning.
+        </para>
+       </entry>
+      </row>
+     </tbody>
+    </tgroup>
+   </table>
+  </sect2>
+
+  <sect2 id="regexp">
+   <title>Regulære udtryk</title>
+
+   <indexterm>
+    <primary>regulære udtryk</primary>
+   </indexterm>
+
+   <para>
+    Mange programmer (blandt andre <command>ed</command>,
+    <command>egrep</command>, Emacs, Perl, PHP,
+    <command>sed</command>, <command>slocate</command> og
+    <command>vi</command>) understøtter et meget effektivt system til
+    søg-og-erstat af tekst efter angivne mønstre.  Dette system kaldes
+    <emphasis>regulære udtryk</emphasis> (eng. "regular expressions").
+   </para>
+
+   <table id="unix-regulaere-udtryk-oversigt">
+    <title>Oversigt over regulære udtryk</title>
+
+    <tgroup cols="2" align="char">
+     <thead>
+      <row>
+       <entry>Syntaks</entry>
+       <entry>Beskrivelse</entry>
+      </row>
+     </thead>
+
+     <tbody>
+      <row>
+       <entry>.*</entry>
+       <entry>Svarer til nul eller flere vilkårlige tegn.</entry>
+      </row>
+
+      <row>
+       <entry>.</entry>
+       <entry>Svarer til netop ét vilkårligt tegn</entry>
+      </row>
+
+      <row>
+       <entry>[a-d]</entry>
+       <entry>
+        Svarer til et af tegnene <literal>a</literal>,
+        <literal>b</literal>, <literal>c</literal> eller
+        <literal>d</literal>.  Men pas på.  Nogle systemer kan
+        ignorere forskelle mellem store og små bogstaver og regne med
+        enten det danske eller det latinske alfabet.
+       </entry>
+      </row>
+
+      <row>
+       <entry>[^a-d]</entry>
+       <entry>
+        Svarer til at andet end tegnene <literal>a</literal>,
+        <literal>b</literal>, <literal>c</literal> eller
+        <literal>d</literal>.
+       </entry>
+      </row>
+
+      <row>
+       <entry>(Skåne|Sjælland|Hven)</entry>
+       <entry>
+        Svarer til netop én strengene <literal>Skåne</literal>,
+        <literal>Sjælland</literal> og <literal>Hven</literal>.
+       </entry>
+      </row>
+
+      <row>
+       <entry>.*foo..ba[rz](fubar|qux).*quux</entry>
+
+       <entry>
+        <para>
+         <!-- Tak Ole Tange. Tak, det er rigeligt! /chlor --> Svarer
+         til nul eller flere vilkårlige tegn, efterfulgt af strengen
+         <literal>foo</literal>.  Så to vilkårlige tegn efterfulgt af
+         strengen <literal>ba</literal> og et af tegnene
+         <literal>r</literal> eller <literal>z</literal>.  Dernæst
+         strengen en af strengene <literal>fubar</literal> eller
+         <literal>qux</literal> efterfulgt af nul eller flere
+         vilkårlige tegn og så strengen <literal>quux</literal> til
+         sidst.  Med dette udtryk ses det (let) at man kan finde
+         filnavnene <filename>foo++barquxquux</filename> og
+         <filename>XYZfoo77bazfubarYESquux</filename> i én og samme
+         søgning.
+        </para>
+       </entry>
+      </row>
+     </tbody>
+    </tgroup>
+   </table>
 
 <!-- Nedenstående er fra Claus Sørensens referat efter
  Ole Tanges foredrag 2000-05-09 -->
@@ -1118,43 +1402,43 @@ kan 'fangsterne' findes i nummererede variable 1, 2, 3 osv.
 <title>Notation af regulære udtryk i forskellige programmer</title>
 
 <para>
-<emphasis>Perl</emphasis>
-</para>
+<emphasis>Perl</emphasis>:
 <programlisting>
 s/(Linus) (Torvalds)/$2, $1/
 </programlisting>
+</para>
 
 <para>
-<emphasis>Emacs</emphasis>
-</para>
+<emphasis>Emacs</emphasis>:
 
 <programlisting>
 M-x replace-regexp RET
 \(Linus\) \(Torvalds\) RET
 \2, \1 RET
 </programlisting>
+</para>
 
 <para>
-<emphasis>vi</emphasis>
-</para>
+<emphasis>vi</emphasis>:
 
 <programlisting>
 :%s/\(Linus\) \(Torvalds\)/\2, \1/g
 </programlisting>
+</para>
 
 <para>
-<emphasis>PHP</emphasis>
-</para>
+<emphasis>PHP</emphasis>:
 <programlisting>
 $a = preg_replace("/(Linus) (Torvalds)/", "\\2, \\1", $a);
 </programlisting>
+</para>
 
 <para>
-<emphasis>sed</emphasis>
-</para>
+<emphasis>sed</emphasis>:
 <programlisting>
 sed 's/\(Linus\) \(Torvalds\)/\2, \1/'
 </programlisting>
+</para>
 
 </example>
 
@@ -1177,7 +1461,7 @@ Med <filename>slocate</filename> gøres dette således:
 </para>
 
 <screen>
-<prompt>[tyge@hven MitKatalog]$ </prompt> <userinput>slocate -r '\.html\?$'</userinput>
+<prompt>[tyge@hven MitKatalog]$ </prompt><userinput>slocate -r '\.html\?$'</userinput>
 </screen>
 
 <para>
@@ -1617,7 +1901,7 @@ Så mens <command>updatedb</command> kører i baggrunden, kan vi
 så kører kommandoen <command>ps</command> og se processen.
 Efter at have tastet en del andre kommandoer, her illustreret
 ved <command>cat /proc/loadavg</command>, er <command>updatedb</command>
-færdig med at køre, og kommer ud og skriver <emphasis>Done</emphasis>.
+færdig med at køre, og kommer ud og skriver "Done".
 Her er det så baggrundsprocess nummer [1] der er færdig med at køre.
 <command>&amp;</command>-kommandoen bruges på direkte fra
 kommandolinjen og inde i shell-scripts.
@@ -2030,11 +2314,11 @@ kan <command>bash</command> stadig håndterer det:
 /dev/fd/63 /dev/fd/62
 </screen>
 
-<para>
-<command>&lt;()</command> ser ud som en fil, men er rent faktisk en <emphasis>kanal</emphasis>,
-hvilket er mere effektivt end at bruge en fil.
-Følgende kommandoer giver lidt yderligere information.
-</para>
+   <para>
+    <command>&lt;()</command> ser ud som en fil, men er rent faktisk
+    en <emphasis>kanal</emphasis>, hvilket er mere effektivt end at
+    bruge en fil.  Følgende kommandoer giver lidt yderligere
+    information:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ls -l &lt;(true)</userinput>
@@ -2048,27 +2332,25 @@ Access: Fri Jul 25 20:16:21 2002
 Modify: Fri Jul 25 20:16:21 2002
 Change: Fri Jul 25 20:16:21 2002
 </screen>
+   </para>
 
-<para>
-Ovenstående eksempel med <command>tar</command> kan
-selvfølgelig løses på mange andre måder,
-hvor <command>&lt;()</command> ikke er nødvendigt. Til gengæld skulle
-det lille eksempel være nemmere at forstå.
-Et mere drilsk eksempel kan laves med <command>comm</command>,
-der er et program til at sammenligne filer.
-Ved almindelig brug anvendes det således:
-</para>
+   <para>
+    Ovenstående eksempel med <command>tar</command> kan selvfølgelig
+    løses på mange andre måder, hvor <command>&lt;()</command> ikke er
+    nødvendigt. Til gengæld skulle det lille eksempel være nemmere at
+    forstå.  Et mere drilsk eksempel kan laves med
+    <command>comm</command>, der er et program til at sammenligne
+    filer.  Ved almindelig brug anvendes det således:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>comm fil-1 fil-2</userinput>
 </screen>
+   </para>
 
-<para>
-Nu kan man være så uheldig at de filer der skal undersøges 
-er output fra fx. <command>grep</command>. 
-Uden brug af <command>&lt;()</command> kunne et shell-script
-se således ud:
-</para>
+   <para>
+    Nu kan man være så uheldig at de filer der skal undersøges er
+    uddata fra for eksempel <command>grep</command>.  Uden brug af
+    <command>&lt;()</command> kunne et shell-script se således ud:
 
 <programlisting>
 #! /bin/sh
@@ -2077,44 +2359,60 @@ grep foo test2 &gt; fil-2
 comm fil-1 fil-2
 rm -f fil-1 fil-2
 </programlisting>
+   </para>
 
-<para>
-Omskrevet med <command>&lt;()</command> bliver det blot en
-enkelt linje:
-</para>
+   <para>
+    Omskrevet med <command>&lt;()</command> bliver det blot en enkelt
+    linje:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>comm &lt;(grep foo test1) &lt;(grep foo test2)</userinput>
 </screen>
+   </para>
 
-<para>
-For mere information om <emphasis>process substitution</emphasis>
-se <ulink url="http://www.tldp.org/LDP/abs/html/process-sub.html">http://www.tldp.org/LDP/abs/html/process-sub.html</ulink>
-</para>
-</sect2><!-- id="procsubst" -->
+   <para>
+    For mere information om <emphasis>processubstituering</emphasis>
+    (eng. "process substitution") se <ulink
+    url="http://www.tldp.org/LDP/abs/html/process-sub.html">http://www.tldp.org/LDP/abs/html/process-sub.html</ulink>
+   </para>
+  </sect2>
 
-<sect2 id="kill">
-<title>Dræb en proces</title>
-<indexterm>
- <primary>kill</primary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>kill</secondary>
-</indexterm>
-<indexterm>
- <primary>Kommandooversigt</primary>
- <secondary>Grundlæggende kommandobeskrivelse</secondary>
- <tertiary>kill</tertiary>
-</indexterm>
-<para>
-Nu kan det ske, at du har fået startet et program op, som du
-bliver træt af. Du vil altså gerne afbryde det, inden det er kørt
-færdigt. Unix-verdenen er barsk, for man taler ikke om at afbryde
-en proces, men om at slå den ihjel (eng. "kill"). Når du vil slå
-en proces ihjel, kan du bruge kommandoen <command>kill</command>. Som
-argument til <command>kill</command> giver du PID. Nedenfor er vist
-et eksempel.</para>
+  <sect2 id="kill">
+   <title>Dræb en proces</title>
+
+   <indexterm>
+    <primary>stop</primary>
+    <secondary>et program</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>afliv</primary>
+    <secondary>et program</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>kill</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>kill</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>Kommandooversigt</primary>
+    <secondary>Grundlæggende kommandobeskrivelse</secondary>
+    <tertiary>kill</tertiary>
+   </indexterm>
+
+   <para>
+    Nu kan det ske, at du har fået startet et program, som du bliver
+    træt af. Du vil altså gerne afbryde det, inden det er kørt
+    færdigt. Unix-verdenen er barsk, for man taler ikke om at afbryde
+    en proces, men om at slå den ihjel (eng. "kill"). Når du vil slå
+    en proces ihjel, kan du bruge kommandoen
+    <command>kill</command>. Som argument til <command>kill</command>
+    giver du PID. Nedenfor er vist et eksempel.
 
 <screen>
 <prompt>[tyge@hven MitKatalog]$ </prompt><userinput>ps</userinput>
@@ -2130,17 +2428,20 @@ et eksempel.</para>
   436  2   S   0:00 -bash
   763  2   R   0:00 ps
 </screen>
+   </para>
 
-<para>
-Det skal også nævnes, at enkelte gange kan en proces være kørt helt i
-skoven, og så må du tage kraftigere skyts i brug. I stedet for
-<command>kill PROCESNUMMER</command> kan du bruge <command>kill -9
-PROCESNUMMER</command>.
-</para>
-</sect2>
-
-
-</sect1>
+   <para>
+    Det skal også nævnes, at enkelte gange kan en proces være kørt
+    helt i skoven, og så må du tage kraftigere skyts i brug. I stedet
+    for <command>kill PROCESNUMMER</command> kan du bruge
+    <command>kill -9 PROCESNUMMER</command>.  Forskellen er at
+    <command>kill</command> som standard sender en besked til
+    programmet om at det skal stoppe, mens man med <command>kill
+    -9</command> beder linuxkernen om at tage sig af at stoppe
+    programmet.
+   </para>
+  </sect2>
+ </sect1>
 
 <sect1 id="miljoevar">
 <title>$variable, export og env</title>
@@ -4870,7 +5171,7 @@ echo "Navnet er: $NAVN"
 <para>
 Man kan undlade at angive hvilken variabel der skal indlæses
 til, og i stedet bruge den som <command>read</command> selv
-sætter. Navnet på den er <emphasis>$REPLY</emphasis>.
+sætter. Navnet på den er <literal>REPLY</literal>.
 Scriptet kunne så se således ud:
 </para>
 
