@@ -583,7 +583,7 @@ skal ske med pakken: Om den skal afvises eller slippes igennem.
 Ideen er så, at en firewall stopper alle de pakker, som man ikke
 har "inviteret". Kører man f. eks. en web-server, slipper man kun
 web-pakker igennem. En privat maskine med internetadgang kan godt
-stoppe alle udefra kommende forespørgseler samtidigt med, at alle
+stoppe alle udefra kommende forespørgsler samtidigt med, at alle
 de netværks-sessions, der startes af brugeren får lov til at køre
 som normalt, d.v.s. at <emphasis>svar-pakker</emphasis> fra det
 eksterne net får lov at komme igennem.
@@ -1960,16 +1960,16 @@ for at sikre mere grundigt.
 
 <para>
 DNS forespørgsler kan bruges som eksempel. Vi ønsker at tillade
-forespørgseler til en remote DNS server men ellers ikke noget på
+forespørgsler til en remote DNS server men ellers ikke noget på
 vores server. Det kunne gøres ved at køre en DNS caching server
-(en hjælpeserver, som husker tingene så alle maskinerne på
-vores lille netværk ikke behøver at sende pakker ud over det
-overbelastede ISP link). Vi kører hjælpeserveren på en maskine
-66.77.88.199 og dnscache foretager forespørgselen som udgår med
-et højt portnummer $hoyport. De eksterne DNS servere svarer
-66.77.88.199 på dette høje portnummer, $hoyport. Man kan
-selvfølgelig forbedre sikkerheden ved at køre dnscache på en
-maskine for sig selv, og de andre maskiner må så kun lave UDP til
+(en hjælpeserver, som husker nyligt brugte adresser, så alle
+maskinerne på vores lille netværk ikke behøver at spørge igen og
+igen ud over det overbelastede ISP link). Når hjælpeserveren så
+skal foretage forespørgsel bruger den som afsenderport et nummer
+som den får tildelt lidt tilfældigt. De eksterne DNS servere
+svarer med adresse/port til dette høje portnummer.  Det forbedrer
+selvfølgelig sikkerheden at køre en DNS caching server på en
+maskine for sig selv. De andre maskiner må så kun lave UDP til
 denne specifikke IP-adresse. Her kommer kommandoen, som kan gøre
 det:
 </para>
@@ -1982,10 +1982,11 @@ det:
 Ligesom for tcp protokollen loades der et extension modul, når vi
 specificerer -p udp. De kriterier, som -p udp giver, er dog kun
 portnumre for hhv. source og destination. Det ovenstående
-eksempel specificerer, at alle inputporte over 1023 må bruges. I
-stedet for at åbne for input på dem ville det være en mulighed at
-bruge fast portnumre for hjælpeserverens udgående trafik og så
-kun åbne for de portnumre.
+eksempel specificerer, at alle inputporte over 1023 må bruges.
+Det ville være meget bedre at sige til DNS-forwarder programmet
+at det kun må bruge fx. port 32109. Ved at bruge fast portnummer
+for hjælpeserverens udgående trafik kan antallet af åbne porte
+begrænses meget.
 </para>
 
 <screen>
@@ -2031,6 +2032,9 @@ firewall):
 </screen>
 
 <para>
+I det efterfølgende eksempel bliver port specifikationer brugt
+til at omdirigere trafikken, en stærk feature, når man vil lave
+en HTML proxy.
 </para>
 
 
