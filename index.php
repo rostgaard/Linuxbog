@@ -169,8 +169,8 @@ function vistype($type) {
       )
     ),
     "wm" => array(
-      title => "Linux - Friheden til at vælge window manager",
-      comment => "Lær hvilken window manager som passer dig bedst",
+      title => "Linux - Friheden til at vælge grafisk brugergrænseflade",
+      comment => "Lær hvilken grafisk brugergrænseflade som passer dig bedst",
       auth => array(
         "Peter Toft" => "pto@linuxbog.dk"
       )
@@ -529,7 +529,8 @@ Vil du modtage E-post om nye versioner af bogen?
 <INPUT TYPE=SUBMIT VALUE="Indsend form"></FORM>
 
 <p>
-Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen, Hans Schou, Donald Axel og Michael Rasmussen - 
+Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen, Hans Schou,
+Donald Axel og flere andre - 
 &lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
 <br>
 Indholdet af bøgerne diskuteres på
