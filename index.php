@@ -356,11 +356,6 @@ function vistype($type) {
       form => "-htmlub-",
       last => ".tar.gz"
     ),
-    "PostScript" => array(
-      first => "linuxbog-",
-      form => "-ps-",
-      last => ".zip"
-    ),
     // Eks: linuxbog-frihed-pdf.zip
     "PDF" => array(
       first => "linuxbog-",
