@@ -1,5 +1,6 @@
-# -*- Perl -*-
+#!/usr/bin/perl -- # -*- Perl -*-
 #
+# $Id$
 
 use Getopt::Std;
 
@@ -50,7 +51,7 @@ $indextag     = $setindex ? 'setindex' : 'index';
 if ($newindex) {
     safe_open(*OUT, $outfile);
     if ($indexid) {
-	print OUT "<$indextag ID='$indexid'>\n\n";
+	print OUT "<$indextag id='$indexid'>\n\n";
     } else {
 	print OUT "<$indextag>\n\n";
     }
@@ -87,6 +88,7 @@ print STDERR "Processing $dat...\n";
 open (F, $dat);
 while (<F>) {
     chop;
+    chop if /\r$/;
 
     if (/^\/indexterm/i) {
 	push (@term, $idx);
@@ -115,59 +117,59 @@ while (<F>) {
 
     if (/^primary[\[ ](.*)$/i) {
 	if (/^primary\[(.*?)\] (.*)$/i) {
-	    $idx->{'psortas'} = $1;
-	    $idx->{'primary'} = $2;
+	    $idx->{'psortas'} = &escape($1);
+	    $idx->{'primary'} = &escape($2);
 	} else {
-	    $idx->{'psortas'} = $1;
-	    $idx->{'primary'} = $1;
+	    $idx->{'psortas'} = &escape($1);
+	    $idx->{'primary'} = &escape($1);
 	}
 	next;
     }
 
     if (/^secondary[\[ ](.*)$/i) {
 	if (/^secondary\[(.*?)\] (.*)$/i) {
-	    $idx->{'ssortas'} = $1;
-	    $idx->{'secondary'} = $2;
+	    $idx->{'ssortas'} = &escape($1);
+	    $idx->{'secondary'} = &escape($2);
 	} else {
-	    $idx->{'ssortas'} = $1;
-	    $idx->{'secondary'} = $1;
+	    $idx->{'ssortas'} = &escape($1);
+	    $idx->{'secondary'} = &escape($1);
 	}
 	next;
     }
 
     if (/^tertiary[\[ ](.*)$/i) {
 	if (/^tertiary\[(.*?)\] (.*)$/i) {
-	    $idx->{'tsortas'} = $1;
-	    $idx->{'tertiary'} = $2;
+	    $idx->{'tsortas'} = &escape($1);
+	    $idx->{'tertiary'} = &escape($2);
 	} else {
-	    $idx->{'tsortas'} = $1;
-	    $idx->{'tertiary'} = $1;
+	    $idx->{'tsortas'} = &escape($1);
+	    $idx->{'tertiary'} = &escape($1);
 	}
 	next;
     }
 
     if (/^see (.*)$/i) {
-	$idx->{'see'} = $1;
+	$idx->{'see'} = &escape($1);
 	next;
     }
 
     if (/^seealso (.*)$/i) {
-	$idx->{'seealso'} = $1;
+	$idx->{'seealso'} = &escape($1);
 	next;
     }
 
     if (/^significance (.*)$/i) {
-	$idx->{'significance'} = $1;
+	$idx->{'significance'} = &escape($1);
 	next;
     }
 
     if (/^class (.*)$/i) {
-	$idx->{'class'} = $1;
+	$idx->{'class'} = &escape($1);
 	next;
     }
 
     if (/^scope (.*)$/i) {
-	$idx->{'scope'} = uc($1);
+	$idx->{'scope'} = &escape(uc($1));
 	next;
     }
 
@@ -223,7 +225,7 @@ safe_open(*OUT, $outfile);
 
 # Write the index...
 if ($indexid) {
-    print OUT "<$indextag ID='$indexid'>\n\n";
+    print OUT "<$indextag id='$indexid'>\n\n";
 } else {
     print OUT "<$indextag>\n\n";
 }
@@ -232,7 +234,7 @@ print OUT "<!-- This file was produced by collateindex.pl.         -->\n";
 print OUT "<!-- Remove this comment if you edit this file by hand! -->\n";
 
 print OUT "<!-- ULINK is abused here.
-      
+
       The URL attribute holds the URL that points from the index entry
       back to the appropriate place in the output produced by the HTML
       stylesheet. (It's much easier to calculate this URL in the first
@@ -311,7 +313,7 @@ foreach $idx (@term) {
     } elsif (!&tsame($last, $idx, 'secondary')) {
 	print "DIFF SEC\n" if $debug;
 
-	print OUT "\n  </$lastout>\n";
+	print OUT "\n  </$lastout>\n" if $lastout;
 
 	print OUT "  <secondaryie>", $idx->{'secondary'};
 	$lastout = "secondaryie";
@@ -323,7 +325,7 @@ foreach $idx (@term) {
     } elsif (!&tsame($last, $idx, 'tertiary')) {
 	print "DIFF TERT\n" if $debug;
 
-	print OUT "\n  </$lastout>\n";
+	print OUT "\n  </$lastout>\n" if $lastout;
 
 	if ($idx->{'tertiary'}) {
 	    print OUT "  <tertiaryie>", $idx->{'tertiary'};
@@ -441,7 +443,7 @@ sub print_term {
 	    print OUT "\n  </$lastout>\n";
 	    $lastout = "";
 	}
-	print OUT $indent, "<seeie>", $idx->{'see'}, "</seeie>\n";
+	print OUT $indent, "<seeie>", &escape($idx->{'see'}), "</seeie>\n";
 	return;
     }
 
@@ -451,7 +453,7 @@ sub print_term {
 	    print OUT "\n  </$lastout>\n";
 	    $lastout = "";
 	}
-	print OUT $indent, "<seealsoie>", $idx->{'seealso'}, "</seealsoie>\n";
+	print OUT $indent, "<seealsoie>", &escape($idx->{'seealso'}), "</seealsoie>\n";
 	return;
     }
 
@@ -479,13 +481,13 @@ sub print_term {
 	    $linkend = $key;
 	}
 
-	$role = $linkend;
+	$role = $phref{$key};
 	$role = $1 if $role =~ /\#(.*)$/;
 
 	print OUT $indent;
 	print OUT "<ulink url=\"$linkend\" role=\"$role\">";
 	print OUT "<emphasis>" if ($idx->{'significance'} eq 'PREFERRED');
-	print OUT $href{$key};
+	print OUT &escape($href{$key});
 	print OUT "</emphasis>" if ($idx->{'significance'} eq 'PREFERRED');
 	print OUT "</ulink>";
     }
@@ -593,3 +595,14 @@ sub safe_open {
 	}
     }
 }
+
+sub escape {
+    # make sure & and < don't show up in the index
+    local $_ = shift;
+    s/&/&amp;/sg;
+    s/</&lt;/sg;
+    s/>/&gt;/sg; # what the heck
+
+    return $_;
+}
+
