@@ -224,9 +224,9 @@ function vistype($type) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
-    "docbook" => array(
-      title => "Linux - Friheden til at skrive i SGML/DocBook",
-      comment => "Skrive bøger i DocBook",
+    "dokumentation" => array(
+      title => "Linux - Friheden til at skrive dokumentation",
+      comment => "Skrive dokumentation under Linux",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
