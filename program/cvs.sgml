@@ -652,10 +652,20 @@ andre som skal bruge det katalog har læse og skriverettighed til det.
 </screen>
 
 <para>
+og tilsvarende for tcsh/csh:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>setenv CVSROOT /usr/local/CVSROOT</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs init</userinput>
+</screen>
+
+
+<para>
 Hver af brugerne skal selv indføje
 <filename>CVSROOT</filename>-variablen i deres
 <filename>~/.bashrc</filename> eller <filename>~/.profile</filename>
-med syntaken <filename>CVS-SERVER:KATALOG</filename>. Variablen
+med syntaken <filename>BRUGER@CVS-SERVER:KATALOG</filename>. Variablen
 <filename>CVSROOT</filename> er sat når man starter en ny shell. Check
 dette ved at skrive
 </para>
@@ -664,13 +674,20 @@ dette ved at skrive
 <prompt>[anne@linus ~]$</prompt> <userinput>bash</userinput>
 <prompt>[anne@linus ~]$</prompt> <userinput>env | grep CVS</userinput>
 CVS_RSH=ssh
-CVSROOT=cvs.sslug.dk:/usr/local/CVSROOT
+CVSROOT=anne@cvs.sslug.dk:/usr/local/CVSROOT
 </screen>
+
+<para>
+tilsvarende skal tcsh-brugere starte en nyt terminal-vindue eller
+skrive <command>tcsh</command> for at checke.
+</para>
 
 <para>
 I eksemplet kan man se at maskinen <filename>cvs.sslug.dk</filename>
 er CVS-server og CVS-databasen (repositoriet) ligger på den maskine i
-<filename>/usr/local/CVSROOT</filename>.
+<filename>/usr/local/CVSROOT</filename>. Brugernavnet
+<filename>anne@</filename> svarer til det bruger-navn, som man har på
+den CVS-server (ikke nødvendigvis det samme på på egen maskine).
 </para>
 
 <para>
@@ -726,14 +743,91 @@ hundredefold.
 </para>
 
 
+
+<sect3 id="misc-med-cvs">
+<title>Diverse med CVS</title>
+
 <para>
-Endelig kan det nævnes, at hvis Emacs indlæser en fil, der er koblet
+Det kan nævnes, at hvis Emacs indlæser en fil, der er koblet
 ind i CVS, vil Emacs automatisk genkende dette og indsætte en ekstra
 menu, hvorfra du på enkel vis kan sende tilføjelser til den fælles
 database (selve ændringerne skal du ikke selv styre - det klarer Emacs
 og CVS).
 </para>
 
+
+<para>
+Skal man anvende en "export" version til distribution, eller blot ikke
+ønsker at lave en "checkout", så er <command>cvs export
+PROJEKT</command> også en mulighed. Den henter kun filerne, men ikke
+CVS informations-filerne. Meget praktisk til at skelne mellem
+udgivelse af filer ("export") i forhold til udvikler-version med fuld
+CVS-information ("checkout").
+</para>
+
+<para>
+Vi har tidligere vist, at projekt/kildetekst hentes med:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout projektnavn</userinput>
+</screen>
+ 
+<para>
+Men for folk, der deltager i mange projekter er det interessant at man
+faktisk også kan angive CVSROOT-variablen som kommando argument
+</para>
+  
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs -d USER@tux.hjemme:/usr/local/CVSROOT checkout projektnavn</userinput>
+</screen>
+
+<para>
+og det skal bemærkes at man faktisk ikke anvender CVSROOT-variablen
+efter at man har kørt <command>cvs checkout</command>. Hvis man ser
+efter i <filename>projekt-katalog/CVS</filename>, så finder man der
+tre filer, som tilhører CVS.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+ <filename>Repository</filename> indeholder projekt-navn på CVS-serveren.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<filename>Root</filename> indeholder CVSROOT-variablen for det
+pågældende projekt.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<filename>Entries</filename> indeholder listen over de filer og
+kataloger som er registreret i CVS.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Næste trick er for dem som anvender SSH til at kommunikere med CVS.
+Man kan få ssh til at understøtte komprimering i
+<filename>~/.ssh/config</filename> :
+</para>
+
+<screen> 
+Compression yes
+CompressionLevel 6
+</screen>
+
+<para>
+Men vær opmærksom på at visse servere ikke kan finde ud af at anvende
+kompression, så er der uforklarlige problemer med at få forbindelse,
+så slå det fra. 
+</para>
+                          
+
+</sect3>
 </sect2>
 
 </sect1>
