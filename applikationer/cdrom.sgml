@@ -9,7 +9,7 @@ Linux understøtter cd-brænding på alle drev fremstillet siden 1999,
 hvor en standardisering af cd-brændere slog igennem. Desuden er en
 række ældre brændere understøttet; den fulde liste findes på adressen
 <ulink
-url="http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html">http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html</ulink>.
+url="http://www.fokus.fraunhofer.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-2.0.html">http://www.fokus.fraunhofer.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-2.0.html</ulink>.
 </para>
 
 <para>
@@ -38,9 +38,9 @@ som det skal. Ved at give kommandoen <command>cdrecord
 
 <screen>
 <prompt>[root@linus /]#</prompt> <userinput>cdrecord -scanbus</userinput>
-Cdrecord 1.11a12 (i586-mandrake-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
-Linux sg driver version: 3.1.22
-Using libscg version 'schily-0.5'
+Cdrecord 2.0 (i586-mandrake-linux-gnu) Copyright (C) 1995-2002 Jörg Schilling
+Linux sg driver version: 3.1.24
+Using libscg version 'schily-0.7'
 scsibus0:
         0,0,0     0) 'PIONEER ' 'CD-ROM DR-744   ' '1.02' Removable CD-ROM
         0,1,0     1) 'LITE-ON ' 'LTR-12101B      ' 'LS3J' Removable CD-ROM
@@ -178,8 +178,8 @@ ikke forbeholdt brændere.
 
 <para>
 Bruger man LILO til at starte Linux skal man ind og ændre i
-<filename>/etc/lilo.conf</filename>, hvor der skal tilføjes en
-<command>append</command> linje:
+<filename>/etc/lilo.conf</filename>. Her skal man tilføje til
+en <command>append</command> linje:
 </para>
 
 <programlisting>
@@ -188,13 +188,18 @@ map=/boot/map
 install=/boot/boot.b
 prompt
 lba32
-timeout=50
-append="hdc=ide-scsi hdd=ide-scsi"
 image=/boot/vmlinuz-2.4.17-6
         label=linux
+        append="apm=on hdc=ide-scsi hdd=ide-scsi"
         root=/dev/hda5
         read-only
 </programlisting>
+
+<para>
+I ovenstående eksempel fandtes i forvejen
+<command>append="apm=on"</command>, og vi har så udvidet med vores
+parametre. Findes linjen ikke i forvejen, laver man den blot selv.
+</para>
 
 <para>
 Efter tilføjelsen køres <command>/sbin/lilo</command> og maskinen skal
@@ -202,8 +207,22 @@ så genstartes for at glemme alt om IDE-drevet.
 </para>
 
 <para>
-Kører man med <command>loadlin</command> (opstart fra DOS/Windows), så 
-kan man lave en linje i <command>autoexec.bat</command> med
+Hvis man i stedet bruger GRUB til at starte Linux, skal parametren
+skrives i en <command>kernel</kernel> linje i
+<filename>/etc/grub.conf</filename>:
+</para>
+
+<programlisting>
+title Red Hat Linux (2.4.20-18.8)
+        root (hd0,1)
+        kernel /boot/vmlinuz-2.4.20-18.8 ro root=LABEL=/ hdc=ide-scsi hdd=ide-scsi
+        initrd /boot/initrd-2.4.20-18.8.img
+</programlisting>
+
+<para>
+Hvis endelig man kører med <command>loadlin</command> (opstart fra
+DOS/Windows), så kan man lave en linje i
+<command>autoexec.bat</command> med
 </para>
 
 <programlisting>
@@ -418,9 +437,9 @@ hjælp af kommandoen <command>cdrecord -scanbus</command>.
 
 <screen>
 <prompt>[root@linus /]#</prompt> <userinput>cdrecord -scanbus</userinput>
-Cdrecord 1.11a12 (i586-mandrake-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
-Linux sg driver version: 3.1.22
-Using libscg version 'schily-0.5'
+Cdrecord 2.0 (i586-mandrake-linux-gnu) Copyright (C) 1995-2002 Jörg Schilling
+Linux sg driver version: 3.1.24
+Using libscg version 'schily-0.7'
 scsibus0:
         0,0,0     0) 'PIONEER ' 'CD-ROM DR-744   ' '1.02' Removable CD-ROM
         0,1,0     1) 'LITE-ON ' 'LTR-12101B      ' 'LS3J' Removable CD-ROM
@@ -468,11 +487,11 @@ af en kommando som følgende:
 </para>
 
 <screen>
-<prompt>[root@linus /]#</prompt> <userinput>cdrecord speed=8 dev=0,1,0 iso-fil</userinput>
+<prompt>[root@linus /]#</prompt> <userinput>cdrecord speed=16 dev=0,1,0 iso-fil</userinput>
 </screen>
 
 <para>
-Dette starter <command>cdrecord</command>, som med 8 gange hastighed
+Dette starter <command>cdrecord</command>, som med 16 gange hastighed
 vil bruge brænderen med nummer <command>0,1,0</command> til at
 brænde indholdet af filen <filename>iso-fil</filename>. Selve
 <filename>iso-fil</filename> kan være hvad som helst, men navnet vil
@@ -605,7 +624,7 @@ harddisken. En sådan kombineret kommando ser eksempelvis således ud:
 </para>
 
 <screen>
-<prompt>[root@linus /]#</prompt> <userinput>mkisofs -r -J /cd/ | cdrecord speed=8 dev=0,1,0 -</userinput>
+<prompt>[root@linus /]#</prompt> <userinput>mkisofs -r -J /cd/ | cdrecord speed=16 dev=0,1,0 -</userinput>
 </screen>
 
 <para>
@@ -707,7 +726,7 @@ af det hele. Wav-filerne kan brændes til en cd med følgende kommando:
 </para>
 
 <screen>
-<prompt>[root@linus musik]#</prompt> <userinput>cdrecord speed=8 dev=0,1,0 track01.cdda.wav track02.cdda.wav</userinput>
+<prompt>[root@linus musik]#</prompt> <userinput>cdrecord speed=16 dev=0,1,0 track01.cdda.wav track02.cdda.wav</userinput>
 </screen>
 
 <para>
@@ -733,7 +752,7 @@ og det tidligere eksempel ser så ud som følger:
 </para>
 
 <screen>
-<prompt>[root@linus musik]#</prompt> <userinput>cdrecord speed=8 dev=0,1,0 -dao track01.cdda.wav track02.cdda.wav</userinput>
+<prompt>[root@linus musik]#</prompt> <userinput>cdrecord speed=16 dev=0,1,0 -dao track01.cdda.wav track02.cdda.wav</userinput>
 </screen>
 
 </sect2>
@@ -760,7 +779,7 @@ ikke bliver lukket, og det er derfor muligt at tilføje mere senere hen:
 </para>
 
 <screen>
-<prompt>[root@linus musik]#</prompt> <userinput>cdrecord -speed=8 -dev=0,1,0 -multi track01.cdda.wav track02.cdda.wav</userinput>
+<prompt>[root@linus musik]#</prompt> <userinput>cdrecord -speed=16 dev=0,1,0 -multi track01.cdda.wav track02.cdda.wav</userinput>
 </screen>
 
 <para>
@@ -773,7 +792,7 @@ bruger man <command>-msinfo</command>:
 </para>
 
 <screen>
-<prompt>[root@linus musik]#</prompt> <userinput>cdrecord -dev=0,1,0 -msinfo</userinput>
+<prompt>[root@linus musik]#</prompt> <userinput>cdrecord dev=0,1,0 -msinfo</userinput>
 0,25654
 </screen>
 
@@ -796,7 +815,7 @@ musikken:
 </para>
 
 <screen>
-<prompt>[root@linus /]#</prompt> <userinput>cdrecord -speed=8 -eject -dev=0,1,0 min.iso</userinput>
+<prompt>[root@linus /]#</prompt> <userinput>cdrecord -speed=16 -eject dev=0,1,0 min.iso</userinput>
 </screen>
 
 <para>
