@@ -75,7 +75,7 @@
 
 <para>
   FileWriter-objektets write()-metode er lidt besværlig at
-  arbejde med, da den ikke understøtter linieskift (som så
+  arbejde med, da den ikke understøtter linjeskift (som så
   i stedet må laves med &quot;\n&quot;).
 </para>
 
@@ -173,7 +173,7 @@ person4 k 16
   Til det formål bruger vi et FileReader-objekt som
   datakilde. Igen pakker vi det ind i et andet objekt, denne gang af
   klassen BufferedReader. BufferedReader gør det mere
-  bekvemt, da indlæsning kan ske linie for linie med metoden
+  bekvemt, da indlæsning kan ske linje for linje med metoden
   readLine(). Når der ikke er flere data, returnerer readLine()
   null.
 </para>
@@ -194,11 +194,11 @@ public class LaesTekstfil
 <emphasis>    FileReader fil = new FileReader(&quot;skrevet fil.txt&quot;);</emphasis>
 <emphasis>    BufferedReader ind = new BufferedReader(fil);</emphasis>
 
-    String linie = ind.readLine();
-    while (linie != null)
+    String linje = ind.readLine();
+    while (linje != null)
     {
-      System.out.println(&quot;Læst: &quot;+linie);
-      linie = <emphasis>ind.readLine()</emphasis>;
+      System.out.println(&quot;Læst: &quot;+linje);
+      linje = <emphasis>ind.readLine()</emphasis>;
     }
   }
 }
@@ -233,7 +233,7 @@ Læst: person4 k 16
 </screen>
 
 <para>
-  ... og derpå gøre den linieorienteret ved at pakke
+  ... og derpå gøre den linjeorienteret ved at pakke
   den yderligere ind i et BufferedReader-objekt:
 </para>
 
@@ -242,12 +242,12 @@ Læst: person4 k 16
 </screen>
 
 <para>
-  Derefter kan man læse inddata fra tastaturet linie for
-  linie, ligesom vi gør med filer:
+  Derefter kan man læse inddata fra tastaturet linje for
+  linje, ligesom vi gør med filer:
 </para>
 
 <screen>
-  String linie = ind.readline();
+  String linje = ind.readline();
 </screen>
 </sect1> 
 
@@ -407,7 +407,7 @@ public class LaesFormel
 
 <para>
   Nu kan vi skrive et statistikprogram. Vi tæller antallet af
-  personer (linier i filen) og summen af aldrene. Linierne
+  personer (linjer i filen) og summen af aldrene. Linjerne
   analyseres og lægges ind i variablerne navn, køn og
   alder.
 </para>
@@ -427,12 +427,12 @@ public class LaesTekstfilOgLavStatistik
       BufferedReader ind =
         new BufferedReader(new FileReader(&quot;skrevet fil.txt&quot;));
 
-      String linie = ind.readLine();
-      while (linie != null)
+      String linje = ind.readLine();
+      while (linje != null)
       {
         try 
         {
-          StringTokenizer bidder = new StringTokenizer(linie);
+          StringTokenizer bidder = new StringTokenizer(linje);
 
           String navn = bidder.nextToken();
           String køn = bidder.nextToken();
@@ -443,10 +443,10 @@ public class LaesTekstfilOgLavStatistik
           sumAlder = sumAlder + alder;
         } catch (Exception u) 
         {
-          System.out.println(&quot;Fejl. Linien springes over.&quot;);
+          System.out.println(&quot;Fejl. Linjen springes over.&quot;);
           u.printStackTrace();
         }
-        linie = ind.readLine();
+        linje = ind.readLine();
       }
 
       System.out.println(&quot;Aldersgennemsnittet er: &quot;+sumAlder/antalPersoner);
@@ -483,19 +483,19 @@ Aldersgennemsnittet er: 30
 </para>
 
 <para>
-  Under analyseringen af linien kan der også opstå flere
+  Under analyseringen af linjen kan der også opstå flere
   forskellige slags undtagelser: Konverteringen til heltal kan gå
   galt, og der kan være for få bidder, så nextToken()
   bliver kaldt efter sidste bid.
 </para>
 
 <para>
-  For eksempel giver linien &quot;person2 m24&quot; (der mangler et
+  For eksempel giver linjen &quot;person2 m24&quot; (der mangler et
   mellemrum mellem m og 24)
 </para>
 
 <screen>
-Fejl. Linien springes over.
+Fejl. Linjen springes over.
 java.util.NoSuchElementException
         at java.util.StringTokenizer.nextToken(StringTokenizer.java:241)
         at LaesTekstfil.main(LaesTekstfil.java:25)
@@ -504,14 +504,14 @@ java.util.NoSuchElementException
 
 <para>
   Hvis disse fejl opstår, fortsætter programmet efter
-  catch-blokken med at læse næste linie af inddata.
+  catch-blokken med at læse næste linje af inddata.
 </para>
 
 <para>
   Da sumAlder og antalPersoner ændres sidst i
-  try-catch-blokken, vil de kun blive opdateret hvis hele linien
+  try-catch-blokken, vil de kun blive opdateret hvis hele linjen
   er i orden, og statistikken udregnes derfor kun på grundlag af
-  de gyldige linier.
+  de gyldige linjer.
 </para>
 </sect2>
 </sect1>
@@ -677,7 +677,7 @@ java.util.NoSuchElementException
 
 <para>
   BufferedReader sørger også for, at man kan læse
-  en hel linie af datastrømmen ad gangen.
+  en hel linje af datastrømmen ad gangen.
 </para>
 </sect2>   
 
@@ -712,7 +712,7 @@ java.util.NoSuchElementException
 </para>
 
 <para>
-  <emphasis>LineNumber</emphasis>-klasser tæller antallet af linieskift i
+  <emphasis>LineNumber</emphasis>-klasser tæller antallet af linjeskift i
   datastrømmen, men lader den ellers være uændret.
 </para>
 
@@ -781,7 +781,7 @@ PrintWriter ud=new PrintWriter(GZIPOutputStream(new(FileOutputStream(&quot;fil.g
 
 <para>
   Herunder læser vi en fil og udregner filens checksum og
-  antallet af linier i filen.
+  antallet af linjer i filen.
 </para>
 
 <screen>
@@ -799,10 +799,10 @@ public class UndersoegFil
     InputStreamReader <emphasis>txtstrøm  = new InputStreamReader(chkstrøm)</emphasis>;
     LineNumberReader <emphasis>ind        = new LineNumberReader(txtstrøm)</emphasis>;
 
-    String linie;
-    while ((linie=<emphasis>ind.readLine()</emphasis>)!= null) System.out.println(&quot;Læst: &quot;+linie);
+    String linje;
+    while ((linje=<emphasis>ind.readLine()</emphasis>)!= null) System.out.println(&quot;Læst: &quot;+linje);
 
-    System.out.println(&quot;Antal linier: &quot;  +<emphasis>ind.getLineNumber()</emphasis>);
+    System.out.println(&quot;Antal linjer: &quot;  +<emphasis>ind.getLineNumber()</emphasis>);
     System.out.println(&quot;Checksum (CRC):&quot; +<emphasis>checksum.getValue()</emphasis>);
   }
 }
@@ -816,7 +816,7 @@ Læst: person1 k 10
 Læst: person2 k 16
 Læst: person3 k 11
 Læst: person4 k 21
-Antal linier: 5
+Antal linjer: 5
 Checksum (CRC):3543848051
 </screen>
 
@@ -826,12 +826,12 @@ Checksum (CRC):3543848051
   at bruge det forrige objekt i som parameter til konstruktørerne:
   Filindlæsning, buffering, checksum, gå fra binær
   til tekstbaseret indlæsning (InputStreamReader) og
-  linietælling.
+  linjetælling.
 </para>
 
 <para>
   While-løkken er skrevet meget kompakt med en tildeling
-  (linie=ind.readLine()) og derefter en sammenligning, om værdien
+  (linje=ind.readLine()) og derefter en sammenligning, om værdien
   af tildelingen var null ( (..) != null).
 </para>
 </sect1>   
@@ -844,14 +844,14 @@ Checksum (CRC):3543848051
 </para>
 
 <orderedlist>
-  <listitem><para>Udvid LaesTekstfilOgLavStatistik.java sådan, at linier, der starter med &quot;#&quot; er kommentarer, som ignoreres, og afprøv om programmet virker.</para></listitem>
-  <listitem><para>Skriv et program, Grep.java, der læser en fil og udskriver alle linier, der indeholder en bestemt delstreng (vink: Ret LaesTekstfil.java - en linie undersøges for en delstreng med substring(...))</para></listitem>
-  <listitem><para>Skriv et program, Diff.java, der sammenligner to tekstfiler linie for linie og udskriver de linier, der er forskellige.</para></listitem>
+  <listitem><para>Udvid LaesTekstfilOgLavStatistik.java sådan, at linjer, der starter med &quot;#&quot; er kommentarer, som ignoreres, og afprøv om programmet virker.</para></listitem>
+  <listitem><para>Skriv et program, Grep.java, der læser en fil og udskriver alle linjer, der indeholder en bestemt delstreng (vink: Ret LaesTekstfil.java - en linje undersøges for en delstreng med substring(...))</para></listitem>
+  <listitem><para>Skriv et program, Diff.java, der sammenligner to tekstfiler linje for linje og udskriver de linjer, der er forskellige.</para></listitem>
   <listitem><para>Ret SkrivTekstfil.java til SkrivKomprimeretTekstfil.java, der gemmer data komprimeret.</para></listitem>
   <listitem><para>Lav den tilsvarende LaesKomprimeretTekstfilOgLavStatistik.java.</para></listitem>
   <listitem>
     <para>
-      Lav et program, der læser fra en tekstfil, skyld.txt, og udskriver summen af tallene i hver linie med navnet foranstillet (f.eks. Anne:  450). Filen kunne f.eks. indeholde</para>
+      Lav et program, der læser fra en tekstfil, skyld.txt, og udskriver summen af tallene i hver linje med navnet foranstillet (f.eks. Anne:  450). Filen kunne f.eks. indeholde</para>
       <screen>Anne 300 150Peter 18 300 900 -950Lis 1000 13.5</screen>
   </listitem>
 </orderedlist>

@@ -303,7 +303,7 @@ Punkt D
   Staksporet er nyttigt, når man skal finde ud af, hvordan
   fejlen opstod. Det viser præcist, at undtagelsen opstod i
   elementAt() i Vector, som blev kaldt fra SimpelUndtagelse2.java i
-  main()-metoden linie 11.
+  main()-metoden linje 11.
 </para>
 </sect2>
 </sect1>
@@ -339,7 +339,7 @@ Punkt D
 <title>Fange undtagelser eller sende dem videre</title>
 
 <para>
-  Som eksempel vil vi indlæse en linie fra tastaturet og
+  Som eksempel vil vi indlæse en linje fra tastaturet og
   udskrive den på skærmen:
 </para>
 
@@ -350,15 +350,15 @@ public class TastaturbrugerFejl
   public static void main(String arg[]) 
   {
     BufferedReader ind = new BufferedReader(new InputStreamReader(System.in));
-    String linie;
-    linie = ind.readLine();
-    System.out.println(&quot;Du skrev: &quot;+linie);
+    String linje;
+    linje = ind.readLine();
+    System.out.println(&quot;Du skrev: &quot;+linje);
   }
 }
 </screen>
 
 <para>
-  Metoden readLine() læser en linie fra datastrømmen
+  Metoden readLine() læser en linje fra datastrømmen
   (tastaturet), men når den udføres, kan der opstå
   en IOException-undtagelse.
   Oversætteren tvinger os til at tage højde for den mulige
@@ -367,12 +367,12 @@ public class TastaturbrugerFejl
 
 <screen>
 TastaturbrugerFejl.java:8: unreported exception java.io.IOException; must be caught or declared to be thrown
-              linie = ind.readLine();
+              linje = ind.readLine();
 </screen>
 
 <para>
   Fejlmeddelelsen ville på dansk lyde: &quot;<emphasis>I
-  TastaturbrugerFejl.java linie 8 er der en uhåndteret undtagelse
+  TastaturbrugerFejl.java linje 8 er der en uhåndteret undtagelse
   IOException; den skal fanges, eller det skal erklæres, at den
   bliver kastet</emphasis>&quot;:
 </para>
@@ -385,8 +385,8 @@ TastaturbrugerFejl.java:8: unreported exception java.io.IOException; must be cau
 
 <screen>
 <emphasis>    try {</emphasis>
-      linie = ind.readLine();
-      System.out.println(&quot;Du skrev: &quot;+linie);
+      linje = ind.readLine();
+      System.out.println(&quot;Du skrev: &quot;+linje);
 <emphasis>    } catch (Exception u) {</emphasis>
       u.printStackTrace();
 <emphasis>    }</emphasis>
@@ -429,7 +429,7 @@ TastaturbrugerFejl.java:8: unreported exception java.io.IOException; must be cau
   Det har konsekvenser at sende undtagelser videre, for da skal kalderen
   håndtere dem. Her er et eksempel: Lad os sige, at vi har
   uddelegeret læsningen fra tastaturet til en separat klasse, der
-  kan læse en linie fra tastaturet med læsLinie() og evt.
+  kan læse en linje fra tastaturet med læsLinje() og evt.
   omsætte den til et tal med læsTal():
 </para>
 
@@ -445,11 +445,11 @@ public class Tastatur
     ind = new BufferedReader(new InputStreamReader(System.in));
   }
 
-  public String læsLinie()
+  public String læsLinje()
   {
     try {
-      String linie = ind.readLine();
-      return linie;
+      String linje = ind.readLine();
+      return linje;
     } catch (IOException u)
     {
       u.printStackTrace();
@@ -459,14 +459,14 @@ public class Tastatur
 
   public double læsTal()
   {
-    String linie = læsLinie();
-    return Double.parseDouble(linie);
+    String linje = læsLinje();
+    return Double.parseDouble(linje);
   }
 }
 </screen>
 
 <para>
-  Herover fanger vi undtagelsen IOException ved dens &quot;rod&quot; i læsLinie().
+  Herover fanger vi undtagelsen IOException ved dens &quot;rod&quot; i læsLinje().
 </para>
 
 <para>
@@ -474,15 +474,15 @@ public class Tastatur
 </para>
 
 <screen>
-  public String læsLinie() throws IOException
+  public String læsLinje() throws IOException
   {
-    String linie = ind.readLine();
-    return linie;
+    String linje = ind.readLine();
+    return linje;
   }
 </screen>
 
 <para>
-  Nu sender læsLinie() undtagelserne videre, så nu er det kalderens problem at håndtere den.
+  Nu sender læsLinje() undtagelserne videre, så nu er det kalderens problem at håndtere den.
 </para>
 
 <para>
@@ -493,8 +493,8 @@ public class Tastatur
   public double læsTal()
   {
     try {
-      String linie = læsLinie();
-      return Double.parseDouble(linie);
+      String linje = læsLinje();
+      return Double.parseDouble(linje);
     } catch (IOException u)
     {
       u.printStackTrace();
@@ -520,16 +520,16 @@ public class TastaturKasterUndtagelser
     ind = new BufferedReader(new InputStreamReader(System.in));
   }
 
-  public String læsLinie()<emphasis> throws IOException</emphasis>
+  public String læsLinje()<emphasis> throws IOException</emphasis>
   {
-    String linie = ind.readLine();
-    return linie;
+    String linje = ind.readLine();
+    return linje;
   }
 
   public double læsTal()<emphasis> throws IOException</emphasis>
   {
-    String linie = læsLinie();
-    return Double.parseDouble(linie);
+    String linje = læsLinje();
+    return Double.parseDouble(linje);
   }
 }
 </screen>
@@ -542,11 +542,11 @@ public class TastaturKasterUndtagelser
 
 <para>
   Hvad sker der f.eks. i Tastatur, hvis der opstår en
-  undtagelse i læsLinie() kaldt fra læsTal()?
+  undtagelse i læsLinje() kaldt fra læsTal()?
 </para>
 
 <para>
-  Jo, læsLinie() returnerer en null-reference til læsTal(),
+  Jo, læsLinje() returnerer en null-reference til læsTal(),
   der sender denne reference til parseDouble(), der sandsynligvis
   &quot;protesterer&quot; med en NullPointerException, for man kan
   ikke konvertere null til et tal. Der opstår altså en
@@ -599,7 +599,7 @@ public class SumMedTastatur
         }
         System.out.println(&quot;Summen er: &quot;+sum);
         System.out.print(&quot;Vil du prøve igen? (j/n)&quot;);
-        if (&quot;n&quot;.equals(t.læsLinie())) stop = true;    // undersøg om det er &quot;n&quot;
+        if (&quot;n&quot;.equals(t.læsLinje())) stop = true;    // undersøg om det er &quot;n&quot;
       }
 <emphasis>    }   catch (Exception u) {</emphasis>
 <emphasis>      System.out.println(&quot;Der opstod en undtagelse!&quot;);</emphasis>
@@ -645,8 +645,8 @@ java.lang.NumberFormatException: 17xxøføf
 <para>
   Her opstod en anden undtagelse: 17xxøføf kunne ikke
   konverteres til et tal. Igen er staksporet nyttigt til at finde
-  fejlen (læst nedefra og op viser det, at main() i linie 18
-  kaldte læsTal(), der i linie 27 kaldte parseDouble(), der er en
+  fejlen (læst nedefra og op viser det, at main() i linje 18
+  kaldte læsTal(), der i linje 27 kaldte parseDouble(), der er en
   del af standardbiblioteket.
 </para>
 
@@ -686,7 +686,7 @@ public class SumMedTastatur2
 <emphasis>        System.out.println(&quot;Indtastningsfejl - &quot; + u);</emphasis>
 <emphasis>      }</emphasis>
       System.out.print(&quot;Vil du prøve igen? (j/n)&quot;);
-      if (&quot;n&quot;.equals(t.læsLinie())) stop = true;
+      if (&quot;n&quot;.equals(t.læsLinje())) stop = true;
     }
   }
 }
