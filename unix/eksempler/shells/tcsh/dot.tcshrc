@@ -1,0 +1,38 @@
+#!/bin/tcsh
+# User .tcshrc file (/bin/tcsh initialization).
+
+# Omgåelse af en fejl i Red Hat 7.X
+unset dspmbyte
+
+# Anvend ssh til rsync
+setenv RSYNC_RSH ssh
+
+#Dansk keyboard setup
+setenv LC_ALL da_DK
+setenv LANG da
+
+# Led efter programmer i de følgende steder - bemærk
+# punktum betyder at det aktuell katalog også gennemsøges.
+set path = (  /bin /usr/bin /usr/local/bin /usr/X11R6/bin .)
+
+if ( ! $?prompt ) exit                      # Kommandofortolkeren er interaktiv
+
+set history = 500                           # 500 af de forrige kommandoer huskes
+set savehist                                # Number to save across sessions
+set histfile
+set autolist                                # List choices in name completion
+set correct = cmd                           # Checks spelling of commands
+
+# Kommando-prompt med login-navn maskine og sti
+set prompt  = "%{^[[1m%}${user}@`hostname`%/>%{^[[0m%} " 
+
+# Findes en ~/.alias-fil med aliaser, da køres denne
+if ( -e ~/.alias ) source ~/.alias
+
+# Findes en ~/.complete.tcsh-fil, da køres denne
+if ( -e ~/.complete.tcsh ) source ~/.complete.tcsh
+
+# Jeg vælger også at søge efter programmer i ~/bin
+if ($?PATH) then
+    setenv PATH $PATH:~/bin
+endif
