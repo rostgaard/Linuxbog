@@ -24,7 +24,7 @@ version=$(shell cat version.sgml)
 dato=$(shell cat dato.sgml)
 
 # Her er en liste af sgml-filer der ændres automatisk
-badsgmlfiles=dato.sgml magic.sgml stikord.sgml
+badsgmlfiles=dato.sgml version.sgml magic.sgml stikord.sgml
 
 # Her er  en liste af alle sgml
 allesgmlfiles=$(wildcard *.sgml)
@@ -56,12 +56,16 @@ ImageMagickconvertf=$(wildcard /usr/bin/convert /usr/X11R6/bin/convert)
 ImageMagickconvert = $(firstword $(ImageMagickconvertf))
 
 # her er det der skal laves
-all:	starter html pspdf palmpilot sgml eksempelbackup exit
+all:	starter gemversion html pspdf palmpilot sgml eksempelbackup exit
 
 starter:
 	@echo "---------------------------------------------"
 	@echo "Starter oversættelser af " $(targetshortname)
 	@echo "---------------------------------------------"
+
+gemversion:
+	@grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml
+	version=$(shell cat version.sgml)
 
 sgml: $(targetname)-$(version).sgml.tgz
 

@@ -36,6 +36,16 @@ statusfiler:  Makefiler
 	make -C docbook  statusfiler
 	make -C alle  statusfiler
 
+version:  Makefiler
+	make -C friheden gemversion
+	make -C applikationer  gemversion
+	make -C admin  gemversion
+	make -C program  gemversion
+	make -C web  gemversion
+	make -C sikkerhed  gemversion
+	make -C c  gemversion
+	make -C docbook  gemversion
+
 eksempelbackup:  statusfiler
 	make -C friheden eksempelbackup
 	make -C applikationer  eksempelbackup
