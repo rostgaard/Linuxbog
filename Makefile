@@ -12,6 +12,7 @@ Makefiler:
 	cp Makefile.subdir sikkerhed/Makefile
 	cp Makefile.subdir c/Makefile
 	cp Makefile.subdir docbook/Makefile
+	cp Makefile.subdir office/Makefile
 
 filer:  Makefiler
 	make Makefiler
@@ -23,6 +24,7 @@ filer:  Makefiler
 	make -C sikkerhed
 	make -C c
 	make -C docbook
+	make -C office
 	make -C alle 
 
 statusfiler:  Makefiler
@@ -34,6 +36,7 @@ statusfiler:  Makefiler
 	make -C sikkerhed  statusfiler
 	make -C c  statusfiler
 	make -C docbook  statusfiler
+	make -C office  statusfiler
 	make -C alle  statusfiler
 
 version:  Makefiler
@@ -45,6 +48,7 @@ version:  Makefiler
 	@grep -A2 "<listitem>" sikkerhed/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > sikkerhed/version.sgml
 	@grep -A2 "<listitem>" c/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > c/version.sgml
 	@grep -A2 "<listitem>" docbook/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > docbook/version.sgml
+	@grep -A2 "<listitem>" office/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >office/version.sgml
 	cp friheden/version.sgml alle/version.sgml
 	@echo "friheden" `cat friheden/version.sgml`
 	@echo "applikationer" `cat applikationer/version.sgml`
@@ -54,6 +58,7 @@ version:  Makefiler
 	@echo "sikkerhed" `cat sikkerhed/version.sgml`
 	@echo "c" `cat c/version.sgml`
 	@echo "docbook" `cat docbook/version.sgml`
+	@echo "office" `cat office/version.sgml`
 
 eksempelbackup:  statusfiler
 	make -C friheden eksempelbackup
@@ -64,6 +69,7 @@ eksempelbackup:  statusfiler
 	make -C sikkerhed  eksempelbackup
 	make -C c  eksempelbackup
 	make -C docbook  eksempelbackup
+	make -C office  eksempelbackup
 
 clean: Makefiler
 	make -C friheden clean
@@ -74,6 +80,7 @@ clean: Makefiler
 	make -C sikkerhed clean 
 	make -C c clean 
 	make -C docbook clean 
+	make -C office clean 
 	make -C alle clean 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
