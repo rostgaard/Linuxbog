@@ -608,14 +608,263 @@ CVS. http://www.sslug.dk/linuxbog/program/bog/vaerktoej.html
 <!-- ####################################################################### -->
 <sect1 id="java-dev-env-test">
 <title>Test</title>
+<indexterm>
+  <primary>Test</primary>
+  <secondary>JUnit</secondary>
+</indexterm>
 
 <para>
-TODO
+Kunsten at lave fejlfri programmer er svær at mestre. Kunsten at lave robuste
+programmer er svær at mestre. Kunsten at lave programmer der svarer til kundernes
+forventning er svær at mestre. Netop derfor er det nødvendigt at ethvert
+softwareprojekt i et eller andet omfang gennemtestes for fejl og mangler inden
+det sendes ud på markedet.
 </para>
 
 <para>
-JUnit
+En <emphasis>modultest</emphasis> er en test, der afprøver en afgrænset delmængde kode
+i isolation fra det samlede softwaresystem. Målet er at finde fejl og sandsynliggøre
+at modulet fungerer efter hensigten. Når vi taler Java så er et modul som oftest
+enten en klasse eller en samling af klasser hørende under en fælle pakke.
 </para>
+
+<para>
+I denne sektion ser vi på et yderst værdifuldt værktøj til automatiseret modultest,
+<emphasis>JUnit</emphasis>.
+</para>
+
+<sect2 id="java-dev-env-test-junit">
+<title>JUnit</title>
+
+<para>
+JUnit er et testframework, der har til formål at lette programmørens arbejde når
+der skal udarbejdes testmetoder. Frameworket er centreret omkring begrebet
+<emphasis>Test Case</emphasis> som repræsenterer en samling af testmetoder for et enkelt modul.
+På dansk kaldes en test case for en <emphasis>testsamling</emphasis>.
+</para>
+
+<para>
+Du kan ganske gratis hente JUnit fra <ulink url="http://www.junit.org/">http://www.junit.org</ulink>.
+På selvsamme adresse kan du også finde mange gode artikler og eksempler. Gennemgangen i
+denne sektion er kun ment som en hurtig introduktion så det kan varmt anbefales selv at
+grave efter mere information.
+</para>
+
+<sect3 id="java-dev-env-test-junit-intstack">
+<title>Test af IntStack</title>
+
+<para>
+I <xref linkend="java-dev-env-doc-javadoc"> blev der defineret en stak,
+<constant>IntStack</constant>, der kan lagre heltal. Nedenstående kode viser
+et eksempel på, hvordan JUnit kan anvendes til at teste denne stak.
+</para>
+
+<para>
+For at kunne oversætte og udføre eksemplet så skal jar-filen <constant>junit.jar</constant>
+være med i CLASSPATH.
+</para>
+
+<screen>
+package dk.sslug;
+
+import junit.framework.TestCase;
+import dk.sslug.IntStack;
+
+public class TestIntStack extends TestCase
+{
+  public TestIntStack(String name)
+  {
+    super(name);
+  }
+
+  public void testPushPop()
+  {
+    IntStack stack = new IntStack();
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+    assertTrue( stack.pop() == 30 );
+    assertTrue( stack.pop() == 20 );
+    assertTrue( stack.pop() == 10 );
+  }
+
+  public void testEmptyStackException()
+  {
+    IntStack stack = new IntStack();
+    try {
+      stack.pop();
+      fail("Burde have smidt en EmptyStackException");
+    } catch (java.util.EmptyStackException e) {
+    }
+  }
+}
+</screen>
+
+<para>
+Der er flere ting du skal bide mærke i. For det første skal en testklassen nedarve
+fra <constant>TestCase</constant>-klassen. For det andet skal testmetoderne starte med navnet
+<emphasis>test</emphasis> for at testframeworket kan udføre dem. For det tredje skal
+testmetoderne være deklareret public og ikke tage imod nogen argumenter.
+</para>
+
+<para>
+Metoden <constant>assertTrue(boolean)</constant> bruges til at fortælle
+testframeworket, hvorvidt en test skal fejle eller ej. Hvis det boolske udtryk
+evaluerer til falsk så fejler testen.
+</para>
+
+<para>
+Der findes flere forskellige <constant>assertX()</constant>-metoder (læs dokumentationen!).
+De mest brugte udover <constant>assertTrue(boolean)</constant> er nok
+</para>
+
+<itemizedlist>
+<listitem><para><constant>
+assertEquals(java.lang.Object expected, java.lang.Object actual) 
+</constant></para></listitem>
+<listitem><para><constant>
+assertNotNull(java.lang.Object object) 
+</constant></para></listitem>
+<listitem><para><constant>
+assertNull(java.lang.Object object) 
+</constant></para></listitem>
+</itemizedlist>
+
+
+<para>
+<constant>fail()</constant>-metoden får altid en test til at fejle.
+</para>
+
+<para>
+Hvis ovenstående eksempel oversættes og køres med
+</para>
+
+<programlisting>
+<prompt>[jonas@zeta eksempler/dev-env]$ </prompt> <userinput>java junit.textui.TestRunner \
+dk.sslug.TestIntStack</userinput>
+</programlisting>
+
+<para>
+så fås 
+</para>
+
+<screen>
+.F.F
+Time: 0.029
+There were 2 failures:
+1) testPushPop(dk.sslug.TestIntStack)junit.framework.AssertionFailedError: expected:<-1> but was:<30>
+        at dk.sslug.TestIntStack.testPushPop(TestIntStack.java:27)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:42)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:28)
+2) testEmptyStackException(dk.sslug.TestIntStack)junit.framework.AssertionFailedError: Burde have smidt en EmptyStackException
+        at dk.sslug.TestIntStack.testEmptyStackException(TestIntStack.java:37)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:42)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:28)
+
+FAILURES!!!
+Tests run: 2,  Failures: 2,  Errors: 0
+</screen>
+
+<para>
+Hvis der smides en runtime exception i testmetoden som ikke fanges så fejler
+testen også. I JUnit-terminologi er fejl forårsaget af <constant>assertX()</constant>-
+og <constant>fail()</constant>-metoder <emphasis>failures</emphasis> men runtime exceptions
+der ikke bliver fanget er <emphasis>errors</emphasis>.
+</para>
+
+
+<para>
+Du kan lege med at implementere <constant>IntStack</constant> i henhold til API-specifikationen
+og se om din implementation indeholder fejl.
+</para>
+
+<para>
+Du kan også bruge en grafisk TestRunner. Hvis du kører nedenstående
+</para>
+
+<programlisting>
+<prompt>[jonas@zeta eksempler/dev-env]$ </prompt> <userinput>java junit.awtui.TestRunner \
+dk.sslug.TestIntStack</userinput>
+</programlisting>
+
+<para>
+så fås
+</para>
+
+<figure id="junit-gui-testrunner-fig" float="1">
+<title>Grafisk JUnit TestRunner</title>
+<graphic fileref="junit-gui.&magic;" scale="60"></graphic>
+</figure>
+
+</sect3>
+
+<sect3 id="java-dev-env-test-junit-fixture">
+<title>Fælles initialisering for metoder</title>
+
+<para>
+Ofte er man ude for at have to eller flere testmetoder, som skal operere på den samme
+kendte mængde af objekter. I JUnit-terminologi kaldes denne mængde af objekter for et
+<emphasis>test fixture</emphasis> og skal betragtes som en slags fast inventar som
+alle testmetoder kan benytte sig af. Ligeledes er det ikke sjældent at to eller flere
+testmetoder skal gøre brug af en fælles ressource, for eksempel en netværksforbindelse
+eller en databaseforbindelse.
+</para>
+
+<para>
+Nedenstående eksempel viser hvordan dette kan gøres ved at overskrive metoderne
+<constant>setUp()</constant> og <constant>tearDown()</constant> og benytte sig af
+klassevariable.
+</para>
+
+<screen>
+package dk.sslug;
+
+import junit.framework.TestCase;
+import dk.sslug.IntStack;
+
+public class TestIntStack extends TestCase
+{
+  IntStack nonempty_stack;
+  IntStack empty_stack;
+
+  public TestIntStack(String name)
+  {
+    super(name);
+  }
+
+  protected void setUp() throws Exception
+  {
+    nonempty_stack = new IntStack();
+    nonempty_stack.push(10);
+
+    empty_stack = new IntStack();
+  }
+
+  protected void tearDown() throws Exception
+  {
+    // intet behov for oprydning
+  }
+
+  ...
+}
+</screen>
+
+<para>
+Hver gang en testmetode skal udføres så tages <constant>setUp()</constant>
+og <constant>tearDown()</constant> i brug. <constant>setUp()</constant> bliver
+kaldt umiddelbart før den enkelte testmetode, mens <constant>tearDown()</constant>
+bliver kaldt umiddelbart efter.
+</para>
+
+<para>
+Bemærk at begge metoder er deklareret som protected og sat til at kunne kaste en exception.
+</para>
+
+</sect3>
+
+</sect2>
 
 </sect1>
 
