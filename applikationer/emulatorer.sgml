@@ -1,7 +1,6 @@
 <!-- $Id$ -->
 <chapter id="emulatorer">
 <title>Emulatorer</title>
-<indexterm><primary>VMware</primary></indexterm>
 <indexterm><primary>win4lin</primary></indexterm>
 <indexterm><primary>Plex86</primary></indexterm>
 <indexterm><primary>Emulator</primary><secondary>VMware</secondary></indexterm>
@@ -58,6 +57,373 @@ og er ekstremt langsomt.
 <TITLE>Windows kører under Linux via Win4lin</TITLE>
 <GRAPHIC FILEREF="win4lin.&magic;"  SCALE="40"></GRAPHIC>
 </FIGURE>
+
+
+<sect1 id="vmware">
+<title>Vmware - flere maskiner i en</title>
+<indexterm><primary>VMware</primary></indexterm>
+<para>
+Du kan med programmet VMware (<ulink
+url="http://vmware.com">http://vmware.com</ulink>) sætte din maskine
+op til at køre flere styresystemer samtidigt. Du kan hente en 30-dages
+licens til systemet hos <ulink
+url="http://vmware.com">http://vmware.com</ulink>, (og tilsyneladende
+forny den en del gange senere, ikke mindst hvis du har en
+*.mail;). Samme sted findes en meget fyldig og logisk opdelt
+installationsvejledning, som efter et par dages eksperimenter oven i
+købet er til at forstå.
+</para>
+
+<sect2 id="vmware-fordele">
+<title>Fordele ved virtuelle maskiner</title>
+
+<para>
+Med de virtuelle maskiner opnår du flere fordele.Samme hardware til
+alle styresystemer uanset antal. Jeg har en vane med at bruge
+udrangeret udstyr i en junkmaskine til at lege med, men det er ikke
+tilfredsstillende at gå fra fx. 850MHz PIII til 333 Mhz PII.Mulighed
+for at suspendere maskiner uden at skulle gennem en boot næste gang de
+skal bruges.Muliged for at afteste netværks-programmer uden at skulle
+investere en formue i hardware.Mulighed for at lege med nye
+distributioner uden at ødelægge den kørende server.  (Der skal nok
+være flere gode grunde, men disse var nok til at få mig til lommerne).
+</para>
+
+<para>
+Selv om du kan sætte en server op i en virtuel maskine til permanent
+brug, skal du ikke gøre dette. Virtuelle maskiner er efter min mening
+kun velegnet i forbindelser med aftestning. Selv en ældre maskine med
+en installeret server (ikke virtuel) er bedre, og så er du også fri
+for at få opsætningen på denne maskine forstyrret.
+</para>
+</sect2>
+
+
+<sect2 id="vmware-hardwarekrav">
+<title>Hardwarekrav</title>
+
+<para>
+Det kan stærkt anbefales at afprøve programmet for at se, om det kan
+hvad man ønsker, og om ens hardware er hurtig nok til at give et
+tilfredsstillende resultat. Ens processor bør efter min mening være
+CPU >= 600 Mhz, RAM >=128MB og harddisken skal have 2-4 GB plads
+pr. virtuel maskine.
+</para>
+
+</sect2>
+
+<sect2 id="vmware-vaert">
+<title>Valg af værtssystemet</title>
+
+<para>
+Ideen med programmet er, at du først installerer dit HOST-styresystem
+(Linux, NT4 eller Win2K), og derefter opretter en eller flere
+virtuelle maskiner under dette host-system, hvori du installerer andre
+(eller samme) styresystem. Installerer du MS eller andre
+købe-styresystemer, skal du naturligvis have licens til dem, mere
+virtuelt er det trods alt ikke.
+</para>
+
+<para>
+Det første valg du skal gennemtænke meget grundigt er, hvilket
+styresystem der skal være på maskinen (HOST).
+</para>
+
+<para>
+Det du skal lægge vægt på her er både hvad du normalt bruger din
+maskine til, og om al din hardware (også den kommende) er understøttet
+af styresystemet. Begge grunde fik mig til at vælge W2K som HOST, da
+jeg dels primært arbejder i Delphi, og dels har en hang til mystisk
+(ofte alt for dyr) hardware.
+</para>
+
+<para>
+Den næste overvejelse er hvilke styresystemer, der skal installeres
+som GUEST-systemer. Her er valget langt lettere, idet du kan have alt
+der vedrører en given virtuel maskine liggende samlet i en folder ( et
+dir ), som blot kan slettes, hvis du valgte noget forkert. Du kan
+naturligvis også vælge at lade den virtuelle maskine som sådan
+overleve, og blot installere noget andet forfra. Det du risikerer ved
+fejlvalg er således blot at opsamle unyttige erfaringer, men det kan
+jo også have en værdi.
+</para>
+</sect2>
+
+<sect2 id="vmware-pre-installation">
+<title>Inden installationen</title>
+
+<para>
+Det er meget vigtigt, at du starter med at installere netværksdrivere
+i dit HOST-system umiddelbart efter, du har installeret Vmware selv,
+og inden du begynder at installere virtuelle maskiner. Har du ikke
+dette på plads, vil du hurtigt løbe ind i problemer med at kommunikere
+mellem systemerne. Jeg valgte at installere driveren til
+Bridget-networking, hvilket senere giver adgang til at gøre de
+virtuelle maskiner offentligt tilgængelige. Du kan som alternativ
+vælge et lukket netværk, som alene giver adgang til at kommunikere
+internt mellem host/guest systemer.
+</para>
+
+<para>
+En anden ting, der skal være på plads er skærmens farvedybde. 16 og 24
+bit fungerer ganske enkelt ikke. 8 bit giver hurtigere maskiner rent
+grafisk, mens 32 giver flottere udseende.
+</para>
+
+<para>
+Under W2K kan det være praktisk at tilpasse den indbyggede DHCP
+servers adresseområde. Jeg har valgt at køre alt under 192.168.1.* og
+har derfor tilpasset filen
+<filename>C:\WINNT\System32\vmnetdhcp.conf</filename>, så der uddeles
+adresser i det område:
+</para>
+
+<screen>
+subnet 192.168.1.0 netmask 255.255.255.0 {
+    range 192.168.1.210 192.168.1.220;
+    option broadcast-address 192.168.1.255;
+    option domain-name-servers 192.168.1.200;
+    option domain-name "linux.intranet";
+}
+</screen>
+
+<para>
+Er det en Windows-host, gør det heller ingen skade at køre en
+defragmentering på harddisken, så der kommer en sammenhæng i de
+datafiler, de virtuelle maskiner skal "leve" I.
+</para>
+</sect2>
+
+<sect2 id="vmware-deling">
+<title>Deling af filer mellem styresystemerne</title>
+<para>
+Installerer du win9x på en maskine med NT/W2K som host, er
+delingsmulighederne via en workgroup helt som mellem de to
+styresystemer på to uafhængige maskiner.
+</para>
+
+<para>
+Har du Linux med i spil, skal du sætte samba op på den, og arbejde med
+filflytning fra Windows siden. Altså 
+</para>
+
+<para>
+<emphasis>Linux-Host + Win9X/NT4/W2K guest:</emphasis> Her skal Linux
+have samba installeret, og i den/de virtuelle maskiner kan du derefter
+kopiere til/fra samba-"drevene".
+</para>
+
+<para>
+<emphasis>NT/W2K-host + Linux-guest:</emphasis> 
+Igen her skal samba
+ind på Linuxmaskinen, og du kan fra Hosten hente og gemme filer på
+samba-"drevene". Det vil ikke være praktisk at lave en permanent
+mapning, da Windows maskinen jo ikke kan finde den virtuelle samba før
+den er sat i gang.
+</para>
+
+<para>
+Har du en selvstændig Linux-server, kan dens samba-"drev" bruges som
+fælles drev for både host og guest systemerne. Dette vil være den
+foretrukne løsning for de fleste med en linuxserver, da de filer, der
+ligger på serveren jo ikke er så udsat for at gå tabt ved et
+systemnedbrud.
+</para>
+
+<para>
+Der er andre muligheder for fildeling, men disse forekommer mig at
+være de mest enkle at håndtere, ikke mindst fordi de allerede er
+implementeret mellem min Linux-server og W2K arbejdspladser.
+</para>
+
+</sect2>
+
+<sect2 id="vmware-skaerm">
+<title>Skærmopløsning</title>
+<para>
+Dette emne er meget hardwareafhængigt. Jeg kører med et Matrox Marvel
+G400 TV kort som har diverse forskellige muligheder for
+opløsninger. Mit valg har været at sætte værten op til 1152x864, mens
+gæsterne kun kører i 1024x768. Dette giver plads til at vise gæsterne
+i (virtul) fuld skærm, og dog tillade overskrift og menulinie omkring
+dem. Matrox-kortet understøtter desuden virtuelle skærme, så hver af
+de virtuelle maskiner kan få sin egen skærm at brede sig i.
+</para>
+
+<para>
+Andre, nyere skærmkort tillader lignende løsninger.
+</para>
+
+<para>
+Der kan opstå lidt problemer med opdateringen af skærmene i de
+virtuelle maskiner, men jeg tilskriver dem mere Matrox-driveren end
+VMware.
+</para>
+</sect2>
+
+<sect2 id="vmware-reboot">
+<title>Reboot/Power off/Suspend</title>
+<para>
+Det er kun i forbindelse med installationer, at man har behov for at
+"slukke" for den virtuelle maskine. Normalt vælger jeg blot at
+suspendere den. Det er ganske enkelt herligt at have en fuldt
+installeret, kørende SuSE/KDE/Konqueror oppe på under 5 sekunder med
+/etc vist med et hav af små ikoner. Det tager omtrent 4 minutter at
+lave en boot på min maskine (den har SCSI), så den med at dual-boote
+dur ganske enkelt ikke i dagligt brug.
+</para>
+
+<para>
+ALT+CTRL+DEL fanges af værten, mens ALT+CTRL+INS oversættes til en
+lokal ALT+CTRL+DEL i den af de virtuelle maskiner der har focus. En
+både sjov og logisk løsning, som man går fejl af en del gange i
+starten.
+</para>
+
+<para>
+Med W2K som host giver ALT+CTRL+DEL i en virtuel maskine den
+sædvanlige logout dialog, men selv ved valg af CANCEL i denne dialog
+ryger tastetrykket ALT+CTRL+DEL til den virtuelle maskine, som
+reagerer på det. Det er det man sædvanligvis er interesseret i, så det
+kan vel knapt kaldes mere end en skønhedsfejl. Kører den virtuelle
+maskine X får man her en mulighed for at fortryde, kører den i en
+tekst-konsol, går den i gang med en "reboot -n" uden videre.
+</para>
+</sect2>
+
+<sect2 id="vmware-focus">
+<title>Focus/prioritet</title>
+<para>
+VMware "grabber" focus enten ved et bestemt tastetryk eller ved et
+klik med musen i den virtuelle maskines vindue. Jeg har valgt kun at
+bruge musen, det fungerer overbevisende. Man slipper fri igen med
+CTRL+ALT+ESC, hvorefter focus er placeret i hostmaskinen. Skiftes der
+til full-screen modus er det ligeledes CTRL+ALT+ESC der skal anvendes
+for at slippe fri.
+</para>
+
+<para>
+Der er mulighed for at bestemme, hvordan maskinens ressourcer skal
+fordeles mellem de kørende virtuelle maskiner. Normalt vil det være at
+foretrække med en høj prioritet til den maskine, der har focus, og en
+lavere til de øvrige. Ressource-prioriteringen kan ændres under drift.
+</para>
+
+<para>
+Der er mulighed for at tildele større eller mindre mængder RAM til de
+virtuelle maskiner. Denne mængde kan der kun ændres på, når den
+virtuelle maskine er helt slukket (ikke under suspend, de færreste
+styresystemer kan håndtere hot-swap-RAM:).
+</para>
+
+<para>
+Det er (heldigvis) ikke muligt at starte samme virtuelle maskine op i
+flere kopier.
+</para>
+</sect2>
+
+<sect2 id="vmware-flere">
+<title>Flere ens virtuelle maskiner</title>
+<para>
+Hvis du har fulgt rådet i starten af dette dokument om at installere
+hver virtuel maskine i sin egen folder (katalog), kan du endog meget
+hurtigt sætte en række ens virtuelle maskiner op. Start med at
+installere den første maskine.Luk den virtuelle maskine ned (ellers
+vil kopien starte med at køre check på disken). Kopier folderen med
+indhold til en ny folderRet sti og evt filnavne i
+<filename>.vmx</filename> filen vha. en simpel teksteditor.
+</para>
+
+<para>
+Nu har du fået to eller flere ens virtuelle maskiner, og kan blot
+starte dem fra en ende af. Du skal dog være opmærksom på, at fysiske
+enheder og COM-porte kan give konflikt ved start af flere virtuelle
+maskiner, som alle ønsker at starte med fx. drev A:
+"connected". Vmware løser denne konflikt ved at sætte sådanne enheder
+til ikke at være forbundet ved boot. De kan derefter aktiveres efter
+behov under drift.
+</para>
+</sect2>
+
+<sect2 id="vmware-vnc">
+<title>Vmware og VNC</title>
+
+<para>
+Det er rent faktisk muligt at afvikle virtuelle maskiner via VNC (se
+også <xref linkend="vnc">). Hvis hosten kører vncserver + en virtuel
+maskine, kan man bearbejde den virtuelle maskine via sin
+vnc-forbindelse. Det giver dog en del mere mening at starte vncserver
+på både host og den/de virtuelle maskiner, da "oversættelsen" fra
+virtuel til host til vnc er alt for sløv.
+</para>
+
+<para>
+Altså: Installer og start vncserver på alle de virtuelle
+maskiner. Kører den virtuelle maskine Linux, kan du uden videre
+minimere den, da vnc alligevel ikke bruger det viste skærmbillede.
+</para>
+
+<para>
+Brug vncviewer til at vise hver enkelt maskine.
+</para>
+
+<para>
+Dette dokument skives på en bærbar maskines tastatur en stille
+sommeraften på terassen via vnc til min normale arbejdsplads, som
+forøvrigt kører to win98 og en enkelt SuSE 7.0 i virtuelle
+maskiner. Linux'en kører minimeret på sin host, men i et andet
+vnc-view på den bærbare, mens min normale Linux-server blot for en
+ordens skyld kører i et tredje view.
+</para>
+
+<para>
+Alle maskiner kører med en tilfredsstillende hastighed, faktisk er
+alle en del hurtigere at arbejde på, end hvis jeg havde arbejdet
+direkte på den bærbare.
+</para>
+</sect2>
+
+<sect2 id="vmware-vnc-problem">
+<title>Det største problem</title>
+<para>
+Det største problem ved virtuelle maskiner er efter min mening at
+finde rundt i dem. Man kan opnå en del ved at lave skrivebordet
+forskelligt, både i baggrundsfarve og placering af diverse
+paneler. (Her har jeg for første gang fundet en nyttig grund til at
+skifte baggrundsfarve;)
+</para>
+
+<para>
+Vænner man sig til aldrig at slukke, men kun "suspende" de virtuelle
+maskiner er meget nået mht. utilsigtet afbrydelse.
+</para>
+</sect2>
+
+<sect2 id="vmware-konklusion">
+<title>Konklusion</title>
+<para>
+VMware er et af de programmer, der på trods af mange års arbejde
+indenfor EDB-området, har fået mig til at hæve et øjenbryn i
+(blaseret) begejstring. For første gang siden mit første møde med ægte
+multitasking i OS2, er der noget der rykker. Jeg har i mange år haft
+elektronisk omskiftning mellem fire maskiner til samme
+tastatur/skærm/mus, og er vant til at kunne skifte let mellem dem, men
+fleksibiliteten i at kunne se alle samtidigt, og at kunne skifte
+mellem dem med et klik er virkelig et fremskridt.
+</para>
+
+<para>
+Det sker kun en sjælden gang, at min CPU arbejder 100%. Delingen af
+processorkraften mellem flere maskiner er derfor ikke noget, der i
+større grad generer. Dette sammenholdt med den virkning, at alle
+maskiner opdateres samtidigt og gratis, hver gang min host-maskine
+ombygges eller udvides, gør programmet særdeles interessant. Selv om
+skattefar mod- og ufrivilligt sponsorerer to trediedele af mine
+nyanskaffelser er der jo trods alt den sidste trediedel at tage hensyn
+til.
+</para>
+</sect2>
+</sect1>
 
 
 <sect1 id="dosemu">
@@ -1368,7 +1734,6 @@ VNC er en åbning af et potentielt sikkerhedshul - i hvertfald er
 versioner op til og med 3.3.3 ikke sikre, jfr. Weekly Linux Security
 Digest 2001/01/22-2001/01/28. I de ældre versioner kan man bryde ind i
 trafikken mellem server og klient.
-
 </para>
 </sect2>
 </sect1>
