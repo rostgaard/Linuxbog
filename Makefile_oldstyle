@@ -49,7 +49,7 @@ pspdf:
 	rm sikkerhed/Makefile
 	       
 	       
-clean:	       
+clean: Makefiles    
 	make -C friheden clean
 	make -C admin clean 
 	make -C program clean

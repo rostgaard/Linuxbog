@@ -1,4 +1,5 @@
 locdirname=$(shell pwd)
+targetshortname=$(notdir $(locdirname))
 targetname=linux-$(notdir $(locdirname))
 version=$(shell cat version.sgml)
 dato=$(shell cat dato.sgml)
@@ -19,7 +20,7 @@ statusfiler:
 	@echo Version er $(version)
 	@echo Dato sat til $(dato)
 
-html:	statusfiler
+htmlfiler:	statusfiler
 	@echo "Target er HTML i" $(notdir $(locdirname))/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -32,15 +33,26 @@ html:	statusfiler
 	db2html bog.sgml
 	cp linuxbog.css bog
 	cp images/*.png bog
-	mv bog $(targetname)
-	tar cvzf $(targetname)-$(version).html.tgz $(targetname)
-	tar cvzf $(targetname)-$(version).html-ub.tgz $(targetname)/*.html $(targetname)/*.css
-	mv $(targetname) bog 
-	mv images $(targetname)_images
-	tar cvzf $(targetname)-$(version).png.tgz $(targetname)_images/
-	mv $(targetname)_images images 
 	@echo "Done HTML (html)"
 	@echo ""
+
+reparerhtml:
+	(cd bog;perl ../../misc/insertimagesize)	
+	(cd bog;tidy -f err.txt -imu *html;rm -f err.txt)
+
+
+pakhtml:
+	mv bog $(targetshortname)
+	tar cvzf $(targetname)-$(version).html.tgz $(targetshortname)
+	tar cvzf $(targetname)-$(version).html-ub.tgz $(targetshortname)/*.html $(targetshortname)/*.css
+	mv $(targetshortname) bog 
+	mv images $(targetshortname)_images
+	tar cvzf $(targetname)-$(version).png.tgz $(targetshortname)_images/
+	mv $(targetshortname)_images images 
+	@echo "Done HTML pakning (pakhtml)"
+	@echo ""
+
+html: htmlfiler reparerhtml pakhtml
 
 pspdf:	statusfiler
 	@echo "Target is" $(targetname).ps.gz
