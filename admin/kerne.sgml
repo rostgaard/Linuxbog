@@ -360,7 +360,47 @@ en anden proces.
 </itemizedlist>
 
 </sect2>
-  
+
+<sect2 id="Linux-opstart">
+<title>Opstart af Linux</title>
+<para>
+Når kernen er loaded starter den een enkelt bruger-proces,
+nemlig /sbin/init. Som parameter får init-programmet det 
+"run-level" som man angiver ved lilo-prompten, f.eks. "single"
+der normalt fortolkes som "run-level 1".
+</para>
+
+<para> init kigger så i <filename>/etc/inittab</filename>, og udfører
+de kommandoer der står som aktive for run-level 1, eller alle
+run-levels. På min Red Hat er det f.eks.
+</para>
+
+<screen>
+# System initialization.
+si::sysinit:/etc/rc.d/rc.sysinit
+l1:1:wait:/etc/rc.d/rc 1
+</screen>
+
+<para> 
+<command>rc.sysinit</command> bliver altså kørt uanset
+run-level, mens <command>/etc/rc.d/rc 1</command> - som starter alle
+de kommandoer der ligger i <filename>/etc/rc.d/rc1.d/</filename>
+kataloget - kun kører i run-level 1.
+</para>
+
+<para> Det er formentlig i <command>rc.sysinit</command> at du finder
+et kald til f.eks. <command>sulogin</command>, der prompter dig for
+root-password førend den starter en shell.
+</para>
+
+<para> Det er for resten ikke nogen naturlov, at kernen starter
+<command>/sbin/init</command> som det første program. Man kan faktisk
+angive hvilket program der skal startes med en lilo-parameter,
+f.eks. vil <literal>init=/bin/bash</literal> starte en root-shell helt
+uden om opstarts-scripts osv.
+</para>
+</sect2>  
+
 <sect2 id="Procesrelationer">
 <title>Procesrelationer</title>
 
@@ -1200,10 +1240,10 @@ skal udføres efter modulet er indlæst.
 
 <para>
 I Debian og Corel Linux bør man ikke rette
-<filename>/etc/conf.modules</filename>/ da programmet
+<filename>/etc/conf.modules</filename> da programmet
 <command>update-modules</command> vil overskrive filen.  Programmet
 henter konfigurationen fra filerne i
-<filename>/etc/modutils/</filename> , bl.a. stier, options arhc/i386,
+<filename>/etc/modutils/</filename> , bl.a. stier, options 
 og aliaser.  Skal man lave rettelser bør det gøres i disse filer og
 efterfølgende bør <command>update-modules</command> udføres.
 </para>
