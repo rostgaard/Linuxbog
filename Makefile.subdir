@@ -188,7 +188,6 @@ else
 	@echo "Du bør installere tidy"
 endif
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
-	make pakhtml
 	rm -rf tempdir 
 	@echo "Done HTML (html)"
 	@echo ""
@@ -211,7 +210,9 @@ $(targetname)-pdf-$(version).zip: $(sgmlfiler)
 	cp images/*png tempdir
 	(cd tempdir;jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
 	(cd tempdir;collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
-	(cd tempdir; db2pdf bog.sgml; db2pdf bog.sgml)
+	(cd tempdir; echo `db2pdf bog.xml >& /dev/null`)
+	(cd tempdir; echo `db2pdf bog.xml >& /dev/null`)
+	(cd tempdir; echo `db2pdf bog.xml >& /dev/null`)
 	mv tempdir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-pdf-$(version).zip $(targetname)-$(version).pdf
