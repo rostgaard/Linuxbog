@@ -506,7 +506,7 @@ if (count($notexists))
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
 [<a href="search.php">Søg</a>]
-[<a href="alle/bog/stikord.html">Stikord</a>]
+[<a href="alle/bog/idx.html">Stikord</a>]
 </font>
 
 <h2>Vi har følgende bøger</h2>
