@@ -97,7 +97,14 @@ version:
 # Stikordsfilen "stikord.sgml"
 ################################################################################
 
-stikord.sgml:	$(filter-out stikord.sgml,$(dep_sgml_filer))
+# dax: Circular dependencies, version var med i dep_sgml_filer.
+# Det må man ikke. Den står forrest her fordi den skal være ældre
+# end stikord.sgml. Man må også fjerne stikord.sgml fra default
+# listen og indføje den, hvor den skal bruges
+# OBS!!! Der er ikke andre rettelser i Makefile.subdir end denne
+# (foreløbig, altså!)
+
+stikord.sgml:	$(filter-out version.sgml stikord.sgml ,$(dep_sgml_filer))
 	if test ! -e magic.sgml ; then \
 		echo '<!ENTITY magic "png">' > magic.sgml ; \
 	fi
