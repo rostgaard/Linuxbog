@@ -439,7 +439,7 @@ bits).
                     |             |
            120808   +-------------+
                     |             |  Adressevariabel, indeholder
-                    |  <800436>   |  adresse på string Hallo! Prog...
+                    |  &lt;800436>   |  adresse på string Hallo! Prog...
            120804   +-------------+
                     |             |
                     |             |
@@ -590,8 +590,8 @@ mellem double quotes, (gåseøjne) og talvariabelen
 </para>
 
 <programlisting>
-"resultat er: %d\n"   <== string-var
-"resultat er: %d\n", resultat <== string-var, tal-var
+"resultat er: %d\n"   &lt;== string-var
+"resultat er: %d\n", resultat &lt;== string-var, tal-var
 </programlisting>
 
 <para>
@@ -1785,7 +1785,7 @@ benytte kommandolinie parametre i stedet for omdirigering.
 
 </sect2>
 
-<sect2 id="sect3-file-adder">
+<sect2 id="sect-file-adder">
 <title>Summering af tal i en fil.</title>
 <para>
 Et program, som ønsker at behandle linier i st.f. characters, kan
@@ -1877,28 +1877,37 @@ siger: det skal nok gå alt sammen ...
 
 <para>
 I dette eksempel demonstreres den teknik at lade en funktion
-hente rigeligt input til en buffer, selv om vi ofte kun anvender et
-tegn af gangen. Når vi har brug for at sammenligne med en string-
-compare, ved vi, at der er tegn nok bufferen, for vi lader den
-"efterfylde" hver gang vi kommer til en newline eller en tag -
-som desværre jo kan ligge hen over en liniedeling eller to.
-Vores buffer lader vi være så stor, at der ikke er umiddelbar
-fare for overfyldning.
+hente rigeligt input til en buffer, selv om vi ofte kun anvender
+et tegn af gangen. Når vi har brug for at sammenligne input med
+et nøgleord, så kan vi gå ud fra, at nøgleord ikke kan deles ved
+linieskift, derfor er det godt nok, at vi "kun" fylder en linie
+af gangen i bufferen.
 </para>
 
-<example id="ex-tag-parser">
-<title>En tag - parser</title>
+<para>
+Vores buffer lader vi være så stor, at der ikke er umiddelbar
+fare for overfyldning. Sker det, at en linie er længere end
+bufferen, vil den blive delt - og hvis der så opstår fejl af den
+grund, må ophavsmanden til sgml teksten skrive kortere linier.
+</para>
+
+<example id="ex-sgmlpre">
+<title>En tag - parser, forstadium</title>
 <programlisting role="C">
-/* tagpars.c Minimalt program til genkendelse af tags. */
+/* sgmlfmt_pre1.c Forstadium til mini program, som checker balancen i
+ * sgml tags. I den nuværende skikkelse kan programmet erstatte
+ * alle "mindre-end" tegn med sgml-koden for dette, altså \&lt; -
+ * så det kan såmænd bruges til at filtrere C-programmer, der
+ * skal includeres i en sgml-tekst. */
 
 #include &lt;stdio.h>
 #include &lt;string.h>
 #include &lt;strings.h>
+#include &lt;errno.h>
+#include &lt;error.h>
 
-#define INTAG  257
-#define OUTTAG 258
 int status;
-int eof;                        /* global end of file */
+int eofile;                        /* global end of file */
 
 #define MAXB 8000
 
@@ -1910,79 +1919,268 @@ int init();
 int fillbuf();
 int ch();
 int gch();
+int parse();
 
 int main()
 {
-    int c;
-
     if (init() == 0)
         return 1;
-    while (!eof && ch() != '&lt;')
-        putchar(gch());
-
+    while (!eofile) {
+        if (ch() != '&lt;')
+            putchar(gch());
+        else {
+	    printf("&amp;lt;");
+	    gch(); /* discard character '&lt;' */
+        }
+    }
     return 0;
 }
 
+
 int init()
 {
-    /* do any initializing of globvars */
+    /* insert initialization of global vars here */
     return fillbuf();
 }
 
 int fillbuf()
 {
     char *rv;
-    int tlen;
-    char tmpbuf[MAXB];
 
-    /* til at begynde med er status 0 altså != INTAG */
-    if (status == INTAG)
-        while ((rv = fgets(tmpbuf, MAXB, stdin)) != NULL) {
-            if ((tlen = strlen(tmpbuf)) > (MAXB - endbuf)) {
-                fprintf(stderr, "Tagparse, fatal: buffer full\n");
-                exit(255);
-            }
-            strcpy(&amp;buf[endbuf], tmpbuf);
-            endbuf += tlen;
-            if (index(&amp;buf[endbuf], '>'))
-                break;
-        }
-    /* end-while */ 
-    else {
-        rv = fgets(buf, MAXB, stdin);
-        endbuf = strlen(buf);
-        bufindex = 0;
-    }
-    if (rv == NULL) {
-        eof = 1;
-        return 0;
-    } else
-        return 1;
+    if (!(rv = fgets(buf, MAXB, stdin)))
+	strcpy(buf, "");
+    endbuf = strlen(buf);
+    bufindex = 0;
+    return (int) rv;
 }
+
 
 int ch()
 {
     return buf[bufindex];
 }
 
+int nch()
+{
+    return buf[bufindex + 1];
+}
+
+
+
+/* For longer buffer lookahead we will need to change the gch()
+ * and fillbuf() functions so they will work like getc(fp) macro,
+ * that is: 
+ * 1) check for number of characters left in buffer
+ * 2) if near end of buffer, move unfetched chars to beginning of
+ *    buffer, reset bufpointer and
+ * 3) append newly read chars to string in buffer.
+ * the cute thing about this implementation is that we always
+ * have one character lookahead (guaranteed) but normally we will
+ * have a newline char as the last before zero, which will be our
+ * guarantee that if we have a word in the buffer it is the whole
+ * word.
+ */
+
+/* ch() and gch() must always return same thing, so here we need
+ * the nch() function to tell us if we are getting near end of
+ * line. Otherwise, gch() simply returns same as ch but advances
+ * the buffer index (could have been a pointer).
+ */
+
 int gch()
 {
-    if (ch() == 0)
-        fillbuf();
+    int c;
+    if (nch() == 0) {
+	c = ch();
+        if (!fillbuf()) {
+            eofile = 1;		/* will take effect for the next char */
+        }
+	return c;
+    }
     return buf[bufindex++];
 }
+
+
 
 </programlisting>
 </example>
 
 
 <para>
-Beklager, programmet er ikke færdigt! Der tilføjes et linieskift
-for meget i output.
+Programmets main kunne såmænd udmærket nøjes med at benytte
+getchar og putchar. Der er ikke noget vundet i dette program ved
+at benytte en særlig input mekanisme. Men det, som er det
+egentlige formål med programmet, er jo også at bygge
+grundbestanddelen til et andet. Det er "terrasse 1", og hvis det
+virker og kopierer input til output (med undtagelse af &lt;
+tegn), så er grunden lagt til terrasse 2, som blot skal checke,
+om en tekst har balancerede tags.
 </para>
 
 <para>
-asd
+Se på input funktionerne ch() og gch(). Vi kigger ikke direkte i
+den globale variabel "buf[MAXB]", men lader en funktion om det.
+Hvis man ikke er disciplineret nok til at overholde denne regel,
+kan man flytte buf[] til en anden fil og erklære den static. I
+samme fil anbringes ch() og gch(), der ikke skal være static.
+</para>
+
+<para>
+Man kan også flytte definitionen af buf ned til de to funktioner,
+og derved udnytte, at en global variabel "kun" har scope fra det
+sted, hvor den er defineret til slutningen af filen.
+</para>
+
+<para>
+En af de ting, der drillede ved konstruktionen af programmet,
+var, at gch() skal fylde bufferen - den er jo ansvarlig, klart
+nok, for at der er en næste byte at læse. gch() er den eneste,
+som kalder filbuf. Men hvornår skal den fylde bufferen? Hvis 
+buffer pointeren (bufp) peger på newline eller en streng-slutning
+(null-byte), så kunne det være signal til at fylde bufferen op.
+Da det alligevel blot er en newline, så kunne man smide den væk.
+</para>
+
+<para>
+Men det er ikke en god ide (her) - for at det skal kunne lade sig
+gøre at gengive linieskift i fx. litteral tekst er det nok bedst
+at lade gch() kigge en byte fremad.
+</para>
+
+<para>
+Så man skal altså huske at "gemme" den sidste byte i bufferen i
+en variabel og derefter kan man fylde på bufferen igen.
+</para>
+
+<para>
+Derved opstår der et andet problem. Hvornår rammer man end of
+file. Hvis caller af gch() tester på end of file INDEN han bruger
+den character, han har fået med gch(), så vil der - i denne
+version - gå kage i systemet.
+</para>
+
+<para>
+I dette lille program er det imidlertid overskueligt at huske, at
+man skal anvende returværdien fra gch() inden man tester for end
+of file (eller teste for end of file inden man kalder gch()).
+</para>
+
+<para>
+Programmet anvender IKKE pointere. I stedet indexeres array'et
+med variabelen bufindex. Det er ikke så effektivt som at have en
+pointer - men det er da rart at se, at det kan lade sig gøre.
+</para>
+
+<para>
+I den (næsten) færdige version af tag-parseren, tagbal01.c, kan
+man se, hvordan input mekanismen er bevaret. Programmet er ikke
+gengivet her (det kunne man måske godt), men ligger som en fil i
+kataloget med eksempler. 
+</para>
+
+<para>
+Opmærksomheden kan nu koncentrere sig om, hvordan man scanner for
+en tag med tilhørende slut-tag. Det sker i funktionen
+parse_level1. Navnet giver en forudanelse om, at man senere kunne
+have forskellige levels i parseren, som hver især er udtryk for,
+at der gælder forskellige regler for forskellige tags. Men her
+bliver de alle behandlet ens. Der er ikke nogen regler for,
+hvilke tags der må være inde mellem andre tags. Programmet skal
+blot kunne checke, at der efter en &lt;tag>, kommer en &lt;/tag>
+(altså en slut-tag af samme type) senere, evt, efter nogle andre,
+indskudte (nestede) tags og med "tekst data" både før og efter.
+</para>
+
+<para>
+For at få tag'en analyseret kalder parse_level1 en dertil
+indrettet funktion, som afleverer navnet eller keywordet på
+taggen i den buffer, som den får adressen på. Her er der mulighed
+for overflow, men vi dimensionerer tag-navne bufferen på passende
+vis, alternativt kan vi tilføje en parameter med size og så
+kontrollere, i any_tag(), at vi ikke fylder for meget i.
+Parse_level1 gemmer navnet på taggen for senere at kontrollere,
+at den tilsvarende end-tag har samme navn.
+</para>
+
+<para>
+parse_level1 accepterer nu ord ved at kalde getword. Typisk ville
+det være efter en para-tag. Når getword støder ind i et '&lt;'-tegn
+stopper den, og hvis der ikke var space foran, er det bare
+ærgeligt (i denne version). Så kasseres de bogstaver, der ligger
+op af &lt; tegnet.
+</para>
+
+<para>
+Find en metode til at undgå denne fejl (eller se tagbal02.c).
+</para>
+
+<para>
+Nu kommer det spændende! Hvad må der komme efter? På dette sted i
+input kan der komme en end-tag eller en ny tag. Hvis det er en
+end tag, har vi sluttet ringen og bør gå et niveau ned og se, om
+der er mere tekst efter end-taggen. Det gøres ved at breake og
+hvis der ikke kommer en ny tag returneres fra parse_level1.
+</para>
+
+<para>
+Hvis den nu har kaldt sig selv, så er vi ikke på det yderste
+niveau. Derfor returneres til det sted lige efter det rekursive
+call, hvorved programmet igen ser efter med getword, om der er
+"tekst-data". Men altså! På et niveau lavere. (Det kan ses på
+indrykningerne i output).
+</para>
+
+<para>
+Nøglen til forståelse er at følge flowet i nedenstående funktion
+og forestille sig input i stil med flg.: &lt;sect1>
+&lt;para>&lt/para>&lt;/sect1>
+</para>
+
+<para>
+Bagefter kan man forestille sig ord imellem para-tags. Eller
+prøve programmet med forskelligt input og se med printf
+statements anbragt de rigtige steder, hvad der sker.
+</para>
+
+<programlisting>
+#define MAXT 80
+
+int parse_level1()
+{
+        char tagname[MAXT];
+        while (!eofile) {
+                if (!anytag(tagname)) {
+                        return 0;
+                }
+                while (!eofile) {
+                        while (getword())
+                                putword();
+                        if (have_endtag(tagname))
+                                break;
+                        (void) parse_level1();  /* nested tags */
+                }
+                blanks();
+        }
+        return 1;
+}
+
+</programlisting>
+
+<para>
+Den anden funktion, have_endtag(), er vanskelig at placere, hvis
+man glemmer følgende (og det gør man måske første gang man prøver
+at skrive sådan et program): Efter en nested tag kan der komme
+mere tekst (som efter emphasis tag fx.) men den vil i så fald
+være tekst, der tilhører et andet tag-sæt, et niveau lavere.
+På den anden side kan der jo komme en ny tag-konstruktion lige
+efter en komplet cyklus <emphasis>på samme niveau</emphasis>.
+</para>
+
+<para>
+Derfor returnerer parse_level1 ikke straks efter have_endtag,
+men prøver lige en gang til at se, om der er flere tags, der i så
+fald jo vil tilhøre samme niveau som de nys afsluttede tag-par.
+(Det krævede et par forsøg at nå frem til den konstruktion!)
 </para>
 
 </sect2>
