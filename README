@@ -453,12 +453,60 @@ have bygget de bøger der anbefales når du vil lære hvordan man bruger
 en Linux maskine til at programmere med, kan du give configure
 argumentet --med "friheden unix program c java". Så vil configure
 sørge for at opsætte systemet, således at disse bøger vil blive
-oversat.
+oversat. Hvis du ikke angiver noget --med argument, vil alle bøger
+blive medtaget.
 
 --med-alle argumentet bruges til at angive at man vil have bygget den
-særlige "alle" bog.
+særlige "alle" bog. Det er en udgave hvor de forskellige bøger flettes
+ind i hinanden. --med argumentet bruges af --med-alle; hvis du har
+angivet et --med argument, bruges kun de bøger i dette argument til
+--med-alle. Rækkefølgen er også som i --med, hvis det er angivet.
 
+--bogurl bruges fortrinsvist når vi udgiver en bog på nettet - så
+bygges bøgerne så interne (explicitte) referencer til &linuxbogurl;
+refererer til www.linuxbog.dk - normalt er det cvs.linuxbog.dk.
+
+SUBDIROPTIONS er argumenter der ikke bruges af configure programmet
+selv, men gives videre til configure i de forskellige subdirs. Se
+afsnittet om at bygge fra kildekode tidligere i denne fil.
 
 Her er en liste af filer der anvendes direkte af byggeprocessen i toplevel.
 
+configure        dette script kopierer en række filer til de forskellige
+                 subdirs, og kører "bootstrap", samt "configure" i disse
+                 subdirs.
 
+Makefile.in      denne fil laves af configure om til Makefile i
+                 toplevel.
+
+faelles-filer/*  disse filer kopieres af configure til de forskellige
+                 subdirs, som subdir/*
+
+bootstrap.subdir denne fil kopieres til de forskellige subdirs, som 
+                 subdir/bootstrap 
+
+Makefile.subdir  denne fil kopieres af configure til de forskellige
+                 subdirs som Makefile.am, som af subdir/bootstrap
+                 laves om til Makefile
+
+configure.ac.subdir kopieres af configure til de forskellige subdirs
+                    som subdir/configure.ac
+
+Endvidere kopieres scriptet "misc/insertimagesize" til
+subdir/misc/. TODO: De forskellige palm filer.
+
+Makefile.alle    Denne fil kopieres af configure til alle/Makefile.am,
+                 hvis --med-alle argumentet blev angivet.
+
+Når configure er færdig med at kopiere, kører configure
+subdir/bootstrap og subdir/configure SUBDIROPTIONS for alle de bøger
+der skal opsættes. Bootstrap kører de forskellige autotools værktøjer
+der skal til for at opsætte de forskellige subdirs. Bemærk at det
+således er nødvendigt at have autotools værktøjerne for at bygge
+bøgerne fra CVS, men det er _ikke_ nødvendigt for at bygge
+individuelle bøger hentet i *dist* pakker.
+
+Den centrale del af det videre byggeforløb ligger i filerne
+"Makefile.subdir" (der via toplevel/configure og subdir/configure
+bliver til subdir/Makefile). Denne fil er den centrale at modificere
+for at rette de tilbageværende problemer i byggeprocessen.
