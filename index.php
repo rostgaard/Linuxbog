@@ -620,14 +620,6 @@ Bøgerne er udgivet under
 hvilket gør at forfatterne ikke er involveret i de trykte udgaver.
 </p>
 
-
-<FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
-Vil du modtage E-post om nye versioner af bogen?
-<BR>Skriv din E-post adresse her
-<BR><INPUT TYPE=TEXT SIZE=40 NAME="required-email">
-<BR><INPUT TYPE=HIDDEN VALUE="http://www.linuxbog.dk" NAME="url">
-<INPUT TYPE=SUBMIT VALUE="Indsend form"></FORM>
-
 <p>
 Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen, Hans Schou,
 Donald Axel og flere andre - 
