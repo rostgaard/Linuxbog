@@ -23,7 +23,11 @@ Bogen er en del af en serie der kan findes samlet på http://www.sslug.dk/linuxbo
 
 %install
 mkdir -p $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname}
-(cd %{buildname}; cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname})
+if [ -d ./%{buildname} ]; then
+	(cd %{buildname}; cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname})
+else
+	(cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname})
+fi
 
 if [ -d ./eksempler ]; then
 	mkdir -p $RPM_BUILD_ROOT/usr/share/books/linuxbog/%{buildname}/eksempler
