@@ -1323,6 +1323,7 @@ image=/boot/bzImage
         read-only
         restricted  
         password=HEMLIPASSWORD
+        append="max_loop=128 quiet"
 image=/boot/vmlinuz-2.0.35-2
         label=linux2
         root=/dev/hda3
@@ -1358,6 +1359,12 @@ ikke bør kunne læses af andre end root, dvs. kør en gang for alle
 <screen>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> chmod 600 /etc/lilo.conf</userinput>
 </screen>
+
+<para>
+I eksemplet ses også kommandoen <command>append=</command> som får
+Lilo til at give kernen nogle ekstra direktiver til opstart.
+Læs mere om direktiverne i <xref linkend="kernelparm">.
+</para>
 
 <PARA>
 Lilo kan en hel del, men kan være et lige så besværligt værktøj, som
@@ -1439,6 +1446,132 @@ Husk dog at den nye LILO kun vil virke med BIOS der understøtter
 de udvidede LBA funktioner til store diske, så ældre BIOS og
 nyere BIOS der ikke helt følger standarden kan stadig give problemer.
 </para>
+</sect3>
+
+<sect3 id="kernelparm">
+<title>Kerneparametre</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>kerneparametre</secondary></indexterm>
+<indexterm><primary>Boot af Linux</primary><secondary>kerneparametre</secondary></indexterm>
+<indexterm><primary>Kerneparametre</primary><secondary>LILO</secondary></indexterm>
+<indexterm><primary>LILO</primary><secondary>append</secondary></indexterm>
+
+<para>
+Når din computer bootes med Lilo, holdes der typisk en pause. Pausen kan
+enten bruges til at vælge en anden kerne at boote med, men kan også bruges
+til at taste ekstra parametre til Linux.
+En ofte brugt kommando er boote Linux op i "single user mode", hvilket gør
+at man kan udfører systemarbejde uden alt for mange programmer kørende,
+eller hvis du har glemt password til <command>root</command>.
+Kommandoen er:
+</para>
+
+<SCREEN>
+<PROMPT>boot: </PROMPT> <USERINPUT>linux single</USERINPUT>
+</SCREEN>
+
+<para>
+Flere parametre angives med et mellemrum imellem:
+</para>
+
+<SCREEN>
+<PROMPT>boot: </PROMPT> <USERINPUT>linux single debug</USERINPUT>
+</SCREEN>
+
+<para>
+Disse parametre kan også indsættes permanent i <filename>/etc/lilo.conf</filename>
+så de altid er med og man ikke skal taste dem ind hver gang computeren booter.
+Fra eksemplet om lilo i <x ref linkend="lilo"> er der tilføjet to parametre
+med linien <command>append="max_loop=128 quiet"</command>:
+</para>
+
+<screen>
+...
+image=/boot/bzImage
+        label=linux
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+        <userinput>append="max_loop=128 quiet"</userinput>
+...
+</screen>
+
+<para>
+Der er mange parametre og de fleste af dem har til formål at give
+en bestemt type hardware, fx. en harddisk, nogle ekstra parametre
+om I/O eller interrupt. Her er en liste af nogle af de mere generelle
+parametre som kan skrives enten på boot-prompten eller i lilo.conf i
+<command>append</command>-linien.
+</para>
+
+<itemizedlist>
+ <listitem>
+  <para><command>console=ttyS0,9600n</command> - få output til skærmen ud på den
+  serielle port. Kommandoen kan bruges til at sende data til et modem eller en
+  seriel skærmterminal. Alternativt til en printer med kommandoen
+  <command>console=lp0</command>.
+  Læs mere i <filename>/usr/src/linux/Documentation/serial-console.txt</filename>.
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>debug</command> - modsat <command>quiet</command>
+  skriver denne paramter om muligt endnu mere information ud under boot.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>init=3</command> - bestemmer i hvilken mode Linux booter.
+  <command>init=3</command> svare til at Linux booter op i text-modem,
+  og <command>init=5</command> er boot i grafisk mode. Init-level bestemmes
+  normalt i <filename>/etc/inittab</filename>, men hvis man fx. skifter skærmkort
+  og dette ikke virker med den gamle grafik-opsætning bruges denne kommando.
+  <command>init=1</command> starter Linux i single user mode.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>max_loop=128</command> - øger antallet af loop-back
+  devices i Linux. Værdien kan være helt op til 255. Default er den 8.
+  Loop-back bruges fx. til at mounte iso-filer:
+  <command>mount -o loop redhat.iso /mnt</command> .
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>panic=5</command> - antal sekunder der skal efter en kernel-panic
+  før systemet rebooter.
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>quiet</command> - undertrykker de fleste informationslinier
+  Linux skriver ud under boot. Fejl udskrives stadig, men ligegyldig
+  information udskrives ikke. De beskeder der normalt kan efter boot 
+  stadig læses med <command>dmesg</command>.
+  Denne kommando vil typisk være noget man med glæde skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>ro</command> - filsystemer bliver mounted read-only
+  under boot. Herefter kan man foretage systemarbejde på et "sygt" system.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>single</command> - starter Linux i single-user-mode
+  hvilket er det samme som <command>init=1</command>.
+  Denne kommando vil nok mest blive tastet ind, men kan også skrives
+  i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+</itemizedlist>
+
+<para>
+Den fulde liste af kerneparametre kan findes på din harddisk:
+<filename>/usr/src/linux/Documentation/kernel-parameters.txt</filename>
+</para>
+
 </sect3>
 </sect2>
 
