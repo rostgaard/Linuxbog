@@ -127,6 +127,10 @@ function form_filename( $bookname, $format ) {
       first => "linux-",
       last => ".html.tgz"
     ),
+    "PNG" => array(
+      first => "linux-",
+      last => ".png.tgz"
+    ),
     "HTML u/billeder" => array(
       first => "linux-",
       last => ".html-ub.tgz"
