@@ -263,6 +263,7 @@ function vistype($type) {
   );
 
   // Sæt versionsnumre, sideantal og dato på bøgerne
+  $totalsideantal = 0;
   reset($books);
   while (list($bookname) = each($books)) {
     reset($ext_files);
@@ -270,9 +271,12 @@ function vistype($type) {
       if (file_exists($bookname.$fname)) {
         $num = file($bookname.$fname);
         $books[$bookname][$ftype] = trim($num[0]);
+        if ($ftype == "sideantal" && $books != "alle")
+          $totalsideantal += trim($num[0]);
       }
     }
   }
+
 
   // Bogpakker pakket på forskellige måder
   // <first><$books><last>
@@ -453,10 +457,16 @@ Filtyper:
     $raw = rawurlencode($short);
     echo href("?b=$raw","<b>$desc[title]</b>");
     echo "<br> $desc[comment]";
+    if ($desc[sideantal])
+      echo "<br>$desc[sideantal] sider.";
     echo "</li>\n";
   }
 ?>
 </ul>
+
+<p>
+Det samlede sideantal for alle bøger er <b><?php echo $totalsideantal ?></b> sider.
+</p>
 
 <hr>
 <?php
