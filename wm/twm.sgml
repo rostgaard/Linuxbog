@@ -149,6 +149,35 @@ twm
     </para>
 
     <para>
+     Man kan konfigurere twm, så at den har en museklik-funktion,
+     som hæver et vindue og holder dets fokus, og en anden, som
+     gør det muligt at få et eller andet til at ske, når man
+     klikker på rammen. I .twmrc filen kan fx. definere en
+     funktion, focus-raise, som udføres, når man klikker med
+     shift-Museknap1:
+    </para>
+    <programlisting>
+     Function "focus-raise" { f.focus f.raise }
+     Button1 = s : window :  f.function "focus-raise"
+     Function "focus-raise-or-move" { f.focus f.raise f.deltastop f.move }
+     Button1 = : frame : f.function "focus-raise-or-move"
+    </programlisting>
+
+    <para>
+     Man kan nu shift-klikke hvilket som helst sted i vinduet
+     (også titlebar og ramme) og få vinduet op og i fokus. Da
+     funktionen blokerer for andre funktioner, skal man nok ikke
+     bruge museknap1 uden shift! De to sidste linier sørger for,
+     at hvis man klikker på rammen får vinduet fokus og kommer
+     i forgrunden, og man kan flytte det.
+     <command>f.deltastop</command>
+     svarer til en if-sætning: Hvis man ikke flytter mere end
+     <emphasis>deltastop</emphasis> pixels skal twm ikke udføre
+     resten at linien. Man bør i øvrigt definere en lidt bredere
+     ramme, hvis man bruger den funktion.
+    </para>
+
+    <para>
      Som standard hæves et vindue ikke (dvs. det bliver bagved andre
      vinduer) selv om det får fokus. Dette kan ændres for udvalgte
      vinduer, ved at indsætte følgende linje i sin
@@ -161,7 +190,12 @@ AutoRaise { "XTerm" "emacs" }
      vil alle vinduer der hedder "XTerm" (eller er af klassen "XTerm"
      - herunder alle der hedder "xterm") blive hævet når de får fokus.
      Samme for Emacs. Der er ingen måde at gøre dette til
-     standardopførslen for alle vinduer.
+     standardopførslen for alle vinduer. Og der er desværre
+     heller ikke nogen måde at forbyde programmerne at forlange
+     et forgrundsvindue, fx. OpenOffice smækker et vindue op
+     i synet på den arbejdende programmør uden at man kan
+     beskytte sig, og derved kan der ryge nogle tasteslag ind
+     i et forkert vindue.
     </para>
 
     <para>
@@ -247,6 +281,19 @@ AutoRaise { "XTerm" "emacs" }
 RandomPlacement
 </programlisting>
     </para>
+   </sect3>
+   <sect3 id="wm-fed-twm">
+   <title>Hvad er det fede ved twm?</title>
+     
+    <para>
+     Twm er gennemført minimalistisk. Den er tænkt til at
+     samarbejde med xsm, X-session manager, der kan registrere,
+     hvad der er af vinduer, når man logger ud, og med xdm, xsm
+     og twm kan man såmænd få en udmærket flad klient til X11.
+     Det fedeste ved twm er, at den ikke belaster grafik/CPU og
+     giver god performance med remote X11.
+    </para>
+
    </sect3>
   </sect2>
  </sect1>
