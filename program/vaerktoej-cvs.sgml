@@ -472,6 +472,7 @@ log-beskeder direkte
   </para>
  </sect2>
 
+<!--
  <sect2 id="cvs-forgreninger">
   <title>Forgreninger i udviklingen</title>
 
@@ -494,6 +495,7 @@ log-beskeder direkte
    </para>
   </example>
  </sect2>
+-->
 
  <sect2 id="opsaet-cvs">
   <title>Opsætning af CVS</title>
@@ -613,20 +615,20 @@ internetbaserede samarbejdsprojekter er dette virkeligt smart.
    <para>
     Når flere folk arbejder sammen på et software-projekt er det nødvendigt
     at man nemt kan se hvad andre personer har ændret i filerne. Med
-    <command>cvs watch add FILNAVN</command> vil du modtage
-emails når andre laver <command>cvs commit FILNAVN</command>, men her
-vil du ikke se hvad de har ændret. Du kan få en bedre føling med
-ændringerne ved at bruge en lille program <filename>log</filename>,
-der følger med cvs. Med det program kan du få en email med hvilke
-filer, som er ændret og du få også i emailen besked om den
-log-meddelelse som brugeren skrev. Hvis man indenfor projektet holder
-en god stil med at skrive ordentlige log-meddelelser, så er dette super.
-</para>
+    <command>cvs watch add FILNAVN</command> vil du modtage emails når andre
+    kører <command>cvs commit FILNAVN</command>, men her vil du ikke se hvad
+    de har ændret. Du kan få en bedre føling med ændringerne ved at bruge et
+    lille program <filename>log</filename>, der følger med cvs. Med det
+    program kan du få et brev om hvilke filer, som er ændret og du får også
+    den log-meddelelse brugeren skrev med i brevet. Hvis man indenfor
+    projektet holder en god stil med at skrive ordentlige log-meddelelser,
+    så er dette super.
+   </para>
 
-<para>
-Lad os se på opsætningen af dette. Først skal du 
-lave en fil i $CVSROOT, som dit projekt kan læse og skrive. 
-</para>
+   <para>
+    Lad os se på opsætningen af dette. Først skal du lave en fil i
+    $CVSROOT, som dit projekt kan læse og skrive. 
+   </para>
 
 <para>
 <emphasis>I det følgende skal du erstatte STIL_TIL_CVS_RODEN med den fulde sti
@@ -669,234 +671,221 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
 </para>
 
   </sect3>
+ </sect2>
 
-<sect3 id="cvs-branch">
-<title>CVS og afgreninger (branches)</title>
-<para>
-Lad os se lidt mere på starten, da vi lavede projektet
-</para>
+ <sect2 id="cvs-forgreninger">
+  <title>Forgreninger i udviklingen</title>
+
+  <para>
+   Lad os se lidt mere på starten, da vi lavede projektet
 
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cd MODUL_DIR</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs import MODUL
-VENDOR_TAG RELEASE_TAG</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs import MODUL VENDOR_TAG RELEASE_TAG</userinput>
 </screen>
+  </para>
 
-<para>
-Dette genererer med det samme to grene (branches), som man altid kan
-komme tilbage til.
-</para>
+  <para>
+   Dette genererer med det samme to grene (engelsk: "branches"), som man
+   altid kan komme tilbage til.
 
-<itemizedlist mark="bullet">
-<listitem>
- <para>
-1.1.1 - VENDOR_TAG
- </para>
-</listitem>
-<listitem> 
- <para>
-1.1.1.1 - RELEASE_TAG
- </para>
-</listitem>
-</itemizedlist>
+   <itemizedlist mark="bullet">
+    <listitem>
+     <para>
+      1.1.1 - VENDOR_TAG
+     </para>
+    </listitem>
+    <listitem> 
+     <para>
+      1.1.1.1 - RELEASE_TAG
+     </para>
+    </listitem>
+   </itemizedlist>
+  </para>
 
-<para>
-Går man igang med at checke filerne ud, rette og lave <command>cvs
-commit</command>, så kommer de enkelte versioner til at hedde version
-1.1, 1.2, 1.3 osv.
-</para>
+  <para>
+   Går man igang med at checke filerne ud, rette og køre <command>cvs
+   commit</command>, så kommer de enkelte versioner til at hedde version
+   1.1, 1.2, 1.3 osv.
+  </para>
 
-<para>
-Ofte vil alle bruge samme gren af filerne, men hvad gør man hvis man
-nu har brug for at kode et stykke tid på noget som lammer resten af
-udviklerne på samme projekt. I dette tilfælde kan man oprette en gren
-til dette - de andre udviklere kommer ikke til at se noget anderledes
-og to afskilte udviklingsgrene kan køre.
-</para>
+  <para>
+   Ofte vil alle bruge samme gren af filerne, men hvad gør man hvis man
+   nu har brug for at kode et stykke tid på noget som lammer resten af
+   udviklerne på samme projekt. I dette tilfælde kan man oprette en gren
+   til dette - de andre udviklere kommer ikke til at se noget anderledes
+   og to afskilte udviklingsgrene kan køre.
+  </para>
 
+  <para>
+   Lad os antage at vi arbejder med et modul i CVS med navn "sslugkode"
+   som er importeret i CVS ved at skrive <command>cvs import sslugkode
+   start version0</command>. Da der ikke er nogen naturlig "vendor"
+   sættes leverandør-tag blot til "start" og start-version til "version0".
+  </para>
 
-<para>
-Lad os antage at vi arbejder med et modul i CVS med navn "sslugkode"
-som er importeret i CVS ved at skrive <command>cvs import sslugkode
-start version0</command>. Da der ikke er nogen naturlig "vendor"
-sættes leverandør-tag blot til "start" og start-version til "version0".
-</para>
-
-<para>
-For at skabe "afgrening1" ud fra hoved-branchen "version0" skriver man
-(uden at man nødvendigvis har koden checket ud)
-</para>
+  <para>
+   For at skabe "gren1" ud fra hovedgrenen "version0" skriver man (uden
+   at man nødvendigvis har koden checket ud)
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 afgrening1 sslugkode</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 gren1 sslugkode</userinput>
 </screen>
+  </para>
 
-<para>
-Tilsvarende kunne man måske have en anden udvikler, som
-skal arbejde samtidig på en anden gren "afgrening2"
-</para>
-
+  <para>
+   Tilsvarende kunne man måske have en anden udvikler, som skal arbejde
+   samtidig på en anden gren, "gren2"
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 afgrening2 sslugkode</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 gren2 sslugkode</userinput>
 </screen>
+  </para>
 
-<para>
-For at isolere sig selv i grenen "afgrening1" skrives
-</para>
-
+  <para>
+   For at isolere sig selv i grenen "gren1" skrives
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout sslugkode</userinput>
 <prompt>[anne@linus ~]$</prompt> <userinput>cd sslugkode</userinput>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r afgrening1</userinput>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r gren1</userinput>
 </screen>
+   eller direkte
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout -r gren1 sslugkode</userinput>
+</screen>
+  </para>
 
-<para>
-eller direkte
-</para>
+  <para>
+   Det normale er derefter at udvikleren retter, laver <command>cvs
+   commit</command> som vanligt. Fordelen er at de andre udviklere ikke
+   ser dette. Grenene er totalt afkoblede indtil der laves en "merge"
+  </para>
+
+  <para>
+   Hvis det skulle ske at vores udvikler fra "gren1" skal hjælpe han
+   som arbejder i "gren2"-grenen, så kan han lave <command>cvs
+   commit</command> på egne filer og derfter skifte direkte over til "gren2"
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout -r afgrening1 sslugkode</userinput>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r gren2</userinput>
 </screen>
+  </para>
 
-<para>
-Det normale er derefter at udvikleren retter, laver <command>cvs
-commit</command> som vanligt. Fordelen er at de andre udviklere ikke
-ser dette. Grenene er totalt afkoblede indtil der laves en "merge"
-</para>
-
-<para>
-Hvis det skulle ske at vores udvikler fra "afgrening1" skal hjælpe han
-som arbejder i "afgrening2"-grenen, så kan han lave <command>cvs
-commit</command> på egne filer og derfter skifte direkte over til "afgrening2"
-</para>
-
-
-<screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r afgrening2</userinput>
-</screen>
-
-<para>
-Endelig kan man skifte ud til hoved-sporet (komme ud af "afgrening1" hhv
-"afgrening2" ved at skrive
-</para>
+  <para>
+   Endelig kan man skifte ud til hoved-sporet (komme ud af henholdsvis
+   "gren1" og "gren2" ved at skrive
 
 <screen>
 <prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -A</userinput>
 </screen>
+  </para>
 
-<sect4 id="cvs-join">
-<title>Flette grene (cvs join)</title>
-<para>
-Antag at to udviklingsgrene som hver for sig har udviklet 
-sig, og de at de på et tidspunkt skal flettes sammen.
-</para>
+  <sect3 id="cvs-join">
+   <title>Flette grene sammen igen</title>
 
-<para>
-I "afgrening2"-branchen kan du opdatere med nyeste ting fra
-"afgrening1"-branchen ved at skrive
-</para>
+   <para>
+    Antag at to udviklingsgrene som hver for sig har udviklet sig, og de
+    at de på et tidspunkt skal flettes sammen.
+   </para>
 
-<screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j afgrening1</userinput>
-</screen>
-
-<para>
-Hvis man ikke var i "afgrening2" skal man først sikre at du er i
-"afgrening1"-grenen.
-</para>
-
+   <para>
+    I "gren2"-grenen kan du opdatere med nyeste ting fra "gren1"-grenen
+    ved at skrive
 
 <screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r afgrening2</userinput>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j afgrening1</userinput>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j gren1</userinput>
 </screen>
-</sect4>
+   </para>
 
-</sect3>
+   <para>
+    Hvis man ikke var i "gren2" skal man først sikre at du er i "gren1"-grenen.
 
-  <sect3 id="misc-med-cvs">
-<title>Diverse med CVS</title>
+<screen>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r gren2</userinput>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j gren1</userinput>
+</screen>
+   </para>
+  </sect3>
+ </sect2>
 
-<para>
-Det kan nævnes, at hvis Emacs indlæser en fil, der er koblet
-ind i CVS, vil Emacs automatisk genkende dette og indsætte en ekstra
-menu, hvorfra du på enkel vis kan sende tilføjelser til den fælles
-database (selve ændringerne skal du ikke selv styre - det klarer Emacs
-og CVS).
-</para>
+ <sect2 id="misc-med-cvs">
+  <title>Diverse med CVS</title>
 
+  <para>
+   Det kan nævnes, at hvis Emacs indlæser en fil, der er koblet ind i CVS,
+   vil Emacs automatisk genkende dette og indsætte en ekstra menu, hvorfra
+   du på enkel vis kan sende tilføjelser til den fælles database (selve
+   ændringerne skal du ikke selv styre - det klarer Emacs og CVS).
+  </para>
 
-<para>
-Skal man anvende en "export" version til distribution, eller blot ikke
-ønsker at lave en "checkout", så er <command>cvs export
-PROJEKT</command> også en mulighed. Den henter kun filerne, men ikke
-CVS-informationsfilerne. Meget praktisk til at skelne mellem
-udgivelse af filer ("export") i forhold til udvikler-version med fuld
-CVS-information ("checkout").
-</para>
+  <para>
+   Skal man anvende en "export" version til distribution, eller blot ikke
+   ønsker at lave en "checkout", så er <command>cvs export PROJEKT</command>
+   også en mulighed. Den henter kun filerne, men ikke
+   CVS-informationsfilerne. Meget praktisk til at skelne mellem udgivelse
+   af filer ("export") i forhold til udvikler-version med fuld
+   CVS-information ("checkout").
+  </para>
 
-<para>
-Vi har tidligere vist, at projekt/kildetekst hentes med:
-</para>
+  <para>
+   Vi har tidligere vist, at projekt/kildetekst hentes med:
 
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout projektnavn</userinput>
 </screen>
+  </para>
  
-<para>
-Men for folk, der deltager i mange projekter er det interessant at man
-faktisk også kan angive variablen <literal>CVSROOT</literal> som argument på
-kommandolinien:
+  <para>
+   Men for folk, der deltager i mange projekter er det interessant at man
+   faktisk også kan angive variablen <literal>CVSROOT</literal> som argument
+   på kommandolinien:
   
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs -d USER@tux.hjemme:/usr/local/CVSROOT checkout projektnavn</userinput>
 </screen>
-</para>
 
-<para>
-og det skal bemærkes at man faktisk ikke anvender <literal>CVSROOT</literal>
-efter at man har kørt <command>cvs checkout</command>. Hvis man ser
-efter i <filename>projekt-katalog/CVS</filename>, så finder man der
-tre filer, som tilhører CVS.
-</para>
+   og det skal bemærkes at man faktisk ikke anvender
+   <literal>CVSROOT</literal> efter at man har kørt <command>cvs
+   checkout</command>. Hvis man ser efter i
+   <filename>projekt-katalog/CVS</filename>, så finder man der tre filer,
+   som tilhører CVS:
 
-<itemizedlist mark="bullet">
-<listitem>
- <para>
- <filename>Repository</filename> indeholder projekt-navn på CVS-serveren.
- </para>
-</listitem>
-<listitem> 
- <para>
-<filename>Root</filename> indeholder <literal>CVSROOT</literal> for det
-pågældende projekt.
- </para>
-</listitem>
-<listitem> 
- <para>
-<filename>Entries</filename> indeholder listen over de filer og
-kataloger som er registreret i CVS.
- </para>
-</listitem>
-</itemizedlist>
+   <itemizedlist mark="bullet">
+    <listitem>
+     <para>
+      <filename>Repository</filename> indeholder projekt-navn på CVS-serveren.
+     </para>
+    </listitem>
+    <listitem> 
+     <para>
+      <filename>Root</filename> indeholder <literal>CVSROOT</literal> for det
+      pågældende projekt.
+     </para>
+    </listitem>
+    <listitem> 
+     <para>
+      <filename>Entries</filename> indeholder listen over de filer og
+      kataloger som er registreret i CVS.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </para>
 
-<para>
-Næste trick er for dem som anvender SSH til at kommunikere med CVS.
-Man kan få ssh til at understøtte komprimering i
-<filename>~/.ssh/config</filename> :
-</para>
+  <para>
+   Næste trick er for dem som anvender SSH til at kommunikere med CVS.
+   Man kan få ssh til at understøtte komprimering i
+   <filename>~/.ssh/config</filename>:
 
 <screen> 
 Compression yes
 CompressionLevel 6
 </screen>
+  </para>
 
-   <para>
-    Men vær opmærksom på at visse servere ikke kan finde ud af at anvende
-    kompression, så er der uforklarlige problemer med at få forbindelse, så
-    slå det fra. 
-   </para>
-  </sect3>
+  <para>
+   Men vær opmærksom på at visse servere ikke kan finde ud af at anvende
+   komprimering, så er der uforklarlige problemer med at få forbindelse, så
+   slå det fra. 
+  </para>
  </sect2>
 </sect1>
