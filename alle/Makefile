@@ -28,13 +28,14 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
                $(wildcard ../applikationer/*.sgml) \
                $(wildcard ../c/*.sgml) \
                $(wildcard ../docbook/*.sgml) \
+               $(wildcard ../kontorbruger/*.sgml) \
                $(wildcard ../program/*.sgml)
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
 
 # her er det der skal laves
-all:	billeder html palmpilot sgml pspdf exit
+all:	html palmpilot exit
 
 sgml: $(targetname)-$(version).sgml.tgz
 
@@ -69,6 +70,7 @@ billeder:
 	cp ../program/images/*.png images
 	cp ../c/images/*.png images
 	cp ../docbook/images/*.png images
+	cp ../kontorbruger/images/*.png images
 	cp ../applikationer/images/*.png images
 	cp ../sikkerhed/images/*.png images
 
@@ -95,6 +97,7 @@ htmlfiler:
 	cp ../applikationer/images/*.png bog
 	cp ../c/images/*.png bog
 	cp ../docbook/images/*.png bog
+	cp ../kontorbruger/images/*.png bog
 	cp ../sikkerhed/images/*.png bog
 	rm -rf tempdir
 	@echo "Done HTML (html)"
