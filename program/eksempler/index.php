@@ -82,9 +82,11 @@ eksempler samlet.
       if (file_exists("$file.$ext"))
         $gotall++;
     echo " <td>";
+    /*
     if ($gotall == count($examp))
       echo "<a href=\"all?lang=$ext\"><b>$lang[navn]</b></a>";
     else
+    */
       echo "$lang[navn]";
     echo "</td>\n";
     // Spol eksempel-navn listen tilbage

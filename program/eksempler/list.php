@@ -29,9 +29,11 @@ nok mere forvirrende, end den er informativ.
       $n++;
 			echo "<hr><a name=\"$lang[navn]\"></a>";
 			echo "<h2>$n. $lang[navn]: <a href=\"show.php?file=$file&amp;ext=$ext\">$filename</a></h2>\n";
+      /*
 			echo "Læs mere om <b>".$proglang[$ext][navn]."</b> i bogen under ";
 			echo "<a href=\"$boghref".$proglang[$ext][link]."\">http://www.sslug.dk$boghref".$proglang[$ext][link]."</a>\n";
-			echo "<table border=\"0\" cellspacing=\"0\" width=\"80%\" bgcolor=\"#F0F0F0\">";
+			*/
+      echo "<table border=\"0\" cellspacing=\"0\" width=\"80%\" bgcolor=\"#F0F0F0\">";
 			echo "<tr><td><pre>";
   		$fp = fopen(basename($filename),"r");
 			while (!feof($fp)) {

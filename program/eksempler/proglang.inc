@@ -41,6 +41,10 @@ $proglang = array(
     navn => "C KDE",
     link => "kde.html"
   ),
+  "prg" => array(
+    navn => "Clipper",
+    link => "clipper.html"
+  ),
   "cod" => array(
     navn => "Cobol",
     link => "cobol.html"
@@ -52,6 +56,10 @@ $proglang = array(
   "cml" => array(
     navn => "Comal?",
     link => "comal.html"
+  ),
+  "e" => array(
+    navn => "Eiffel",
+    link => "eiffel.html"
   ),
   "erl" => array(
     navn => "Erlang",
@@ -69,10 +77,6 @@ $proglang = array(
     navn => "Forth",
     link => "forth.html"
   ),
-  "scm" => array(
-    navn => "Guile",
-    link => "guile.html"
-  ),
   "java" => array(
     navn => "Java",
     link => "java.html"
@@ -80,10 +84,6 @@ $proglang = array(
   "html" => array(
     navn => "JavaScript",
     link => "javascript.html"
-  ),
-  "occ" => array(
-    navn => "KRoC",
-    link => "kroc.html"
   ),
   "lisp" => array(
     navn => "Lisp",
@@ -101,9 +101,9 @@ $proglang = array(
     navn => "Objective C",
     link => "objectivec.html"
   ),
-  "oca" => array(
-    navn => "Occam?",
-    link => "occam.html"
+  "occ" => array(
+    navn => "Occam (KRoC)",
+    link => "kroc.html"
   ),
   "pas" => array(
     navn => "Pascal",
@@ -149,9 +149,13 @@ $proglang = array(
     navn => "RPilot",
     link => "rpilot.html"
   ),
-  "she" => array(
-    navn => "Scheme?",
-    link => "scheme.html"
+  "rb" => array(
+    navn => "Ruby",
+    link => "ruby.html"
+  ),
+  "scm" => array(
+    navn => "Scheme (Guile)",
+    link => "guile.html"
   ),
   "sh" => array(
     navn => "Shell/bash",

@@ -1,7 +1,8 @@
-% Oversættelse:
+% Erlang
 % af Peter Stubbe <stubbe@bitnisse.dk>
 % $Id$
 
+% Oversættelse:
 %  erlc hello.erl
 %
 % Afvikling (let og elegant):
