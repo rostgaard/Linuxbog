@@ -1,4 +1,4 @@
-10 REM hello.cod - Cobol
+10 REM hello.bas - BASIC
 20 REM af Hans Schou <chlor@sslug.dk>
 30 REM $Id$
 
