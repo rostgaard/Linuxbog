@@ -135,7 +135,17 @@ clean:	configure
 #
 # all
 # All i alle underkataloger
-all:	configure
+all:	makefile
+	@for dir in $(SUBDIRS) $(ALLE) ; do \
+		echo "*** Kører make all i $$dir" && \
+		cd $$dir && make all && cd .. || exit ;\
+	done ;
+
+################################################################################
+#
+# all
+# All i alle underkataloger
+all:	makefile
 	@for dir in $(SUBDIRS) $(ALLE) ; do \
 		echo "*** Kører make all i $$dir" && \
 		cd $$dir && make all && cd .. || exit ;\
@@ -150,7 +160,7 @@ DATE=`date +"%F"`
 dist:	distclean
 	@for dir in $(SUBDIRS) ; do \
 		echo "*** Laver distributionspakke: $$dir.$(DATE).tar.gz" && \
-		tar -zcf $$dir.$(DATE).tar.gz $$dir || exit ; \
+		tar --exclude CVS --exclude .cvsignore -zcf $$dir.$(DATE).tar.gz $$dir || exit ; \
 	done ;
 
 
