@@ -135,6 +135,12 @@ function form_filename( $bookname, $format ) {
       last => "/index.html",
       online => 1  // Hvis bognavn kun skal med een gange
     ),
+    // Eks: frihed/bog/index.html
+    "Ændringer" => array(
+      first => "bog",
+      last => "/apprevhist.html",
+      online => 1  // Hvis bognavn kun skal med een gange
+    ),
     // Eks: frihed/linux-frihed-4.0.tgz
     "HTML" => array(
       first => "linux-",
