@@ -1,84 +1,80 @@
-<chapter>
-  <title>RMI - objekter over netværk</title>
+<chapter id="java-rmi">
+<title>RMI - objekter over netværk</title>
 
 <para>
-Indhold:
+  Indhold:
 </para>
 
 <itemizedlist mark="bullet">
-<listitem><para>
-Forstå principperne i RMI
-</para></listitem>
-<listitem><para>
-Kalde metoder i fjerne objekter
-</para></listitem>
+  <listitem><para>Forstå principperne i RMI</para></listitem>
+  <listitem><para>Kalde metoder i fjerne objekter</para></listitem>
 </itemizedlist>
 
 <para>
-Kapitlet forudsættes ikke i resten af bogen.
+  Kapitlet forudsættes ikke i resten af bogen.
 </para>
 
 <para>
-Forudsætter kapitel 11, Interfaces, kapitel 17, Serialisering og
-kendskab til netværk.
+  Forudsætter kapitel 11, Interfaces, kapitel 17, Serialisering og
+  kendskab til netværk.
 </para>
 
 <para>
-RMI (Remote Method Invocation) er en måde at arbejde med objekter der
-eksisterer i en anden Java virtuel maskine (ofte på en anden fysisk
-maskine), <emphasis>som om de var lokale objekter</emphasis>.
+  RMI (Remote Method Invocation) er en måde at arbejde med objekter der
+  eksisterer i en anden Java virtuel maskine (ofte på en anden fysisk
+  maskine), <emphasis>som om de var lokale objekter</emphasis>.
 </para>
 
-<sect1>
-  <title>Principper</title>
+<sect1 id="java-rmi-principer">
+<title>Principper</title>
 
 <para>
-Herunder er tegnet, hvad der sker, når en klient på maskine A laver et
-kald til et serverobjekt (da: værts-objekt), der er i maskine B.
+  Herunder er tegnet, hvad der sker, når en klient på maskine A laver et
+  kald til et serverobjekt (da: værts-objekt), der er i maskine B.
 </para>
 
-<figure>
-<title>Java</title>
-<graphic fileref="Nordfalk2015469.&magic;" scale="60"></graphic>
+<figure id="java-rmi-principer-fig">
+  <title>Java</title>
+  <graphic fileref="Nordfalk2015469.&magic;" scale="60"></graphic>
 </figure>
 
 <para>
-Serverobjektet findes slet ikke på maskine A, i stedet er der en
-såkaldt <emphasis>RMI-stub</emphasis>, der repræsenterer det. Når der
-sker et kald til RMI-stubben på maskine A, sørger den for at
-transportere kaldet og alle parametre til maskine B, hvor
-serverobjektet bliver kaldt, som om det var et lokalt
-kald. Serverobjektets svar bliver transporteret tilbage til
-RMI-stubben, der returnerer det til klienten.
+  Serverobjektet findes slet ikke på maskine A, i stedet er der en
+  såkaldt <emphasis>RMI-stub</emphasis>, der repræsenterer det. Når der
+  sker et kald til RMI-stubben på maskine A, sørger den for at
+  transportere kaldet og alle parametre til maskine B, hvor
+  serverobjektet bliver kaldt, som om det var et lokalt
+  kald. Serverobjektets svar bliver transporteret tilbage til
+  RMI-stubben, der returnerer det til klienten.
 </para>
 
 <para>
-Denne proces foregår helt automatisk og er usynlig for klienten såvel
-som serverobjektet.
+  Denne proces foregår helt automatisk og er usynlig for klienten såvel
+  som serverobjektet.
 </para>
 
 <para>
-RMI benytter serialisering til at transportere parametre og returværdi
-mellem maskinerne, så man skal huske, at alle objekter, der sendes
-over netværket, skal implementere Serializable-interfacet, og at
-variabler, der ikke skal overføres, skal mærkes med nøgleordet
-transient.
+  RMI benytter serialisering til at transportere parametre og returværdi
+  mellem maskinerne, så man skal huske, at alle objekter, der sendes
+  over netværket, skal implementere Serializable-interfacet, og at
+  variabler, der ikke skal overføres, skal mærkes med nøgleordet
+  transient.
 </para>
 
 <para>
-Overordnet set foregår det på den måde, at der defineres et interface
-til de metoder på serverobjektet, der skal være tilgængelige for
-klienten.
+  Overordnet set foregår det på den måde, at der defineres et interface
+  til de metoder på serverobjektet, der skal være tilgængelige for
+  klienten.
 </para>
 </sect1>    <!--   Principper -->
 
-<sect1>
-  <title>Konkret</title>
+<sect1 id="java-rmi-konkret">
+<title>Konkret</title>
 
 <para>
-Konkret kunne man tænke sig, at serveren havde et konto-objekt, hvor
-man kan overføre penge, spørge om saldo og få bevægelserne på
-kontoen. Så ville man definere et Konto-interface (her kaldt KontoI):
+  Konkret kunne man tænke sig, at serveren havde et konto-objekt, hvor
+  man kan overføre penge, spørge om saldo og få bevægelserne på
+  kontoen. Så ville man definere et Konto-interface (her kaldt KontoI):
 </para>
 
 <screen>
@@ -92,24 +88,23 @@ public interface KontoI extends java.rmi.Remote
 }
 </screen>
 
-
 <para>
-Interfacet skal arve fra interfacet java.rmi.Remote, og alle metoder
-skal kunne kaste undtagelsen java.rmi.RemoteException.
+  Interfacet skal arve fra interfacet java.rmi.Remote, og alle metoder
+  skal kunne kaste undtagelsen java.rmi.RemoteException.
 </para>
 
 <para>
-Interfacet bliver brugt på både klientsiden og serversiden.
+  Interfacet bliver brugt på både klientsiden og serversiden.
 </para>
 
-<sect2>
-  <title>På serversiden</title>
+<sect2 id="java-rmi-konkret-serveren">
+<title>På serversiden</title>
 
 <para>
-På serversiden skal vi implementere Konto-interfacet og programmere
-den funktionalitet der skjuler sig bag det, i et serverobjekt, som
-normalt ender på Impl (for at signalere, at det er implementationen af
-interfacet). Serverobjektet skal arve fra UnicastRemoteObject.
+  På serversiden skal vi implementere Konto-interfacet og programmere
+  den funktionalitet der skjuler sig bag det, i et serverobjekt, som
+  normalt ender på Impl (for at signalere, at det er implementationen af
+  interfacet). Serverobjektet skal arve fra UnicastRemoteObject.
 </para>
 
 <screen>
@@ -150,10 +145,9 @@ public class KontoImpl <emphasis>extends UnicastRemoteObject implements KontoI</
 }
 </screen>
 
-
 <para>
-Nu skal vi oprette et serverobjekt og registrere vores tjeneste under
-et navn i RMI. Det sker sådan her:
+  Nu skal vi oprette et serverobjekt og registrere vores tjeneste under
+  et navn i RMI. Det sker sådan her:
 </para>
 
 <screen>
@@ -170,42 +164,32 @@ public class Kontoserver
 </screen>
 
 <para>
-Derudover skal der køre en RMI-navnetjeneste, der holder styr på,
-hvilke tjenester der udbydes under hvilke navne og formidler kontakten
-til dem. Det er et lille program, der hedder rmiregistry. Det skal
-kende definitionen af de klasser, der overføres.
+  Derudover skal der køre en RMI-navnetjeneste, der holder styr på,
+  hvilke tjenester der udbydes under hvilke navne og formidler kontakten
+  til dem. Det er et lille program, der hedder rmiregistry. Det skal
+  kende definitionen af de klasser, der overføres.
 </para>
 
 <para>
-Når vi skal køre vores server sker de i fire trin:
+  Når vi skal køre vores server sker de i fire trin:
 </para>
 
 <orderedlist>
-<listitem><para>
-alle kildetekster oversættes til bytekode:  <constant>javac *.java</constant> (eller i et udviklingsværktøj)
-</para></listitem>
-<listitem><para>
-KontoImpl skal have en RMI-stub og en RMI-skel:  <constant>rmic KontoImpl.java</constant>
-</para></listitem>
-<listitem><para>
-rmiregistry startes i et separat vindue (fra samme katalog, som
-bytekoden ligger i): <constant>rmiregistry</constant>
-</para></listitem>
-<listitem><para>
-til sidst kan Kontoserver startes fra et separat vindue:
-<constant>java Kontoserver</constant> (eller i et udviklingsværktøj)
-</para></listitem>
+  <listitem><para>alle kildetekster oversættes til bytekode:  <constant>javac *.java</constant> (eller i et udviklingsværktøj)</para></listitem>
+  <listitem><para>KontoImpl skal have en RMI-stub og en RMI-skel:  <constant>rmic KontoImpl.java</constant></para></listitem>
+  <listitem><para>rmiregistry startes i et separat vindue (fra samme katalog, som bytekoden ligger i): <constant>rmiregistry</constant></para></listitem>
+  <listitem><para>til sidst kan Kontoserver startes fra et separat vindue: <constant>java Kontoserver</constant> (eller i et udviklingsværktøj)</para></listitem>
 </orderedlist>
 
 </sect2>    <!--   På serversiden -->
 
-<sect2>
-  <title>På klientsiden</title>
+<sect2 id="java-rmi-konkret-klient">
+<title>På klientsiden</title>
 
 <para>
-På klientsiden skal vi slå serverobjektet op i RMI-tjenesten og
-derefter bruge det objekt, vi får retur, som om det var serverobjektet
-selv (i virkeligheden er det en RMI-stub, der implementerer KontoI):
+  På klientsiden skal vi slå serverobjektet op i RMI-tjenesten og
+  derefter bruge det objekt, vi får retur, som om det var serverobjektet
+  selv (i virkeligheden er det en RMI-stub, der implementerer KontoI):
 </para>
 
 <screen>
@@ -238,6 +222,7 @@ public class Kontoklient
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Saldo er: 250
@@ -245,14 +230,13 @@ Saldo er: 101
 Bevægelser er: [Overførsel på 100 kr. Ny saldo er 200 kr., Overførsel på 50 kr. Ny saldo er 250 kr., Overførsel på -200 kr. Ny saldo er 50 kr., Overførsel på 51 kr. Ny saldo er 101 kr.]
 </screen>
 
-
 <para>
-Herunder ses de enkelte klassers funktioner.
+  Herunder ses de enkelte klassers funktioner.
 </para>
 
-<figure>
-<title>Java</title>
-<graphic fileref="Nordfalk2015471.&magic;" scale="60"></graphic>
+<figure id="java-rmi-konkret-klient-fig">
+  <title>Java</title>
+  <graphic fileref="Nordfalk2015471.&magic;" scale="60"></graphic>
 </figure>
 
 </sect2>    <!--   På klientsiden -->
