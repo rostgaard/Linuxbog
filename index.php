@@ -390,7 +390,7 @@ if ($matrix) { ?>
   $c = 0;
   reset($books);
   while (list($short,$desc) = each($books)) {
-    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n <td valign=\"top\">";
+    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n td valign=\"top\">";
     echo "<b>$desc[title]</b><font size=\"-1\"><br>$desc[comment]</font></td>\n";
     reset($packs);
     while (list($type,$attr) = each($packs)) {
@@ -519,9 +519,13 @@ indeks-register.</a>
 </p>
 
 <p>
-Se også vores konkurrenters bog ;-) "Linux i skolen" på 
-<a href="http://www.gnuskole.dk">http://www.gnuskole.dk</a>
+Se også vores konkurrenters bøger ;-)
 </p>
+
+<ul>
+<li>"Linux i skolen" på <a href="http://www.gnuskole.dk">www.gnuskole.dk</a></li>
+<li>Bog om Debian <a href="http://www.razor.dk/debianguiden/">www.razor.dk/debianguiden/</a></li>
+</ul>
 
 <p>
 Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
@@ -537,4 +541,4 @@ Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
   if (file_exists($DOCUMENT_ROOT."includes/bottom.phtml")) {
     include($DOCUMENT_ROOT."includes/bottom.phtml");
   }
-?>
+?>*
