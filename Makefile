@@ -45,6 +45,7 @@ version:  Makefiler
 	@grep -A2 "<listitem>" sikkerhed/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > sikkerhed/version.sgml
 	@grep -A2 "<listitem>" c/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > c/version.sgml
 	@grep -A2 "<listitem>" docbook/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > docbook/version.sgml
+	cp friheden/version.sgml alle/version.sgml
 
 eksempelbackup:  statusfiler
 	make -C friheden eksempelbackup
