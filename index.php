@@ -182,7 +182,7 @@ function form_filename( $bookname, $format ) {
     // Eks: frihed/linux-frihed-4.0.tgz
     "HTML" => array(
       first => "linux-",
-      last => ".html.tgz"
+      last => ".html.tar.gz"
     ),
     "HTML zip" => array(
       first => "linux-",
@@ -190,11 +190,11 @@ function form_filename( $bookname, $format ) {
     ),
     "PNG billeder" => array(
       first => "linux-",
-      last => ".png.tgz"
+      last => ".png.tar.gz"
     ),
     "HTML u/billeder" => array(
       first => "linux-",
-      last => ".html-ub.tgz"
+      last => ".html-ub.tar.gz"
     ),
 //    "PostScript" => array(
 //      first => "linux-",
@@ -207,15 +207,15 @@ function form_filename( $bookname, $format ) {
     ),
     "PalmPilot" => array(
       first => "linux-",
-      last => ".palm.tgz"
+      last => ".palm.tar.gz"
     ),
     "eksempler" => array(
       first => "linux-",
-      last => "_eksempler.tgz"
+      last => "_eksempler.tar.gz"
     ),
     "SGML" => array(
       first => "linux-",
-      last => ".sgml.tgz"
+      last => ".sgml.tar.gz"
     )
   );
 
