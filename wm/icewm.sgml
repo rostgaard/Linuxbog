@@ -1,0 +1,197 @@
+<chapter id="icewm">
+<title>IceWM</title>
+
+<para>
+Icewm's hjemmeside er http://www.icewm.org/, men man kan også hente
+IceWM fra http://www.plopcrew.net/vuori/icewm/. Hvis man bruger et
+RPM-baseret ix86-system kan man nøjes med at hente pakkerne
+"icewm-common-1.2.0-1.noarch.rpm" og "icewm-default-1.2.0-1.i386.rpm",
+og installere dem med kommandoen: 
+</para>
+
+<screen>
+su - -c 'rpm --upgrade icewm-common-1.2.0-1.noarch.rpm
+icewm-default-1.2.0-1.i386.rpm && echo O.k.'
+</screen>
+
+<para>
+Alternativt kan man hente kildeteksten, pakke den ud og oversætte den med kommandoen:
+</para>
+
+<screen>
+./configure && make && su -c 'make install' &&
+echo O.k.
+</screen>
+
+<sect1 id="icevm-aktivering">
+<title>Aktivere IceWM</title>
+
+<para>
+Man kan sætte IceWM til at være den windowmanager man som standard
+bruger, ved at lade filen <filename>${HOME}/.xsession</filename> bestå
+af følgende to linier: 
+</para>
+
+<screen>
+#! /bin/sh
+exec /usr/bin/X11/icewm
+</screen>
+
+<para>
+Hvis icewm ligger et andet sted end i kataloget /usr/bin/X11 skal den sidste linie rettes til. Med kommandoen:
+</para>
+
+<screen>
+which icewm
+</screen>
+
+<para>
+kan man se hvor icewm ligger henne på systemet.
+</para>
+
+</sect1>
+
+<sect1 id="icewm-brug-af">
+<title>Brug af IceWM</title>
+
+
+<para>
+Udseende
+</para>
+
+<figure id="icewm-fig" float="1">
+<title>IceWM</title>
+<graphic fileref="icewm.&magic;" scale="60"></graphic>
+</figure>
+
+
+<sect2 id="icewm-opsaetning">
+<title>Opsætningsfiler</title>
+
+
+<para>
+IceWM læser sin opsætning fra disse filer:
+</para>
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+${HOME}/.icewm (brugerens personlige tilpasning)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+/etc/X11/icewm (fælles tilpasninger for alle brugere på systemet)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+/usr/lib/X11/icewm (standardindstillingerne)
+ </para>
+</listitem>
+</itemizedlist>
+
+
+<para>
+ For at ændre sine indstillinger skal man oprette kataloget
+<filename>{HOME}/.icewm</filename>$, og kopiere filerne fra
+<filename>/usr/lib/X11/icewm</filename> dertil: </para>
+
+<screen>
+cp /usr/X11R6/lib/X11/icewm/preferences ~/.icewm/preferences
+cp /usr/X11R6/lib/X11/icewm/toolbar ~/.icewm/toolbar
+cp /usr/X11R6/lib/X11/icewm/winoptions ~/.icewm/winoptions
+</screen>
+
+<para>
+Derefter kan man rette i filerne. Der er ikke noget grafisk værktøj til formålet. 
+</para>
+</sect2>
+
+
+"Start"-menu 
+
+
+IceWM's "startknap" findes som standard nederst i skærmens venstre hjørne.
+
+
+<sect2 id="icewm-genvejstaster">
+<title>Genvejstaster</title>
+
+<para>
+Skift mellem virtuelle skriveborde:
+</para>
+
+<para>
+I standardopsætningen har IceWM fire virtuelle skriveborde
+(repræsenteret ved de fire nummererede knapper ude mod venstre nederst
+i ovenstående skærmbillede). Man skifter mellem dem med
+Ctrl-Alt-Venstrepil og Ctrl-Alt-Højrepil.
+</para>
+
+<para>
+Flytte vinduer:
+</para>
+
+<para>Efter at have trykket Alt-F7 kan man flytte et vindue med piltasterne. Shift- og Ctrl-knapperne betyder at vinduet bliver flyttet i større ryk. Tast Enter når vinduet er kommet derhen hvor det skal.
+Ændre vinduesstørrelse:
+Med Alt-F8 kan du ændre vinduesstørrelse. (proceduren er i øvrigt som for at flytte vinduer)
+Hoppe mellem vinduer: 
+Med Alt-Tab kan man hoppe mellem vinduerne på et virtuelt skrivebord. 
+</para>
+</sect2>
+
+<sect2 id="icewm-vh">
+<title>Vindueshåndtering</title>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Flytte et vindue: 
+Brug genvejstasten Alt-F7 eller træk i vinduets titelbjælke. 
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Minimere et vindue: 
+Brug genvejstasten Alt-F9 eller klik på ikonen med en enkelt vandret streg i vinduets titelbjælke. 
+ </para>
+</listitem>
+<listitem>
+ <para>
+Maksimere et vindue: 
+Brug genvejstasten Alt-F10 eller klik på ikonen med et rektangel i vinduets titelbjælke. 
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Vis et vindue på alle skriveborde: 
+Brug genvejstasten Alt-F2 til at skifte mellem at et vindue kun vises på et og vises på alle skriveborde. 
+ </para>
+</listitem>
+</itemizedlist>
+
+
+Fokus
+
+
+Som standard er vinduesfokus i IceWM sat til ikke bare at følge musen. Det betyder at man skal klikke i et vindue eller bruge en af genvejstasterne Alt-F3, Alt-F6 eller Alt-Tab til at flytte fokus. Man kan sætte IceWM op til at fokus følger musen ved at ændre 
+
+ ClickToFocus=1
+
+ til 
+ ClickToFocus=0
+
+ i filen ${HOME}/.icewm/preferences. 
+
+Dokumentation
+
+
+Hvis man installerer IceWM som en RPM-pakke vil man kunne finde dokumentationen i /usr/share/doc/icewm-common-1.2.0/icewm.html. Ellers kan man se på http://www.icewm.org/index.php?page=docs. 
+
+
+Hvad er det fede ved IceWM?
+
+
+IceWM er et letvægtsprogram der ikke brænder ressourcer af på unødvendigt pjat. Samtidig har det som standard stort set alle de funktioner man i dag forventer af et skrivebordssystem. - Og så kan man vælge at køre det med Warp 3-look. ;-) 
+</para>
+</chapter>
