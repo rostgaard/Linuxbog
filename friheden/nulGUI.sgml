@@ -29,7 +29,7 @@ installationen forfra.
 
 
 <sect1 id="XF86config-sect1">
-<title>XF86Setup, xf86config, SaX og Xconfigurator</title>
+<title>XF86Setup, xf86config, XFdrake, SaX og Xconfigurator</title>
 <indexterm><primary>XF86</primary></indexterm>
 <indexterm><primary>X</primary></indexterm>
 <indexterm><primary>XWindow</primary></indexterm>
@@ -68,6 +68,16 @@ til X11 skal benyttes (det er dog ikke det, der vises ud for teksten
 "First video").  I øvrigt kan det være klogt at indhente data for dit
 grafikkort, tastatur, mus og skærm fra producenternes hjemmesider og manualer.
 </para>
+
+<sect2 id="XFdrake">
+<title>XFdrake sætter det grafiske system op til Mandrake</title>
+<indexterm><primary>XFdrake</primary></indexterm>
+<para>
+På Mandrake er programmet <command>XFdrake</command> en nem måde at kunne
+sætte X-systemet op. Programmet startes op som root, og vil automatisk søge
+efter grafikkortet. Langt de fleste kort vil blive detekteret korrekt.
+</para>
+</sect2>
 
 <sect2 id="xf86config-setup">
 <title>xf86config</title>
@@ -241,10 +251,7 @@ du kan prøve at skrive <command>startx</command>.
 <title>XF86Config-filen</title>
 
 <para>
-Kører du f.eks. Red Hat 6.2 eller tidligere, Mandrake 7.1 med XFree86
-3.3.6, så har du din X-konfiguration gemt i
-<filename>/etc/X11/XF86Config</filename>. Har du installeret Red Hat
-7.0, Mandrake 8.0 eller senere 
+Har du installeret Red Hat 7.0, Mandrake 8.0 eller senere 
 er det <filename>/etc/X11/XF86Config-4</filename> som er
 interessant og du bør gå til <xref linkend="XF86Config-4-filen"/>.
 </para>
@@ -296,33 +303,36 @@ EndSection
  <indexterm><primary>Mus</primary></indexterm>
 
  <para>
-  I modsætning til Windows-verdenen er det smart at købe en tre-knaps mus til
-  Linux. Man kan godt bruge to-knaps mus, men Linux kan anvende tre knapper på
-  en meget smart måde.
+  I modsætning til Windows-verdenen er det smart at købe en tre-knaps
+  mus til Linux, og evt. gerne med musehjul. Man kan godt bruge
+  to-knaps mus, men Linux kan anvende tre knapper på en meget smart
+  måde.  
  </para>
 
 <para>Musen kan være lidt problematisk for nogle. Får du ikke fat i den
 rigtige type, kan du se det ved, at musen ofte springer rundt. Du
-skal så rette i <filename>XF86Config</filename> i afsnittet "Pointer", der
-kan se ud som:
+skal så rette i <filename>/etc/X11/XF86Config-4</filename> i afsnittet "InputDevice", 
+der kan se ud som:
+</para>
 
 <programlisting>
-Section "Pointer"
-    Protocol    "MouseMan"
-    Device      "/dev/mouse"
-#    Emulate3Buttons
-#    Emulate3Timeout    50
+Section "InputDevice"
+    Identifier "Mouse1"
+    Driver "mouse"
+    Option "Protocol" "PS/2"
+    Option "Device" "/dev/psaux"
+#    Option "Emulate3Buttons"
+#    Option "Emulate3Timeout" "50"
 EndSection
 </programlisting>
 
-Vi har her med en Logitech tre-knaps mus at gøre. En mus, som oftest er
-af typen MouseMan. Dog kan protokollen sættes til PS/2, hvis stikket
-er af PS/2-typen. Har man en Microsoft to-knaps mus, må man emulere
+<para>
+Vi har her med en PS/2 mus at gøre. En mus, som oftest er
+af typen PS/2. Har man en mus med hjul er det normalt IMPS/2. 
+Har man en to-knaps mus, må man emulere
 midterknappen ved at trykke begge knapper ned på samme tid, og de to
 udkommenterede linjer ovenfor skal så gøres aktive, dvs. du skal
-fjerne <filename>#</filename>-tegnet.  Valget af protokol er ikke
-universelt. En Cordless Wheel Mouse fra Logitech skal bruge
-"MouseManPlusPS/2".
+fjerne <filename>#</filename>-tegnet.
 </para>
 
 <para>
@@ -347,24 +357,10 @@ Var dette ikke tilfældet, skal du rette op på det med
 </screen>
 
 <para>
-Bruger du COM1 (fra DOS) til musen, så erstat
-<filename>/dev/psaux</filename> med <filename>/dev/ttyS0</filename>.
-</para>
-
-<para>
 Der er følgende lovlige protokoller, som vises ved at skrive
 <filename>man XF86Config</filename>:
 </para>
 
-<para>
-BusMouse, Logitech, Microsoft (Ofte til to-knaps mus), MMSeries,
-Mouseman (tit med Logitech mus), MouseSystems (ofte no-name
-tre-knaps mus), PS/2 (for PS/2-port mus), MMHitTab, GlidePoint, IntelliMouse,
-Xqueue og OSMouse.
-I Red Hat 5.2 og 6.0 er der også kommet understøttelse for flere varianter af
-Genius NetMouse og Netscroll, Kensington Thinking mouse, ALPS GlidePoint, ASCII
-MieMouse, ATI-bus mus, Logitech MouseMan+ og FirstMouse+.
-</para>
 
 <sect3 id="Xpad">
 <title>2 mus</title>
@@ -404,8 +400,7 @@ begge har scroolknap/musehjul) gør man følgende:
 <para>
 
 Man skal ændre i ét afsnit af
-<filename>/etc/X11/XF86Config-4</filename> filen eller
-<filename>/etc/X11/XF86Config</filename> - nemlig afsnittet <literal>Section
+<filename>/etc/X11/XF86Config-4</filename> - nemlig afsnittet <literal>Section
 "ServerLayout"</literal>, 
 hvor man starter med at fortælle X, at man har mere end
 bare én enhed der skal kunne peges med. Hvilken konfigurationsfil man
@@ -492,177 +487,8 @@ anstrenge hånden eller håndledet.
 </para>
 </sect3>
 
-<sect3 id="Xmushjul">
-<title>Mus med hjul</title>
-<indexterm><primary>mus</primary><secondary>Mus med hjul</secondary></indexterm>
-<para>
-Det kan nævnes, at med Microsoft IntelliMouse, Logitech pilot+, og
-Logitech MouseMan+ med hjul normalt virker direkte. Skulle der være problemer med at få
-den midterste knap (hjulet) til at virke er der hjælp at hente på <ulink
-url="http://www.inria.fr/koala/colas/mouse-wheel-scroll">http://www.inria.fr/koala/colas/mouse-wheel-scroll</ulink>
-</para>
-
-<para>
-For at gøre X i stand til at benytte hjulet som midterknap, skal man
-rette i filen <filename>/etc/X11/XF86Config-4</filename>. 
-Protokollen skal ændres, og hjulfunktionen skal aktiveres.
-</para>
-<para>
-Pointer-sektionen i <filename>XF86Config</filename> ser nu ud som
-følger:
-</para>
-
-
-
-<programlisting>
-Section "Pointer"
-    Protocol    "IMPS/2"
-    ZAxisMapping 4 5
-    Device      "/dev/mouse"
-</programlisting>
-
-<para>
-Læs mere på <ulink url="http://www.inria.fr/koala/colas/mouse-wheel-scroll/">http://www.inria.fr/koala/colas/mouse-wheel-scroll/</ulink>.
-</para>
-
-<sect4 id="Xmushjulnetscape">
-<title>Mus med hjul og Netscape</title>
-<para>
-For at benytte hjulet til at rulle op og ned i Netscape indsættes
-følgende i <filename>~/.Xdefaults</filename>:
-</para>
-
-<programlisting>
-Netscape*drawingArea.translations:  #replace \
-          &lt;Btn1Down&gt;:    ArmLink()   \n\
-          &lt;Btn2Down&gt;:     ArmLink()   \n\
-          ~Shift&lt;Btn1Up&gt;:    ActivateLink()  \n\
-          ~Shift&lt;Btn2Up&gt;:    ActivateLink(new-window)  \
-                                          DisarmLink()   \n\
-          Shift&lt;Btn1Up&gt;:    ActivateLink(save-only)  \
-                                          DisarmLink()   \n\
-          Shift&lt;Btn2Up&gt;:    ActivateLink(save-only)  \
-                                          DisarmLink()   \n\
-          &lt;Btn1Motion&gt;:     DisarmLinkIfMoved()  \n\
-          &lt;Btn2Motion&gt;:     DisarmLinkIfMoved()  \n\
-          &lt;Btn3Motion&gt;:     DisarmLinkIfMoved()  \n\
-          &lt;Motion&gt;:     DescribeLink()  \n\
-          &lt;Btn3Down&gt;:     xfeDoPopup()   \n\
-          &lt;Btn3Up&gt;:     ActivatePopup() \n\
-          Ctrl&lt;Btn4Down&gt;: PageUp()\n\
-          Ctrl&lt;Btn5Down&gt;: PageDown()\n\
-          Shift&lt;Btn4Down&gt;: LineUp()\n\
-          Shift&lt;Btn5Down&gt;: LineDown()\n\
-
-None&lt;Btn4Down&gt;: LineUp()LineUp()LineUp()LineUp()LineUp()LineUp()\n\
-
-None&lt;Btn5Down&gt;:
-LineDown()LineDown()LineDown()LineDown()LineDown()LineDown()\n\
-          Alt&lt;Btn4Down&gt;: xfeDoCommand(forward)\n\
-          Alt&lt;Btn5Down&gt;: xfeDoCommand(back)\n
- Netscape*globalNonTextTranslations: #override\n\
-          Shift&lt;Btn4Down&gt;: LineUp()\n\
-          Shift&lt;Btn5Down&gt;: LineDown()\n\
-          None&lt;Btn4Down&gt;: LineUp()LineUp()LineUp()LineUp()LineUp()\n\
-          None&lt;Btn5Down&gt;: LineDown()LineDown()LineDown()LineDown()LineDown()
-</programlisting>
-
-<para>Tilsvarende kan du få mere gavn af musehjulet i xterm ved at
-tilføje:
-</para>
-
-<programlisting>
-xterm*VT100.Translations: #override\n\
-        Shift&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,line)\n\
-        Shift&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,line)\n\
-        Ctrl&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,page)\n\
-        Ctrl&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,page)\n\
-        &lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,halfpage)\n\
-        &lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,halfpage)\n\
-        &lt;KeyPress&gt;Prior : scroll-back(1,page)\n\
-        &lt;KeyPress&gt;Next : scroll-forw(1,page)
-XTerm.vt100.Scrollbar.translations: #override\n\
-     &lt;Btn5Down&gt;: StartScroll(Forward)\n\
-     &lt;Btn4Down&gt;: StartScroll(Backward)
-nxterm*VT100.Translations: #override\n\
-        Shift&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,line)\n\
-        Shift&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,line)\n\
-        Ctrl&lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,page)\n\
-        Ctrl&lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,page)\n\
-        &lt;Btn4Down&gt;,&lt;Btn4Up&gt;:scroll-back(1,halfpage)\n\
-        &lt;Btn5Down&gt;,&lt;Btn5Up&gt;:scroll-forw(1,halfpage)\n\
-        &lt;KeyPress&gt;Prior : scroll-back(1,page)\n\
-        &lt;KeyPress&gt;Next : scroll-forw(1,page)
-</programlisting>
-
-<para>
-En anden og kortere opsætning er:
-</para>
-
-<programlisting>
-! Netscape mouse scrolling
-Netscape*globalNonTextTranslations: #override\n\
-        Shift&lt;Btn4Down&gt;: LineUp()\n\
-        Shift&lt;Btn5Down&gt;: LineDown()\n\
-        None&lt;Btn4Down&gt;: LineUp()LineUp()LineUp()LineUp()LineUp()\n\
-        None&lt;Btn5Down&gt;: LineDown()LineDown()LineDown()LineDown()LineDown()\n\
-        Ctrl&lt;Btn4Down&gt;: PageUp()\n\
-        Ctrl&lt;Btn5Down&gt;: PageDown()\n\
-        Alt&lt;Btn4Down&gt;: xfeDoCommand(forward)\n\
-        Alt&lt;Btn5Down&gt;: xfeDoCommand(back)
-</programlisting>
-
-<para>
-Det er muligt at der ryger lidt funktionalitet ved at nøjes med
-ovenstående. Desuden bør det nævnes at
-</para>
-
-<para>
-Uden keyboardtaster scroller man almindeligt.
-Med Shift scroller man langsomt.
-Med Ctrl scroller man hurtigt (Page Up/Page Down).
-Med Alt svarer scrollning til "forward" hhv. "back".
-</para>
-
-</sect4>
-
-</sect3>
 </sect2>
 
-<sect2 id="USB-modem">
-<title>USB modem</title>
-<para>
-USB modem (til alm. telefonlinjer, ISDN eller kabel) bør overholde
-CSC (Communication Device Class) specifikationen, og til underklassen
-ACM (Abstract Control Model) - eller vil du ikke kunne få det til at virke 
-med Linux
-</para>
-
-<para>
-Du skal have fat i et kerne-modul "USB Modem (CDC ACM)".
-Det skal kunne findes om "acm.o" under dine kerne-moduler
-<filename>/lib/modules/KERNEVERSION</filename>. Med nyere
-kerne 2.4-distributioner, bør den være med.
-</para>
-
-<para>
-Hvis det ikke er gjort for dig, så skal du sætte devices op til dit USB-modem.
-Der kan sættes 32 modemer op til samme driver, men vi tager kun de fire 
-første her:
-</para>
-
-<screen>
-<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM0 c 166 0</userinput>
-<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM1 c 166 1</userinput>
-<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM2 c 166 2</userinput>
-<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM3 c 166 3</userinput>
-</screen>
-
-<para>
-Dernæst bør man kunne anvende <filename>/dev/usb/ttyACM0</filename>
-som det første modem. Anvend <command>ln -sf /dev/usb/ttyACM0 /dev/modem</command> for at <filename>/dev/modem</filename> peger på det første USB-modem.
-</para>
-</sect2>
 
 
 <sect2 id="XFskaerm">
@@ -699,11 +525,6 @@ bitplaner (65536 farver), så skriv <command>exec X :0.0 -bpp
 <sect1 id="XF86Config-4-filen">
 <title>XF86Config-4 filen</title>
 
-<para>
-Kører du f.eks. Red Hat 6.2 eller tidligere, Mandrake 7.1 med XFree86
-3.3.6, så har du din X-konfiguration gemt i
-<filename>/etc/X11/XF86Config</filename> og du bør læse <xref linkend="XF86Configfilen"/>.
-</para>
 
 <para>
 I det følgende er vist et eksempel på hvordan en konfigurationsfil til
@@ -716,7 +537,10 @@ X-skærmskåner ikke anvendes.
 
 <indexterm><primary>PC-projektor laptop</primary></indexterm>
 <indexterm><primary>eksternt display</primary></indexterm>
+<indexterm><primary>intern_disp</primary></indexterm>
+<indexterm><primary>extern_disp</primary></indexterm>
 <indexterm><primary>laptop</primary><secondary>eksternt display</secondary></indexterm>
+
 <para>
 Det kan bemærkes at for laptops kan man udkommentere de to 
 linjer med "intern_disp" og "extern_disp" for at kunne
@@ -803,6 +627,43 @@ Section "DRI"
 EndSection
 </programlisting>
 
+</sect1>
+
+<sect1 id="USB-modem">
+<title>USB modem</title>
+<indexterm><primary>modem</primary><secondary>USB</secondary></indexterm>
+<indexterm><primary>USB</primary><secondary>modem</secondary></indexterm>
+<para>
+USB modem (til alm. telefonlinjer, ISDN eller kabel) bør overholde
+CSC (Communication Device Class) specifikationen, og til underklassen
+ACM (Abstract Control Model) - eller vil du ikke kunne få det til at virke 
+med Linux
+</para>
+
+<para>
+Du skal have fat i et kerne-modul "USB Modem (CDC ACM)".
+Det skal kunne findes om "acm.o" under dine kerne-moduler
+<filename>/lib/modules/KERNEVERSION</filename>. Med nyere
+kerne 2.4-distributioner, bør den være med.
+</para>
+
+<para>
+Hvis det ikke er gjort for dig, så skal du sætte devices op til dit USB-modem.
+Der kan sættes 32 modemer op til samme driver, men vi tager kun de fire 
+første her:
+</para>
+
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM0 c 166 0</userinput>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM1 c 166 1</userinput>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM2 c 166 2</userinput>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM3 c 166 3</userinput>
+</screen>
+
+<para>
+Dernæst bør man kunne anvende <filename>/dev/usb/ttyACM0</filename>
+som det første modem. Anvend <command>ln -sf /dev/usb/ttyACM0 /dev/modem</command> for at <filename>/dev/modem</filename> peger på det første USB-modem.
+</para>
 </sect1>
 
 </appendix>
