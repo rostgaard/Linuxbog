@@ -395,8 +395,8 @@ function vistype($type) {
     */
     "PDF" => array(
       first => "linuxbog-",
-      form => "-",
-      last => ".pdf.tar.gz"
+      form => "-pdf-",
+      last => ".tar.gz"
     ),
     /* zipzip - lad os få slettet dem
     "PalmPilot" => array(
