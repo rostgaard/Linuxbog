@@ -154,11 +154,7 @@ for det er en del nemmere end at skulle repartitionere harddisken.
 <para>
 Hvis du starter med en Windows 95/98-maskine og skal have Linux
 installeret på den samme harddisk som Windows, skal du have delt
-harddisken op i to dele - en til hvert styresystem. Kan du lægge Linux
-først undgår du problemer med bootloaderen LILO (i Red Hat 7.1 og
-tidligere) som ikke kan adressere start af Linux-partitionen senere
-end cylinder 1024. Med de store harddiske som man køber i dag er dette
-et problem. I Mandrake 8.0 er problemet heldigvis væk.
+harddisken op i to dele - en til hvert styresystem. 
 </para>
 
 <para>
@@ -223,19 +219,28 @@ dag man skal bruge disketten :-)
 <title>Hvad skal der ske?</title>
 <para>
 Kort fortalt: Før du installerer Linux, skal der være en partition til
-rådighed, der er stor nok til at rumme det hele (samt en swap-partition).  Hvor
-stor er et spørgsmål om, hvad du vil tage med i installationen - se de
-følgende afsnit.  I løbet af Linux-installationen vil der blive
-lejlighed til at repartitionere så meget, du har behov for, inden for
-den plads, der nu er blevet til rådighed.
+rådighed, der er stor nok til at rumme det hele (samt en
+swap-partition).  Hvor stor er et spørgsmål om, hvad du vil tage med i
+installationen - se <xref linkend="disklayout">.  I løbet af
+Linux-installationen vil der blive lejlighed til at repartitionere så
+meget, du har behov for, inden for den plads, der nu er blevet til
+rådighed.
+</para>
+
+
+<para>
+Har du fri plads på din disk, eller har du en tom windowspartition, kan du
+med de fleste nyere Linux-distributioner blot installere fra cdrom eller
+via nettet, og under installationen lave den eller de ønskede
+partitioner til filsystemer, samt swap-partitionen.
 </para>
 
 <para>
-DOS/Windows (i det følgende kaldet DOS) har programmet
-<command>fdisk.exe</command>. Linux har programmerne
-<command>fdisk</command> og <command>disk-druid</command>.  Alle
-programmerne er tilfredsstillende beskrevet i deres respektive
-dokumentationer.
+Hvis du har Windows installeret, og ønsker at bevare det efter at
+Linux er blevet installeret, og du ikke har nok fri plads til at lave
+de ønskede Linux-partitioner, så se <xref linkend="opdelharddisk"> for
+hvordan man kan lave Windows-partitionerne mindre, så der bliver nok
+plads til Linux.
 </para>
 
 <para>
@@ -257,17 +262,11 @@ de registreringer, Linux måtte have lagt i diskens master boot record
 (det vil vi minde dig om et par gange).
 </para>
 
-<para>
-Du kan måske være interesseret i at læse denne vejledning i
-repartitionering af harddisken: 
-<ulink url="http://www.redhat.com/support/manuals/RHL-6.2-Manual/ref-guide/ch-partitions.html">http://www.redhat.com/support/manuals/RHL-6.2-Manual/ref-guide/ch-partitions.html</ulink>.
-</para>
-
 </sect2>
 
 
 <sect2 id="opdelharddisk">
-<title>Opdel en DOS/Windows-harddisk til Linux</title>
+<title>Opdele en DOS/Windows-harddisk til Linux</title>
 <para>
 <indexterm><primary>Opdeling af harddisk</primary></indexterm>
 <indexterm><primary>fips</primary></indexterm>
@@ -305,66 +304,81 @@ Linux installeres på "extended partitions". Problemet
 eksisterer ikke med officielt udgivne Windows-versioner - det er kun
 final beta og tidligere, der har problemer.
 </para>
+
+<para>
+Mandrake kan krympe en DOS/VFAT-partition under installeringen, så du ikke
+skal bruge fips.exe først, men det vil være klogt at finde ud af hvor
+meget plads du skal bruge til windows, og derfor hvor meget plads du kan
+bruge til Linux på disken.
+</para>
 </sect2>
 </sect1>
 
 <sect1 id="disklayout">
 <title>Disk-partitioner</title>
+
 <para>
 Du er temmelig frit stillet med hensyn til antallet og størrelsen af
 partitionerne. Hvis du kører uden swap-partition, kan du simpelthen
-installere alt på en enkelt root-partition 
-(<filename>/</filename>). Mange bruger fire
-eller fem partitioner. Denne fordeling er ret udbredt og efter vor mening også
-både fornuftig og fleksibel:
+installere alt på en enkelt root-partition
+(<filename>/</filename>). Mange bruger fire eller fem partitioner. Den
+følgende fordeling er ret udbredt og efter vor mening også både
+fornuftig og fleksibel:
+</para>
 
-<itemizedlist mark="bullet" spacing="compact">
-
+<itemizedlist mark="bullet">
 <listitem>
-<para>
-<indexterm><primary>Swap</primary></indexterm>
-en swap-partition. Størrelsen kan diskuteres i det uendelige og
-afhænger meget af, hvad du har tænkt dig at bruge systemet til. Et
-eller andet sted mellem 16 Mb og 127 Mb. En tommelfingerregel siger,
-at swap-partitionens størrelse skal være det dobbelte af den fysiske
-hukommelse.  Har du 32 Mb RAM og derover, kan du måske nøjes med en
-swap-størrelse, som svarer til RAM-størrelsen. Et råd til dig er, at
-normal anvendelse af Linux ikke kræver over 64 Mb, dvs. summen af
-fysisk hukommelse plus swap.  Du kan dog lave mange swap-partitioner,
-hvis du vil, og de kan laves på et senere tidspunkt, evt. bundet til en
-stor swapfil, som det kendes fra Windows. Du skal bemærke, at
-swap-partitioner ikke placeres i filtræet. Man kan således ikke gå et
-bestemt sted hen og se swap-indholdet, men det er blot mere hukommelse
-for systemet (du kan med kommandoen <command>free</command> senere se,
-hvordan hukommelsen anvendes).
-</para>
+ <para>
+ en swap-partition. Størrelsen kan diskuteres i det uendelige
+ og afhænger meget af, hvad du har tænkt dig at bruge systemet
+ til. Et eller andet sted mellem 16 Mb og 500 Mb. En
+ tommelfingerregel siger, at swap-partitionens størrelse skal
+ være det dobbelte af den fysiske hukommelse. Har du 32 Mb RAM
+ og derover, kan du måske nøjes med en swap-størrelse, som
+ svarer til RAM-størrelsen. Et råd til dig er, at 
+ anvendelse af Linux uden desktop ikke kræver over 64 Mb, dvs. summen af
+ fysisk hukommelse plus swap. Kører du Linux som desktop, (med
+ fx KDE eller Gnome) er det ikke tilrådeligt at have under 128
+ Mb RAM, og 256 Mb RAM er ønskeligt. Du kan lave mange
+ swap-partitioner, hvis du vil, og de kan laves på et senere
+ tidspunkt, evt. bundet til en stor swapfil, som det kendes fra
+ Windows. Du skal bemærke, at swap-partitioner ikke placeres i
+ filtræet. Man kan således ikke gå et bestemt sted hen og se
+ swap-indholdet, men det er blot mere hukommelse for systemet
+ (du kan med kommandoen free senere se, hvordan hukommelsen
+ anvendes).
+ </para>
 </listitem>
-
-<listitem><para>en partition på 20 Mb til <filename>/boot</filename>,
-som lægges før cylinder 1024 på disken.  Ældre BIOS-typer har en fejl,
-som gør dette nødvendigt.  Denne partition bør du kun lave, hvis du
-vil køre LILO - læs mere i "Linux - Friheden til at lære Unix".
-</para></listitem>
-
-<listitem><para>en partition på 300-500 Mb til rodkataloget,
-dvs. <filename>/</filename>, men installerer du SuSE, skal du dertil
-lægge plads til <filename>/opt</filename>, som kan indeholde
-yderligere 200 Mb, hvis du installerer KDE og StarOffice. Med Red Hat
-installeres disse programmer under
-<filename>/usr</filename>.</para></listitem>
-
-<listitem><para>en partition på 300 Mb til 1 Gb til
-<filename>/usr</filename></para></listitem>
-
-
-
-<listitem><para>en partition til <filename>/home</filename>,
-størrelse afhængig af antal brugere og deres behov.</para></listitem>
-
+<listitem>
+ <para>
+  en partition på 50 Mb til <filename>/boot</filename>, som lægges før
+  cylinder 1024 på disken. Ældre BIOS-typer har en
+  fejl, som gør dette nødvendigt. Denne partition bør
+  du kun lave, hvis du vil køre LILO - læs mere i
+  "Linux - Friheden til at lære Unix".
+ </para>
+</listitem>
+<listitem>
+ <para>
+  en partition på 1500-3000 Mb til
+  rodkataloget, dvs. <filename>/</filename>, afhængig af om du intallerer både
+  KDE og Gnome, OpenOffice.org, og diverse serverprogrammel.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ en partition til brugernes egne data <filename>/home</filename>,
+ størrelse afhængig af antal brugere og deres behov.  Man kan her også
+ have liggende alt programmel der skal overleve en systemopgradering
+ eller skift til anden distribution, f.eks. i diverse kataloger i
+ <filename>/home</filename> for de enkelte applikationer, såsom
+ webserver, databaser, <filename>/usr/local</filename> mm.
+ </para>
+</listitem>
 </itemizedlist>
-Installerer du alle pakker som custom, skal du regne med at bruge
-mindst 1 Gb.
-</para>
+
+<sect2 id="navne-partitioner">
+<title>Navne på harddisk-partitioner</title>
 
 <para>
 Harddisknummerering i Windows og Linux er forskellig.  I Linux kaldes
@@ -395,7 +409,7 @@ Første SCSI-disk = <filename>/dev/sda</filename> osv.
 Partitioner på en disk har numre svarende til disken, f.eks. er
 <filename>/dev/hda2</filename> den anden partition på den første IDE-disk.
 </para>
-
+</sect2>
 </sect1>
 
 <sect1 id="kort-om-filsystemet">
