@@ -13,7 +13,7 @@ at vedligeholde hardware og software på en computer.
 I UNIX-verdenen består systemadministration ofte i at rette i en
 masse forskellige konfigurationsfiler. Konfigurationsfilerne er rene
 tekstfiler, og det vigtigste værktøj til systemadministration er
-<command>vi</command> (eller en anden editor). Red Hat har lavet om på
+en tekst-editor så som <command>vi</command>. Red Hat har lavet om på
 dette: der findes nu administrationssoftware, som er grafisk. Under
 overfladen bruges dog stadig rene tekstfiler. Vi vil i dette kapitel
 primært benytte os af Red Hat's grafiske værktøjer.
@@ -44,7 +44,7 @@ systemadministrator ("<userinput>su</userinput>" og "<userinput>su
 root</userinput>" er i øvrigt det samme). Typisk har en bruger en del
 opsætning, f.eks. omkring e-post, og denne opsætning bør du ikke
 "kende" til som <filename>root</filename>. Bemærk også, at prompten
-ændrede sig, da du blev <filename>root</filename>. Dollar-symbolet
+ændrede sig, da du blev <filename>root</filename>. Dollar-tegnet
 blev til et hash-tegn. Da root har lov til alt på maskinen, bør du
 være meget omhyggelig med, om du er root eller almindelig
 bruger. Måske tror du, at det er smart at være root og kunne alt 
@@ -68,6 +68,7 @@ System V familien, men låner lidt fra BSD.
 
 <SECT1 ID="Mount">
 <TITLE>Få adgang til andre diskdrev, cdrom og diskettedrev</TITLE>
+<indexterm><primary>mount</primary></indexterm>
 <para>
 Linux er lidt anderledet bygget op end Windows med hensyn til at læse og
 skrive fra de eksterne enheder (devices), såsom cdrom og diskettedrev. Af
@@ -79,7 +80,6 @@ selvfølgelig kun være muligt at læse fra.
 
 <sect2 id="mount-CDROM">
 <TITLE>Cdrom</TITLE>
-<indexterm><primary>mount</primary></indexterm>
 <indexterm><primary>Cdrom</primary></indexterm>
 <para>
 Først en gang Linux-gymnastik, som kun skal gøres en gang på din
@@ -95,10 +95,6 @@ lrwxrwxrwx   1 root  root  3 Sep  4 14:31 /dev/cdrom -> hdd
 </SCREEN>
 
 <para>
-I eksemplet befinder cdrom-drevet sig på den sekundære IDE-bus som slave. Du
-skal ændre <command>chmod</command>-kommandoen alt efter, hvor dit
-cdrom-drev sidder. 
-
 I eksemplet er <filename>/dev/cdrom</filename> en lænke til
 <filename>/dev/hdd</filename>, dvs. at cd-rom-drevet sidder på den
 sekundære IDE-bus som slave (typisk situation). Se også <xref
@@ -108,7 +104,7 @@ efter, hvor dit cd-rom-drev sidder.
 
 <para>
 Redigér filen <filename>/etc/fstab</filename> med
-<userinput>pico -w /etc/fstab</userinput> eller lignende. Du har sikkert
+<command>vi /etc/fstab</command> eller lignende. Du har sikkert
 en linje, der starter med <filename>/dev/cdrom</filename>. Den skal du
 ændre til
 </para>
@@ -116,6 +112,14 @@ en linje, der starter med <filename>/dev/cdrom</filename>. Den skal du
 <SCREEN>
 /dev/cdrom    /mnt/cdrom   iso9660  noauto,ro,user,exec   0 0
 </SCREEN>
+
+<para>
+Hvis du <EMPHASIS>ikke<EMPHASIS> finder en linje, som ligner ovenstående, 
+kan det være fordi supermount er installeret, så du automatisk får 
+adgang til dit cdrom- og floppy-drev, hvilket Mandrake bl.a. 
+benytter. I så fald skal du ikke ændre noget i 
+<filename>/etc/fstab</filename> og hop videre til næste afsnit.
+</para>
 
 <para>
 Første kolonne viser den enhed (<filename>/dev/cdrom</filename>),
@@ -137,7 +141,8 @@ kommandoen <command>man mount</command>.
 
 <para>
 Nu er du klar til at teste det. Stop som root ved at trykke Ctrl-D i
-den terminal, du arbejder i. Læg f.eks. din Red Hat cdrom i dit cdrom-drev, og skriv
+den terminal, du arbejder i. Læg f.eks. din Red Hat-cdrom i dit 
+cdrom-drev, og skriv
 </para>
 
 <SCREEN>
@@ -158,8 +163,9 @@ først skrive
 Du skal også vide, at du sagtens kan bruge
 f.eks. <filename>/cdrom</filename> som stedet, du monterer din cdrom. Du
 skal bare først lave biblioteket med <userinput>mkdir /cdrom</userinput>
-og gøre ovenstående med den nye sti. Endelig findes der systemer til
-Linux (Automount og AMD), hvor du mere eller mindre direkte kan lægge
+og gentage ovenstående med den nye sti. Endelig findes der systemer til
+Linux (Automount, Supermount og AMD), hvor du mere eller mindre direkte 
+kan lægge
 din cdrom i drevet og få adgang til data uden at skulle bruge
 specielle kommandoer, men det skal sættes op særskilt.
 </para>
@@ -261,8 +267,8 @@ programmer.
 <para>
 I Red Hat og SuSE er der mulighed for at du automatisk monteret
 eksterne enheder, såsom cdrom og diskettedrev automatisk. Det er nemt
-- du skal blot installere autofs-pakken. (Snart kommer supermount
-pakken, som er endnu smartere).
+- du skal blot installere autofs-pakken. I Mandrake benyttes supermount, 
+som er endnu smartere.
 </para>
 
 <SCREEN>
@@ -329,8 +335,8 @@ maskinen dykker.kongeh.dk, hvis dette er exporteret korrekt.
 <indexterm><primary>uncompress</primary></indexterm>
 
 <para>Linux har glimrende muligheder for at pakke programmer og
-datafiler sammen svarende til zip-formatet kendt fra Windows
-verdenen. Faktisk kan du med <command>unzip</command> udpakke
+datafiler sammen svarende til zip-formatet kendt fra Windows-verdenen. 
+Faktisk kan du med <command>unzip</command> udpakke
 zip-filer. Du skal blot installere unzip-pakken først - se <xref
 linkend="RPM">. Tilsvarende kan du have brug for at kunne udpakke en
 selvudpakkende zip-fil (som kommer som en exe-fil fra Windows). Til
@@ -432,7 +438,8 @@ væk. Kun den pakkede fil er tilbage efter <command>gzip</command>.
 
 <para>
 Ofte laver man ikke tar-filen, man springer direkte til
-<filename>.tgz</filename> formatet ved at danne pakke filen med
+<filename>.tgz</filename> formatet ved at danne pakke filen med 
+<command>z</command> (for zip) tilføjet optionerne
 </para>
 
 <SCREEN>
@@ -475,7 +482,7 @@ information præsenteret på skærmen. Det skal nævnes, at
 <command>tar</command> har en stor mænge options, som kan læres lidt
 efter lidt. Brug <command>man tar</command> til at komme videre. En
 option du måske allerede nu kan lære at <command>-C DIR</command> som
-bruges til at pakke pakke-filen ud svarende til at du står i i
+bruges til at pakke pakke-filen ud svarende til at du står i kataloget 
 <filename>DIR</filename> og pakker ud.
 </para>
 
@@ -502,7 +509,7 @@ FILNAVN.tar.bz2</command> og derefter <command>tar xvf FILNAVN.tar</command>.
 kan jo ske, at du løber tør for plads på din harddisk og køber en
 ekstra disk. Du beslutter nu at du vil flytte
 <filename>/home</filename> over på den nye disk
-(<filename>/dev/hdb1</filename>) og vil køre videre med Linux systemet
+(<filename>/dev/hdb1</filename>) og vil køre videre med Linux-systemet
 på den gamle disk. Lad os antage at du har partitioneret
 <filename>/dev/hdb</filename> med <command>fdisk /dev/hdb</command> og
 kørt <command>/sbin/mke2fs /dev/hdb1</command> for at formattere
@@ -702,12 +709,6 @@ maskiner bliver lige opgraderet i et hug!
 <para>
 <indexterm><primary>rpmfind</primary></indexterm>
 <indexterm><primary>Mangler filer</primary></indexterm>
-<emphasis>Tip:</emphasis> Hvad gør man hvis man har en RPM-pakke, som
-kræver en bibliotek eller fil, som man ikke har? Et godt trick er at
-få ind på 
-<ulink url="http://www.rpmfind.net/linux/RPM/">http://www.rpmfind.net/linux/RPM/</ulink>.
-Her kan man søge efter RPM-pakker, men også efter filnavne og derved
-oftest finde hvilke RPM-pakker du mangler.
 
 <emphasis>Tip:</emphasis> Under installationen eller upgraderingen af
 en RPM-pakke sker det at den klager over at man mangler nogle filer,
@@ -733,7 +734,7 @@ vi anbefale at læse
 
 <para>
 <command>chkconfig</command> er et nyttigt lille værktøj til ændringer i
-services i et runlevel. Værktøjet følger med Red Hat (og Mandrake).
+services i et runlevel. Værktøjet følger med Red Hat og Mandrake.
 </para>
 
 <para>
@@ -773,7 +774,7 @@ named 0:off 1:off 2:off 3:off 4:off 5:off 6:off
 <para>
 Skal du installere programmer på Debian eller Corel Linux, skal du
 være root. Med Corel Linux er det meningen at man skal anvende
-"Applications"->"System"->"update" Der anvendes et program der hedder
+"Applications"->"System"->"update". Der anvendes et program der hedder
 <command>get_it</command>.  Her kan man sætte cdrom, ftp eller http
 adresser hvor updates hentes fra. Som standard er Corel's ftp-update
 adresse medtaget.  Man kan jo prøve at tilføje <ulink
