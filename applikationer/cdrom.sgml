@@ -5,14 +5,14 @@
 <indexterm><primary>cdrom</primary><secondary>brænde</secondary></indexterm>
 
 <para>
-Er man så heldig at man har en scsi brænder, så skulle man bare kunne
+Er man så heldig at man har en scsi-brænder, så skulle man bare kunne
 installere X-CD-roast og få det til at virke direkte. Har man en brænder
 af ide/atapi-typen, så er man nødt til at lave en ide-scsi-emuluering
-for at få dette til at virke. Det er dog ikke så svært som det lyder
-og fungerer fint. Det første kræver at kernen skal bygges til at
-have ide-scsi, scsi cdrom, generic scsi og ide-cd bygget support på
-den ene eller den anden måde. I dag er de fleste standard
-distributioner sat op og forberedt på dette. Derfor skal der blot
+for at få det til at virke. Det er dog ikke så svært som det lyder
+og det fungerer fint. Det første kræver at kernen skal oversættes med 
+support for ide-scsi, scsi-cdrom, generic scsi og ide-cd. 
+I dag er de fleste standard-distributioner
+sat op og forberedt på dette. Derfor skal der blot
 loades nogle moduler for at det hele virker. Disse skal findes med:
 </para>
 
@@ -21,7 +21,7 @@ loades nogle moduler for at det hele virker. Disse skal findes med:
 </screen>
 
 <para>
-Ovenstående kommando giver den kerne version man i øjeblikket kører på, så kan man se
+Ovenstående kommando giver den kerne-version man i øjeblikket kører på. Så kan man se
 hvilket katalog i <filename>/lib/modules</filename>, der er
 interessant. For Mandrake 7.2 vil dette f.eks. være
 2.2.17-21mdk. Dette anvendes i det følgende:
@@ -45,19 +45,19 @@ scsi/ide-scsi.o
 </screen>
 
 <para>
-Hvis ja, så er kernen allerede klar til scsi emuleringen.  Eksisterer
+Hvis ja, så er kernen allerede klar til scsi-emuleringen.  Eksisterer
 de ikke så skal kernen omkonfigureres.  
 Det man skal være opmærksom på under kerne-oversættelsen
 er menupunkterne under "SCSI med SCSI generic" og "SCSI
-cdrom" er med som enten modul eller bygget helt ind i kernen og
+cdrom" som skal tilvælges (evt. som modul) og
 menupunkterne under "Block Devices med SCSI-emulation" og "IDE/ATAPI
 cdrom"-support er med som enten modul eller bygget ind i kernen.
 </para>
 
 <para>
 Vælges de som modul så skal der køres en <command>modprobe</command>
-på modulnavnet når systemet kommer op for at loade modulerne, bygges
-de ind i kernen virker de bare. Når dette er gjort kan man bare
+på modulnavnet. Når systemet kommer op for at loade modulerne, bygges
+de ind i kernen og så virker de bare. Når det er gjort kan man bare
 fortsætte her.  Så skal der lige laves en lille ændring først. I
 <filename>/etc/lilo.conf</filename> skal der laves følgende ændring
 (se linien med append).
@@ -115,7 +115,7 @@ Efter genstart af systemet kan man nu skrive
 </screen>
 
 <para>
-Så skulle scsi emulueringen være i orden og man kan nu køre:
+Så skulle scsi-emuleringen være i orden og man kan nu køre:
 </para>
 
 <screen>
@@ -140,8 +140,8 @@ linierne.
 </para>
 
 <para> 
-For nu at kunne bruge det drev der er lavet scsi-emulering på
-som almindeligt cdrom-drev også skal der lige laves en lille
+For nu at kunne bruge det drev, der er lavet scsi-emulering på,
+som almindeligt cdrom-drev også, skal der lige laves en lille
 ændring. Følgende symlink er sandsynligvis sat.
 </para>
 
@@ -151,11 +151,11 @@ lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> hdb
 </screen>
 
 <para> 
-Eftersom der nu er lavet en scsi emulering så eksisterer cd
-drevet ikke længere på ide bussen på systemet men på den emulerede
-scsi bus derfor har den også fået et nyt device dette er
+Eftersom der nu er lavet en scsi-emulering, så eksisterer cd-drevet
+ikke længere på ide-bussen på systemet, men på den emulerede
+scsi-bus. Derfor har den også fået et nyt device, nemlig
 <filename>/dev/scd0</filename> (lidt afhængigt af om der er andre
-scsi enheder i systemet) derfor skal dette symlink også ændres til at
+scsi-enheder i systemet), og så skal dette symlink også ændres til at
 pege det korrekte sted hen.
 </para>
 
@@ -174,9 +174,9 @@ lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 <para>
 På <ulink
 url="http://www.xcdroast.org">http://www.xcdroast.org</ulink> kan du
-fine X-CD-roast. Få fat i den og installér den. Skal man kunne brænde
-cdrommer uden at være root bliver man nødt til at sætte suid-bitten på
-<filename>xcdroast</filename>, dette gøres:
+finde X-CD-roast. Få fat i den og installér den. Skal man kunne brænde
+cdrom'er uden at være root bliver man nødt til at sætte suid-bitten på
+<filename>xcdroast</filename>. Dette gøres:
 </para>
 
 <screen>
@@ -198,7 +198,7 @@ en ret morsom "disclaimer".
 </FIGURE>
 
 <para>
-Det antages nu at cdrom brænderen er sat op til at virke, dette testes
+Det antages nu at cdrom-brænderen er sat op til at virke. Det testes
 med "Setup".  Under "CD Setup" vælges brænderen som cd-writer-device,
 og speed sættes. Eksisterer brænderen ikke under dette punkt, så
 skyldes det, at brænderen enten ikke er tilsluttet ordentligt (scsi)
@@ -206,11 +206,11 @@ eller at det er en ide-brænder som kræver en
 ide-scsi-emuluering. Dette ses i sidste afsnit.  Under "HD Setup"
 vælges et image-mount-point (der hvor du monterer dit image).  Her kan
 man vælge, hvis man har en hel partition dedikeret til cd-images eller
-lignende at den skal bruge dette. Det er meget praktisk at der mindst
+lignende, at den skal bruge dette. Det er meget praktisk at der mindst
 er plads til en enkelt hel cd på den valgte placering. Det er på denne
 plads i filsystemet at xcdroast lægger de rippede images.  Under
-"Misc" og "Defaults", kan sættes ting som lyd, vindues-placering,
-etc. Disse er dog ikke vigtige for brændingen. Derefter vælges "Save"
+"Misc" og "Defaults", kan sættes ting som lyd, vinduernes placering,
+osv. Disse er dog ikke vigtige for brændingen. Derefter vælges "Save"
 og "Done". Nu skulle de øvrige knapper ikke være grå længere, men alle
 skulle kunne bruges.  Så afhænger det af hvad man skal brænde. Under
 "Copy Data CD" ligger alle de operationer man skal kunne bruge på en
@@ -228,14 +228,14 @@ hel cd.
 </FIGURE>
 
 <para>
-Det skal lige bemærkes at xcdroast bruger <filename>.raw</filename> i
+Det skal lige bemærkes at X-CD-roast bruger <filename>.raw</filename> i
 stedet for <filename>.iso</filename> som endelse. Dette ligger kun i
-navnet, ikke andet, skal man derfor bruge det rippede image til noget
-hvor denne endelse er vigtig, kan man bare lave en symlink med det
+navnet, ikke andet. Skal man derfor bruge det rippede image til noget
+hvor denne endelse er vigtig, kan man bare lave et symlink med det
 andet navn. De rippede (eller andre) images skal dog have endelse
-<filename>.raw</filename> for at xcdroast vil kendes ved dem. Der er
+<filename>.raw</filename> for at X-CD-roast vil kendes ved dem. Der er
 heller ikke noget krav til at de faktisk skal ligge i
-<filename>/image</filename> kataloget:
+<filename>/image</filename>-kataloget:
 </para>
 
 <screen>
@@ -249,8 +249,8 @@ drwxr-xr-x 2 root root 1024 Feb 29 20:26 tmp
 </screen>
 
 <para>
-Under "Copy Audio CD" er der samme features som ved data, dette virker
-bare på audio cd´er i stedet:
+Under "Copy Audio CD" er der samme features som ved data. Dette virker
+bare på audio-cd'er i stedet:
 </para>
 
 <FIGURE ID="xcdroast3" FLOAT="1">
@@ -259,12 +259,12 @@ bare på audio cd´er i stedet:
 </FIGURE>
 
 <para>
-Skal man nu selv til at lægge et filsystem ud på cd, gøres dette under punktet
-"Master CD". Under Master from/to, kan man nu vælge
+Skal man nu selv til at lægge et filsystem ud på cd, gøres det under punktet
+"Master CD". Under Master from/to kan man nu vælge
 den del af filsystemet man ønsker at brænde ud. Følgende valg vil lave
-et master image med <filename>/home</filename> på hvor
+et master image med <filename>/home</filename> hvor
 <filename>/home/ftp</filename> ikke er på. Vælg "Master Image" og
-derefter "Write Image", så er du igang.
+derefter "Write Image", så er du i gang.
 </para>
 
 
@@ -325,11 +325,11 @@ er: <filename>dev=0,0,0</filename>
 </para>
 
 <sect2 id="cdrom-skrivning">
-<title>Skrivning og brænding af et data image</title>
+<title>Skrivning og brænding af et data-image</title>
 
 <para>
 Læg alle libs og filer i et bibliotek (eks. <filename>/test</filename>)
-Vedtag et navn for dit cd image (eks. <filename>mit_stof</filename>).
+Vedtag et navn for dit cd-image (f.eks. <filename>mine_ting</filename>).
 </para>
 
 <para>
@@ -337,16 +337,16 @@ Lav dit cdrom-image med <command>mkisofs</command>:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -o  mit_stof  /test/</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -o  mine_ting  /test/</USERINPUT>
 </screen>
 
 
 <para>
-Ønskes et mere Windows-venligt image, brug -J option ( Joliet )
+Ønskes et mere Windows-venligt image, bruges -J option (Joliet)
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -J  -o  mit_stof /test/</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -J  -o  mine_ting /test/</USERINPUT>
 </screen>
 
 <para>
@@ -354,12 +354,12 @@ Test indholdet med følgende kommando:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t iso9660 -o ro,loop=/dev/loop0  mit_stof /mnt</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t iso9660 -o ro,loop=/dev/loop0  mine_ting /mnt</USERINPUT>
 </screen>
 
 <para>
-I <filename>/mnt</filename> kan indholdet checkes. Afmonter dernæst
-med kommandoen <command>umount mit_stof /mnt</command>.
+I <filename>/mnt</filename> kan indholdet checkes. Afmontér dernæst
+med kommandoen <command>umount mine_ting /mnt</command>.
 </para>
 </sect2>
 
@@ -371,13 +371,13 @@ Du kan nu brænde din cdrom med kommandoen:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mine_ting</USERINPUT>
 </screen>
 
 <para>
 Man kan også være smart og kombinere <command>mkiso</command> og
 <command>cdrecord</command> via en fifo-fil (dvs. en bufferfil, så man
-kommer aldrig til at fylde en hel cdrom på harddisken);
+kommer aldrig til at fylde en hel cdrom på harddisken):
 </para>
 
 <screen>
@@ -401,7 +401,7 @@ derefter brændes som et iso-image.
 </para>
 
 <para>
-Oprettelse af filen  <filename>test.iso</filename>
+Oprettelse af filen  <filename>test.iso</filename>:
 </para>
 
 <screen>
@@ -409,7 +409,7 @@ Oprettelse af filen  <filename>test.iso</filename>
 </screen>
 
 <para>
-Opret et ext2 filsystem på denne fil	
+Opret et ext2-filsystem på denne fil:
 </para>
 
 <screen>
@@ -430,7 +430,7 @@ Montér filen med:
 </screen>
 	
 <para>
-Kopier hvad du har lyst til, til <filename>/mnt</filename> og afmonter
+Kopiér hvad du har lyst til, til <filename>/mnt</filename> og afmontér
 den med kommandoen <command>umount test.iso /mnt</command>.
 </para>
 
@@ -469,7 +469,7 @@ Denne detalje virker ikke med en musik-cd.
 <para>
 Til at brænde en musik-cd kommer nu en helt basal opskrift.
 Optage en cd (eller dele af den), gøres med <command>cdparanoia</command>:
-Læg din originale musik-cd i cdrom drevet og kør så følgende for at
+Læg din originale musik-cd i cdrom-drevet og kør så følgende for at
 rippe alle sange til filerne <filename>track01.cdda.wav</filename>, <filename>track02.cdda.wav</filename> osv.
 </para>
 
@@ -497,7 +497,7 @@ Du kan også bruge * (alle filer), hvis du har filerne i et katalog:
 </para>
 
 <para>
-Omkring audio-formater se <command>man cdparanoia</command>, kig evt på
+Omkring audio-formater se <command>man cdparanoia</command>. Kig evt. på
 <command>Sox</command> eller <command>ecasound</command>.
 </para>
 
@@ -518,7 +518,7 @@ ved at kombinere <command>-data</command> og <command>-audio</command>.
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof -audio track01.cdda.wav</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mine_ting -audio track01.cdda.wav</USERINPUT>
 </screen>
 
 <para>
@@ -591,7 +591,7 @@ hvor <command>xxxx</command> udfyldes ud fra dette:
 <para>
 For yderligere information læs:
 <command>man cdrecord</command>, <command>man cdparanoia</command>,
-<command>man mkisofs</command> og i øvrigt CD-Writing HOWTO
+<command>man mkisofs</command> og i øvrigt CD-Writing-HOWTO
 <ulink url="http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html">http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html</ulink>.
 </para>
 </sect2>
