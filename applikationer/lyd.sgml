@@ -675,7 +675,7 @@ url="http://ardour.sourceforge.net/">http://ardour.sourceforge.net/</ulink>.
 <sect2 id="lilypond">
 <title>Nodeudskrivning med Lilypond</title>
 <indexterm><primary>Lilypond</primary></indexterm>
-<indexterm><primary>Noderedigering</primary></indexterm>
+<indexterm><primary>Nodesats</primary><secondary>med Lilypond</secondary></indexterm>
 
 <para>
 Hvis man vil lave sine egne noder, bør man kigge lidt på
@@ -755,6 +755,154 @@ du let kan lære at bruge programmet.
 </para>
 
 </sect2>
+
+<!-- =================================================================== -->
+<!-- musixtex -->
+<!-- =================================================================== -->
+<sect2 id="musixtex">
+<title>Nodesats med MusiXTeX</title>
+<indexterm><primary>MusiXTex</primary></indexterm>
+<indexterm><primary>Nodesats</primary><secondary>med MusiXTeX</secondary></indexterm>
+
+<para>MusiXTeX er en samling værktøjer til fremstilling af nodesats. Alle
+værktøjerne er baseret på en samlig macroer til plain TeX. Det er derfor
+nødvendigt at have en fungerende TeX-installation, før man kan installere
+MusiXTeX-værktøjerne.</para>
+
+<para>MusiXTeX-macroer og programmer kan hentes på hjemmesiden <ulink
+url="http://icking-music-archive.org/">Werner Icking Music
+Archive</ulink>. Her findes også deltaljerede on-line
+installationsvejledninger for <ulink
+url="http://icking-music-archive.org/software/musixtex/musixtex-for-unix.html">Linux</ulink>
+(og <ulink
+url="http://icking-music-archive.org/software/musixtex/musixwin.pdf">Windows</ulink>)
+foruden en meget stor samling noder til klassisk musik, hvoraf mange
+er fremstillet med MusiXTeX. Der er kildetekster til de fleste af
+noderne.</para>
+
+<indexterm><primary>PMX</primary></indexterm>
+<indexterm><primary>M-Tx</primary></indexterm>
+<para>Det er muligt at fremstille nodesats ved direkte brug af
+MusiXTeX-macroerne. Men det kan stærkt anbefales at benytte en af
+præprocessorerne PMX og M-Tx, hvorved arbejdet forenkles ganske betydeligt.
+Her følger et par simple eksempler på brugen af disse programmer.</para>
+
+<para>Her er et eksempel på en inputfil til PMX:</para>
+
+<screen>% Præambel:
+
+% antal stave: antal instrumenter: 
+  2            1                     
+% logisk taktart, tæller: nævner:
+                  4       4 
+% noteret taktart, tæller: nævner:
+                   0       6  
+% optakt: fortegn:
+  0       0 
+% antal sider: antal nodesystemer
+  1            1 
+% Skriftstørrelse: indrykning i 1. system
+  20               0
+% basnøgle+diskantnøgle: 
+bt
+% output directory
+./
+% Takt 1-4
+c24d b4 | c2 c4- e4 | f2 g2 | c0- | Rb /
+c45 c4 c4 d4 | e4 e4 e2 | d4 d4 d4 e4 | c2 c2 | /
+</screen>
+
+<para>Den skal gemmes som f.eks. <filename>edderkop.pmx</filename>. Bemærk,
+at den dybeste stemme, klaverets venstre hånd, skrives <emphasis>før</emphasis> den
+øverste stemme, højre hånd.
+</para>
+
+<para>PMX er en præprocessor til MusiXTeX, hvilket betyder, at dens resultat er
+MusiXTeX-kode, i dette tilfælde filen <filename>edderkop.tex</filename>
+som man får ved at skrive</para>
+
+<screen><prompt>[wolfgang@mozart ~]$</prompt><userinput>pmxab edderkop</userinput>
+</screen>
+
+<para>Denne fil skal derefter gennem 3 processer, der resulterer i en dvi-fil
+<filename>>edderkop.dvi</filename></para>
+
+<indexterm><primary>musixflx</primary></indexterm>
+<screen><prompt>[wolfgang@mozart ~]$</prompt><userinput>tex edderkop</userinput>
+<prompt>[wolfgang@mozart ~]$</prompt><userinput>musixflx edderkop</userinput>
+<prompt>[wolfgang@mozart ~]$</prompt><userinput>texedderkop</userinput>
+</screen>
+
+<para>og så skulle du meget gerne få følgende resultat når du åbner
+<filename>edderkop.dvi</filename> med <command>xdvi</command>:</para>
+
+<figure id="musixtex-pmx-fig" float="1">
+<title>Resultatet af tex+musixflx+tex-kørsel</title>
+<graphic fileref="musixtex-edderkop.&magic;" scale="50"></graphic>
+</figure>
+
+<para>Du får en postscript-fil ved at skrive</para>
+
+<screen><prompt>[wolfgang@mozart ~]$</prompt><userinput>dvips edderkop.dvi -o edderkop.ps</userinput>
+</screen>
+
+<indexterm><primary>dvipdfm</primary></indexterm>
+<para>Hvis du har installeret programmet <ulink 
+url="http://gaspra.kettering.edu/dvipdfm/">dvipdfm</ulink> kan du få en pdf-fil
+<filename>edderkop.pdf</filename> ved at skrive</para>
+
+<screen><prompt>[wolfgang@mozart ~]$</prompt><userinput>dvipdfm edderkop</userinput>
+</screen>
+
+<para>Ellers kan du benytte <filename>ps2pdf</filename> på din
+postscript-fil.</para>
+
+<para>Her er et eksempel på en inputfil til M-Tx:</para>
+
+<screen>% Præambel:
+
+Meter: C
+SingerPiano: Voices RH LH; Clefs G F; Vocal; Group
+Style: SingerPiano
+Pages: 1
+Systems: 1
+
+% Takt 1-4
+c4+ c c d  | e e e2 | d4 d d e | c2 c |
+L: Lil-le Pe-ter Ed-der-kop krav-led op ad mu-ren.
+c2d+ b4 | c2 c4- e | f2 g | c0- |
+</screen>
+
+<para>Den skal gemmes som f.eks. <filename>edderkop.mtx</filename>. Bemærk,
+at her skrives den øverste stemme før den dybeste. M-Tx er skrevet specielt
+med henblik på at gøre det let at skrive noder med sangtekst.
+</para>
+
+<para>M-Tx er en præprocessor til PMX, hvilket betyder, at dens resultat er
+PMX-kode, i dette tilfælde filen <filename>edderkop.pmx</filename> som
+man får ved at skrive</para>
+
+<indexterm><primary>prepmx</primary></indexterm>
+<screen><prompt>[wolfgang@mozart ~]$</prompt><userinput>prepmx edderkop</userinput>
+</screen>
+
+<para>Denne fil behandles som beskrevet ovenfor for pmx-inputfiler.</para>
+
+<para>Det færdige resultat skulle gerne se sådan ud:</para>
+
+<figure id="musixtex-mtx-fig" float="1">
+<title>Resultatet af prepmx+pmxab+tex+musixflx+tex-kørsel</title>
+<graphic fileref="musixtex-edderkop_mtx.&magic;" scale="50"></graphic>
+</figure>
+
+<para>Det en rigtig god ide at læse den omfattende <ulink
+url="http://icking-music-archive.org/software/pmx/notdr.pdf">tutorial</ulink>
+der findes i Werner Icking-arkivets <ulink
+url="http://icking-music-archive.org/software/indexmt6.html">software-afdeling</ulink>.
+Det kan desuden anbefales at studere nogle af de kildetekster, der følger med
+noderne i Icking-arkivet.</para>
+
+</sect2> <!-- musixtex -->
 
 </sect1>
 
