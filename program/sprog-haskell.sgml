@@ -7,12 +7,6 @@
   <primary>Haskell</primary>
  </indexterm>
 
-<!--
- <indexterm>
-  <primary>imperative sprog</primary><secondary>Haskell</secondary>
- </indexterm>
--->
-
  <indexterm>
   <primary>fortolkede sprog</primary><secondary>Haskell</secondary>
  </indexterm>
@@ -22,23 +16,90 @@
  </indexterm>
 
  <para>
-  Haskell er et rent funktionsorienteret programmeringssprog hvilket er
-  muligt ved at lade I/O og lignende foregår via monader.  
+  Haskell er et funktionsorienteret programmeringssprog og minder på
+  mange måder om SML. Mange af de ting der er beskrevet i afsnittet om
+  <link linkend="sprog-ml">SML</link> gælder derfor også for Haskell.
+  Der er typepolymorfi, højerordens funktioner og funktionsdefinition 
+  ved mønstre.
  </para>
 
  <para>
-  Derudover er sproget dovent hvilket betyder at argumenterne ved
-  funktionskald først bliver evalueret når den kaldte funktion benytter dem.
-  Dette gør det praktisk at benytte uendelige lister og lignende.
+  Den første måde hvor Haskell adskiller sig fra SML er at Haskell er 
+  et rent funktionsorienteret sprog, hvor SML har nogle imperative dele.
+  Det har især betydning for I/O der i Haskell foregår ved hjælp af et
+  koncept der hedder monader.
  </para>
 
  <para>
-  Haskell har i øvrigt et stærkt typesystem hvilket medføre at mange
-  potentielle fejl bliver opdaget på oversættelsestidspunktet.
+  Den anden forskel er at Haskell er et dovent sprog. Dette betyder at
+  argumenter til funktioner først bliver evalueret når den kaldte 
+  funktion benytter dem. Dette giver blandt andet mulighed for at behandle
+  uendelige datastrukture, for eksempel uendelige lister af tal.
  </para>
 
  <para>
   Der er oversættere og fortolkere til de fleste platforme herunder *BSD,
   Linux, MacOS og Windows.
  </para>
+
+ <sect2 id="sprog-haskell-brug">
+  <title>Brug af Haskell</title>
+
+  <para>
+   Skal man lege med Haskell bør man tage fat i Hugs. Den implementerer en
+   læs-beregn-udskriv løkke hvor man kan skrive et udtryk og få Hugs til 
+   at beregne udtrykket. Man kan dog ikke definere nye funktioner, de skal
+   skrives i filer.
+  </para>
+
+  <para>
+   Hvis man for eksempel har en fil <filename>Test.hs</filename> med følgende
+   indhold
+
+<programlisting>
+mylength :: [t] -&gt; Int
+mylength []      = 0
+mylength (x:xs)  = 1 + length xs
+
+mysum    :: [Int] -&gt; Int
+mysum []         = 0
+mysum (x:xs)     = x + sum xs
+</programlisting>
+
+   En session med Hugs kan så se således ud
+
+<screen>
+__   __ __  __  ____   ___      _________________________________________
+||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
+||___|| ||__|| ||__||  __||     Copyright (c) 1994-2002
+||---||         ___||           World Wide Web: http://haskell.org/hugs
+||   ||                         Report bugs to: hugs-bugs@haskell.org
+||   || Version: November 2002  _________________________________________
+
+Haskell 98 mode: Restart with command line option -98 to enable extensions
+
+Reading file "/usr/lib/hugs/lib/Prelude.hs":
+                   
+Hugs session for:
+/usr/lib/hugs/lib/Prelude.hs
+Type :? for help
+<prompt>Prelude&gt; </prompt><userinput>:load Test.hs</userinput> 
+Reading file "Test.hs":
+                   
+Hugs session for:
+/usr/lib/hugs/lib/Prelude.hs
+Test.hs
+<prompt>Main&gt; </prompt><userinput>mylength [3, 6, 2, 5]</userinput>
+4
+<prompt>Main&gt; </prompt><userinput>mysum [3, 6, 2, 5]</userinput>
+16
+<prompt>Main&gt; </prompt>
+</screen>
+
+   Man kan så inde fra Hugs redigere <filename>Test.hs</filename> med
+   kommandoen <command>:edit Test.hs</command> der starter en editor og
+   efterfølgende genindlæser filen
+  </para>
+ </sect2>
+
 </sect1>
