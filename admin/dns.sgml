@@ -1886,13 +1886,16 @@ Du kan finde et mindre eksempel på DNS-filerne under 'Eksempler' til
 denne bog på hjemmesiden <ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
 </para>
 
-
 </sect1>
-
 
 <!-- skrevet af Anne Jonna Armannsdottir -->
 <sect1 id="chroot-dns">
-<title>Chroot-DNS</title>
+<title>Sikret-DNS</title>
+
+<!-- 
+Rettelser som jeg stadig har til gode: s/chroot/sikret og sikkert
+en hel masse andre ting som jeg ikke har fået øje på. 
+-->
 
 <indexterm><primary>BIND</primary></indexterm>
 <indexterm><primary>BIND9</primary></indexterm>
@@ -1904,132 +1907,725 @@ denne bog på hjemmesiden <ulink url="http://www.sslug.dk/linuxbog">http://www.ss
  <primary>DNS</primary>
  <secondary>chroot</secondary>
 </indexterm>
-<indexterm>
- <primary>DNS</primary>
- <secondary>dørvogter</secondary>
-</indexterm>
 
 <para>
 Hvis en angriber har held med et angreb på en DNS server og 
 kan udføre root kommandoer på systemet, kan konsekvenserne 
 blive uoverskuelige. 
 Der findes en sikkerhedsteknik til begrænsning af de skader 
-en angriber kan forvolde. Teknikken går ud på, at smide 
-angriberen i en isoleret del af filsystemet, det såkaldte 
+en angriber kan forvolde samt til at gøre det umuligt at bruge den 
+til at bryde ind i det øvrige system den kører på. Teknikken går ud på, at
+afspærre angrebet i en isoleret del af filsystemet, det såkaldte 
 "chroot-jail". 
-Der oprettes en  mappestruktur, som DNS-serveren skal 
-køre isoleret i. Set fra DNS-serveren vil denne mappestruktur udgøre 
-hele serverens filsystem, og den vil således ikke kunne se 
-den resterende del af filsystemet. Dette vil således også 
-gælde for en angriber.  
+For at opnå uautoriseret adgang 
+kan angriberen bruge forskellige svagheder i programmer som 
+har suid/sgid bitten sat. Den største fordel ved denne teknik er 
+begrænsningen af adgang til sådanne programmer. I denne vejledning har
+DNS-processen ingen adgang til programmer og den sættes op til at køre
+som en upriviligeret bruger. Denne kombination gør livet 
+<emphasis>meget</emphasis> besværligt for den eventuelle angriber. 
+Når en proces køres på denne måde kan den ikke se det øvrige 
+filsystem der er udenfor afgrænsningen og den vil ikke kunne
+tilgå det øvrige filsystem. Dem der har brugt et ftp program for at
+koble op til en ftp-tjener, har sandsynligvis set et "chroot-jail"
+som det ser ud indenfra. 
+</para>
+
+<para>
+Man skal dog huske at denne teknik ikke løser alle sikkerhedsproblemer
+men blot en del af dem. Der findes sågar rapporter og vejledninger om
+hvordan man som angriber bryder ud af isolationen for at tilgå 
+servers virkelige filsystem. Forudsætningen for at dette lykkes er at
+angriberen først skal opnå root-privilegier inden han/hun kan bryde ud
+fra den isolerede del af filsystemet. For en uddybning af dette se
+afsnit 3.8 i "Running Services in a chroot Environment": 
+<ulink url="http://www.nic.com/~dave/SecurityAdminGuide/SecurityAdminGuide-3.html">
+http://www.nic.com/~dave/SecurityAdminGuide/SecurityAdminGuide-3.html
+</ulink>
+Samt: 
+<ulink url="http://www.linuxgazette.com/issue30/tag_chroot.html">
+http://www.linuxgazette.com/issue30/tag_chroot.html
+</ulink>
+Denne teknik kan feks. ikke forhindre en cracker i at forespørge
+dns-tjeneren om oplysninger til brug i forbindelse med andre angreb på
+computeren. 
+</para>
+
+<para>
+Den følgende vejledning gælder kun for BIND version 9 og opefter men 
+noget kan dog bruges til tidligere versioner. 
+Denne vejledning tager udgangspunkt i konfigurationsfilerne for en
+fungerende DNS-tjener og derfor er det oftest unødvendigt at ændre dem.
+Hvis DNS-tjeneren køres som upriviligeret bruger og beskyttes samtidig
+af en meget restriktiv dørvøgter kan man dog alligevel være nødt til
+at lave en lille ændring i konfigurationsfilen. Dette forklares i 
+<xref linkend="dns-upriviligeret">.
+</para>
+
+<para>
+I disse afsnit bruges variablen <filename>$JAIL</filename>
+hyppigt. F.eks. skal kommandoen <command>echo $JAIL</command>
+bogstaveligt skrives sådan. 
+</para>
+
+<sect2 id="opsaetning-foer-chroot">
+<title>
+  Indsamling af oplysninger om serverens konfiguration før "chroot".
+</title>
+
+<para>
+Der findes flere distributioner og de placerer filer på hver sin
+måde. Det ville være for snævert hvis denne vejledning, var lavet 
+således at den kun kan bruges til én af disse distributioner. 
+For at sætte serveren op skal man kende navnet og placeringen på de
+relevante filer i hver distribution. Vi nøjes med 4 forskellige
+distributioner i håb om at det rammer tilstrækkelig bredt.
+</para>
+
+<para>
+Vi skal bruge stinavnet på opstartsfilen der anvendes til at starte og
+stoppe processen. 
+</para>
+
+  <itemizedlist mark="bullet" spacing="compact">
+    <listitem>
+      <para>
+        Redhat: <filename>/etc/rc.d/init.d/named</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Debian: <filename>/etc/init.d/named9</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Mandrake: ?
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Suse: ?
+      </para>
+    </listitem>
+  </itemizedlist>
+
+<para>
+Ovenstående opstartsfil indholder fuldt stinavn på den overordnede
+konfigurationsfil: 
+</para>
+  <itemizedlist mark="bullet" spacing="compact">
+    <listitem>
+      <para>
+        Redhat: <filename>/etc/named.conf</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Debian: <filename>/etc/bind/named.conf</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Mandrake: ?
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Suse: ?
+      </para>
+    </listitem>
+  </itemizedlist>
+
+<para>
+Serverens forvalgte placering af zone filer.
+Denne mappe nævnes som regel i den overordnede konfigurationsfil ( se
+eksemplet i <xref linkend="DNS-eks-etc-name-conf">) og den er angivet
+som <filename>var/named</filename> i det følgende eksempel:
+<SCREEN>
+ options { directory "/var/named";} 
+</SCREEN>
+Variablen <filename>OPTDIR</filename> sættes lig med denne mappe,
+dog uden det første skråstreg. 
+</para>
+  <itemizedlist mark="bullet" spacing="compact">
+    <listitem>
+      <para>
+         <filename>OPTDIR=</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Redhat: <filename>var/named</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Debian: <filename>var/cache/bind</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Mandrake: 
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Suse: 
+      </para>
+    </listitem>
+  </itemizedlist>
+
+<para>
+En mappe hvor masterzone filer normalt placeres.
+Denne mappe nævnes som regel i den overordnede konfigurationsfil og den er angivet
+som <filename>etc/bind</filename> i det følgende eksempel:
+<SCREEN>
+zone "127.in-addr.arpa" {
+	type master;
+	file "/etc/bind/db.127";
+};
+</SCREEN>
+Variablen <filename>MASTERZD</filename> sættes lig med denne mappe,
+dog uden det første skråstreg. 
+  <itemizedlist mark="bullet" spacing="compact">
+    <listitem>
+      <para>
+        <filename>MASTERZD=</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Redhat: <filename>var/named</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Debian: <filename>etc/bind</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Mandrake: 
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Suse: 
+      </para>
+    </listitem>
+  </itemizedlist>
+
+<para>
+Det er et potentielt sikkerhedshul at lægge sine "master zone"-filer i
+mapper som selve processen har skriverettigheder til idet en angriber
+derved kunne ændre dem. 
 </para>
 <para>
-Tidligere versioner af DNS-serveren, måtte oversættes 
-til formålet, men BIND version 9 , kan nøjes 
-med nogle parametre på kommandolinien. De følgende 
-instruktioner gælder kun for BIND version 9 og opefter. 
-</para>
+En mappe hvor processen har skriveadgang og hvor der normalt placeres slave-zone-filer. 
+Denne mappe nævnes som regel i den overordnede konfigurationsfil og den er angivet
+som <filename>etc/bind/slave</filename> i det følgende eksempel:
+<SCREEN>
+  zone "intranet" in {
+  type slave;
+  file "/etc/bind/slave/intranet";
+  masters { 192.168.0.1; };
+</SCREEN>
+
 <para>
-I nedenstående eksempel oprettes mappestrukturen med roden 
-<COMMAND>/chroot/named</COMMAND>. Hvis man ønsker en anden 
-rod kan man blot ændre variablen JAIL. 
+Den forvalgte mappe kan sagtens bruges her hvis master filerne lægges
+i en anden mappe. 
+Variablen <filename>SLAVEZD</filename> sættes lig med denne mappe,
+dog uden det første skråstreg. 
 </para>
+  <itemizedlist mark="bullet" spacing="compact">
+    <listitem>
+      <para>
+        <filename>SLAVEZD=</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Redhat: <filename>var/named/slave</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Debian: <filename>var/cache/bind</filename>
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Mandrake: 
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Suse: 
+      </para>
+    </listitem>
+  </itemizedlist>
+
 <para>
-I disse afsnit bruges variablen JAIL hyppigt. F.eks. skal 
-kommandoen <COMMAND>echo $JAIL</COMMAND> bogstaveligt skrives 
-sådan. 
+  For at få variabler med fornuftige værdier skal man køre det
+  følgende som passer for den enkelte distribution. 
 </para>
+
 <para>
-De følgende kommandoer køres som root: 
+   I Redhat: 
 </para>
 
 <SCREEN>
 <userinput>
-export JAIL=/chroot/named
-
-mkdir -p $JAIL &&
-cd $JAIL &&
-mkdir -p dev var/cache/bind etc/bind/slave  &&
-cd $JAIL/dev &&
-touch log null random &&
-cd $JAIL/etc &&
-cp /etc/localtime . &&
-cd /etc/bind &&
-find . | cpio -pm  $JAIL/etc/bind 
+export OPTDIR=var/named
+export MASTERZD=var/named
+export SLAVEZD=var/named/slave 
 </userinput>
 </SCREEN>
 
 <para>
-Kommandoen i den nederste linie, kopierer hele DNS-serverens 
-opsætning til mappen $JAIL/etc/bind . 
-</para>
-
-<para>
-DNS-serveren bruger 3 /dev filer. Disse er <COMMAND>log</COMMAND>, 
-<COMMAND>null</COMMAND>, og <COMMAND>random</COMMAND>. 
-Tidligere er der lavet forskellige krumspring for at DNS-serveren 
-kan skrive til syslog. Dette kan dog løses let og elegant med 
-en <COMMAND>mount --bind</COMMAND> kommando for hver af disse 
-/dev filer. 
+I  Debian: 
 </para>
 
 <SCREEN>
+<userinput>
+export OPTDIR=var/cache/bind
+export MASTERZD=etc/bind
+export SLAVEZD=var/cache/bind
+</userinput>
+</SCREEN>
+
+<para>
+Der kan opstå forvirring vedrørende placeringer af filer og mapper
+hvilket nok ikke er særlig underligt idet der grundlæggende set er
+tale om 3 forskellige filsystemrødder, nemlig systemets egentlige
+rod <filename>/</filename> , den nye rod der etableres ved "chroot" og
+som er angivet ved variablen <filename>$JAIL</filename> samt
+DNS-serverens forvalgte mappe angivet bla. ved variablen 
+<filename>$OPTDIR</filename>. 
+</para>
+
+<para>
+Det kan forøge forvirringen at DNS-serveren fortolker
+<emphasis>relative</emphasis> filnavne i forhold til serverens forvalgte
+mappe mens <emphasis>absolutte</emphasis> filnavne fortolkes i forhold
+til den nye rod der etableres ved "chroot".
+</para>
+
+<para>
+Variablerne <filename>OPTDIR</filename> ,
+<filename>MASTERZD</filename> samt <filename>SLAVEZD</filename> skal
+allesammen fortolkes i forhold til filsystemets rod, nemlig 
+<filename>/</filename> eller <filename>$JAIL</filename>. 
+</para>
+
+<para>
+Et fiktivt eksempel hvor variablen <filename>SLAVEZD</filename> er
+forskellig fra værdien i den overordnede konfigurationsfil. 
+<SCREEN>
+<userinput>
+export SLAVEZD=var/named/slave
+</userinput>
+</SCREEN>
+Mens der i den overordnede konfigurationsfil bla. står: 
+<SCREEN>
+  options { directory "/var/named";
+  };
+  zone "intranet" in {
+  type slave;
+  file "slave/intranet";
+  masters { 192.168.0.1; };
+};
+</SCREEN>
+</para>
+
+<para>
+Variablerne <filename>$OPTDIR</filename> ,
+<filename>MASTERZD</filename> samt <filename>SLAVEZD</filename> skal
+allesammen fortolkes i forhold til filsystemets rod
+<filename>/</filename> eller <filename>$JAIL</filename>. 
+</para>
+
+
+
+<indexterm>
+ <primary>DNS</primary>
+ <secondary>brugernavn</secondary>
+</indexterm>
+<sect2 id="dns-brugernavn">
+<title>DNS-serverens brugernavn</title>
+<para>
+Nogle distributioner opretter automatisk en bruger der svarer til
+DNS-serveren. Et hurtigt blik på <filename>/etc/passwd</filename> kan
+afsløre en bruger der hedder f.eks. named, bind eller dns og så kan
+man lave de nødvendige rettelser i kommandoerne. Her antages
+at brugeren hedder <command>named</command> samt at gruppen hedder
+ligeledes <command>named</command>. 
+</para>
+
+<para>
+Hvis denne bruger ikke findes i forvejen, kan
+den i Debian oprettes med den følgende kommando:  
+</para>
+
+<para>
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>
+adduser --system --group --home /opt/chroot/named named 
+</userinput>
+</screen>
+</para>
+
+</sect2>
+
+<sect2 id="chroot-dns-mount">
+<title>Tilføjelse til filsystemtabellen</title>
+
+<indexterm>
+ <primary>mount</primary>
+ <secondary>bind</secondary>
+</indexterm>
+
+<para>
+DNS-serveren bruger 3 /dev filer. Disse er <filename>log</filename>, 
+<filename>null</filename>, og <filename>random</filename>. 
+For hver af disse /dev filer skal der oprettes en forbindelse til de 
+tilsvarende filer i den isolerede del af filsystemet. Når det er gjort 
+kan serveren skrive til syslog. 
+</para>
+<para>
+Tidligere er der lavet forskellige krumspring for at DNS-serveren 
+kan skrive til syslog. Med version 2.4 af kernen kom muligheden for
+at løse dette let og elegant med kommandoen 
+<command>mount</command>.
+</para>
+<para>
+I det følgende er der givet 2 forskellige metoder for at opnå
+forbindelse til filerne i den isolerede del af filsystemet. I den første
+metode bruges en <command>mount</command> kommando for hver af 
+disse <filename>/dev</filename> filer. Den første metode giver
+mulighed for at afprøve opsætningen men den vil være tabt ved genstart
+af computeren.
+</para>
+
+<SCREEN>
+<userinput>
 mount --bind /dev/log $JAIL/dev/log
 mount --bind /dev/random $JAIL/dev/random
 mount --bind /dev/null $JAIL/dev/null
-/userinput>
+</userinput>
 </SCREEN>
 
 <para>
-Når <COMMAND>mount --bind</COMMAND> kommandoen er blevet udført, 
-sker der forandringer med filernes dato, som ses med kommandoen 
-<COMMAND>ls -l $JAIL/dev</COMMAND> 
+Erfarne brugere vil vide at mount kommandoen også kan bruges i
+forbindelse med filsystemtabellen <filename>/etc/fstab</filename> og
+derved kan man opnå en varig opsætning af disse filer. Der tilføjes 
+nogle linier til filsystemtabellen (derfor er det tilrådeligt at man
+lige tager en kopi af denne fil idet den er meget vigtig for 
+systemet). Dette gøres lettest med de følgende kommandoer:  
 </para>
 
 <SCREEN>
-srw-rw-rw-    1 root     root            0 Apr 12 16:29 log
-crw-rw-rw-    1 root     root       1,   3 Jan  1  1970 null
-crw-rw-rw-    1 root     root       1,   8 Jan  1  1970 random
+<userinput>
+export JAIL=/opt/chroot/named &amp;&amp;
+cd /etc &amp;&amp;
+cp --backup=t fstab fstab.orig &amp;&amp;
+echo -e '/dev/log\t'$JAIL'/dev/log\tnone \t rw,bind \t 0 0' >>fstab &amp;&amp;
+echo -e '/dev/null\t'$JAIL'/dev/null\tnone \t rw,bind \t 0 0' >>fstab &amp;&amp;
+echo -e '/dev/random\t'$JAIL'/dev/random\tnone \t rw,bind \t 0 0' >>fstab
+</userinput>
 </SCREEN>
 
 <para>
-Hvis det ovenstående er lykkedes, er filsystemet nu klart til 
-at isolere DNS-serveren og dermed en eventuel angriber. 
-Det eneste der mangler nu er kommandolinien til DNS-serveren. 
-Først skal vi finde ud af om serveren skal køre som root eller
-som en upriviligeret bruger. 
+Ovenstående kommandoer er nok til at sætte computeren op så
+ændringerne er varige også ved genstart. 
 </para>
 
 <para>
-Forsøg har vist, at angriberen kan bryde ud fra den isolerede 
-del af filsystemet hvis han/hun kan opnå root-privilegier. 
+Hvis mappestrukturen er blevet opsat 
+(Se <xref linkend="chroot-dns-mappestruktur">) , kan man med følgende
+kommando afprøve om dette fungerer som det skal:
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>
+mount --all
+</userinput>
+</screen>
 </para>
 
 <para>
-Hvis DNS-serveren køres som 
-en almindelig bruger i stedet for root, kan man forhindre 
-angriberen i at opnå root-privilegier. Flere Distributioner 
-installerer en upriviligeret bruger til dette formål. Et 
-hurtigt blik på <COMMAND>/etc/passwd</COMMAND> kan afsløre 
-en bruger der hedder f.eks. named, bind eller dns. 
-</para>
-
-<para>
-Hvis der forefindes en bruger ved navn <COMMAND>named</COMMAND> 
-kan BIND DNS-serveren køres i chroot-isolation og som en 
-upriviligeret bruger med den følgende kommando: 
+Derpå vil kommandoen <command>mount</command> afsløre de interne 
+forbindelser i kernen. 
 </para>
 
 <SCREEN>
-OPTS="-u named -t /chroot/named" &&
-CONF="-c /etc/bind/named.conf" &&
+<prompt>[root@linus /root]# </prompt> <userinput>mount</userinput>
+</SCREEN>
+<SCREEN>
+/dev/log on /opt/chroot/named/dev/log type none (rw,bind)
+/dev/null on /opt/chroot/named/dev/null type none (rw,bind)
+/dev/random on /opt/chroot/named/dev/random type none (rw,bind)
+</SCREEN>
+
+</sect2>
+
+
+
+<sect2 id="chroot-dns-mappestruktur">
+<title>Oprettelse af mappestruktur</title>
+
+<para>
+Der oprettes en  mappestruktur, til DNS-serveren hvori den skal 
+køre isoleret. Set fra DNS-serveren vil denne mappestruktur udgøre 
+hele serverens filsystem, og den vil således ikke kunne se 
+den resterende del af filsystemet. Dette vil således også 
+gælde for en eventuel angriber der har haft held med at tage
+kontrollen over DNS-processen. 
+</para>
+
+<indexterm>
+ <primary>FHS</primary>
+</indexterm>
+<para>
+I nedenstående eksempel oprettes mappestrukturen med roden 
+<filename>/opt/chroot/named</filename> hvilket er i overensstemmelse 
+med standarden for filhierarki i Linux ( for flere oplysninger om FHS se: 
+<ulink url="http://www.pathname.com/fhs/">
+http://www.pathname.com/fhs/</ulink>). 
+Hvis man ønsker en anden rod (feks. <filename>/chroot/named</filename>
+kan man blot ændre variablen <filename>$JAIL</filename> i starten af
+ kommandoerne. Ligeledes kan man rette brugernavnet i kommandoerne så
+ det svarer til det brugernavn DNS-processen skal køre som. De følgende
+ kommandoer kan klippes og klistres med et par museklik ind i et
+ terminalvindue hvor root allerede har logget ind: 
+</para>
+
+<SCREEN>
+<userinput>
+export JAIL=/opt/chroot/named &amp;&amp;
+export PIDDIR=var/run &amp;&amp;
+export LOKALTID=etc/localtime &amp;&amp;
+export UNAMED=named &amp;&amp;
+export GNAMED=named &amp;&amp;
+mkdir -p $JAIL &amp;&amp;
+cd $JAIL &amp;&amp;
+mkdir -p dev $OPTDIR $PIDDIR $MASTERZD $SLAVEZD &amp;&amp;
+cd / 
+cp $LOKALTID $JAIL/$LOKALTID  &amp;&amp;
+cd $JAIL/dev &amp;&amp;
+touch log null random &amp;&amp;
+mount --all &amp;&amp;
+cd / &amp;&amp;
+cd $MASTERZD &amp;&amp;
+find . | cpio -pm  $JAIL/$MASTERZD &amp;&amp;
+cd $JAIL &amp;&amp;
+chown $UNAMED.$GNAMED .  $PIDDIR $SLAVEZD &amp;&amp;
+chmod 700 . .. &amp;&amp;
+chattr +i  dev etc var $LOKALTID
+</userinput>
+</SCREEN>
+
+<para>
+Kommandoen i femte nederste linie, kopierer hele DNS-serverens 
+opsætning til mappen  $JAIL/$MASTERZD . Den tredje øverste linie sætter
+DNS-tjeneren som ejer af bla. mappen <filename>$JAIL</filename> ,
+hvilket jo også er meget passende ide det jo er dens hjemmemappe (Det
+burde det i hvertfald være hvis alting gik godt i 
+<xref linkend="dns-brugernavn"> ). 
+Den næstnederste linie siger adgang forbudt for uvedkommende. Den
+allersidste er kommandoen <command>chattr</command> der på et Linux
+filsystem (ext2, ext3 og evt. andre) kan sætte "immutable"-bitten på
+bestemte filer. Filer med denne bit sat, kan ikke ændres, omdøbes
+eller slettes. Dette er nødvendigt idet <filename>named</filename>
+brugeren ejer mappen <filename>$JAIL</filename> og har dermed ret til
+at omdøbe og slette enhver fil i denne mappe, uanset hvem ejer dem. 
+Denne bit vil altså forhindre <filename>named</filename>
+brugeren i at omdøbe feks. <filename>etc</filename> mappen til noget
+andet og oprette en ny <filename>etc</filename> mappe med falske eller 
+ændrede domæner. Dette kan named brugeren gøre 
+uden videre hvis denne bit ikke er sat. Hvis en angriber opdager at
+denne bit ikke er sat, kan han/hun juble ligesom Benny i "The
+Julekalender" da han havde eksperimenteret med nissernes magiske bog
+og udbrød i ekstase: "Sikke muligheder man! Sikke muligheder!" 
+Hvis man er i gang med at eksperimentere med denne opsætning,
+gør man dog klogest i at undgå denne bit idet den forbyder selv
+root-brugeren at slette eller ændre hele <filename>$JAIL</filename> 
+mappen. Denne bit ("immutable"-bitten) skal resettes med kommandoen
+<command>chattr -i</command> før root kan ændre eller slette filer
+hvor den er sat. Så er folk blevet advaret. 
+</para>
+
+<para>
+Hvis der har været fejl i opsætningen eller kommandoerne kan man
+fjerne mappestrukturen med nogle eller alle af de følgende kommandoer
+og derpå kan man prøve endnu en gang at installere
+mappestrukturen. Som den Linuxkyndige læser vil se, er der sat to små 
+sikkerhedsventiler på kommandoen <command>rm -rf</command> for det
+tilfælde at variablen <filename>&amp;JAIL</filename> ikke findes. 
+</para>
+
+<SCREEN>
+<userinput>
+umount $JAIL/dev/* &amp;&amp;
+cd $JAIL &amp;&amp;
+chattr -i  dev etc var $LOKALTID &amp;&amp;
+cd /tmp &amp;&amp;
+rm -rf $JAIL findesikke 
+</userinput>
+</SCREEN>
+
+</sect2>
+
+
+<sect2 id="chroot-dns-pars">
+<title>Parametre til bind-processen.</title>
+
+<indexterm>
+ <primary>bind</primary>
+ <secondary>parametre</secondary>
+</indexterm>
+
+<para>
+Hvis det er lykkedes at oprette mappestrukturen samt montere
+<filename>/dev</filename> filerne i foregående afsnit, er filsystemet
+klart til at isolere DNS-serveren og dermed også isolere en eventuel
+angriber. 
+</para>
+
+<para>
+Det eneste der mangler nu er at fortælle DNS-serveren at den skal 
+isoleres i denne del af filsystemet og køre som en bestemt bruger. 
+Tidligere versioner af DNS-serveren måtte genoversættes 
+til formålet, men BIND version 9 kan bruges uden videre ved 
+at tilføje nogle parametre til kommandolinien. Disse parametre er: 
+</para>
+
+<itemizedlist mark="bullet">
+<listitem> 
+ <para>
+<filename>-u named</filename> processen skal køre som brugeren named i
+stedet for root. 
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<filename>-t /opt/chroot/named</filename> processen skal isoleres i
+ "chroot-jail" der er blevet klargjort.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+<filename>-c /etc/named.conf</filename> processen skal vide hvor i den
+ isolerede del af filsystemet, den finder sin konfigurationsfil.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Der tilføjes nogle linier til opstartsfilerne: 
+</para>
+
+<SCREEN>
+OPTS="-u named -t /opt/chroot/named" &amp;&amp;
+CONF="-c /etc/bind/named.conf" &amp;&amp;
+/usr/sbin/named $OPTS $CONF 
+</SCREEN>
+
+<para>
+For at gøre opsætningen varig, kan ovenstående sættes ind i opstartsfilen. 
+</para>
+
+<para>
+I Redhat ser opstartsfilen således ud med ovenstående ændringer: 
+</para>
+
+<SCREEN>
+   #!/bin/sh
+   #
+   # named           This shell script takes care of starting and stopping
+   #                 named (BIND DNS server).
+   #
+   # chkconfig: - 55 45
+   # description: named (BIND) is a Domain Name Server (DNS) \
+   # that is used to resolve host names to IP addresses.
+   # probe: true
+
+   # Source function library.
+   . /etc/rc.d/init.d/functions
+
+   # Source networking configuration.
+   . /etc/sysconfig/network
+
+   # Check that networking is up.
+   [ ${NETWORKING} = "no" ] && exit 0
+
+   [ -f /usr/sbin/named ] || exit 0
+
+   [ -f /etc/named.conf ] || exit 0
+
+   RETVAL=0
+
+   # See how we were called.
+   case "$1" in
+   start)
+   # Start daemons.
+   echo -n "Starting named: "
+# *** De foelgende linier er udkommenteret for chroot
+#   daemon named 
+# *** De foelgende linier er indsat for chroot
+OPTS="-u named -t /opt/chroot/named"
+CONF="-c /etc/bind/named.conf"
+daemon named $OPTS $CONF
+# *** De ovenstaaende linier er indsat for chroot
+   RETVAL=$?
+   [ $RETVAL -eq 0 ] && touch /var/lock/subsys/named
+   echo
+   ;;
+   stop)
+   # Stop daemons.
+   echo -n "Shutting down named: "
+   killproc named
+   RETVAL=$?
+   [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/named
+   echo
+   ;;
+   status)
+   /usr/sbin/ndc status
+   exit $?
+   ;;
+   restart)
+   $0 stop
+   $0 start
+   ;;
+   reload)
+   /usr/sbin/ndc reload
+   exit $?
+   ;; 
+   probe)
+   # named knows how to reload intelligently; we don't want linuxconf
+   # to offer to restart every time
+   /usr/sbin/ndc reload &gt;/dev/null 2&gt;&1 || echo start
+   exit 0
+   ;;
+
+   *)
+   echo "Usage: named {start|stop|status|restart}"
+   exit 1
+   esac
+
+   exit $RETVAL
+</SCREEN>
+
+<para>
+I Debian ser opstartsfilen således ud for bind version 9: 
+</para>
+
+<SCREEN>
+OPTS="-u named -t /opt/chroot/named" &amp;&amp;
+CONF="-c /etc/bind/named.conf" &amp;&amp;
 /usr/sbin/named $OPTS $CONF
 </SCREEN>
-
-<para>
-Alt det ovenstående kan sættes ind i et init skript. 
-I Debian ser skriptet således ud for bind9:  
-</para>
 
 <SCREEN>
 #!/bin/sh
@@ -2042,11 +2638,6 @@ OPTS="-u named -t /chroot/named"
 CONF="-c /etc/bind/named.conf"
 
 test -x /usr/sbin/named || exit 0
-
-# Devices for a chrooted server 
-mount --bind /dev/log /chroot/named/dev/log
-mount --bind /dev/random /chroot/named/dev/random
-mount --bind /dev/null /chroot/named/dev/null
 
 case "$1" in
     start)
@@ -2082,27 +2673,113 @@ exit 0
 </SCREEN>
 
 <para>
-DNS-serveren bør kunne skrive til cache-mappen samt den mappe hvor den 
-gemmer sit proces ID, så man bør lige køre
-de følgende kommandoer:
-</para>
-
-<SCREEN>
-chown named.named $JAIL/var/cache/bind
-chown named.named $JAIL/var/run
-</SCREEN>
-
-<para>
-Med ovenstående init-skript kan serveren køre efter genstart, 
+Med ovenstående opstartsfil kan serveren køre efter genstart, 
 uden indgreb fra administrator. 
 </para>
+</sect2>
 
 
+<sect2 id="chroot-dns-start">
+<title>Afprøvning af DNS-serveren</title>
 
-<!-- det følgende afsnit bør faktisk være et underafsnit 
-i afsnittet om chroot-dns --> 
+<para>
+For at starte DNS-processen uden at genstart maskinen, giver man
+følgende kommando i henholdsvis Redhat og Debian (den er desuden pyntet med lidt &&
+krusiduller og Co. for at man kan se hvordan opstarten går): 
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>/etc/rc.d/init.d/bind start &amp;&amp; tail -f /var/log/messages  
+</userinput>
+</screen>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>/etc/init.d/bind9 start &amp;&amp; tail -f /var/log/daemon.log 
+</userinput>
+</screen>
+
+<screen>
+Jun  8 14:29:28 nse named[308]: starting BIND 9.2.0 -u named -t /opt/chroot/named \ 
+-c /etc/bind/named.conf
+Jun  8 14:29:28 ns named[308]: using 1 CPU
+Jun  8 14:29:29 ns named[311]: loading configuration from '/etc/bind/named.conf'
+Jun  8 14:29:29 ns named[311]: listening on IPv4 interface eth0, 192.168.8.1#53
+Jun  8 14:29:29 ns named[311]: command channel listening on 127.0.0.1#953
+Jun  8 14:29:29 ns named[311]: zone 0.in-addr.arpa/IN: loaded serial 1
+Jun  8 14:29:29 ns named[311]: zone 127.in-addr.arpa/IN: loaded serial 1
+Jun  8 14:29:29 ns named[311]: zone 168.192.in-addr.arpa/IN: loaded serial 2000111605
+Jun  8 14:29:29 ns named[311]: zone 255.in-addr.arpa/IN: loaded serial 1
+Jun  8 14:29:29 ns named[311]: zone localhost/IN: loaded serial 1
+</screen>
+
+<para>
+Hvis alting er som det skal være, udskrives noget der ligner det
+ovenstående. 
+</para>
+
+<para>
+Opsætningen kan desuden afprøves ved at 
+se om bind virkelig kører samt kigge i logfiler. 
+ Hvis bind kører, vil kommandoen 
+<command>ps aux | grep named</command> vise en eller flere 
+linier som den følgende: 
+</para>
+
+<screen>
+named     2043  0.0  2.8 10396 1432 ?        S    03:11   0:00 \
+ /usr/sbin/named -u named -t /opt/chroot/named -c /etc/bind/named.conf
+</screen>
+
+<para>
+Ovenstående linie bekræfter at BIND kører som den upriviligerede bruger 
+<filename>named</filename> og at den er isoleret i
+<filename>/opt/chroot/named</filename> som hensigten var.
+</para>
+
+<para>
+Den afgørende bekræftelse af opsætningen får man hvis serveren svarer
+når den forepørges om forskellige domæner. Hvid den er
+authoritativ/primær DNS-server for et domæne bør man selvfølgelig
+forespørge DNS-serveren om dette domæne. Man kan konkludere at
+"chroot" opsætningen er korrekt hvis serveren svarer. 
+</para>
+
+<para>
+Hvis der er noget i vejen, kan man få  yderligere  oplysninger kan
+findes i logfilen med kommandoen <COMMAND>tail
+/var/log/daemon.log</COMMAND> eller <COMMAND>tail
+/var/log/messages</COMMAND>. 
+</para>
+
+<para>
+Hvis serveren ikke kører, bør man kigge nærmere efter om alle filer og mapper er
+placeret som de skal og om der er manglende sammenhæng mellem de
+filnavne der er angivet i konfigurationsfilerne og de filnavne og
+mappenavne der blev oprettet. 
+</para>
+
+<para>
+Alle øvrige problmemer med DNS-serveren har at gøre med den generelle
+opsætning i konfigurationsfilerne. Yderligere oplysninger om opsætning
+og test af DNS, findes i <xref linkend="om-dns">.
+</para>
+
+</sect2>
+
+
+<indexterm>
+ <primary>DNS</primary>
+ <secondary>dørvogter</secondary>
+</indexterm>
 <sect2 id="dns-upriviligeret">
 <title>DNS-serveren som upriviligeret bruger</title>
+
+<!-- 
+Dette afsnit skal flyttes til nogle af de foregående afsnit idet det 
+handler egentlig ikke om chroot. Jeg vil dog vente lidt med det indtil
+vi har set hvordan alle disse ændringer fungerer sammen. 
+--> 
+
 <para>
 Dette afsnit handler hovedsagelig om hvordan DNS-serveren 
 BIND 9 opfører sig når den kører som upriviligeret bruger. 
@@ -2117,24 +2794,25 @@ sende førespørgsler til andre servere fra port 53.
 Som udgangspunkt vil den vælge et tilfældigt upriviligeret 
 port at sende fra. Hvis netværket beskyttes af en dørvogter 
 der udtrykkeligt specificerer hvilket port DNS-serveren 
-kan sende fra, kan man vælge et bestemt upriviligeret port, 
-f.eks. 5352 og 
-konfigurere BIND til kun at bruge dette port som afsenderport. 
-I konfigurationsfilen til bind <COMMAND>$JAIL/etc/bind/named.conf</COMMAND> 
-bør de følgende linier tilføjes i sektionen <COMMAND>options {}</COMMAND>:
+kan sende fra, vil forespørgslerne ikke kunne komme forbi
+dørvogteren. For at afhjælpe dette kan man vælge en bestemt
+upriviligeret port,  f.eks. 1053 og 
+konfigurere BIND til kun at bruge denne port som afsenderport. 
+I den overordnede konfigurationsfil til BIND 
+bør den nederste af de følgende linier tilføjes i sektionen options {}:
 </para>
 
 <screen>
 <userinput>
         listen-on port 53 { 192.168.8.1; };
-        query-source address * port 5352;
+        query-source address * port 1053;
 </userinput>
 </screen>
 
 <para>
 <!-- Det følgende skal gøre mere ud af men ikke lige nu --> 
 I eksemplet ovenfor, har serveren IP-nummeret 
-<COMMAND>192.168.8.1</COMMAND> på trods af at det er en offentlig 
+192.168.8.1 på trods af at det er en offentlig 
 DNS server. Forklaringen er, at serveren ikke har fået 
 tildelt et offentligt IP-nummer, men trafik til den bliver 
 dirigeret til den gennem en dørvogter. 
@@ -2143,34 +2821,16 @@ med dette source port.
 Dermed kan BIND fortsætte med at fungere bag selv den mest 
 restriktive dørvogter. 
 </para>
-
 </sect2>
 
-
-<!-- det følgende afsnit bør faktisk være et underafsnit 
-i afsnittet om chroot-dns --> 
 <sect2 id="dns-upriviligeret-test">
-<title>Afprøvning af DNS-serveren</title>
+<title>Testkørsel af DNS serveren.</title>
 
-<para>
-De første skridt til at afprøve opsætningen består i at 
-se om bind virkelig kører samt kigge i logfiler. 
- Hvis bind kører, vil kommandoen 
-<COMMAND>ps aux | grep named |less</COMMAND> vise en eller flere 
-linier som den følgende: 
-</para>
-
-<screen>
-named     2043  0.0  2.8 10396 1432 ?        S    03:11   0:00 /usr/sbin/named -u named -t /chroot/named -c /etc/bind/named.conf
-</screen>
-
-<para>
-Ovenstående linie bekræfter at BIND kører som en upriviligeret bruger 
-og at den er isoleret i <COMMAND>/chroot/named</COMMAND> .
-Hvis bind ikke kan køre, kan man kigge efter yderligere oplysninger 
-i logfilen med kommandoen <COMMAND>tail /var/log/daemon.log</COMMAND> . 
-Den plejer at give en forklaring på hvad der kan være i vejen.
-</para>
+<!-- 
+Dette afsnit skal flyttes til nogle af de foregående afsnit idet det 
+handler egentlig ikke om chroot. Jeg vil dog vente lidt med det indtil
+vi har set hvordan alle disse ændringer fungerer sammen. 
+--> 
 
 <para>
 Hvis serveren kører, bør den kunne svare på forespørgsler. Der findes 
@@ -2182,14 +2842,12 @@ eksempel, skal den nyopsatte DNS-server give os oplysninger om
 domænet sslug.dk . 
 </para>
 
-<!-- jeg bruger også eksemplet med robin@sherwood for at bogen 
-bliver så homogen som muligt  --> 
 <SCREEN>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>dig @192.168.8.1 sslug.dk</userinput>
 </SCREEN>
 
 <SCREEN>
-; &lt;&gt;&gt; DiG 9.2.0 &lt;&gt;&gt; @192.168.8.1 sslug.dk
+; &lt;&lt;&gt;&gt; DiG 9.2.0  &lt;&lt;&gt;&gt; @192.168.8.1 sslug.dk
 ;; global options:  printcmd
 ;; Got answer:
 ;; -&gt;&gt;HEADER&lt;- opcode: QUERY, status: NOERROR, id: 45711
@@ -2221,12 +2879,24 @@ ns-soa.darenet.dk.      71539   IN      A       130.226.1.4
 Sådan kan man teste serveren ved at pege den på forskellige 
 domæner. Hvid den er authoritativ/primær DNS-server for et 
 domæne bør man selvfølgelig forespørge DNS-serveren om 
-dette domæne. Yderligere oplysninger om opsætning og test 
-af DNS, findes i sslugs bog om administration af egen server. 
+dette domæne. Man kan konkludere at "chroot" opsætningen er korrekt
+hvis serveren svarer. 
 </para>
 
 </sect2>
 </sect1>
 
 </chapter>
+
+
+
+
+
+
+
+
+
+
+
+
 
