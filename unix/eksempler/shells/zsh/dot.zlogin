@@ -13,37 +13,19 @@
 # This file: ~/.zlogin (8)
 #
 #-----------------------------------------------------------------------------
-#--  Set window title:
-
-titel ${HOST}
-
-#-----------------------------------------------------------------------------
 #--  Keep an eye on people:
 
-watch=(1 alstrom  any \
-         berntsen any \
-         bhansen  any \
-         fenger   any \
-         hoeyer   any \
-         jenseniu any \
-         kjldgrd  any \
-         levinsen any \
-         norrelyk any \
-         nilsson  any \
-         nygard   any \
-         okkels   any \
-         rachid   any \
-         schroder any \
-         villaume any \
-         zaccarin any )
+watch=(1 theboss       any \
+         onefriend     any \
+         anotherfriend any )
 
 #-----------------------------------------------------------------------------
 #--  Earlier logins:
 
-last sparre | head -n 5
+last ${USER} | head -n 5
 
 #-----------------------------------------------------------------------------
-#--  Activate the "Compose" key:
+#--  Additional modifications to the keyboard map in X:
 
 if [ -r "${HOME}/.xmodmaprc" ]; then
    xmodmap ${HOME}/.xmodmaprc
