@@ -21,6 +21,7 @@ html:
 	db2html bog.sgml
 	cp linuxbog.css bog
 	cp images/*.png bog
+	tar cvzf $(targetname)-html.tgz bog
 
 pspdf:
 	@echo "Target is" $(targetname).ps.gz
