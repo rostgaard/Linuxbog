@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = wm friheden unix applikationer admin program web sikkerhed c dokumentation kontorbruger java signatur
+SUBDIRS = friheden unix applikationer admin program web sikkerhed c dokumentation kontorbruger java signatur
 
 all: filer
 
