@@ -111,7 +111,7 @@ genindlæse en opdateret opsætningsfil.
 </para>
 
 <para>
-I Red Hat 7.0 installeres Apache via <filename>apache*.rpm</filename>,
+I Red Hat installeres Apache via <filename>apache*.rpm</filename>,
 som følger med distributionen. Skal du have PHP4 med så skal du
 dernæst installere <filename>mod_php-4.0*.rpm</filename>.
 Webserveren sættes op til at din dokument-root (der hvor filer
@@ -791,6 +791,43 @@ Husk at SSL højest giver dig mulighed for at øge sikkerheden, men du
 skal dog selv forstå at implementere den gennem opsætning og
 fornuftig drift af serveren.
 </para>
+
+<para>
+Hvis man vil køre https og dermed SSL på sin webserver skal man have
+et SSL-certifikat. Dette kan købes fx hos Verisign.com, men man kan også
+blot benytte et selvunderskrevet certifikat, det er både billigere (gratis)
+og hurtigere at få. Installerer man Apache med SSL-modulet, kommer der
+ofte et certifikat med som er et generelt standard-certifikat.
+Dette er nok til at man kan køre https, og derved benytte den sikre 
+kommunikationsprotokol, som ingen kan lytte med på.
+</para>
+
+<para>
+Man kan også lave sit eget selvunderskrevne certifikat, som så vil
+indeholde eget firmanavn og kontaktoplysninger. Dette vil se en del
+pænere ud for brugerne af systemet. Et selvunderskrevet certifikat
+kan laves ved som brugeren root at køre:
+</para>
+
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /etc/httpd/conf</USERINPUT>
+<PROMPT>[root@linus /etc/httpd/conf]#</PROMPT> <USERINPUT>rm ssl.crt/server.crt</USERINPUT>
+<PROMPT>[root@linus /etc/httpd/conf]#</PROMPT> <USERINPUT>make testcert</USERINPUT>                          
+
+<para>
+Hertil skal indtastes oplysninger om firma, kontaktadresse mv.
+Et lille tip: indtast "state, province" som et enkelt mellemrum.
+Amerikanerne tror alle bor i føderale nationer med delstater.
+</para>
+
+<para>
+Man kan også lave sin egen krypterede nøgle, med <command>make
+genkey</command> men så skal man angive denne nøgle før Apache kan
+startes op, og det kan være noget besværligt, fx ved automatisk
+opstart efter strømnedbrud.
+</para>
+
 
 </sect2>
 </sect1>
