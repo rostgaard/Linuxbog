@@ -27,6 +27,13 @@ pspdf:	start
 
 	$(MAKE) -C alle -f Makefile pspdf
 
+html:	start
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir html; \
+	done;
+
+	$(MAKE) -C alle -f Makefile html
+
 eksempelbackup:
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir eksempelbackup; \
