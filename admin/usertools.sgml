@@ -7,6 +7,30 @@ I dette kapitel ser vi nærmere på nogle af de værktøjer og opgaver som
 systemadministratoren kommer ud for.
 </para>
 
+<sect1 id="Erstatning-af-tekst">
+<title>Erstatning af tekst i flere filer</title>
+<para>
+Ofte kommer man ud for at skulle erstatte tekst i 
+filer. Nogle gange er det nemmest at starte en emacs eller vi-editor op 
+og blot rette filen til. Andre gange skal man lave samme rettelse
+i mange filer, og så er det meget nyttigt at kunne en smule shell og Perl.
+Antag f.eks. at man i alle .txt-filer skal erstatte "Windows" med "Linux".
+Dette kan gøres med følgende lille script:
+</para>
+
+<screen>
+for I in *.txt
+do
+  perl -pi.bak -e 's/Windows/Linux/g' $I
+done
+</screen>
+
+<para>
+Denne operation efterlader en .bak-fil for hver fil du laver
+søg-og-erstat i (bare for en sikkerheds skyld).
+</para>
+
+</sect1>
 
 <sect1 id="glemt-passwd">
 <title>Har du glemt din adgangskode?</title>
@@ -50,233 +74,233 @@ root-adgangskoden og den adgangskode, du har sat i <filename>/etc/lilo.conf</fil
   <title>Samtidig installation af Windows og Linux</title>
 
   <indexterm><primary>Opstart af Linux</primary>
-             <secondary>Windows</secondary></indexterm>
+         <secondary>Windows</secondary></indexterm>
   <indexterm><primary>Microsoft Windows</primary>
-             <secondary>Windows</secondary></indexterm>
+         <secondary>Windows</secondary></indexterm>
   <indexterm><primary>Dual Boot</primary>
-             <secondary>Linux</secondary></indexterm>
+         <secondary>Linux</secondary></indexterm>
 
-  <para>
-   Windows og Linux kan sagtens være installeret på samme computer. Ved at
-   bruge et opstartsprogram kan man, når man starter computeren, vælge om den
-   skal starte i Linux eller i Windows. Det er samtidig også muligt at have
-   flere forskellige udgaver af Linux og/eller Windows installeret på samme
-   maskine. Man kan dog kun køre en ad gangen (med mindre man bruger VMware).
-  </para>
+<para>
+Windows og Linux kan sagtens være installeret på samme computer. Ved at
+bruge et opstartsprogram kan man, når man starter computeren, vælge om den
+skal starte i Linux eller i Windows. Det er samtidig også muligt at have
+flere forskellige udgaver af Linux og/eller Windows installeret på samme
+maskine. Man kan dog kun køre en ad gangen (med mindre man bruger VMware).
+</para>
 
-  <para>
-   Når man starter en computer, der kun har Windows installeret
-   indlæses der først et lille startprogram fra <emphasis>Master Boot
-   Record</emphasis> (MBR), der ligger først på den første harddisk
-   (<filename>/dev/hda</filename>) sammen med beskrivelsen af hvordan
-   harddisken er opdelt (partitionstabellen).  Startprogrammet fra MBR
-   indlæser et egentligt startprogram fra den første del af den første
-   harddisk (<filename>/dev/hda1</filename>) og overfører kontrollen
-   til det.  Hvis computeren kører Windows 95 eller 98 vil DOS blive
-   startet, og DOS vil så automatisk starte Windows. Kører computeren
-   Windows NT eller 2000 giver startsprogrammet et valg mellem
-   forskellige opsætninger af styresystemet.
-  </para>
+<para>
+Når man starter en computer, der kun har Windows installeret
+indlæses der først et lille startprogram fra <emphasis>Master Boot
+Record</emphasis> (MBR), der ligger først på den første harddisk
+(<filename>/dev/hda</filename>) sammen med beskrivelsen af hvordan
+harddisken er opdelt (partitionstabellen).  Startprogrammet fra MBR
+indlæser et egentligt startprogram fra den første del af den første
+harddisk (<filename>/dev/hda1</filename>) og overfører kontrollen
+til det.  Hvis computeren kører Windows 95 eller 98 vil DOS blive
+startet, og DOS vil så automatisk starte Windows. Kører computeren
+Windows NT eller 2000 giver startsprogrammet et valg mellem
+forskellige opsætninger af styresystemet.
+</para>
 
 <!-- Flyt følgende para til FTAV begynder bogen? -->
 
-  <para>
-   Microsoft anbefaler, at C-drevet under Windows NT er formateret som et
-   FAT-filsystem. Det giver flere muligheder for fejlfinding end hvis man
-   bruger det nyere NTFS-filsystem. En praktisk sideeffekt af at bruge et
-   FAT-filsystem er at Linux ikke har problemer med at læse fra og skrive til
-   C-drevet. En anden fordel er at hvis man får en maskine hvor Windows fylder
-   hele harddisken, så kan man bruge DOS-programmet
-   <command>fips.exe</command> til at frigøre en del af Windows-partitionen
-   til brug for Linux. Det er derimod ikke muligt at omstrukturere
-   NTFS-filsystemer og det vil derfor være nødvendigt at slette og
-   geninstallere Windows, hvis man har en harddisk der er fyldt op af et
-   enkelt NTFS-filsystem.
-  </para>
+<para>
+Microsoft anbefaler, at C-drevet under Windows NT er formateret som et
+FAT-filsystem. Det giver flere muligheder for fejlfinding end hvis man
+bruger det nyere NTFS-filsystem. En praktisk sideeffekt af at bruge et
+FAT-filsystem er at Linux ikke har problemer med at læse fra og skrive til
+C-drevet. En anden fordel er at hvis man får en maskine hvor Windows fylder
+hele harddisken, så kan man bruge DOS-programmet
+<command>fips.exe</command> til at frigøre en del af Windows-partitionen
+til brug for Linux. Det er derimod ikke muligt at omstrukturere
+NTFS-filsystemer og det vil derfor være nødvendigt at slette og
+geninstallere Windows, hvis man har en harddisk der er fyldt op af et
+enkelt NTFS-filsystem.
+</para>
 
-  <para>
-   Når man starter en maskine, der kun har Linux installeret, startes
-   <emphasis>LInux LOader</emphasis> (LILO), der ligesom Windows'
-   startprogram ligger i MBR. Der findes også en række andre
-   startsprogrammer til Linux, men dem vil vi ignorere i denne
-   omgang. LILO giver brugeren mulighed for at vælge hvilken udgave
-   af kernen, der skal startes. Typisk vil man kun have én udgave
-   liggende, men det giver let mulighed for at afprøve en nyoversat
-   kerne. Hvis den ikke virker kan man bare genstarte, og vælge den
-   gamle og velfungerende kerne i stedet for. Der er mere om LILO i 
-   bogen "Linux - Friheden til at vælge".
-  </para>
+<para>
+Når man starter en maskine, der kun har Linux installeret, startes
+<emphasis>LInux LOader</emphasis> (LILO), der ligesom Windows'
+startprogram ligger i MBR. Der findes også en række andre
+startsprogrammer til Linux, men dem vil vi ignorere i denne
+omgang. LILO giver brugeren mulighed for at vælge hvilken udgave
+af kernen, der skal startes. Typisk vil man kun have én udgave
+liggende, men det giver let mulighed for at afprøve en nyoversat
+kerne. Hvis den ikke virker kan man bare genstarte, og vælge den
+gamle og velfungerende kerne i stedet for. Der er mere om LILO i 
+bogen "Linux - Friheden til at vælge".
+</para>
 
-  <para>
-   Hvis det er Windows' startprogram der ligger i MBR, skal
-   Windows-opsætningen ændres så det også kan starte Linux. Hvis det er Linux'
-   startprogram (LILO) der ligger i MBR skal dets opsætning tilsvarende
-   ændres, så det kan starte Windows. De følgende afsnit vil gennemgå begge
-   muligheder. 
-  </para>
+<para>
+Hvis det er Windows' startprogram der ligger i MBR, skal
+Windows-opsætningen ændres så det også kan starte Linux. Hvis det er Linux'
+startprogram (LILO) der ligger i MBR skal dets opsætning tilsvarende
+ændres, så det kan starte Windows. De følgende afsnit vil gennemgå begge
+muligheder. 
+</para>
 
-  <para>
-   Bemærk at når Windows (gen)installeres, bliver MBR harddisken overskrevet!
-   Hvis LILO er installeret i MBR vil den derfor blive slettet, og man kan
-   således ikke starte Linux. Det er derfor meget vigtigt at lave en
-   startdiskette (eng. boot disk) til Linux, før man vil går i gang med at
-   installere Windows på en maskine der allerede er Linux på. Det kan også
-   være fornuftigt at lave en startdiskette før man begynder at eksperimentere
-   med LILO. Så kan man altid redde sig ud af en uheldig opsætning af LILO.
-  </para>
+<para>
+Bemærk at når Windows (gen)installeres, bliver MBR harddisken overskrevet!
+Hvis LILO er installeret i MBR vil den derfor blive slettet, og man kan
+således ikke starte Linux. Det er derfor meget vigtigt at lave en
+startdiskette (eng. boot disk) til Linux, før man vil går i gang med at
+installere Windows på en maskine der allerede er Linux på. Det kan også
+være fornuftigt at lave en startdiskette før man begynder at eksperimentere
+med LILO. Så kan man altid redde sig ud af en uheldig opsætning af LILO.
+</para>
 
-  <para>
-   Startdisketten kan fremstilles efter installationen med Linux-kommandoen
-   <command>mkbootdisk</command>. Husk at have en formateret diskette parat.
-   Det er vigtigt, at disketten er 100% fri for fysiske fejl!
-  </para>
+<para>
+Startdisketten kan fremstilles efter installationen med Linux-kommandoen
+<command>mkbootdisk</command>. Husk at have en formateret diskette parat.
+Det er vigtigt, at disketten er 100% fri for fysiske fejl!
+</para>
 
-  <para>
-   Eksempel:
-  </para>
+<para>
+Eksempel:
+</para>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT>
-<USERINPUT>fdformat /dev/fd0H1440</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>fdformat /dev/fd0H1440</USERINPUT>
 Double-sided, 80 tracks, 18 sec/track. Total capacity 1440 kB.
 Formatting ... done
 Verifying ... done
-<PROMPT>[root@linus /root]# </PROMPT>
-<USERINPUT>mkbootdisk `uname --release`</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mkbootdisk `uname --release`</USERINPUT>
 Insert a disk in /dev/fd0. Any information on the disk will be lost.
 Press &lt;Enter&gt; to continue or ^C to abort:
 </screen>
 
 <!-- Eksemplet er noget simplificeret sammenlignet med det gamle,
-     men kræver at kernen ligger i /boot -->
+ men kræver at kernen ligger i /boot -->
 
-  <para>
-   Det er også en smart idé at lave en startdiskette til Windows før du går
-   igang med LILO-eksperimenter. I Windows 95 og 98 kan man køre
-   <command>format a: /s</command> på kommandolinien. I Windows NT og
-   2000 skal disketten formateres, da det medfører at de nødvendige
-   systemfiler bliver kopieret ud på disketten.
-   <!--
-   Dette opretter
-   en Windows boot sektor på disketten, og filerne 
-   <filename>ntldr</filename>,
-   <filename>Ntdetect.com</filename> og <filename>Boot.ini</filename>
-   kopieres
-   fra roden af C: drevet til disketten. Filerne er normalt mærket som
-   skjulte og system, så du skal muligvis ændre Explorens konfiguration
-   for at finde dem.
-   -->
-  </para>
+<para>
+Det er også en smart idé at lave en startdiskette til Windows før du går
+igang med LILO-eksperimenter. I Windows 95 og 98 kan man køre
+<command>format a: /s</command> på kommandolinien. I Windows NT og
+2000 skal disketten formateres, da det medfører at de nødvendige
+systemfiler bliver kopieret ud på disketten.
+<!--
+Dette opretter
+en Windows boot sektor på disketten, og filerne 
+<filename>ntldr</filename>,
+<filename>Ntdetect.com</filename> og <filename>Boot.ini</filename>
+kopieres
+fra roden af C: drevet til disketten. Filerne er normalt mærket som
+skjulte og system, så du skal muligvis ændre Explorens konfiguration
+for at finde dem.
+-->
+</para>
 
-  <sect3 ID="LinuxiMBR">
-   <title>Linux styrer opstarten</title>
+<sect3 ID="LinuxiMBR">
+<title>Linux styrer opstarten</title>
 
-   <para>
-    Den letteste løsning er at lade Linux styre opstarten af maskinen. Det ser
-    også mest blæret ud :-)
-   </para>
+<para>
+Den letteste løsning er at lade Linux styre opstarten af maskinen. Det ser
+også mest blæret ud :-)
+</para>
 
-   <para>
-    Under installationen af Red Hat gøres dette ved at vælge at lægge LILO i
-    MBR. Under Red Hat installationen vil et eventuelt eksisterende
-    Windows-system automatisk blive tilføjet som en valgmulighed i LILO.
-   </para>
+<para>
+Under installationen af Red Hat gøres dette ved at vælge at lægge LILO i
+MBR. Under Red Hat installationen vil et eventuelt eksisterende
+Windows-system automatisk blive tilføjet som en valgmulighed i LILO.
+</para>
 
-   <para>
-    Har du allerede installeret Linux, kan et Windows-system føjes til LILO's
-    menu ved at føje følgende linier til <filename>/etc/lilo.conf</filename>:
+<para>
+Har du allerede installeret Linux, kan et Windows-system føjes til LILO's
+menu ved at føje følgende linier til <filename>/etc/lilo.conf</filename>:
 <screen>
 other=/dev/hda1
         label=dos
         table=/dev/hda
 </screen>
-   </para>
+</para>
 
-   <para>
-    Husk at hver gang opsætningen af LILO ændres skal du køre
-    <command>/sbin/lilo</command> som root. Det vil så
-    opdatere informationerne, der ligger i MBR.
-   </para>
+<para>
+Husk at hver gang opsætningen af LILO ændres skal du køre
+<command>/sbin/lilo</command> som root. Det vil så
+opdatere informationerne, der ligger i MBR.
+</para>
 
-   <para>
-    Når LILO starter får du en oversigt over mulighederne. Typisk kan du vælge
-    mellem 'linux' og 'dos'. Når du vælger 'dos', kalder LILO Windows' "OS
-    Loader". Med ældre udgaver af LILO er det nødvendigt at trykke på
-    tabulatortasten for at blive præsenteret for valgmulighederne.
-   </para>
+<para>
+Når LILO starter får du en oversigt over mulighederne. Typisk kan du vælge
+mellem 'linux' og 'dos'. Når du vælger 'dos', kalder LILO Windows' "OS
+Loader". Med ældre udgaver af LILO er det nødvendigt at trykke på
+tabulatortasten for at blive præsenteret for valgmulighederne.
+</para>
   </sect3>
 
-  <sect3 ID="WindowsiMBR">
-   <title>Windows styrer opstarten</title>
+<sect3 ID="WindowsiMBR">
+<title>Windows styrer opstarten</title>
 
-   <para>
-    Dette afsnit gælder ikke for Windows 95 og Windows 98. Hvis du bruger et
-    af disse to systemer skal du lade Linux styre opstarten om beskrevet i
-    forrige afsnit. Opsætningen af Windows NT's og 2000's startprogram, "OS
-    Loader" findes i filen <filename>C:\Boot.ini</filename>.
-   </para>
+<para>
+Dette afsnit gælder ikke for Windows 95 og Windows 98. Hvis du bruger et
+af disse to systemer skal du lade Linux styre opstarten om beskrevet i
+forrige afsnit. Opsætningen af Windows NT's og 2000's startprogram, "OS
+Loader" findes i filen <filename>C:\Boot.ini</filename>.
+</para>
 
-   <para>
-    Når Windows styrer opstarten skal LILO installeres i
-    <emphasis>boot</emphasis>-sektoren på rod- eller
-    <filename>/boot</filename>-filsystemet. For at kunne starte Linux fra
-    Windows skal <emphasis>boot</emphasis>-sektoren kopieres over i en fil,
-    overføres til C-drevet og føjes til <filename>C:\Boot.ini</filename>.
-   </para>
+<para>
+Når Windows styrer opstarten skal LILO installeres i
+<emphasis>boot</emphasis>-sektoren på rod- eller
+<filename>/boot</filename>-filsystemet. For at kunne starte Linux fra
+Windows skal <emphasis>boot</emphasis>-sektoren kopieres over i en fil,
+overføres til C-drevet og føjes til <filename>C:\Boot.ini</filename>.
+</para>
 
-   <para>
-    Først skal bootsektoren gemmes som en fil, for eksempel
-    <filename>bootsect.lnx</filename>. I <filename>/etc/lilo.conf</filename>
-    er der en linie "boot=...". Den fortæller i hvor LILO's
-    <emphasis>boot</emphasis>-sektor findes.
-   </para>
+<para>
+Først skal bootsektoren gemmes som en fil, for eksempel
+<filename>bootsect.lnx</filename>. I <filename>/etc/lilo.conf</filename>
+er der en linie "boot=...". Den fortæller i hvor LILO's
+<emphasis>boot</emphasis>-sektor findes.
+</para>
 
-   <para>
-    Eksempel:
+<para>
+Eksempel:
+</para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>grep "^boot" /etc/lilo.conf</USERINPUT>
 boot=/dev/hda3
 </screen>
-   </para>
 
-   <para>
-    Vi kan se at i eksemplet er LILO placeret i
-    <emphasis>boot</emphasis>-sektoren på <filename>/dev/hda3</filename>.
-    Vi kan nu kopiere <emphasis>boot</emphasis>-sektoren ud i filen
-    <filename>bootsect.lnx</filename> med kommandoen:
+<para>
+Vi kan se at i eksemplet er LILO placeret i
+<emphasis>boot</emphasis>-sektoren på <filename>/dev/hda3</filename>.
+Vi kan nu kopiere <emphasis>boot</emphasis>-sektoren ud i filen
+<filename>bootsect.lnx</filename> med kommandoen:
+</para>
 
 <screen>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> dd if=/dev/hda3
 of=/bootsect.lnx bs=512 count=1</userinput>
 </screen>
 
-    (kopiér den første blok à 512 bytes fra <filename>/dev/hda3</filename> til
-    <filename>bootsect.lnx</filename>)
-   </para>
+<para>
+(kopiér den første blok à 512 bytes fra <filename>/dev/hda3</filename> til
+<filename>bootsect.lnx</filename>)
+</para>
 
-   <para>
-    <filename>bootsect.lnx</filename> skal nu kopieres til Windows' C-drev og
-    den følgende linie skal føjes til <filename>c:\Boot.ini</filename>:
+<para>
+<filename>bootsect.lnx</filename> skal nu kopieres til Windows' C-drev og
+den følgende linie skal føjes til <filename>c:\Boot.ini</filename>:
+</para>
 
 <screen>
-C:\bootsect.lnx="Linux - Red Hat 7.0"
+C:\bootsect.lnx="Linux - Red Hat"
 </screen>
-   </para>
 
-   <para>
-    Denne linier betyder at NT's startsprogram kalder LILO - i filen
-    <filename>C:\bootsect.lnx</filename> - hvis du vælger Linux i NT's
-    opstartsmenu. Dette trick kan også laves med flere
-    <emphasis>boot</emphasis>-sektorer.
-   </para>
+<para>
+Denne linier betyder at NT's startsprogram kalder LILO - i filen
+<filename>C:\bootsect.lnx</filename> - hvis du vælger Linux i NT's
+opstartsmenu. Dette trick kan også laves med flere
+<emphasis>boot</emphasis>-sektorer.
+</para>
 
-   <para>
-    Hvis C-drevet er i FAT-format, kan du montere det fra Linux (det er de to
-    første linier nedenfor). De to sidste linier kopierer
-    <emphasis>boot</emphasis>-sektorfilen til Windows-drevet, og føjer den til
-    "OS Loader"ens opsætningsfil. Bemærk at &gt;&gt; <emphasis>skal</emphasis>
-    bruges, da &gt; alene vil overskrive filen og ikke føje til den:
+<para>
+Hvis C-drevet er i FAT-format, kan du montere det fra Linux (det er de to
+første linier nedenfor). De to sidste linier kopierer
+<emphasis>boot</emphasis>-sektorfilen til Windows-drevet, og føjer den til
+"OS Loader"ens opsætningsfil. Bemærk at &gt;&gt; <emphasis>skal</emphasis>
+bruges, da &gt; alene vil overskrive filen og ikke føje til den:
 
 <screen>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mkdir /dos</userinput>
@@ -284,27 +308,27 @@ C:\bootsect.lnx="Linux - Red Hat 7.0"
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mv /bootsect.lnx /dos/bootsect.lnx</userinput>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> echo 'C:\\bootsect.lnx="Linux - Red Hat 7.0"' >>/dos/BOOT.INI</userinput>
 </screen>
-   </para>
+</para>
 
 <!-- er der en bedre måde at skrive echo på?? -->
 
-   <para>
-    Dette virker ikke hvis dit Windows-drev er NTFS-formateret. Har du adgang
-    til en FTP-server, kan du kopiere <filename>bootsect.lnx</filename> til
-    FTP-server, genstarte maskinen i Windows og hente filen igen. Et
-    alternativ er at kopiere filen ud på en diskette med brug af
-    <command>mcopy</command>, som vist her:
+<para>
+Dette virker ikke hvis dit Windows-drev er NTFS-formateret. Har du adgang
+til en FTP-server, kan du kopiere <filename>bootsect.lnx</filename> til
+FTP-server, genstarte maskinen i Windows og hente filen igen. Et
+alternativ er at kopiere filen ud på en diskette med brug af
+<command>mcopy</command>, som vist her:
 
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mcopy /bootsect.lnx a:</userinput>
 </screen>
-   </para>
+</para>
 
-   <para>
-    Genstart derefter din maskine.
-   </para>
+<para>
+Genstart derefter din maskine.
+</para>
 
-   <para>
+<para>
 Eksempel på en komplet <filename>C:\Boot.ini</filename>:
 
 <SCREEN>
@@ -317,15 +341,16 @@ multi(0)disk(0)rdisk(0)partition(3)\WINNT="NT Workstation 4.00 SP3 [VGA
 mode]" /basevideo /sos
 C:\="Windows 95"
 </screen>
-   </para>
+</para>
 
-   <para>
-    Denne fil er Windows' startprograms opsætningsfil. Filen skal nu
-    tilrettes, så Linux også bliver en valgmulighed.
-   </para>
+<para>
+Denne fil er Windows' startprograms opsætningsfil. Filen skal nu
+tilrettes, så Linux også bliver en valgmulighed.
+</para>
 
-   <para>
-    Skriv i DOS/NT:
+<para>
+Skriv i DOS/NT:
+</para>
 
 <screen>
 C:
@@ -333,40 +358,39 @@ CD \
 ATTRIB -s -r BOOT.INI
 EDIT BOOT.INI
 </screen>
-   </para>
 
-   <para>
-    Tilføj følgende linje:
+<para>
+Tilføj følgende linje:
+</para>
 
 <screen>
 C:\bootsect.lnx="Linux - Red Hat 7.0"
 </screen>
-   </para>
 
-   <para>
-    Sæt derefter filens attributter igen:
+<para>
+Sæt derefter filens attributter igen:
 
 <screen>
 ATTRIB +s +r BOOT.INI
 </screen>
-   </para>
+</para>
 
-   <para>
-    Nu kan Windows' "OS Loader" kalde LILO og dermed starte Linux. Så du
-    <emphasis>kan</emphasis> opnå valgfrihed - også med Windows! Husk hvis du
-    ændrer opsætningen af LILO, skal du huske at fremstille en ny
-    <filename>bootsect.lnx</filename>-fil og kopiere den over på til
-    Windows-filsystemet. 
-   </para>
+<para>
+Nu kan Windows' "OS Loader" kalde LILO og dermed starte Linux. Så du
+<emphasis>kan</emphasis> opnå valgfrihed - også med Windows! Husk hvis du
+ændrer opsætningen af LILO, skal du huske at fremstille en ny
+<filename>bootsect.lnx</filename>-fil og kopiere den over på til
+Windows-filsystemet. 
+</para>
 
-   <para>
-    Hvis du vil vide meget mere om MBR-placering, opstart og diskopdeling, kan
-    det anbefales at læse HOWTO-guiden om LILO. På Red Hat Linux-cdrommen
-    hedder filen <filename>/doc/HOWTO/mini/LILO</filename>.
-   </para>
+<para>
+Hvis du vil vide meget mere om MBR-placering, opstart og diskopdeling, kan
+det anbefales at læse HOWTO-guiden om LILO. På Red Hat Linux-cdrommen
+hedder filen <filename>/doc/HOWTO/mini/LILO</filename>.
+</para>
 
-   <!-- Man kunne også referere til Mini HOWTO'en om NT windows og linux -->
-  </sect3>
+<!-- Man kunne også referere til Mini HOWTO'en om NT windows og linux -->
+</sect3>
  </sect2>
 </sect1>
 
@@ -463,7 +487,7 @@ betydningen af de forskellige runlevels.
   <TITLE>Runlevels</TITLE>
   <TGROUP COLS=2 ALIGN="char">
   <THEAD>
-    <ROW>
+   <ROW>
       <ENTRY>Runlevel</ENTRY>
       <ENTRY>Betydning</ENTRY>
     </ROW>
