@@ -1,4 +1,4 @@
-all: clean html pdf mail
+all: clean html pdf cvs2html mail
 
 html:
 	make -C friheden html
@@ -22,6 +22,7 @@ clean:
 	make -C program clean
 	make -C web clean 
 	make -C sikkerhed clean 
+	rm -rf cvs2html
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
