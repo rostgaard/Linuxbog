@@ -35,7 +35,7 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
 
 # her er det der skal laves
-all:	html palmpilot exit
+all:	html palmpilot pspdf sgml exit
 
 sgml: $(targetname)-$(version).sgml.tar.gz
 
