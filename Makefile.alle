@@ -64,7 +64,7 @@ test:
 ################################################################################
 # her er det der skal laves
 .PHONY : all
-all: html  pakhtml sgml palmpilot
+all: html  pakhtml sgml palmpilot pdf
 
 ################################################################################
 
@@ -153,12 +153,11 @@ html: statusfiles $(targetshortname)
 $(targetshortname): html.stamp
 
 html.stamp: $(dep_sgml_filer) bog.sgml
-#	echo $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
 	rm -rf stikord.sgml magic.sgml bog alle
 	echo '<!ENTITY magic "png">' > magic.sgml
 	collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml
+	( cd bog && ln ../../*/*.sgml  ./ && jw -V %use-id-as-filename% -V html-index -f docbook -b html -o ./   bog.sgml )
 	collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
 	rm -rf bog/
 	db2html -V %use-id-as-filename% bog.sgml
@@ -199,30 +198,33 @@ html:
 	@echo "Overspring html"
 endif !BUILD_HTML
 
+# dax parkerede en linie fra make html: her.
+#	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml
 ################################################################################
 # Byg PDF filen
 ################################################################################
 
 if BUILD_PDF
-pdf: $(targetname)-pdf-$(version).zip
-$(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.sgml
+pdf: $(targetname)-$(version).pdf
+# $(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.sgml
+$(targetname)-$(version).pdf: $(sgmlfiler) bog.sgml
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pdf"
 	@echo ".........................................."
 	@echo '<!ENTITY magic "png">' > magic.sgml
 	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	rm -rf tempdir
-	mkdir tempdir
-	cp *.{sgml,xml} tempdir
-	(cd tempdir && ln -s ../images/*png .)
-	(cd tempdir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
-	(cd tempdir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
-	(cd tempdir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
-	(cd tempdir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
+	rm -rf PdfBuildDir
+	mkdir PdfBuildDir
+	cp *.{sgml,xml} PdfBuildDir
+	(cd PdfBuildDir && ln -s ../images/*png .)
+	(cd PdfBuildDir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
+	(cd PdfBuildDir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
+	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
+	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
 
-	mv tempdir/bog.pdf $(targetname)-$(version).pdf
+	mv PdfBuildDir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
-	rm -rf tempdir
+	rm -rf PdfBuildDir
 	@echo "Done PDF (pdf)"
 	@echo ""
 endif BUILD_PDF
