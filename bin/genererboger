@@ -4,8 +4,6 @@ cd /home/www/cvs.linuxbog.dk/htdocs/
 cvs update -d 
 
 # Publicer cvs som html
-rm -rf cvs2html
-mkdir cvs2html
 cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
 
 # Byg boegerne.
@@ -27,8 +25,8 @@ date >> .buildmsgs
 date >> .builderrs
 
 # Lidt rettighedssnaks, og en automail til linuxbog.dk
-chgrp -R linuxbog .
-chmod -R g-w .
+chgrp -R linuxbog *
+chmod -R g-w *
 TERM=vt100 /usr/bin/lynx http://cvs.linuxbog.dk/index.php\?matrix=1 -dump | grep "Ud af" > ~/.lbstatus
 date | mail -s "Linuxbog:`cat ~/.lbstatus`" linuxbog-commit@tyge.sslug.dk
 echo "done"
