@@ -13,9 +13,7 @@ version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -
 # dato
 dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)	
 
-# cygnus dsl ligger ikke ens på MDK8 og RH6.2
-cygnusdsl = $(firstword $(wildcard  /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl))
-
+# filer vi ikke vil se på
 badfiles1 = $(wildcard ../*/dato.sgml)
 badfiles2 = $(wildcard ../*/magic.sgml)
 badfiles3 = $(wildcard ../*/stikord.sgml)
@@ -41,7 +39,7 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 SUBDIRS = applikationer admin program unix web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html  pakhtml palmpilot sgml
+all: html  pakhtml sgml
 
 
 versionfil:
@@ -59,10 +57,10 @@ sgml: $(sgmlfiler) $(targetname)-sgml-$(version).tar.gz $(targetname)-sgml-$(ver
 
 
 $(targetname)-sgml-$(version).tar.gz:
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile)
 
 $(targetname)-sgml-$(version).zip:
-	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
+	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile)
 
 palmpilot: $(targetname)-palm-$(version).zip
 
@@ -79,37 +77,32 @@ $(targetshortname): alle/index.html
 
 alle/index.html: $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
-	rm -rf tempdir stikord.sgml magic.sgml bog alle
+	rm -rf stikord.sgml magic.sgml bog alle
 	echo '<!ENTITY magic "png">' > magic.sgml
-	mkdir tempdir
-	perl ./collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d $(cygnusdsl)\#html -V html-index bog.sgml)
-	(cd tempdir; perl ../collateindex.pl -s Symboler  -x -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
-	#db2html bog.sgml
-	(cd tempdir;jade -t sgml -ihtml -d $(cygnusdsl)\#html bog.sgml)
-	mkdir $(targetshortname)
-	cp tempdir/*.html $(targetshortname)
+	collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	jw -V html-index -f docbook -b html -o bog bog.sgml
+	collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
+	rm -rf bog/
+	db2html  -V  %use-id-as-filename% bog.sgml
 	for dir in $(SUBDIRS); do \
-		cp ../$$dir/images/*.png $(targetshortname); \
+		cp ../$$dir/images/*.png bog; \
 	done;
-	cp linuxbog.css $(targetshortname)
-	ln -s alle bog
-	rm -rf tempdir
-	echo %define buildname $(targetshortname) > $(targetshortname)/$(targetname).spec
-	echo Name: linuxbog-$(targetshortname) >> $(targetshortname)/$(targetname).spec
-	echo Summary: `grep -A2 "<title>" ../friheden/indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> $(targetshortname)/$(targetname).spec
-	echo Version: `cat ../friheden/version.sgml` >> $(targetshortname)/$(targetname).spec
-	echo Release: 1mdk >>  $(targetshortname)/$(targetname).spec
-	cat ../linuxbog.spec >> $(targetshortname)/$(targetname).spec
+	cp linuxbog.css bog
+	ln -s bog alle
+	echo %define buildname $(targetshortname) > bog/$(targetname).spec
+	echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
+	echo Summary: `grep -A2 "<title>" ../friheden/indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
+	echo Version: `cat ../friheden/version.sgml` >> bog/$(targetname).spec
+	echo Release: 1mdk >>  bog/$(targetname).spec
+	cat ../linuxbog.spec >> bog/$(targetname).spec
 
 ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
-	(cd $(targetshortname);perl ../../misc/insertimagesize)
+	(cd bog;perl ../../misc/insertimagesize)
 else
 	@echo Du bør installere Perl-modulet Image::Size.
 endif
 ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
-	(cd $(targetshortname);tidy -f err.txt -imu *html;rm -f err.txt)
+	(cd bog;tidy -f err.txt -imu *html;rm -f err.txt)
 else
 	@echo Du bør installere tidy.
 endif
@@ -118,7 +111,7 @@ endif
 pakhtml: $(targetname)-html-$(version).tar.gz $(targetname)-htmlub-$(version).tar.gz $(targetname)-png-$(version).tar.gz $(targetname)-html-$(version).zip
 
 $(targetname)-html-$(version).tar.gz: alle/index.html 
-	tar czf $(targetname)-html-$(version).tar.gz $(targetshortname)
+	tar czf $(targetname)-html-$(version).tar.gz $(targetshortname)/*
 
 $(targetname)-htmlub-$(version).tar.gz: alle/index.html 
 	tar czf $(targetname)-htmlub-$(version).tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
