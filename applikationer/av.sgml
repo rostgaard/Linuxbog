@@ -1798,10 +1798,27 @@ for at få hele skærmen gemt.
 <sect1 id="webcam">
 <title>Webcam under Linux</title>
 <indexterm><primary>Webcam</primary></indexterm>
+<indexterm><primary>Video For Linux</primary></indexterm>
+<indexterm><primary>v4l</primary></indexterm>
 <para>
-Indtil for nylig var det umuligt at få et webcam (internet-kamera) 
-til at virke under Linux, men med kerne 2.4 er det nu muligt.
+Indtil for nylig var det vanskeligt at få et webcam (internet-kamera) 
+til at virke under Linux, men med kerne 2.4 er det nu blevet langt
+lettere. Det er stadig sådan at man skal sikre sig at det enkelte
+kamera har understøttelse under Linux (helst inden man køber det). I
+praksis har de fleste USB kameraer understøttelse, men enkelte
+eksotiske kameraer giver stadig problemer. Ligeledes skal man kigge
+sig godt for, hvis man f.eks. vil have et webcam på parallel- eller
+firewireporten. 
 </para>
+
+<para>I praksis fungerer de fleste webcams under Linux ved hjælp af
+"Video For Linux" (v4l) arkitekturen. En driver sidder mellem Linux
+kernen og kameraet, og stiller en v4l grænseflade til rådighed som
+programmer der kan bruge v4l kan anvende. Et klassisk program er
+XAWTV, men også f.eks. aKtion (se <xref linkend="xanim">) understøtter
+dette. Du kan finde mere information om v4l på f.eks. 
+<ulink url="http://www.exploits.org/v4l/">http://www.exploits.org/v4l/</ulink>.</para>
+
 <para>
 På <ulink url="http://qce-ga.sourceforge.net">http://qce-ga.sourceforge.net</ulink> kan man finde drivere til Logitech Quickcam Express. 
 </para>
@@ -1818,4 +1835,886 @@ er på
 </para>
 
 </sect1>
+
+<!-- =================================================================== -->
+<!-- Video redigering -->
+<!-- =================================================================== -->
+
+<sect1 id="videored">
+<title>Video redigering</title>
+<indexterm><primary>Video redigering</primary></indexterm>
+
+<para>
+Video redigering er en omfattende proces der kræver at man gennemfører
+en del skridt og at man har noget rimeligt hardware - især må man nok
+forvente at skulle bruge en del diskplads. Hvis man vil lave mange
+sjove effekter (overgange, mv) eller gerne vil indkode til MPEG2/DivX
+er det også en god ide at have en (eller flere) kraftige processorer.
+</para>
+
+<para>Video redigering under Linux er ikke trivielt at begynde at
+arbejde med. Det skyldes primært at man skal installere en del
+forskellig software for at få de forskellige codecs (se <xref
+linkend="videoreg-konvertering">) understøttet og at man også i et
+vist omfang vil blive tvunget til at foretage en del konverteringer
+mellem forskellige formater for at få de forskellige værktøjer til at
+arbejde med ens sekvenser.</para>
+
+<para>For at kunne redigere video kræves at man kan</para>
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Få videostrømmen ind på computeren. (Optage video).
+ </para>
+</listitem>
+<listitem>
+ <para>
+Konvertere video fra det rå video format til et format ens programmer
+kan arbejde med.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Manipulere video- og lydklip og sætte dem sammen til videofilm.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Konvertere den færdige film til det endelige format.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Overføre den færdige film til slutmediet.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>I det følgende vil hvert af disse skridt blive skitseret - da
+der er mange forskellige måder at gøre tingene på, vil de forskellige
+skridt ikke blive gennemgået i detaljer. Flere værktøjer dækker
+desuden flere skridt - de vil blive nævnt under de punkter hvor de er
+mest relevante.</para>
+
+<sect2 id="videoreg-optage">
+<title>Optage video</title>
+<indexterm><primary>Optage video</primary></indexterm>
+<indexterm><primary>Video For Linux</primary></indexterm>
+<indexterm><primary>v4l</primary></indexterm>
+<indexterm><primary>XAWTV</primary></indexterm>
+<para>Der findes en række måder at få en videostrøm ind på dit system
+på. I det følgende antages at man har en videosekvens man har optaget
+på et videokamera eller lignende (kan også være f.eks. direkte tv,
+eller et webcam) og det er denne sekvens man vil have lagret på sin
+harddisk, med så lidt tab af signal (f.eks. frames) som muligt. Jeg
+forsøger at bruge ordet "optage" om denne proces - på engelsk kalder
+man det at "grabbe" video.</para>
+
+<para>Det er selvklart muligt at købe et decideret optagekort (frame
+grabber card). Et sådan kort har den store fordel at det kan grabbe
+analog video og eventuelt komprimere det i hardware, hvilket fjerner
+en del af belastningen fra selve systemet. Der findes et par kort der
+er understøttet under Linux via mjpegtools (mjpegtools er beskrevet
+i <xref linkend="videoreg-konvertering-mjpegtools">). Jeg har imidlertid ingen
+erfaring med disse kort.</para>
+
+<para>mjpegtools kan desuden optage fra "Video For Linux" (v4l)
+enheder og understøtter også software realtids komprimering under
+optagelse til jpeg codecs. v4l er en generel video infrastruktur som
+de fleste drivere til Linux der beskæftiger sig med video
+understøtter. (Med f.eks. DV som en undtagelse, så vidt jeg ved). Hvis
+man har f.eks. et webcam, vil driveren til dette typisk stille en v4l
+grænseflade til rådighed for applikationer. Derfor kan de fleste
+programmer der f.eks. er beregnet til at optage video, fungere med
+v4l. Du kan finde mere information om v4l på f.eks. 
+<ulink
+url="http://www.exploits.org/v4l/">http://www.exploits.org/v4l/</ulink>.
+</para>
+
+<para>Hvis du har et tvkort, der bruger v4l, kan du bruge
+f.eks. programmet XAWTV (se
+<xref linkend="webcam">), til at gemme din videosekvens på din
+harddisk enten som en række jpeg billeder, eller som både lyd og
+billede i en AVI strøm. Du skal blot afspille din videosekvens og bede
+XAWTV om at gemme den på en passende måde. Imidlertid kræver dette en
+del af din hardware. Ved normal fremvisning skriver dit tvkort direkte
+i dit grafikkorts hukommelse og med mindre dit tvkort (og driveren til
+det) kan overføre billederne til din ram direkte, skal XAWTV læse
+billederne fra videokortets hukommelse og behandle dem
+efterfølgende. Det kan være en temmeligt langsommelig process og det
+er vanskeligt at grabbe med særlig høj opløsning, eller i særlig god
+kvalitet på den måde. Med en tilstrækkelig hurtig computer burde det
+dog kunne lade sig gøre.</para>
+
+<para>For et webcam gælder egentlig de samme betragtninger som for
+tvkortet, bortset fra at man nok har en større sandsynlighed for at
+opnå succes, da udgangspunktet som regel er at et webcam har en
+relativt ringere kvalitet end et videokamera og især et lavere
+båndbreddeforbrug.</para>
+
+<sect3 id="firewire">
+<title>Optage digital video</title>
+<indexterm><primary>Digital video</primary></indexterm>
+<indexterm><primary>Firewire</primary></indexterm>
+<indexterm><primary>DV-out</primary></indexterm>
+<indexterm><primary>ILink</primary></indexterm>
+<indexterm><primary>linux1394</primary></indexterm>
+<indexterm><primary>IEEE1394</primary></indexterm>
+<indexterm><primary>AV/C</primary></indexterm>
+<indexterm><primary>libavc1394</primary></indexterm>
+<indexterm><primary>libraw1394</primary></indexterm>
+<indexterm><primary>romtest</primary></indexterm>
+<indexterm><primary>dvcont</primary></indexterm>
+<indexterm><primary>gscanbus</primary></indexterm>
+<indexterm><primary>dvgrab</primary></indexterm>
+<indexterm><primary>PAL</primary></indexterm>
+<indexterm><primary>NTSC</primary></indexterm>
+
+<para>Hvis man er den lykkelige ejer af et digitalt videokamera (DV
+kamera) er der ingen tvivl om hvordan man skal optage video; det skal
+man gøre med Firewire. Firewire er en IEEE specifikation, nummer
+1394. (Firewire er et "kælenavn" for denne specifikation, som omtales
+som IEEE1394 når man snakker teknik. Sony har forsøgt at kalde
+Firewire for ILink, men det er vist aldrig rigtigt slået an).</para>
+
+<para>For at bruge Firewire, skal ens videokamera have en Firewire
+port. Det er mit indtryk at alle digitale videokameraer har en
+sådan. Derudover skal man have en Firewire port i sin PC. Har man en
+stationær, kan man købe f.eks. et Adaptec FireConnect 4300 kort til
+omkring 500-700 kr. Mange nyere bærbare (inklusiv alle fra Apple og de
+fleste fra Dell) kommer med en indbygget Firewire port. Det vigtige er
+at sikre sig at chippen er en OHCI kompatibel chip - men, da det er
+langt den mest udbredte burde det være en smal sag.</para>
+
+<para>Dernæst skal man selvfølgelig bruge noget software. Først og
+fremmest skal man bruge nogen kernedrivere. Projektet for disse
+drivere er på <ulink
+url="http://www.sourceforge.net/projects/linux1394/">http://www.sourceforge.net/projects/linux1394/</ulink>.
+Det vil fremgå af projektets hjemmeside hvilke kerneversioner, osv,
+der anbefales - jeg har i skrivende stund gode erfaringer med den der
+kommer med Mandrake 8.2, nemlig kerne 2.4.18. Bemærk at driverne er en
+del af standard kernen, altså også 2.4.18, men at det nogen gange kan
+betale sig at opgradere driverne alligevel. For mig har alting
+fungeret fint med den kerne og de pakker der kommer med Mandrake
+8.2. (Pånær libdv - det vender jeg tilbage til nedenfor).</para>
+
+<para>Installationen af ieee1394 driverne er iøvrigt beskrevet i
+dokumentationen til driverne. I det følgende vises kort hvordan en
+session hvor disse drivere anvendes f.eks. kan se ud.</para>
+
+<para>Man skal have et device kaldet <filename>/dev/raw1394</filename>
+som skal være oprettet som major 171, minor 0, og med passende ejer og
+rettigheder:</para>
+<screen>
+[root@ripley madsdyd]# ls -l /dev/raw1394
+crw-r--r--    1 madsdyd  madsdyd  171,   0 mar 29 21:34 /dev/raw1394
+</screen>
+
+<para>Indsættelse af modulerne skulle helst ikke give nogen fejl. Det
+kan f.eks. se sådan ud, når man gør det manuelt (som sædvanligt kan
+moduler autoloades - se andetsteds for information om dette):</para>
+
+<screen>
+[root@ripley madsdyd]# modprobe raw1394
+[root@ripley madsdyd]# modprobe ohci1394
+[root@ripley madsdyd]# tail /var/log/messages
+May  1 15:43:53 ripley kernel: raw1394: /dev/raw1394 device initialized
+May  1 15:43:59 ripley kernel: ohci1394: $Revision$ Ben Collins ...
+May  1 15:43:59 ripley kernel: PCI: Found IRQ 10 for device 02:0f.2
+May  1 15:43:59 ripley kernel: PCI: Sharing IRQ 10 with 00:1f.2
+May  1 15:43:59 ripley kernel: PCI: Sharing IRQ 10 with 02:0f.0
+May  1 15:43:59 ripley kernel: PCI: Sharing IRQ 10 with 02:0f.1
+May  1 15:43:59 ripley kernel: ohci1394_0: OHCI-1394 1.0 (PCI): IRQ=[10] ...
+</screen>
+
+<para>ieee1394 driveren bliver automatisk loadet af ovenstående selv
+om den ikke blev loaded eksplicit:</para>
+
+<screen>
+[root@ripley madsdyd]# lsmod | head
+Module                  Size  Used by    Tainted: P
+ohci1394               15904   0  (unused)
+raw1394                 6832   0  (unused)
+ieee1394               26312   0  [ohci1394 raw1394]
+</screen>
+
+<para>Når de forskellige drivere er loadet, kan du køre programmet
+<command>romtest</command> som er et testprogram fra libavc
+pakken. Dette er en pakke der giver et standard programmerings
+grænsesnit (API) til "1394 Trade Association AV/C (Audio/Video
+Control) Digital Interface Command Set" - altså et API til de
+protokolkommandoer vi kan sende til vores Firewire controller og
+bus. Hvis du kører Mandrake 8.2, ligger dette program i pakken
+"libavc1394_0-testools" som selvfølgelig forudsætter at "libavc1394_0"
+er installeret (og, det er nok en god ide at installere
+"libavc1394_0-devel" mens man er i gang). I denne pakke medfølger
+desuden <command>dvcont</command> som er et kommandolinie værktøj til
+at manipulere med DV kameraer med. <command>romtest</command> og
+<command>dvcont</command> forudsætter udover libavc1394 at man har
+installeret "libraw1394" biblioteket (dette bibliotek anvendes iøvrigt
+af stort set alle programmer der håndterer DV nær hardwaren, så det er
+praktisk at installere det). I Mandrake 8.2 kan man installere
+"libraw1394_5" og "libraw1394_5-devel" pakkerne. Hjemmesiderne for de
+to biblioteker er på <ulink
+url="http://www.sourceforge.net/projects/libraw1394/">http://www.sourceforge.net/projects/libraw1394/</ulink>
+og <ulink
+url="http://www.sourceforge.net/projects/libavc1394/">http://www.sourceforge.net/projects/libavc1394/</ulink>.
+Kørsel af <command>romtest</command> kan f.eks. se sådan her ud (når
+der ikke er nogen enheder tilsluttet Firewire bussen):</para>
+
+<screen>
+[root@ripley madsdyd]# romtest
+Librom1394 Test Report
+=================================================
+
+Node 0:
+-------------------------------------------------
+bus info block length = 4
+bus id = 0x31333934
+bus options:
+    isochronous resource manager capable: 0
+    cycle master capable                : 1
+    isochronous capable                 : 1
+    bus manager capable                 : 0
+    cycle master clock accuracy         : 0 ppm
+    maximum asynchronous record size    : 2048 bytes
+GUID: 0x434fc00032fea410
+directory:
+    node capabilities    : 0x000083c0
+    vendor id            : 0x0000005e
+    unit spec id         : 0x00000000
+    unit software version: 0x00000000
+    model id             : 0x00000000
+    textual leaves       : Linux 1394
+</screen>
+
+<para>Når du har overbevist dig om at du har kontakt til din Firewire
+adapter, kan du prøve at forbinde dit kamera. Bemærk, at en del DV
+kameraer ikke vil snakke på Firewire stikket, hvis ikke det er aktivt
+når kameraet er tændt. MAO: det er typisk en god ide at slukke
+kameraet inden man stikker Firewire kablet i. Dernæst bør man loade
+driverne på PC siden og så endeligt tænde kameraet. Hvis man derefter
+kører <command>romtest</command>, skulle man gerne have to noder på
+sin Firewire bus. Alternativt kan man køre programmet
+<command>gscanbus</command>, som er et grafisk program til at se
+enheder på en Firewire bus, inspicere dem, og for enkelte enheder
+kontrollere dem. På <xref linkend="gscanbus-fig"> er et skærmdump af
+<command>gscanbus</command> med et DV kamera tilsluttet og et
+dialogvindue til at kontrollere kameraet med, vist.</para>
+
+<figure ID="gscanbus-fig" FLOAT="1">
+<title>gscanbus</title>
+<graphic fileref="gscanbus.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>Og, endelig er vi fremme ved at optage video. Til dette kan du
+f.eks.  bruge kommandolinieprogrammet <command>dvgrab</command>. Dette
+program ligger under Mandrake 8.2 i "dvgrab" pakken. Hjemmesiden for
+dette værktøj er på
+<ulink
+url="http://www.schirmacher.de/arne/dvgrab/index_e.html">http://www.schirmacher.de/arne/dvgrab/index_e.html</ulink>.
+<command>dvgrab</command> kræver biblioteket "libdv". Det er en
+rigtigt god ide at installere libdv i den allernyeste version, faktisk
+fra CVS. Hvis du f.eks. oplever at dvgrab ikke kan se dit kamera eller
+simpelthen crasher (dvs at f.eks. <command>dvgrab</command> crasher),
+kan det skyldes en kendt fejl med MMX detekteringen i libdv. De RPM
+filer der er med Mandrake 8.2 indeholder ikke en rettelse for denne
+fejl, så det er nødvendigt at downloade versionen fra CVS, eller
+patche koden til biblioteket selv. Det er relativt simpelt at gøre
+dette og er beskrevet i libdv's dokumentation. Bemærk at både Kino,
+MainActor og Broadcast 2000 tilbyder grafiske frontends til at optage
+fra DV med - disse programmer er beskrevet i <xref
+linkend="videoreg-redigere"> nedenfor.</para>
+
+<para>Når du bruger <command>dvgrab</command> og dit kamera er PAL
+(Meste af verden, pånær USA), optager du med 25 billeder i sekundet (I
+modsætning til NTSC, der optager med næsten 30 billeder i
+sekundet). Det betyder at du vil optage med ret præcist 3.6 MB/s. De
+fleste moderne harddiske har ingen problemer med at tage imod dette,
+men man skal være opmærksom på at der er ingen flowkontrol - det vil
+sige at hvis man sætter sin harddisk til at lave noget andet, kan man
+risikere at man mister billeder. Endvidere kan man tilsyneladende
+risikere at komme i nogen situationer hvor Linux naivt beslutter sig
+for at fylde ens RAM med billeder, istedet for at skrive ud til
+harddisken med det samme. Når Linux endelig opdager at man har tænkt
+sig at smide 12 GB på disken (en time i DV fylder omtrent 12 GB),
+begynder den hektisk at flushe ram til disken, og det kan også give
+nogen pakketab. Jeg har dog aldrig selv oplevet dette, men har set det
+beskrevet. For nogen er løsningen at starte en seperat process der
+løbende syncer disken. Det kan man f.eks. gøre ved at skrive</para>
+<screen>
+[madsdyd@ripley madsdyd 61%]$ while : ; do sleep 1 && sync ; done
+</screen>
+<para>i en xterm eller lignende (hvis man bruger en anden shell end
+bash er syntaxen lidt anderledes). Dette vil synce disken omtrent
+hvert sekund, hvilket antageligvis kan løse problemet med mistede
+billeder for nogen. Det kan muligvis også betale sig at bruge
+low-latency patchene til Linux kernen, eller i yderste nødstilfælde
+disable skrive cachen på disken med programmet
+<command>hdparm</command>. Det sidste må dog generelt frarådes.</para> 
+
+</sect3> <!-- Digitale video/Firewire -->
+
+</sect2> <!-- Video optagelse -->
+
+<sect2 id="videoreg-konvertering">
+<title>Konvertering af de optagne videosekvenser</title>
+<indexterm><primary>Konvertere video</primary></indexterm> 
+<indexterm><primary>Codecs</primary></indexterm>
+<indexterm><primary>Video codecs</primary></indexterm>
+
+
+<para>Næsten ligegyldigt hvordan du har optaget din originale
+videosekvens, vil der opstå et behov for at konvertere sekvensen til 
+et andet format, typisk et format dine værktøjer kan arbejde med. Når
+du har lavet din endelige film, vil der formentlig ligeledes være brug
+for at konvertere den til forskellige formater, afhængigt af hvad du
+skal bruge den til. Det sidste er dækket i <xref
+linkend="videoreg-slutkonvertering">, det første gives der en introduktion til i
+dette afsnit.</para>
+
+<para>
+Først skal man gøre sig klart, hvilke formater ens værktøjer
+understøtter. I <xref linkend="videoreg-redigere"> nævnes et par
+værktøjer til at redigere i videofilm med. Eksempelvis for Kino gælder
+det at den kun redigerer DV klip i det format dvgrab optager med (DV
+format). For Broadcast 2000 gælder at den kun redigerer klip i
+QuickTime - og kun i et par af de mere simple codecs.
+</para>
+
+<para>
+Overordnet set er der 3 udbredte formater; AVI (.avi), QuickTime
+(.mov) og MPEG (.mpeg). Imidlertid er f.eks. en .avi fil ikke bare en
+.avi fil. De forskellige formater her nævnt er faktisk kun en
+definition af hvordan man skal kunne udtrække de enkelte billeder,
+synkronisere med lyd, mv. fra videosekvensen. Selve indkodningen af
+billeder kan gøres på mange forskellige måder. Eksempelvis ser man
+.avi filer hvor hver enkelt billede er rå 24 bit RGB og lyden er rå 16
+bit stereo i f.eks. 44 kHz. Hvis man konverterer denne .avi sekvens
+til at billederne skal være jpeg komprimeret og lyden ulaw
+komprimeret, kan man opnå en voldsom formindskelse i pladsforbrug med
+et normalt tåleligt kvalitetstab. De forskellige måder at indkode og
+afkode billeder og lyd på i de forskellige sekvenser kaldes codecs.
+Desværre er det ofte sådan at de bedste codec - altså dem der giver
+bedst billed- og lydkvalitet med mindst pladsforbrug - udelukkende
+frigives i binær form til f.eks. Windows og Mac. Eller er omfattet af
+patent- eller licensbetingelser der gør det umuligt at implementere
+dem i åben software. Derfor er det ikke nok at AVI, QuickTime og MPEG
+er understøttet under Linux - de enkelte codecs skal også være
+det. Det er generelt ikke noget problem med de sekvenser man selv
+optager, men hvis man vil mikse sekvenser man har fundet andre steder
+sammen, kan man opleve at man nok kan se sekvensen, f.eks. gennem
+programmet Mplayer (se <xref linkend="DivX">), men at det kan være
+meget vanskeligt at konvertere sekvensen til noget ens værktøjer kan
+arbejde med.
+</para>
+
+<sect3 id="videoreg-konvertering-dv2jpg">
+<title>DV2 AVI til JPEG AVI</title>
+<indexterm><primary>dv2jpg</primary></indexterm>
+<indexterm><primary>DV</primary></indexterm>
+<indexterm><primary>JPEG AVI</primary></indexterm>
+<indexterm><primary>AVI</primary></indexterm>
+
+<para><command>dv2jpg</command> er et lille program der kan bruges til
+at konvertere en DV2 AVI sekvens, f.eks. optaget med dvgrab (se <xref
+linkend="firewire">) til en JPEG AVI sekvens. En JPG AVI sekvens kan
+ses med f.eks. xine og andre film afspillere (se <xref
+linkend="spille-film">). dv2jpg's hjemmeside er på
+<ulink
+url="http://sourceforge.net/projects/dv2jpg">http://sourceforge.net/projects/dv2jpg</ulink>,</para>
+
+<para>Fordelen ved <command>dv2jpg</command> er at det er rimeligt
+hurtigt at køre og at den resulterende fil bliver væsentligt mindre
+end den oprindelige DV film. Ulempen er at man ikke har så meget
+kontrol over konverteringen - f.eks. sætter dv2jpg opløsningen ned i
+en forventning om at man vil lave en sekvens der skal ud på f.eks. en
+Video CD. Men, det er et simpelt program at bruge hvis man
+f.eks. gerne hurtigt vil lave en sekvens der f.eks. kan lægges online
+og/eller afspilles på en Windows maskine. Til seriøs behandling af
+sekvenser er det dog ikke velegnet, med mindre konverteringen passer
+til det formål man har med videokonverteringen.</para>
+
+<para>For at bruge <command>dv2jpg</command> skal DV sekvensen være
+lagret i "DV format 2" - hvis du bruger <command>dvgrab</command> til
+at optage med, skal du altså bruge parameteren "--format dv2".</para>
+
+</sect3> <!-- dv2jpg -->
+
+<sect3 id="videoreg-konvertering-mjpegtools">
+<title>mjpegtools</title>
+<indexterm><primary>mjpegtools</primary></indexterm>
+<indexterm><primary>QuickTime</primary></indexterm>
+<indexterm><primary>MPEG</primary></indexterm>
+<indexterm><primary>MPEG2</primary></indexterm>
+<indexterm><primary>DV</primary></indexterm>
+<indexterm><primary>DivX</primary></indexterm>
+<indexterm><primary>VideoCD</primary></indexterm>
+<indexterm><primary>lav2mpeg</primary></indexterm>
+<indexterm><primary>lav2dvix</primary></indexterm>
+<indexterm><primary>toolame</primary></indexterm>
+<indexterm><primary>mp2enc</primary></indexterm>
+<indexterm><primary>lavrec</primary></indexterm>
+<indexterm><primary>mplex</primary></indexterm>
+
+<para>mjpegtools er en samling af en lang række kommandolinieværktøjer
+der kan konvertere fra MPEG og DV codecs (samt et par YUV
+indkodninger) i AVI, movtar eller QuickTime format til tilsvarende
+indkodninger. Eksempelvis kan mjpegtools konvertere både almindelige
+DV strømme og uddata fra f.eks. Broadcast 2000 (mindst eet format
+ihvertfald). Disse værktøjer er nok uundværlige, hvis man vil
+konvertere sine færdige film til f.eks. forskellige bitrater,
+størrelse, indkodninger og til f.eks. et medie som
+VideoCD. Forudsætningen er naturligvis at ens slutresultat skal være
+MPEG i en eller anden form. mpjegtools hjemmeside er på
+<ulink
+url="http://sourceforge.net/projects/mjpeg/">http://sourceforge.net/projects/mjpeg/</ulink>,
+men besøg også <ulink
+url="http://mjpeg.sourceforge.net/">http://mjpeg.sourceforge.net/</ulink>.</para>
+
+<para>På hjemmesiden kan du downloade mjpegtools i flere forskellige
+binære udgaver eller som kildefiler. Jeg vil anbefale dig at starte
+med at downloade en binær udgave og blive fortrolig med
+programmet. Hvis du kan finde ud af det, kan det dog godt betale sig
+at oversætte mjpegtools selv, da det er et værktøj der er meget CPU
+tungt, og du formentlig vil kunne få en del glæde af at have en udgave
+af det der er optimeret til din maskine. På min maskine (866 MHz PIII)
+konverterer mjpegtools fra DV format til MPEG2 med ca. 0.6 billeder i
+sekundet. Det er temmeligt langsomt. Bemærk at det er enog meget
+vanskeligt at oversætte mjpegtools med DV support på en måde så det
+virker. Start med de binære pakker.</para>
+
+<para>mjpegtools indeholder som sagt en lang række værktøjer. Skriv
+"man mjpegtools" i en shell for at få en introduktion. Disse værktøjer
+rækker over <command>lavrec</command> der kan optage MPEG strømme fra
+mange forskellige kilder, inklusiv nogle enkelte frame grabber korts,
+forskellige konverteringsværktøjer, <command>mplex</command> som er en
+MPEG multiplexer (anvendes typisk til at knytte en lydfil sammen med
+en videofil i slutkonvertering) og <command>lavplay</command> der kan
+afspille de understøttede formater.</para>
+
+<para>Men, det mest interessante værktøj at introducere her må være
+<command>lav2mpeg</command>. Dette shellscript kan konvertere mellem
+de formater mjpegtools understøtter ved at kalde de forskellige
+værktøjer og har en rimeligt overskuelig syntaks.
+<command>lav2mpeg</command> (og muligvis andre af mjpegtools'ene)
+bruger <command>toolame</command> værktøjet til at indkode lyd i MPEG
+filerne med. Det er muligt at bruge en anden enkoder,
+f.eks. <command>mp2enc</command> som følger med mjpegtools, læs manual
+siden til <command>lav2mpeg</command> for at finde ud af hvordan. Men,
+hvis du vil bruge <command>toolame</command> fandt jeg
+<command>toolame</command> på <ulink
+url="http://members.dingoblue.net.au/~mikecheng/">http://members.dingoblue.net.au/~mikecheng/</ulink>.
+Installationen er lidt klodset, man skal selv rette i Makefilen og
+installere programmet manualt, men det er et lille program, og hurtigt
+oversat og installeret.</para>
+
+<para>mjpegtools pakken indeholder endvidere et værktøj kaldet
+"lav2divx", der angiveligt skulle kunne bruges til at konvertere til
+aiv/divx format. Jeg har dog ikke testet det.</para>
+
+</sect3>
+
+<sect3 id="videoreg-konvertering-andre">
+<title>Andre værktøjer</title>
+<indexterm><primary>dv_utils</primary></indexterm>
+<indexterm><primary>transcode</primary></indexterm>
+<indexterm><primary>DV</primary></indexterm>
+<indexterm><primary>DV2 MOV</primary></indexterm>
+<indexterm><primary>DV2 QuickTime</primary></indexterm>
+<indexterm><primary>MOV</primary></indexterm>
+
+<para>Pakken "dv_utils" kan konvertere mellem DV og et par formater,
+som mov og avi. Dog ikke indkodning. Denne pakke kan downloades fra
+<ulink
+url="http://www.singingwizard.org/programming.php">http://www.singingwizard.org/programming.php</ulink>.</para>
+
+<para><command>transcode</command>, som kan downloades fra <ulink
+url="http://www.theorie.physik.uni-goettingen.de/~ostreich/transcode/">http://www.theorie.physik.uni-goettingen.de/~ostreich/transcode/</ulink>,
+kan ligeledes konvertere mellem en række formater.</para>
+
+</sect3>
+
+</sect2> <!-- Konvertering af de optagne videosekvenser -->
+
+
+<sect2 id="videoreg-redigere">
+<title>Redigering af video- og lydsekvenser</title>
+<indexterm><primary>Video redigering</primary></indexterm>
+
+<para>Der findes en del programmer til at redigere video med. I det
+følgende vil nogen af de mest populære blive præsenteret. Disse
+programmer har typisk også mulighed for at redigere og filtrere en
+smule i lyd - Broadcast 2000 har f.eks. rigtigt mange lydfiltre - men
+iøvrigt vil jeg ikke komme ind på lydredigering i sig selv. Der findes
+en del programmer til dette under Linux af varierende modenhed. Et af
+de mest spændende projekter jeg har set er Glame på 
+<ulink url="http://www.sourceforge.net/projects/glame/">http://www.sourceforge.net/projects/glame/</ulink>.</para>
+
+<sect3 id="broadcast2000">
+<title>Broadcast 2000</title>
+<indexterm><primary>Broadcast 2000</primary></indexterm>
+<indexterm><primary>Video redigering</primary></indexterm>
+
+<para>Broadcast 2000 er et af de mest kendte og vel nok også ældste
+videoredigeringsprogrammer til Linux. Det understøtter optagelse fra
+et v4l interface, fra LML33, som er et frame grabber kort fra <ulink
+url="http://linuxmedialabs.com">Linux Media Labs</ulink>, samt fra
+Firewire interface. På <xref linkend="broadcast2000-fig"> kan du se et
+typisk billede af Broadcast 2000.</para>
+
+<figure ID="broadcast2000-fig" FLOAT="1">
+<title>Broadcast 2000</title>
+<graphic fileref="broadcast2000.&magic;"  scale="33"></graphic>
+</figure>
+
+<para>Broadcast 2000 er et ret kraftfuldt program, men det har nogen
+problemer. For det første editerer det kun enkelte formater, primært
+QuickTime med ret primitive codes. Heldigvis kan Broadcast 2000 også
+loade MPEG2 video (men, jeg har ikke haft succes med MPEG1
+video). Derudover har Broadcast 2000 nogen enkelte fejl og
+uhensigtsmæssigheder i grænsefladen, der nogen gange gør det lidt
+besværligt at finde ud af hvad der foregår i programmet. Jeg finder
+det personligt svært at arbejde med, lidt ala Blender. Endeligt har
+forfatteren stoppet udviklingen på Broadcast 2000, angiveligt fordi
+han blev truet med et sagsanlæg af nogen der mente at de havde
+rettigheder til nogen af de teknikker programmet anvender. Han
+forsætter dog tilsyneladende udviklingen på programmet, nu under et
+nyt navn, nemlig Cinelerra (se <xref linkend="cinelerra">). Under
+Mandrake 8.2 kan man installere pakken "bcast" for at få adgang til
+Broadcast 2000 - jeg er faktisk ikke sikker på hvor kildekoden til
+Broadcast 2000 er henne, men hvis man vil igang med kildekoden til
+Broadcast 2000 kan man lige så godt kigge på Cinelerra.</para>
+
+<para>Hvis man kan finde ud af grænsefladen har Broadcast 2000 mange
+styrker. Eksempelvis kan det bruge plugins fra Gimp til at lave
+overgange og effekter med. Det giver en umiddelbar adgang til
+bogstaveligt talt 100 vis af spændende effekter og gør det ekstremt
+nemt at skrive sine egne effekter eller overgange; hvis man gøre det
+til Gimp, kan man gøre det til Broadcast 2000. Broadcast 2000 er
+desuden et udemærket lydredigeringsprogram.</para>
+
+<para>Der følger en del dokumentation med til Broadcast 2000 og,
+ihvertfald for forfatteren, var det nødvendigt at nærlæse denne meget
+grundigt for overhovedet at komme igang.</para>
+
+<para>Det endelige format for sekvenser redigeret med Broadcast 2000
+bliver nødt til at være en variation af QuickTime. En del simple
+codecs understøttes, herunder DV (som jeg tror er mest relevant, hvis
+man har brugt Broadcast 2000 til at optage video fra sit DV kamera
+med), JPEG, PNG, RGB og YUV. For f.eks. JPEG kan man få nogen
+kompression, men generelt er det ikke meget, før kvaliteten af
+billederne falder drastisk.</para>
+
+</sect3> <!-- Broadcast 2000 -->
+
+<sect3 id="cinelerra">
+<title>Cinelerra</title>
+<indexterm><primary>Cinelerra</primary></indexterm>
+<indexterm><primary>Video redigering</primary></indexterm>
+
+<para>Som nævnt i <xref linkend="broadcast2000"> kaldes efterfølgeren
+til Broadcast 2000 Cinelerra. Hjemmesiden er på
+<ulink
+url="http://sourceforge.net/projects/heroines/">http://sourceforge.net/projects/heroines/</ulink>.
+Cinelerra er en gennemgribende omskrivning af Broadcast 2000. Mens
+dette skrives (maj 2002) kaldes den nyeste version "Backups 050302" og
+dette må være at betragte som en alfa udgave. Cinelerra skal
+oversættes fra source. Processen er ikke triviel. Makefilen er
+"hjemmestrikket" og har blandt andet den uheldige egenskab at den
+forsøger at oversætte flere dele af programmet samtidig, men ikke
+tager højde for at nogen dele kan fejle. Det vil sige at man faktisk
+kan risikere at det ser ud som om at programmet er blevet oversat
+korrekt, uden at det er tilfældet. Visse dele af programmet virker dog
+fint, blandt andet lydredigering og grænsefladen er langt mere
+intuitiv end for Broadcast 2000. Så, hvis man er frisk på at
+eksperimentere lidt, så er det absolut interessant at prøve Cinelerra
+af. På <xref linkend="cinelerra-fig"> kan du se et skærmdump af
+Cinelerra med composition og ressource vinduet vist.</para>
+
+<figure ID="cinelerra-fig" FLOAT="1">
+<title>Cinelerra</title>
+<graphic fileref="cinelerra.&magic;"  scale="30"></graphic>
+</figure>
+
+<para>Oversættelse og installation af Cinelerra er som sagt ret
+besværligt og beskrives ikke i detaljer her. Du skal have en rimelig
+erfaring med at oversætte software under Linux for at få det til at
+virke. Download alle backup pakkerne (4 stks; cinelerra, xmovie,
+libmpeg og quicktime) og udpak dem i et katalog. Læs derefter filen
+<filename>cinelerra/doc/doc_2002.html</filename> og ret i
+<filename>cinelerra/global_config</filename>. Jeg måtte f.eks. fjerne
+ALSA support fra config, for at få det til at virke, selvom jeg
+egentlig har ALSA support. Jeg måtte desuden installere pakken
+"libtermcap5-devel" - men der er ikke nogen oversigt over hvilke
+pakker der kræves for at oversætte.</para>
+
+<para>Når du har rettet i config filen, kan du skifte til
+<filename>cinelerra</filename> og køre <command>make 2>&1 | tee
+make.log</command>. Redirectionen og pipen er for at sikre at du får
+al uddata i loggen. Når du er færdig med at oversætte skal du meget
+gerne have et program kaldet
+<filename>cinelerra/cinelerra/i686/cinelerra</filename>. Hvis ikke
+denne fil findes, så kig i <filename>make.log</filename> efter
+fejl. Fiks fejlene og prøv igen. Til sidst kan du køre <command>make
+install</command> som beskrevet i
+<filename>cinelerra/doc/doc_2002.html</filename>.</para>
+
+</sect3> <!-- cinelerra -->
+
+<sect3 id="mainactor">
+<title>MainActor</title>
+<indexterm><primary>MainActor</primary></indexterm>
+
+<para>MainActor, som kan fås fra <ulink
+url="http://www.mainconcept.de">http://www.mainconcept.de</ulink> er
+ikke Open Source, men derimod ShareWare. Indtil du registrerer vil
+MainActor skrive "MainActor" hen over alle dine videor. Registrering
+koster DM 149.</para>
+
+<para>MainActor kommer med flere programmer. Dels hovedprogrammet
+MainActor Sequencer (<command>maseq</command>), men også 3 mindre
+værktøjer (der vist alle er integreret i Sequencer), nemlig MainActor
+VideoEditor (<command>mave</command>) der er et simpelt værktøj til at
+råredigere enkelte sekvenser, MainActor VideoCapture
+(<command>macap</command>) der kan bruges til at optage sekvenser,
+samt i et vist omfang komprimere i realtid og endelig MATool
+(<command>matool</command>) der er et kommandolinie baseret program
+til at konvertere mellem forskellige videoformater. På <xref
+linkend="mainactor-fig"> kan du se et skærmdump af MainActor Sequencer.</para>
+
+<figure ID="mainactor-fig" FLOAT="1">
+<title>MainActor Sequencer</title>
+<graphic fileref="mainactor.&magic;"  scale="33"></graphic>
+</figure>
+
+<para>Forfatteren til dette afsnit er en stor tilhænger af OSS
+software - for næsten enhver pris. Alligevel kan det kun anbefales at
+man i det mindste prøver MainActor, hvis man gerne vil lave
+videoredigering under Linux. Programmet tilbyder mange faciliteter man
+ellers vil skulle bruge mange forskellige programmer for at kunne få,
+herunder tekster, filtre, effekter og ikke mindst konvertering mellem
+en lang række formater og codecs. Imidlertid har jeg også oplevet at
+det er gået ned for mig mindst een gang - og så mærker man
+irritationen ved at det ikke er OSS. (Ikke at OSS programmer ikke
+crasher, men så kan man jo fyre op under
+<command>gdb</command>.</para>
+
+</sect3> <!-- Main Actor -->
+
+
+<sect3 id="kino">
+<title>Kino</title>
+<indexterm><primary>Kino</primary></indexterm>
+
+<para>Kino er en temmelig simpel, men meget brugbar "DV only" cuts
+editor. Den er specielt velegnet til en råredigering af ens DV
+sekvenser. På <xref linkend="kino-fig"> kan du se et skærmskud af
+kino. Der er kun loadet een sekvens, men kino har automatisk fundet ud
+af at det er 7 scener, ved at kigge på tidsstemplerne i DV
+sekvensen. Du kan se det første billede i de 7 scener i venstre
+søjle. I hovedfeltet har er vist "tidslinien" som er en smart facilitet
+til at browse rundt i sin film med.</para>
+
+<figure ID="kino-fig" FLOAT="1">
+<title>Kino 2000</title>
+<graphic fileref="kino.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>Kino udviklerne har fokuseret på korrekthed og simplicitet. Så,
+man kan ikke lave smarte overgange. Ikke en gang simple, faktisk. Til
+gengæld er det meget nemt og hurtigt og arbejde med, og selv om det er
+i version 0.52 i øjeblikket er det absolut stabilt nok til at arbejde
+med.</para>
+
+<para>Kino læser og skriver DV1 og DV2 codecs i AVI (altså samme
+formater som man typisk vil optage med
+<command>dvgrab</command>). Ingen af delene tilbyder kompression, men
+til gengæld er der heller ikke noget kvalitetstab overhovedet. Hvis
+man vil lave playback i fuld PAL opløsning under Kino, skal man regne
+med at have mindst en PIII 866 MHz maskine. Kino kan kontrollere dit
+DV kamera, hvis det er tilsluttet din Firewire port, og hvis dit
+kamera kan DV-IN (se <xref linkend="videoreg-lagre-dv">), kan du
+eksportere din DV film tilbage til dit kamera. Det kræver ikke en
+særligt kraftig maskine, men en rimelig disk, der kan holde mindst 3.6
+MB/s ligeså længe filmen varer.</para>
+
+</sect3> <!-- Kino -->
+</sect2> <!-- Redigering af video- og lydsekvenser -->
+
+<sect2 id="videoreg-slutkonvertering">
+<title>Konvertering til det endelige format</title>
+<indexterm><primary>Slutkonvertering af video</primary></indexterm>
+
+<para>Denne sektion beskriver meget kort hvilke værktøjer man kan
+bruge til slutkonvertering til populære
+formater, med hovedvægt på DIVX AVI indkodning, og MPEG
+strømme til Video CD'er.</para>
+
+<sect3 id="videoreg-slutkonvertering-divx">
+<title>Indkodning til DivX AVI</title>
+<indexterm><primary>DivX</primary></indexterm>
+
+<para>Se <command>lav2divx</command> i <xref linkend="videoreg-konvertering-mjpegtools">.</para>
+
+</sect3> <!-- Indkodning til DivX AVI -->
+
+<sect3 id="videoreg-slutkonvertering-videocd">
+<title>Indkodning til VideoCD MPEG film</title>
+<indexterm><primary>VideoCD</primary></indexterm>
+<indexterm><primary>mjpegtools</primary></indexterm>
+
+<para>Se <command>lav2mpeg</command> i <xref linkend="videoreg-konvertering-mjpegtools">.</para>
+
+</sect3> <!-- Indkodning til VideoCD MPEG film -->
+
+</sect2> <!-- Konvertering til det endelige format -->
+
+<sect2 id="videoreg-lagre">
+<title>Overføre video til slutmedie</title>
+<indexterm><primary>Overføre video</primary></indexterm>
+
+<para>Dette afsnit hænger selvfølgelig utroligt meget sammen med det
+foregående, idet slutdestinationen for ens film naturligvis har stor
+indflydelse på hvilke formater man vælger at lægge den endelige film
+i. I dette afsnit vil der blive fokuseret på overførsel til DV bånd,
+VideoCD og almindeligt video signal.</para>
+
+<sect3 id="videoreg-lagre-dv">
+<title>Lagring af endelig film på DV</title>
+<indexterm><primary>DV-in</primary></indexterm>
+
+
+<para>Hvis man har et DV kamera kan man i mange tilfælde lægge den
+endelige film tilbage på bånd i kameraet. Fordelen ved at lægge den
+endelige film tilbage på DV bånd er naturligvis, at man derved bevarer
+den oprindelige kvalitet og har mulighed for at bruge kameraet til at
+overspille til normal videobånd, mv. Som nævnt i <xref linkend="kino">
+stiller det ikke særligt store krav til ens hardware at overføre DV
+video fra disken, da der ikke skal ske nogen konvertering af
+nævneværdig art.</para>
+
+<para>For at kameraet skal kunne optage DV tilbage fra Firewire
+porten, skal det understøtte "DV-in". I Europa sælges de fleste
+kameraer uden DV-in. Imidlertid er kameraerne identiske med dem der
+sælges i f.eks. Japan med DV-in. Muligheden er blot fjernet i
+firmwaren. Heldigvis kan man enable DV-in igen, med simpel
+software. En god oversigt over de forskellige programmer der findes
+til dette, kan findes på <ulink
+url="http://lea.hamradio.si/~s51kq/DV-IN.HTM">Enabling DV-IN on D8 &
+DV</ulink>. Desværre er de fleste af disse programmer Windows
+programmer, men for f.eks. JVC kameraer, findes der et Linux
+program. Når man enablet DV-in i firmwaren, skal man dog stadig have
+en mulighed for at starte optagelsen. Proceduren for dette er typisk
+beskrevet for hver type kamera. For nogen kameraer kan det kun gøres
+med software, for andre kan man trykke på recordknappen, mens kameraet
+står i playmode, eller lignende mærkværdigheder. NB: Brug for egen
+risiko, naturligvis. Skulle man være så heldig at eje et DV kamera med
+DV-in som standard, er ovenstående betragtninger selvklart
+ligegyldige.</para>
+
+<para>Kino kan exportere ens film til DV kameraet. Kino vil forsøge at
+starte optagelsen på kameraet, men for f.eks. mit kamera, skal jeg
+derudover selv presse record knappen ind. Der er nogen forskellige
+indstillinger i Kino man kan jurstere, der handler om timing mv. Hvis
+man oplever billedfejl eller lignende kan det muligvis betale sig at
+jurstere på disse indstillinger.</para>
+
+<para>For at kunne eksportere tilbage til kameraet med Kino, skal man
+have loadet modulet "video1394" og have et device med de rigtige
+rettigheder. Det kan f.eks. se sådan ud:</para>
+
+<screen>
+[root@ripley madsdyd]# ls -l /dev/video1394
+crw-r--r--    1 madsdyd  madsdyd  172,   0 maj  4 13:39 /dev/video1394
+</screen>
+
+</sect3> <!-- Lagring af endelig film på DV -->
+
+<sect3 id="videoreg-lagre-vcd">
+<title>Lagring af endelig film på VideoCD</title>
+<indexterm><primary>VideoCD</primary></indexterm>
+<indexterm><primary>VCD</primary></indexterm>
+
+<para>TODO:Her skal indsættes en beskrivelse af GNU VCDImager, som kan
+fås på <ulink url="http://www.vcdimager.org/">http://www.vcdimager.org/</ulink>.</para>
+
+</sect3><!-- Lagring af endelig film på VideoCD -->
+
+<sect3 id="videoreg-lagre-vhs">
+<title>Lagring af endelig film på VHS</title>
+<indexterm><primary>Analog video</primary></indexterm>
+<indexterm><primary>VHS</primary></indexterm>
+
+<para>Hvis man vil lave en VHS film, kan man naturligvis vælge at
+overføre til VideoCD eller tilbage til DV bånd, hvis man har mulighed
+for at gøre dette. Herefter kan man overspille til analog bånd fra
+f.eks. en DVD afspiller eller direkte fra video kameraet. Imidlertid
+kan man også, hvis man har et videokort der understøtter TV out,
+overføre direkte fra PC til sin videooptager. Det kræver naturligvis
+at man har konfigureret X11 til at understøtte dette. Man kan så
+afspille til videoudgangen, i fuldskærm og starte optagelsen samtidig
+med at man afspiller filmen. Se <xref linkend="spille-film"> og <xref
+linkend="spille-dvd"> for mere information om dette.</para>
+
+<para>Den store ulempe ved at gøre det på denne måde er at man skal
+have tilstrækkeligt med computerkraft til at sikre afspilning uden at
+frames bliver droppet eller lyden hakker. Ellers vil disse fejl jo
+optræde på videoen. Det betyder at man i en vis udstrækning skal passe
+på hvad man laver på sin maskine samtidig - det vil f.eks. næppe være
+smart at begynde at oversætte Linux kernen samtidig. Igen, low latency
+patchene til Linux vil muligvis kunne hjælpe, men generelt må denne
+metode til overførsel af Video siges at være den ringeste af dem jeg
+her har nævnt.</para>
+
+</sect3><!-- Lagring af endelig film på VHS -->
+
+</sect2> <!-- Overføre video til slutmedie -->
+
+<sect2 id="videoreg-links">
+<title>Yderligere information om Video Redigering</title>
+<indexterm><primary>Crow</primary></indexterm>
+<indexterm><primary>Special effects</primary></indexterm>
+<indexterm><primary>LVE</primary></indexterm>
+<indexterm><primary>Linux Video Studio</primary></indexterm>
+<indexterm><primary>dvbackup</primary></indexterm>
+
+<para>Der findes et væld af værktøjer og information om
+videoredigering under Linux. På mange af de hjemmesider der er nævnt
+ovenfor, kan du finde yderligere information. Ellers kan du også kigge
+på nogen af følgende:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Crow er en ufuldstændig DV editor på <ulink url="http://www.crow.atu.com.au/main.php3">http://www.crow.atu.com.au/main.php3</ulink>.</para>
+</listitem>
+<listitem>
+ <para>
+Jashaka er en "special effects" composer på <ulink url="http://www.sf.net/projects/jahshakafx/">http://www.sf.net/projects/jahshakafx/</ulink>.</para>
+</listitem>
+<listitem>
+ <para>
+LVE er en MPEG editor, som kan findes på <ulink
+url="http://de.groups.yahoo.com/group/liunux_mpeg_world/">http://de.groups.yahoo.com/group/liunux_mpeg_world/</ulink>.
+Alt er på tysk...</para>
+</listitem>
+<listitem>
+ <para>
+Linux Video Studio er en grafisk overbygning til mjpegtools, som kan
+findes på <ulink url="http://ronald.bitfreak.net/">http://ronald.bitfreak.net/</ulink>.</para>
+</listitem>
+
+</itemizedlist>
+
+<para>Der er som sagt meget meget mere. Et interessant lille værktøj,
+hvis man ejer et DV kamera, er
+<command>dvbackup</command>, som lader en gemme 10 GB på et DV
+bånd. Hjemmesiden er på <ulink url="http://sourceforge.net/projects/dvbackup">http://sourceforge.net/projects/dvbackup</ulink>.</para>
+
+</sect2> <!-- Yderligere information om Video Redigering -->
+
+</sect1>
+
 </chapter>
