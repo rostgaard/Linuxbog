@@ -59,4 +59,4 @@ cvs2html:
 
 
 mail:
-	echo "Nu gik oversættelse af bøger på tyge fint igennem. Du gør det godt. Have a nice day" | mail linuxbog@sslug.dk
+	echo "Nu gik oversættelse af bøger på tyge fint igennem. Du gør det godt. Have a nice day" | mail -s "automatisk mail: bog OK" linuxbog@sslug.dk
