@@ -7,9 +7,9 @@
       .....
       ... [topmenu] ...
    */
-   $htmltitle_en="SSLUG - Liberty of writing books";
-   $htmltitle_da="SSLUG - Friheden til at skrive bøger";
-   $htmltitle_sv="SSLUG - Friheden til at skrive böcker";
+   $htmltitle_en="Liberty of writing books";
+   $htmltitle_da="Friheden til at skrive bøger";
+   $htmltitle_sv="Friheden til at skrive böcker";
    $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
    $maintain_name = "Hans Schou";       // Skriv dit navn her
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
@@ -24,7 +24,7 @@ if (!$b && !$t && !$matrix) { ?>
  align="right" width="<? echo $width ?>" height="<? echo $height ?>">
 <?php } ?>
 
-<h1>SSLUG - Friheden til at skrive bøger</h1>
+<h1>Friheden til at skrive bøger</h1>
  
 <?php
 
@@ -158,28 +158,28 @@ function vistype($type) {
       title => "Linux - Friheden til at vælge installation",
       comment => "Hjælp til installation",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "unix" => array(
       title => "Linux - Friheden til at lære Unix",
       comment => "Lær elementær Unix",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "wm" => array(
       title => "Linux - Friheden til at vælge window manager",
       comment => "Lær hvilken window manager som passer dig bedst",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "applikationer" => array(
       title => "Linux - Friheden til at vælge programmer",
       comment => "Vælg programmer til Linux",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk",
+        "Peter Toft" => "pto@linuxbog.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
@@ -187,14 +187,14 @@ function vistype($type) {
       title => "Linux - Friheden til at vælge kontorprogrammer",
       comment => "Basal anvendelse af Linux kontorprogrammer",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "admin" => array(
       title => "Linux - Friheden til systemadministration",
       comment => "Administrer din egen Linux-server",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk",
+        "Peter Toft" => "pto@linuxbog.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
@@ -203,7 +203,7 @@ function vistype($type) {
       comment => "Programmering på Linux",
       auth => array(
         "Jacob Sparre Andersen" => "sparre@sslug.dk",
-        "Peter Toft" => "pto@sslug.dk",
+        "Peter Toft" => "pto@linuxbog.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
@@ -225,14 +225,14 @@ function vistype($type) {
       title => "Linux - Friheden til sikkerhed på internettet",
       comment => "Sikkerhed omkring din Linux-boks",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "web" => array(
       title => "Linux - Friheden til egen webserver",
       comment => "Web og databaser",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk",
+        "Peter Toft" => "pto@linuxbog.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
@@ -240,14 +240,14 @@ function vistype($type) {
       title => "Linux - Friheden til at skrive dokumentation",
       comment => "Skrive dokumentation under Linux",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "kontorbruger" => array(
       title => "Linux - Friheden til at vælge kontorprogrammer",
       comment => "Basal anvendelse af Linux-programmer",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk"
+        "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
     "signatur" => array(
@@ -268,7 +268,7 @@ function vistype($type) {
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
      auth => array(
-       "Peter Toft" => "pto@sslug.dk",
+       "Peter Toft" => "pto@linuxbog.dk",
        "Hans Schou" => "chlor@sslug.dk"
      )
    )
@@ -451,11 +451,11 @@ if (count($notexists))
 ?>
 
 <font size="-1">
-[<a href="http://www.sslug.dk/linuxbog">Seneste udgaver</a>]
-[<a href="http://cvs.sslug.dk/linuxbog">Beta-upgaver</a>]
+[<a href="http://www.linuxbog.dk/">Seneste udgaver</a>]
+[<a href="http://cvs.linuxbog.dk">Beta-upgaver</a>]
 [<a href="laese-vejledning.html">Læsevejledning</a>]
 [<a href="hjaelpe.html">Om at hjælpe</a>]
-[<a href="http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html">Følg ændringer</a>]
+[<a href="http://cvs.linuxbog.dk/cvs2html/cvs_crono.html">Følg ændringer</a>]
 <br>
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
@@ -516,7 +516,7 @@ eller køb en indbundet udgave hos følgende forretninger:
 <p>
 Bøgerne er udgivet under 
 <a href="licens.html">Åben dokumentlicens</a>
-hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
+hvilket gør at forfatterne ikke er involveret i de trykte udgaver.
 </p>
 
 
@@ -524,7 +524,7 @@ hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
 Vil du modtage E-post om nye versioner af bogen?
 <BR>Skriv din E-post adresse her
 <BR><INPUT TYPE=TEXT SIZE=40 NAME="required-email">
-<BR><INPUT TYPE=HIDDEN VALUE="http://www.sslug.dk/linuxbog" NAME="url">
+<BR><INPUT TYPE=HIDDEN VALUE="http://www.linuxbog.dk" NAME="url">
 <INPUT TYPE=SUBMIT VALUE="Indsend form"></FORM>
 
 <p>
@@ -537,7 +537,7 @@ Indholdet af bøgerne diskuteres på
 
 <p>
 Vil du følge med i hvad der sker med vores kilde-kode (SGML-filerne), 
-<a href="http://cvs.sslug.dk/linuxbog/">så se her</a>.
+<a href="http://cvs.linuxbog.dk/">så se her</a>.
 </p>
 
 
