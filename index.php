@@ -545,4 +545,4 @@ Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
   if (file_exists($DOCUMENT_ROOT."includes/bottom.phtml")) {
     include($DOCUMENT_ROOT."includes/bottom.phtml");
   }
-?>*
+?>
