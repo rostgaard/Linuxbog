@@ -208,6 +208,8 @@ Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
 hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
 <p>
 
+Hvis der lige nu mangler hyperlinks til bøgerne, skyldes det at der ved at blive fremstillet en ny version.
+Den nye version er ca. klar om en time.
 <?php
 
   echo "<hr><h2>Bøger</h2>\n";
