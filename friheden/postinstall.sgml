@@ -927,6 +927,58 @@ Windows ME.
 
 </sect1>
 
+<sect1 id="swapfiler">
+<title>Swapfiler</title>
+
+<para>
+Swapfiler er nu til dags et godt alternativ til swappartitioner. Den
+største fordel er at det er nemt at tilføje (og fjerne) swapplads
+efter behov. Tidligere har hastighed været et argument for at bruge
+swappartitioner fremfor swapfiler. I dag er harddiske så hurtige at
+der ikke er nogen reel forskel. Det største problem man i dag støder
+på er installationsprogrammer, der typisk ikke understøtter brugen af
+swapfiler, og nogen gange insisterer på at man laver en
+swappartition.
+</para>
+
+<para>
+For at lave en swapfil skal man starte med at lave en fil af den
+ønskede størrelse, indholdet er ligegyldigt. En nem måde at lave filen
+på er med <command>dd if=/dev/zero of=/swap bs=16384
+count=16384</command> der vil lave filen /swap på 128MiB.
+</para>
+
+<para>
+For at mindske sandsynligheden for at man kommer til at bruge en
+betydningsfuld fil til swap, kræver kernen at swapfiler har en
+signatur. Sådan en kan vi give vores fil fra før med kommandoen
+<command>mkswap /swap</command>.
+</para>
+
+<para>
+Nu hvor vores swapfil er klar til brug, kan vi fortælle kernen at den
+må bruge filen som swap. Det gøres med kommandoen <command>swapon
+/swap</command>. Hvis du er sikker på at en swapfil ikke er i brug -
+eller hvis du har flere at de andre kan dække behovet - (tjek med
+<command>free</command>), kan du bede kernen om at holde op med at
+bruge filen som swap med kommandoen <command>swapoff /swap</command>.
+</para>
+
+<para>For at få brugt swapfilen efter hver genstart, skal du tilføje
+følgende linie til <filename>/etc/fstab</filename>:
+<programlisting>
+/swap		none		swap	sw				0 0
+</programlisting>
+</para>
+
+<para>
+Hvis din distribution insisterede på at lave en swappartition kan du ved
+at fjerne den tilhørende linie i <filename>/etc/fstab</filename>, få
+kernen til at lade være med at bruge den for fremtiden (brug
+<command>swapoff</command> for at få kernen til at holde op med at bruge
+den med det samme).
+</para>
+</sect1> <!-- swapfiler -->
 
 <sect1 id="fdisk">
 <title>Anvendelse af fdisk</title>
