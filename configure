@@ -27,6 +27,7 @@ brug() {
     echo "  -a, --med-alle         Medtag alle (een stor bog) bogen"
     echo "  -s, --med-samling      Medtag samling-bogen (samlingen af de byggede bøger)"
     echo "  -u, --bogurl URL       Hvilken url bøgerne skal bruge. [cvs.linuxbog.dk]"
+    echo "  --splitstikord         Splitter HTML stikord til en fil med hvert forbogstav"
     echo
     echo "Hvor SUBDIROPTIONS kan være"
     echo "      --disable-softlink  Bruger kopering af billeder for HTML targets"
@@ -57,7 +58,7 @@ for arg ; do ORG_ARGS="$ORG_ARGS \"$arg\"" ; done
 # Note that we use `"$@"' to let each command-line parameter expand to a
 # separate word. The quotes around `$@' are essential!
 # We need TEMP as the `eval set --' would nuke the return value of getopt.
-TEMP=`getopt -o ahmsu: --long med-alle,help,med:,med-samling,bogurl: -n "$0" -- "$@"`
+TEMP=`getopt -o ahmsu: --long med-alle,help,med:,med-samling,splitstikord,bogurl: -n "$0" -- "$@"`
 
 if [ $? != 0 ] ; then brug ; exit 1 ; fi
 
@@ -71,6 +72,7 @@ while true ; do
 	-h|--help) hjaelp; shift ;;
 	-m|--med) SUBDIRS=$2 ; shift 2 ;;
 	-u|--bogurl) URL=$2 ; shift 2 ;;
+	--splitstikord) SPLITHTML=1 ; shift ;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit 1 ;;
     esac
