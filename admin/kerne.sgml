@@ -786,12 +786,12 @@ Richard Gooch's Linux Devfs (Device File System) FAQ, som findes på <ulink url="
 </sect2>
 </sect1>
 
-<SECT1 ID="kernelcompile">
-<TITLE>Omkonfigurere Linux-kernen</TITLE>
+<sect1 ID="kernelcompile">
+<title>Omkonfigurere Linux-kernen</title>
 <indexterm><primary>Linux</primary><secondary>kernen</secondary></indexterm>
 <indexterm><primary>Kerne, omkonfigurering</primary></indexterm>
 
-<PARA>
+<para>
 Kernen er det program, der styrer computeren. Den består af en
 række forskellige funktioner, og vi vil i dette afsnit diskutere,
 hvordan du kan omkonfigurere kernen, så den kommer til at passe bedre til
@@ -802,17 +802,17 @@ masse hukommelse (og måske tid). Du kan måske også mangle understøttelse for
 en hardware-del, f.eks. USB (Universal Serial Bus). USB er for
 nylig kommet med i Linux-kernen, hvorfor du kan blive nødt til at
 lave en ny Linux-kerne. 
-</PARA>
+</para>
 
-<PARA>
+<para>
 Vores gennemgang af kernekonfiguration er overfladisk, dvs. vi vil
 ikke gå i detaljer med, hvad de enkelte funktioner kan, men forklare
 dig, hvordan en konfiguration foregår.  Du kan installere den
 kernel HOWTO-guide som følger med flere af Linux-distributioner og
 lære meget mere om kernen.
-</PARA>
+</para>
 
-<PARA>Et par bemærkninger omkring drivere til Linux er på sin
+<para>Et par bemærkninger omkring drivere til Linux er på sin
 plads. Drivere kan eksistere på to måder under Linux: Som
 en del af kernen eller som et modul. Hvis driveren er en
 del af kernen, ligger den fast i hukommelsen hele tiden, men et modul
@@ -820,26 +820,26 @@ indlæses først i det øjeblik, der er brug for det - ja,
 faktisk kan et modul også fjernes fra hukommelsen, når der ikke
 er brug for det længere (se <xref linkend="kerne-moduler">). Det er
 klart en fordel at benytte moduler, hvis man ikke har megen hukommelse.
-</PARA>
+</para>
 
 <sect2 id="kernelklar">
 <title>Bliv klar til at oversætte kernen</title>
 <indexterm><primary>Kerne</primary><secondary>oversætte</secondary></indexterm>
 <indexterm><primary>Oversætte</primary><secondary>Linux kernen</secondary></indexterm>
 
-<PARA>
+<para>
 Første trin til at lave din egen kerne er at se, om du fik installeret
 hele kildeteksten til Linux-kernen. Der er to muligheder; enten fra den
 installations-cdrom du har, eller fra en helt ny kildetekst.
-</PARA>
+</para>
 
 <para>
 Hvis du vil installere kildeteksten til kernen, så skriv
 
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh /cdrom/RedHat/RPMS/kernel-headers-2.2.5-15.i386.rpm</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh /cdrom/RedHat/RPMS/kernel-source-2.2.5-15.i386.rpm</USERINPUT>
-</SCREEN>
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>rpm -ivh /cdrom/RedHat/RPMS/kernel-headers-2.2.5-15.i386.rpm</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>rpm -ivh /cdrom/RedHat/RPMS/kernel-source-2.2.5-15.i386.rpm</userinput>
+</screen>
 
 Dette gør, at kildeteksten lægges ind i <filename>/usr/src/linux</filename>.
 </para>
@@ -849,8 +849,8 @@ I øvrigt kan det tilrådes at lade <filename>/usr/src/linux</filename> være et
 symbolsk link til et versionsafhængigt underkatalog:
 </para>
 
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ls -l /usr/src/linux</USERINPUT>
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>ls -l /usr/src/linux</userinput>
 lrwxrwxrwx   1 root root   11 Jan 31 12:01 linux -> linux-2.2.5
 drwxr-xr-x  17 root root 1024 Jan 25 21:22 linux-2.0.36
 drwxr-xr-x  15 root root 1024 Jan 31 20:45 linux-2.2.5
@@ -866,10 +866,10 @@ vil du installere kildeteksten selv (uden RPM). Start med at lave en
 ny mappe og et symbolsk link til den nye mappe (du skal være root).
 </para>
 
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rm /usr/src/linux</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>mkdir /usr/src/linux-2.3.1</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ln -s /usr/src/linux-2.3.1 /usr/src/linux</USERINPUT>
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>rm /usr/src/linux</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>mkdir /usr/src/linux-2.3.1</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>ln -s /usr/src/linux-2.3.1 /usr/src/linux</userinput>
 </screen>
 
 <para>
@@ -886,18 +886,18 @@ oversætte kernen.
 
 <sect2 id="oversaet-kerne">
 <title>Oversæt Linux-kernen</title>
-<PARA>For det første skal du skifte til kataloget
+<para>For det første skal du skifte til kataloget
 <FILENAME>/usr/src/linux</FILENAME>, hvor kildeteksten til kernen er
 placeret. Skriv nu <userinput>make xconfig</userinput>. Du vil nu se
 et vindue som det nedenfor.
-</PARA>
+</para>
 
-<FIGURE ID="kerne-conf-main" FLOAT="1">
-<TITLE>Hovedmenu for konfiguration af Linux-kernen</TITLE>
-<GRAPHIC FILEREF="kerne-config-main.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
+<figure ID="kerne-conf-main" FLOAT="1">
+<title>Hovedmenu for konfiguration af Linux-kernen</title>
+<graphic FILEREF="kerne-config-main.&magic;"  scale="50"></graphic>
+</figure>
 
-<PARA>Som du kan se, er der en række punkter, som du kan
+<para>Som du kan se, er der en række punkter, som du kan
 konfigurere. Du kan nu trykke på "General Setup", og du vil få
 et vindue som nedenfor. I langt de fleste punkter i menuen kan du
 vælge mellem "y", "m" og "n". Vælges "y", bliver funktionen en
@@ -906,47 +906,59 @@ del af kernen, mens "n" betyder, at den ikke kommer med. Hvis du vælger
 et modul. Som du også kan se, er der mulighed for at få en
 forklaring ved at trykke på knappen "help". Når du har konfigureret
 kernen, trykker du på "Save and exit".
-</PARA>
+</para>
 
-<FIGURE ID="kerne-conf-gs" FLOAT="1">
-<TITLE>"General Setup" menuen</TITLE>
-<GRAPHIC FILEREF="kerne-general-setup.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
+<para> 
+<emphasis>Tip:</emphasis> til bogens eksempler på 
+<ulink url="http://www.sslug.dk/linuxbog/">http://www.sslug.dk/linuxbog/</ulink>
+kan der findes en <filename>.config</filename>-fil under
+<filename>kerne/</filename>. Denne fil 
+(<filename>/usr/src/linux/.config</filename>) dannes når man kører
+<command>man xconfig</command> eller <command>make
+menuconfig</command> (teksbaseret). Filen vil filsvarende anvendes når
+man kører en af de to make-kommandoer.  
+</para>
 
-<PARA>
+
+<figure ID="kerne-conf-gs" FLOAT="1">
+<title>"General Setup" menuen</title>
+<graphic FILEREF="kerne-general-setup.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>
 Du er nu klar til at generere en ny kerne. Der er en række skridt, som
 du bare skal følge. Først gennemgås alle afhængigheder i kernen
 (<command>make dep</command>).  Selve oversættelsen af kernen
 (<command>make bzImage</command>) og moduler (<command>make
 modules</command>) kan godt tage en rum tid afhængigt af, hvor meget
 du har taget med, og hvor hurtig din maskine er.
-</PARA>
-
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>cd /usr/src/linux</USERINPUT>
-<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make dep</USERINPUT>
-<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make clean</USERINPUT>
-<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make bzImage</USERINPUT>
-<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make modules</USERINPUT>
-<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make modules_install</USERINPUT>
-</SCREEN>
-
-<para>
-Bagefter kan du finde den nye Linux-kerne i
-<filename>/usr/src/linux/arch/i386/boot/bzImage</filename>. Du kan
-teste den nye kerne ved at kopiere den til en diskette og så starte
-fra denne. Brug <command>dd if=/usr/src/linux/arch/i386/boot/bzImage
-of=/dev/fd0</command> for at teste på denne måde. Er du tilfreds med
-den nye kerne, kan du kopiere kernen til <filename>/boot</filename> og
-rette i LILO's konfigurationsfil (<filename>/etc/lilo.conf</filename>)
-og køre <command>/sbin/lilo</command>, hvis du anvender LILO til at
-starte maskinen.
 </para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>cd /usr/src/linux</userinput>
+<prompt>[root@linus linux]# </prompt> <userinput>make dep</userinput>
+<prompt>[root@linus linux]# </prompt> <userinput>make clean</userinput>
+<prompt>[root@linus linux]# </prompt> <userinput>make bzImage</userinput>
+<prompt>[root@linus linux]# </prompt> <userinput>make modules</userinput>
+<prompt>[root@linus linux]# </prompt> <userinput>make modules_install</userinput>
+</screen>
+
+<para> 
+Bagefter kan du finde den nye Linux-kerne i
+<filename>/usr/src/linux/arch/i386/boot/bzImage</filename> (hvis du
+bruger en Intel-kompatibel maskine). Du kan teste den nye kerne ved at
+kopiere den til en diskette og så starte fra denne. Brug <command>dd
+if=/usr/src/linux/arch/i386/boot/bzImage of=/dev/fd0</command> for at
+teste på denne måde. Er du tilfreds med den nye kerne, kan du kopiere
+kernen til <filename>/boot</filename> og rette i LILO's
+konfigurationsfil (<filename>/etc/lilo.conf</filename>) og køre
+<command>/sbin/lilo</command>, hvis du anvender LILO til at starte
+maskinen.  </para>
 
 <para>
 Moduler laves til kernen svarende til kernens versionsnummer under
-<filename>/lib/modules</filename>, dvs. for kerne 2.3.1 gemmes de i
-<filename>/lib/modules/2.3.1</filename>  Nu spørger du måske om,
+<filename>/lib/modules</filename>, dvs. for kerne 2.4.10 gemmes de i
+<filename>/lib/modules/2.4.10</filename>  Nu spørger du måske om,
 hvorfor man i det hele taget laver en kerne og så moduler. Dels kan
 kernen blive mindre og derfor ofte hurtigere. Men er der fejl i et
 modul, kan man hurtigt rette i modulets kildetekst, genoversætte
@@ -965,9 +977,9 @@ kan starte din Linux-maskine fra, så kan du gøre dette med
 kerne der er på dit system. Kør f.eks. <command>ls
 /lib/modules/</command>. Står der 2.2.12-20, så skal du - som root -
 skrive 
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>/sbin/mkbootdisk --device /dev/fd0 2.2.12-20</USERINPUT>
-</SCREEN>
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>/sbin/mkbootdisk --device /dev/fd0 2.2.12-20</userinput>
+</screen>
 
 Disken har Linux-kernen, og du kan også bruge denne disk, hvis du skal
 flytte rundt på dine harddiske (fra primær til sekundær osv).
@@ -976,7 +988,7 @@ flytte rundt på dine harddiske (fra primær til sekundær osv).
 
 </sect2>
 
-</SECT1>
+</sect1>
 
 <sect1 ID="kerne-moduler">
 <title>Moduler</title>
