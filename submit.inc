@@ -49,18 +49,18 @@ For at bruge dette script, skal du indsætte
 	< ?php include($DOCUMENT_ROOT."/submit.inc") ?>
 i bunden af din .html fil.
 Dernæst skal din fil have tilføjet .php til slut i filnavnet.
-
 -->
 <hr>
 <h2>Rettelser</h2>
 <p>Har du en rettelse til denne side, så skriv den i boksen herunder.
 Din besked bliver sendt til redaktionen af <i>Friheden Til At Vælge</i>.
 </p>
-
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post">
 <p>
 Eventuelt din e-mail adresse:
 <input type="text" name="email" value="<?php echo $HTTP_POST_VARS["email"] ?>">
+<br>
+(E-mail er kun nødvendig hvis du ønsker svar.)
 <br>
 Din kommentar eller rettelse:
 <br>
@@ -69,7 +69,5 @@ Din kommentar eller rettelse:
 </textarea>
 <input type="submit" name="submit" value="Submit">
 </form>
-<?php
-	#phpinfo()
-?>
+<p>Dit IP-nummer er <?php echo $_SERVER["REMOTE_ADDR"] ?>.</p>
 <!-- Her slutter "submit.inc" -->
