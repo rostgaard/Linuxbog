@@ -216,6 +216,10 @@ function form_filename( $bookname, $format ) {
     "SGML" => array(
       first => "linux-",
       last => ".sgml.tar.gz"
+    ),
+    "SGMLzip" => array(
+      first => "linux-",
+      last => ".sgml.zip"
     )
   );
 
