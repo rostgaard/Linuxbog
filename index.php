@@ -353,7 +353,7 @@ function vistype($type) {
       first => "bog",
       form => "",
       last => "index.html".$USE_SUBMIT_INC,
-      online => 1  // Hvis bognavn kun skal med een gange
+      online => 1  // Hvis bognavn kun skal med een gang
     ),
     // Eks: frihed/bog/index.html
     "Ændringer" => array(
