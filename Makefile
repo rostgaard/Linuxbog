@@ -4,7 +4,7 @@ SUBDIRS = friheden unix applikationer admin program web sikkerhed c dokumentatio
 
 all: filer
 
-release : version cvs2html filer 
+release : cvs2html filer 
 
 Makefiler:
 	@for dir in $(SUBDIRS); do \
