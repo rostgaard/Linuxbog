@@ -1,0 +1,627 @@
+<appendix id="A-crash">
+   <title>Crash course i C sproget</title>
+<titleabbrev>C-sprogelementer</titleabbrev>
+<para>
+C sproget består som andre sprog af:
+</para>
+<itemizedlist>
+
+<listitem>
+<para>
+Data typer. Vi vil gerne bruge maskinen til at behandle vores
+tal, tekster og billeder.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Operatorer. Det ville være rart, hvis vi kunne regne med vores data
+</para>
+</listitem>
+
+<listitem>
+<para>
+Flow-kontrol, <emphasis>if</emphasis> og 
+<emphasis>while</emphasis> etc. Vi vil gerne kunne reagere på, at
+vores tal er blevet for stort, f.x
+</para>
+</listitem>
+
+<listitem>
+<para>
+Modularitet. Vi vil gerne kunne genbruge kode, som fx. beregning af
+sinus eller udskrift til terminalvindue.
+</para>
+</listitem>
+</itemizedlist>
+
+<sect1 id="C-hvad-er">
+<title>C sproget i få ord.</title>
+<para>
+C sproget blev oprindeligt lavet for at kunne skrive
+operativsystemet Unix ved hjælp af et højniveau sprog. C er derfor et
+effektivt sprog, som har nemt ved at interface til maskinsprog,
+<emphasis> assembly language</emphasis>.
+</para>
+
+<para>
+C sproget er også et lille sprog, der er kun 32 reserverede ord
+<emphasis> keywords </emphasis>. Det gør det nemt at lære.
+
+</para>
+
+<programlisting>
+Reserverede ord:
+
+auto
+break
+case
+char
+const
+continue
+default
+do
+double
+else
+enum
+extern
+float
+for
+goto
+if
+int
+long
+register
+return
+short
+signed
+sizeof
+static
+struct
+switch
+typedef
+union
+unsigned
+void
+volatile
+while
+</programlisting>
+
+<para>
+Anvendt på rette måde bliver koden meget læseligt, og derfor 
+anvendes C sproget til mange forskellige slags opgaver, fra
+hardware-niveau til højniveau opgaver.A
+</para>
+
+<para>
+C++ er en udvidelse af C sproget. C++ er et bedre C, som
+supporterer objektorienteret programmering, data abstraction og
+generiske algoritmer. Der er dog et par forskelle mellem C og den
+grundlæggende C-syntax i C++. De beror på det oprindelige C sprogs
+manglende typecheck af funktioners returværdier - det var altid heltal
+<emphasis> integers </emphasis>.
+</para>
+
+<para>
+Et minimal C program:
+</para>
+
+<example id="hello-world">
+<title>Hello world! programmet.</title>
+<programlisting>
+/* Dette program skriver Hello, world! i terminal vindue. */
+
+main(){
+     printf("Hello, world!\n");
+}
+</programlisting>
+</example>
+
+<para>
+     Vores program definerer en funktion, d.v.s. et stykke kode, som
+udfører en opgave. Navnet på vore funktion er main. main er det sted,
+hvor et C program begynder eksekvering. Parenteserne efter ordet main
+fortæller, at det er en funktion.
+</para>
+
+<para>
+     Koden, det, som bliver til maskin instruktioner, står mellem to
+krøllede parenteser <emphasis> braces </emphasis>. Koden består af et
+kald til en anden funktion, printf, som får til opgave at skrive vores
+tekst mellem double quotes på skærmen. "\n" er måden at skrive
+linieskift mellem doublequotes.
+</para>
+
+<para>
+     Ovenstående program-text bør kunne oversættes <emphasis> kompilere
+</emphasis> til et eksekverbart program. De fleste moderne compilere vil
+dog klage over mange mangler. En helt korrekt version (også C++) vil se
+ud som følger:
+</para>
+
+<example id="ex-hello-types">
+<title>Hello, World! med type-specifikationer.</title>
+<programlisting>
+/* Dette program skriver Hello, world! i terminal vindue. */
+
+#include &lt;stdio.h>
+
+int main(){
+     (void) printf("Hello, world!\n");
+     return 0;
+}
+
+</programlisting>
+</example>
+
+<para>
+     Ovenstående eksempel erklærer, at main er en funktion, som
+returnerer en integer. Derfor returnerer den jo så altså netop også en
+integer! Return 0; betyder aflever et 0 til den, som satte funktionen i
+gang. Man siger, at caller får return value.
+</para>
+
+<para>
+     printf er ligeledes en funktion, som returnerer en integer til
+caller; det er antallet af bogstaver, den har skrevet ud. Da vi ikke har
+brug for denne integer, fortæller vi compileren, at det er "med vilje",
+at vi ignorer return value ved at skrive <emphasis> (void) </emphasis>.
+Det kaldes et cast - støbeform, vi omstøber funktionens type!
+</para>
+
+<sect2 id="crash-datatyper">
+<title>Data typer</title>
+<para>
+C sprogets indbyggede datatyper er:
+</para>
+
+<programlisting>
+int x;        /* integer, heltal, maskinens hurtigste type, native type */
+
+char b;       /* velegnet til bogstaver, men i virkeligheden bare en lille */
+              /* integer, 8 bits (eller 9 ...) */
+
+float f;      /* floating point med kun 32 bit, kun til grafikkort o.l. */
+
+double df;    /* 8 eller 10 bytes floating point type */
+
+int ia[10];   /* array med 10 elementer, mange af samme slags */
+
+struct person_type {             /* gruppering af mange typer i en klump */
+   int alder;
+   char navn[10];
+};
+
+struct person_type mig;            /* udlaegning af lager, instantiering */
+struct person_type kanon[10];      /* array af struct */
+
+int *j;                            /* adressevariabel, pointer */
+</programlisting>
+
+<para>
+Datatyperne kan erklæres udenfor en funktion, så er det globale objekter,
+eller som lokale variable, indenfor funktionsbraces.
+</para>
+
+<programlisting>
+/* ramme for eksperimenter med variable af indbyggede typer */
+
+int x;
+char b;
+
+main()
+{
+    double temp = -17.8;
+
+    b = 67;
+    printf("x er %d, b er %d, temperatur er %f\n",x,b,temp);
+    {
+        int *px; /* definition af variabel i top af blok. */
+        px = &amp;x; /* tag adressen af x og læg over i p */
+
+        printf("adressen på x er %p\n",px);
+    }
+
+    return 0;
+}
+</programlisting>
+
+<para>
+Struct kræver lidt øvelse at læse. Ved en typisk struct erklæring bygger
+man først en type op, derefter udlægger man memory til de enkelte
+objekter af struct-typen. 
+</para>
+<para>
+Ordet efter struct kaldes en tag. Det kan sammen med ordet struct bruges
+som type-specifikation.
+</para>
+<programlisting>
+struct &lt;type_tag> {
+   data-declarations ...
+};
+
+struct &lt;type_tag> new_var;
+</programlisting>
+<para>
+Alternativt kan man definere en struct type ved hjælp af typedef. Denne
+metode foretrækkes af mange, fordi man så ikke behøver at anvende ordet
+struct.
+</para>
+
+<programlisting>
+typedef struct &lt;type_tag> {
+   &lt;data-definitions> ...
+} type-specifier;           /* <--- her er den nye types navn */
+</programlisting>
+
+<para>
+Min opfattelse er den, at ordet struct gør programmerne lettere at læse.
+Og compileren kan lettere finde fejl.
+</para>
+<programlisting>
+struct hus_t {
+   char adr[280];
+   int pris;
+};
+
+struct hus_t mithus;
+
+main() {
+   mithus.pris = 780000;
+   strcpy(mithus.adr,"Byvej 20";
+}
+</programlisting>
+
+
+</sect2>
+
+<sect2 id="operatorer">
+<title>Operatorer</title>
+
+<para>
+Aritmetiske operatorer.
+<programlisting>
++ plus, addition
+- minus, subtraktion
+* asterisk, multiplikation
+/ stroke ell. slash, division
+% percent, modulus, rest af heltalsdivision.
+</programlisting>
+</para>
+
+<para>
+Assignments operatorer, tildeling.
+</para>
+
+<programlisting>
+=     a = b; læg værdien af b over i a.
+++    ++c;   læg en til c
+--    c--;   brug værdien af c, men træk en fra inden den lægges på plads.
+Desuden kan lighedstegnet kombineres med de forskellige aritmetiske
+operatorer:
+
+x += megetlangt_navn; /* tael x op med vaerdien af megetlangt_navn */
+</programlisting>
+
+<programlisting>
+Relationelle operatorer, sammenligning.
+
+&lt; mindre end
+> større end
+&lt;= mindre end eller lig med
+>= større end eller lig med
+
+OBS!  ==    test for lighed
+      !=    test for not lighed
+            Husk det ved at tænke på at 
+            den logiske operator NOT er et udråbstegn.
+      !     not (tager kun én operand, hvis logiske værdi inverteres)
+
+Et expression er sandt, når det er forskelligt fra 0.
+Et expression er falsk, når det er lig med 0.
+
+Eksempler:
+
+  if (a > b) 
+      printf("a er for stor\n");
+
+  if (x > 1 || x != y)
+      printf("5 er større end 1 eller x er forskellig fra y!\n");
+</programlisting>
+
+
+<para>
+Logiske operatorer.
+</para>
+
+<programlisting>
+&& logisk AND
+|| logisk OR
+
+!  logisk NOT
+</programlisting>
+
+<para>
+Bitwise operators, bitvise operatorer, manipulerer de enkelte bit eller
+bitkolonner efter den almindelige logik.
+</para>
+
+<programlisting>
+&    bitvis AND               1 & 1 == 1; 17 & 1 == 1;
+|    bitvis OR                1 | 0 == 1; 17 | 1 == 17;
+^    bitvis XOR               1 ^ 0 == 1; 17 ^ 1 == 16;
+~    bitvis NOT               ~1    == 0x[...]fffe;
+>>   shift right              1 >>1 == 0; 17 >>1 == 8;
+<<   shift left               1 <<1 == 2; 17 <<1 == 34;
+</programlisting>
+
+<para>
+Du kan afprøve de ovenstående beregninger med små programmer som
+nedenstående, god øvelse:
+</para>
+
+<programlisting>
+main()
+{
+    printf("17 >> 1 == %d \n",17>>1);
+    return 0;
+}
+</programlisting>
+
+<para>
+Conditional operator
+</para>
+
+<programlisting>
+Specielt for C sproget er betingelses-operatoren:
+
+  yxi = (a>b)? a: b;
+
+Svarer til:
+
+  if (a > b)
+     yxi = a;
+  else
+     yxi = b;
+</programlisting>
+
+<para>
+Andre operatorer
+</para>
+
+<programlisting>
+Ud over ovenstående findes der adskillige specielle operatorer, der kun
+må anvendes efter forudgående aftale med type checking systemet. ;-)
+
+ &   adresse operator, tager adressen af et objekt.
+
+ *   asterisk operator, tag indholdet på den adresse, som specificeres
+     efter stjernen, <emphasis> dereferering af adresse. </emphasis>
+
+ ->  kan bruges ved dereferering af en struct pointer.
+
+ .   Bruges til adressering af et struct element.
+
+ ()  Funktions operator.
+
+ []  Array operator.
+
+
+ sizeof  (en pseudo funktion, kan bruges som operator, giver os
+          størrelsen af det objekt, som den står foran.)
+
+ 
+ ,   Komma, listeoperator.
+</programlisting>
+
+</sect2>
+
+<sect2 id="flow-kontrol">
+<title>Flow kontrol</title>
+
+<programlisting>
+    if (betingelse_opfyldt)
+        do_dyt();
+
+Test inden udførelse:
+
+    while (betingelse_opfyldt)
+        do_looping();
+
+Kør loop-body mindst en gang:
+
+    do
+        mindst_en_gang()
+    while (betingelse_opfyldt);
+
+Behagelig kontrol med tæller variable:
+
+    for (initialisering; betingelse; optælling - eller hvad du ønsker) {
+       loop_body ...
+    }
+
+    fx. 
+    for (i = 0; i &lt; 10 ; ++i)
+        printf("i er nu %d\n", i);
+
+Inde i loops kan man:
+
+    break:      Goto lige efter loop-end.
+
+    continue:   Begynd forfra med test af betingelse.
+
+Jumptabel:
+
+    switch (integer_variabel) {
+    case 17:
+             do_beep();
+             break;
+    case 42:
+             do_hurra();
+             break;
+    default:
+             do_whine();
+    }
+
+For at komme ud af en masse loop-kontrol statements:
+
+   goto label;
+
+   /* kode ... */
+label:
+</programlisting>
+
+<para>
+Bemærk, at case linierne i switch statementet ligner og opfører sig
+som labels, de er faktisk labels. Man fortsætter nedefter i næste case,
+hvis der ikke er et break statement.
+</para>
+
+
+<para>
+Et par eksempler, meget simple, først et eksempel, som smager på
+værdien af en variabel:
+</para>
+
+<programlisting>
+main()
+{
+    int i,j,k;
+
+    i = 27;
+    j = 2;
+
+    if (i > j)
+        k = i;
+    else
+        k = 2;
+
+    return k;
+}
+
+
+</programlisting>
+
+<para>
+Et eksempel på en for-løkke:
+</para>
+
+<programlisting>
+main()
+    int i, celsius;
+
+    for (i = 0; i &lt; 200; i = i + 20) {
+        celsius = 5 * (32 - i) / 9;
+        printf("Fahrenheit %3d svarer til celsius %3d\n", i, celsius);
+    }
+}
+</programlisting>
+
+</sect2>
+
+<sect2 id="modularitet">
+<title>Modularitet</title>
+<para>
+Funktionsbegrebet i C gør det muligt at genbruge kode; man kan bygge på
+andres arbejde i stedet for at begynde på bar bund hver gang.
+</para>
+
+<para>
+Et C program består typisk af mange forskellige filer, der kan
+compileres hver for sig. En fil - evt. med tilhørende header files - der
+kan oversættes alene til et objekt modul, kaldes en oversættelses-unit
+eller en translation-unit.
+</para>
+
+<para>
+Allerede i vores første program benyttede vi os af, at der i et bibiotek
+<emphasis> library </emphasis> lå en funktion (printf) som kunne skrive
+tekst ud på terminalvinduet.
+</para>
+
+<para>
+Det er muligt at have private variable i en translation unit.
+</para>
+
+<programlisting>
+/* modular programmering - fil nr. 1, kryptio.c */
+/* main læser fra tastatur (eller omdirigeret fil)
+ * og skriver det krypterede bogstav ud på skærmen.
+ */
+
+#include &lt;stdio.h>
+main()
+{
+    int c;
+    while ( (c = getchar()) != EOF) {
+        c = krypter(c);
+        putchar(c);
+    }
+}
+</programlisting>
+
+<para>
+Til ovenstående main vil vi nu skrive et simpelt modul, som foretager
+kryptering:
+</para>
+
+<programlisting>
+int krypter(int inputchar)
+{
+    return inputchar + 1;   /* 'cæsar' kryptering */
+}
+</programlisting>
+
+<para>
+Uha, det viser sig snart, at folk gennemskuer vores simple kryptering,
+så nu laver vi en rigtig kryptering. Det smarte er, at vi kan erstatte
+dette modul uden at lave om på det eller de programmer, som anvender
+vores funktion "krypter()".
+</para>
+
+<para>
+Bliv nu ikke forskrækket over, at der er en del ting i næste eksempel,
+som ikke er fyldestgørende forklaret endnu. Prøv at læse det, evt.
+indtaste og oversætte det. Prøv så at rette i det for at se, hvad der
+sker undervejs. Når et problem er kompliceret, så skil det ad i mindre
+dele og indsæt printf statements, så du kan se, hvad der sker undervejs.
+</para>
+
+<programlisting>
+static char *keystring = "Under træerne var der stille og roligt."
+static int first;
+static char *mv = keystring;
+
+krypter(int inpchar)
+{
+   if (!inuse) {
+       inuse = 1;
+       mv = keystring;
+   }
+   if (mv - keystring > strlen(keystring))
+       mv = keystring;
+   return (inpchar + *mv++) % 93 + 33;
+}
+</programlisting>
+
+<para>
+Virker kun for ren ASCII tekster.
+I parentes bemærket, hvis du vil gøre krypteringen ovenfor ubrydelig
+skal du forbedre den lidt. Længere keystring (helst længere en
+gennemsnitsmeddelelsen), formater output i linier, som er lige lange,
+og sørg for, at hvis input består af lutter samme tegn, så vil denne
+version kunne afsløre keystring'en, dog ikke lige i klartekst, men
+alligevel! Endelig er der ikke support for såkaldte offentlige keys, der
+kan bruges til afkodning men ikke indkodning.
+</para>
+
+<para>
+Hvis du blev bidt af ovenstående, så lav en dekryptering til den og gå
+derefter videre med fx. <xref LinkEnd="beregnings-filter">.
+</para>
+</sect2>
+
+</sect1>
+</appendix>
+
+
