@@ -19,7 +19,7 @@
 # Dette script frigives valgfrit under "Åben dokumentlicens" (ÅDL) eller 
 # Gnu Public Licensen (GPL )v. 2.
 
-# Oprindeligt lavet af Mads Bondo Dydensborg <madsdyd@challenge.dk>
+# Oprindeligt lavet af Mads Bondo Dydensborg (madsdyd@challenge.dk)
 # Tilføjelser af Klavs Klavsen og Christian Boesgaard
 # Copyright 2002 Mads Bondo Dydensborg.
 
