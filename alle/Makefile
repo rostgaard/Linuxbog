@@ -53,6 +53,7 @@ statusfiles:
 		echo -n "$$dir "; \
 		(cd ../$$dir;grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; echo -n "`cat version.sgml`"); \
 		(cd ../$$dir;date +%d/%m-%Y> dato.sgml; echo " (`cat dato.sgml`)"); \
+		cp ../friheden/linuxbogurl.sgml .;\
 	done;
 
 sgml: $(sgmlfiler) $(targetname)-sgml-$(version).tar.gz $(targetname)-sgml-$(version).zip
