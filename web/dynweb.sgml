@@ -128,7 +128,7 @@ blive gemt i webserverens fejllog
 <filename>/var/log/httpd/error_log</filename>.  Programmet kan også
 modtage data på stdin fra webserveren, dette vil typisk være data der
 er indtastet i en webformular eller filer, der skal lægges op på serveren.
-CGI-programmer modtager også en række data igennem miljø-variable
+CGI-programmer modtager også en række data igennem systemvariable
 (eng. environment variable).
 </para>
 
@@ -136,7 +136,7 @@ CGI-programmer modtager også en række data igennem miljø-variable
 I det følgende afsnit vil vi introducere CGI-programmer der returnerer et
 simpelt svar og ikke modtager data, forklare hvordan programmer kan
 returnere forskellige typer data, og gå igennem hvordan programmer kan
-modtage data fra webformularer og anvende environment variable til at
+modtage data fra webformularer og anvende systemvariable til at
 bestemme f.eks. IP addressen på den webbrowser som ønsker
 data. 
 Desuden vil vi forklare, hvilke sikkerhedsproblemer, der er
@@ -479,7 +479,7 @@ I browseren vil det se ud som:
 Når et navn og en e-postaddresse er indtastet, og der trykkes på Submit
 knappen,  så vil browseren sende de indtastede data til webserveren, der
 starter <command>get_metoden.cgi</command>. Dataene overfører webserveren igennem
-environment variablen ved navn QUERY_STRING. (C/C++ programmer vil også modtage
+systemvariablen <literal>QUERY_STRING</literal>. (C/C++ programmer vil også modtage
 dem igennem argv-tabellen).
 </para>
 
@@ -635,7 +635,7 @@ bytes skal returneres.
 Alternativt findes post metoden for at sende data tilbage til webserveren.
 Når et data Post'es så modtager CGI-programmet data på standard input, ligesom
 data var indtastet på tastaturet, men de er stadig URLenkrypterede, og
-environment variablen CONTENT_LENGTH indeholder antallet af bytes der kan
+systemvariablen <literal>CONTENT_LENGTH</literal> indeholder antallet af bytes der kan
 indlæses. Det har fordelen at meget store datamængder kan returneres uden
 problemer, men det er umuligt at lave en bookmark til den side, der returneres
 efter en indtastning. Det tidligere eksempel kan let omskrives til at bruge
@@ -739,7 +739,7 @@ med navnet "hemmelig", der har indholdet "Jeg er en hemmelig streng".
 </para>
 
 <para>
-CGI-programmer kan også modtage en sti i environment variablen PATH_INFO, og
+CGI-programmer kan også modtage en sti i systemvariablen <literal>PATH_INFO</literal>, og
 argumenter i QUERY_STRING. Disse kommer fra action=".." linjen i HTML-koden
 for webformularen. Følgende er en rækker eksempler på hvordan et program kan
 kaldes fra HTML-koden i en webformular:
@@ -761,12 +761,12 @@ kaldes fra HTML-koden i en webformular:
     </row>
     <row>
       <entry>/cgi-bin/debug.cgi?arg1&amp;arg2&amp;arg3</entry>
-      <entry>QUERY_STRING environment variablen vil indeholde strengen
+      <entry><literal>QUERY_STRING</literal>-systemvariablen vil indeholde strengen
         "arg1&amp;arg2&amp;arg3".</entry>
     </row>
     <row>
       <entry>/cgi-bin/debug.cgi/foo/bar</entry>
-      <entry>PATH_INFO environment variablen vil indeholde strengen
+      <entry><literal>PATH_INFO</literal>-systemvariablen vil indeholde strengen
       "/foo/bar".</entry>
     </row>
     <row>
@@ -791,7 +791,7 @@ Et eksempel på HTML-koden til en webformular der anvender kommandolinjeargumente
 </programlisting>
 
 <para>
-Følgende er en liste af de mest interessante environment variable som
+Følgende er en liste af de mest interessante systemvariable som
 CGI-programmer har til rådighed:
 </para>
 
@@ -923,8 +923,8 @@ if ($ENV{'REQUEST_METHOD'} eq "POST")
 print "Content-Type: text/plain\r\n\r\n";
 print "Variable Modtaget:\n\n";
 
-#udskriv environment variable
-print "Environment variable:\n";
+#udskriv systemvariable
+print "Systemvariable:\n";
 foreach (sort keys %ENV)
     {
        print "   $_ = \"$ENV{$_}\"\n";
@@ -1074,7 +1074,7 @@ Men er Perl-programmet meget stort eller komplekst kan det tage en
 del tid at finde fejlen ved at genstarte programmet gang på gang. Det er
 istedet mulig at fange input data og gemme dem i på harddisken, og så
 senere hente %data og %ENV hashes fra harddisken. CGI-programmet kan så
-køres i en debugger men med de samme data og environment variable, som
+køres i en debugger men med de samme data og systemvariable, som
 hvis det blev kørt af en webserver.  Bemærk at det ikke køres med
 samme bruger og gruppe id!
 </para>
@@ -1089,7 +1089,7 @@ get eller post metoden og fortsætte, altså uden at der sker noget.
 <para> 
 Køres programmet med $debug=1 og $gemdata=1 vil det indlæse
 webformular data og gemme dem i to filer. %data gemmes i en fil ved
-navn "grab.var", og environment variabler %ENV i en fil med navn
+navn "grab.var", og systemvariable %ENV i en fil med navn
 "grab.env", programmet vil så stoppe.
 </para>
 
@@ -1203,7 +1203,7 @@ if ($isDebug)
 {
   if ($grabdata)
      {
-#Gem environment variable og data hash.
+#Gem systemvariable og data hash.
         GemHash(\%ENV, ">".$filename.".env");
         GemHash(\%data,">".$filename.".var");
 
@@ -1215,10 +1215,10 @@ if ($isDebug)
      }
   else
      {     
-#Slet alle environment variable
+#Slet alle systemvariable
         %env=();
 
-#hent environment og data hash fra filer.
+#hent systemvariable og data hash fra filer.
         HentHash(\%ENV,  $filename.".env");
         HentHash(\%data, $filename.".var");
 
@@ -1333,7 +1333,7 @@ system("ps aux | grep $user");
 </programlisting>
 
 <para>En bruger kan nu taste "root" og se alle de tjenester der kører på
-maskinen. Det giver en ide om hvilke sikkerhedshuller der kan være i systemet.
+maskinen. Det giver en idé om hvilke sikkerhedshuller der kan være i systemet.
 Men som om det ikke var nok så kan enhver taste "<command>tyge ; rm -rf /</command>"
 i webformularen.</para>
 
@@ -1368,7 +1368,7 @@ tjekke at et eval udtryk ikke indeholder farlige kommandoer.</para>
 
 <para>Perl har indbygget en smart funktion der gør det muligt at mærke variable,
 der kommer fra farlige kilder (en farlig variabel kaldes "tainted" der betyder
-noget i retning af mærket/beskidt/usikker), en environment strenge, input, og
+noget i retning af mærket/beskidt/usikker), systemvariable, input, og
 output som andre programmer laver er automatisk tainted. Bruges en tainted
 variabel som filnavn eller som argument i exec eller system kald, vil
 Perl automatisk stoppe med en fejl. Tainted variable slås til ved at kalde
