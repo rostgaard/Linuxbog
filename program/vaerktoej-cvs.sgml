@@ -845,13 +845,14 @@ log-beskeder direkte
    </indexterm>
 
    <para>
-    Hvis CVS-arkivet ligg maskine der står bag en dørvogter eller
-    SSH af andre mystiske omstændigheder ikke kører på port 22 er det lidt
-    sværere at få <command>cvs</command> til at kontakte arkivet. Problemet
-    kan klares ved at man fortæller SSH hvilken port SSH kører på
-    <emphasis>uden</emphasis> at fortælle CVS det. Det gør man i SSH's
-    opsætningsfil <filename>$HOME/.ssh/config</filename>, hvor man for
-    eksempel kan tilføje:
+    Hvis CVS-arkivet ligger på en maskine der står bag en dørvogter
+    eller hvis SSH af andre mystiske omstændigheder ikke kører på port
+    22 er det lidt sværere at få <command>cvs</command> til at
+    kontakte arkivet.  Problemet kan klares ved at man fortæller SSH
+    hvilken port SSH kører på <emphasis>uden</emphasis> at fortælle
+    CVS det. Det gør man i SSH's opsætningsfil
+    <filename>$HOME/.ssh/config</filename>, hvor man for eksempel kan
+    tilføje:
 
 <programlisting>
 Host cvs.virksomhed.dk
@@ -941,16 +942,6 @@ Host cvs.virksomhed.dk
     <xref linkend="cvs-kom-i-gang-ssh"/> for flere detaljer. Vi kommer ikke
     ind på hvordan man giver anonym adgang til et CVS-arkiv her.
    </para>
-
-   <para>
-    Da vi anvendte <command>grep</command> på alt der startede med "CVS",
-    fik vi også en anden variabel med <filename>CVS_RSH</filename>, som
-    angiver hvordan man kommunikerer med CVS-serveren. Er det en og samme
-    maskine udelades den variabel, og er det en anden maskine anvendes
-    enten secure shell (<command>ssh</command>) eller remote shell
-    (<command>rsh</command>). Se mere om <command>ssh</command> i bogen
-    "Linux - friheden til sikkerhed på internettet").
-   </para>
   </sect3>
 
   <sect3 id="cvs-oprette-et-projekt">
@@ -1005,68 +996,66 @@ Host cvs.virksomhed.dk
    <title>Få breve med log-meddelelser ved cvs commit</title>
 
    <para>
-    Når flere folk arbejder sammen på et software-projekt er det nødvendigt
-    at man nemt kan se hvad andre personer har ændret i filerne. Med
-    <command>cvs watch add FILNAVN</command> vil du modtage breve når andre
-    kører <command>cvs commit FILNAVN</command>, men her vil du ikke se hvad
-    de har ændret. Du kan få en bedre føling med ændringerne ved at bruge et
-    lille program <filename>log</filename>, der følger med cvs. Med det
-    program kan du få et brev om hvilke filer, som er ændret og du får også
-    den log-meddelelse brugeren skrev med i brevet. Hvis man indenfor
-    projektet holder en god stil med at skrive ordentlige log-meddelelser,
-    så er dette super.
+    Når flere folk arbejder sammen på et software-projekt er det
+    nødvendigt at man nemt kan se hvad andre personer har ændret i
+    filerne. Med <command>cvs watch add FILNAVN</command> vil du
+    modtage breve når andre kører <command>cvs commit
+    FILNAVN</command>, men her vil du ikke se hvad de har ændret. Du
+    kan få en bedre føling med ændringerne ved at bruge et lille
+    program <filename>log</filename>, der følger med cvs. Med det
+    program kan du få et brev om hvilke filer, som er ændret og du får
+    også den log-meddelelse brugeren skrev med i brevet. Hvis man
+    indenfor projektet holder en god stil med at skrive ordentlige
+    log-meddelelser, så er dette super.
    </para>
 
    <para>
-    Lad os se på opsætningen af dette. Først skal du lave en logfil i
-    CVSROOT-kataloger, som alle deltagere i dit projekt kan læse og skrive.
-   </para>
-
-<para>
-<emphasis>I det følgende skal du erstatte STI_TIL_CVS-RODEN med den fulde sti
-til dit CVSROOT-katalog.</emphasis>.
-</para>
+    Lad os se på opsætningen af dette.  Først skal du lave en logfil i
+    CVSROOT-kataloger, som alle deltagere i dit projekt kan læse og
+    skrive.  <emphasis>I det følgende skal du erstatte
+    STI_TIL_CVS-RODEN med den fulde sti til dit
+    CVSROOT-katalog.</emphasis>.
 
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>touch STI_TIL_CVS-RODEN/CVSROOT/commitlog</userinput>
 <prompt>[anne@linus ~]$ </prompt><userinput>chgrp PROJEKTGRUPPE STI_TIL_CVS-RODEN/CVSROOT/commitlog</userinput>
 <prompt>[anne@linus ~]$ </prompt><userinput>chmod g+rw STI_TIL_CVS-RODEN/CVSROOT/commitlog</userinput>
 </screen>
+   </para>
 
-<para>
-Dernæst skal vi rode i noget af de "helligste" af cvs-opsætningen.
-</para>
+   <para>
+    Dernæst skal vi rode i noget af de "helligste" af cvs-opsætningen.
 
- <indexterm>
-  <primary>CVS</primary>
-  <secondary>CVSROOT</secondary>
- </indexterm>
+    <indexterm>
+     <primary>CVS</primary>
+     <secondary>CVSROOT</secondary>
+    </indexterm>
 
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>cvs -d STI_TIL_CVS-RODEN checkout CVSROOT</userinput>
 <prompt>[anne@linus ~]$ </prompt><userinput>vi CVSROOT/loginfo</userinput>
 </screen>
 
-<para>
-Indsæt følgende linie til sidst hvis <filename>anne@linus</filename>
-skal modtage breve. Er der flere som skal modtage breve så tilføj
-gerne flere "-m modtager@maskine" efter hinanden.
-</para>
+    Indsæt følgende linie til sidst hvis
+    <filename>anne@linus</filename> skal modtage breve. Er der flere
+    som skal modtage breve så tilføj gerne flere "-m modtager@maskine"
+    efter hinanden:
 
 <programlisting>
 DEFAULT /usr/share/cvs/contrib/log -m anne@linus -f STI_TIL_CVS-RODEN/CVSROOT/commitlog
 </programlisting>
+   </para>
 
+   <para>
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit -m "Man kan modtage logbeskeder per post" CVSROOT/loginfo</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs release -d CVSROOT</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs commit -m "Man kan modtage logbeskeder per post" CVSROOT/loginfo</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs release -d CVSROOT</userinput>
 </screen>
 
-<para>
-De sidste linier vil regenerere CVSROOT (sted hvor CVS-opsætningen er
-gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
-</para>
-
+    De sidste linier vil regenerere CVSROOT (sted hvor CVS-opsætningen
+    er gemt), og derefter sletter man den CVSROOT-kopi man har checket
+    ud.
+   </para>
   </sect3>
  </sect2>
 
@@ -1074,19 +1063,18 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
   <title>Forgreninger i udviklingen</title>
 
   <para>
-   Lad os se lidt mere på starten, da vi lavede projektet
-  </para>
+   Lad os se lidt mere på starten, da vi lavede projektet.
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cd MODUL_DIR</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs -d STI_TIL_CVS-RODEN import MODUL VENDOR_TAG RELEASE_TAG</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cd MODUL_DIR</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs -d STI_TIL_CVS-RODEN import MODUL VENDOR_TAG RELEASE_TAG</userinput>
 </screen>
 
-  <para>
-   Dette genererer med det samme to grene (engelsk: "branches"), som man
-   altid kan komme tilbage til.
+   Dette genererer med det samme to grene (engelsk: "branches"), som
+   man altid kan komme tilbage til.
   </para>
 
+  <para>
    <itemizedlist mark="bullet">
     <listitem>
      <para>
@@ -1100,25 +1088,25 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
     </listitem>
    </itemizedlist>
 
-  <para>
    Går man igang med at checke filerne ud, rette og køre <command>cvs
-   commit</command>, så kommer de enkelte versioner til at hedde version
-   1.1, 1.2, 1.3 osv.
+   commit</command>, så kommer de enkelte versioner til at hedde
+   version 1.1, 1.2, 1.3 osv.
   </para>
 
   <para>
-   Ofte vil alle bruge samme gren af filerne, men hvad gør man hvis man
-   nu har brug for at kode et stykke tid på noget som lammer resten af
-   udviklerne på samme projekt. I dette tilfælde kan man oprette en gren
-   til dette - de andre udviklere kommer ikke til at se noget anderledes
-   og to adskilte udviklingsgrene kan køre.
+   Ofte vil alle bruge samme gren af filerne, men hvad gør man hvis
+   man nu har brug for at kode et stykke tid på noget som lammer
+   resten af udviklerne på samme projekt. I dette tilfælde kan man
+   oprette en gren til dette - de andre udviklere kommer ikke til at
+   se noget anderledes og to adskilte udviklingsgrene kan køre.
   </para>
 
   <para>
-   Lad os antage at vi arbejder med et modul i CVS med navn "sslugkode"
-   som er importeret i CVS ved at skrive <command>cvs import sslugkode
-   start version0</command>. Da der ikke er nogen naturlig "vendor"
-   sættes leverandør-tag blot til "start" og start-version til "version0".
+   Lad os antage at vi arbejder med et modul i CVS med navn
+   "sslugkode" som er importeret i CVS ved at skrive <command>cvs
+   import sslugkode start version0</command>. Da der ikke er nogen
+   naturlig "vendor" sættes leverandør-tag blot til "start" og
+   start-version til "version0".
   </para>
 
   <para>
@@ -1127,8 +1115,8 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
     <secondary>rtag</secondary>
    </indexterm>
 
-   For at skabe "gren1" ud fra hovedgrenen "version0" skriver man (uden
-   at man nødvendigvis har koden checket ud):
+   For at skabe "gren1" ud fra hovedgrenen "version0" skriver man
+   (uden at man nødvendigvis har koden checket ud):
 
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>cvs rtag -b -r version0 gren1 sslugkode</userinput>
@@ -1136,56 +1124,56 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
   </para>
 
   <para>
-   Tilsvarende kunne man måske have en anden udvikler, som skal arbejde
-   samtidig på en anden gren, "gren2"
-  </para>
+   Tilsvarende kunne man måske have en anden udvikler, som skal
+   arbejde samtidig på en anden gren, "gren2":
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 gren2 sslugkode</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs rtag -b -r version0 gren2 sslugkode</userinput>
 </screen>
-
-  <para>
-   For at isolere sig selv i grenen "gren1" skrives
   </para>
 
+  <para>
+   For at isolere sig selv i grenen "gren1" skrives:
+
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs -d STI_TIL_CVS-RODEN checkout sslugkode</userinput>
-<prompt>[anne@linus ~]$</prompt> <userinput>cd sslugkode</userinput>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r gren1</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs -d STI_TIL_CVS-RODEN checkout sslugkode</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cd sslugkode</userinput>
+<prompt>[anne@linus sslugkode]$ </prompt><userinput>cvs update -r gren1</userinput>
 </screen>
 
-  <para>
    eller direkte
-  </para>
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs -d STI_TIL_CVS-RODEN checkout -r gren1 sslugkode</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs -d STI_TIL_CVS-RODEN checkout -r gren1 sslugkode</userinput>
 </screen>
+  </para>
 
   <para>
    Det normale er derefter at udvikleren retter, laver <command>cvs
-   commit</command> som vanligt. Fordelen er at de andre udviklere ikke
-   ser dette. Grenene er totalt afkoblede indtil der laves en "merge"
+   commit</command> som vanligt. Fordelen er at de andre udviklere
+   ikke ser dette. Grenene er totalt afkoblede indtil der laves en
+   "merge"
   </para>
 
   <para>
    Hvis det skulle ske at vores udvikler fra "gren1" skal hjælpe han
    som arbejder i "gren2"-grenen, så kan han lave <command>cvs
-   commit</command> på egne filer og derfter skifte direkte over til "gren2"
-  </para>
+   commit</command> på egne filer og derfter skifte direkte over til
+   "gren2":
 
 <screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r gren2</userinput>
+<prompt>[anne@linus sslugkode]$ </prompt><userinput>cvs update -r gren2</userinput>
 </screen>
+  </para>
 
   <para>
    Endelig kan man skifte ud til hoved-sporet (komme ud af henholdsvis
-   "gren1" og "gren2" ved at skrive
-  </para>
+   "gren1" og "gren2" ved at skrive:
 
 <screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -A</userinput>
+<prompt>[anne@linus sslugkode]$ </prompt><userinput>cvs update -A</userinput>
 </screen>
+  </para>
 
   <sect3 id="cvs-join">
    <title>Flette grene sammen igen</title>
@@ -1201,36 +1189,37 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
    </indexterm>
 
    <para>
-    Antag at to udviklingsgrene, som hver for sig har udviklet sig, på et
-    tidspunkt skal flettes sammen. Du har været så smart at du kørte 
-    <command>cvs tag TAG1</command> da du startede med din "gren1" og
-    du har også gemt et mærke TAG2 ved slutningen af "gren1" - dvs. du har
-    har lige kørt <command>cvs tag TAG2</command> i "gren1".    
+    Antag at to udviklingsgrene, som hver for sig har udviklet sig, på
+    et tidspunkt skal flettes sammen. Du har været så smart at du
+    kørte <command>cvs tag TAG1</command> da du startede med din
+    "gren1" og du har også gemt et mærke TAG2 ved slutningen af
+    "gren1" - dvs. du har har lige kørt <command>cvs tag
+    TAG2</command> i "gren1".
    </para>
 
    <para>
     I "gren2"-grenen kan du opdatere samtlige ændringer fra "gren1"-grenen
-    mellem TAG1 og TAG2 ved at skrive.
-   </para>
+    mellem TAG1 og TAG2 ved at skrive:
 
 <screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j TAG1 -j TAG2</userinput>
+<prompt>[anne@linus sslugkode]$ </prompt><userinput>cvs update -j TAG1 -j TAG2</userinput>
 </screen>
+   </para>
 
    <para>
-    Hvis man ikke var i "gren2" skal man først sikre at du er i "gren2"-grenen.
-   </para>
+    Hvis man ikke var i "gren2" skal man først sikre at man er i
+    "gren2"-grenen:
 
 <screen>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r gren2</userinput>
-<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j TAG1 -j TAG2</userinput>
+<prompt>[anne@linus sslugkode]$ </prompt><userinput>cvs update -r gren2</userinput>
+<prompt>[anne@linus sslugkode]$ </prompt><userinput>cvs update -j TAG1 -j TAG2</userinput>
 </screen>
+   </para>
 
-<para>
-Der er lidt mere information om emnet på 
-<ulink url="http://groups.yahoo.com/group/info-cvs/message/12246">http://groups.yahoo.com/group/info-cvs/message/12246</ulink>.
-</para>
-
+   <para>
+    Der er lidt mere information om emnet på <ulink
+    url="http://groups.yahoo.com/group/info-cvs/message/12246">http://groups.yahoo.com/group/info-cvs/message/12246</ulink>.
+   </para>
   </sect3>
  </sect2>
 
@@ -1238,26 +1227,27 @@ Der er lidt mere information om emnet på
   <title>Diverse med CVS</title>
 
   <para>
-   Det kan nævnes, at hvis Emacs indlæser en fil, der er koblet ind i CVS,
-   vil Emacs automatisk genkende dette og indsætte en ekstra menu, hvorfra
-   du på enkel vis kan sende tilføjelser til den fælles database (selve
-   ændringerne skal du ikke selv styre - det klarer Emacs og CVS).
+   Det kan nævnes, at hvis Emacs indlæser en fil, der er koblet ind i
+   CVS, vil Emacs automatisk genkende dette og indsætte en ekstra
+   menu, hvorfra du på enkel vis kan sende tilføjelser til den fælles
+   database (selve ændringerne skal du ikke selv styre - det klarer
+   Emacs og CVS).
   </para>
 
   <para>
-   Skal man anvende en "export" version til distribution, eller blot ikke
-   ønsker at lave en "checkout", så er <command>cvs export PROJEKT</command>
-   også en mulighed. Den henter kun filerne, men ikke
-   CVS-informationsfilerne. Meget praktisk til at skelne mellem udgivelse
-   af filer ("export") i forhold til udvikler-version med fuld
-   CVS-information ("checkout").
+   Skal man anvende en "export" version til distribution, eller blot
+   ikke ønsker at lave en "checkout", så er <command>cvs export
+   PROJEKT</command> også en mulighed. Den henter kun filerne, men
+   ikke CVS-informationsfilerne. Meget praktisk til at skelne mellem
+   udgivelse af filer ("export") i forhold til udvikler-version med
+   fuld CVS-information ("checkout").
   </para>
 
   <para>
    Vi har tidligere vist, at projekt/kildetekst hentes med:
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs STI_TIL_CVS-RODEN checkout projektnavn</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs STI_TIL_CVS-RODEN checkout projektnavn</userinput>
 </screen>
   </para>
 
@@ -1276,12 +1266,8 @@ Der er lidt mere information om emnet på
    checkout</command>.
 -->
 
-   Hvis man ser efter i
-   <filename>projekt-katalog/CVS</filename>, så finder man der tre filer,
-   som tilhører CVS:
-  </para>
-
-
+   Hvis man ser efter i <filename>projekt-katalog/CVS</filename>, så
+   finder man der tre filer, som tilhører CVS:
 
    <itemizedlist mark="bullet">
     <listitem>
@@ -1302,24 +1288,21 @@ Der er lidt mere information om emnet på
      </para>
     </listitem>
    </itemizedlist>
+  </para>
 
   <para>
    Næste trick er for dem som anvender SSH til at kommunikere med CVS.
    Man kan få ssh til at understøtte komprimering i
    <filename>~/.ssh/config</filename>:
-  </para>
 
 <programlisting>
-Compression yes
+Compression      yes
 CompressionLevel 6
 </programlisting>
 
-  <para>
-   Men vær opmærksom på at visse servere ikke kan finde ud af at anvende
-   komprimering, så er der uforklarlige problemer med at få forbindelse, så
-   slå det fra.
+   Men vær opmærksom på at visse servere ikke kan finde ud af at
+   anvende komprimering, så er der uforklarlige problemer med at få
+   forbindelse, så slå det fra.
   </para>
-
-
  </sect2>
 </sect1>
