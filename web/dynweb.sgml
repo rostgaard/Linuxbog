@@ -506,25 +506,24 @@ variabel2 svarer til indeholdet af name feltet i HTML-koden (altså "navn" og
 
 <para>
 Både navne og indtastninger er URL-kodet. Det betyder at at mellemrum
-skiftes ud med '+', ligeledes bliver en række karaktere specielt '=','%' og
-'&amp;' ombyttet med den tilsvarende hexadecimal kode skrevet som %xx. I
+skiftes ud med '+', ligeledes bliver en række tegn. specielt '=','%' og
+'&amp;' ombyttet med den tilsvarende hexadecimale kode skrevet som %xx. I
 eksemplet blev '@' lavet om til %40.
 </para>
 
 <para>
 For at URL-afkode en streng skal den altså først klippes i stykker ved
-alle &amp;-karakterne. Dette giver en tabel af strenge af formen
+alle &amp;-tegnene. Dette giver en tabel af strenge af formen
 "variabel=indtastning". Hver streng skal så klippes ved '=' og man får
 variabel og indtastning hver for sig, og så skal alle '+' konverteres
-til mellemrum og bagefter skal alle %xx konverteres til den
-tilsvarende ASCII karakter i både variabel og indtastning
-strengene. 
+til mellemrum og bagefter skal alle %xx konverteres til det
+tilsvarende ISO-8859-1-tegn i både variabel- og indtastningsstrengene. 
 </para>
 
 <para>
-En lille detalje er at %00 null karakteren skal
+En lille detalje er at %00 &mdash; tegnet "NULL" &mdash; skal
 fjernes. Det er vigtigt, at dette gøres netop i denne rigtige
-rækkefølge ellers vil alle '+' karaktererne, der er indtastet ændres
+rækkefølge ellers vil alle "+"-tegnene, der er indtastet ændres
 til mellemrum.
 </para>
 
@@ -546,7 +545,7 @@ sub URLdekrypt
     my ($variabel,$indtastning);
     my %data;
 
-#Klip input strengen ved all '&amp;' karaktere
+#Klip input strengen ved all '&amp;'-tegn
 
     my @query=split /&amp;/, $input;
 
@@ -568,13 +567,13 @@ sub URLdekrypt
         $variabel    =~ s/%00//g;
         $indtastning =~ s/%00//g;
 
-#substituter %xy med den tilsvarende karakter..
+#substituter %xy med det tilsvarende tegn
 
         $variabel    =~ s/%([0-9A-Fa-f]{2})/pack("c",hex($1))/ge;
         $indtastning =~ s/%([0-9A-Fa-f]{2})/pack("c",hex($1))/ge;
 
 #Hvis flere felter har samme navn så konkateneres deres indhold
-#separeret af en '|' karakter.
+#separeret af et "|"-tegn.
 
         if ($data{$variabel})
             { $data{$variabel}=$data{$variabel}."|".$indtastning; }
@@ -835,9 +834,11 @@ CGI-programmer har til rådighed:
     </row>
     <row>
       <entry>HTTP_ACCEPT_CHARSET</entry>
-      <entry>Karakterset som browseren kan forstå f.eks. "iso-8859-1,*,utf-8" Dvs.
-        en browser der fortrækker et iso-8859-1 dvs. latin1 enkrypteret svar,
-        man kan acceptere andre karakterset.</entry>
+      <entry>Tegnkodning som browseren kan forstå.  Værdien kan for eksempel
+        være "<literal>iso-8859-1,utf-8,*</literal>", hvilket betyder at
+        browseren foretrækker ISO-8859-1-tegnkodningen, sekundært
+        UTF-8-tegnkodningen, men i øvrigt accepterer vilkårlige
+        tegnkodninger.</entry>
     </row>
     <row>
       <entry>HTTP_ACCEPT_LANGUAGE</entry>
@@ -1170,11 +1171,11 @@ sub HentHash
 }
 
 sub tohash
-#addere hash data efter at escaped karaktere er fixet
+#addere hash data efter at escaped tegn er fixet
 {
   my ($hashref,$key,$str)=(@_);
 
-#Fix escaped karaktere.
+#Fix escaped tegn.
   $str =~ s/&amp;lt;/&lt;/g;
   $str =~ s/&amp;gt;/>/g;
   $str =~ s/&amp;amp;/&amp;/g;
@@ -1380,7 +1381,7 @@ være tainted, og konkateneres en tainted og en normal streng bliver resultatet
 også tainted. Man kan derfor være rimelig sikker på at der opstår en fejl,
 hvis man forsøger at bruge usikker information i en farlig operation. Den
 eneste måde at untainte en streng på er ved at ekstrahere den fra et regulært
-udtryk, f.eks. et der fjerner forbudte karakterer som ';','|' og '/'. Se "man
+udtryk, f.eks. et der fjerner forbudte tegn som ';','|' og '/'. Se "man
 perlsec" for mere information om tainted variable.</para>
 
 <para>Det følgende eksempel bruger tainted variable, og viser hvordan det
@@ -1398,7 +1399,7 @@ if ($user =~ /^(\w+)$/)
    $user = $1;
 
 #$user er nu untainted og kan kun indeholde
-#følgende karaktere A-Z,a-z,0-9, samt '_'
+#følgende tegn A-Z,a-z,0-9, samt '_'
  }
 else 
  {
