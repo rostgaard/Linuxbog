@@ -5,6 +5,7 @@ release : version cvs2html filer
 
 Makefiler:
 	cp Makefile.subdir friheden/Makefile
+	cp Makefile.subdir unix/Makefile
 	cp Makefile.subdir applikationer/Makefile
 	cp Makefile.subdir admin/Makefile
 	cp Makefile.subdir program/Makefile
@@ -18,6 +19,7 @@ Makefiler:
 filer:  Makefiler
 	$(MAKE) Makefiler
 	$(MAKE) -C friheden
+	$(MAKE) -C unix
 	$(MAKE) -C applikationer
 	$(MAKE) -C admin
 	$(MAKE) -C program
@@ -31,6 +33,7 @@ filer:  Makefiler
 
 pspdf:	Makefiler
 	$(MAKE) -C friheden      pspdf
+	$(MAKE) -C unix          pspdf
 	$(MAKE) -C applikationer pspdf
 	$(MAKE) -C admin         pspdf
 	$(MAKE) -C program       pspdf
@@ -44,6 +47,7 @@ pspdf:	Makefiler
 
 statusfiler:  Makefiler
 	$(MAKE) -C friheden statusfiler
+	$(MAKE) -C unix  statusfiler
 	$(MAKE) -C applikationer  statusfiler
 	$(MAKE) -C admin  statusfiler
 	$(MAKE) -C program  statusfiler
@@ -57,6 +61,7 @@ statusfiler:  Makefiler
 
 version:  Makefiler
 	@grep -A2 "<listitem>" friheden/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > friheden/version.sgml
+	@grep -A2 "<listitem>" unix/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > unix/version.sgml
 	@grep -A2 "<listitem>" applikationer/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > applikationer/version.sgml
 	@grep -A2 "<listitem>" admin/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > admin/version.sgml
 	@grep -A2 "<listitem>" program/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > program/version.sgml
@@ -68,6 +73,7 @@ version:  Makefiler
 	@grep -A2 "<listitem>" itplatform/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >itplatform/version.sgml
 	cp friheden/version.sgml alle/version.sgml
 	@echo "friheden" `cat friheden/version.sgml`
+	@echo "unix" `cat unix/version.sgml`
 	@echo "applikationer" `cat applikationer/version.sgml`
 	@echo "admin" `cat admin/version.sgml`
 	@echo "program" `cat program/version.sgml`
@@ -80,6 +86,7 @@ version:  Makefiler
 
 eksempelbackup:  statusfiler
 	$(MAKE) -C friheden eksempelbackup
+	$(MAKE) -C unix eksempelbackup
 	$(MAKE) -C applikationer  eksempelbackup
 	$(MAKE) -C admin  eksempelbackup
 	$(MAKE) -C program  eksempelbackup
@@ -92,6 +99,7 @@ eksempelbackup:  statusfiler
 
 clean: Makefiler
 	$(MAKE) -C friheden clean
+	$(MAKE) -C unix clean
 	$(MAKE) -C applikationer clean
 	$(MAKE) -C admin clean 
 	$(MAKE) -C program clean
@@ -103,7 +111,6 @@ clean: Makefiler
 	$(MAKE) -C itplatform clean 
 	$(MAKE) -C alle clean 
 	rm -rf cvs2html
-	rm -rf Friheden_palm.tgz 
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html

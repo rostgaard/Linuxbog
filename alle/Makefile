@@ -23,6 +23,7 @@ badfiles = $(badfiles1) $(badfiles2) $(badfiles3) $(badfiles4)
 # Her er en liste af sgml-filer der skal checkes
 totalsgmlfiler=$(wildcard ../alle/*.sgml) \
                $(wildcard ../friheden/*.sgml) \
+               $(wildcard ../unix/*.sgml) \
                $(wildcard ../admin/*.sgml) \
                $(wildcard ../web/*.sgml) \
                $(wildcard ../applikationer/*.sgml) \
@@ -67,6 +68,7 @@ exit:
 
 billeder:
 	cp ../friheden/images/*.png images
+	cp ../friheden/unix/*.png images
 	cp ../admin/images/*.png images
 	cp ../web/images/*.png images
 	cp ../program/images/*.png images
