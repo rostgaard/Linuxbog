@@ -15,18 +15,35 @@ dnl ======================================================================
 
 dnl Vi skal lede efter de programmer og filer, vi skal bruge under oversættelsen
 AC_MSG_NOTICE([checker helt nødvendige programmer og filer])
-
+FATALE_MANGLER=""
 dnl Vi har brug for perl
-AC_CHECK_PROG(PERL, perl, ja, AC_ERROR(Du skal have perl i din path, simpelthen))
+AC_CHECK_PROG(PERL, perl, ja, nej)
+if test "xja" != "x$PERL" ; then
+  FATALE_MANGLER="$FATALE_MANGLER perl"
+  AC_MSG_NOTICE([perl blev ikke fundet. Det er nødvendigt for at lave bøgerne at perl bliver installeret])
+fi
 
 dnl Vi har i den grad brug for jade
-AC_CHECK_PROG(JADE, jade, ja, AC_ERROR(jade eller openjade er krævet for at lave bøgerne))
+AC_CHECK_PROG(JADE, jade, ja, nej)
+if test "xja" != "x$JADE" ; then
+  FATALE_MANGLER="$FATALE_MANGLER jade/openjade"
+  AC_MSG_NOTICE([jade blev ikke fundet. jade eller openjade er krævet for at lave bøgerne og et af disse programmer skal installeres])
+fi
 
 dnl Vi bruger jw til at kalde jade
-AC_CHECK_PROG(JW, jw, ja, AC_ERROR(jw er krævet for at lave bøgerne))
+AC_CHECK_PROG(JW, jw, ja, nej)
+if test "xja" != "x$JW" ; then
+  FATALE_MANGLER="$FATALE_MANGLER jw"
+  AC_MSG_NOTICE([jw blev ikke fundet. Det er nødvendigt at installere dette progrm for at lave bøgerne])
+fi
 
 dnl find også
-AC_CHECK_PROG(FIND, find, ja, AC_ERROR(find er krævet for at lave bøgerne))
+AC_CHECK_PROG(FIND, find, ja, nej)
+if test "xja" != "x$FIND" ; then
+  FATALE_MANGLER="$FATALE_MANGLER find"
+  AC_ERROR([find blev ikke fundet. find er krævet for at lave bøgerne og skal installeres])
+fi
+
 dnl ======================================================================
 dnl Check stien til "cygnus" filerne
 dnl ======================================================================
@@ -38,8 +55,17 @@ dnl Faktisk er de krævet pt, men det kan vi jo håbe ændrer sig
 dnl ======================================================================
 
 AC_MSG_NOTICE([checker for generelle programmer])
+ANBEFALEDE_MANGLER=""
+
 AC_CHECK_PROG(TAR, tar, ja, nej - det er ikke muligt at lave tarrede udgaver)
+if test "xja" != "x$TAR" ; then
+  ANBEFALEDE_MANGLER="$ANBEFALEDE_MANGLER tar"
+fi
+
 AC_CHECK_PROG(ZIP, zip, ja, nej - det er ikke muligt at lave zippede udgaver)
+if test "xja" != "x$ZIP" ; then
+  ANBEFALEDE_MANGLER="$ANBEFALEDE_MANGLER zip"
+fi
 
 dnl ======================================================================
 dnl Check specifikke krav til de enkelte måder at lave bogen på
@@ -55,11 +81,11 @@ TARGET_PAKHTML=ja
 dnl ======================================================================
 dnl Check krav til SGML udgaven
 dnl ======================================================================
-if test "xnej" == "x$TAR" ; then 
+if test "xja" != "x$TAR" ; then 
   TARGET_SGML=nej
   AC_MSG_WARN(tar ikke fundet - det er ikke muligt at lave SGML udgaven)
 fi
-if test "xnej" == "x$ZIP" ; then 
+if test "xja" != "x$ZIP" ; then 
   TARGET_SGML=nej
   AC_MSG_WARN(zip ikke fundet - det er ikke muligt at lave SGML udgaven)
 fi
@@ -111,16 +137,12 @@ AC_CHECK_PROG(PDFINFO, pdfinfo, ja, nej - det er ikke muligt at lave PDF udgaven
 if test "xja" != "x$PDFINFO"; then
   TARGET_PDF=nej
 fi
-AC_CHECK_PROG(DB2PS, db2ps, ja, nej - det er ikke muligt at lave PDF udgaven)
-if test "xja" != "x$DB2PS"; then
-  TARGET_PDF=nej
-fi
 dnl Image Magick Convert
 AC_CHECK_PROG(CONVERT, convert, ja, nej - det er ikke muligt at lave PDF udgaven)
 if test "xja" != "x$CONVERT"; then
   TARGET_PDF=nej
 fi
-if test "xnej" == "x$ZIP" ; then 
+if test "xja" != "x$ZIP" ; then 
   TARGET_PDF=nej
   AC_MSG_WARN(zip ikke fundet - det er ikke muligt at lave PDF udgaven)
 fi
@@ -140,6 +162,15 @@ fi
 dnl ======================================================================
 dnl Lad brugeren vide lidt om hvad der foregår
 dnl ======================================================================
+AC_MSG_NOTICE([==================================================================])
+if test "x$ANBEFALEDE_MANGLER" != "x" ; then
+  AC_MSG_NOTICE([Følgende programmer kan med fordel installeres for at få flere muligheder for at bygge bøgerne: $ANBEFALEDE_MANGLER])
+fi
+
+if test "x$FATALE_MANGLER" != "x" ; then
+  AC_ERROR([Følgende programmer mangler for overhovedet at kunne bygge bøgerne og skal installeres: $FATALE_MANGLER])
+fi
+
 AC_MSG_NOTICE([Oversigt over hvilke moduler der kan laves])
 
 AC_MSG_NOTICE([ Kan SGML bygges    : $TARGET_SGML ])
@@ -147,6 +178,8 @@ AC_MSG_NOTICE([ Kan PALM bygges    : $TARGET_PALM ])
 AC_MSG_NOTICE([ Kan PDF bygges     : $TARGET_PDF ])
 AC_MSG_NOTICE([ Kan HTML bygges    : $TARGET_HTML ])
 AC_MSG_NOTICE([ Kan PAKHTML bygges : $TARGET_PAKHTML ])
+
+AC_MSG_NOTICE([==================================================================])
 
 dnl Sæt nogen conditionals der bestemmer hvilke muligheder vi har for at bygge 
 dnl de forskellige typer af bogen.
@@ -158,9 +191,6 @@ AM_CONDITIONAL(BUILD_PAKHTML, test "x$TARGET_PAKHTML" = "xja")
 
 AM_CONDITIONAL(HAVE_TIDY,     test "x$TIDY" = "xja")
 AM_CONDITIONAL(HAVE_PERL_IMAGE_SIZE, test "x$HAVE_PERL_IMAGE_SIZE" = "xja")
-
-
-AC_MSG_NOTICE([Danner Makefiler]) 
 
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
