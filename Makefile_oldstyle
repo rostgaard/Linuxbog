@@ -37,14 +37,14 @@ statusfiler:  Makefiler
 	make -C alle  statusfiler
 
 version:  Makefiler
-	make -C friheden gemversion
-	make -C applikationer  gemversion
-	make -C admin  gemversion
-	make -C program  gemversion
-	make -C web  gemversion
-	make -C sikkerhed  gemversion
-	make -C c  gemversion
-	make -C docbook  gemversion
+	@grep -A2 "<listitem>" friheden/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > friheden/version.sgml
+	@grep -A2 "<listitem>" applikationer/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > applikationer/version.sgml
+	@grep -A2 "<listitem>" admin/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > admin/version.sgml
+	@grep -A2 "<listitem>" program/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > program/version.sgml
+	@grep -A2 "<listitem>" web/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > web/version.sgml
+	@grep -A2 "<listitem>" sikkerhed/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > sikkerhed/version.sgml
+	@grep -A2 "<listitem>" c/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > c/version.sgml
+	@grep -A2 "<listitem>" docbook/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > docbook/version.sgml
 
 eksempelbackup:  statusfiler
 	make -C friheden eksempelbackup
