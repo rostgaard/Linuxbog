@@ -1,15 +1,38 @@
+# Lokalt katalog (fuld sti)
 locdirname=$(shell pwd)
+
+# Kort navn
 targetshortname=$(notdir $(locdirname))
+
+# Med linux- foran
 targetname=linux-$(notdir $(locdirname))
+
+# version
 version=$(shell cat version.sgml)
+
+# dato
 dato=$(shell cat dato.sgml)
 
-all:	statusfiler html pspdf palmpilot sgml
+# Her er en liste af sgml-filer der ændres automatisk
+badsgmlfiles=dato.sgml magic.sgml stikord.sgml
 
-sgml:
+# Her er  en liste af alle sgml
+allesgmlfiles=$(wildcard *.sgml)
+
+# Her er en liste af sgml-filer der skal checkes
+sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+
+# her er det der skal laves
+all:	statusfiler html pspdf palmpilot sgml exit
+
+sgml: $(targetname)-$(version).sgml.tgz
+
+$(targetname)-$(version).sgml.tgz: $(sgmlfiler)
 	tar cvzf $(targetname)-$(version).sgml.tgz *.sgml Makefile collateindex.pl
 
-palmpilot:
+palmpilot: $(targetname)-$(version).palm.tgz
+
+$(targetname)-$(version).palm.tgz: $(sgmlfiler)
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
@@ -17,10 +40,17 @@ palmpilot:
 
 statusfiler:
 	@$(shell date +%d/%m-%Y> dato.sgml)
+	@echo start på $(targetshortname)	
 	@echo Version er $(version)
 	@echo Dato sat til $(dato)
+	@echo Checker $(sgmlfiler)
 
-htmlfiler:	statusfiler
+exit:
+	@echo slut på $(targetshortname)
+	@echo --------------
+	@echo 
+
+htmlfiler: 
 	@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -53,9 +83,16 @@ pakhtml:
 	@echo "Done HTML pakning (pakhtml)"
 	@echo ""
 
-html: htmlfiler reparerhtml pakhtml
+bog/index.html: $(sgmlfiler)
+	make htmlfiler 
+	make reparerhtml 
+	make pakhtml
 
-pspdf:	statusfiler
+html: bog/index.html
+
+pspdf:	$(targetname)-$(version).pdf
+
+$(targetname)-$(version).pdf: $(sgmlfiler)
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
@@ -85,6 +122,9 @@ pspdf:	statusfiler
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	@echo "Done PDF (pspdf)"
 	@echo ""
+
+test:
+	echo $(sgmlfiler)
 
 
 clean:
