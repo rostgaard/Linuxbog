@@ -1,36 +1,24 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
-        "http://www.w3.org/TR/REC-html40/loose.dtd">
-<!--
-$Id$
--->
-<html>
-<HTML>
-<HEAD>
-<!-- Husk titel. Skal begynde med "SSLUG - " -->
-   <TITLE>SSLUG - Friheden til at skrive bøger</TITLE>
-<LINK REL="STYLESHEET" HREF="/style/sslug.css" TYPE="text/css">
-</HEAD>
-<BODY>
 <?php
 
-  // Nogen vil gerne se kildeteksten, og det skal de da have lov til.
-  // Men læs hellere om PHP i "Linux - Friheden til at programmere".
-  if ($show_source) {
-    echo "<tt>";
-    show_source(basename($PHP_SELF));
-    echo "</tt></BODY></HTML>";
-    exit;
-  }
+   /* top.phtml sets 
+      <!--DOCTYPE ....
+      .....
+      ... [topmenu] ...
+   */
+   $htmltitle_en="SSLUG - Liberty of writing books";
+   $htmltitle_da="SSLUG - Friheden til at skrive bøger";
+   $htmltitle_sv="SSLUG - Friheden til at skrive bøger";
+   $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
+   $maintain_name = "Hans Schou";       // Skriv dit navn her
+   $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
+   include($DOCUMENT_ROOT."/includes/top.phtml");
 
-  include($DOCUMENT_ROOT."includes/top.phtml");
-
-	list($width,$height) = getimagesize("front.png");
+   list($width,$height) = getimagesize("front.png");
 ?>
 
 <img src="front.png" alt="Friheden til at skrive bøger"
  align="right" width="<? echo $width ?>" height="<? echo $height ?>">
 <h1>SSLUG - Friheden til at skrive bøger</h1>
-</p>
 
 <?php
 
@@ -351,11 +339,5 @@ foretages.
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  include($DOCUMENT_ROOT."includes/top.phtml");
+  include($DOCUMENT_ROOT."includes/bottom.phtml");
 ?>
-<center>
-<p>Denne side vedligeholdes af Hans Schou (&lt;<A HREF="mailto:chlor@sslug.dk">chlor@sslug.dk</a>&gt;)
-<br><a href="<?php echo $PHP_SELF ?>?show_source=1">Se kildeteksten</a></p>
-</center>
-</BODY>
-</HTML>
