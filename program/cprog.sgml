@@ -1,0 +1,1723 @@
+<chapter id="programmering">
+<title>Programmering under Linux</title>
+
+<para>
+<indexterm><primary>Programmering under Linux</primary></indexterm>
+For den, der har lyst til at udvikle programmer, er Linux det rene paradis.
+Der er masser af programmeringssprog og værktøjer at vælge mellem. Langt
+det meste er af rigtig høj kvalitet og selvfølgelig frit tilgængeligt. Der
+er i øvrigt mange andre muligheder end dem, vi kommer ind på her, så hvis
+dit bestemte yndlingssprog ikke er nævnt her, betyder det langtfra, at det
+ikke findes til Linux. Selv grafisk baserede udviklingsmiljøer er der,
+eller hurtigt på vej. Seneste nyt er, at Inprise (tidligere Borland)
+vil frigive Delphi til Linux. Godt nok findes Microsoft Visual C++
+ikke til Linux (og det kommer nok heller ikke), men læs videre. Du vil se
+at KDevelop ligner meget. 
+</para>
+
+<sect1 id="shell">
+<title>Shell-programmering</title>
+<indexterm><primary>Shell programmering</primary></indexterm>
+<indexterm><primary>/bin/sh</primary></indexterm>
+<indexterm><primary>sh</primary></indexterm>
+<indexterm><primary>bash</primary></indexterm>
+<para>
+Hvis du ofte har brug for at køre nogle bestemte programmer for at
+håndtere en tilbagevendende opgave, bør du sætte dig ind i at skrive
+<emphasis>shell-skript</emphasis>. Kender du til
+batch-filer under DOS, har du en ide om, hvad det går ud på. Et
+shell-skript er i bund og grund blot en tekstfil, der indeholder en
+række kommandoer og måske nogle ekstra linjer til at vælge hvilke dele
+af scriptet, der skal udføres.
+</para>
+
+<para>
+Det første eksempel på et shell-skript bør være "Hello World", som
+skriver en tekst på skærmen.
+</para>
+
+<screen>
+#!/bin/sh
+echo "Hello World"
+</screen>
+
+<para>
+Dette gemmes under navnet <filename>HelloWorld</filename> eller
+lignende, og derefter gøres filen eksekverbar med <command>chmod +x
+HelloWorld</command>. Du kan nu teste eksemplet ved at skrive
+<command>./HelloWorld</command> på en kommando linje (f.eks. i en
+xterm). Du skal skrive punktum og skråstreg foran programnavnet, hvis
+du ikke har ændret din søgestien ($PATH) i
+<filename>./.profile</filename>.
+</para>
+
+<para>
+Et eksempel kunne være, at du fandt ud af, at du ofte havde brug for en
+nem metode til at tage en hurtig kopi af tekstfilerne i
+arbejdskataloget.
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter sikkerhedskopiéring..."
+mkdir backup
+cp *.txt backup
+echo "Sikkerhedskopiéring slut"
+</screen>
+
+<para>
+Gem denne tekst i en fil med navnet <filename>bu</filename> (for "back
+up"), og gør den eksekverbar med kommandoen <userinput>chmod +x
+bu</userinput>. Nu kan du køre <filename>bu</filename> fra kommandolinjen:
+</para>
+
+<screen>
+<prompt>$</prompt> <userinput>./bu</userinput>
+Starter sikkerhedskopiéring...
+Sikkerhedskopiéring slut
+</screen>
+
+<para>
+Første linje i scriptet er egentlig en kommentar, men giver
+samtidig systemet besked om, at dette er et shell-skript og ikke f.eks. et
+perl-skript.
+</para>
+
+<para>
+Hvis du er lidt forsigtig anlagt og gerne vil undgå at komme til at
+overskrive en eksisterende backup, kan du udvide skriptet en smule:
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter sikkerhedskopiéring..."
+mkdir backup
+if [ $? -eq 0 ]
+then
+    echo "kataloget ./backup oprettet..."
+else
+    echo "kataloget ./backup kunne IKKE oprettes"
+    echo "bu afsluttes"
+    exit 1
+fi
+cp -v *.txt backup
+echo "bu slut"
+</screen>
+
+<indexterm><primary>Shell variable</primary></indexterm>
+<para>
+I linje 4 i skriptet støder vi på en såkaldt shell-variabel, nemlig
+<filename>$?</filename>, der betyder "resultatet af sidst udførte
+kommando". Her bruges den til at vise, om <filename>mkdir</filename>
+lykkedes eller ej. I dette eksempel går vi enfoldigt ud fra, at hvis
+kommandoen <userinput>mkdir backup</userinput> ikke lykkedes, er det, fordi
+kataloget <filename>backup</filename> eksisterer i forvejen.
+</para>
+
+<para>
+Hvis vi så finder ud af, at vi af og til har brug for at overskrive en
+backup, kan vi ændre vores skript en smule, så vi ved at tilføje
+<userinput>-O</userinput> på kommandolinjen kan få den til at være
+ligeglad med, om kataloget findes i forvejen:
+</para>
+
+<screen>
+#!/bin/sh
+echo "Starter sikkerhedskopiéring..."
+mkdir backup
+if [ $? -eq 0 ]
+then
+    echo "kataloget ./backup oprettet..."
+else
+    echo "kataloget ./backup kunne IKKE oprettes"
+    OVERWRITE="-O"
+    if [ $# -eq 1 ]
+    then
+    if [ $1 != $OVERWRITE ]
+	  then
+        echo "bu afsluttes"
+	  exit 1
+        else
+            echo "der overskrives..."
+        fi
+    else
+        echo "bu afsluttes"
+        exit 1
+    fi
+fi
+cp -v *.txt backup
+echo "bu slut"
+</screen>
+
+<para>
+Du kan faktisk nå temmelig langt ved hjælp af shell-skript, men det kan
+hurtigt blive lidt kryptisk at læse. Kunsten er nok i virkeligheden at
+stoppe, mens legen er god, og vælge et "rigtigt" programmeringssprog, når
+opgaven kræver det. Alligevel bør du lære at skrive shell-programmer, dels
+for at lave dine egne små praktiske løsninger på dagligdagens problemer,
+dels for at kunne forstå andres skript.
+</para>
+
+<para>
+Endelig kan det nævnes at der findes en del bøger om
+shell-programmering, bl.a. fra <ulink
+url="http://www.oreilly.com">O'Reilly</ulink>, bl.a. "Learning the
+Bash Shell". Eksemplerne fra denne bog er interessante og de kan
+hentes fra <ulink url="http://www.oreilly.com/catalog/bash/">http://www.oreilly.com/catalog/bash/</ulink>
+</para>
+
+
+<sect2 ID="sed">
+<title>sed</title>
+<indexterm><primary>sed</primary></indexterm>
+<para>
+Programmet <command>sed</command> er ofte anvendt i UNIX til at
+modificere tekst, såsom at uddrage eller omforme en mindre del af en
+tekstlinie. Ofte læses teksten fra en rør-konstruktion (eng. pipe) eller fil og
+tilsvarende afleveres resultatet i en fil eller rør.
+Fordelen med <command>sed</command> i forhold til Perl (som kan meget
+mere) er at sed er et lille program.
+</para>
+
+<para>
+Lad os tage et eksempel med anvendelse af sed.  I shell-skript kan man
+ofte være interesseret i at finde stinavne (eng. pathname), basefilename 
+og extension udfra den fulde sti i $0 for shell-skript.  Så for at manipulere med
+fuld sti kan man gøre følgende:
+</para>
+
+<SCREEN>
+  pathname=`echo $0 | sed 's#[^/]*$##'`
+  progname=`echo $0 | sed 's#^.*/##'`
+  noext=`echo $0 | sed 's/\.[^\.]\+$//`
+
+  ext =`echo $progname | sed 's/^.\+\.//'`
+  ext2=`echo $progname | sed 's/^.*\././'`
+</screen>
+
+<para>
+Dog vil ovenstående eksempler måske fejle for visse typer stinavne,
+men de plejer at virke for de fleste "normale" sti+filnavne man
+anvender.
+</para>
+
+</sect2>
+
+<sect2 id="tcsh">
+<title>tcsh</title>
+
+<indexterm><primary>tcsh</primary></indexterm>
+
+<para>
+På de fleste UNIX-kompatible maskiner, såsom Linux findes andre
+kommando-shells (kommandofortolkere). Gamle kendinge er ksh 
+(Korn-shellen), sh (Bourne-shellen) og csh. De er meget udbredte, 
+men til daglig anvendelse
+mangler flere af dem funktioner, såsom vis forrige kommando, kommando
+og filnavn udfyldning (tryk på tabulator). Derfor er Bash (Bourne
+again-shellen) og tcsh bedre alternativer. I Linux er sh og bash links
+til hinanden, så man kan se mere om bash tidligere i dette
+kapitel. Her skal vi nævne lidt om tcsh.
+</para>
+
+<para>
+Skal du brug tcsh som shell, så skal du ændre den del af linien for
+dig selv i <filename>/etc/passwd</filename> fra
+<filename>/bin/bash</filename> til <filename>/bin/tcsh</filename>.
+Tcsh vil anvende kommandoer skrevet i filerne 
+<filename>.login</filename> (ved login) og 
+<filename>.tcshrc</filename> (til hver shell, der startes). Et
+eksempel på <filename>.login</filename> kan være.
+<indexterm><primary>.login</primary></indexterm>
+</para>	
+
+<indexterm>
+ <primary>Dansk</primary>
+ <secondary>Tastatur og sprog</secondary>
+</indexterm>
+
+<screen>
+#!/bin/csh
+# User .login file (/bin/csh initialization).
+
+# Begræns forbrug for programmer
+limit coredumpsize 0
+limit stacksize 140000
+limit datasize 140000
+limit memoryuse 140000
+limit filesize 20000
+
+# Editor
+setenv EDITOR emacs
+# CVS skal bruge Secure Shell
+setenv CVS_RSH ssh
+setenv RSYNC_RSH ssh
+# gzip skal komprimere maksimalt
+setenv GZIP "-9 -v"
+setenv HOSTNAME "cat /etc/HOSTNAME"
+unsetenv LESS
+# Brug latin1 tegnsæt med less kommandoen
+setenv LESSCHARSET latin1
+# Vælg printer til lp
+setenv PRINTER lp
+
+#Dansk tastaturopsætning
+setenv LC_ALL da_DK
+setenv LANG da
+
+# Manual path
+setenv MANPATH /usr/local/man:/usr/man/preformat:/usr/man:/usr/X11/man
+
+if ( ! $?PAGER ) then
+  setenv PAGER less
+endif
+
+#if ($TERM == linux) startx
+
+# Hvis du er i tekst terminal 1, så start X op automatisk
+if (`echo $tty` == tty1) startx
+</screen>
+
+<screen>
+#!/bin/tcsh
+# User .tcshrc file (/bin/tcsh initialization).
+
+# Standard fil maske rw for mig - r for andre og gruppe
+umask 022
+# Path (søgesti)
+set path = ( .  ~/bin /usr/local/bin /usr/X11R6/bin \
+ /bin /usr/bin /usr/X11R6/bin /usr/lib/teTeX/bin \
+ /usr/local/Office51/bin )
+
+if ( ! $?prompt ) exit                      # Shell is interactive
+
+set filec
+set notify
+set nobeep
+set cdpath  = ( ~:/usr/spool )
+#set watch = (1 any any)
+set history = 500                           # Command prompt history
+set savehist                                # Number to save across sessions
+set autolist                                # List choices in name completion
+set correct = cmd                           # Checks spelling of commands
+set prompt  = "%{^[[1m%}${user}@`hostname`%/>%{^[[0m%} " # Command prompt
+
+#Gør at ls får farver
+alias ls 'ls --color=always'
+                                                      # in boldface
+set matchbeep=nomatch
+
+# Er der er en .alias fil, så indlæs denne
+if ( -e ~/.alias ) source ~/.alias
+</screen>
+
+</sect2>
+</sect1>
+
+
+<sect1 id="basalcprog">
+<title>C og C++ programmering</title>
+
+<indexterm><primary>C</primary></indexterm>
+<indexterm><primary>C++</primary></indexterm>
+<para>
+Programmeringssproget C og UNIX har traditionelt været tæt knyttet til
+hinanden, og dette gælder i høj grad også for Linux. Kernen og langt de
+fleste applikationer er skrevet i C.
+</para>
+
+<indexterm><primary>GNU C/C++</primary></indexterm>
+<para>
+GNU C/C++ er en af de allerbedste oversættere på markedet i dag. I
+modsætning til Windows-verdenen er oversætteren ikke indkapslet i en
+grafisk brugergrænseflade. Det giver større frihed for den enkelte til at
+sammensætte et personligt udviklingsmiljø - enten grafisk eller
+tekstbaseret. Med lidt tilvænning er det også hurtigt at anvende, specielt
+hvis der skal oversættes meget kode per gang. Der er også den store fordel,
+at det er standard inden for UNIX-verdenen, hvorfor kode og
+kompileringsfiler (makefiles) uden problemer kan flyttes, oversættes og
+eksekveres på andre typer af UNIX-systemer.
+</para>
+
+
+<sect2 id="foerstecprog">
+<title>Det første C program: HelloWorld</title>
+
+<indexterm><primary>Hello World skrevet i C</primary></indexterm>
+<para>
+Per tradition er HelloWorld-programmet det første C-program, man skal få
+til at virke. Programmet skriver en kort tekst (normalt "Hello World", men
+i dette tilfælde en lidt mere relevant besked) ud på skærmen og afslutter.
+Indtast følgende (brug <command>emacs</command>,
+<command>pico</command> eller <command>vi</command>), og gem det som
+<filename>hello.c</filename>.
+</para>
+
+<screen>
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+  printf("Linux er sjovt\n");
+  return 0;
+}
+</screen>
+
+<para>
+I kataloget, hvor filen er gemt, kan programmet nu oversættes ved at
+skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>gcc -o hello hello.c</userinput></screen>
+
+<indexterm><primary>gcc</primary></indexterm>
+<para>
+C-oversætteren hedder <command>gcc</command>. Den skal her lave en
+eksekverbar (kørbar) fil med navnet <filename>hello</filename>, og den skal oversætte
+og linke ud fra kildeteksten i <filename>hello.c</filename>.
+</para>
+
+<para>
+Det oversatte C-program <filename>hello</filename> køres ved at skrive
+navnet i en <command>xterm</command>. For dem, som har C-erfaring,
+kommer der et par tips nu. En lille sjov ordre er at skrive
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>nm hello</userinput>
+</screen>
+
+Så kan du se, at programmet bl.a. kalder funktionen
+<filename>printf</filename> og indeholder en funktion
+<filename>main</filename>.  Programmet blevet linket med dynamiske links
+til externe kataloger - dette kan ses ved at skrive <filename>ldd
+hello</filename>
+<indexterm><primary>ldd</primary></indexterm>
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>ldd hello</userinput>
+        libc.so.6 => /lib/libc.so.6 (0x40003000)
+        /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x00000000)
+</screen>
+
+<para>
+At den eksterne funktion <filename>printf</filename> rent faktisk kommer
+fra <filename>libc</filename>, kan ses ved at skrive
+<indexterm><primary>nm</primary></indexterm>
+</para>
+
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>nm /lib/libc.so.6 | grep "printf"</userinput>
+</screen>
+
+<para>
+Det var lidt om dynamisk link. Ideen er, at programmet kun indeholder de
+nødvendige dele. Under udførelsen af programmet bruges nogle af de nævnte
+eksterne biblioteker. Koden kan også oversættes med alle eksterne
+funktioner - linket statisk ind.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>gcc -o hello hello.c -static
+</userinput>
+</screen>
+
+<para>
+Bemærk ændringen i filstørrelsen (fra ca. 4 kbytes til over 400 kbytes).
+Nu vil <filename>ldd hello</filename> vise, at der ikke er eksterne
+biblioteker nødvendige for at køre programmet.  Nu tilbage til lidt mere
+simple eksempler.
+</para>
+</sect2>
+
+<sect2 id="foerstecppprogram">
+<title>Det første C++ program</title>
+
+<para>
+I følgende enkle eksempel ønskes et program, der indlæser to tal, finder
+det største af de to og skriver dette ud. Omkring C/C++ programmering kan
+henvises til en af de mange standardbøger om C og C++. Koden er ikke det
+primære, men kunne se således ud.
+</para>
+
+<screen>
+#include &lt;iostream.h&gt;
+
+void read2(int&,int&);
+void writeMax(int);
+
+int main()
+{
+  int val1,val2,maxVal;
+
+  read2(val1,val2);
+  maxVal = (val1>val2)?val1:val2;
+  writeMax(maxVal);
+
+  return 0;
+}
+
+void read2(int& v1,int& v2)
+{
+  cout << "Indtast to heltal ";
+  cin >> v1 >> v2;
+}
+
+void writeMax(int val)
+{
+  cout << val
+       << " er det største tal\n";
+}
+</screen>
+
+<para>
+Eksemplet gemmes som <filename>eks1.c++</filename>.
+</para>
+
+<para>
+Oversættelse kan ske med en såkaldt "makefile", men her sker det ved
+direkte at kalde oversætteren.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>g++ eks1.c++ -o eks1</userinput>
+</screen>
+
+<para>
+Du kan eventuelt lave en fil, hvor der står ordren til at oversætte
+en fil ud fra variabel. En hurtig måde er direkte at bruge
+<command>echo</command> funktionen til dette.
+
+<screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>echo "g++ $1.c++ -g -lm -o $1" > mycompile</userinput></screen>
+
+Koden <filename>$1</filename> betyder første argument, hvorfor filen
+kaldes med første argument lig med C-kodens filnavn. I filen inkluderes
+aflusningsinformation (debug-information) med flaget -g, og matematikbiblioteket linkes med -lm. I
+dette tilfælde er dette ikke nødvendigt, men normalt vil det være det. Filen
+er gemt under navnet <filename>mycompile</filename>, og der skrives
+følgende for, at filen kan eksekveres:
+</para>
+
+<screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>chmod a+x mycompile</userinput></screen>
+
+<para>Nu kan du skrive
+</para> 
+
+<screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>./mycompile FILNAVN
+</userinput></screen>
+
+<para>
+Det antages, at kildefilen hedder <filename>FILNAVN.c++</filename>, og
+den eksekverbare fil kommer til at hedde <filename>FILNAVN</filename>.
+</para>
+
+<para>
+Her skal det nævnes at .C .C++ og .cpp alle er C++ programmer. Hvis man
+forsøger at oversætte c-programmer med C++ compileren (<command>g++
+program.c -o program</command>), så kommer der problemer.
+</para>
+
+
+</sect2>
+
+<sect2 id="makefiles">
+<title>Oversættelse af flere C-filer med makefiler</title>
+
+<indexterm><primary>make</primary></indexterm>
+<indexterm><primary>Makefile</primary></indexterm>
+<para>
+Næste eksempel er to filer, hvor den ene kalder funktioner i den anden. I
+eksemplet, der er C-kode, er det igen det største af to tal, der skal
+findes og skrives ud.
+</para>
+
+<para>
+Følgende fil kan gemmes som <filename>ceks2.c</filename>.
+</para>
+
+<screen>
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+float v1,v2,retval;
+
+float max(float,float);
+
+int main(void)
+{
+  v1=sin(2.34);
+  v2=tan(4.4);
+
+  retval=max(v1,v2);
+
+  printf("Af %f og %f er %f stoerst\n",v1,v2,retval);
+  return 0;
+}
+</screen>
+
+<para>
+Følgende fil kan gemmes som <filename>cfkt.c</filename>.
+</para>
+
+<screen>
+float max(float f1,float f2)
+{
+  float f3;
+
+  if (f1>f2)
+    f3=f1;
+  else
+    f3=f2;
+
+  return f3;
+}
+</screen>
+
+<para>
+Koden kan oversættes ved hjælp af GNU C-oversætteren
+<command>gcc</command>. Brug <command>man gcc</command> for at få
+hjælp til de mange muligheder.
+</para>
+
+<screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>gcc -o ceks2 ceks2.c cfkt.c -lm</userinput></screen>
+
+<para>
+En langt mere elegant metode er at lave en makefile. Herefter skrives blot
+<command>make</command>, og C-oversætteren vil kun oversætte de filer, der
+er nye i forhold til objektfilerne. Makefiles kan også anvendes til at
+styre oversættelse generelt såsom af LaTeX-kode. En makefile (med navnet
+<filename>Makefile</filename>) kunne være følgende.
+</para>
+
+<screen>
+# Makefile til GNU C-oversætteren - dette er en kommentar
+# I dette eksempel oversættes to filer.
+# ceks2.c og cfkt.c oversættes til exefilen ceks2
+
+# Navn paa oversaetter = gcc
+CC = gcc
+
+# Navn paa eksekverbar fil
+OUTPUT   = ceks2
+
+# Kilde fil navne
+sources  = ceks2.c \
+           cfkt.c
+
+# Automatisk navngivning af objektfiler, hvor  .c bliver til .o
+OBJS        = $(sources:.c=.o)
+
+# Compilerflag: Maximal optimering -O2 og debug information -g
+CFLAGS      = -O2 -g
+
+#Linkerflag: Inkluderer matematik-bibliotek med -lm !!!!
+LDFLAGS      = -lm
+
+# Foelgende linje tjekker om en .o fil er nyere end den eksekverbare fil. Hvis
+# dette er tilfaeldet, linkes disse. Dvs. kun nye elementer oversættes.
+$(OUTPUT): $(OBJS)
+	$(CC) $(CFLAGS) -o $(OUTPUT) $(OBJS) $(LDFLAGS)
+</screen>
+
+<para>
+Bemærk, at der skal stå en tabulator foran de linjer, der skal eksekveres,
+såsom den sidste. Der må ikke anvendes mellemrum.
+</para>
+
+<para>
+Når makefilen er skrevet, kan programmet oversættes ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
+</screen>
+
+<para>
+i det katalog, hvor makefilen findes. En makefile kan være meget lang og
+indeholde mange regler.
+</para>
+</sect2>
+
+<sect2 id="GDB">
+<title>GNU debuggeren og DDD</title>
+<indexterm><primary>GDB</primary></indexterm>
+<indexterm><primary>DDD</primary></indexterm>
+<indexterm><primary>Visuelt programmeringsmiljø</primary><secondary>debug</secondary></indexterm>
+<para>
+Til GNU C/C++ findes en tekst-baseret debugger (<filename>gdb</filename>), som virker fint sammen med
+oversætteren. Hvis alle filer er oversat med flaget
+<filename>-g</filename>, kan man kalde afluseren ved at skrive
+<command>gdb FILNAVN</command>, hvor <filename>FILNAVN</filename> er
+navnet på den eksekverbare fil.
+</para>
+
+<para>
+Man kan vise (display) enkelte variabler eller strukturer. Du kan sætte
+"breakpoints" og meget andet, men det hele er tekstbaseret. Programmet
+<command>gdb</command> kan med fordel kaldes fra editoren Emacs ved at
+skrive <filename>Meta-x gdb</filename> (Meta=Alt). Så fås en delt skærm
+med debugger og kode, der kører sammen. Du kan i en
+<command>xterm</command> skrive
+<command>man gdb</command> for at få muligheder for debuggeren.
+Ved fejl kan det
+anbefales at oversætte kode uden optimering, dvs. fjern
+<filename>-O2</filename> ved oversættelse, idet man således ikke får
+fjernet overflødige variable og lignende, som så ikke kan vises med
+debuggeren.
+</para>
+
+<para>
+Ønsker du at anvende en grafisk afluser, kan du med fordel installere
+<command>ddd</command>, som giver
+en fuldt professionel grafisk brugerflade til aflusning af C, C++, Perl,
+Java- og Fortran-kode.  Specielt lækkert er, at man nemt kan følge
+indholdet af strukturer,
+tabeller og simple variabler. DDD kan nedlæses fra
+<ulink url="http://www.cs.tu-bs.de/softech/ddd">http://www.cs.tu-bs.de/softech/ddd</ulink>.
+</para>
+
+<FIGURE ID="DDD-fig" FLOAT="1">
+<TITLE>DDD
+</TITLE>
+<GRAPHIC FILEREF="../images/ddd22.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+</sect2>
+
+
+<sect2 id="kdevelop">
+<title>KDevelop</title>
+<indexterm><primary>KDevelop</primary></indexterm>
+<indexterm><primary>Visuelt programmeringsmiljø</primary><secondary>KDevelop</secondary></indexterm>
+<para>
+Der er ved at komme integrerede udviklingsmiljøer til Linux, som det
+kendes fra f.eks. Visual C++ til Windows. Man kan købe Code Warrior
+til Linux, Code Crusader og Delphi er også godt på vej 
+(Code Crusader er ikke så godt designet).
+</para>
+<para>
+Et spændende helt nyt program er KDevelop til KDE.
+</para>
+
+<FIGURE ID="kdevelop1-fig" FLOAT="1">
+<TITLE>Opstartsbillede til KDevelop
+</TITLE>
+<GRAPHIC FILEREF="../images/kdevelop1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Ambitionsniveauet er meget højt, og til trods for at det er den første
+beta-version, som er blevet testet her, så ser det positivt ud.
+</para>
+
+<para>
+Som det ses på <xref linkend="kdevelop2-fig">, så er der der ligheder
+med Visual C++ fra Microsoft. Man kan nemt overskue alle filer,
+klasser, strukturer og variable i projektet. Der er god understøttelse for at
+oversætte, afluse (ser det ud til), og revisionskontrol er direkte
+integreret. Dette er baseret på CVS. Der er mulighed for integreret
+dokumentationsmuligheder baseret på SGML. 
+</para>
+
+<FIGURE ID="kdevelop2-fig" FLOAT="1">
+<TITLE>KDevelop
+</TITLE>
+<GRAPHIC FILEREF="../images/kdevelop2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+En ting, som er et meget stort plus ved KDevelop i forhold til Visual
+C++ er at alle projekt-filer er tekstbaserede, dvs. man kan se alt
+med en almindelig teksteditor og rette hvis man har noget specielt,
+der skal ind.  KDevelop laver i øvrigt selv standard makefiler, så man
+kan oversætte programmerne udenfor det grafiske miljø. Med andre ord, så er
+KDevelop en naturlig overbygning på GNU værktøjerne, uden at disse
+erstattes.  KDevelop følger ikke med f.eks. Red Hat endnu, men kan
+hentes fra projektets hjemmeside
+<ulink url="http://www.kdevelop.org">http://www.kdevelop.org</ulink>.
+</para>
+
+<FIGURE ID="kdevelop3-fig" FLOAT="1">
+<TITLE>KDevelop har naturligvis også indbygget dokumentation for at
+lave grafiske programmer
+</TITLE>
+<GRAPHIC FILEREF="../images/kdevelop3.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+</sect2>
+
+<sect2 id="C-books">
+<title>Bøger om C-programmering under Linux</title>
+
+<para>
+Der findes mange bøger om C-programmering på UNIX-systemer. Vi nøjes
+her med at nævne et par stykker, som vi synes er gode:
+</para>
+
+<para>
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+Michael K. Johnson &amp; Erik W. Troan: <emphasis>Linux Application Development</emphasis>,
+Addison Wesley, ISBN 0-201-30821-5, 538 sider.
+</para>
+<para>
+En god og klar indføring i C-programmering under Linux. Lidt dyr, men
+lækkert udført og med den fordel, at den er skrevet specifikt til
+Linux.
+</para>
+</listitem>
+
+<listitem>
+<para>
+David A. Curry: <emphasis>UNIX Systems Programming</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-163-1, 596 sider.
+</para>
+<para>
+Denne glimrende bog handler i høj grad om de samme emner, som behandles
+i den førnævnte Linux Application Development, men kommer lidt mere ud
+i hjørnerne af stoffet og beskriver forskellene mellem forskellige
+kommercielle UNIX-varianter. Linux nævnes ikke, men så godt som alle
+forklaringer og eksempler kan bruges uændret under Linux
+</para>
+</listitem>
+
+<listitem>
+<para>
+W. Richard Stevens: <emphasis>Advanced Programming in the UNIX Environment</emphasis>,
+Addison Wesley, ISBN 0-201-56317-7, 742 sider.
+</para>
+<para>
+Dette er bestemt ikke en begynderbog (hvad titlen heller ikke på nogen
+måde kan siges at antyde), men hvis du har lyst til at lære en masse
+om, hvordan et UNIX-system fungerer og programmeres, kan vi
+kun anbefale denne bog på det varmeste. Den kommer gennem alle
+relevante emner på en meget grundig måde og binder til sidst i bogen
+det hele sammen i et par større eksempler, der gennemgås ganske
+grundigt.
+</para>
+</listitem>
+
+</itemizedlist>
+</para>
+
+<para>
+Fælles for de tre nævnte bøger er, at de henvender sig til læsere, der
+allerede er godt inde i C som programmeringssprog. Hvis du har brug
+for at lære C fra grunden, findes der utroligt mange bøger at vælge
+mellem. Prøv som udgangspunkt at tage et kig på disse to (den første
+er en klassiker):
+</para>
+
+<para>
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+Brian W. Kernighan &amp; Dennis M. Ritchie: <emphasis>The C Programming Language (2nd Edition)</emphasis>,
+Prentice Hall, ISBN 0-131-10362-8, 272 sider.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Steve Oualline: <emphasis>Practical C Programming</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-565-92306-5, 454 sider.
+</para>
+</listitem>
+
+</itemizedlist>
+</para>
+
+<para>
+Hvis du har brug for en referencemanual til C, skulle du kigge på denne bog:
+</para>
+
+<para>
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+Samuel P. Harbison &amp; Guy L. Steele Jr.: <emphasis>C: A Reference Manual
+(Fourth Edition)</emphasis>,
+Prentice Hall, ISBN 0-13-326224-3, 462 sider.
+</para>
+<para>
+Det er ikke en lærebog i C programmering, men derimod en god opslagsbog. Den
+har alle detaljer med, også C's standardbibliotek. Bogen beskriver den
+internationale ISO-standard (ISO/IEC 9899:1990). Den giver desuden tips til,
+hvordan man skriver programmer, der kan oversættes uden fejl med enten en
+C-oversætter eller en C++-oversætter.
+</para>
+</listitem>
+
+</itemizedlist>
+</para>
+
+
+</sect2>
+
+</sect1>
+
+<sect1 id="perl-sect1">
+<title>Perl programmering</title>
+<indexterm><primary>Perl</primary></indexterm>
+
+<para>
+Perl er et spændende og meget anvendeligt sprog. C og C++ er i mange
+tekniske sammenhænge en de facto standard, men disse programmeringssprog er
+ikke ret velegnede til tekst-manipulationer. Der skal allokeres den rette
+mængde hukommelse, og det er ofte svært at kunne beregne, hvor meget man
+skal bruge. Perl er som skabt til at behandle tekst. Perl er et
+fortolket sprog, som BASIC er det.
+</para>
+
+<para>
+Check, om du har installeret Perl, ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>perl -v</userinput>
+</screen>
+
+<para>
+Ordren <command>which perl</command> bliver her udført og checker, om
+programmet <command>perl</command> kan findes i den nuværende søgesti
+(Se dette med <command>echo $PATH</command>). Ordren <command>rpm -q
+FILNAVN</command> viser dig hvilken RPM-pakke filen findes i. Kommer
+der en tom streng frem, er Perl ikke installeret.
+</para>
+
+<para>
+Du kan også checke, om Perl er installeret ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>perl -v</userinput>
+</screen>
+
+
+<para>
+Indtast følgende program, og gem det som <filename>leg_med_perl.pl</filename>
+</para>
+
+<screen>
+#!/usr/bin/perl
+
+@a="hej";
+@b=(@a,"igen");
+
+print "Arrayet \@b har værdierne : @b\n";
+printf "Der er %i elementer i \@b\n",$#b+1;
+
+foreach $indeks (@b)
+{
+  print "Ud kommer $indeks fra arrayet\n";
+}
+
+$c = "hvad med at ";
+$d = "sætte strenge sammen";
+$e = $c.$d;
+
+print "Variablen \$e har værdien : $e\n";
+</screen>
+
+<para>
+Programmet skal gøres eksekverbart ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>chmod +x leg_med_perl.pl</userinput>
+</screen>
+
+<para>
+Udføres programmet ved at skrive <command>./leg_med_perl.pl</command>,
+får man følgende
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>./leg_med_perl</userinput>
+Arrayet @b har værdierne : hej igen
+Der er 2 elementer i @b
+Ud kommer hej fra arrayet
+Ud kommer igen fra arrayet
+Variablen $e har værdien : hvad med at sætte strenge sammen
+</screen>
+
+<para>
+Der er selvfølgelig et par små tricks i dette lille program, men det
+væsentlige at lægge mærke til er, at der ikke reserveres hukommelse til
+nye variable, og det er legende let at arbejde videre med.
+</para>
+
+<para>
+Hvad med følgende lille søde program, som tager et filnavn som input og
+erstatter samtlige forekomster af Microsoft med navnet Linux? Det er et
+program, som slet ikke kan laves så elegant og kort som i Perl.
+</para>
+
+<screen>
+#!/usr/bin/perl -i.bak -p
+s/Microsoft/Linux/g;
+</screen>
+
+<para>
+Vi kan også nævne, at du kan gøre dine Perl programmer uafhængig af
+Perl-placeringen (om det er <filename>/usr/bin/perl</filename> eller
+<filename>/usr/local/bin/perl</filename>) ved at starte følgende tre
+liner før selve programmet. Det erstatter så den første "magiske" linje.
+</para>
+
+<screen>
+: # Use perl
+eval 'exec perl -S $0 "$@"'
+    if $running_under_some_shell;
+
+print "Det virker\n";
+</screen>
+
+<para>
+Hvis du nu har fået blod på tanden og vil i gang med at lære Perl, er
+disse to bøger standardværkerne, den ene til at komme i gang på, den
+anden for viderekomne:
+</para>
+
+<para>
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+Randal L. Schwartz &amp; Tom Christiansen: <emphasis>Learning Perl (2nd Edition)</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-284-0, 271 sider.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Larry Wall, Tom Christiansen &amp; Randal L. Schwartz: <emphasis>Programming Perl (2nd Edition)</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-149-6, 645 sider.
+</para>
+</listitem>
+
+</itemizedlist>
+</para>
+</sect1>
+
+<sect1 id="tcltk">
+<title>Tcl/Tk
+</title>
+<indexterm><primary>Tcl/Tk</primary></indexterm>
+<para>
+Hvis du gerne vil programmere grafik under Linux, er Tcl/Tk et godt
+sprog. Det er et forholdsvist nemt sprog at lære. Tcl er et makrosprog,
+som har fået en søster Tk, der er en grafisk del med samme nemme
+syntaks. Det er et meget velegnet sprog til hurtigt at få en grafisk
+brugergrænseflade til et (tekstbaseret) program.
+</para>
+
+<para>
+Prøv at indtaste følgende program (kald det
+<filename>editor.tcl</filename>) efter at have
+installeret Tcl og Tk (<command>rpm -i tcl-8.0.4-29.rpm; rpm -i
+tk-8.0.4-29.i386.rpm</command> - eller måske lidt anderledes, alt efter
+hvilke versioner du netop har fået). Den øverste linje svarer til, at
+du kører Red Hat, SuSE har installeret <command>wish</command> i
+<filename>/usr/X11R6/bin</filename>.
+</para>
+
+<screen>
+#!/usr/bin/wish -f
+
+label .l -text "Filename:"
+label .l2 -text "Editor:"
+set fname testfil
+set editor emacs
+entry .e -relief sunken -width 30 -textvariable fname
+entry .e2 -relief sunken -width 30 -textvariable editor
+pack .l -side left
+pack .e -side left -padx 1m -pady 1m
+
+bind .e &lt;Return&gt; {
+  exec xterm -e $editor $fname
+}
+
+pack .l2 -side left
+pack .e2 -side left -padx 1m -pady 1m
+bind .e2 &lt;Return&gt; {
+  exec emacs  $fname
+}
+</screen>
+
+<para>
+Gør programmet kørbar ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>chmod +x editor.tcl</userinput>
+</screen>
+
+<para>
+og kør det ved at skrive <command>./editor.tcl</command>. Ret i
+tekstfelterne, og se, hvad der sker, når du trykker return i hvert af
+tekstfelterne. Programmet er vist på <xref linkend="tk1-fig">.
+</para>
+
+<FIGURE ID="tk1-fig" FLOAT="1">
+<TITLE>Tcl/Tk programmer tcl1.tcl
+</TITLE>
+<GRAPHIC FILEREF="../images/tk1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Et andet Tcl/Tk eksempel, der laver et simpelt stopur med start og stop
+funktion. Programmet bliver ikke forklaret, men skal illustrere, hvor lidt
+kode der skal til at lave et program, som med andre programmeringssprog
+ville være meget længere.  Programmet er vist på <xref linkend="tk2-fig">.
+</para>
+
+<FIGURE ID="tk2-fig" FLOAT="1">
+<TITLE>Et stopur i Tcl/Tk
+</TITLE>
+<GRAPHIC FILEREF="../images/tk2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<screen>
+#!/usr/bin/wish -f
+
+label .counter -text 0.00 -relief raised -width 20
+button .start -text Start -command {
+    if $stopped {
+	set stopped 0
+	tick
+    }
+}
+button .stop -text Stop -command {set stopped 1}
+pack .counter -side bottom -fill both
+pack .start -side left -fill both -expand yes
+pack .stop -side right -fill both -expand yes
+
+set seconds 0
+set hundredths 0
+set stopped 1
+
+proc tick {} {
+    global seconds hundredths stopped
+    if $stopped return
+    after 50 tick
+    set hundredths [expr $hundredths+5]
+    if {$hundredths >= 100} {
+	set hundredths 0
+	set seconds [expr $seconds+1]
+    }
+    .counter config -text [format "%d.%02d" $seconds $hundredths]
+}
+
+bind . &lt;Control-c&gt; {destroy .}
+bind . &lt;Control-q&gt; {destroy .}
+focus .
+</screen>
+
+
+<para>
+En variant af stopur programmet er et nyttigt program, som viser
+status på batteriet på en bærbar. I dette eksempel har vi erstattet den
+første linje, svarende til SuSE 6.1 placering af
+<command>wish</command>, og der kræves, at kommandoen
+<command>apm</command> er installeret,
+dvs. <filename>apmd-2.4-57.rpm</filename> eller lignende.
+</para>
+
+<screen>
+#!/usr/X11R6/bin/wish -f
+
+ label .counter -text 0 -relief raised -width 50
+ button .start -text Start -command {
+         tick
+ }
+ button .stop -text Stop -command { destroy .}
+ pack .counter -side left -fill both
+ pack .stop -side right -fill both 
+
+ proc tick {} {
+     after 1000 tick
+     set tot [eval exec apm]
+     .counter config -text [format "%s" $tot]
+ }
+
+ tick
+
+bind . &lt;Control-c&gt; {destroy .}
+bind . &lt;Control-q&gt; {destroy .}
+ focus .
+
+</screen>
+
+<para>
+Hvis du har lyst til at stifte nærmere bekendtskab med Tcl/Tk, er dette
+en god og meget omfattende bog:
+</para>
+
+<para>
+Brent B. Welch: <emphasis>Practical Programming in Tcl and Tk</emphasis>,
+Prentice Hall, ISBN 0-13-616830-2, 630 sider + cdrom.
+</para>
+
+
+</sect1>
+
+<sect1 id="python-sect1">
+<title>Python</title>
+<indexterm><primary>Python</primary></indexterm>
+<para>
+Python er et fortolket objektorienteret sprog, der byder på flere
+spændende koncepter. En genial idé, som man enten hader eller elsker, er,
+at koden struktureres ved hjælp af indrykninger frem for tuborg-klammer
+som i C (og C++ og Perl).
+</para>
+
+<para>
+I C ville man skrive sådan her:
+</para>
+
+<screen>
+int i = 0;
+
+while (i != 256) {
+    printf("%d\n", i);
+    i++;
+}
+</screen>
+
+<para>
+I Python ser det sådan ud:
+</para>
+
+<screen>
+i = 0
+
+while (i != 256):
+    print i
+    i = i + 1
+</screen>
+
+<para>
+På den måde umuliggøres denne fejl, som ofte ses i C-kode:
+</para>
+
+<screen>
+/* forkert, uendelig løkke! */
+
+int i = 0;
+
+while (i != 256)
+    printf("%d\n", i);
+    i++;
+</screen>
+
+<para>
+Hvorfor bliver i ikke talt op? Linjen "i++" er slet ikke med i løkken, men
+indrykningen snyder! Hvis den virkelige struktur skulle fremgå af
+indrykningen, skulle der stå:
+</para>
+
+<screen>
+int i = 0;
+
+while (i != 256)
+    printf("%d\n", i);
+i++;
+</screen>
+
+<para>
+I Python er indrykningen lig med strukturen, man kunne faktisk fristes til
+at kalde det "Hva' du ser - er hva' du får"-kode. Her er et eksempel
+klippet ud af et større program:
+</para>
+
+<screen>
+# check the command line syntax
+for arg in sys.argv[1:]
+    if arg[0] == '-': # only check switches
+        if arg[1:] not in switch_funcs.keys():
+            print "Invalid parameter: ", arg
+            sys.exit(1)
+</screen>
+
+<para>
+Python er i lighed med Perl et fortolket sprog, og hastigheden er bestemt
+ikke et af Pythons fortrin. Til gengæld er det forholdsvis nemt at lave
+udvidelser i C eller C++, der så kan bruges til de dele af et program, der
+udgør en hastighedsmæssig flaskehals. Python-fortolkeren kan også
+indlejres i andre programmer, hvorved du kan stille et fuldt
+programmeringssprog til rådighed for brugerne af programmet.
+</para>
+
+<para>
+Til at konstruere grafiske brugergrænseflader bruges i Python normalt et
+modul kaldet Tkinter, der er en grænseflade til det ovenfor nævnte Tk. Med
+mindre du bruger specielle Linux-faciliteter, kan Python-programmer med
+eller uden Tkinter også køres under andre styresystemer - f.eks. Windows
+NT.
+</para>
+
+<para>
+Læs mere om Python på <ulink url="http://www.python.org/">http://www.python.org/</ulink>
+og i <XREF LINKEND="db-pgsql-python"> hvor Python anvendes sammen med PostgreSQL.
+</para>
+
+</sect1>
+
+<sect1 id="java">
+<title>Java</title>
+<indexterm><primary>Java</primary></indexterm>
+
+<para>
+Java er et objektorienteret programmeringssprog, der har fået en masse
+vind i sejlene i forbindelse med Internettets vækst. Det skyldes at
+Java ud over at kunne bruges til udvikling af almindelige
+applikationer også giver mulighed for at lave såkaldte applets, små
+programmer, der kan køres i en web-browser. Derfor er Java blevet
+internettets fortrukne programmeringssprog.
+</para>
+
+<para>
+<indexterm><primary>JVM</primary></indexterm>
+<indexterm><primary>bytecode</primary></indexterm>
+Java er lidt forskellige sammenlignet med mange andre
+programmeringssprog derved at et Java program oversættes til kode der
+ikke i sig selv kan køre på en computer. Programmet oversættes til
+såkaldt "bytecodes", som kan fortolkes af en JVM (Java Virtual
+Machine). Denne såkaldte "bytecodes" kan dermed køres på alle de
+computere der har en JVM. Dvs. Java udviklet på en Linux maskine kan
+uden re-kompilering køres på en Solaris, MacOS eller Windows NT
+maskine. Samtidigt er der indbygget en Java Virtual Machine i de
+fleste web-browsere på markedet.
+</para>
+
+<para>
+Javas syntaks minder på mange måder om C++, men sproget er mere
+renblodet objektorienteret. Desuden følger der mange forskellige
+biblioteker (pakker) med Java som en del af sproget. Disse pakker
+dækker de fleste af de behov for værktøjer som en programmør måtte
+have. Af pakker der kan nævnes er: pakke til at udvikle grafiske
+brugergrænseflader, pakke med standardværktøjer såsom vektorer,
+matricer, container klasser osv., pakke til netværkskommunikation og
+en pakke til 3D visualisering.  Alle de pakker der som standard følger
+med sproget Java, eller som kan hentes ned fra Internettet separat,
+betyder at man ikke behøver at finde programbiblioteker til at løse
+specifikke problemer på Internettet eller købe specifikke
+programbiblioteker (såsom MFC til Windows). Bagsiden af medaljen er at
+programmeringssproget er meget omfattende og dermed også svært at
+lære.
+</para>
+
+<para>
+Nogle vigtige pakker som er del af Java sproget er:
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>
+<filename>java.applet</filename> : pakke til at håndtere udvikling af applikationer der kan
+køre i en browser.  
+</para></listitem>
+
+<listitem><para>
+<filename>java.awt</filename> : pakke til at håndtere GUI udvikling, med klasser til 2D
+grafik, knapper, menuer, drag-and-drop etc.
+</para></listitem>
+
+<listitem><para>
+<filename>java.beans</filename> : pakke til at håndtere komponentbaseret udvikling.
+</para></listitem>
+
+<listitem><para>
+<filename>java.io</filename> : Input og output kontrol på filer, vektorer og matricer og
+serialization.  
+</para></listitem>
+
+<listitem><para> <filename>java.lang</filename> : pakke med klasser
+som er basale for Java sproget og dets eksekveringsdomæne.  java.math:
+pakke til matematik inkluderende klasser til vilkårlig nøjagtighed af
+reelle og flydende tal beregninger.  </para></listitem>
+
+<listitem><para> <filename>java.net</filename> : pakke til håndtering
+af netværksbaseret kommunikation, herunder Web baseret fil håndtering.
+</para></listitem>
+
+<listitem><para>
+<filename>java.rmi</filename> : pakke til eksekvering af metoder af klasser på en anden
+maskine.  
+</para></listitem>
+
+<listitem><para>
+<filename>java.sql</filename> : jdbc interface, som er interface til databaser.
+</para></listitem>
+
+<listitem><para> <filename>javax.swing</filename> : Swing er GUI
+udviklingspakken, er avanceret og afløser AWT (java.awt).
+</para></listitem>
+
+<listitem><para>
+<filename>org.omg.CORBA</filename> : understøttelse af CORBA standarden.
+</para></listitem>
+</itemizedlist>
+
+Man kan også blande Java og andre programmeringssprog. Det gøres
+vha. JNI som det hedder i Java. Man kan få genereret C og C++ header
+filer (stubbe) vha. et JNI værktøj.
+</para>
+
+<para>
+Sproget blev i sin tid udviklet af Sun Microsystems og stillet gratis
+til rådighed. Java stilles til rådighed i form af et såkaldt JRE (Java
+Runtime Environment) og en JDK (Java Development Kit). JRE dækker over
+det der skal til for at køre Java programmer, mens JDK er det der skal
+til for at udvikle Java programmer.  I starten var det ikke alle
+operativsystemer der var understøttet, hvorfor firmaer kan licensere
+selve Java udviklingskoden (det gør Microsoft blandt andet). Linux var
+ikke understøttet i lang tid, men i dag er der givet en gratis licens
+til et medlem af Blackdown porting teamet (Steve Byrne), som sammen
+med andre porterer nye versioner af Java til Linux. Organisationen der
+styrer Java til Linux er Blackdown 
+<ulink url="http://www.blackdown.org">http://www.blackdown.org</ulink>.
+</para>
+
+<para>Der var specielt i starten, hvor der ikke eksisterede officielle
+versioner af Java til Linux, startet et antal projekter med det mål at
+udvikle Java-værktøjer under GPL. Med Red Hat følger dels guavac, der
+er en selvstændigt udviklet Java-oversætter, dels kaffe, der er en
+virtuel Java-maskine (JVM), altså et program der kan afvikle
+Java-bytecodes (kaffe er på vej til at blive et komplet udviklingsmiljø,
+pakken indeholder bl.a. en Java-oversætter og de mest nødvendige biblioteker.)
+Der er også udviklet et antal JIT (Just In Time) JVM'er til Java som
+OpenSource produkter. Den bedste og mest kende hedder ShuJIT.  En JIT er en
+JVM der kan oversætter "bytecodes" koden til maskinkode, når der er behov
+for at eksekvere koden, og ikke før. En JIT afvikler normalt koden hurtigere
+end en almindelig JVM fortolker. Desuden har Sun udviklet en meget hurtig JVM
+kaldet HotSpot som er ved at blive porteret til Linux.
+</para>
+
+<para>I det følgende vil der blive givet en opskrift på hvordan man
+installerer Java udviklingsmiljøet (JDK).  Der findes to versioner af
+Java, Java 1.1 og Java 2 (som egentlig er Java 1.2 pt. Java 1.2.2RC4
+til Linux).  Den store forskel på disse to versioner er at den nyeste
+Java 2 har mange nye værktøjer og er sprogmæssigt lidt forskelligt fra
+den ældre Java 1.1. Java 1.1 kan være interessant bla. fordi den
+eksekverer en hel del hurtigere end den nye Java 2 (på Linux). I det
+følgende er det Java 2 der vil blive omtalt da det forventes at de
+problemer der er med Java 2 vil blive løst. Endvidere er Java 1.3
+tilgængelig til Windows og Solaris, og igang med at blive porteret til
+Linux (se 
+<ulink url="http://www.blackdown.org">http://www.blackdown.org</ulink>
+for status).
+</para>
+
+
+<sect2 id="java-installation">
+<title>Installation af Java 2</title>
+<para>
+Det første skridt er at downloade
+<filename>jdk-1.2.2-RC4-linux-i386-glibc-2.1.2.sh</filename>. Denne
+pakke kan findes de sædvanlige steder såsom <ulink
+url="http://sunsite.auc.dk">http://sunsite.auc.dk</ulink>, på
+<ulink url="http://www.blackdown.org">http://www.blackdown.org</ulink>
+og 
+<ulink url="http://java.sun.com">http://java.sun.com</ulink>. JDK'en som du skal
+downloade skal passe til din Linux distribution. Der er forskellige
+pakker til netop den version af glibc som du benytter i din
+distribution. Du kan se version af glibc du benytter ved at se hvilken
+soft link dit <filename>libc.so.6</filename> peger på (enten
+<filename>libc-2.1.x</filename> eller
+<filename>libc-2.0.x</filename>). Pakken fylder godt 20 Mbyte.
+</para>
+
+<para>
+Du kan installere shell installation pakken (ender på .sh), men der
+findes også almindelige tar og gzippede filer. Installation af shell
+installation foregår ved (se nedenfor vedr. hvor det kan betale sig at
+installere det):
+</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt> <userinput>cd /usr/local</userinput>
+<prompt>[root@daisy /root]# </prompt> <userinput>chmod +x DIN_STI/jdk-1.2.2-RC4-linux-i386-glibc-2.1.2.sh</userinput>
+<prompt>[root@daisy /root]# </prompt> <userinput>DIN_STI/jdk-1.2.2-RC4-linux-i386-glibc-2.1.2.sh</userinput>
+</screen>
+
+<para>
+Hermed er Java udviklings- og eksekveringsmiljøet installeret! Du
+skal dog gennem et par ekstra skridt for at det virker
+tilfredsstillende.
+</para>
+
+<para>
+Man mangler Zapf Dingbats fonte i installationen. Disse hentes på
+<ulink url="http://www.gimp.org/fonts.html">http://www.gimp.org/fonts.html</ulink>. Installation
+af disse er beskrevet på WEB siten. Man skal i korthed downloade URW
+fontene <filename>urw-fonts.tar.gz</filename>. Disse skal gunzippes og tar'es i X Window
+systemets font katalog:
+</para>
+
+<screen>
+<prompt>[root@beta /root]# </prompt> <userinput>cd /usr/X11R6/lib/X11/fonts</userinput>
+<prompt>[root@beta /root]# </prompt> <userinput>tar xzvf /mnt/cdrom/Java/java3d/linux/urw-fonts.tar.gz</userinput>
+<prompt>[root@beta /root]# </prompt> <userinput>chown -R root.root</userinput>
+</screen>
+
+<para>
+Dernæst skal man ændre sin X Window opsætningsfil. Hvis ens
+distribution kører med X Window font server så hedder filen
+<filename>/etc/X11/fs/config</filename> (Red Hat) ellers hvis man kører uden font server
+skal man rette i <filename>/etc/X11/XF86Config</filename> (Red Hat) som beskrevet nedenfor
+(Red Hat 6.x bruger font server) :
+</para>
+
+<screen>
+        /usr/X11R6/lib/X11/fonts/misc:unscaled,
+	/usr/X11R6/lib/X11/fonts/75dpi:unscaled,
+	/usr/X11R6/lib/X11/fonts/100dpi:unscaled,
+        /usr/X11R6/lib/X11/fonts/URW,
+	/usr/X11R6/lib/X11/fonts/misc,
+	/usr/X11R6/lib/X11/fonts/Type1,
+	/usr/X11R6/lib/X11/fonts/Speedo,
+	/usr/share/fonts/default/Type1
+</screen>
+
+<para>
+Ændringer til X Window Server XF86Config filen er beskrevet på <ulink
+url="http://www.gimp.org/fonts">http://www.gimp.org/fonts</ulink>,
+og for font server filen skal fjerde linie med URW fontene lægges til
+<filename>/etc/X11/fs/config</filename> filen. For at genstarte font
+serveren køres scriptet xfs med parameter restart i
+<filename>/etc/rc.d/init.d</filename> (som root). Næste gang din Linux
+maskine bootes startes X font serveren automatisk med de nye fonte.
+</para>
+
+<para>
+Nu mangler vi bare at sørge for at dine skal-variable er korrekt sat
+op. Det er specielt PATH der skal være sat op så den kan se dine
+eksekverbare java programmer. Normalt behøver man ikke sætte andre
+shell variable op hvis man har installeret i
+<filename>/usr/local/jdk1.2.2</filename>. Kataloget der skal ind i din PATH eller path
+variable er <filename>/usr/local/jdk1.2.2/bin</filename>.  Det er dog en god ide også at
+sætte JAVA_HOME til <filename>/usr/local/jdk1.2.2</filename>.
+</para>
+
+<para>
+De to vigtigste eksekverbare filer er <command>javac</command> (som er oversætteren) og
+<command>java</command> (som er java's virtuelle maskine JVM).
+</para>
+</sect2>
+
+<sect2 id="mit-forste-java-program">
+<title>Det første Java program</title>
+
+<para>
+Et meget lille Java-program kunne f.eks. se sådan ud:
+</para> 
+
+<screen>
+class HelloWorldApp {
+   public static void main(String[] args) {
+      System.out.println("Dette er Java!");
+   }
+}
+</screen>
+
+<para>
+Hvis du gemmer denne i en fil kaldet
+<filename>HelloWorldApp.java</filename>, så kan du kompilere den ved:
+</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt> <userinput>javac HelloWorldApp.java</userinput>
+</screen>
+
+<para>
+Java oversætteren laver en fil kaldet
+<filename>HelloWorldApp.class</filename>. Denne fil indeholder
+"bytecodes" som kan eksekveres af Java's virtuelle maskine (JVM):
+</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt> <userinput>java HelloWorldApp</userinput>
+</screen>
+
+<para>
+Det kan bemærkes, at JVM ved, at det er filen med endelsen .class der
+skal eksekveres, så dette udelades.
+Programmet svarer med output : "Dette er Java!" 
+</para>
+</sect2>
+
+<sect2 id="java3d-installation">
+<title>Installation af Java3D</title>
+<para>
+Der findes masser af andre pakker der er interessant til udvikling af
+Java applikationer.  Det er et spørgsmål om hvad man har brug for og
+så ellers komme igang med den. Et interessant valg er Java3D. Det er
+et meget elegant design af et visualiserings API, så derfor vil jeg
+kort beskrive hvordan man installerer det og hvad det kan.
+</para>
+
+<para>
+For det første hører Java3D til media pakkerne, som indeholder alt til
+udvikling af multimedie og Virtual Reality, spil osv.  Java3D er en
+pakke der stiller klasser til rådighed til udvikling af 3D
+visualiseringssystemer.  Java3D er et elegant værktøj der skulle
+stille de fleste 3D visualiseringssystem udviklere tilfreds. Det
+baserer sig på scenegraf princippet. Dvs. alle visuelle objecter i en
+virtuel verden er hængt op i en scenegraf. Der er knuder, der kan
+gruppere dele af det virtuelle univers, knuder der kan lave
+transformationer på underliggende knuder, knuder der repræsenterer
+egentlige virtuelle objekter, lys og kameraet (øjenpunktet) osv.
+</para>
+
+<para>
+Der skal en hel del til for at installere Java3D på din Linux
+maskine. Først og fremmest baserer Java3D sig på OpenGL. På Linux er
+Open Source implementeringen af OpenGL et bibliotek kaldet Mesa
+(<ulink url="http://www.mesa3d.org">http://www.mesa3d.org</ulink>). 
+Mesa kan også findes som RPM pakke og det er
+et krav at versionen skal være Mesa3.1-3 eller nyere. Filen som skal
+downloades er <filename>Mesa-3.1-3rh61.i386.rpm</filename> (for Red Hat 6.1). Man kan også
+optionelt installere glut (som er et bibliotek til at lave
+applikationer med menu kontrol osv. til OpenGL), desuden kan man
+installere eksemplerne (<filename>Mesa-glut-3.1-3rh61.i386.rpm</filename> og
+<filename>Mesa-demos-3.1-3rh61.i386.rpm</filename>).
+</para>
+
+
+<para>
+Desværre er det sådan at Mesa lægger OpenGL lib filerne som
+<filename>libGL.so.xxx</filename>, mens Java3d forventer at de hedder
+<filename>libMesaGL.so.xxx</filename>. Derfor skal du i /usr/lib lave
+et ekstra link:
+</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt> <userinput>cd /usr/lib</userinput>
+<prompt>[root@daisy /root]# </prompt> <userinput>ln -s libGL.so.1.2.0 libMesaGL.so.3</userinput>
+</screen>
+
+<para>
+Nu er det så tid til at installere Java3D. Det er ikke så svært. Det
+vigtigste er at hvis man lægger Java3D samme sted som Java 2 SDK er
+det problemfrit, ellers skal man sørge for at få environment variable
+CLASSPATH til at inkludere stien til Java3D filerne.
+</para>
+
+<para>
+Filen du skal downloade fra 
+<ulink url="http://java.sun.com">http://java.sun.com</ulink> er <filename>java3d1.1.1pre-v1-linux-sdk.tar.bz2</filename>. 
+Du kan kun bruge java3D sammen med java 2 (den der er beskrevet i det foregående). 
+</para>
+
+<para>
+Filen skal unzippes ved: 
+</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt> <userinput>bunzip2 java3d1.1.1pre-v1-linux-sdk.tar.bz2</userinput>
+</screen>
+
+<para>
+Dernæst skal du installere den vha. tar. Inden du gør det skal du
+gennem et par skridt for ikke at løbe ind i alt for mange problemer
+siden hen. Du vil gerne have Java3D til at ligge sammen med din
+jdk1.2.2 installation. Problemet er at Java3D installationen er pakket
+i et katalog der hedder jdk1.2, derfor skal du før omdøbe dit jdk1.2.2
+katalog til jdk1.2 dernæst pakker du Java3D filen ud (<command>tar xvf
+java3d1.1.1pre-v1-linux-sdk.tar</command> hvor du skal stå i
+<filename>/usr/local</filename> hvis det er der du installerede
+jdk'en). Tilsidst omdøber du jdk1.2 kataloget til jdk1.2.2 igen. Nu er
+du kørende mht. java3d !
+</para>
+
+<para>
+Det er specielt to ting der er lagt ned i din java installation. Det
+er delvist java biblioteksfiler i
+<filename>/usr/local/jdk1.2.2/jre/lib/ext</filename> og Java3D demo
+filer.
+</para>
+
+<para>
+Inden vi beskriver et lille programeksempel vil jeg omtale såkaldte
+loaders til java3d.  Det er sådan at det kan være et meget omfattende
+arbejde og er egentlig imod 3D visualeringsparadigmet, at programmere
+sig til den visuelle verden. Det man bør gøre er, at definere den
+virtuelle verden i en separat fil i et eller andet format. Der findes
+til Java3D en lang række loadere til at læse sådanne filer. Et meget
+kendt format er VRML, som på en måde er internettets foretrukne 3D
+virtuelle model format. Java er ikke født med en VRML loader, men
+heldigvis findes den gratis på 
+<ulink url="http:/www.vrml.org">http:/www.vrml.org</ulink>. Du kan også
+downloade java3d vrml loader eksempelprogrammer i kildekode. Den java
+jar (java biblioteksfil), som hedder <filename>vrml97.jar</filename> skal lægges ned i
+<filename>/usr/local/jdk1.2.2/jre/lib/ext</filename>, så kan man bruge den i forbindelse
+med udvikling af java3d programmer der benytter load af VRML filer.
+</para>
+
+<para>
+For eksempler på Java3D programmer henvises der til installationen af
+java3d, hvor der er inkluderet 37 programeksempler inkluderende vrml
+eksempelprogrammer.
+</para>
+
+<para>
+På internettet kan der desuden findes et utal af modeller af visuelle
+objekter, i alle mulige typer af formatter, herunder VRML.
+</para>
+</sect2>
+
+<sect2 id="java-dok">
+<title>Java Dokumentation og specifikationen</title>
+<para>
+Der er en meget god dokumentation af sproget og alle de pakker man får
+med i Java sproget. Dokumentationen kan enten, hvis man har tilgang
+til internettet mens man programmerer, findes på 
+<ulink url="http://java.sun.com">http://java.sun.com</ulink> 
+eller kan downloades og installeres. Dokumentationen til de basale
+Java pakker er skrevet i HTML og fylder godt 100 MByte installeret.
+</para>
+
+<para>
+Der er skrevet ufatteligt meget om programmeringssproget Java. De
+officielle Java bøger fra Sun (<ulink
+url="http://java.sun.com">http://java.sun.com</ulink>) er gode når man
+kender en del til Java i forvejen.
+</para>
+
+<para>
+For Linux brugere er der for nyligt udkommet en udmærket bog som giver
+et godt overblik: "Java Programming on Linux" af Nathan Meyers udgivet
+af Waite Group Press i år 2000 (se 
+<ulink url="http://www.javalinux.net">http://www.javalinux.net</ulink>).
+</para>
+</sect2>
+
+<sect2 id="java-vaerktoejer">
+<title>Java Værktøjer</title>
+<para>
+Der findes en masse værktøjer som kan hjælpe dig i udviklingen af Java
+programmer.  For det første er der understøttelse for java i emacs og
+ddd. Derudover er der masser af såkaldte IDE'er. Det er grafiske
+værktøjer som benyttes til at skrive programmer med, debugge osv. Det
+er virkeligt en smags sag om man kan lide at bruge en IDE eller om man
+vil håndkode vha. f.eks. emacs. Derudover er IDE'erne meget
+forskellige og det er smag og behag hvilken der bekommer den
+enkelte. To virkelig gode gratis IDE'er er: Inprise
+JBuilder <ulink
+url="http://www.borland.com/jbuilder/foundation/">http://www.borland.com/jbuilder/foundation/</ulink> (en
+efterfølger af Borlands C++ linie) og FORTE som er købt af SUN
+(<ulink url="http://www.sun.com/forte/ffj/">http://www.sun.com/forte/ffj/</ulink>.
+</para>
+</sect2>
+</sect1>
+
+</chapter>
+
