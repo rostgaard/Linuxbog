@@ -171,7 +171,7 @@ else !USE_SOFTLINKS
 	done;
 endif !USE_SOFTLINKS
 	cp linuxbog.css bog
-	echo "det var derfor den ikke kunne pakke html filer. ln -s bog alle"
+	@echo "det var derfor den ikke kunne pakke html filer. ln -s bog alle"
 	cp -pRid bog alle
 	echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
@@ -192,7 +192,9 @@ else !HAVE_TIDY
 endif !HAVE_TIDY
 if ADD_SUBMITBOX
 	(cd bog && ../addsubmitbox)
+if HAVE_TIDY
 	./Insert-Linkname.awk
+endif HAVE_TIDY
 endif ADD_SUBMITBOX
 	touch html.stamp
 else !BUILD_HTML
