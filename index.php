@@ -390,7 +390,7 @@ if ($matrix) { ?>
   $c = 0;
   reset($books);
   while (list($short,$desc) = each($books)) {
-    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n td valign=\"top\">";
+    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n <td valign=\"top\">";
     echo "<b>$desc[title]</b><font size=\"-1\"><br>$desc[comment]</font></td>\n";
     reset($packs);
     while (list($type,$attr) = each($packs)) {
