@@ -19,6 +19,7 @@ til din Linux-maskine via modem (eng. dial-in modem).
 
 <sect1 id="dhcp">
 <!-- Skrevet af Henrik Størner "henrik@storner.dk" -->
+<!-- Afsnittet om dynamisk dns og dhcp er skrevet af Michael Rasmussen "mir@miras.org" -->
 <title>Opsætning af DHCP-server</title>
 <indexterm><primary>DHCP</primary></indexterm>
 <para>
@@ -475,6 +476,8 @@ værtsnavne, men forbindelsen mellem et værtsnavn og en IP-adresse
 håndteres af navneserveren. Hvordan hænger de to servere sammen?
 </para>
 
+<sect3 id="version2">
+<title>DHCP version 2</title>
 <para>
 Svaret er, at lige nu (april 2000) hænger de ikke særlig godt
 sammen. DHCP-serveren har endnu ikke nogen måde, hvor den kan fortælle
@@ -525,6 +528,145 @@ og
 <ulink url="http://www.heronforge.net/~stephen/DHCP-DNS/dhcp-dns.html">http://www.heronforge.net/~stephen/DHCP-DNS/dhcp-dns.html</ulink>.
 </para>
 
+<para>
+En måde at løse ovenstående problem på er, at installere et lille script på hver enkelt klient der sørger for at lave en relation mellem klientens hostnavne og det tildelte ip-nummer fra DHCP-serveren. scriptet, set_domain_ip, kan hentes her <ulink url="http://www.sslug.dk/linuxbog/admin/eksempler">http://www.sslug.dk/linuxbog/admin/eksempler</ulink>. Instruktion for installering findes i scriptets brødtekst. Scriptet løser ikke problemet helt, da andre klienter i netværket stadigvæk ikke vil kende til hinanden, men nu vil den enkelte klient dog kende til sit eget ip-nummer. Hvis dette ikke er tilstrækkeligt, må du thy til DHCP 3.0. DHCP 3.0 er emnet for næste afsnit.
+</para>
+</sect3>
+
+<sect3 id="version3">
+<title>DHCP version 3</title>
+<para>
+Dette afsnit beskriver DHCP 3.0 fra <ulink url="http://www.isc.org">ISC</ulink>, og jeg vil starte med at påpege, at det stadigvæk er i betaudgave, så nu er du advaret - jeg har det dog kørende upåklageligt på min egen server, så jeg vil da opfordre til, at man prøver det.
+</para>
+
+<para>
+Installationen er ret nem, enten henter du en <ulink url="ftp://angus.ind.wpi.edu/pub/packages/isc/dhcp">rpm</ulink>- eller en <ulink url="ftp://ftp.isc.org/isc/dhcp/dhcp-latest.tar.gz">tarpakke</ulink> med sourcen. Hvad angår Debian, findes der, mig bekendt, kun den mulighed at hente sourcen og så oversætte den selv.
+</para>
+
+<para>
+Når du har installeret DHCP 3.0, forestår der kun minimale ændringer. Du skal ændre i to filer: named.conf og dhcpd.conf. Eksempler kan hentes her <ulink url="http://www.sslug.dk/linuxbog/admin/eksempler">http://www.sslug.dk/linuxbog/admin/eksempler</ulink>.
+</para>
+
+<para>
+I named.conf skal der tilføjes en option til de zoner hvor vores DHCP-server uddeler ip-numre til. Tilføjelsen giver named ret til at foretage opdateringer i vores zonefiler, og tilladelsen gives med følgende kommando: allow-update {localhost;}. Se eksempel nedenfor.
+</para>
+
+<screen>
+options {
+	directory "/var/named";
+	notify no;
+	forwarders{
+		XXX.XXX.XXX.XXX;
+		XXX.XXX.XXX.XXX;
+	};
+};
+
+logging {
+	category lame-servers { null; };
+};
+
+zone "." in {
+	type hint;
+	file "named.ca";
+};
+
+zone "0.0.127.IN-ADDR.ARPA" in {
+	type master;
+	file "127.0.0";
+};
+
+zone "domænenavn" in {
+	type master;
+	file "filnavn";
+	allow-update {localhost;};
+};
+
+zone "XXX.YYY.ZZZ.IN-ADDR.ARPA" in {
+	type master;
+	file "filnavn";
+	allow-update {localhost;};
+};
+</screen>
+
+<para>
+I dhcpd.conf skal der tilføjes en række options, der vedrører dynamisk dns. Disse options starter alle med ddns, og de væsentligste er følgende:
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>ddns-domainname "domænenavn"</para></listitem>
+<LISTITEM><para>ddns-rev-domainname "IN-ADDR.ARPA"</para></listitem>
+<LISTITEM><para>ddns-update-style interim</para></listitem>
+<LISTITEM>
+<screen>
+zone domænenavn. {
+	primary DNS-serverens ip-adresse;
+}
+</screen>
+</listitem>
+<LISTITEM>
+<screen>
+zone reverse ip-adresse.IN-ADDR.ARPA. {
+	primary DNS-serverens ip-adresse;
+}
+</screen>
+</listitem>
+</itemizedlist>
+
+<para>
+Et eksempel følger nedenfor.
+</para>
+
+<screen>
+	option domain-name "domænenavn";
+	ddns-update-style interim;
+
+subnet	WWW.XXX.YYY.ZZZ. netmask 255.255.255.0 {
+	range WWW.XXX.YYY.100 WWW.XXX.YYY.150;
+	ddns-domainname "domænenavn";
+	ddns-rev-domainname "IN-ADDR.ARPA";
+#	log-facility local7;
+
+	# default gateway
+	option routers WWW.XXX.ZZZ.YYY;
+	option domain-name-servers WWW.XXX.ZZZ.YYY;
+	option interface-mtu 1500;
+	option broadcast-address WWW.XXX.ZZZ.255;
+
+	option netbios-name-servers WWW.XXX.ZZZ.YYY;
+	option netbios-dd-server WWW.XXX.ZZZ.YYY;
+	option netbios-node-type 8;
+
+	default-lease-time 36000;
+	max-lease-time 86400;
+}
+
+host prtsrv {
+		hardware ethernet 00:40:8C:30:6F:CE;
+		fixed-address prtsrv.domænenavn;
+}
+
+zone domænenavn. {
+  primary WWW.XXX.ZZZ.YYY;
+}
+
+zone ZZZ.XXX.WWWW.in-addr.arpa. {
+  primary WWW.XXX.ZZZ.YYY;
+}
+</screen>
+
+<para>
+Hvis du bruger Redhat 7.2, mangler der en sidste rettelse. Rettelsen skal foretages i filen /etc/sysconfig/network, hvor du skal tilføje følgende:
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>DHCP_HOSTNAME="hostnavnet på klienten"</para></listitem>
+</itemizedlist>
+
+<para>
+Det skal bemærkes, at ovenstående hostnavn er uden angivelse af domænet. Hvis vi f.eks. har domænet intranet, og ønsker at tildele klienten eric en adresse, skal hostnavnet angives som eric og ikke som eric.intranet.
+</para>
+
+</sect3>
 </sect2>
 
 </sect1>
