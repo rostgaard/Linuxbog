@@ -40,6 +40,7 @@ clean: Makefiler
 	rm -f program/Makefile
 	rm -f sikkerhed/Makefile
 	rm -rf cvs2html
+	rm -rf Friheden_palm.tgz 
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
