@@ -27,7 +27,7 @@ er så bare lavet en symbolic link til "smart.php".
 require("proglang.inc");
 
 $version = file("../version.sgml");
-$tar_eksempler = "linux-program-$version[0]_eksempler.tgz";
+$tar_eksempler = "linux-program-$version[0]_eksempler.tar.gz";
 
 ?><h2><?php
   echo count($proglang);
@@ -82,9 +82,11 @@ eksempler samlet.
       if (file_exists("$file.$ext"))
         $gotall++;
     echo " <td>";
+    /*
     if ($gotall == count($examp))
       echo "<a href=\"all?lang=$ext\"><b>$lang[navn]</b></a>";
     else
+    */
       echo "$lang[navn]";
     echo "</td>\n";
     // Spol eksempel-navn listen tilbage
