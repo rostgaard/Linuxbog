@@ -100,7 +100,7 @@ function form_filename( $bookname, $format ) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
-    "C" => array(
+    "c" => array(
       title => "Linux - Friheden til programmere i C",
       comment => "Programmering i C",
       auth => array(
