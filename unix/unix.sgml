@@ -2153,7 +2153,7 @@ til et andet sub-dir, men det kunne også være en variabel der blev ændret:
 </para>
 
 <screen>
-<prompt>[tyge@hven ~]$ </prompt><userinput>(cd /tmp ; path=. ; min_test)</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>(cd /tmp ; PATH=. ; min_test)</userinput>
 </screen>
 
 <para>
@@ -2449,16 +2449,16 @@ skrive:
 
 <screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>env</userinput>
-pwd=/home/tyge/linuxbog
-vendor=intel
-pager=less
+PWD=/home/tyge/linuxbog
+VENDOR=intel
+PAGER=less
 .
 .
 .
 </screen>
 
 <para>
-Der kom mange linjer, som alle er formateret "variabel=VÆRDI".
+Der kom mange linjer, som alle er formateret "VARIABEL=VÆRDI".
 Linjen "PWD" betyder f.eks. at jeg nu står i kataloget
 <filename>/home/tyge/linuxbog</filename>. De fleste er sat af
 systemet, mens brugeren kan vælge at tilføje nye eller overskrive de
@@ -2469,7 +2469,7 @@ det er tilfældet:
 
 <screen>
 <prompt>[tyge@hven ~]$</prompt> <userinput>env | grep SHELL</userinput>
-shell=/bin/bash
+SHELL=/bin/bash
 </screen>
 
 <para>
@@ -2522,7 +2522,7 @@ Jeg bruger /bin/bash
 </screen>
 
 <para>
-Vil du sætte systemvariable, så er syntaksen <command>export variabel=VÆRDI</command>.
+Vil du sætte systemvariable, så er syntaksen <command>export VARIABEL=VÆRDI</command>.
 </para>
 
 <para>
@@ -2541,7 +2541,7 @@ er denne sat til <filename>/home/BRUGERNAVN</filename>
 <para>
 For at rette i $PATH se <filename>/etc/profile</filename> hvis
 ændringerne skal gælde alle brugere. Man kan også skrive "export
-path=$PATH:/home/mig/bin" Hvis man gerne vil have at ens shell også
+PATH=$PATH:/home/mig/bin" Hvis man gerne vil have at ens shell også
 skal søge efter de programmer man har lagt i
 <filename>/home/mig/bin</filename>.
 </para>
@@ -3979,7 +3979,7 @@ kun variabelnavne med majuskler.
 
 <programlisting>
 #! /bin/sh
-version="0.1.2"
+VERSION="0.1.2"
 echo "Dette er version $VERSION af programmet."
 echo $VERSION
 </programlisting>
@@ -3995,7 +3995,7 @@ tider ikke lade sig gøre.
 
 <programlisting>
 #! /bin/sh
-version="0.1.2"
+VERSION="0.1.2"
 echo "Dette er version ${VERSION}beta af programmet."
 </programlisting>
 
@@ -4068,7 +4068,7 @@ første tegn starter ved 0 (nul):
 
 <programlisting>
 #! /bin/sh
-tekst=abcdef
+TEKST=abcdef
 echo "Skriv kun 'bcd': ${TEKST:1:3}"
 echo "Man kan også regne: ${TEKST:1:10-7}"
 </programlisting>
@@ -4081,7 +4081,7 @@ Herunder er det de først forekommende 3 tegn 'bcd' der udskiftes med 1 tegn 'X':
 
 <programlisting>
 #! /bin/sh
-tekst=abcdefabcdef
+TEKST=abcdefabcdef
 echo "Udskift 'bcd' med 'X': ${TEKST/bcd/X}"
 </programlisting>
 
@@ -4096,7 +4096,7 @@ Skal alle forekomster af et eller flere tegn udskiftes bruges '//':
 
 <programlisting>
 #! /bin/sh
-tekst=abcdefabcdef
+TEKST=abcdefabcdef
 echo "Udskift alle 'bcd' med 'X': ${TEKST//bcd/X}"
 </programlisting>
 
@@ -4257,12 +4257,12 @@ Sådan kan det gøres:
 
 <programlisting>
 #! /bin/sh
-rest=$HOSTNAME
-del=""
+REST=$HOSTNAME
+DEL=""
 while [ "$REST" != "$DEL" ]; do
         echo "Rest: '$REST'"
-        del=${REST%%.*}  # slet bagfra til sidste forkomne punktum
-        rest=${REST#*.}  # slet frem til og med første punktum
+        DEL=${REST%%.*}  # slet bagfra til sidste forkomne punktum
+        REST=${REST#*.}  # slet frem til og med første punktum
         echo "Del : '$DEL'"
 done
 </programlisting>
@@ -4339,13 +4339,13 @@ adskilt af indholdet af den specielle variabel <emphasis>IFS</emphasis>.
 Med <command>$@</command> skrives alle parametre ud som enkeltstående
 strenge.
 For at prøve de følgende eksempler, skal der to parametre på når du kalder
-scriptet, hvoraf det ene skal være en tekst med to ord og "omkring".
+scriptet, hvoraf det ene skal være en tekst med to ord og " omkring.
 </para>
 
 <programlisting>
 #! /bin/sh
 echo "Alle parametre: $*"
-ifs=","
+IFS=","
 echo "Alle parametre, nu adskilt af komma: $*"
 echo "Alle parametre er adskilt af mellemrum: $@"
 </programlisting>
@@ -4542,12 +4542,12 @@ if [ -x foo ]; then
 	echo "Programmet 'foo' findes, og du kan køre det."
 fi
 
-tekst="Ja"
+TEKST="Ja"
 if [ "$TEKST" = "Ja" ]; then
 	echo "Tekstsvaret var 'Ja'."
 fi
 
-nummer=3
+NUMMER=3
 if [ $NUMMER -eq 3 ]; then
 	echo "Heltallet i variablen \$NUMMER er 3"
 else
@@ -4719,8 +4719,8 @@ Det kunne være et filnavn der er dannet ud fra dags dato.
 
 <programlisting>
 #! /bin/sh
-dato=$(date -I)
-fil="backup-$DATO.tar.gz"
+DATO=$(date -I)
+FIL="backup-$DATO.tar.gz"
 echo "Dagens backup gemmes i: $FIL"
 tar czvf $FIL /home
 </programlisting>
@@ -4823,7 +4823,7 @@ og organiseret.
 #! /bin/sh
 # Husk: \ til sidst på linjen, betyder at teksten
 # fortsætter på næste linje.
-filer="\
+FILER="\
 index.html \
 tyge.html \
 otto.html \
@@ -4849,7 +4849,7 @@ Herunder udskrives blot tallene 1 til og med 4.
 
 <programlisting>
 #! /bin/sh
-for ((n=1; N&lt;5; N++)); do
+for (( N=1; N&lt;5; N++ )); do
 	echo "Tal $N"
 done
 </programlisting>
@@ -4930,7 +4930,7 @@ while [ $# -gt 0 ]; do
 			# Næste parameter er filnavn
 			# Det hentes frem med 'shift'
 			shift
-			fil=$1
+			FIL=$1
 			;;
 		*)
 			echo "Ukendt parameter: $1"
@@ -4961,7 +4961,7 @@ Er er nogle eksempler:
 
 <programlisting>
 #! /bin/sh
-(( n=1 ))
+(( N=1 ))
 echo "Antal filer: $(( N+2 ))"
 (( N += 1))
 let N += 1
