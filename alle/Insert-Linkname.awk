@@ -22,7 +22,7 @@ BEGIN {
        }
        if (firstline) firstline = 0;
        if (lina ~ "alle-stikord.html")
-          printf("<DT><A href=\"stikord.html.php\">Stikordsregister</A></DT>\n") > "bog/nyt-index.html.php";
+          printf("<DT><A href=\"stikord.html\">Stikordsregister</A></DT>\n") > "bog/nyt-index.html.php";
        else
           print lina >> "bog/nyt-index.html.php";
     }
