@@ -1,0 +1,291 @@
+<chapter id="netbsd">
+<title>NetBSD</title>
+
+<sect1 id="netbsd-hvad-er">
+<title>Hvad er NetBSD</title>
+
+<para>
+NetBSD er som navnet antyder en BSD-variant. 
+</para>
+
+<para>
+NetBSD kæmper med Debian GNU/Linux om at være det mest portable
+styresystem, hvilket af systemerne der fører kommer an på hvordan man
+tæller, men faktum er at begge systemer findes til en meget lang række
+platforme.  
+</para>
+
+<para>
+Du kan læse mere om NetBSD på projektets hjemmeside
+<ulink>www.netbsd.org</ulink>.
+
+</sect1>
+
+<sect1 id="netbsd-installation">
+<title>Installation af NetBSD</title>
+
+<para>
+Der er to forskellige versioner af NetBSD man kan vælge at
+installere. Den seneste formelle udgivelse, som i skrivende stund er
+version 1.6.1, eller -current som er ... Det frarådes at bruge
+-current på produktionsmaskiner.
+</para>
+
+<para>
+Jeg forsøger en FTP-installation af den formelle udgivelse.
+</para>
+
+<para>
+For at komme igang skal du hente filerne
+<filename>boot1.fs</filename>
+<filename>boot2.fs</filename>
+fra
+<filename>ftp://ftp.dk.netbsd.org/pub/NetBSD/NetBSD-1.6.1/i386/installation/floppy/</filename>,
+og skrive dem på disketter (f.eks. med <command>dd</command>).
+</para>
+
+Partitionstype: a9
+
+<para>
+Sæt disketten du skrev <filename>boot1.fs</filename> i diskettedrevet
+og genstart maskinen. Efter at have indlæst indholdet af disketten
+(det tager et stykke tid) vil den bede dig indsætte diskette nummer
+2. Når den også er indlæst booter NetBSD-kernen og dernæst starter
+installationsprogrammet. Installationsprogrammet er tekstbaseret og
+har et menusystem. 
+</para>
+
+<para>
+Det første man bliver spurgt om, er hvad man vil. Den første mulighed
+er 'Install NetBSD to hard disk'. Hvis man vælger det (og det går man
+vel, hvis man læser dette), bliver man dernæst advaret om at man bør
+have en fuldstændig sikkerhedskopi før man fortsætter!
+</para>
+
+<para>
+Første skridt
+herefter er at partitionere en disk, hvis man har flere diske bliver
+man spurgt hvilken man vil partitionere. NetBSD forsøger derefter at
+aflæse diskens geometri (antal cylindre, hoveder og sektorer) og
+holder dem op mod de data den kan få fra BIOS'en. Jeg var så heldig
+(?) at den fandt konsistente oplysninger, der matchede hvad jeg på
+forhånd vidste om disken, derfor godkendte jeg blot hvad den sagde.
+Det næste spørgsmål var om jeg ville bruge hele disken eller kun en
+del af den. 
+Da jeg havde valgt kun at bruge en del af disken, blev jeg spurgt om
+jeg ville bruge megabytes, cylindre eller sektorer til at angive
+størrelsen. Jeg er vant til at arbejde i cylindre, når jeg
+partitionere diske, og det var da også cylindre der var anvendt til at
+lave de eksisterende partitioner, så det valgte jeg.
+Så blev jeg præsenteret for min partitionstabel, og en menu med
+forskellige muligheder for at rette i tabellen. Bemærk at NetBSD i
+modsætning til Linux kræver en aktiv partition. 
+Fordi jeg har andre systemer installeret på samme disk, blev jeg
+dernæst spurgt om jeg ville installere en 'bootselector', det svarede
+jeg ja til.
+Derefter fulgte så en oversigt over hvordan den ville konfigurere
+denne 'bootselector' og en menu med mulighed for at ændre på det. Jeg
+valgte at omdøbe menupunkterne til noget mere beskrivende end
+<command>entry 1</command>..<command>entry 4</command>.
+</para>
+
+<para>
+Som de andre BSD'er bruger også NetBSD en BSD-disklabel til at opdele
+NetBSD-partitionen. Her var fire valgmuligheder:
+<list>
+- Standard
+- Standard with X
+- Custom
+- Use existing
+</list>
+Uden at have nogen videre viden om det, valgte jeg 'Standard with X'.
+Det bragte mig så til en oversigt over de partitioner den ville lave,
+her skal man huske at partition c svarer til hele 'slicen' og
+partition d til hele disken. I menuen kunne man vælge at ændre
+partitioneringen eller at godkende den, jeg valgte det sidste.
+Derefter blev jeg spurgt hvad jeg ville kalde min disk.
+</para>
+
+<para>
+Så kommer installationsprogrammet og siger at det er klar til at
+installere NetBSD på harddisken, og oplyser om at endnu intet er
+skrevet til disken, men at det nu er sidste chance for at afbryde
+processen før der bliver ændret på tingene. Det bliver ledsagt af
+spørgsmålet om man vil fortsætte.
+Hvis man svarer ja til det, begynder den at lave filsystemer.
+</para>
+
+<para>
+Når det er overstået (det tager længere tid hvis man har afsat meget
+plads til NetBSD), bliver man spurgt om man vil bruge normale eller
+serielle bootblokke. Det drejer sig om hvorvidt man vil bruge
+skærm+tastatur som konsol (normale bootblokke) eller om man har en
+seriel konsol på den første serielle port. Alt efter hvad man vælger
+der arbejder den et øjeblik.
+</para>
+
+<para>
+Så får man at vide at første del af proceduren er afsluttet, med et
+lille resumé af hvad den har lavet. Den siger samtidig at næste skridt
+er at hente og udpakke nogle filer ('distribution filesets'). Man skal
+blot trykke retur for at komme videre.
+</para>
+
+<para>
+Herefter bliver man spurgt om man vil lave en fuld (hvor fuld?)
+installation eller om man vil vælge mellem filerne. Hvis man vælger at
+vælge bliver man dernæst præseteret for en liste med 18 forskellige
+"pakker" (hvoraf 5 er forskellige kernepakker) man kan vælge til eller
+fra. 
+Når man er færdig med det, bliver man spurgt om den under udpakningen
+løbende skal vise hvilken fil der udpakkes.
+</para>
+
+<para>
+Herefter bliver man spurgt hvor man vil installere fra, der er en lang
+række muligheder
+- ftp
+- nfs
+- cdrom
+- floppy
+- umonteret filsystem
+- lokalt katalog
+(- none)
+</para>
+
+<para>
+Hvis man vælger ftp eller nfs skal man derefter konfiguere sit
+netværk.
+Hvis der er flere netkort i maskinen skal man først vælge hvilket der
+skal bruges.
+Det første spørgsmål handler om 'network media type', der er ingen
+oversigt over mulighederne, der står bare at standard er autoselect.
+Næste spørgsmål (og nu dukker menusystemet op igen) er om man vl bruge
+DHCP. Hvis der er en DHCP-server på ens lokalnet (f.eks. indbygget i
+en router) er det klart det nemmeste, i modsat fald, skal man indtaste
+- DNS domæne (grove.home)
+- Maskinnavn (celine)
+- IPv4-adresse (192.168.1.42)
+- Netmaske som skal indtaste i hex (0xffffff00)
+- IPv4-gateway (192.168.1.1)
+- IPv4-navneserver (194.239.134.83)
+Når man har gjort det spørger den om den skal foretage en
+autokonfigurering af IPv6. 
+Slutteligt bliver man præsenteret for en oversigt over de oplysninger
+man har indtastet og spurgt om der er i orden.
+</para>
+
+<para>
+Dernæst bliver man spurgt hvilket katalog den skal bruge til
+ftp. Standardvalget er fint.
+Så skal man konfigurere hvilken ftp-server den skal bruge. Som
+standard foreslår den <filename>ftp.netbsd.org</filename>, hvilket det
+for danskere kan anbefales at ændre til
+<filename>ftp.dk.netbsd.org</filename>. Resten af oplysninger er gode
+nok. For at komme videre vælger man så 'Get Distribution'.
+</para>
+
+<para>
+Så går den i gang med at hente filer ned via FTP. (start 17:06 - slut 18:48)
+</para>
+
+<para>
+Hvis man bad den udskrive filnavne løbende under udpakningen kan
+man dernæst se en masse filnavne løbe over skærmen.
+</para>
+
+<para>
+Når den er færdig med at pakke filerne ud, får man at vide at man skal
+trykke retur.
+Når man har gjort det giver den sig til at oprette device-filer.
+</para>
+
+<para>
+Så bliver man spurgt om den netværkskonfiguration man indtastede under
+installationen også skal bruges i daglig drift.
+</para>
+
+<para>
+Så får man at vide at installationen i princippet er overstået, og at
+NetBSD nu kan boote fra harddisken, men at man lige får mulighed for
+at konfigurere nogle væsentlige ting først.
+</para>
+
+<para>
+Det første man skal vælge er hvilken tidszone man befinder sig i. Man
+kan vælge fra en lang liste med steder.
+</para>
+
+<para>
+Næste spørgsmål er om adgangskoder skal "krypteres" med DES eller MD5.
+</para>
+
+<para>
+Så bliver man spurgt om man vil sætte roots adgangskode, det svarer
+man selvfølgelig ja til, og sætter det.
+</para>
+
+<para>
+Så er installationen overstået, og et tryk på retur bringer dig
+tilbage til den første menu du så, hvor du denne gang nok vil vælge at
+genstarte maskinen.
+</para>
+
+Læs INSTALL om afsluttende konfig
+Ret /etc/rc.conf (se /etc/defaults/rc.conf)
+
+Bootselector? I hvert fald hvis man holder shift nede. Den kunne ikke
+starte Linux, men godt dos.
+
+<para>
+Når du genstarter vil du se NetBSD starte op, men eftersom X endnu
+ikke er konfigureret får du kun en almindelig konsol op.
+</para>
+
+<para>
+Det du har nu er et meget råt system. Der er ikke installeret meget
+mere end højst nødvendigt (der er dog en <command>vi</command>).
+Standardkommandofortolkeren er csh (nej, ikke <emphasis>tcsh</emphasis>).
+</para>
+
+<para>
+Du kan få dansk tastatur ved at gå ind i
+<filename>/etc/wscons.conf</filename> og rette linien
+<programlisting>
+#encoding sv
+</programlisting>
+til
+<programlisting>
+encoding dk
+</programlisting>
+</para>
+
+<para>
+Til konfiguration af X er der xf86config. Et rent tekstbaseret
+værktøj, som vækker masser af gode minder.
+
+Det eneste der drillede mig var min ps/2-mus. Det rigtige valg viste
+sig at være 'wsmouse protocol' og /dev/wsmouse0 som port.
+</para>
+
+<para>
+Læs
+<ulink>http://www.netbsd.org/Documentation/software/packages.html</ulink>
+for at finde ud af hvordan du kan installere andre programmer.
+</para>
+
+</sect1>
+
+<sect1 id="netbsd-konklusion">
+<title>Konklusion</title>
+
+<para>
+NetBSD er et spændende alternativ til Linux, men man skal kende sin
+standardværktøjer, og være forberedt på at der er meget der skal
+konfigureres hvis den skal se ud som en typisk Linux. Til gengæld har
+man alle muligheder for at få et system der ser ud præcis som man vil
+have det.
+</para>
+</sect1>
+
+</chapter>
