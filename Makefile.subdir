@@ -237,8 +237,9 @@ $(targetname)-$(version).pdf: $(dep_sgml_filer)
 	(cd PdfBuildDir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
 	(cd PdfBuildDir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
 	@echo Bygger PDF fil
-	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
-	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
+	(cd PdfBuildDir && echo "Running db2pdf" && db2pdf bog.sgml; true)
+#	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
+#	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
 	mv PdfBuildDir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 #	rm -rf PdfBuildDir
