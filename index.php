@@ -61,6 +61,10 @@ function form_filename( $bookname, $format ) {
       // Ændringer, Eks: admin/bog/admin-apprevhist.html
       return "$bookname/$format[first]/$bookname-$format[last]";
       break;
+    case 3:
+      // Onlinebøger, Eks: admin/todo.html
+      return "$bookname/$format[last]";
+      break;
     default:
       // Eks: admin/linuxbog-admin-1.0.ps.gz
       return "$bookname/$format[first]$bookname-".$books[$bookname][version]."$format[last]";
@@ -343,9 +347,9 @@ function vistype($type) {
       last => ".sgml.zip"
     ),
     "TODO" => array(
-      first => "todo-",
-      last => ".html"
-      online => 2  // "Ændringer" har bognavn med to gange
+      first => ".",
+      last => "todo.html",
+      online => 3  
     )
   );
 
