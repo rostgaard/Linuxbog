@@ -157,22 +157,189 @@
 
     <row>
      <entry>4000</entry>
+
      <entry>u+s</entry>
-     <entry>Hvis ressourcen er et program, så vil det blive kørt med de rettigheder som brugeren det tilhører har.</entry>
+
+     <entry>Hvis ressourcen er et program, så vil det blive kørt med
+     de rettigheder som brugeren det tilhører har.</entry>
     </row>
 
     <row>
      <entry>2000</entry>
+
      <entry>g+s</entry>
-     <entry>Hvis ressourcen er et program, så vil det blive kørt med de rettigheder som gruppen det tilhører har.</entry>
+
+     <entry>Hvis ressourcen er et program, så vil det blive kørt med
+     de rettigheder som gruppen det tilhører har.</entry>
     </row>
 
     <row>
      <entry>1000</entry>
+
      <entry>o+t</entry>
-     <entry>Hvis ressourcen er et program, så vil det blive kopieret til "swap", så det kan starte hurtigere.</entry>
+
+     <entry>Hvis ressourcen er et program, så vil det blive kopieret
+     til "swap", så det kan starte hurtigere.</entry>
     </row>
    </tbody>
   </tgroup>
  </table>
+
+ <example id="adgangsstyring-ingen-adgang">
+  <title>Hindre alle andre i at læse hjemmekataloget</title>
+
+  <para>
+   Som en første praktisk øvelse i adgangsstyring kan man fratage alle andre
+   alle adgangstilladelser under sit hjemmekatalog med kommandoen:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chmod -R go-rwx ~/</userinput>
+</screen>
+
+   Kommandoen <command>chmod</command> bruges til at sætte og stryge
+   adgangsstyringsflag.  Tilvalget "-R" betyder at vi ønsker at det
+   skal gøres rekursivt og inkludere alle filer og kataloger under det
+   katalog vi udpeger.  Tilvalget "go-rwx" betyder at vi vil fratage
+   ("-") gruppen og andre ("go") adgangen til at læse, skrive og bruge
+   ("rwx") kataloget (og p.g.a. tilvalget "-R" også de underliggende
+   filer og kataloger).  <filename>~/</filename>, hjemmekataloget, er
+   det katalog hvis adgangsstyringsflag vi vil have
+   <command>chmod</command> til at ændre.
+  </para>
+
+  <para>
+   Husk dog på at adgangsstyringen aldrig hindrer
+   systemadministratoren &mdash; eller programmer der kører med
+   systemadministratorrettigheder &mdash; i at læse, skrive og ændre i
+   dine filer.
+  </para>
+ </example>
+
+ <example id="adgangsstyring-fremtidige-filer">
+  <title>Standardadgangstilladelser for nye filer</title>
+
+  <para>
+   Hvad er det nu den variabel hedder?
+  </para>
+ </example>
+
+ <example id="adgangsstyring-websted">
+  <title>Gøre hjemmesiden synlig for Apache</title>
+
+  <para>
+   Hvis Apache skal kunne vise din hjemmeside, er det nødvendigt at
+   den bruger, hvis rettigheder Apache kører med, har adgang til at
+   læse både kataloget hjemmesiden ligger i og selve filen med
+   hjemmesiden.  Men efter at vi i eksemplet <xref
+   linkend="adgangsstyring-ingen-adgang"/> har hindret al adgang til
+   filerne under <filename>~/</filename> for alle andre end dig selv,
+   har Apache ikke længere adgang til det.  Først giver vi alle adgang
+   til at læse kataloget <filename>~/websted/</filename> og alt hvad
+   der ligger i det og dets underkataloger:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chmod -R o+r ~/websted/</userinput>
+</screen>
+  </para>
+
+  <para>
+   Men det alene er ikke nok, for for at komme til kataloget
+   <filename>~/websted/</filename>, skal Apache også kunne komme til
+   kataloget <filename>~/</filename> som vi stadig har frataget alle
+   andre brugere alle adgangstilladelser til.  For at kunne komme til
+   en fil eller et underkatalog i et katalog skal man have adgang til
+   at bruge kataloget, så vi sætter "x"-flaget for "andre brugere"
+   ("o") på katalogerne <filename>~/</filename> og
+   <filename>~/websted/</filename>:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chmod o+x ~/ ~/websted/</userinput>
+</screen>
+  </para>
+
+  <para>
+   Hvis <filename>~/websted/</filename> har nogle underkataloger som
+   Apache skal kunne læse filer fra, så bliver du også nødt til at
+   udføre kommandoen <command>chmod o+x</command> på dem.  Det kan for
+   eksempel gøres sådan her:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>find ~/websted/ -type d -print0 | xargs -0 chmod o+x</userinput>
+</screen>
+  </para>
+
+  <para>
+   Hvis du har grund til at gøre nogle data på dit websted synlige for
+   Apache, men ikke for alle brugere på maskinen, kan du bede din
+   systemadministrator om at sørge for at kataloget med dit websted
+   hører til den gruppe med hvis adgangstilladelser Apache kører med
+   og så sætte "x"-flaget på det katalog
+   (<filename>~/websted/</filename> ovenfor) for gruppen i stedet for
+   for "andre brugere".  Dette vil i praksis kun være relevant, hvis
+   du har adgangskodebeskyttede oplysninger på webstedet, for ellers
+   vil folk jo under alle omstændigheder kunne komme til dataene
+   gennem Apache.
+  </para>
+ </example>
+
+ <example id="adgangsstyring-familiebilleder">
+  <title>Give en gruppe skrivetilladelse til et katalog</title>
+
+  <para>
+   Hvis vi skal sidde og bringe orden i familiebillederne, kan det
+   være praktisk, hvis resten af familien også kan komme med nye
+   billeder til samlingen.  Vi opretter derfor kataloget
+   <filename>~/familiebilleder/</filename> som hele familien (gruppen
+   "brahe") skal kunne læse og kataloget
+   <filename>~/familiebilleder/nye/</filename>, hvor de også skal
+   kunne tilføje billeder:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>mkdir ~/familiebilleder/</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>mkdir ~/familiebilleder/nye/</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chgrp -R brahe ~/familiebilleder/</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chmod -R g+rx ~/familiebilleder/</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>chmod g+w ~/familiebilleder/nye/</userinput>
+</screen>
+
+   Bemærk at der desværre ikke findes en mulighed for at give
+   tilladelse til at tilføje data, der ikke også giver mulighed for at
+   slette eller overskrive data.  Det betyder for eksempel at
+   medlemmerne af gruppen "brahe" nu både kan tilføje og slette
+   billeder i kataloget <filename>~/familiebilleder/nye/</filename>.
+  </para>
+
+  <para>
+   -- deles op i to eksempler? --
+  </para>
+ </example>
+
+ <example id="adgangsstyring-eksterne-enheder">
+  <title>Direkte styring af enheder</title>
+
+  <para>
+   Hvis du har koblet et instrument på enheden
+   <filename>/dev/astrolabrium</filename> som alle brugerne i gruppen
+   "astronomi" skal kunne styre, bliver du nødt til at give dem adgang
+   til at skrive til enheden (så de kan sende kommandoer til
+   instrumentet) og til at læse fra enheden (så de kan modtage data
+   fra instrumentet).
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>su -</userinput>
+Password: 
+<prompt>[root@hven /root]# </prompt><userinput>chgrp astronomi /dev/astrolabrium</userinput>
+<prompt>[root@hven /root]# </prompt><userinput>chmod g+rw /dev/astrolabrium</userinput>
+<prompt>[root@hven /root]# </prompt><userinput>exit</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>ls -l /dev/astrolabrium</userinput>
+brw-rw----    1 root     astronom   2,   0 apr 11  2002 /dev/astrolabrium
+</screen>
+
+   Da enheden er ejet af systemadministratoren, bliver vi først nødt
+   til at skifte til systemadministratorkontoen med kommandoen
+   <command>su -</command>.  Bemærk også at kommandoen <command>ls
+   -l</command> kun viser de første otte bogstaver i navnet på en
+   bruger eller en gruppe.
+  </para>
+ </example>
 </chapter>
