@@ -938,4 +938,102 @@ perl -e '$dir=shift; map {m:/proc/(\d+)/cwd -> $dir[/\n]: and do {print
 
 </sect2>
 </sect1>
+
+<!-- Skrevet af Ole Tange -->
+<sect1 id="fejlfinding">
+<title>Fejlfinding</title>
+
+<indexterm><primary>strace</primary></indexterm>
+<indexterm><primary>emacs</primary><secondary>strace</secondary></indexterm>
+<indexterm><primary>debugge programmer</primary></indexterm>
+<indexterm><primary>fejlfinding af programmer</primary></indexterm>
+
+<para>
+Nogle gange er programmer ret dårlige til at forklare, hvorfor det gik
+galt. Kommandoen <command>strace</command> er god til at fejlsøge
+med. Det gælder specielt ved fejl som:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+Segmentation fault (core dumped)
+ </para>
+</listitem>
+<listitem>
+ <para>
+File not found
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Access denied
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Her vil <command>strace</command> ofte kunne give dig en ide om, hvad
+der skete lige inden fejlen indtrådte, og med lidt held kan du ud af
+dette gætte, hvad der gik galt. Måske mangler du en fil eller måske
+bruger programmet den forkerte version af et library.
+</para>
+
+<para>
+<command>strace</command> står for system trace og viser alle de kald,
+der er til library-rutiner. Hvis man vil se, hvilke kald
+<command>ls</command> laver, så skriver man:
+</para>
+
+<screen>
+</screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>strace ls</userinput>
+
+<para>
+Det går hurtigt op for een, at der kommer <emphasis>ret</emphasis>
+meget output. Da problemerne ofte er fil-relateret, så kan man nøjes
+med at få vist de fil-relaterede systemkald:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>strace -e trace=file ls</userinput>
+</screen>
+
+<para>
+Hvis programmet starter andre processer (f.eks. ved at kalde andre
+programmer), så kan man strace disse med '-ff'. Prøv at se forskellen
+på disse to:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>strace time ls</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>strace -ff time ls</userinput>
+</screen>
+
+<para>
+Hvis du strace'r programmer, der kører under X, så vil du ofte få
+utroligt meget output. Du kan proppe det i en fil ved at redirigere
+stderr:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput> strace -ff time ls 2&gt;/tmp/fil</userinput>
+</screen>
+
+<para>
+En anden mulighed er at starte <command>strace</command> fra en shell
+i <command>emacs</command>:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>emacs</userinput>
+M-x shell
+<prompt>[anne@linus ~]$</prompt> <userinput>strace ...</userinput>
+</screen>
+
+<para>
+Herved får du mulighed for at bladre i outputtet med det samme.
+</para>
+</sect1>
+
 </chapter>
