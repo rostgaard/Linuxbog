@@ -89,10 +89,16 @@ vi senere skal have distribueret til brugeren.
 </para>
 
 <para>
-Første fil vi kommer til at mangle når <command>configure</command>
-kører er <filename>aclocal.m4</filename>. Vi skal have den fil
-liggende og den fås nemmest med <command>aclocal</command>.
-<command>aclocal</command> skal køres ved visse ændringer
+<filename>aclocal.m4</filename> er en samling af alle de shell-macroer som bruges i
+<filename>configure.in</filename>.
+Filen <filename>aclocal.m4</filename> dannes af programmet <command>aclocal</command>,
+ved at <command>aclocal</command>
+skanner <filename>configure.in</filename> for hvilke macroer der bliver brugt.
+Macroerne finder
+den i .m4-filer som dem i /usr/share/aclocal/ (Den kigger i nuværende
+bibliotek og /usr/share/aclocal/ automatisk, man kan angive yderligere
+biblioteker).
+<command>aclocal</command> skal køres hvis der anvendes nye makroer
 i <filename>configure.in</filename>.
 </para>
 
@@ -209,16 +215,16 @@ beskrivelse af de mest almindelige filer.
 <row> <entry>Makefile.am</entry>   <entry>*dig*</entry>      <entry>automake</entry> </row>
 <row> <entry>configure.in</entry>  <entry>*dig*</entry>      <entry>automake autoconf aclocal</entry> </row>
 <row> <entry>config.h.in</entry>   <entry>autoheader</entry> <entry>automake configure</entry> </row>
-<row> <entry>aclocal.m4</entry>    <entry>aclocal</entry>    <entry>autoconf configure</entry> </row>
+<row> <entry>aclocal.m4</entry>    <entry>aclocal</entry>    <entry>autoconf</entry> </row>
 <row> <entry>Makefile.in</entry>   <entry>automake</entry>   <entry>configure</entry> </row>
 <row> <entry>missing</entry>       <entry>automake</entry>   <entry>make??</entry> </row>
-<row> <entry>install-sh</entry>    <entry>automake</entry>   <entry>make?</entry> </row>
+<row> <entry>install-sh</entry>    <entry>automake</entry>   <entry>"make install"</entry> </row>
 <row> <entry>mkinstalldirs</entry> <entry>automake</entry>   <entry>configure</entry> </row>
 <row> <entry>stamp-h.in</entry>    <entry>automake</entry>   <entry>configure</entry> </row>
 <row> <entry>configure</entry>     <entry>autoconf</entry>   <entry>*script*</entry> </row>
 <row> <entry>Makefile</entry>      <entry>configure</entry>  <entry>make</entry> </row>
 <row> <entry>config.h</entry>      <entry>configure</entry>  <entry>hello.c(gcc)</entry> </row>
-<row> <entry>stamp-h</entry>       <entry>configure</entry>  <entry>?</entry> </row>
+<row> <entry>stamp-h</entry>       <entry>configure</entry>  <entry>configure</entry> </row>
 <row> <entry>config.cache</entry>  <entry>configure</entry>  <entry>configure</entry> </row>
 <row> <entry>config.status</entry> <entry>configure</entry>  <entry>configure</entry> </row>
 <row> <entry>config.log</entry>    <entry>configure</entry>  <entry>*dig*</entry> </row>
@@ -226,9 +232,14 @@ beskrivelse af de mest almindelige filer.
   </tgroup>
 </table>
 
+<para>
+I figuren herunder ses en skematisk tegning af de vigtigste filer
+i et autoconf system.
+</para>
+
 <figure ID="autoconf-roadmap" FLOAT="1">
 <title>Autoconf road map</title>
-<graphic FILEREF="autoconf.&magic;"  SCALE="50"></graphic>
+<graphic FILEREF="autoconfs.&magic;"  SCALE="50"></graphic>
 </figure>
 
 <para>
