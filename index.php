@@ -393,10 +393,13 @@ if ($matrix) { ?>
 <p>
 <?php } ?>
 
+<font size="-1">
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
+[<a href="search">Søg i sgml-filer</a>]
 [<a href="alle/bog/stikord.html">Stikord for alle bøger</a>]
+</font>
 
 <h2>Vi har følgende bøger</h2>
 <p>
