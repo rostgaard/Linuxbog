@@ -67,6 +67,14 @@ function form_filename( $bookname, $format ) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
+    "applikationer" => array(
+      title => "Linux - Friheden til at vælge programmer",
+      comment => "Vælg programmer til Linux",
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk",
+        "Hans Schou" => "chlor@sslug.dk"
+      )
+    ),
     "admin" => array(
       title => "Linux - Friheden til systemadministration",
       comment => "Administrer din egen Linux-server",
@@ -266,8 +274,21 @@ foretages.
   // Liste over alle bøger. Alle bøger har hver sin tabel med forskellig filtyper
   reset($books);
   while (list($short,$desc) = each($books)) {
-    echo "<a name=\"$short\"></a><h3>$desc->title</h3>\n";
-    echo "$desc->comment";
+    echo "<a name=\"$short\"></a><h3>$desc->title \n";
+    echo "</h3>\n<i>$desc->comment</i><p>";
+
+    if (file_exists($short."/dato.sgml")) {
+      include($short."/dato.sgml");
+    }
+    if (file_exists($short."/version.sgml")) {
+      echo "- version ";
+      include($short."/version.sgml");
+    }
+    if (file_exists($short."/sideantal.txt")) {
+      echo "- Antal sider: ";
+      include($short."/sideantal.txt");
+    }
+    echo "<p>";
     echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
     echo "<th>Link</th>\n";
@@ -297,6 +318,7 @@ foretages.
       echo "</tr>\n";
     }
     echo "</table>\n";
+    echo "<p><hr align=\"left\" width=\"70%\">\n";
   }
 
   echo "<hr><h2>Filtyper</h2>\n";

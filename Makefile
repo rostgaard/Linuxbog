@@ -1,63 +1,40 @@
-all: clean Makefiler statusfiler html palmpilot pspdf sgml 
+all: clean Makefiler filer
 
 release : all cvs2html mail
 
 Makefiler:
 	cp Makefile.subdir friheden/Makefile
+	cp Makefile.subdir applikationer/Makefile
 	cp Makefile.subdir admin/Makefile
 	cp Makefile.subdir program/Makefile
 	cp Makefile.subdir web/Makefile
 	cp Makefile.subdir sikkerhed/Makefile
 	cp misc/collateindex.pl friheden
+	cp misc/collateindex.pl applikationer
 	cp misc/collateindex.pl admin
 	cp misc/collateindex.pl program
 	cp misc/collateindex.pl web
 	cp misc/collateindex.pl sikkerhed
 
-statusfiler:
+filer:  Makefiler
 	make Makefiler
-	make -C friheden statusfiler
-	make -C admin statusfiler 
-	make -C program statusfiler
-	make -C web statusfiler 
-	make -C sikkerhed statusfiler 
-
-sgml: Makefiler
-	make -C friheden sgml
-	make -C admin sgml 
-	make -C program sgml
-	make -C web sgml 
-	make -C sikkerhed sgml 
-
-html: Makefiler
-	make -C friheden html
-	make -C admin html 
-	make -C program html
-	make -C web html 
-	make -C sikkerhed html 
-
-palmpilot: Makefiler
-	make -C friheden palmpilot
-	make -C admin palmpilot 
-	make -C program palmpilot
-	make -C web palmpilot 
-	make -C sikkerhed palmpilot 
+	make -C friheden
+	make -C applikationer
+	make -C admin
+	make -C program
+	make -C web
+	make -C sikkerhed
 	(cd misc;plucker-build -v -P . -f Friheden;tar cvzf ../Friheden_palm.tgz viewer_en.prc Friheden.pdb SysZLib.prc; rm Friheden.pdb)
-	       
-pspdf:  Makefiler       
-	make -C friheden pspdf
-	make -C admin pspdf 
-	make -C program pspdf
-	make -C web pspdf 
-	make -C sikkerhed pspdf 
 
 clean: Makefiler
 	make -C friheden clean
+	make -C applikationer clean
 	make -C admin clean 
 	make -C program clean
 	make -C web clean 
 	make -C sikkerhed clean 
 	rm -f friheden/Makefile
+	rm -f applikationer/Makefile
 	rm -f admin/Makefile
 	rm -f web/Makefile
 	rm -f program/Makefile
