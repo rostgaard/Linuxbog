@@ -222,7 +222,7 @@ endif !ADD_SUBMITBOX
 ################################################################################
 .PHONY : html
 if BUILD_HTML
-html: html.stamp
+html: html.stamp eksempler-sgml
 html.stamp: $(dep_sgml_filer)
 	@echo ".........................................."
 	@echo "Target $(targetshortname):html"
@@ -266,7 +266,7 @@ html.clean:
 .PHONY : pdf
 if BUILD_PDF
 pdf: $(targetname)-$(version).pdf
-$(targetname)-$(version).pdf: $(dep_sgml_filer)
+$(targetname)-$(version).pdf: $(dep_sgml_filer) eksempler-sgml-PDF
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pdf"
 	@echo ".........................................."
@@ -369,3 +369,16 @@ distclean-local:	clean
 .PHONY : reallyclean
 reallyclean:	clean distclean
 	rm -Rf dato.sgml bogoversigt.sgml ophavsret.sgml linuxbog.css linuxbog.spec linuxbogurl.sgml misc aclocal.m4 bootstrap configure configure.ac install-sh Makefile.am Makefile.in missing mkinstalldirs palm-faelles/
+
+#-----------------------------------------------------------------------------
+#--  Bygger SGML/XML-udgaver af alle filer i eksempler:
+
+eksempler-sgml: eksempler/*
+	mkdir -p eksempler-sgml
+	for fil in eksempler/*; do; perl ../signatur/eksempler/perl2sgml.pl < ${fil} > eksempler-sgml/$(basename ${fil}); done
+
+eksempler-sgml-PDF: eksempler/*
+        mkdir -p PdfBuildDir/eksempler-sgml
+        for fil in eksempler/*; do; perl ../signatur/eksempler/perl2sgml.pl < ${fil} > PdfBuildDir/eksempler-sgml/$(basename ${fil}); done
+
+#-----------------------------------------------------------------------------
