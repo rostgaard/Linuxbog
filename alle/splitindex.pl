@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#
+# $Id$
 
 my $state = 0;
 my $headerX = "";
@@ -49,5 +49,3 @@ print IDX "</body></html>";
 close(IDX);
 print FILE "</body></html>";
 close(FILE);
-
-#print $header;
