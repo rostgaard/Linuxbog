@@ -21,7 +21,12 @@ allesgmlfiles=$(wildcard *.sgml)
 
 # Her er en liste af sgml-filer der skal checkes
 #sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
-sgmlfiler=$(allesgmlfiles)
+sgmlfiler=$(allesgmlfiles) \
+          ../friheden/*.sgml \
+          ../admin/*.sgml \
+          ../web/*.sgml \
+          ../applikationer/*.sgml \
+          ../program/*.sgml
 
 # her er det der skal laves
 all:	html palmpilot sgml billeder pspdf exit
