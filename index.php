@@ -341,7 +341,7 @@ men indtil endelig release, kan der være graverende fejl i den.
       $filename = form_filename( $short, $attr );
       $filetext = "$short $type";
       if (!file_exists($filename)) {
-        echo "$filetext";
+        echo "<i>$filetext</i>";
         $date = " - ";
       } else {
         $filesize = fsize_text($filename);
@@ -373,9 +373,9 @@ men indtil endelig release, kan der være graverende fejl i den.
     if ($desc[dato])
       echo $desc[dato];
     if ($desc[version])
-      echo "- version $desc[version]";
+      echo " - version $desc[version]";
     if ($desc[sideantal])
-      echo "- Antal sider: ".$desc[sideantal];
+      echo " - Antal sider: ".$desc[sideantal];
 
     echo "<p>";
     echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
@@ -395,7 +395,7 @@ men indtil endelig release, kan der være graverende fejl i den.
         $date = date("Y-m-d",filemtime($filename));
         $filesize = fsize_text($filename);
       } else {
-        echo "<td>$filename</td>\n";
+        echo "<td><i>$filename</i></td>\n";
         $date = " - ";
         $filesize = " - ";
       }
@@ -432,7 +432,7 @@ men indtil endelig release, kan der være graverende fejl i den.
         $date = date("Y-m-d",filemtime($filename));
         $filesize = fsize_text($filename);
       } else {
-        echo "<td>$filename</td>\n";
+        echo "<td><i>$filename</i></td>\n";
         $date = " - ";
         $filesize = "00 B";
       }
