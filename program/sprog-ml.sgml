@@ -77,4 +77,133 @@ tom [] eller også har den et første element x og en hale xr.
   Københavns Universitet (DIKU), Aarhus Universitet, Aalborg Universitet
   og IT-højskolen i København.
  </para>
+
+<sect2 id='sprog-ml-eksempel'>
+ <title>Eksempel på SML</title>
+
+ <para>
+  Det følgende eksempel forsøger vise en række af de ting der er
+  specielle for SML og andre funktionsorienterede sprog. SML udleder
+  selv typer for funktioner, og de udledte typer er her indsat over
+  funktionsdefinitionerne i kommentarer <literal>(* ... *)</literal>.
+ </para>
+
+ <para>
+  Først defineres en funktion <literal>map</literal>:
+ </para>
+
+<programlisting>
+(* Type: ('a -&gt; 'b) -&gt; 'a list -&gt; 'b list *)
+fun map f nil = nil
+  | map f (x::xs) = f(x) :: map f xs;
+</programlisting>
+
+ <para>
+  Typen fortæller at funktionen <literal>map</literal> som argumenter tager en
+  anden funktion der tager et argument af typen <literal>'a</literal> og
+  returnerer en værdi af typen <literal>'b</literal>. Det andet argument til
+  <literal>map</literal> er en liste hvor elementerne har typen
+  <literal>'a</literal> og så returnerer map en liste af elementer af typen
+  <literal>'b</literal>. Men hvad er <literal>'a</literal> og
+  <literal>'b</literal>?
+ </para>
+
+ <para>
+  <literal>'a</literal> er en typevariabel. Hvis man kalder
+  <literal>map</literal> med en funktion der tager et heltal som argument vil
+  <literal>'a</literal> blive bundet til typen <literal>int</literal>. Dette
+  kaldes typepolymorfi. <literal>map</literal> arbejder bare på lister og er
+  ligeglad med hvad funktionen <literal>f</literal> gør ved elementerne.
+ </para>
+
+ <para>
+  Funktionen er defineret med mønstergenkendelse. Det vil sige at der er listet
+  en række tilfælde af definitionen op hvor SML så vil vælge den første der
+  passer. <literal>nil</literal> og <literal>(x::xs)</literal> er mønstre som
+  SML sammenligner med hvad funktionen bliver kaldt med. <literal>nil</literal>
+  er den tomme liste og <literal>(x::xs)</literal> er en liste hvor det første
+  element bliver bundet til variablen <literal>x</literal> og resten af listen
+  bliver bundet til variablen <literal>xs</literal>.
+ </para>
+
+ <para>
+  <literal>::</literal> er en infix-operator der laver listesammensætning.
+  <literal>map</literal> tager altså en funktion og en liste og udføre
+  funktionen på alle elementerne i listen. Da <literal>map</literal> tager en
+  anden funktion som argument kaldes den en højereordensfunktion.
+ </para>
+
+ <para>
+  Følgende enkle funktion tager et heltal og ganger det med 2:
+ </para>
+
+<programlisting>
+(* Type: int -&gt; int *)
+fun double n = 2 * n;
+</programlisting>
+
+ <para>
+  Ikke noget specielt her.
+ </para>
+
+ <para>
+  Nu vil vi så anvende ovenstående to funktioner til at lave en funktion der
+  tager en liste af heltal og fordobler dem:
+ </para>
+
+<programlisting>
+(* Type: int list -&gt; int list *)
+val doublelist = map double;
+</programlisting>
+
+ <para>
+  Bemærk at vi her bruger <literal>val</literal> og ikke
+  <literal>fun</literal>. Det er fordi vi egentligt ikke laver en ny funktion
+  men tildeler navnet <literal>doublelist</literal> en værdi (funktioner er
+  nemlig lige så meget værdier som heltal er).
+ </para>
+
+ <para>
+  Det næste man bemærker er at <literal>map</literal> kaldes med kun et
+  argument. Men <literal>map</literal> havde da to argumenter? Dette kaldes
+  'currying'. Vi kalder <literal>map</literal> med det første argument, det
+  returnere en funktion der tager resten af argumenterne.
+ </para>
+
+ <para>
+  Vi kunne også have undladt at definere funktionen <literal>double</literal>
+  og bruge en anonym funktion:
+ </para>
+
+<programlisting>
+(* Type: int list -&gt; int list *)
+val doublelist = map (fn x =&gt; 2 * x);
+</programlisting>
+
+ <para>
+  Den slags anonyme funktioner bruges også ganske ofte i SML.
+ </para>
+</sect2>
+
+<sect2 id='sprog-ml-iteration'>
+<title>Iteration i SML</title>
+
+ <para>
+  SML indeholder ikke de løkke-strukture man normalt bruger. Skal man beregne
+  noget iterativt bliver man derfor nødt til selv at lave nogle funktioner der
+  kalre det for sig. Man kunen for eksempel bruge følgende funktion:
+ </para>
+
+<programlisting>
+(* Type: ('a -&gt; 'a) -&gt; int -&gt; 'a -&gt; 'a *)
+fun iterate f 0 x = x
+  | iterate f i x = iterate f (i-1) (f x);
+</programlisting>
+
+ <para>
+  <literal>iterate</literal> tager en funktion <literal>f</literal> og udføre
+  den et antal gange på værdien <literal>x</literal>.
+ </para>
+</sect2>
+
 </sect1>
