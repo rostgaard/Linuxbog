@@ -2435,10 +2435,13 @@ Læs om den under <command>man test</command>.
 
 </sect2><!-- id="koerflere" -->
 
-<sect2 id="nyshell">
-<title>Start en ny shell på kommandolinjen</title>
+<sect2 id="subshell">
+<title>Start en sub-shell på kommandolinjen</title>
 <indexterm>
  <primary>( )</primary>
+</indexterm>
+<indexterm>
+ <primary>Sub-shell</primary>
 </indexterm>
 <para>
 Når man starter en ny shell, får man nye omgivelser (environment)
@@ -2532,7 +2535,129 @@ echo -e "HEAD / HTTP/1.0\n"
 sleep 2
 </programlisting>
 
-</sect2><!-- id="nyshell" -->
+</sect2><!-- id="subshell" -->
+
+<sect2 id="procsubst">
+<title>Proces substituering</title>
+<indexterm><primary>&lt;( )</primary></indexterm>
+<indexterm><primary>Process Substitution</primary></indexterm>
+<indexterm><primary>Output til fil</primary></indexterm>
+<indexterm><primary>Temporær fil</primary></indexterm>
+<para>
+Man kommer til tider ud for at man bliver 
+nødt til at oprette midlertidige filer, der senere
+skal bruges til et andet program.
+Nogle programmer kan kun tage filer som input,
+og hvis output kommer fra en proces, skal der gøres noget andet.
+Disse midlertidige filer skal til slut slettes,
+hvilket ofte ikke er noget problem.
+Med kommandoen <command>&lt;()</command> kan man
+undgå dette midlertidige trin.
+</para>
+
+<para>
+Programmer såsom <command>tar</command>, <command>diff</command>
+og <command>comm</command> skal bruge filer som input på
+kommandolinjen.
+Er input til disse programmer så noget der kommer fra en proces,
+vil man typisk gemme dette i en midlertidig fil.
+Her er et eksempel på hvordan det kunne se ud med et shell-script:
+</para>
+
+<programlisting>
+#! /bin/sh
+# Find filer der skal tages backup af:
+find | egrep "\.c$" > temp
+# 'tar' filerne nævnt i 'temp'
+tar cvf backup.tar -T temp
+# Ryd op
+rm -f temp
+</programlisting>
+
+<para>
+Ovenstående program er måske overskueligt, men man skal
+stadig huske at fjerne midlertidige filer, og man skal
+finde på et godt midlertidigt navn til sin
+<filename>temp</filename>-fil.
+I stedet for at oprette en midlertidig fil, kan man tage
+output fra <command>find</command> og lave dette om til
+noget der for <command>tar</command> ligner en fil.
+Med &lt;() "process substitution" bliver det så:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>tar cvf backup.tar -T &lt;(find | egrep "\.c$")</userinput>
+</screen>
+
+<para>
+<command>tar</command> opfatter <command>&lt;()</command> som en fil, og behandler
+den på denne måde.
+Lad os lige prøve at se om ikke systemet selv kan forklare hvad
+en <command>&lt;()</command> er.
+Hvis nu <command>&lt;()</command> er en fil, så ville man kunne
+skrive filnavnet ud på skærmen.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>echo &lt;(true)</userinput>
+/dev/fd/63
+</screen>
+
+<para>
+Her ses at der bare oprettes en midlertidig fil et eller andet sted,
+som <command>bash</command> selv holder styr på.
+Hvis man så er to gange <command>&lt;()</command> på kommandolinjen,
+kan <command>bash</command> stadig håndterer det:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>echo &lt;(true) &lt;(true)</userinput>
+/dev/fd/63 /dev/fd/62
+</screen>
+
+<para>
+Ovenstående eksempel med <command>tar</command> kan
+selvfølgelig løses på mange andre måder,
+hvor &lt;() ikke er nødvendigt, til gengæld skulle
+det være nemmere at forstå.
+Et mere drilsk eksempel kan laves med <command>comm</command>
+der er et program til at sammenligne filer.
+Ved almindelig brug anvendes det således:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>comm fil-1 fil-2</userinput>
+</screen>
+
+<para>
+Nu kan man være så uheldig at de filer der skal undersøges 
+er output fra fx. <command>grep</command>. 
+Uden brug af <command>&lt;()</command> kunne et shell-script
+se således ud:
+</para>
+
+<programlisting>
+#! /bin/sh
+grep foo test1 &gt; fil-1
+grep foo test2 &gt; fil-2
+comm fil-1 fil-2
+rm -f fil-1 fil-2
+</programlisting>
+
+<para>
+Omskrevet med <command>&lt;()</command> bliver det blot en
+enkelt linje:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>comm &lt;(grep foo test1) &lt;(grep foo test2)</userinput>
+</screen>
+
+<para>
+For mere information om <emphasis>process substitution</emphasis>
+se <ulink url="http://www.tldp.org/LDP/abs/html/process-sub.html">http://www.tldp.org/LDP/abs/html/process-sub.html</ulink>
+</para>
+</sect2><!-- id="procsubst" -->
 
 <sect2 id="kill">
 <title>Dræb en proces</title>
