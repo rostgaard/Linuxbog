@@ -228,8 +228,9 @@ html.stamp: $(dep_sgml_filer)
 	@echo "Target $(targetshortname):html"
 	@echo ".........................................."
 	rm -rf $(targetname)-*.html.tar.gz bog/ $(targetshortname)/
-	@echo '<!ENTITY magic "png">' > magic.sgml
 	make version.sgml
+	sleep 2; ls -lo version.sgml ; test -f version.sgml || { echo "Fatal, cannot make version.sgml"; exit 105 ; } ;
+	@echo '<!ENTITY magic "png">' > magic.sgml
 	db2html -V %stylesheet%=linuxbog.css -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
 	mv bog/ $(targetshortname)
 	cp linuxbog.css $(targetshortname)	
