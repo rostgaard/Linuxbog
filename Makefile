@@ -13,6 +13,7 @@ start:
 		cp -f faelles-filer/*.css $$dir; \
 		cp linuxbog.spec $$dir; \
 		make -C $$dir start; \
+		make -C $$dir ekstra; \
 	done;
 	echo "Installerer Makefiler og fælles SGML-filer til alle bøger"
 
