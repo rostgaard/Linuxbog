@@ -8,57 +8,87 @@
 <title>Indledning</title>
 
 <para>
-Java hjælper dig med at gøre dine programmer platformsuafhængige,
-men hvad hvis de også skal være sproguafhængige? Når et program
-skal anvendes af brugere med anden sproglig og kulturel baggrund
-så opstår der behov for at programtekster, beløb og datoangivelser
-afhænger af brugerens land, sprog og eventuelt andre faktorer.
+Java hjælper dig med at gøre dine programmer platformsuafhængige, men
+hvad hvis de også skal være sproguafhængige? Når et program skal
+anvendes af brugere med anden sproglig og kulturel baggrund så opstår
+der behov for at programtekster, beløb og datoangivelser afhænger af
+brugerens land, sprog og eventuelt andre faktorer. Dette benævnes
+<emphasis>lokalafhængighed</emphasis>.
 </para>
 
 <para>
-En mulig måde at opnå sproguafhængighed på er at vedligeholde kildeteksten
-til sit program i flere forskellige versioner, der hver især understøtter
+En mulig måde at løse problemet på er at vedligeholde kildeteksten til
+sit program i flere forskellige versioner, der hver især understøtter
 et bestemt sprog. Man finder hurtigt ud af at denne løsningsmetode er
-uholdbar i længden idet ændringer og opdateringer til programmet medfører
-at samtlige versioner skal ændres. Ligeledes skal kildeteksten oversættes
-hver eneste gang.
+uholdbar i længden idet ændringer og opdateringer til programmet
+medfører at samtlige versioner skal ændres. Ligeledes skal
+kildeteksten oversættes hver eneste gang. En bedre fremgangsmåde er at
+internationalisere og lokalisere sit program.
 </para>
 
 <para>
-I stedet for at gøre livet træls for sig selv og benytte ovenstående
-metode så kan man i stedet for vælge at benytte sig af de værktøjer, som JDK
-stiller til rådighed. I den forbindelse er der to begreber, som du skal
-være fortrolig med.
+<emphasis>Internationalisering</emphasis> er den proces, hvor du laver
+et programdesign, som er sprogligt og kulturelt neutralt.  Al
+formatering og fortolkning af tal-, beløbs-, dato- og
+klokkeslætangivelser skal med andre ord være afhængigt af en række
+parametre, der på kørsels- eller oversættelsestidspunktet bestemmer
+den konkrete sproglige og kulturelle kontekst som programmet skal
+indgå i. Ligeledes skal sproglige tekster og direkte stinavne til
+billeder adskilles fra kildeteksten.
 </para>
 
-<itemizedlist mark="bullet">
-
-<listitem><para>
-<emphasis>Internationalisering</emphasis> er den proces, hvor du
-laver et programdesign, som er sprogligt og kulturelt neutralt.
-Al formatering og fortolkning af tal-, beløbs-, dato- og tidsangivelser
-skal med andre ord være afhængigt af en række parametre, der på kørsels-
-eller oversættelsestidspunktet bestemmer den konkrete sproglige og
-kulturelle kontekst som programmet skal indgå i. Ligeledes skal
-sproglige tekster og direkte stinavne til billeder adskilles fra
-kildeteksten.
-</para></listitem>
-
-<listitem><para>
+<para>
+Internationalisering er ikke nok i sig selv.
 <emphasis>Lokalisering</emphasis> er den process, hvor du tilpasser
 dit internationaliserede program så det imødekommer de sproglige og
 kulturelle krav, der stilles af den givne målgruppe.
-</para></listitem>
+</para>
 
+<para>
+Data som skal fremvises til brugeren kan kategoriseres ud fra om det
+er lokalafhængigt eller lokaluafhængigt. 
+</para>
+
+<itemizedlist>
+<listitem><para>
+Lokalafhængige data dækker f.eks. over tekst, billeder og lyd, der er
+udformet med en sproglig og geografisk målgruppe in mente.  Disse kan
+umiddelbart vises til brugeren hørende til den bestemte målgruppe.
+</para></listitem>
+<listitem><para>
+Lokaluafhængige data dækker f.eks. over datoer, tal, beløb og
+klokkeslæt, der i sig selv ikke har tilknytning til nogen bestemt
+sproglig og geografisk målgruppe. Disse skal først formateres med en
+lokalafhængig formateringsfunktion før de kan vises til brugeren.
+</para></listitem>
 </itemizedlist>
 
 <para>
-Lyder det besværligt? Det er det ikke!
+JDK stiller værktøjer til rådighed som hjælper dig med både
+internationaliserings- og lokaliseringsprocessen, herunder håndtering
+af lokalafhængige og uafhængige data. De næste mange sektioner går i
+dybden med disse værktøjer.
+</para>
+
+<para>
+I <xref linkend="java-i18n-lokalindstilling"> beskrives hvordan man i
+sin programkode angiver en bestemt sproglig og geografisk region.
+</para>
+
+<para>
+I <xref linkend="java-i18n-ressourcebundt"> beskrives hvordan
+lokalafhængige data håndteres, mens <xref
+linkend="java-i18n-formatering-dato"> og <xref
+linkend="java-i18n-formatering-tal"> beskæftiger sig med formatering
+af lokaluafhængige data.
 </para>
 
 </sect1>
 
-<sect1 id="java-i18n-locale">
+<!-- ************************************************************* -->
+<!-- ************************************************************* -->
+
+<sect1 id="java-i18n-lokalindstilling">
 <title>Lokalindstillinger</title>
 
 <para>
@@ -73,14 +103,15 @@ adfærd på baggrund af en lokalindstilling, vil vi kalde for
 <para>
 Lokalindstillinger udfører intet i sig selv, men overgives til andre
 lokalafhængige objekter, som udfører det egentlige arbejde, f.eks. at
-formattere en beløbsstørrelse.
+formatere en beløbsstørrelse.
 </para>
 
-<sect2 id="java-i18n-locale-create">
+<sect2 id="java-i18n-lokalindstilling-opret">
 <title>Oprettelse af en lokalindstilling</title>
 
 <para>
-En lokalindstilling kan konstrueres ved at angive sprog- og landekode, f.eks.
+En lokalindstilling kan konstrueres ved at angive sprog- og landekode,
+f.eks.
 </para>
 
 <programlisting>
@@ -122,17 +153,16 @@ Locale currentLocale = Locale.getDefault();
 
 <para>
 Dette objekt angiver den virtuelle maskines nuværende sprog- og
-regionsindstillinger. Ved opstart af den virtuelle maskine
-svarer denne lokalindstiling til brugerens indstillinger i
-operativsystemet.
+regionsindstillinger. Ved opstart af den virtuelle maskine svarer
+denne lokalindstiling til brugerens indstillinger i operativsystemet.
 </para>
 
 <para>
 Det er muligt at ændre den globale lokalindstilling ved at kalde
 klassemetoden <constant>Locale.setDefault(Locale aLocale)</constant>
-men vær opmærksom på at <emphasis>alle</emphasis> programmer i den virtuelle
-maskine vil blive berørt, da de lokalafhængige klasser anvender
-den globale lokalindstilling i de situationer, hvor man ikke
+men vær opmærksom på at <emphasis>alle</emphasis> programmer i den
+virtuelle maskine vil blive berørt, da de lokalafhængige klasser
+anvender den globale lokalindstilling i de situationer, hvor man ikke
 explicit fortæller hvilken lokalindstilling, der skal anvendes.
 </para>
 
@@ -146,7 +176,7 @@ f.eks. hvis det skal være flersproget, så gøres dette ved at invokere metoden
 
 </sect2>
 
-<sect2 id="java-i18n-locale-available">
+<sect2 id="java-i18n-lokalindstilling-tilgaengelig">
 <title>Tilgængelige lokalindstillinger</title>
 
 <para>
@@ -245,24 +275,244 @@ Lad os nu se på hvordan lokalindstillinger kan anvendes.
 
 </sect1>
 
-<sect1 id="java-i18n-formatting-date">
-<title>Formattering af datoer og klokkeslæt</title>
+<!-- ************************************************************* -->
+<!-- ************************************************************* -->
+
+<sect1 id="java-i18n-ressourcebundt">
+<title>Ressourcebundter</title>
+
+<para>
+Ressourcebundter bruges til at isolere lokalafhængige data fra din
+kode, f.eks. tekster eller billeder på knapper. Dette afsnit går i
+dybden med klasserne
+<constant>java.util.ResourceBundle</constant>,
+<constant>java.util.PropertyResourceBundle</constant> og
+<constant>ListResourceBundle</constant> som er nyttige i denne sammenhæng.
+</para>
+
+<sect2 id="java-i18n-ressourcebundt-generelt">
+<title>Generelt om ressourcebundter</title>
+
+<para>
+Et ressourcebundt er en samling af lokalafhængige data, som hver især
+er associeret med en unik tekstnøgle. Nøglen bruges når der skal hives
+et bestemt element ud af bundtet, f.eks. et billede.
+</para>
+
+<para>
+Et ressourcebundt hører til en familie af ressourcebundter, som deler
+et fælles basisnavn, f.eks. "dk.sslug.LogInd" eller
+"dk.sslug.MitRessourcebundt". Alle medlemmer i familien har et unikt
+navn på formen
+<constant>basisnavn[_sprogkode[_landekode[_variant]]]</constant>, der
+afspejler den lokalindstilling, som de understøtter.
+</para>
+
+<para>
+F.eks. kunne vi have følgende ressourcebundter
+</para>
+
+<screen>
+dk.sslug.LogInd
+dk.sslug.LogInd_de
+dk.sslug.LogInd_da_DK
+dk.sslug.LogInd_da_DK_LINUX
+</screen>
+
+<para>
+Alle familiemedlemmer indeholder de samme data i en lokaliseret
+udgave. I en given familie identificeres et bestemt dataelement altid
+med den samme nøgle - uanset hvilket familiemedlem man har fat i.
+</para>
+
+<para>
+Når du i dit program ønsker at tilgå data hørende til et
+ressourcebundt så gøres det ved at bruge klassemetoden
+<constant>getBundle(String, Locale)</constant> på
+klassen <constant>ResourceBundle</constant> som vist forneden.
+</para>
+
+<screen>
+Locale daLocale = new Locale("da", "DK");
+ResourceBundle logIndBundt =
+  ResourceBundle.getBundle("dk.sslug.LogInd", daLocale);
+</screen>
+
+<para>
+Metoden vil først forsøge at finde ressourcebundtet
+"dk.sslug.LogInd_da_DK", dernæst "dk.sslug.LogInd_da" og endeligt
+"dk.sslug.LogInd". Hvis ingen af dem findes så kastes en
+<constant>MissingResourceException</constant>. På grund af dette bør
+der altid være et standard ressourcebundt med basisnavnet som eneste
+navn.
+</para>
+
+<para>
+I JDK er der to måder at definere et ressourcebundt på: som en
+ressourcefil eller som en klasse. De to næste afsnit beskriver dette
+nærmere.
+</para>
+
+</sect2>
+
+<sect2 id="java-i18n-ressourcebundt-ressourcefil">
+<title>Lagring af tekst i ressourcefiler</title>
+
+<para>
+Det er muligt at lagre lokalafhængig tekst i en dedikeret ressourcefil
+kaldet for en property-fil. Det er en simpel tekstfil, der bruges til
+at associere tekstnøgler med lokalafhængige tekster. En association er
+på formen <constant>nøglenavn = værdi</constant>, hvor nøglen kan være
+navndøbt mere eller mindre abitrært. I praksis er det fornuftigt at
+vælge et signende nøglenavn.
+</para>
+
+<para>
+Forneden ses et eksempel på en ressourcefil. Kommentarlinjer starter
+med havelågetegn (#).
+</para>
+
+<screen>
+# LogInd_da_DK.properties
+# Dansk lokalindstilling for Log ind-skærmbilledet
+IndtastNavnLabel = Indtast dit navn
+IndtastAdgangskodeLabel = Indtast din adgangskode
+LogIndKnap = Log ind
+AnnullerKnap = Annuller
+</screen>
+
+<para>
+Hvis tekstfilen placeres i "dk/sslug/" relativt fra classpath så får
+ressourcebundtet navnet "dk.sslug.LogInd_da_DK". Helt analogt får
+ressourcebundet for de to nedenstående ressourcefiler navnene
+"dk.sslug.LogInd" og "dk.sslug.LogInd_de".
+</para>
+
+<screen>
+# LogInd.properties
+# Standard lokalindstilling for Log ind-skærmbilledet
+IndtastNavnLabel = Enter name
+IndtastAdgangskodeLabel = Enter password
+LogIndKnap = Log in
+AnnullerKnap = Cancel
+
+# LogInd_de.properties
+# Mangelfuld tysk lokalindstilling for Log ind-skærmbilledet
+AnullerKnap = Abbrechen
+</screen>
+
+<para>
+Ressourcefiler håndteres af
+<constant>PropertyResourceBundle</constant>, der er en subklasse af
+<constant>ResourceBundle</constant>. Som programmør behøver man dog
+kun benytte sig af moderklassen, hvilket følgende eksempel viser.
+</para>
+
+<screen>
+package dk.sslug;
+
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+public class PropertyResourceBundleEksempel
+{
+  public static void main(String[] args)
+  {
+    udskrivVaerdier(new Locale("da", "DK"));
+    udskrivVaerdier(new Locale("de"));
+    udskrivVaerdier(new Locale("fr", "CA"));
+  }
+  
+  private static void udskrivVaerdier(Locale locale)
+  {
+    ResourceBundle logIndBundt =
+      ResourceBundle.getBundle("dk.sslug.LogInd", locale);
+    Enumeration enum = logIndBundt.getKeys();
+    while (enum.hasMoreElements()) {
+      String noegle = (String) enum.nextElement();
+      System.out.println(noegle +" = " + logIndBundt.getString(noegle));
+    }
+    System.out.println();
+  }
+}
+</screen>
+
+<para>
+Køres programmet så fås
+</para>
+
+<screen>
+IndtastAdgangskodeLabel = Indtast din adgangskode
+LogIndKnap = Log ind
+IndtastNavnLabel = Indtast dit navn
+AnnullerKnap = Annuller
+
+AnullerKnap = Abbrechen
+IndtastAdgangskodeLabel = Enter password
+LogIndKnap = Log in
+IndtastNavnLabel = Enter name
+AnnullerKnap = Cancel
+
+IndtastAdgangskodeLabel = Enter password
+LogIndKnap = Log in
+IndtastNavnLabel = Enter name
+AnnullerKnap = Cancel
+</screen>
+
+<para>
+<constant>PropertyResourceBundle</constant> benytter sig internt af
+<constant>java.text.Properties</constant> som repræsenterer en
+persistent mængde of nøgle/værdi-par. Den er nyttig såfremt du ønsker
+dit program skal benytte sig af konfigurationsfiler. Man kan
+finde mere information i JDK's API dokumentation.
+</para>
+
+</sect2>
+
+<sect2 id="java-i18n-ressourcebundt-klasse">
+<title>Lagring af ressourcer i klasser</title>
+
+<para>
+TODO
+</para>
+
+</sect2>
+
+</sect1>
+
+<!-- ************************************************************* -->
+<!-- ************************************************************* -->
+
+<sect1 id="java-i18n-parameterized-messages">
+<title>Parametriserede beskeder</title>
+
+<para>
+TODO
+</para>
+
+</sect1>
+
+<!-- ************************************************************* -->
+<!-- ************************************************************* -->
+
+<sect1 id="java-i18n-formatering-dato">
+<title>Formatering af datoer og klokkeslæt</title>
 
 <para>
 <constant>Date</constant>-objekter repræsenterer datoer og klokkeslæt.
 Dette afsnit går i dybden med de lokalafhængige klasser
-<constant>java.text.DateFormat</constant>,
-<constant>java.text.DateFormatSymbols</constant> og
-<constant>java.text.SimpleDateFormat</constant> som er velegnet
-til at formattere <constant>Date</constant>-objekter.
+<constant>java.text.DateFormat</constant> og
+<constant>java.text.SimpleDateFormat</constant> som er velegnet til at
+formattere <constant>Date</constant>-objekter.
 </para>
 
-<sect2 id="java-i18n-formatting-date-predefined">
+<sect2 id="java-i18n-formatering-dato-foruddefineret">
 <title>Prædefineret formater</title>
 
 <para>
 Klassen <constant>DateFormat</constant> indeholder en række statiske fabriksmetoder,
-som returner specialiseret formatteringsobjekter. Seks af disse er
+som returner specialiseret formateringsobjekter. Seks af disse er
 </para>
 
 <screen>
@@ -276,7 +526,7 @@ getDateTimeInstance(int dateStyle, int timeStyle, Locale aLocale)
 
 <para>
 Metoderne tager imod en eller flere <constant>style</constant>-parametre, som
-anvendes til at angive længden af formatteringsresultatet.
+anvendes til at angive længden af formateringsresultatet.
 De mulige værdier er defineret som konstanter i <constant>DateFormat</constant>-klassen.
 </para>
 
@@ -299,9 +549,9 @@ De mulige værdier er defineret som konstanter i <constant>DateFormat</constant>-
 </itemizedlist>
 
 <para>
-Det præcise resultat afhænger af lokalindstillingen. Det var med vilje at der
-ikke blev brugt en dansk lokalindstilling i ovenstående eksempler, for i så
-fald ville der ikke være nogen synlig forskel på brugen af LONG og FULL.
+Det præcise resultat afhænger af lokalindstillingen. Hvis vi i det
+ovenstående havde brugt en dansk lokalindstilling så ville der ikke
+være nogen synlig forskel på brugen af LONG og FULL.
 </para>
 
 <para>
@@ -362,11 +612,11 @@ bevidst ønsker at irritere ham/hende).
 
 </sect2>
 
-<sect2 id="java-i18n-formatting-date-customizing">
+<sect2 id="java-i18n-formatering-dato-tilpasset">
 <title>Egne formater</title>
 
 <para>
-Ønsker man som programmør fuld kontrol over hvordan datoen bliver formatteret
+Ønsker man som programmør større kontrol over hvordan datoen bliver formateret
 så må man selv specificere formatet med <constant>SimpleDateFormat</constant>.
 </para>
 
@@ -390,17 +640,8 @@ public class BenytSimpleDateFormat
 }
 </screen>
 
-<note><title>Kort sidebemærkning</title>
 <para>
-Den opmærksomme læser har måske opdaget at vi har begået en brøler i ovenstående
-eksempel. Mønsteret indholder nemlig sprogspecifikke tekster! Senere i dette
-kapitel ser vi på, hvordan brøleren kan løses ved at lægge de sprogspecifikke
-tekster ud i ressourcefiler.
-</para>
-</note>
-
-<para>
-Kørsel af ovenstående program med dansk lokalindstilling giver 
+Kørsel af ovenstående program med dansk lokalindstilling giver
 </para>
 
 <screen>
@@ -408,7 +649,8 @@ mandag den 10. december år 2001.
 </screen>
 
 <para>
-En tilsvarende kørsel af programmet med amerikansk lokalindstilling giver 
+En tilsvarende kørsel af programmet med amerikansk lokalindstilling
+giver
 </para>
 
 <screen>
@@ -416,88 +658,337 @@ Monday den 10. December ?r 2001.
 </screen>
 
 <para>
-Ud fra eksemplet ses at formatteringsresultatet afhænger af
-to faktorer: lokalindstillingen samt mønsteret angivet til klassens konstruktør.
+Ud fra eksemplet ses at formateringsresultatet afhænger af to
+faktorer: lokalindstillingen samt argumentet angivet til
+<constant>SimpleDateFormat</constant>s konstruktør.  Argumentet
+angiver et mønster, som angiver hvordan dato- og
+klokkeslætformateringen logisk bør tage sig ud. Dato- og
+klokkeslætformater specificeres ved hjælp af bogstaverne a-z og A-Z
+som har en speciel betydning så længe de ikke er omgivet af
+apostroffer.  F.eks. dækker M over måneden i et år, mens E dækker over
+dagen i en uge. Antallet af gange et bogstav gentages er ikke helt
+uden betydning. Gentages M fire gange som i eksemplet så skrives
+måneden som en tekst, f.eks. 'december', men vises den kun en gang så
+skrives måneden som et tal, f.eks. 12. Bemærk at konstanterne
+<constant>SHORT</constant>, <constant>MEDIUM</constant>,
+<constant>LONG</constant> og <constant>FULL</constant> i
+<constant>DateFormat</constant>-klassen afspejler dette.
 </para>
 
 <para>
-TODO...lav tabel over Date Format Pattern Syntax
+I skrivende stund er det ikke alle bogstaver, der har fået tillagt en
+betydning. Nedenstående tabel viser dem som findes i JDK 1.4. En
+lignende tabel findes også i API-dokumentationen for
+<constant>SimpleDateFormat</constant>.
+</para>
+
+<table id="java-i18n-dato-og-klokkeslaetmoenstre">
+<title>Dato og klokkeslætmønstre</title>
+<tgroup cols="3" align="char">
+<thead>
+  <row>
+    <entry>Tegn</entry>
+    <entry>Betydning</entry>
+    <entry>Eksempler med dansk lokalindstilling (1-4 ens)</entry>
+  </row>
+</thead>
+<tbody>
+  <row>
+    <entry>G</entry>
+    <entry>Tidsregningbetegnelse</entry>
+    <entry>AD, AD, AD, AD</entry>
+  </row>
+  <row>
+    <entry>y</entry>
+    <entry>År</entry>
+    <entry>02, 02, 02, 2002</entry>
+  </row>
+  <row>
+    <entry>M</entry>
+    <entry>Måneden i et år</entry>
+    <entry>6, 06, jun, juni</entry>
+  </row>
+  <row>
+    <entry>w</entry>
+    <entry>Ugen i et år</entry>
+    <entry>24, 24, 024, 0024</entry>
+  </row>
+  <row>
+    <entry>W</entry>
+    <entry>Ugen i en måned</entry>
+    <entry>2, 02, 002, 0002</entry>
+  </row>
+  <row>
+    <entry>D</entry>
+    <entry>Dagen i et år</entry>
+    <entry>162, 162, 162, 0162</entry>
+  </row>
+  <row>
+    <entry>d</entry>
+    <entry>Dagen i en måned</entry>
+    <entry>11, 11, 011, 0011</entry>
+  </row>
+  <row>
+    <entry>F</entry>
+    <entry>Ugedagen i en måned</entry>
+    <entry>2, 02, 002, 0002</entry>
+  </row>
+  <row>
+    <entry>E</entry>
+    <entry>Dagen i en uge</entry>
+    <entry>ti, ti, ti, tirsdag</entry>
+  </row>
+  <row>
+    <entry>a</entry>
+    <entry>Am/pm</entry>
+    <entry>PM, PM, PM, PM</entry>
+  </row>
+  <row>
+    <entry>H</entry>
+    <entry>Timen i en dag (0-23)</entry>
+    <entry>19, 19, 019, 0019</entry>
+  </row>
+  <row>
+    <entry>k</entry>
+    <entry>Timen i en dag (1-24)</entry>
+    <entry>19, 19, 019, 0019</entry>
+  </row>
+  <row>
+    <entry>K</entry>
+    <entry>Timen i am/pm (0-11)</entry>
+    <entry>7, 07, 007, 0007</entry>
+  </row>
+  <row>
+    <entry>h</entry>
+    <entry>Timen i am/pm (1-12)</entry>
+    <entry>7, 07, 007, 0007</entry>
+  </row>
+  <row>
+    <entry>m</entry>
+    <entry>Minuttet i en time</entry>
+    <entry>49, 49, 049, 0049</entry>
+  </row>
+  <row>
+    <entry>s</entry>
+    <entry>Sekundet i et minut</entry>
+    <entry>22, 22, 022, 0022</entry>
+  </row>
+  <row>
+    <entry>S</entry>
+    <entry>Millisekund</entry>
+    <entry>689, 689, 689, 0689</entry>
+  </row>
+  <row>
+    <entry>z</entry>
+    <entry>Tidszone (Generel)</entry>
+    <entry>CEST, CEST, CEST, Central European Summer Time</entry>
+  </row>
+  <row>
+    <entry>Z</entry>
+    <entry>Tidszone (RFC 822)</entry>
+    <entry>+0200, +0200, +0200, +0200</entry>
+  </row>
+</tbody>
+</tgroup>
+</table>
+
+<para>
+<emphasis>Ugedagen i en måned</emphasis> kræver en kort
+forklaring. Hvis datoen er tirsdag den 11. maj 2002, så fortæller den
+os at det er den 2. tirsdag i maj måned 2002. Er datoen derimod lørdag
+den 15. maj 2002 så fortæller den os at det er den 3. lørdag i maj måned.
 </para>
 
 </sect2>
 
-<sect2 id="java-i18n-formatting-date-parsing">
-<title>Fortolkning af brugerindtastninger</title>
+</sect1>
+
+<!-- ************************************************************* -->
+<!-- ************************************************************* -->
+
+<sect1 id="java-i18n-formatering-tal">
+<title>Formatering af tal og beløb</title>
 
 <para>
-TODO...om at parse datoer og klokkeslæt.
+Denne sektion går i dybden med den lokalafhængige klasse
+<constant>java.text.NumberFormat</constant> som er velegnet til at
+formatere tal, beløb og procentstørrelser.
+</para>
+
+<!-- Skal bruges når undersektionen 'Egne formater' er skrevet til
+     denne sektion /jk
+-->
+<!--
+<para>
+Denne sektion går i dybden med de lokalafhængige klasser
+<constant>java.text.NumberFormat</constant> og
+<constant>java.text.DecimalFormat</constant> som er velegnet til at
+formatere tal, beløb og procentstørrelser.
+</para>
+-->
+
+<sect2 id="java-i18n-formatering-tal-praedefineret">
+<title>Prædefineret formater</title>
+
+<para>
+Klassen NumberFormat indeholder en række statiske fabriksmetoder, som
+returnerer specialiseret formateringsobjekter.
+</para>
+
+<screen>
+getInstance() 
+getInstance(Locale locale) 
+getCurrencyInstance() 
+getCurrencyInstance(Locale locale) 
+getIntegerInstance() 
+getIntegerInstance(Locale locale) 
+getNumberInstance() 
+getNumberInstance(Locale locale) 
+getPercentInstance() 
+getPercentInstance(Locale locale) 
+</screen>
+
+<para>
+<constant>getInstance(..)</constant> er synonym med
+<constant>getNumberInstance(..)</constant>, og returnerer det normale
+lokalafhængige
+<constant>NumberFormat</constant>-objekt. <constant>getCurrencyInstance(..)</constant>
+er beregnet til beløb, <constant>getIntegerInstance(..)</constant> til
+heltal og <constant>getPercentInstance(..)</constant> til
+procentstørrelser.
+</para>
+
+<para>
+Uanset om man arbejder med heltal eller decimaltal så kan det være
+nyttigt at justere på antallet af cifre der skal vises før og efter et
+eventuelt decimaltegn. I Danmark er det f.eks. meget normalt at
+beløbsstørrelser vises med præcis to betydende decimaler. Dette
+hjælper følgende metoder med:
+</para>
+
+<screen>
+setMaximumIntegerDigits(int vaerdi) 
+setMinimumIntegerDigits(int vaerdi) 
+setMaximumFractionDigits(int vaerdi) 
+setMinimumFractionDigits(int vaerdi) 
+</screen>
+
+<para>
+De to første metoder omhandler heltalsdelen af et tal, men de to andre
+omhandler decimaldelen. <constant>setMaximumXXX(8)</constant> betyder
+at der vises højest 8 cifre i enten heltal- eller decimaldelen, mens
+<constant>setMinimumXXX(2)</constant> betyder at der vises mindst 2
+cifre. Overskydende cifre skæres væk mens manglende cifre erstattes
+med nuller.
+</para>
+
+<para>
+Nedenstående eksempel viser brugen af
+<constant>NumberFormat</constant>-klassen.
+</para>
+
+<screen>
+package dk.sslug;
+
+import java.util.Locale;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+public class Talformatering
+{
+  public static void main(String[] args)
+  {
+    Locale[] locales = NumberFormat.getAvailableLocales();
+    for (int i = 0; i < locales.length; i++) {
+      System.out.println(locales[i].toString());
+      formaterTal(locales[i]);
+      formaterBeloeb(locales[i]);
+      formaterProcent(locales[i]);
+      System.out.println();
+    }
+  }
+  
+  public static void formaterTal(Locale locale) {
+    NumberFormat nf = NumberFormat.getNumberInstance(locale);
+    String heltal     = nf.format(123456789);
+    String decimaltal = nf.format(123456.789);
+    System.out.println(heltal);
+    System.out.println(decimaltal);
+  }
+  
+  public static void formaterBeloeb(Locale locale) {
+    NumberFormat cf = NumberFormat.getCurrencyInstance(locale);
+    cf.setMaximumFractionDigits(2);
+    String beloeb = cf.format(123456.789);
+    System.out.println(beloeb);
+  }
+  
+  public static void formaterProcent(Locale locale) {
+    NumberFormat pf = NumberFormat.getPercentInstance(locale);
+    String procent = pf.format(1.42);
+    System.out.println(procent);
+  }
+}
+</screen>
+
+<para>
+Eksemplet gennemløber alle lokalindstillinger, som NumberFormat
+explicit kender. Et udsnit af resultatet ved at køre ovenstående
+program er vist her forneden.
+</para>
+
+<screen>
+...
+
+da
+123.456.789
+123.456,789
+¤ 123.456,79
+142%
+
+da_DK
+123.456.789
+123.456,789
+kr 123.456,79
+142%
+
+...
+
+en_CA
+123,456,789
+123,456.789
+$123,456.79
+142%
+
+en_GB
+123,456,789
+123,456.789
+£123,456.79
+142%
+
+...
+</screen>
+
+</sect2>
+
+<!--
+
+<sect2 id="java-i18n-formatering-tal-tilpasset">
+<title>Egne formater</title>
+
+<para>
+Ønsker man som programmør større kontrol over hvordan formateringen
+tager sig ud så må man selv specificere formatet med
+<constant>DecimalFormat</constant>.
 </para>
 
 </sect2>
 
+-->
 </sect1>
 
-<sect1 id="java-i18n-currency-formatting">
-<title>Formattering af tal og beløb</title>
-
-<para>
-TODO
-</para>
-
-</sect1>
-
-<sect1 id="java-i18n-internationalization">
-<title>Internationalisering</title>
-
-<para>
-TODO
-</para>
-
-<itemizedlist mark="bullet">
-<listitem><para>Tekster</para></listitem>
-<listitem><para>Hjælpefiler</para></listitem>
-<listitem><para>Lyd</para></listitem>
-<listitem><para>Farver</para></listitem>
-<listitem><para>Billeder</para></listitem>
-<listitem><para>Ikoner</para></listitem>
-<listitem><para>Datoer</para></listitem>
-<listitem><para>Tidspunkter</para></listitem>
-<listitem><para>Tal</para></listitem>
-<listitem><para>Valuta</para></listitem>
-<listitem><para>Telefonnumre</para></listitem>
-<listitem><para>Titelbetegnelser</para></listitem>
-<listitem><para>Postnumre</para></listitem>
-<listitem><para>Sidelayout </para></listitem>
-</itemizedlist>
-
-</sect1>
-
-<sect1 id="java-i18n-property-resource-bundle">
-<title>PropertyResourceBundle</title>
-
-<para>
-TODO
-</para>
-
-</sect1>
-
-<sect1 id="java-i18n-list-resource-bundle">
-<title>ListResourceBundle</title>
-
-<para>
-TODO
-</para>
-
-</sect1>
-
-<sect1 id="java-i18n-parameterized-messages">
-<title>Parametriserede beskeder</title>
-
-<para>
-TODO
-</para>
-
-</sect1>
+<!-- ************************************************************* -->
+<!-- ************************************************************* -->
 
 <sect1 id="java-i18n-working-with-text">
 <title>Tekster og tegn</title>
@@ -554,7 +1045,9 @@ isDefined
 <screen>
 Sikker sammenligning af strenge gøres vha. metoden compare() på klasssen Collator.
 
-Sammenligning kan ikke gøres sikkert med String.compareTo(), idet den sammenligner binært på Unicode-niveau, hvilket ikke altid stemmer overens med et sprogs tegn-orden.
+Sammenligning kan ikke gøres sikkert med String.compareTo(), idet den
+sammenligner binært på Unicode-niveau, hvilket ikke altid stemmer
+overens med et sprogs tegn-orden.
 
 Således opnås en instans af Collator for en given Locale:
 Collator myCol = Collator.getInstance(aLocale);
@@ -562,7 +1055,8 @@ Collator myCol = Collator.getInstance(aLocale);
 To strenge sammenlignes således:
 myCol.compare(firstString, secondString);
 
-compare() returnerer -1, 0 el. 1, afhængig af om firstString er hhv. mindre end, lig med el. større end secondString.
+compare() returnerer -1, 0 el. 1, afhængig af om firstString er
+hhv. mindre end, lig med el. større end secondString.
 </screen>
 
 </sect2>
@@ -571,13 +1065,18 @@ compare() returnerer -1, 0 el. 1, afhængig af om firstString er hhv. mindre end,
 <title>Analyse af grænser i tekst</title>
 
 <screen>
-Klassen BreakIterator gør det muligt at finde grænser (boundaries) i form af positionsnumre i en tekst for en given Locale på følgende niveauer:
+Klassen BreakIterator gør det muligt at finde grænser (boundaries) i
+form af positionsnumre i en tekst for en given Locale på følgende
+niveauer:
+
 tegn
 ord
 sætning
 linie
 
-Ved instantieringen af BreakIterator invokeres én af følgende klassemetoder til at konstruere instansen med den ønskede egenskab:
+Ved instantieringen af BreakIterator invokeres én af følgende
+klassemetoder til at konstruere instansen med den ønskede egenskab:
+
 getCharacterInstance
 getWordInstance
 getSentenceInstance
