@@ -1,0 +1,67 @@
+# $Id$
+
+SUBDIRS = friheden applikationer admin program web sikkerhed c docbook kontorbruger itplatform
+
+all: filer
+
+release : version cvs2html filer 
+
+Makefiler:
+	@for dir in $(SUBDIRS); do \
+		cp -f Makefile.subdir.tlb $$dir/Makefile; \
+	done;
+# Remove me later.
+	@cp -f alle/Makefile.tlb alle/Makefile
+
+filer:  Makefiler
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir; \
+	done;
+	$(MAKE) -C alle
+
+pspdf:	Makefiler
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir pspdf \
+	done;
+
+	$(MAKE) -C alle pspdf
+
+statusfiler:  Makefiler
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir statusfiler \
+	done;
+
+	$(MAKE) -c alle statusfiler
+	
+version:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir version \
+	done;
+
+	cp friheden/version.sgml alle/version.sgml
+
+eksempelbackup:  statusfiler
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir eksempelbackup; \
+	done;
+	
+clean: Makefiler
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir clean; \
+		rm -f $$dir/Makefile; \
+	done;
+
+	$(MAKE) -C alle clean
+
+	rm -rf cvs2html
+	rm -rf Friheden_palm.tgz 
+
+cvs2html:
+	chmod +x /home/pto/utils/cvs2html
+	rm -rf cvs2html
+	mkdir cvs2html
+	/home/pto/utils/cvs2html -i ../linux.png  -l http://cvs.sslug.dk/linuxbog -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
+
+
+mail:
+#	@echo "Nu er der nye bøger på tyge. Have a nice day" | mail -s "automatisk mail: bog OK" linuxbog@sslug.dk
