@@ -157,7 +157,7 @@ function vistype($type) {
     ),
     "unix" => array(
       title => "Linux - Friheden til at lære Unix",
-      comment => "Lær elementær Unix og de første dele af hvordan Linux er sat sammen",
+      comment => "Lær elementær Unix",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
