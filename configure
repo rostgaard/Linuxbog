@@ -137,13 +137,16 @@ if test "x$ALLE" != "x" ; then
     mkdir -p $ALLE/misc
     cp --update misc/insertimagesize $ALLE/misc/
     cd $ALLE && ./bootstrap && cd .. || exit ;
+    cd $ALLE &&	./make.bog.sgml.pl $SUBDIRS > bog.sgml && cd .. || exit ;
 fi
 
 # Så køres ./configure i hvert subdir. 
 for dir in $SUBDIRS; do
+    echo "*** Kører configure i $dir"
     cd $dir && ./configure $EXTRA_ARG && cd .. || exit ;
 done
 if test "x$ALLE" != "x" ; then
+    echo "*** Kører configure i $ALLE"
     cd $ALLE && ./configure $EXTRA_ARG && cd .. || exit ;
 fi
 
