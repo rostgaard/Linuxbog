@@ -245,7 +245,8 @@ du kan prøve at skrive <command>startx</command>.
 Kører du f.eks. Red Hat 6.2 eller tidligere, Mandrake 7.1 med XFree86
 3.3.6, så har du din X-konfiguration gemt i
 <filename>/etc/X11/XF86Config</filename>. Har du installeret Red Hat
-7.0 er det <filename>/etc/X11/XF86Config-4</filename> som er
+7.0, Mandrake 8.0 eller senere 
+er det <filename>/etc/X11/XF86Config-4</filename> som er
 interessant og du bør gå til <xref linkend="XF86Config-4-filen">.
 </para>
 
@@ -365,6 +366,127 @@ I Red Hat 5.2 og 6.0 er der også kommet understøttelse for flere varianter af
 Genius NetMouse og Netscroll, Kensington Thinking mouse, ALPS GlidePoint, ASCII
 MieMouse, ATI-bus mus, Logitech MouseMan+ og FirstMouse+.
 </para>
+
+<sect3 id="Xpad">
+<title>2 mus</title>
+<indexterm><primary>mus</primary><secondary>2 stk på samme tid</secondary></indexterm>
+<indexterm><primary>flere mus</primary></indexterm>
+<indexterm><primary>touchpad</primary></indexterm>
+
+<para>
+I dette afsnit ser vi på hvordan man bruger 
+2 mus/pegeenheder i X-Window eller både
+pointerknap og touchpad og ekstern mus på en bærbar computer:
+</para>
+
+<para>
+
+Man kan med Linux (der jo som bekendt kan ALT !) sagtens bruge to mus
+(eller flere), eller to pegeenheder (eller flere). Det være sig en
+tegneplade, touchpad, mus, musepen; ja et hvilket som helst HID (Human
+Interface Device) man har til rådighed, som Linux på forhånd
+understøtter med drivere og evt. protokoller.
+</para>
+
+<para>
+Dette er specielt relevant hvis man har en bærbar computer med både en
+pointerknap og en touchpad eller bare ønsker at bruge en mus af og til
+uden at skulle omkonfigurere musen hele tiden. man skla blot huske på,
+at man selv må finde ud af hvilke devices éns enheder sidder under, da
+dette varierer individuelt fra computer til computer og fra enhed til
+enhed.
+</para>
+
+<para>
+For at bruge to mus under X (hér i eksemplet en PS/2 og en USB der
+begge har scroolknap/musehjul) gør man følgende:
+</para>
+
+<para>
+
+Man skal ændre i ét afsnit af
+<filename>/etc/X11/XF86Config-4</filename> filen eller
+<filename>/etc/X11/XF86Config</filename> - nemlig afsnittet <literal>Section
+"ServerLayout"</literal>, 
+hvor man starter med at fortælle X, at man har mere end
+bare én enhed der skal kunne peges med. Hvilken konfigurationsfil man
+skal ændre i afhænger af hvilken version af X-windows man har; over
+version 4.x bruger filen med 4-tallet til sidst.
+</para>
+
+<para>
+Sektionen skal med mit eget eksempel med to mus se sådan hér ud:
+</para>
+
+<screen>
+Section "ServerLayout"
+        Identifier "XFree86 Configured"
+        Screen      0  "Screen0" 0 0
+        InputDevice    "Mouse0" "CorePointer"
+        InputDevice    "Mouse1" "SendCoreEvents"
+        InputDevice    "Keyboard0" "CoreKeyboard"
+EndSection
+</screen>
+
+<para> 
+Derpå skal man indsætte disse to sektioner eller ændre dem som
+vist i det følgende. Den første mus hér er en Logitech PS/2 mus (med
+scroll - derfor protokol IMPS/2) og derfor er Option "Emulate3Buttons"
+"no" sat til no da den har tre knapper. Hvis musen kun har to knapper
+sættes dette til "yes" i stedet.
+</para>
+
+<screen>
+# Logitech Pilot Wheel Mouse
+Section "InputDevice"
+        Identifier      "Mouse0"
+        Driver          "mouse"
+        Option          "Device"                "/dev/psaux"
+        Option          "Protocol"              "IMPS/2"
+        Option          "Emulate3Buttons"       "no"
+        Option         "ZAxisMapping"          "4 5"
+EndSection
+</screen>
+
+<para>
+Den sidste mus her er en Razor Boomslang 2000 USB mouse (også med
+scroolknap). Musen har en opløsning på 2000 DPI (MEGET følsom
+mus). Derfor er Option "Resolution sat til musens relevante DPI.
+</para> 
+
+
+<screen>
+# Razor Boomslang 2000 USB mouse
+Section "InputDevice"
+        Identifier      "Mouse1"
+        Driver          "mouse"
+        Option          "Device"                "/dev/input/mice"
+        Option          "Protocol"              "IMPS/2"
+ 	Option		"Resolution"		"2000"       
+	Option          "Emulate3Buttons"       "no"
+        Option         "ZAxisMapping"          "4 5"
+EndSection
+</screen>
+
+<para>
+En Razor Boomslang 2000/1000 mus eller an anden mus/pegeenhed med
+flere knapper end 3, kan eventuelt bruges med alle knapper med
+protokollen netmouseps/2 i stedet for IMPS/2. Dette skal så bare
+ændres under <literal>Option "Protocol"</literal>. 
+Da Razor Boomslang 2000 musen er så
+følsom som den er, kan den anbefales enten til folk der spiller
+ekstremt meget og derfor har brug for en meget høj præcision og hurtig
+mus, eller til folk der har et bevægelsesmæssigt handicap (som
+gigt,slidgigt og andet. Dette skyldes der ikke skal bruges særligt
+mange kræfter for, at flytte musen. Endvidere er den designet så den
+er éns på begge sider (=symmetrisk) og knapperne, samt designet gør at
+man kan slappe helt af i hånden UDEN at man aktivere nogen af
+knapperne ufrivilligt. Endvidere er den stor som næsten en halv
+mursten og derfor også nem at flytte og holde på. Eventuelt kan en
+glasplade anbefales sammen med musen, hvis man absolut ikke må/skal
+anstrenge hånden eller håndledet.
+</para>
+</sect3>
 
 <sect3 id="Xmushjul">
 <title>Mus med hjul</title>
