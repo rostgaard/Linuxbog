@@ -83,6 +83,20 @@ function form_filename( $bookname, $format ) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
+    "kontorbruger" => array(
+      title => "Linux - Friheden til at vælge kontorprogrammer",
+      comment => "Basal anvendelse af Linux-programmer",
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk"
+      )
+    ),
+    "kontorplatform" => array(
+      title => "Linux - Friheden til at vælge kontorplatform",
+      comment => "Valg af Linux-baseret kontorplatform",
+      auth => array(
+        "Michael Rasmussen" => "mir@miras.org"
+      )
+    ),
     "admin" => array(
       title => "Linux - Friheden til systemadministration",
       comment => "Administrer din egen Linux-server",
@@ -129,21 +143,7 @@ function form_filename( $bookname, $format ) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
-    "kontorbruger" => array(
-      title => "Linux - Friheden til at vælge kontorprogrammer",
-      comment => "Basal anvendelse af Linux-programmer",
-      auth => array(
-        "Peter Toft" => "pto@sslug.dk"
-      )
-    ),
-    "kontorplatform" => array(
-      title => "Linux - Friheden til at vælge kontorplatform",
-      comment => "Valg af Linux-baseret kontorplatform",
-      auth => array(
-        "Michael Rasmussen" => "mir@miras.org"
-      )
-    ),
-  "alle" => array(
+   "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
      auth => array(
