@@ -1,8 +1,13 @@
 <chapter id="distro-puppy">
 <title>Om Puppy Linux</title>
 <para>
-Ideen med Puppy Linux er at have en lille Linux som man nemt kan have med sig, f.eks. på en CD eller et flash-kort, og bruge hvor man er. 
-Pt. kan man få Puppy til cdrom (live-Puppy), til flash kort (flash-Puppy) samt en puppy til at installere på harddisken (hard-Puppy). Desuden har forfatteren Barry Kauler planer om en floppy-Puppy og en zippy-Puppy, men disse findes ikke endnu.  Vi tester her live-cd'en.
+Ideen med Puppy Linux er at have en lille men lækker Linux incl.
+grafisk brugergrænseflade, som man nemt kan have med sig, f.eks. på en
+CD eller et flash-kort, og bruge hvor man er. I øjeblikket kan man få
+Puppy til cdrom (live-Puppy), til flash kort (flash-Puppy) samt en puppy
+til at installere på harddisken (hard-Puppy). Desuden har forfatteren
+Barry Kauler planer om en floppy-Puppy og en zippy-Puppy, men disse
+findes ikke endnu. Vi tester her live-cd'en.
 
 </para>
 <para>
@@ -47,7 +52,7 @@ Version 0.7.6 ligger under puppy-0.7.6 og hedder også cd-puppy.iso, men
 til den ligger der moduler under modules-0.7.6/modules.tgz. Dette vender
 vi tilbage til senere.
 
-Så, vi downloader og brænder et image med kommandoerne
+Man kan downloade og brænde et image med kommandoerne
 <screen>
 wget --passive-ftp ftp.ibiblio.org/pub/linux/distributions/puppylinux/puppy-0.7.8/cd-puppy.iso
 cdrecord -v speed=8 dev=0,0,0 -data cd-puppy.iso
@@ -62,34 +67,42 @@ og vil sikkert blive rettet i næste version.
 
 På mit system brokker den sig også over at der ikke er fri plads nok på
 den forreste ext3 partition, hvor den gerne vil have lov at lægge sin
-root fil. Mere hreom senere.
+root fil. Mere herom senere.
 </para>
 
 <para>
 Efter lidt tid bliver man spurgt om keyboard (us er default) og om mus
 (ps/2 er default). Så starter X op i en lav opløsning, og man kan vælge
-x opløsning. Nu startes X op i den nye opløsning, og man er kørende.
+x opløsning ved et klik med musen. Nu startes X op i den nye opløsning,
+og man er kørende. Hvis du blot ønsker at fortsætte herfra med at bruge
+systemet, kan du gå videre til <xref linkend="distro-puppy-brug"/>. 
 </para>
 
+<sect2 id="distro-puppy-root">
+<title>Puppy's /root partition</title>
 <para>
+Puppy vil gerne gemme din konfiguration, enten på en floppy, på
+harddisken, eller på flash-kortet i tilfælde af flash-Puppy. Så hvis det
+er muligt, opretter den en fil på et fast medie, og mounter det som
+/root. Hvis ikke det er muligt, er /root en RAMDISK, og konfigurationen
+går således tabt ved reboot.
 /etc er et symbolsk link til /root/.etc. Så hvis /root er en rigtig fil
 i stedet for en RAMdisk gemmes konfiguration i /etc på denne måde.
 </para>
 
 <para>
-Puppy vil under første boot forsøge at lægge en 128 MB fil på
+Live-Puppy vil under første boot forsøge at lægge en 128 MB fil på
 harddisken, som den så vil mounte som root, og hvor al konfiguration
 bliver gemt.
 Den første brugbare partition på mit system er tilfældigvis en ext3
 partition på 50 MB (/boot fra en Red Hat installation)
-Puppy laver så vidt jeg
-kan se en fil på den
-første egnede partition den kan finde, og kalder den pup078.
-Det lykkes så ikke i mit tilfælde, selvom der er masser af
-fri plads
-på den næste partition - den checker åbenbart ikke om der er plads nok,
-før den vælger hvilken partition den vil bruge,
+Puppy laver så vidt jeg kan se en fil på den første egnede partition den
+kan finde, og kalder den pup078. Det lykkes så ikke i mit tilfælde,
+selvom der er masser af fri plads på den næste partition - den checker
+åbenbart ikke om der er plads nok, før den vælger hvilken partition den
+vil bruge. Det hjælper heller ikke at sætte en tom floppy i drevet.
 </para>
+
 
 <para>
 Problemer:
@@ -109,15 +122,8 @@ programmet giver, men det hjælper ikke at sætte en floppy i og reboote
 som der står. Flere steder på websiden kan dokumentationen heller ikke
 følge med.
 </para>
-<para>
-</para>
-<para>
-</para>
-<para>
-</para>
+</sect2>
 
-<para>
-</para>
 
 </sect1>
 
@@ -131,15 +137,44 @@ Man får en menu med flere programmer ved at venstreklikke på skærmen
 eller ved at klikke på start menuen.  </para>
 
 <para>
-Der er Konqueror med som web browser. Det er et meget begrænset sæt
-applikationer der er med.
+Konqueror er med som web browser. Der er et meget begrænset sæt
+applikationer med.
+</para>
+</sect1>
+
+<sect1 id="distro-puppy-customize">
+<title>Tilpasning af Puppy</title>
+
+<para>
+Hvis man har min. 256 MB memory, hvis /root ligger på et varigt
+medie og har 36 MB fri, og hvis man har cd brænder i maskinen, kan man
+lave en modificeret version af sin live-Puppy cd, med programmet
+"Remaster live-Puppy CD" som man kan vælge i menuen, under "Utilities".
+Disse krav kunne jeg ikke opfylde, så det er ikke testet.
+</para>
+
+<para>En anden måde at lave en alternativ cd på, er beskrevet på Puppy
+on a CD siden:
+<ulink
+url="http://www.goosee.com/puppy/cd-puppy.htm">http://www.goosee.com/puppy/cd-puppy.htm</ulink>.
+Man skal bruge image.gz og vmlinuz fra cd'en, samt filen isolinux.zip som kan hentes på  Puppy on a CD siden. isolinux.zip og image.gz udpakkes: <command>unzip isolinux.zip; gunzip image.gz</command>. 
+
+"image" filen er filsystem, som kan mountes med kommandoen
+<command>mount image -o loop /mnt</command> 
+Nu findes Puppy's filstruktur under /mnt, og man kan rette i
+konfigurationsfiler mv. Når man er færdig, unmountes filen igen
+(<command>umount /mnt</command>), og image-filen pakkes med <command>gzip image</command>.
 </para>
 
 <para>
+Der oprettes et directory der hedder linux-builds, og nogle af filerne
+flyttes derned: <command>mkdir linux-builds; mv linuxiso.bin
+linux-builds; mv image.gz linux-builds; mv isolinux.cfg linux-builds; mv
+vmlinuz linux-builds</command>. Så køres kommandoen <command>./makeiso</command>. Nu kommer der et nyt iso image der hedder cd-puppy.iso.
+
+
 </para>
 
-<sect2 id="distro-puppy-customize">
-<title>Tilpasning af Puppy</title>
 <para>
 Til 0.7.6 kan man downloade moduler. Jeg fik mit netkort til at virke
 med sis900 dirveren under 0.7.6 på følgende måde:
@@ -150,17 +185,15 @@ Download
 ifconfig eth0 up; dhcpcd</command>
 
 For at få dette til at virke automatisk er det nødvendigt at brænde en
-puppy cd hvor modulet er med.
+puppy cd hvor modulet er med. Og det er ikke nemt at komme til, da
+/lib/modules/net er et symbolsk link ind i en cramfs fil, der mountes på
+/usr når Puppy bootes. Denne cramfs fil kunne jeg ikke få lov at skrive
+i selvom jeg kopierede den ud og mountede den rw som root. Men det må
+være muligt at lægge modulet et andet sted og fortælle dette til depmod.
+Måske kan man endda nøjes med at lægge det et sted på sin /root og ændre
+i startup scriptet, hvis ellers man har en /root der virker.
 </para>
-</sect2>
-<sect2 id="distro-puppy-upgrade">
-<title>Opgradering af Puppy</title>
-<para>
-</para>
-</sect2>
 </sect1>
-
-
 
 <sect1 id="distro-puppy-killer">
 <title>Killer-feature</title>
@@ -212,9 +245,9 @@ det utrolig nemt at komme i gang med.
 </para>
 
 <para>
-Den korte: Ligenu er puppy ikke egnet særlig til målgruppen, hvis de vil
-ret meget mere end at se hvordan en Linux desktop ser ud. Bare at få sat
-den op så man kan gemme sine filer er alt for svært. Puppy er
+Den korte: Ligenu er puppy ikke særlig egnet til målgruppen, medmindre
+de er heldige at det virker i første forsøg. Det er for
+svært at få sat den op så man kan gemme sine filer. Puppy er
 stadig i et tidligt udviklingstadium og kan godt gå hen at udvikle sig
 til noget ganske brugbart.
 </para>
