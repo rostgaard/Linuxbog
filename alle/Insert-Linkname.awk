@@ -12,10 +12,15 @@ BEGIN {
     iostat = getline < "bog/index.html.php-1";
     if (iostat > 0)
        fatal_already();
-    x = 1;
+    firstline = x = 1;
     while (x > 0) {
        x = getline lina < "bog/index.html.php" ;
-       if (x < 1) fatal_file();
+       if (x < 1) {
+          if (firstline)
+             non_fatal_file();
+          else break;
+       }
+       if (firstline) firstline = 0;
        if (lina ~ "alle-stikord.html")
           printf("<DT><A href=\"alle-stikord.html\">Stikordsregister</A></DT>\n") > "bog/nyt-index.html.php";
        else
@@ -43,7 +48,7 @@ function fatal_already()
     exit (105);
 }
 
-function fatal_file()
+function non_fatal_file()
 {
     printf("File index.html.php is missing.\n");
     # we accept this error because somebody may run the
