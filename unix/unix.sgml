@@ -2276,6 +2276,10 @@ Ovenstående kommando sender både <filename>stderr</filename> og
 <sect3 id="Unixapp-who">
 <title>Hvem er logget ind?</title>
 <indexterm><primary>who</primary></indexterm>
+<indexterm><primary>who am i</primary></indexterm>
+<indexterm><primary>w</primary></indexterm>
+<indexterm><primary>finger</primary></indexterm>
+
 <para>
 Hvis du ønsker at vide, hvilke brugere der er logget på samme computer
 som dig, bruger du kommandoen <command>who</command>. Du vil så få en
@@ -2286,10 +2290,92 @@ kan det være, at <command>rwho</command> virker. <command>rwho</command>
 viser dig, hvem der er logget ind på hvilke computere i netværket.
 </para>
 
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>who</userinput>
+anne     tty1     Dec 21 17:25
+anne     pts/0    Dec 21 17:26
+anne     pts/1    Dec 21 17:26
+anne     pts/2    Dec 21 17:26
+katja    pts/5    Dec 21 17:31 (k5.sslug)
+</screen>
+
 <para>
-Hvis du ikke er klar over, hvem du er logget ind som, skriver du blot
-<command>whoami</command>. Svaret synes indlysende, men alligevel:
-dit brugernavn dukker op og terminalens id ligeså.
+Dette viser at brugeren anne er logget ind via konsollen tty1, og har
+sidenhen (kl. 17:26) åbnet tre terminal-vinduer - under X. Brugeren
+katja er også logget ind på maskinen kl. 17:31 fra maskinen "k5.sslug"
+og har kun et terminal-vindue (pts/5) åbent.
+</para>
+
+<para>
+Man kan få mere information end blot antal terminaler ved at skrive 
+</para>
+
+<screen>                 
+$ w
+  5:35pm  up  7:20,  8 users,  load average: 0.14, 0.15, 0.10
+USER  TTY      FROM     LOGIN@  IDLE   JCPU   PCPU  WHAT
+anne  tty1     -        5:25pm  9:40   1.26s  0.03s  /bin/sh /usr/X1
+anne  pts/0    -        5:26pm  7:03   2.50s  2.50s  /usr/bin/pine
+anne  pts/1    -        5:26pm  9:01   0.04s  0.04s  /bin/cat
+anne  pts/2    -        5:26pm  3:48   0.40s  0.40s  -bin/tcsh
+katja pts/5    k5.sslug 5:31pm  3:13   0.37s  0.37s  -tcsh
+anne  pts/6    -        5:33pm  1.00s  0.25s  0.04s  w
+</screen>
+
+
+<para>
+Man får igen samme information om de to brugere som er logget ind, men
+der er mere information her. Man kan også se hvor lang tid de enkelte
+terminalvinduer har været urørte under "IDLE" og under "WHAT" kan man
+se om der kører et program i den enkelte terminal. I terminalen pts/0
+kører der eksempelvis pine - dvs. et e-post program.
+</para>
+
+<para>
+En anden vej at udvide information er at skrive 
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>who am i</userinput>
+k6.sslug!anne     pts/6    Dec 21 17:33
+</screen>
+
+<para>
+Resultatet er at man får maskin-navnet "k6.sslug" på den maskine man
+sidder ved og dernæst kommer brugernavnet. Det er meget hyttigt hvis
+man f.eks. anvender DHCP eller logger meget ind fra en maskine til
+mange andre over netværket.
+</para>
+
+<para>
+Det næste vi ser på er finger, som giver lidt ekstra
+informationer. Man skriver "finger BRUGERNAVN" for at se information
+om BRUGERNAVN. Man får infromation tilbage om brugeren er logget ind
+på maskinen og man kan også se brugerens rigtige navn under
+"Name:"-feltet.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>finger katja</userinput>
+Login: katja                            Name: Katja B
+Directory: /home/katja                  Shell: /bin/tcsh
+On since Fri Dec 21 17:31 (CET) on pts/5 from k5.sslug
+   11 minutes 9 seconds idle
+     (messages off)
+No mail.
+No Plan.
+</screen>
+
+<para>
+Nu har vi set et par forskellige måder til at få information om
+hvilke brugere som anvender maskinen. En nem måde at få kontakt til
+en anden bruger på maskinen er at anvende "talk" (dette kræver at
+talk-dæmonen er installeret og startet). Men "talk BRUGERNAVN" kan
+man få en ICQ-lignende chat-session i gang hvor skærmen deles i
+to. Er brugeren logget ind i flere terminaler kan man anføre et
+ekstra argument til kommandoen "talk BRUGERNAVN TERMINAL", hvor
+terminal en af de terminaler, som BRUGERNAVN anvender - ovenfor kan
+brugeren "katja" findes på pty/5.
 </para>
 </sect3>
 
