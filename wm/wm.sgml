@@ -131,4 +131,145 @@ exec /usr/X11R6/bin/icewm
 </screen>
 </sect2>
 </sect1>
+
+<sect1>
+
+  <title>Få en window manager til at optræde i KDM eller GDM menuen</title>
+
+<para>
+Siden det nu er søndag er der lidt ekstra guf. I stedet for at sætte sin yndlings window manager ind i sin .xsession og vælge default, kan det være smart at sætte den ind i den menu, der vises i KDM eller GDM, så man kan vælge den derfra.</para>
+
+<para>
+Der kan være forskelle på de forskellige distributioner. Eksemplerne
+herunder er baseret på Red Hat. Vi håber der kan være til hjælp og
+inspiration også for dem der ikke kører Red Hat.</para>
+
+<sect2>
+  <title>Kører jeg kdm eller gdm?</title>
+
+<para>
+Først må man finde ud af om man kører kdm eller gdm. Dette kan gøres ved
+at se, om der kører en proces der hedder kdm eller gdm.
+</para>
+
+<screen>
+$ ps ax |grep kdm
+1181 ?        S      0:00 /usr/bin/kdm -nodaemon
+2431 pts/4    S      0:00 grep kdm
+$ ps ax |grep gdm
+2433 pts/4    S      0:00 grep gdm
+</screen>
+
+<para>
+Her kører vi kdm. Hvis vi kørte gdm, var det <command>ps ax |grep gdm</command>
+der var kommet output ud af.
+</para>
+
+<para>
+Der er også forskel på hvordan de ser ud. Der kan være forskel fra
+distribution til distribution, men her er screen shots fra Red Hat:
+</para>
+
+
+<figure id="kdm-fig" float="1">
+<title>KDM</title>
+<graphic fileref="kdm.&magic;" scale="60"></graphic>
+</figure>
+
+<para>
+Og her er fra gdm:</para>
+
+
+<figure id="choosesession1-shot-crop-fig" float="1">
+<title>GDM</title>
+<graphic fileref="choosesession1_shot_crop.&magic;" scale="60"></graphic>
+</figure>
+</sect2>    <!--   Kører jeg kdm eller gdm? -->
+
+<sect2>
+  <title>GDM</title>
+
+<para>
+Hvis du kører GDM er det nemt at sætte den nye Window manager ind
+i menuen:</para>
+
+<para>
+Når du er tilfreds med din <filename>$HOME/.xsession</filename> kan den kopieres til
+<filename>/etc/X11/gdm/Sessions/WMNAME</filename>.</para>
+</sect2>    <!--   GDM -->
+
+<sect2>
+  <title>KDM</title>
+
+<sect3>
+  <title>At få den nye window manager til at optræde i menuen</title>
+
+<para>
+Det er nemt nok at få kdm til at vise et nyt menupunkt.
+Åbn filen <filename>/etc/X11/xdm/kdmrc</filename> med en editor. (Kan ligge andre steder på
+andre distributioner).</para>
+
+<para>
+Find linien "SessionTypes" og indsæt navnet på din nye window
+manager:
+</para>
+
+<para>
+<filename>SessionTypes=default,kde,failsafe,gnome,icewm,qvwm</filename>
+</para>
+
+<para>
+Dette får imidlertid kun kdm til at vise menupunktet. Man skal selv
+sørge for at der sker det rigtige, når man vælger det fra menuen.
+</para>
+</sect3>    <!--   At få den nye window manager til at optræde i menuen -->
+
+<sect3>
+  <title>At få det nye menupunkt til at starte den nye window manager</title>
+
+<para>
+Hvis man kører KDM på Red Hat og har switchdesk installeret, skal man
+blot kopiere sin .xsession til /usr/share/apps/switchdesk/ og kalde den
+Xclients.icewm eller Xclients.qvwm eller hvad man nu har sat ind i sin
+.kdmrc for et navn. Den skal måske helst have permissions 755 (kig på de
+filer der ligger der i forvejen.</para>
+
+<para>
+Hvis man ikke kører Red Hat med switchdesk installeret, skal man sætte
+sin nye Window Manager ind i det case statement, der findes i filen
+<filename>/etc/X11/xdm/Xsession</filename> (kan ligge andre steder på andre
+systemer).
+</para>
+
+
+<screen>
+case $1 in
+    failsafe)
+       exec -l $SHELL -c "xterm -geometry 80x24-0-0"
+       ;;
+    gnome)
+       exec -l $SHELL -c "gnome-session"
+       ;;
+    kde|kde1|kde2)
+       exec -l $SHELL -c "/usr/share/apps/switchdesk/Xclients.kde"
+       ;;
+    twm)
+        # fall back to twm
+       exec -l $SHELL -c "/usr/share/apps/switchdesk/Xclients.twm"
+       ;;
+    icewm)
+        # Her har jeg indsat icewm
+       exec /usr/X11R6/bin/icewm
+       ;;
+    qvwm)
+        # Her har jeg indsat qvwm
+       exec /usr/local/bin/qvwm
+       ;;
+    esac
+</screen>
+
+</sect3>
+</sect2>
+</sect1>
+
 </chapter>

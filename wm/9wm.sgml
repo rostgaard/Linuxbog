@@ -1,8 +1,262 @@
 <?xml encoding="ISO-8859-1" ?>
 <chapter id="the-9wm">
+
+<!-- Originalfil http://www.sslug.dk/julekalender/6.php3 -->
+
+
 <title>9wm</title>
 
 <para>
-x
+9wm er en ældre sag. Den første udgave er fra 1994. 
+Ideen med 9wm er at emulere udseende og opførsel fra windowmanageren i
+operativsystemet Plan 9 (den hedder iøvrigt 8½, men det er en anden
+sag)</para>
+
+<sect1>
+  <title>Installation</title>
+
+<para>
+
+Der eksisterer RPM-pakker til Red Hat rundt omkring, men enten er det
+ikke nyeste version (der under alle omstændheder er nogle år gammel),
+eller også fungerer de ikke. Det letteste er at hente kildekoden fra
+<ulink
+url="http://sources.isc.org/x/window-managers/9wm-1.1.tar.gz">http://sources.isc.org/X/window-managers/9wm-1.1.tar.gz</ulink>.
 </para>
+
+<para>
+9wm er så gammel at den ikke kan bygges med <command>./configure &amp;&amp;
+make &amp;&amp; make install</command> som ellers er normalt i dag.
+</para>
+
+<para>
+I stedet skal man bruge <command>xmkmf</command> . Såfremt den ikke er
+installeret, kan den formodentlig findes i pakken XFree86-devel.
+</para>
+
+<para>
+Jeg vil ikke have at hjemme-kompilerede programmer ligger og flyde
+blandt de programmer der er installeret med RPM. Derfor indsatte jeg
+et par linier ekstra i den ellers ret minimalistiske
+<filename>Imakefile</filename> : 
+</para>
+
+<screen> 
+DESTDIR = /usr/local 
+BINDIR = /bin 
+MANDIR = /man 
+</screen> 
+
+<para>
+Herefter udføres disse kommandoer:
+</para>
+
+<screen>
+xmkmf
+ make
+ su
+ make install
+</screen>
+
+<para>
+9wm er ikke fyldt med features og sjove indfald. Nærmest tværtimod.
+9wm kan to ting:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+    Starte et specifikt program ( <command>9wm -term "PROGRAMNAVN"</command> )
+ </para>
+</listitem>
+<listitem> 
+ <para>
+    Afslutte sig selv ( <command>9wm exit</command> )
+ </para>
+</listitem>
+</itemizedlist>
+
+
+<para>
+PROGRAMNAVN kan være hvad som helst, men det er selvfølgelig praktisk at
+lade den starte en xterm, hvorfra man så kan starte andre programmer. Hvis man
+ikke angiver hvilket program der skal startes vil den prøve at starte
+xterm.</para>
+
+<para>
+I <filename>.xsession</filename> indsættes:
+</para>
+
+
+<screen>
+#!/bin/bash
+
+exec /usr/local/bin/9wm -term "xterm -ls"
+</screen>
+
+<para>
+Herunder ses 9wm med en xterm og menuen:
+</para>
+
+
+<figure id="ninewm-full-screen-fig" float="1">
+<title>9wm</title>
+<graphic fileref="9wm_full_screen.&magic;" scale="60"></graphic>
+</figure>
+</sect1>    <!--   Installation -->
+
+<sect1>
+  <title>Brug af 9wm</title>
+
+<para>
+Der er ingen rammer eller bjælker man kan hive fat i for at flytte
+vinduer eller ændre størrelse på vinduer. Alt foregår via menuen der kan
+nås ved trykke højre museknap ned, og holde den nede. I øvrigt bruges
+højre museknap til alle operationer.</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+ <emphasis>Ny terminal</emphasis>:
+  Vælg <emphasis>New</emphasis> fra menuen.
+  Angiv hvor terminalen skal placeres
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ <emphasis>Flytte et vindue</emphasis>:
+  Vælg <emphasis>Move</emphasis> fra menuen.
+  Marker det vindue der skal flyttes.
+  Angiv hvor det skal flyttes hen.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ <emphasis>Ændre størrelse på et vindue</emphasis>:
+  Vælg <emphasis>Reshape</emphasis> fra menuen.
+  Marker det vindue der skal ændres på.
+  Angiv den ønskede størrelse på vinduet.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ <emphasis>Luk et vindue</emphasis>:
+  Vælg <emphasis>Delete</emphasis> fra menuen.
+  Marker det vindue der skal lukkes.
+  Læg mærke til at dette svarer til at bruge kommandoen <command>xkill</command>.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ <emphasis>Gem et vindue</emphasis>:
+  Vælg <emphasis>Hide</emphasis> fra menuen.
+  Marker det vindue der skal gemmes væk.
+ </para>
+</listitem>
+</itemizedlist>
+
+<sect2>
+  <title>En menu mere</title>
+
+<para>
+Vil man have en decideret menu til at starte programmer fra kan man
+prøve 9menu. Den kan findes på
+<ulink url="ftp://ftp.comintern.ru/pub/unix/x11/plan9/">ftp://ftp.comintern.ru/pub/unix/X11/plan9/</ulink>.</para>
+
+<para>
+<filename>9menu-1.5.shar.gz</filename> er en zippet shar-fil. Dvs. et script med indbygget
+binær kode.
+</para>
+
+<para>
+Lav et katalog til kildekoden - pak ud - kør shar-filen:
+</para>
+
+<screen>
+mkdir 9menu
+gzip -d 9menu-1.5.shar.gz
+cd 9menu
+sh ../9menu-1.5.shar
+</screen>
+
+<para>
+På Red Hat 8 vil den ikke oversætte med det samme, 
+men hvis <filename>Makefile</filename> ændres til følgende går det uden problemer:
+</para>
+
+<screen>
+# Makefile for 9menu.
+#
+# Edit to taste
+#
+# Arnold Robbins
+# arnold@skeeve.atl.ga.us
+
+CC = gcc
+CFLAGS = -g -O
+SEARCHLIBS = -L/usr/X11R6/lib
+LIBS = -lX11
+
+9menu: 9menu.c
+        $(CC) $(SEARCHLIBS) $(CFLAGS) 9menu.c $(LIBS) -o 9menu
+</screen>
+
+<para>
+Herefter køres <command>make</command>, og den nye binære fil kopieres på
+plads:
+</para>
+
+<screen>
+make
+su
+cp 9menu /usr/local/bin
+</screen>
+
+<para>
+9menu har ingen konfigurationsfil, men skal konfigureres i <filename>.xsession</filename>:
+</para>
+
+<screen>
+#!/bin/bash
+
+xsetroot -solid black
+oclock -fg gold -bg black -jewel red -bd white -geometry -0-120 &amp;
+xload -geometry 120x120-0-0 -highlight gold -bg black -fg gold &amp;
+
+9menu -geometry -0+0 \
+EMACS:emacs \
+GV:gv \
+Netscape:/usr/local/netscape/netscape \
+Evolution:evolution \
+Galeon:galeon \
+Gaim:gaim \
+Terminal:"xterm -ls" \
+"SSLUG ssh":"xterm -e ssh -t gw ssh sslug" \
+ScreenShot:"xwd|display" \
+Exit:"9wm exit" &amp;
+
+exec /usr/local/bin/9wm -term "xterm -ls"
+</screen>
+
+<para>
+Her sættes baggrunden til sort, et ur og xload startes i nederste
+højre hjørne og 9menu startes i øverste højre hjørne. Et par programmer
+fra menuen er også startet:</para>
+
+
+<figure id="ninewm-med-9menu-full-screen-fig" float="1">
+<title>9wm</title>
+<graphic fileref="9wm_med_9menu_full-screen.&magic;" scale="60"></graphic>
+</figure>
+</sect2>    <!--   En menu mere -->
+</sect1>
+
+<sect1>
+  <title>Er 9wm anvendelig?</title>
+
+<para>Ja. Det synes jeg. Selvfølgelig er der windowmanagere der er
+hurtigere og mere intuitive at arbejde med, men 9wm slår de fleste andre
+på
+ældre hardware; den bruger under 1 MB hukommelse når den kører.</para>
+</sect1>
 </chapter>
