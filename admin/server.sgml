@@ -495,19 +495,19 @@ og
 </sect1>
 
 
-<SECT1 ID="ftpd">
+<sect1 ID="ftpd">
 <TITLE>FTP-server</TITLE>
 <INDEXTERM><PRIMARY>ftp</PRIMARY><SECONDARY>server</SECONDARY></INDEXTERM>
 <INDEXTERM><PRIMARY>wu-ftpd</PRIMARY></INDEXTERM>
 
-<PARA>
+<para>
 De fleste Linux-distributioner installerer automatisk en 
 ftp-server, hvis man har valgt en server-installation.
 Har du valgt en skrabet installation til en gammel maskine,
 er det nemt senere at få ftp-serveren installeret efterfølgende.
-</PARA>
+</para>
 
-<PARA>
+<para>
 <FILENAME>wu-ftpd</FILENAME> er en ftp-server der følger
 med næsten alle distributioner.
 Et bedre alternativ til wu-ftpd er <FILENAME>proftpd</FILENAME>
@@ -517,31 +517,31 @@ Med wu-ftpd installeret, er det muligt
 for alle brugere af systemet at få adgang til deres filer
 med ftp.
 Installationen er nem.
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 <PROMPT>[root@linus RPMS]# </PROMPT><USERINPUT>rpm -ivh wu-ftpd*.i386.rpm</USERINPUT>
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 Ftp-serveren er nu startet og klar til brug.
 Af sikkerhedsmæssige årsager kan <COMMAND>root</COMMAND> ikke logge
 ind på ftp-serveren.
 Dette skyldes at <COMMAND>root</COMMAND> er nævnt i filen
 <FILENAME>/etc/ftpusers</FILENAME>. Du kan have dine grunde til at give
 root lov til at logge ind, men tænk dig om.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Som før nævnt er det kun brugere af systemet, der kan logge ind.
 Skal ftp-serveren være åben for alle, f.eks. til brug for at installere
 Linux på en anden maskine over nettet, så skal der lige en pakke mere
 ind.
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 <PROMPT>[root@linus RPMS]# </PROMPT><USERINPUT>rpm -ivh anonftp*.i386.rpm</USERINPUT>
-</SCREEN>
+</screen>
 
 <para>
 For at du kan starte din ftp-server op skal du 
@@ -552,7 +552,7 @@ Ret <literal>disable = yes</literal> til
 blive startet op. 
 </para>
 
-<PARA>
+<para>
 Nu er maskinen åben for at alle kan hente filer fra din maskine, hvor
 brugerne logger ind som <COMMAND>anonymous</COMMAND> (eller
 <COMMAND>ftp</COMMAND>) og giver sin egen e-post-adresse som
@@ -562,7 +562,7 @@ eller et af dets underkataloger. Du kan evt. linke til
 andre dele af filsystemet, hvis du f.eks. vil give 
 almindelige brugere lov til at ligger filer ud til 
 nedhentning.
-</PARA>
+</para>
 
 
 <para>
@@ -573,7 +573,7 @@ installerer på et usikkert netværk, såsom Internettet.
 
 <!--
 
-<PARA>
+<para>
 Skal brugerne have lov til at lægge filer op, gøres dette normalt
 til <FILENAME>/home/ftp/incoming/</FILENAME>.
 Her er det vigtigt at sætte ftp op så man kun kan lægge filer op
@@ -581,11 +581,11 @@ og ikke hente fra det pågældende katalog. Gør man ikke det,
 risikerer man at ens server bliver
 misbrugt til at rundsende pirat-programmer.
 Opsætningen af <FILENAME>/incoming/</FILENAME> gøres ved at ......
-</PARA>
+</para>
 
 -->
 
-</SECT1> <!-- ftp-server -->
+</sect1> <!-- ftp-server -->
 
 
 <sect1 id="nfs">
@@ -603,112 +603,11 @@ hvis man har et alt for åbent netværk.  Her skal vi kun give et
 simpelt eksempel på, hvordan NFS virker.
 </para>
 
-<para>
-Hvis vi nu siger, at maskinen
-alfa skal dele <filename>/home</filename> med maskinen beta, så skal
-alfa-maskinen have installeret RPM-pakken <filename>knfsd</filename>. I
-<filename>/etc/exports</filename> skriver du først, hvilken del af
-filtræet der skal deles, derefter hvilke klienter der skal bruge det
-(du kan anvende * for alle), og sidst om der deles med læse/skrive
-(rw) eller kun læse-rettigheder (ro). Brug <command>man
-exports</command> for flere detaljer.
-</para>
-
-<SCREEN>
-# /etc/exports - NFS export of /home
-/home beta.domænenavn.dk(rw)
-</SCREEN>
 
 <para>
-Derefter skal du genstarte nfs-serveren ved at skrive
-<command>/etc/rc.d/init.d/nfs restart</command>, og som root på
-beta-maskinen kan du nu nemt få data fra alfa-maskinen.
-</para>
-
-<screen>
-<prompt>[root@beta /root]#</prompt> <userinput>mount -t nfs alfa:/home /home</userinput>
-</screen>
-
-<para>
-Skal alfa være permanent filserver for beta (og andre), bør du på
-beta-maskinen se mere på programmet <command>autofs</command>, der kan 
-tilkoble en disk over netværket, når der er behov for det. Efter et stykke 
-tid uden aktivitet, vil disken afmonteres fra netværket. <!--Dette er der et 
-kort afsnit om i xref linkend="autofs".-->
-Det giver et mere stabilt netværk.
-</para>
-
-<para>
-Nedenstående er baseret på Red Hat 6.0 og 6.1.  RedHat 6.2 har som
-standard de nævnte programmer med. RedHat 6.2 og 7.0 som NFS-server
-bør virke uden yderligere krumspring.
-</para>
-
-<para>
-Enhver der har prøvet at bruge en NFS-server på Linux til lidt mere end en
-fil i ny og næ, ved at der har været performanceproblemer. Yderligere har
-det ikke været muligt at benytte NFS-drev med programmer der
-bruger fillåsning.
-</para>
-
-<para>
-Der arbejdes hårdt på at forbedre Linux' muligheder på dette område. NFS
-version 3 er undervejs, og det er i dag muligt at benytte Linux som
-filserver for andre Unix-maskiner med godt resultat. Men der er nogle krav
-der skal opfyldes: <emphasis>Kerne 2.2.14</emphasis> (eller senere) og 
-<emphasis>nfs-utils</emphasis>.
-</para>
-
-<para>
-Linux-kernen skal oversætttes med følgende options:
-</para>
-
-<screen>
-CONFIG_NFS_FS=m
-CONFIG_NFSD=m
-</screen>
-
-<para>
-Yderligere
-</para>
-
-<screen>
-CONFIG_NFSD_SUN=m  
-</screen>
-
-<para>
-hvis Linux-maskinen skal være NFS-server for SUN Solaris.
-</para>
-
-<para>
-Hent den seneste udgave af nfs-utils fra sourceforge.net:
-<ulink url="ftp://nfs.sourceforge.net/pub/nfs/nfs-utils-0.1.7.tar.gz">
-ftp://nfs.sourceforge.net/pub/nfs/nfs-utils-0.1.7.tar.gz</ulink>
-</para>
-
-<para>
-Byg en RPM-pakke fra kildekoden:
-</para>
-
-
-<screen>
-<prompt>[root@linus /root]#</prompt> <userinput>rpm -ta nfs-utils-0.1.7.tar.gz</userinput>
-...
-...
-...
-...
-Wrote: /usr/src/redhat/RPMS/alpha/nfs-utils-0.1.7-1.alpha.rpm
-Executing: %clean
-+ umask 022
-+ cd /usr/src/redhat/BUILD
-+ cd nfs-utils-0.1.7
-+ rm -rf /var/tmp/nfs-utils-root
-+ exit 0
-</screen>
-
-
-<para>
-nfs-utils indeholder nye udgaver af nfs-programmer og dæmonerne.
+Du skal første installere <filename>nfs-utils</filename> RPM-pakken (eller 
+tilsvarende Debian-pakke) som indeholder nye udgaver af 
+nfs-programmer og dæmonerne.
 </para>
 
 <para>
@@ -729,6 +628,42 @@ nfslock 0:off 1:off 2:off 3:on 4:on 5:on 6:off
 <para>
 Herefter er maskinen klar som fornuftig NFS-server.
 </para>
+
+
+<para>
+Lad os antage at maskinen
+alfa skal dele <filename>/home</filename> med maskinen beta, så skal
+alfa-maskinen have installeret RPM-pakken <filename>knfsd</filename>. I
+<filename>/etc/exports</filename> skriver du først, hvilken del af
+filtræet der skal deles, derefter hvilke klienter der skal bruge det
+(du kan anvende * for alle), og sidst om der deles med læse/skrive
+(rw) eller kun læse-rettigheder (ro). Brug <command>man
+exports</command> for flere detaljer.
+</para>
+
+<screen>
+# /etc/exports - NFS export of /home til beta
+# Tilsvarende gives kun læseadgang til /mnt/cdrom til alle maskiner
+/home beta.domænenavn.dk(rw)
+/mnt/cdrom *(ro)
+</screen>
+
+<para>
+Derefter skal du genstarte nfs-serveren ved at skrive
+<command>/etc/rc.d/init.d/nfs restart</command>, og som root på
+beta-maskinen kan du nu nemt få data fra alfa-maskinen.
+</para>
+
+<screen>
+<prompt>[root@beta /root]#</prompt> <userinput>mount -t nfs alfa:/home /home</userinput>
+</screen>
+
+<indexterm><primary>showmount</primary></indexterm>
+<indexterm><primary>NFS</primary><secondary>se hvad der er eksporteret?</secondary></indexterm>
+<para>
+<emphasis>Tip:</emphasis> Vil du vide hvad der kan monteres fra en NFS-server, så kan man anvende <command>/usr/sbin/showmount -a NFSSERVER</command>, hvor "NFSSERVER" er navn eller IP-adresse på NFS-serveren.
+</para>
+
 </sect1>
 
 <sect1 id="nis">
@@ -1104,14 +1039,14 @@ Manualsiderne fra ypserv- og ypbind-pakkerne. Find dem således:
 <INDEXTERM><PRIMARY>Apple</PRIMARY><SECONDARY>AppleTalk</SECONDARY></INDEXTERM>
 <INDEXTERM><PRIMARY>Mac</PRIMARY><SECONDARY>AppleTalk</SECONDARY></INDEXTERM>
 
-<PARA>
+<para>
 Linux kan ikke bare forbindes til Apple via ftp, men også via 
 almindelig fildeling.
 For brugerne af lokalnettet kommer Linux-serveren så til at optræde
 som en Mac-server.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Det er ikke svært at anvende en Linux-maskine som filserver hvis de
 andre klienter i netværket kører Microsoft-Windows®, da
 Samba-protokollen (som beskrevet i <xref linkend="samba">) følger med
@@ -1122,58 +1057,58 @@ Netatalk. Dette program får på listig vis din Linux-maskine til at se
 ud som en Macintosh-filserver. Programmet understøtter to typer af
 AppleTalk-protokollen; nemlig Classic AppleTalk og AppleShareIP
 (sidstnævnte kaldes også TCP/IP til Mac).
-</PARA>
+</para>
 
-<PARA>
+<para>
 Programmet blev oprindelig udviklet af University of
 Michigan's Research Systems Unix Group og understøttede
 oprindelig kun Classic AppleTalk. Sidenhen er det
 blevet udviklet og vedligeholdt af Adrian Sun, der
 ud over at debugge programmet også har implementeret
 understøttelse af AppleShareIP og andre udvidelser. 
-</PARA>
+</para>
 
-<PARA>
+<para>
 Netatalk kan hentes fra:
 <ULINK 
 URL="ftp://ftp.cobaltnet.com/pub/users/asun/release/netatalk-1.4b2+asun2.1.3.tar.gz">
 ftp://ftp.cobaltnet.com/pub/users/asun/release/netatalk-1.4b2+asun2.1.3.tar.gz</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 og færdigoversat fra:
 <ULINK 
 URL="http://thehamptons.com/anders/netaltalk/mirror/netatalk-1.4b2+asun2.1.1.x86-shadow-linux.tar.gz">
 http://thehamptons.com/anders/netaltalk/mirror/netatalk-1.4b2+asun2.1.1.x86-shadow-linux.tar.gz</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 Til Debian:
 <ULINK 
 URL="http://cgi.debian.org/Packages/stable/net/netatalk.html">
 http://cgi.debian.org/Packages/stable/net/netatalk.html</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 Til RPM-baserede systemer (SuSE, RedHat, Mandrake):
 <ULINK 
 URL="ftp://contrib.redhat.com/pub/contrib/libc6/SRPMS/netatalk-1.4b2+asun2.1.3-6.src.rpm">ftp://contrib.redhat.com/pub/contrib/libc6/SRPMS/netatalk-1.4b2+asun2.1.3-6.src.rpm</ULINK>
 (husk at køre <command>rpm --rebuild -sti-til-source</command>  for at
 oversætte og installere den)
-</PARA>
+</para>
 
-<PARA>
+<para>
 Hvis du har hentet en af <filename>.tar.gz</filename> filerne, skal du
 gøre sådan her: 
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 <prompt>[root@linus /root]#</prompt><USERINPUT>tar -xvzf &lt;filnavn&gt;.tar.gz</USERINPUT>
 <prompt>[root@linus /root]#</prompt><USERINPUT>cd netatalk&lt;tab&lt;&gt;enter&gt;</USERINPUT>
 <PROMPT>[root@linus netatalk]# </PROMPT><USERINPUT>make install</USERINPUT>
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 Netatalk "bor" i kataloget
 <filename>/usr/local/atalk/</filename>. Server-binaries og
 konfigurationsfiler ligger i <filename>/usr/local/atalk/etc</filename>
@@ -1181,30 +1116,30 @@ og userland-binaries i <filename>/usr/local/atalk/bin</filename>. Hvis
 du ikke ikke kan finde <command>netatalk</command> efter du har
 installeret den, så gør følgende: <command>find /* -name atalkd
 -print</command> for at finde den.
-</PARA>
+</para>
 
-<PARA>
+<para>
 For at kunne bruge Classic AppleTalk-protokollen, skal
 understøttelsen af denne være slået til i kernen. For
 at finde ud af, om den er det, gør følgende: dmesg |
 grep -i apple  Hvis den ikke er der, skal du oversætte
 din kerne om, med dette tilvalg slået til. 
-</PARA>
+</para>
 
-<PARA>
+<para>
 Det program der gør AppleTalk shares tilgængelige i
 både Classic AppleTalk og AppleShareIP hedder <command>afpd</command> og
 får sin konfiguration fra en fil der hedder <filename>afpd.conf</filename>.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Den simpleste <filename>afpd.conf</filename>-fil indeholder
 kun ét - (minus), hvilket står for "Denne Computer" med alle
 standard options koblet til. En lidt mere kompliceret
 konfiguration kunne være følgende:
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 - 
 MinLinuxMac -port 12000
 "Denne Linux Leger Mac" -port 12001
@@ -1212,13 +1147,13 @@ MinLinuxMac -port 12000
 "Guest Volume" -nocleartxt  -loginmesg "Vær venlig ved min gæsteserver !"
 "Boksen" -noguest -port 12000
 "Det Helligste" -notcp -defaultvol &lt;path&gt; -systemvol &lt;path&gt;
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 Forklaring af konfigurationsfilen:
-</PARA>
+</para>
 
-<PARA>
+<para>
 Den første linie kun med en bindestreg gør at
 Linux-maskinen laver en server med sit hostnavn.
 Den anden linie laver en server ved navn MinLinuxMac på
@@ -1228,9 +1163,9 @@ Leger Mac" på port 12001.
 Den fjerde linie laver en server kaldet "Der Ude",
 bundet på port 12000 og med den virtuelle IP-adresse
 206.114.89.46.
-</PARA>
+</para>
 
-<PARA>
+<para>
 I næste sektion laver linien "Guest Volume" -nocleartxt -loginmesg
 "Vær venlig ved min gæsteserver !" en dedikeret gæsteserver, der ikke
 spørger om adgangskode og som giver loginbeskeden "Vær venlig...".
@@ -1242,21 +1177,21 @@ stedet for de to standardfiler
 <filename>AppleVolumes.default</filename> og
 <filename>AppleVolumes.system</filename>. Husk at rette i &lt;path&gt;
 hvis du vil gøre dette.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Lav et Classic AppleTalk-share:
-</PARA>
+</para>
 
-<PARA>
+<para>
 For at lave et Classic AppleTalk-share skal du ændre i
 filen <filename>/usr/local/atalk/etc/AppleVolumes.system</filename>
 Eksempelvis hvis du indsætter linien <filename>/data/www</filename>
 "Webserver" laves der en volume kaldet Webserver, hvis
 indhold så vil kunne ses.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Den anden ting denne fil styrer, er "type-creator mappings". På
 Macintosh består alle filer (ulig på Unix) af to dele. En "resource
 fork" og en "data fork". Resource fork'en gemmer på ting som ikoner,
@@ -1274,21 +1209,21 @@ TEXT filer og at det var Microsoft Word der blev brugt til at
 fremstille filen med. Afpd vil så fortælle dette til
 Macintosh-maskiner der støder på filer der ender på .txt og som ikke
 er blevet oprettet på en Macintosh-maskine.
-</PARA>
+</para>
 
-<PARA>
+<para>
 ATALKD daemonen:
-</PARA>
+</para>
 
-<PARA>
+<para>
 Atalkd er det kerne-interface der bruges til Classic
 Appletalk. Det vil agere forbindelse mellem 
 AppleTalk-kernemodulet og resten af Classic AppleTalk's
 funktioner i netatalk. Den vil sågar også tage sig af
 AppleTalk-routing mellem flere netkort. 
-</PARA>
+</para>
 
-<PARA>
+<para>
 Atalkd er styret af konfigurationsfilen
 atalkd.conf. Den enkleste form for konfigurationsfil
 (og også den enkleste måde at konfigurere atalkd på) er
@@ -1297,18 +1232,18 @@ nogle ganske fornuftige opsætninger. Det er tilrådeligt
 at specificere alle de netkort man har i atalkd.conf
 filen. Hvis man specificerer mere end et netkort, vil
 atalkd selv route AppleTalk-pakker mellem netkortene.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Følgende konfiguration kunne overvejes:
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 eth0 -net 153-174 -addr 154.212 -zone "Langt Ude"
 eth1 -net 175-200 \adr 182.318 -zone "På Landet" -seed  
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 Hvad betyder så dette? Forklaringen er ret simpel; hver linie i filen
 <filename>atalkd.conf</filename> specificerer ét netkort. I dette
 eksempel betyder det at eth0 (første netkort i Linux-maskinen) bruges
@@ -1330,42 +1265,42 @@ sig selv. Bemærk også at hvis du har flere end 5 maskiner på netværket,
 skal du angive dette over for afpd (se nedenfor) - ellers virker det
 bare ikke! Derfor anbefales det at læse afsnittet om TCP/IP - det er
 ikke så svært som det umiddelbart ser ud til.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Så kommer den sjove del af det hele - vi skal prøve at
 starte Netatalk-serveren op!
-</PARA>
+</para>
 
-<PARA>
+<para>
 Først skal du finde ud af hvor Netatalk's starup-script
 ligger, hvis du ikke allerede ved det.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Dette kan du gøre sådan her: 
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 find /* -name "*atalk*" -print 
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 eller med                       
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 locate "*atalk*" 
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 (husk at køre <command>updatedb</command> som root efter 
 installationen af
 Netatalk, ellers vil den ikke kunne findes af databasen
 af kommandoen <command>locate</command>).
-</PARA>
+</para>
 
-<PARA>
+<para>
 Når du så er i det katalog hvor scriptet er, skriver du:
 <COMMAND>./rc.atalk start</COMMAND> og venter et par sekunder på at
 Netatalk starter op.  Dette vil så starte en filserver der kører
@@ -1376,22 +1311,22 @@ starte op, da den først kontrollerer netværket ud før den registrerer
 sig selv.  Alternativt kan du nøjes med kun at starte en TCP-server,
 hvis du på forhånd har konfigureret en i
 <filename>atalkd.conf</filename>-filen. Dette gøres sådan her:
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 /usr/local/atalk/etc/afpd -F
 /usr/local/atalk/etc/afpd.conf
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 Bemærk! Hvis du skal bruge mere end 5 forbindelser til
 Netatalk-serveren skal du angive et antal maksimumforbindelser når du
 starter afpd. Dette gøres med -c argumentet: <COMMAND>afpd -c
 25</COMMAND> Dette vil så give mulighed for 25 forbindelser til
 Netatalk-serveren.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Hvis denne kommando lykkes uden at brokke sig, så gå hen til en Mac og
 åben "Chooser" (under Applemenuen i venstre side). Klik på AppleShare
 og se om din Netatalk-server er der. Hvis du bruger AppleShareIP skal
@@ -1417,13 +1352,13 @@ Red Hat skal du nok kigge på
 <filename>/etc/rc.d/rc.local</filename>. Ellers er et andet godt bud
 <filename>/etc/init.d</filename>, for at finde ud af hvor dine
 startup-scripts befinder sig.
-</PARA>
+</para>
 
-<PARA>
+<para>
 Andre ting man kan gøre med Netatalk: 
-</PARA>
+</para>
 
-<PARA>
+<para>
 Tovejs-krypteret "password authentication" er understøttet af
 Netatalk. Men for at dette skal kunne bruges, må serveren nødvendigvis
 vide hvor klartekst-adgangskoderne kan findes henne. Da
@@ -1433,31 +1368,31 @@ oprette en <filename>.passwd</filename>-fil i brugerens hjemmekatalog med
 klartekstadgangskode i kan tovejskryptering opnås (punktummet foran i
 filen betyder at den er skjult og vil kun blive vist, hvis man bruger
 <command>ls -a</command>).
-</PARA>
+</para>
 
-<PARA>
+<para>
 Det ganske usikkert at gemme sine adgangskoder på et så forudsigeligt
 sted. Derfor kræver Netatalk at hver <filename>.passwd</filename>-fil
 ejes af den pågældende bruger og dennes gruppe og kun og alene er læs
 -og skrivbar af denne bruger. I enkle ord skal du en gang for alle
 bare gøre sådan med <filename>.passwd</filename>-filen:
-</PARA>
+</para>
 
-<SCREEN>
+<screen>
 <prompt>[root@linus /root]#</prompt> <USERINPUT>chown BRUGER.GRUPPE /home/&lt;brugernavn&gt;/.passwd</USERINPUT>
 <prompt>[root@linus /root]#</prompt> <USERINPUT>chmod 600 /home/&lt;brugernavn&gt;/.passwd</USERINPUT>
-</SCREEN>
+</screen>
 
-<PARA>
+<para>
 Hvor BRUGER er brugerens gruppe, og GRUPPE er brugerens
 standardgruppe.
-</PARA>
+</para>
 
 
 <sect2 id="netatalk-print">
 <title>Udskrivning via Netatalk</title>
 
-<PARA>
+<para>
 Netatalk kan ikke kun agere filserver for Mac-maskiner. Den
 kan også lave print-spooling og endda printe til
 eksisterende AppleTalk-spools. AppleTalk-spooling opnås
@@ -1471,18 +1406,18 @@ netværket som et print spool og acceptere jobs fra Mac-maskiner på
 netværket. Dette kan lade sig gøre, da printerjobs er
 Postscript-filer, som papd så vil føde Linux-printsystem (lpd)
 med. Eksempler på hvordan papd sættes op kan findes på:
-</PARA>
+</para>
 
-<PARA>
+<para>
 <ULINK URL="http://www.giub.unibe.ch/~eugster/appleprint.html">
 http://www.giub.unibe.ch/~eugster/appleprint.html</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 Det modsatte af dette - altså at printe fra en
 Linux-maskine til en Macintosh-printer - kan opnås ved
 at bruge pap. Se hvordan med kommandoen <command>man pap</command>. 
-</PARA>
+</para>
 </sect2>
 
 <sect2 id="appletalk-andet">
@@ -1491,7 +1426,7 @@ at bruge pap. Se hvordan med kommandoen <command>man pap</command>.
 <indexterm><primary>getzones</primary><secondary>AppleTalk</secondary></indexterm>
 <indexterm><primary>nbplkup</primary><secondary>AppleTalk</secondary></indexterm>
 
-<PARA>
+<para>
 Lige som på Linux og Microsoft-Windows® er der værktøjer til
 at pinge maskiner med.  Over TCP/IP findes der
 <command>aecho</command> til AppleTalk, der virker ligesom
@@ -1506,51 +1441,51 @@ findes på det lokale netværk.
 Der findes mange andre programmer til at bruge med
 Netatalk - så vær ikke bange for at gå i gang med at udforske området
 - held og lykke !
-</PARA>
+</para>
 
-<PARA>
+<para>
 Andre steder på nettet man bør besøge, hvis man bruger
 Netatalk:
-</PARA>
+</para>
 
-<PARA>
+<para>
 The Netatalk HOWTO:
 <ULINK URL="http://thehamptons.com/anders/netatalk/">
 http://thehamptons.com/anders/netatalk/</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 The Netatalk Faq-O-Matic:
 <ULINK URL="http://www.zettabyte.net/fomserve/netatalk/cache/1.html">
 http://www.zettabyte.net/fomserve/netatalk/cache/1.html</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 The Original Netatalk pages:
 <ULINK URL="http://www.umich.edu/~rsug/netatalk/">
 http://www.umich.edu/~rsug/netatalk/</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 The Netatalk Admins list:
 <ULINK URL="mailto:netatalk-admins-request@umich.edu">
 netatalk-admins-request@umich.edu</ULINK>
-</PARA>
+</para>
 
-<PARA>
+<para>
 All registered trademarks and copyrighted names
 courtesy of their respective owners.
 The author of this article does not under any
 circumstances claim rigth over or use of the respective
 trademarks mentioned in this article.
-</PARA>
+</para>
 
-<PARA>
+<para>
 MS-Windows® is a trademark of Microsoft® Corporation
 Microsoft® is a trademark of Microsoft® Corporation
 Macintosh®, AppleTalk and AppleShareIP are trademarks
 of Apple® Corporation.
-</PARA>
+</para>
 
 <!--
 Denne artikel er oversat fra engelsk af nedenstående
