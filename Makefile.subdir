@@ -90,16 +90,20 @@ ekstra:
 
 
 ################################################################################
-# Build the sgml package
+# Pak SGML-filerne sammen
+################################################################################
+
 sgml: $(targetname)-sgml-$(version).tar.gz
 $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile)
 	(cd ..;ln -sf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/$(targetname).sgml.tar.gz)
-	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
+	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile)
 
 
 ################################################################################
-# Build the Palm Pilot Package
+# Byg Palm Pilot udgaven
+################################################################################
+
 palmpilot: $(targetname)-$(version).palm.zip
 $(targetname)-$(version).palm.zip: $(sgmlfiler)
 ifneq   ("$(plucker)","")
@@ -118,6 +122,9 @@ endif
 
 
 ################################################################################
+# pak HTML-filer ned
+################################################################################
+
 pakhtml: 
 	@echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	@echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
@@ -139,18 +146,18 @@ pakhtml:
 
 
 ################################################################################
-# Build the html
+# Byg HTML-filerne
+################################################################################
+
 html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
 	@@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf $(targetname)*
 	rm -rf stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	@echo '<!ENTITY magic "png">' > magic.sgml
-	/usr/bin/collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	jw -V html-index -f docbook -b html -o bog bog.sgml
-	/usr/bin/collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
-#	cp stikord.sgml stikord.sgml-org
-#	recode -d UTF-8..lat1 stikord.sgml
+	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
 	rm -rf bog/
 	mkdir bog
 	db2html  -V  %use-id-as-filename% bog.sgml
@@ -174,17 +181,19 @@ endif
 
 
 ################################################################################
-# Build pdf package.
+# Byg PDF filen
+################################################################################
+
 pdf: $(targetname)-$(version)_pdf.zip
 $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	@echo '<!ENTITY magic "png">' > magic.sgml
-	/usr/bin/collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	rm -rf tempdir
 	mkdir tempdir
 	cp *.{sgml,xml} tempdir
 	cp images/*png tempdir
 	(cd tempdir;jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
-	(cd tempdir;/usr/bin/collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
+	(cd tempdir;collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
 	(cd tempdir; db2pdf bog.sgml; db2pdf bog.sgml)
 	mv tempdir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
@@ -199,6 +208,9 @@ test:
 
 
 ################################################################################
+# Backup af eksempel-filer
+################################################################################
+
 eksempelbackup:  $(targetname)-eksempler-$(version).tar.gz
 $(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
