@@ -44,31 +44,8 @@ tidy:=$(wildcard /usr/bin/tidy)
 
 ################################################################################
 # her er det der skal laves
-all: start html stop
+all: html
 
-
-################################################################################
-start:
-	@echo "-------------------------------------------"
-	@echo "Starter oversættelser af $(targetshortname)"
-	@echo "-------------------------------------------"
-	@echo Version er $(version)
-	@echo Dato sat til $(dato)
-	@echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' > linuxbogurl.sgml
-
-
-
-################################################################################
-stop:
-	@echo "-------------------------------------------"
-	@echo "Slut på $(targetshortname) $(version)      "
-	@echo "-------------------------------------------"
-	@echo 
-
-
-################################################################################
-version:
-	@echo $(targetshortname) $(version)
 
 
 
@@ -83,6 +60,7 @@ bog/index.html: $(sgmlfiler)
 	@echo "Target $(targetshortname):html"
 	@echo ".........................................."
 	@@echo "Target er HTML i" $(targetshortname)/bog
+	@echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' > linuxbogurl.sgml
 	rm -rf $(targetname)*
 	rm -rf stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	@echo '<!ENTITY magic "png">' > magic.sgml
