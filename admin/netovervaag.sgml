@@ -40,26 +40,166 @@ smule plads, og skift til kataloget <filename>bs-0.97</filename>. I
 følge dokumentationen skulle du nu kunne konfigurere Big Sister, og
 bl.a. angive hvor du gerne vil have det installeret, men det kan man
 ikke (<filename>configure</filename>-scriptet findes simpelthen
-ikke). Heldigvis er det ikke nødvendigt at konfigurere noget, man kan
-gå direkte til <command>make install</command>.
-<footnote><para>
-Big Sister er en samling Perl-programmer der ikke skal
-oversættes derfor er der ikke noget
+ikke<footnote><para>
+Det gør det i version 0.98, som dokumentationen
+flere steder ser ud til at være rettet mod, den havde jeg andre
+problemer med.  </para></footnote>).
+Heldigvis er det ikke nødvendigt
+at konfigurere noget, man kan gå direkte til <command>make
+install</command>.  <footnote><para> Big Sister er en samling
+Perl-programmer der ikke skal oversættes derfor er der ikke noget
 <command>make</command>-skridt.
 </para>
 </footnote>
-Næste skridt er at oprette en bruger <filename>bs</filename>, som skal
-	have en brugbar kommandofortolker (ikke noget med
-	<command>/bin/false</command>, hjemmekataloget kan passende
-	sættes til <filename>/usr/local/lib/bs</filename>, som er hvor
-	<command>make install</command> placerede tingene.
+Næste skridt er at oprette en bruger bs, som skal
+have en brugbar kommandofortolker (ikke noget med
+<command>/bin/false</command>, hjemmekataloget kan passende sættes til
+<filename>/usr/local/lib/bs</filename>, som er hvor <command>make
+install</command> placerede tingene, men sørg for at man ikke kan
+	logge ind som bs (sæt en * eller et ! i andet felt i
+	<filename>/etc/shadow</filename>).
+</para>
+</sect2> <!-- big_sister-installation -->
+
+<sect2 id="big_sister-konf1">
+<title>Indledende konfiguration</title>
+
+<para>
+Det første du skal gøre er at finde 
+linien 
+<programlisting>
+localhost bsdisplay
+</programlisting>
+i <filename>~bs/adm/uxmon-net</filename> og rette "localhost" til
+maskinens navn. Mens du er i gang med at rette i den fil, så vil du
+sandsynligvis også fjerne "eventlog" fire linier højere oppe (fra
+listen over hvad der tjekkes - den vender vi tilbage til), det virker
+kun på win32-platformen.
 </para>
 
-</sect1>
+<para>
+Du skal også sørge for at du kan få fat i de sider Big Sister
+genererer. Det letteste er nok at sætte sin navneserver op så
+bs.domæne peger på din maskine og
+så tilføje:
+<programlisting>
+&lt;VirtualHost bs.domæne&gt;
+ServerAdmin admin@domæne
+ServerName bs.domæne
+DocumentRoot /usr/local/lib/bs/www/
+&lt;/VirtualHost&gt;
+</programlisting>
+til <filename>httpd.conf</filename>.
+</para>
+</sect2> <!-- big_sister-konf1 -->
+
+<sect2 id="big_sister-start">
+<title>Start Big Sister</title>
+
+<para>
+Nu er tiden inde til at starte Big Sister, og se at det virker. Big
+startes med kommandoen <command>~bs/bin/bb_start start</command>. Nu
+skulle du kunne pege din netsøger mod bs.domæne og se hvordan Big
+Sister tror din maskine har det.
+</para>
+</sect2> <!-- big_sister-start" --> 
+
+<sect2 id="big_sister-konf2">
+<title>Videre konfiguration</title>
+
+<para>
+Først vil vi af med den gule advarselslampe der er under "msgs", den
+skyldes at brugeren bs ikke kan læse
+<filename>/var/log/syslog</filename> og
+<filename>/var/log/messages</filename>, eftersom vi har sikret os at
+man ikke kan logge ind som bs, er det ikke særlig farligt at tilføje
+bs til gruppen adm, <!-- På Debian, måske noget andet på andre dist?
+--> så Big Sister kan læse disse filer. 
+</para>
+
+<para>
+Med mindre du bruger sendmail havde du også en rød alarmlampe under
+"procs", der fortalte dig at der ikke kørte mindst en
+sendmail-proces, den vil du sikkert gerne af med. For at gøre det skal
+	du igen have fat i
+	<filename>/usr/local/lib/bs/adm/uxmon-net</filename>, denne
+	gang skal du finde linien der indeholder
+<programlisting>
+procs=init(1-1),sendmail(1-20)
+</programlisting>
+og enten fjerne sendmail helt, eller erstatte det med noget du er
+	interesseret i. Hvis du kører Postfix kan du f.eks. bruge
+<programlisting>
+procs=init(1-1),master(1-20)
+</programlisting>
+til at sikre dig at Postfix kører.
+</para>
+
+<para>
+Hvis du har en webserver kørende på maskinen (og det har du, for
+ellers kan du ikke komme i kontakt med Big Sister), er du måske også
+interesseret i at få holdt øje med om den kører. Det gør du ved i
+<filename>/usr/local/lib/bs/uxmon-net</filename> at tilføje http til
+listen over ting der skal tjekkes.
+</para>
+
+<para>
+Der er mange andre ting man kan få Big Sister til at holde øje med,
+det vil føre for vidt at forsøge at komme ind på dem alle her. Tjek
+<ulink
+url="http://bigsister.graeff.com/pdoc/CONFIG.html">dokumentationen</ulink>,
+som omend den ikke er god så dog giver lidt på dette punkt.
+</para>
+
+<para>
+Du har måske også bemærket at "History", "Alarms" og "Admin"
+	henvisningerne til højre ikke virker. For at ordne det skal du
+	kopiere filerne <filename>bshistory</filename>,
+	<filename>bswebalarm</filename> og
+	<filename>bswebadmin</filename> fra
+	<filename>/usr/local/lib/bs/bin</filename> til
+	<filename>/usr/local/lib/bs/www/cgi</filename> (det katalog
+	skal oprettes først), og indsætte linien
+<programlisting>
+ScriptAlias /cgi /usr/local/lib/bs/www/cgi
+</programlisting>
+i <filename>httpd.conf</filename>.
+</para>
+
+<para>
+Når du har ændret i Big Sisters opsætning skal du genstarte Big Sister
+med kommandoen <command>/usr/local/lib/bs/bin/bb_start
+restart</command>. Det er min erfaring at det ofte kan være nødvendigt
+at genstarte Big Sister to gange for at få en ændring til slå
+igennem. Derudover kan der godt gå et par minutter får Big Sister får
+udskiftet en lampe på oversigtssiden, selv om man ved at klikke på dem
+kan se at status er ændret.
+</para>
+</sect2>
+
+<sect2 id="big_sister-andre_maskiner">
+<title>Andre maskiner</title>
+
+<para>
+Hvis du vil tjekke om netværksforbindelsen til en anden maskine er i
+orden, kan du tilføje linien
+<programlisting>
+anden.maskine.domæne ping
+</programlisting>
+til <filename>/usr/local/lib/bs/adm/uxmon-net</filename>. Så vil Big Sister jævnligt
+sende et UDP-ping til anden.maskine.domæne, for at se om den
+svarer. For at den skal have noget held med det, skal du sørge for at
+den anden maskine svarer på UDP-ping, det gør du ved sørge for at
+	linien 
+<programlisting>
+echo            dgram   udp     wait    root    internal
+</programlisting>
+findes i <filename>/etc/inetd.conf</filename>. <!-- Hvordan skal det -->
+<!-- se ud hvis man kører xinetd? -->
+</para>
+
+</sect2>
+
+</sect1> <!-- big_sister -->
+
 </chapter>
-
-
-
-
-
-
