@@ -1,0 +1,140 @@
+<?xml encoding="ISO-8859-1" ?>
+
+<sect1 id='xdm'>
+ <title>XDM</title>
+
+ <indexterm>
+  <primary>XDM</primary>
+ </indexterm>
+
+ <indexterm>
+  <primary>Displaymanager</primary>
+  <secondary>XDM</secondary>
+ </indexterm>
+
+ <para>
+  XDM er den oprindelige displaymanager og er en del af XFree86. Dermed
+  er den også et udtryk for mindste fællesnævner for hvad en displaymanager
+  skal kunne. XDM kan netop hvad den skal kunne og ikke andet.
+ </para>
+
+ <figure id='xdm-fig' float='1'>
+  <title>XDM login-billed</title>
+  <graphic fileref="xdm.&magic;" scale="60" />
+ </figure>
+
+ <sect2 id='xdm-konfiguration'>
+  <title>Opsætning af XDM</title>
+
+  <para>
+   Opsætningen af XDM foregår i en række tekstfiler, der normalt vil være
+   placeret i <filename>/etc/X11/xdm</filename>. Den primære
+   konfigurationsfil er <filename>xdm-config</filename>. I den er der
+   henvisninger til hvad de andre konfigurationsfiler hedder samt hvordan
+   XDM opfører sig som displaymanager
+  </para>
+
+  <para>
+   Ud over henvisninger til de andre filer er det vigtigste i denne fil 
+   at man kan slå muligheden for at skulle lege displaymanager for andre
+   maskiner ved at sætte XDM til at lytte på port 0.
+
+<programlisting>
+! SECURITY: do not listen for XDMCP or Chooser requests
+! Comment out this line if you want to manage X terminals with xdm
+DisplayManager.requestPort:     0
+</programlisting>
+  </para>
+
+  <para>
+   Udseendet af ens loginbilled kan styres fra <filename>Xresources</filename>
+   Her kan man sætte op hvad den skal skrive, hvile fonte der skal bruges
+   og man kan sætte et logo på.
+
+<programlisting>
+xlogin*greeting: Velkommen til hven.sslug.dk
+xlogin*namePrompt: \040\040\040\040\040\040\040Login:
+
+xlogin*fail: Login incorrect
+
+xlogin*logoFileName: /etc/X11/xdm/pixmaps/sslug.xpm
+xlogin*greetFont: -adobe-helvetica-bold-o-normal--14-140-75-75-p-82-iso8859-1
+xlogin*font: -adobe-helvetica-medium-r-normal--12-120-75-75-p-67-iso8859-1
+xlogin*promptFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
+xlogin*failFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
+</programlisting>
+  </para>
+
+  <para>
+   Så findes der en række shell-scripts som XDM kører på forskellige
+   tidspunkter
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      <filename>Xsetup</filename>: Udføres når XDM laver en login-skærm
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      <filename>Xstartup</filename>: Udføres, som root, når en bruger har
+      logget ind
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      <filename>Xsession</filename>: Udføres, som brugeren der har logget
+      ind, efter <filename>Xstartup</filename>
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      <filename>Xreset</filename>: Udføres, som root, når en brugers session
+      afsluttes
+     </para>
+    </listitem>
+   </itemizedlist>
+  </para>
+
+  <para>
+   Normalt kører man en <command>xconsole</command> fra <filename>Xsetup</filename>
+   og man kan også skifte farve fra X11-grå med programmet <command>xsetroot</command>
+  </para>
+
+  <para>
+   <filename>Xstartup</filename> og <filename>Xreset</filename> kan bruges
+   til at sørge for at man kan se at brugeren er logget ind. Dette kan gøres
+   med programmet <command>sessreg</command> der vedligeholder utmp- og
+   wtmp-filer.
+  </para>
+
+  <para>
+   <filename>Xsession</filename> kan sætte noget standardopsætning op. Den 
+   bør altid slutte med at udføre brugerens egen <filename>$HOME/.xsession</filename>
+   som kan starte en windowmanager op.
+  </para>
+
+ </sect2>
+
+ <sect2 id='xdm-konklusion'>
+  <title>Er XDM stadigvæk brugbar?</title>
+
+  <para>
+   Det første man skal overveje er hvor tit man egentlig arbejder på selve
+   login-skærmen? Det er ikke ret ofte. Derfor gør det ikke særlig meget
+   at den ikke har så mange fancy features.
+  </para>
+
+  <para>
+   Så skal man overveje hvad man mangler? Man kan måske mangle en pæn knap
+   der siger 'luk maskinen ned' hvis det er en arbejdsmaskine. De shell-scripts
+   XDM bruger giver dog en fleksibilitet der gør sådan en knap let at lave.
+  </para>
+
+  <para>
+   Jeg vil derfor absolut mene at XDM stadig er brugbar som displaymanager.
+  </para>
+ </sect2>
+</sect1>
+
+  
