@@ -131,6 +131,17 @@ fået mulighed for grafik under opstarten.
 </para>
 
 <para>
+Læs mere om GRUB på 
+<ulink
+url="http://www.gnu.org/software/grub/">
+hjemmesiden</ulink> og på <ulink
+url="http://www.gnu.org/software/grub/manual/grub.html#Configuration">
+konfigurations manualen. Her står nævnt de upraktiske filnavne,
+som GRUB bruger hvis man bruger den råt;</ulink> Red Hat har
+ændret filnavne i overensstemmelse med god skik og brug.
+</para>
+
+<para>
 I <xref linkend="grub-conf-ex"/> er vist et eksempel på den fil
 <filename>/boot/grub/grub.conf</filename>, som styrer
 opstartsprogrammet.  Først er der en linje
@@ -160,6 +171,26 @@ Linux-kerne der skal hentes ved at skrive harddisk og partition
 som <literal>root (hd&lt;DREV&gt;,&lt;PARTITION&gt;)</literal>.
 </para>
 
+<example id="grub-conf-ex">
+<title>Eksempel på en grub.conf</title>
+<programlisting>
+default=0
+timeout=10
+splashimage=(hd0,0)/grub/splash2.xpm.gz
+title Dell
+     root (hd0,0)
+     kernel /bzImage.417 ro root=/dev/hda2
+title Red Hat Linux (2.4.21-13)
+     root (hd0,0)
+     kernel /vmlinuz-2.4.21-13 ro root=/dev/hda2
+     initrd /initrd-2.4.21-13.img
+title Windows 
+     root        (hd0,1)
+     makeactive
+     chainloader +1
+</programlisting>
+</example>
+
 <para> 
 Under det første
 menupunkt "Dell" hentes kernen fra
@@ -184,26 +215,6 @@ NT op fra <filename>/dev/hda2</filename> (det er den anden partition
 på første disk - dvs. <literal>(hd0,1)</literal>.
 </para>
 
-<example id="grub-conf-ex">
-<title>Eksempel på en grub.conf</title>
-<programlisting>
-default=0
-timeout=10
-splashimage=(hd0,0)/grub/splash2.xpm.gz
-title Dell
-     root (hd0,0)
-     kernel /bzImage.417 ro root=/dev/hda2
-title Red Hat Linux (2.4.21-13)
-     root (hd0,0)
-     kernel /vmlinuz-2.4.21-13 ro root=/dev/hda2
-     initrd /initrd-2.4.21-13.img
-title Windows 
-     root        (hd0,1)
-     makeactive
-     chainloader +1
-</programlisting>
-</example>
-
 <para>
 Det eneste man skal gøre hvis man vil ændre i opstarts-opsætningen er
 at rette i <filename>/boot/grub/grub.conf</filename> og ved næste
@@ -217,6 +228,16 @@ også til LILO fra version 22.3.
 Det skal lige nævnes at muligheden for at lægge et billede ind
 kræver et patch til GRUB der kan hentes fra <ulink url="http://people.redhat.com/~katzj/grub/patches/">http://people.redhat.com/~katzj/grub/patches/</ulink>.
 </para>
+
+<!--
+<para>
+Det skal også nævnes, at filnavnet grub.conf er default i RedHat
+og andre distributioner, men at GRUB manualen anbefaler navnet
+menu.lst, hvilket kan vække mistanke om nogle ikke så klare
+tanker hos programmørerne (hvis man
+</para>
+/-->
+
 
 <para>
 <emphasis>Tip:</emphasis> Se <ulink url="http://linuxtoday.com/news_story.php3?ltsn=2002-03-08-014-20-PS-MS-RH">http://linuxtoday.com/news_story.php3?ltsn=2002-03-08-014-20-PS-MS-RH</ulink> og <ulink url="http://bratlady.com/linux_boot.shtml">http://bratlady.com/linux_boot.shtml</ulink>for information om GRUB, Linux og Windows XP.
