@@ -59,7 +59,7 @@ tidy:=$(wildcard /usr/bin/tidy)
 
 ################################################################################
 # her er det der skal laves
-all: start ekstra html pdf sgml eksempelbackup stop
+all: start ekstra html pdf sgml pakhtml eksempelbackup stop
 
 
 ################################################################################
@@ -131,7 +131,9 @@ endif
 # pak HTML-filer ned
 ################################################################################
 
-pakhtml: 
+pakhtml: $(targetshortname)/$(targetname)-html-$(version).tar.gz
+
+$(targetshortname)/$(targetname)-html-$(version).tar.gz: bog/index.html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pakhtml"
 	@echo ".........................................."
@@ -142,12 +144,12 @@ pakhtml:
 	@echo Release: 1mdk >>  bog/$(targetname).spec
 	cat linuxbog.spec >> bog/$(targetname).spec
 	mv bog $(targetshortname)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
+	(cd ..;tar czf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+	(cd ..;tar czf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
-	(cd ..;tar cvzf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
+	(cd ..;tar czf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
 	mv $(targetshortname)_images images 
 	@@echo "Done HTML pakning (pakhtml)"
 	@echo ""
