@@ -228,9 +228,16 @@ Bøgerne redigeres af Peter Toft og Hans Schou
 Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
 <p>
+
 Der er altid ting vi gerne vil have skrevet om, eller skrevet mere på.<br>
 Du er meget velkommen til at komme med forslag. 
 <a href="todo.html">Vi efterlyser bla. disse ting</a>.
+
+<p>
+
+Vil du følge med i hvad der sker med vores kilde-kode (SGML-filerne), 
+<a href="http://cvs.sslug.dk/linuxbog/">så se her</a>.
+
 
 <p>
 
@@ -297,8 +304,8 @@ foretages.
   // Liste over alle bøger. Alle bøger har hver sin tabel med forskellig filtyper
   reset($books);
   while (list($short,$desc) = each($books)) {
-    echo "<a name=\"$short\"></a><h3>$desc->title \n";
-    echo "</h3>\n<i>$desc->comment</i><p>";
+    echo "<a name=\"$short\"></a><h3>$desc[title] \n";
+    echo "</h3>\n<i>$desc[comment]</i><p>";
 
     if (file_exists($short."/dato.sgml")) {
       include($short."/dato.sgml");
