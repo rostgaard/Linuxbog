@@ -46,6 +46,14 @@ version:  Makefiler
 	@grep -A2 "<listitem>" c/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > c/version.sgml
 	@grep -A2 "<listitem>" docbook/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > docbook/version.sgml
 	cp friheden/version.sgml alle/version.sgml
+	@echo "friheden" `cat friheden/version.sgml`
+	@echo "applikationer" `cat applikationer/version.sgml`
+	@echo "admin" `cat admin/version.sgml`
+	@echo "program" `cat program/version.sgml`
+	@echo "web" `cat web/version.sgml`
+	@echo "sikkerhed" `cat sikkerhed/version.sgml`
+	@echo "c" `cat c/version.sgml`
+	@echo "docbook" `cat docbook/version.sgml`
 
 eksempelbackup:  statusfiler
 	make -C friheden eksempelbackup
@@ -78,4 +86,4 @@ cvs2html:
 
 
 mail:
-	echo "Nu er der nye bøger på tyge. Have a nice day" | mail -s "automatisk mail: bog OK" linuxbog@sslug.dk
+	@echo "Nu er der nye bøger på tyge. Have a nice day" | mail -s "automatisk mail: bog OK" linuxbog@sslug.dk
