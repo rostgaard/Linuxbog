@@ -443,6 +443,8 @@ kunne krydsreferere til tabellen fra et sted i teksten.
 <indexterm><primary>SGML-tags</primary><secondary>figure</secondary></indexterm>
 
 <title>Figurer - figure</title>
+<indexterm><primary>magic</primary></indexterm>
+
 <para>
 Figurer er en smule værre i Docbook, fordi man ikke har
 så store muligheder (under Linux i hvertfald). Selvom
@@ -457,7 +459,7 @@ skal kunne oversætte både til HTML, PDF og Postscript.
 <screen>
 &lt;FIGURE ID="linustorvalds-fig" FLOAT="1"&gt;
 &lt;TITLE&gt;Linus Torvalds&lt;/TITLE&gt;
-&lt;GRAPHIC FILEREF="linus.png"  SCALE="60"&gt;&lt;/GRAPHIC&gt;
+&lt;GRAPHIC FILEREF="linus.&amp;magic;"  SCALE="60"&gt;&lt;/GRAPHIC&gt;
 &lt;/FIGURE&gt;
 </screen>
 
@@ -467,12 +469,10 @@ Dette kommer til at se ud som:
 
 </example>
 
-<para>
 <FIGURE ID="linustorvalds-fig" FLOAT="1">
 <TITLE>Linus Torvalds</TITLE>
-<GRAPHIC FILEREF="linus.png"  SCALE="60"></GRAPHIC>
+<GRAPHIC FILEREF="linus.&magic;"  SCALE="60"></GRAPHIC>
 </FIGURE>
-</para>
 
 <para>
 Bemærk at vi igen her har sat <command>ID="label"</command> ind under
@@ -481,6 +481,19 @@ kunne krydsreferere til figuren. Du skal se skalere billedet (i PDF og
 Postscript udskrift via <command>SCALE</command>-parameteren.
 </para>
 
+<para>
+Hvad nu med &amp;magic;? Der er et problem med grafik - hvis man alene
+laver PDF og HTML-filer, så kan man anføre at det er en
+<filename>.png</filename> fil eller lignende. Skal man også lave
+PostScript, så skal man anvende <filename>.eps</filename>-filer. Der
+skal en konvertering af billederne til. En nem måde at styre
+magic-variablen er at tilføje denne i den hoved-sgml-fil man laver
+</para>
+
+<screen>
+&lt;!ENTITY % magic-entities SYSTEM "magic.sgml"&gt;
+  %magic-entities;  &lt;!-- This is where we include it --&gt;
+</screen>
 
 </sect2>
 
