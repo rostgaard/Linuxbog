@@ -68,7 +68,7 @@ bog/index.html: $(sgmlfiler)
 	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
 	rm -rf bog/
 	mkdir bog
-	db2html  -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
+	db2html  -V  %use-id-as-filename%  bog.sgml
 	cp images/*.png bog
 ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
 	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
