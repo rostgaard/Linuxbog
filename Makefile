@@ -1,7 +1,7 @@
 # $Id$
 all: Makefiler filer
 
-release : cvs2html eksempler filer  mail
+release : cvs2html filer  mail
 
 Makefiler:
 	cp Makefile.subdir friheden/Makefile
