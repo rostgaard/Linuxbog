@@ -53,22 +53,24 @@ eksempler-sgml-PDF:
 	@echo 'men giver det overhovedet mening?'
 
 
-# Jeg har ikke lige styr på forskellen mellem distclean, clean og reallyclean
-# Så indtil videre er de ens!
-#
-# De fjerner sikkert heller ikke alt hvad der skal fjernes!
+# Jeg er ikke sikker på at jeg har fanget forskellen mellem distclean,
+# clean og reallyclean.
 
-distclean: clean
-
+.PHONY: clean
 clean: 
 	rm -fr palm-samling
 # Skal ændres når vi engang begynder at bygge PostScript-versioner igen!
 #	rm -fr ps-samling
 	rm -fr pdf-samling
 
-	rm linuxbog-samling-*.tar.gz
+	rm -f linuxbog-samling-*.tar.gz
 
 	rm -f version.sgml
-	rm -f *~*~  .#*[0-9]
+	rm -f *~ .#*[0-9]
 
-reallyclean: clean
+distclean-local: clean
+	rm -fr autom4te.cache config.log config.status
+
+.PHONY: reallyclean
+reallyclean: distclean
+	rm -fr aclocal.m4 linuxbog.spec linuxbogurl.sgml bootstrap configure configure.ac install-sh Makefile.am Makefile.in missing mkinstalldirs ophavsret.sgml palm-faelles/
