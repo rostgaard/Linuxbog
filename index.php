@@ -168,6 +168,13 @@ function vistype($type) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
+    "wm" => array(
+      title => "Linux - Friheden til at vælge window manager",
+      comment => "Lær hvilken window manager som passer dig bedst",
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk"
+      )
+    ),
     "applikationer" => array(
       title => "Linux - Friheden til at vælge programmer",
       comment => "Vælg programmer til Linux",
