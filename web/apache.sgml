@@ -1,374 +1,430 @@
 <!-- $Id$ -->
+
 <chapter id="webserver">
-<title>Webserver</title>
-<indexterm><primary>Webserver</primary>
-  <secondary>Apache</secondary></indexterm>
-<indexterm><primary>Apache</primary></indexterm>
-<para>
-I dette afsnit skal vi se nærmere på webservere - i praksis Apache,
-som i dag anvendes af ca. 60% af alle webservere på internettet.
-</para>
+ <title>Webserver</title>
 
-<para>
-Når du har fået din Linux-server op at køre, er en af de muligheder du
-kan gå i gang med, at installere en webserver. Du kender sikkert allerede
-webservere, idet de anvendes til websteder, intranet, ekstranet og meget 
-andet.
-</para>
+ <indexterm>
+  <primary>Webserver</primary>
+  <secondary>Apache</secondary>
+ </indexterm>
 
-<para>
-Her kan du læse hvordan du selv kommer i gang med at være webmester på din
-egen webserver.
-</para>
+ <indexterm>
+  <primary>Apache</primary>
+ </indexterm>
 
+ <para>
+  I dette afsnit skal vi se nærmere på webservere - i praksis Apache,
+  som i dag anvendes af ca. 60% af alle webservere på internettet.
+ </para>
 
-<sect1 id="Hvad-er-en-webserver">
-<title>Hvad er en webserver?</title>
-<para>
-En webserver var oprindelig en rimelig simpel server, hvis eneste funktion
-i livet var at sende filer fra sin harddisk til den klient, der bad om dem.
-</para>
+ <para>
+  Når du har fået din Linux-server op at køre, er en af de muligheder
+  du kan gå i gang med, at installere en webserver. Du kender sikkert
+  allerede webservere, i det de anvendes til websteder, intranet,
+  ekstranet og meget andet.
+ </para>
 
-<para>
- Der er sidenhen kommet et væld af ekstra funktionaliteter og faciliteter i
- webservere, så det i dag også er det en del af webserverens job at indsætte
- kode i sider når en bruger beder om den, f.eks. sidste gang filen blev rettet
- (Server Side Includes). Webserveren kan udføre programmer og returnere uddata
- i form af tekst, billed, lyd og animationer til browseren. Når man udfylder
- og indsender data i formularer på nettet, så er det også webserverens job at
- modtage data og filer, og at sende disse data videre til programmer, der
- bearbejder dem (CGI-programmer). Webserveren kan også udføre programmer
- indlejret i websiderne, så man f.eks. kan indsætte data fra en database
- direkte i sider (Perl/PHP/Python).
-</para>
+ <para>
+  Her kan du læse hvordan du selv kommer i gang med at være webmester
+  på din egen webserver.
+ </para>
 
-<sect2 id="apache-historie">
-<title>Lidt historie bag Apache</title>
-<indexterm><primary>Webserver</primary><secondary>Apache historie</secondary></indexterm>
-<para>
-Apache serveren startede sit liv som et "patch-kit" (et sæt ændringer)
-til NCSA-serveren, og det er da også der navnet oprindeligt kommer - A
-PAtCHy Server.
-</para>
+ <sect1 id="Hvad-er-en-webserver">
+  <title>Hvad er en webserver?</title>
 
-<para>
-Da udviklingen af NCSA's webserver stoppede, fortsatte udviklingen af
-Apache, og således er Apache-serveren nu blevet den markedsledende
-webserver.
-</para>
+  <para>
+   En webserver var oprindelig en rimelig simpel server, hvis eneste
+   funktion i livet var at sende filer fra sin harddisk til den
+   klient, der bad om dem.
+  </para>
 
-<para>
-Apache ejes og styres af Apache Software Foundation og er frit og gratis.
-</para>
+  <para>
+   Der er sidenhen kommet et væld af ekstra funktionaliteter og
+   faciliteter i webservere, så det i dag også er det en del af
+   webserverens job at indsætte kode i sider når en bruger beder om
+   den, f.eks. sidste gang filen blev rettet (Server Side
+   Includes). Webserveren kan udføre programmer og returnere uddata i
+   form af tekst, billed, lyd og animationer til browseren. Når man
+   udfylder og indsender data i formularer på nettet, så er det også
+   webserverens job at modtage data og filer, og at sende disse data
+   videre til programmer, der bearbejder dem
+   (CGI-programmer). Webserveren kan også udføre programmer indlejret
+   i websiderne, så man f.eks. kan indsætte data fra en database
+   direkte i sider (Perl/PHP/Python).
+  </para>
 
-<para>
- Apache er i skrivende stund nået til version 1.3.17, og er en af de mest
- stabile webservere. Dens markedsandel på ca. 60% af internettet er vist det
- mest sigende bevis på hvor god den er. Der arbejdes på version 2.0, som
- bliver den næste større release. Den nye udgave vil blandt andet blive endnu
- mere modulær end den eksisterende.
-</para>
+  <sect2 id="apache-historie">
+   <title>Lidt historie bag Apache</title>
 
-<para>
-Har du brug for en meget hurtig webserver (Apache er hurtig), så
-findes Tux-1.0, som er tunet meget kraftigt til en performance, der
-oftest ligger langt over en tilsvarende MS IIS.
-</para>
+   <indexterm>
+    <primary>webserver</primary>
+    <secondary>Apaches historie</secondary>
+   </indexterm>
 
-</sect2>
-</sect1>
+   <indexterm>
+    <primary>historie</primary>
+    <secondary>Apaches</secondary>
+   </indexterm>
 
-<sect1 id="apache-installation">
-<title>Apache-installation</title>
-<indexterm><primary>Webserver</primary><secondary>Apache installation</secondary></indexterm>
+   <para>
+    Apache serveren startede sit liv som et "patch-kit" (et sæt
+    ændringer) til NCSA-serveren, og det er da også der navnet
+    oprindeligt kommer - A PAtCHy Server.
+   </para>
 
-<para>
-Når du skal installere en Apache webserver, skal du sikre dig, at du
-har seneste udgave.  Du kan enten vælge at installere den fra nogle
-RPM-pakker eller oversætte den selv fra kildeteksten. Som udgangspunkt
-anbefales det, at du installerer fra kildeteksten, da det ikke er svært
-og det giver dig mulighed for selv at bestemme hvilke moduler, der
-oversættes ind i Apache.
-</para>
+   <para>
+    Da udviklingen af NCSA's webserver stoppede, fortsatte udviklingen
+    af Apache, og således er Apache-serveren nu blevet den
+    markedsledende webserver.
+   </para>
 
-<sect2 id="apache-installation-fra-pakker">
-<title>Apache installation fra pakker</title>
-<para>
-Du kan normalt finde pakker til Red Hat, Debian og andre
-Linux-distributioner med Apache.  At anvende pakker kræver normalt at du
-har systemadministratorrettigheder på maskinen, du vil installere serveren på.
-Hvis du vælger at benytte en sådan, vil du normalt blot få en "standard
-Apache" (alt efter pakken), som installeres i f.eks.
-<filename>/usr/local/apache</filename> og som kører på port 80.
-</para>
+   <para>
+    Apache ejes og styres af Apache Software Foundation og er frit og
+    gratis.
+   </para>
 
-<para>
-I Debian mv. installeres de binære filer under <filename>/usr/sbin/</filename>
-og opsætningsfiler findes i <filename>/etc/apache/</filename>.
-I Debian startes og stoppes Apache bedst hvis man anvender
-programmet i /etc/init.d/debian, der også kan anvendes til at
-genindlæse en opdateret opsætningsfil.
-</para>
+   <para>
+    Apache er i skrivende stund nået til version 1.3.17, og er en af
+    de mest stabile webservere. Dens markedsandel på ca. 60% af
+    internettet er vist det mest sigende bevis på hvor god den er.
+    For tiden sker udviklingsarbejded på Apache 2.0, mens 1.3-serien
+    kun får rettet fejl.  Sammenlignet med 1.3-serien er 2.0-serien
+    langt mere modulær.
+   </para>
 
-<para>
-I Red Hat installeres Apache via <filename>apache*.rpm</filename>,
-som følger med distributionen. Skal du have PHP4 med så skal du
-dernæst installere <filename>mod_php-4.0*.rpm</filename>.
-Webserveren sættes op til at din dokument-root (der hvor filer
-gemmes) i <filename>/var/www/html/</filename>. 
-</para>
+   <para>
+    Har du brug for en meget hurtig webserver (Apache er hurtig), så
+    findes Tux-1.0, som er tunet meget kraftigt til en performance,
+    der oftest ligger langt over en tilsvarende MS IIS.
+   </para>
+  </sect2>
+ </sect1>
 
-<para>
-Dette kan være en løsning, hvis du blot har brug for at se hvorledes
-dine dokumenter ser ud når de kommer fra en browser, men hvis du for
-alvor vil lære Apache at kende, og vil være sikker på hvad der faktisk
-er oversat ind i serveren, er det ofte en god ide at installere den
-direkte fra kildeteksten.
-</para>
-</sect2>
+ <sect1 id="apache-installation">
+  <title>Apache-installation</title>
 
-<sect2 id="apache-installation-fra-kildeteksten">
-<title>Apache installation fra tar-pakker</title>
-<para>
-For at installere (og anvende) Apache, behøver du ikke
-systemadministratorrettigheder på
-maskinen. Der vil blot være nogle begrænsninger af hvor du kan
-installere den og hvilke porte den kan køre på.  Hvis du ikke vil
-installere den som systemadministrator, skal serveren køre på et portnummer over
-1024 (ofte anvendes 8000, 8080 eller 8088).
-</para>
+  <indexterm>
+   <primary>Webserver</primary>
+   <secondary>Apache installation</secondary>
+  </indexterm>
 
-<para>
-Du kan hente seneste udgave af Apache serveren fra <ulink
-url="http://www.apache.org/dist/">http://www.apache.org/dist/</ulink>
-(eller en nærmere spejling). Filen du skal bruge hedder
-<filename>apache_&lt;versionsnummer&gt;.tar.gz</filename>.
-</para>
+  <indexterm>
+   <primary>installation af</primary>
+   <secondary>Apache</secondary>
+  </indexterm>
 
-<para>
- Filen pakkes ud med kommandoen <command>tar xzvf
-apache_&lt;versionsnummer&gt;.tar.gz</command>.  Nu har du hele
-kildeteksten liggende i et katalog der hedder
-<command>apache_&lt;versionsnummer&gt;</command>.  Gå ind i
-biblioteket (<command>cd apache_&lt;versionsnummer&gt;</command>).
-</para>
+  <para>
+   Når du skal installere en Apache webserver, skal du sikre dig, at
+   du har seneste udgave.  Du kan enten vælge at installere den gennem
+   dit systems pakkehåndtering (Debian- eller RPM-pakker) eller
+   oversætte den selv fra kildeteksten.  Som udgangspunkt anbefales
+   det, at du installerer fra kildeteksten, da det ikke er svært og
+   det giver dig mulighed for selv at bestemme hvilke moduler, der
+   oversættes ind i Apache.
 
-<para>
-At få installeret og startet en Apache webserver kræver normalt kun
-følgende trin:
-</para>
+   <!-- Jacob Sparre Andersen mener at man altid bør bruge systemets
+        pakkehåndtering.  Man kan så eventuelt selv bygge pakken, så
+        den passer til ens ønsker.  -->
+  </para>
+
+  <sect2 id="apache-installation-fra-pakker">
+   <title>Apache installation fra pakker</title>
+
+   <para>
+    Du kan normalt finde pakker til Red Hat, Debian og andre
+    Linux-distributioner med Apache.  At anvende pakker kræver normalt
+    at du har systemadministratorrettigheder på maskinen, du vil
+    installere serveren på.  Hvis du vælger at benytte en sådan, vil
+    du normalt blot få en "standard Apache" (alt efter pakken), som
+    installeres i f.eks.  <filename>/usr/local/apache</filename> og
+    som kører på port 80.
+   </para>
+
+   <para>
+    I Debian mv. installeres de binære filer under
+    <filename>/usr/sbin/</filename> og opsætningsfiler findes i
+    <filename>/etc/apache/</filename>.  I Debian startes og stoppes
+    Apache bedst hvis man anvender programmet i /etc/init.d/debian,
+    der også kan anvendes til at genindlæse en opdateret
+    opsætningsfil.
+   </para>
+
+   <para>
+    I Red Hat installeres Apache via <filename>apache*.rpm</filename>,
+    som følger med distributionen. Skal du have PHP4 med så skal du
+    dernæst installere <filename>mod_php-4.0*.rpm</filename>.
+    Webserveren sættes op til at din dokument-root (der hvor filer
+    gemmes) i <filename>/var/www/html/</filename>.
+   </para>
+
+   <para>
+    Dette kan være en løsning, hvis du blot har brug for at se
+    hvorledes dine dokumenter ser ud når de kommer fra en browser, men
+    hvis du for alvor vil lære Apache at kende, og vil være sikker på
+    hvad der faktisk er oversat ind i serveren, er det ofte en god ide
+    at installere den direkte fra kildeteksten.
+   </para>
+  </sect2>
+
+  <sect2 id="apache-installation-fra-kildeteksten">
+   <title>Apache installation fra tar-pakker</title>
+
+   <para>
+    For at installere (og anvende) Apache, behøver du ikke
+    systemadministratorrettigheder på maskinen. Der vil blot være
+    nogle begrænsninger af hvor du kan installere den og hvilke porte
+    den kan køre på.  Hvis du ikke vil installere den som
+    systemadministrator, skal serveren køre på et portnummer over 1024
+    (ofte anvendes 8000, 8080 eller 8088).
+   </para>
+
+   <para>
+    Du kan hente seneste udgave af Apache serveren fra <ulink
+    url="http://www.apache.org/dist/">http://www.apache.org/dist/</ulink>
+    (eller en nærmere spejling). Filen du skal bruge hedder
+    <filename>apache_&lt;versionsnummer&gt;.tar.gz</filename>.
+   </para>
+
+   <para>
+    Filen pakkes ud med kommandoen <command>tar xzvf
+    apache_&lt;versionsnummer&gt;.tar.gz</command>.  Nu har du hele
+    kildeteksten liggende i et katalog der hedder
+    <command>apache_&lt;versionsnummer&gt;</command>.  Gå ind i
+    biblioteket (<command>cd apache_&lt;versionsnummer&gt;</command>).
+   </para>
+
+   <para>
+    At få installeret og startet en Apache webserver kræver normalt kun
+    følgende trin:
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>./configure --prefix=PREFIX</USERINPUT>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>make</USERINPUT>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>make install</USERINPUT>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>PREFIX/bin/apachectl start</USERINPUT>
+<prompt>[root@linus /root]# </prompt><userinput>./configure --prefix=PREFIX</userinput>
+<prompt>[root@linus /root]# </prompt><userinput>make</userinput>
+<prompt>[root@linus /root]# </prompt><userinput>make install</userinput>
+<prompt>[root@linus /root]# </prompt><userinput>PREFIX/bin/apachectl start</userinput>
 </screen>
+   </para>
 
-<para>
-I linje 01 defineres opsætningen af Apache. Her er det kun hvor den
-installeres, der ændres.  I stedet for PREFIX skal du skrive stien til
-det bibliotek hvor du vil have den installeret
-(f.eks. <filename>/home/myuser/apache</filename>). 
-Apache har også nogle foruddefinerede præfikser såsom Red Hat-layout.
-I stedet skrives så <command>--with-layout=RedHat</command>.
-Se <filename>config.layout</filename> for andre layouts.
-Du kan til <command>configure</command>-kommandoen også angive en
-lang række andre parametre, som
-ændre på hvilke moduler der installeres, hvilken bruger den vil køre
-som osv. Du kan ændre på en stor del af de samme parametre efter
-Apache er blevet oversat og installeret.
-</para>
+   <para>
+    I linje 1 defineres opsætningen af Apache. Her er det kun hvor den
+    installeres, der ændres.  I stedet for PREFIX skal du skrive stien
+    til det bibliotek hvor du vil have den installeret
+    (f.eks. <filename>/home/myuser/apache</filename>).  Apache har
+    også nogle foruddefinerede præfikser såsom Red Hat-layout.  I
+    stedet skrives så <command>--with-layout=RedHat</command>.  Se
+    <filename>config.layout</filename> for andre layouts.  Du kan til
+    <command>configure</command>-kommandoen også angive en lang række
+    andre parametre, som ændre på hvilke moduler der installeres,
+    hvilken bruger den vil køre som osv. Du kan ændre på en stor del
+    af de samme parametre efter Apache er blevet oversat og
+    installeret.
+   </para>
 
-<para>
-Linje 02 bygger selve webserveren. På en standard Linux-maskine vil
-der normalt ikke ske andet end at hele byggeprocessen skrives ud på
-skærmen.
-</para>
+   <para>
+    Linje 2 bygger selve webserveren. På en standard Linux-maskine vil
+    der normalt ikke ske andet end at hele byggeprocessen skrives ud
+    på skærmen.
+   </para>
 
-<para>
-Linje 03 installerer serveren. Hvis du har valgt standard
-installationen skal du skifte til brugeren "root" for at installere
-den. Det samme gælder hvis du har valgt at installere Apache et sted
-hvor din bruger ikke har skrive adgang (trin 01 og 02 kan sagtens
-udføres som din normale bruger).
-</para>
+   <para>
+    Linje 3 installerer serveren. Hvis du har valgt
+    standardinstallationen skal du skifte til brugeren "root" for at
+    installere den.  Det samme gælder hvis du har valgt at installere
+    Apache et sted hvor din bruger ikke har skrive adgang (trin 1 og 2
+    kan sagtens udføres uden systemadministratorrettigheder).
+   </para>
 
-<para>
-Linje 04 starter webserveren. Inden du gør dette vil du dog normalt
-skulle ændre i opsætningsfilerne, hvilket er beskrevet nærmere i
-næste afsnit. Hvis du starter den uden yderligere ændringer, kan du
-normalt finde din nye webserver på adressen: <ulink
-url="http://localhost:8080/">http://localhost:8080/</ulink>.  Husk
-igen at erstatte PREFIX med stien til installations-biblioteket.
-</para>
+   <para>
+    Linje 4 starter webserveren. Inden du gør dette vil du dog normalt
+    skulle ændre i opsætningsfilerne, hvilket er beskrevet nærmere i
+    næste afsnit. Hvis du starter den uden yderligere ændringer, kan
+    du normalt finde din nye webserver på adressen: <ulink
+    url="http://localhost:8080/">http://localhost:8080/</ulink>.  Husk
+    igen at erstatte PREFIX med stien til installations-biblioteket.
+   </para>
+  </sect2>
+ </sect1>
 
-</sect2>
-</sect1>
+ <sect1 id="apache-opsaetning">
+  <title>Opsætning af Apache</title>
 
-<sect1 id="apache-opsaetning">
-<title>Opsætning af Apache</title>
-<indexterm><primary>Apache</primary>
-<secondary>opsætning</secondary></indexterm>
+  <indexterm>
+   <primary>Apache</primary>
+   <secondary>opsætning</secondary>
+  </indexterm>
 
-<para>
- Apaches opsætningsfiler kan du finde i <filename>PREFIX/conf</filename>. Den
- fil du skal have fat i er <filename>httpd.conf</filename>. På
- Red Hat og SuSE-systemer finder du filen i <filename>/etc/httpd/conf/</filename>.
- Denne fil indeholder et hav af valgmuligheder, så vi vil kun lige berøre de
- mest basale her.
-</para>
+  <indexterm>
+   <primary>opsætning af</primary>
+   <secondary>Apache</secondary>
+  </indexterm>
 
-<sect2>
-<title>Port</title>
-<para>
-Denne parameter angiver hvilken port Apache skal lytte på. Normalt
-kører en webserver på port 80, hvilket den dog kun kan hvis du har
-installeret den som "root". Hvis du har installeret Apache som standard
-bør du nok vælge port 80.
-</para>
-</sect2>
+  <para>
+   Apaches opsætningsfiler kan du finde i
+   <filename>PREFIX/conf</filename>. Den fil du skal have fat i er
+   <filename>httpd.conf</filename>. På Red Hat og SuSE-systemer finder
+   du filen i <filename>/etc/httpd/conf/</filename>.  Denne fil
+   indeholder et hav af valgmuligheder, så vi vil kun lige berøre de
+   mest basale her.
+  </para>
 
-<sect2 id="apache-logfiler">
-<title>Logfiler</title>
-<indexterm><primary>Apache</primary>
-<secondary>logfiler</secondary></indexterm>
-<para>
-Apache laver to logfiler som udgangspunkt - en tilgangslog, som
-fortæller hvem der har besøgt din server, og en fejllog, som
-fortæller dig om alle fejl der opstår mens serveren kører. Hvilke
-oplysninger, der står i din tilgangslog afhænger af dels hvilke du
-sætter serveren til at skrive og dels hvilke oplysninger klienten
-vil aflevere. Det første sætter du op i et LogFormat-direktiv.  I standard
-<filename>httpd.conf</filename>-filen er der lavet fire skabeloner (combined,
-common, referer og agent), men du kan naturligvis også lave dit eget format.
-</para>
+  <sect2>
+   <title>Port</title>
 
-<para>
-For fejlloggen kan du også bestemme hvor alvorlige begivenheder skal
-være førend de skrives ned - dette defineres på 8 forskellige niveauer
-(fra debug til emergency).
-</para>
+   <para>
+    Denne parameter angiver hvilken port Apache skal lytte på. Normalt
+    kører en webserver på port 80, hvilket den dog kun kan hvis du har
+    installeret den som "root". Hvis du har installeret Apache som
+    standard bør du nok vælge port 80.
+   </para>
+  </sect2>
 
-<para>
-En tredie type logfil som kan være meget nyttig hvis du vil afvikle
-CGI-programmer på din webserver, er ScriptLog. Denne logfil vil føre
-en log over de fejlbeskeder dine CGI-programmer afgiver.  Det er dog
-vigtigt at der sættes en maksimum på størrelsen af denne logfil, da
-den ellers hurtigt kan blive for stor. Dette kan gøres med parameteren
-ScriptLogLength.  Eksempel på anvendelse:
-</para>
+  <sect2 id="apache-logfiler">
+   <title>Logfiler</title>
 
-<PROGRAMLISTING>
+   <indexterm>
+    <primary>Apache</primary>
+    <secondary>logfiler</secondary>
+   </indexterm>
+
+   <para>
+    Apache laver to logfiler som udgangspunkt &mdash; en tilgangslog, som
+    fortæller hvem der har besøgt din server, og en fejllog, som
+    fortæller dig om alle fejl der opstår mens serveren kører. Hvilke
+    oplysninger, der står i din tilgangslog afhænger af dels hvilke du
+    sætter serveren til at skrive og dels hvilke oplysninger klienten
+    vil aflevere. Det første sætter du op i et LogFormat-direktiv.  I
+    standard <filename>httpd.conf</filename>-filen er der lavet fire
+    skabeloner (combined, common, referer og agent), men du kan
+    naturligvis også lave dit eget format.
+   </para>
+
+   <para>
+    For fejlloggen kan du også bestemme hvor alvorlige begivenheder
+    skal være førend de skrives ned - dette defineres på 8 forskellige
+    niveauer (fra debug til emergency).
+   </para>
+
+   <para>
+    En tredie type logfil som kan være meget nyttig hvis du vil
+    afvikle CGI-programmer på din webserver, er ScriptLog. Denne
+    logfil vil føre en log over de fejlbeskeder dine CGI-programmer
+    afgiver.  Det er dog vigtigt at der sættes en maksimum på
+    størrelsen af denne logfil, da den ellers hurtigt kan blive for
+    stor. Dette kan gøres med parameteren ScriptLogLength.  Eksempel
+    på anvendelse:
+
+<programlisting>
 ScriptLog	PREFIX/log/scriptlog
 ScriptLogLength 5192880
-</PROGRAMLISTING>
+</programlisting>
 
-<para>
-Dette fortæller Apache at den skal lave en logfil der hedder
-scriptlog, og at denne fil må maksimalt være 5 Mb.
-</para>
-</sect2>
+    Dette fortæller Apache at den skal lave en logfil der hedder
+    scriptlog, og at denne fil må maksimalt være 5 Mb.
+   </para>
+  </sect2>
 
-<sect2 id="apache-options">
-<title>Options</title>
-<para>
-Options er en af de vigtige direktiver at kende, idet den sætte nogle
-overordende regler for det område den gælder for (Ved Files-, Directory-
-og Location-direktiverne kan man have forskellige options, der gælder
-for forskellige dele af serveren).
-</para>
+  <sect2 id="apache-options">
+   <title>Options</title>
 
-<para>
-De vigtigste parametre til Options er: 
-</para>
+   <para>
+    Options er en af de vigtige direktiver at kende, idet den sætte
+    nogle overordende regler for det område den gælder for (Ved
+    Files-, Directory- og Location-direktiverne kan man have
+    forskellige options, der gælder for forskellige dele af serveren).
+   </para>
 
-<itemizedlist mark="bullet">
+   <para>
+    De vigtigste parametre til Options er: 
 
-<listitem> 
-  <para> 
-    Indexes - som bestemmer hvorvidt man må se indhold af kataloger uden en indeks-fil.
-  </para>
-</listitem>
-<listitem> 
-  <para> 
-    ExecCGI - som bestemmer om det er muligt at køre CGI-programmer.
-  </para>
-</listitem>
-<listitem> 
-  <para> 
-     FollowSymLinks - som bestemmer om symbolske links i området skal
-  følges 
-  </para>
-</listitem>
-</itemizedlist>
-</sect2>
+    <itemizedlist mark="bullet">
+     <listitem>
+      <para>
+       Indexes - som bestemmer hvorvidt man må se indhold af kataloger
+       uden en indeks-fil.
+      </para>
+     </listitem>
+     <listitem>
+      <para>
+       ExecCGI - som bestemmer om det er muligt at køre
+       CGI-programmer.
+      </para>
+     </listitem>
+     <listitem>
+      <para>
+       FollowSymLinks - som bestemmer om symbolske links i området
+       skal følges
+      </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </sect2>
 
-<sect2 id="apache-files-etc">
-<title>Files, Directory og Location</title>
-<para>
-Gennem Files- og Location-direktiverne kan du påføre specielle regler
-for dele af din webserver.  Dette kunne f.eks. være at et givet
-område kun kunne ses, hvis man sad på serveren selv eller ligende.
-</para>
+  <sect2 id="apache-files-etc">
+   <title>Files, Directory og Location</title>
 
-<para>
-Location anvendes til at implementere regler relativt i forhold
-til deres URL. Alt i området <filename>/spoing/</filename> må kun ses
-fra .dk domæner eller ligende.
-</para>
+   <para>
+    Gennem Files- og Location-direktiverne kan du påføre specielle
+    regler for dele af din webserver.  Dette kunne f.eks. være at et
+    givet område kun kunne ses, hvis man sad på serveren selv eller
+    ligende.
+   </para>
 
-<para>
-Directory anvendes til at implementere regler, men tager udgangspunkt
-i filsystemet. Således ville man f.eks. kunne implementere en regel
-der beskyttede alt der ligger i
-<filename>/home/web/htdocs/spoing/</filename>, så det kun kan ses fra
-.dk domæner.
-</para>
+   <para>
+    Location anvendes til at implementere regler relativt i forhold
+    til deres URL. Alt i området <filename>/spoing/</filename> må kun
+    ses fra .dk-domæner eller ligende.
+   </para>
 
-<para>
-Files kan anlægge filtre der gælder på fil-niveau. Typiske anvendelser
-af Files, kunne f.eks. være at sikre at dine
-<filename>.htaccess</filename>-filer og opsætningsfiler ikke kan hentes af
-almindelige brugere. Hvis du bruger emacs vil den ofte efterlade
-sikkerhedskopier der hedder <filename>FILNAVN~</filename>. Disse kan man også
-sikre ikke kan ses gennem webserveren.
-</para>
+   <para>
+    Directory anvendes til at implementere regler, men tager
+    udgangspunkt i filsystemet. Således ville man f.eks. kunne
+    implementere en regel der beskyttede alt der ligger i
+    <filename>/home/web/htdocs/spoing/</filename>, så det kun kan ses
+    fra .dk-domæner.
+   </para>
 
-<para>
-Det er muligt at kombinere Files med enten Directory eller Location, således
-vil en given regel 
-kun gælde for nogle filer i et givet område. Et eksempel kunne være:
-</para>
+   <para>
+    Files kan anlægge filtre der gælder på fil-niveau. Typiske
+    anvendelser af Files, kunne f.eks. være at sikre at dine
+    <filename>.htaccess</filename>-filer og opsætningsfiler ikke kan
+    hentes af almindelige brugere. Hvis du bruger emacs vil den ofte
+    efterlade sikkerhedskopier der hedder
+    <filename>FILNAVN~</filename>. Disse kan man også sikre ikke kan
+    ses gennem webserveren.
+   </para>
 
-<PROGRAMLISTING>
+   <para>
+    Det er muligt at kombinere Files med enten Directory eller
+    Location, således vil en given regel kun gælde for nogle filer i
+    et givet område. Et eksempel kunne være:
+
+<programlisting>
 &lt;Directory /&gt;
       Options +ExecCGI +FollowSymLinks
       &lt;Files ~ "\.cgi$"&gt;
       SetHandler cgi-script
       &lt;/Files&gt;
 &lt;/Directory&gt;
-</PROGRAMLISTING>
+</programlisting>
+
+    Her tillades at der køres CGI-programmer, hvis de har endelsen
+    .cgi, overalt på maskinen, mens alle filer med en anden endelse
+    vil blive leveret som normalt.
+   </para>
+  </sect2>
+
+  <sect2 id="htaccess">
+<title>Adgangskode til websider</title>
+<indexterm><primary>Apache</primary><secondary>Adgangskode til websider</secondary></indexterm>
+<indexterm><primary>.htaccess</primary></indexterm>
+<indexterm><primary>htaccess</primary></indexterm>
+<indexterm><primary>httpd.conf</primary></indexterm>
+<indexterm><primary>Adgangskode</primary><secondary>htaccess</secondary></indexterm>
+<indexterm><primary>Kodeord</primary><secondary>htaccess</secondary></indexterm>
+<indexterm><primary>Password</primary><secondary>htaccess</secondary></indexterm>
+<indexterm><primary>Adgangskontrol</primary><secondary>websider</secondary></indexterm>
 
 <para>
-Her tillades at der køres CGI-programmer, hvis de har endelsen .cgi,
-overalt på maskinen, mens alle filer med en anden endelse vil blive
-leveret som normalt.
-</para>
-</sect2>
-
-<SECT2 ID="htaccess">
-<TITLE>Adgangskode til websider</TITLE>
-<INDEXTERM><PRIMARY>Apache</PRIMARY><SECONDARY>Adgangskode til websider</SECONDARY></INDEXTERM>
-<INDEXTERM><PRIMARY>.htaccess</PRIMARY></INDEXTERM>
-<INDEXTERM><PRIMARY>htaccess</PRIMARY></INDEXTERM>
-<INDEXTERM><PRIMARY>httpd.conf</PRIMARY></INDEXTERM>
-<INDEXTERM><PRIMARY>Adgangskode</PRIMARY><SECONDARY>htaccess</SECONDARY></INDEXTERM>
-<INDEXTERM><PRIMARY>Kodeord</PRIMARY><SECONDARY>htaccess</SECONDARY></INDEXTERM>
-<INDEXTERM><PRIMARY>Password</PRIMARY><SECONDARY>htaccess</SECONDARY></INDEXTERM>
-<INDEXTERM><PRIMARY>Adgangskontrol</PRIMARY><SECONDARY>websider</SECONDARY></INDEXTERM>
-
-<PARA>
 Med Apache er det muligt at sætte adgangskode på udvalgte dele af et websted
 hvis modulet <filename>mod_access</filename> er installeret.
 Dette kan bruges til at sikre at kun familie, venner og kollegaer får adgang
@@ -376,127 +432,127 @@ til nogle bestemt sider på dit websted.
 Første gang adgangskode skal sættes op er det lidt besværligt at få overblikket.
 Derfor har vi sat en realistisk side op og taget filerne direkte der fra.
 Følgende filer indgår i opsætningen af adgangskode.
-</PARA>
+</para>
 
 <ITEMIZEDLIST MARK="BULLET">
-<LISTITEM><PARA><FILENAME>.htaccess</FILENAME> - denne fil ligger i det sub-dir der skal beskyttes</PARA></LISTITEM>
-<LISTITEM><PARA><FILENAME>/home/chlor/htuser</FILENAME> - filen med brugernavne</PARA></LISTITEM>
-<LISTITEM><PARA><FILENAME>/home/chlor/htgroup</FILENAME> - eventuelt en fil med grupper</PARA></LISTITEM>
-<LISTITEM><PARA><FILENAME>/etc/httpd/conf/httpd.conf - apache konfigurations file (redhat sti)</PARA></LISTITEM>
+<listitem><para><filename>.htaccess</filename> - denne fil ligger i det sub-dir der skal beskyttes</para></LISTITEM>
+<listitem><para><filename>/home/chlor/htuser</filename> - filen med brugernavne</para></LISTITEM>
+<listitem><para><filename>/home/chlor/htgroup</filename> - eventuelt en fil med grupper</para></LISTITEM>
+<listitem><para><filename>/etc/httpd/conf/httpd.conf</filename> - apache konfigurations file (redhat sti)</para></LISTITEM>
 </ITEMIZEDLIST>
 
-<PARA>
+<para>
 Først skal der oprettes en fil med få brugere.
 For nemheds skyld kaldes den ene bruger for 'demo' med adgangskoden 'demo'.
 Man kan selv vælge hvad filen skal hedde og hvor den skal ligge.
 Her hedder bruger-filen <filename>/home/chlor/htuser</filename>.
-Ved første bruger skal filen oprettes med <COMMAND>-c</COMMAND>.
+Ved første bruger skal filen oprettes med <command>-c</command>.
 Herunder oprettes brugeren 'demo' og 'john'.
-</PARA>
+</para>
 
 <SCREEN>
-<PROMPT>[chlor@sslug]$</PROMPT> <USERINPUT>htpasswd -c /home/chlor/htuser demo</USERINPUT>
-<PROMPT>[chlor@sslug]$</PROMPT> <USERINPUT>htpasswd /home/chlor/htuser john</USERINPUT>
+<prompt>[chlor@sslug]$</prompt> <userinput>htpasswd -c /home/chlor/htuser demo</userinput>
+<prompt>[chlor@sslug]$</prompt> <userinput>htpasswd /home/chlor/htuser john</userinput>
 </SCREEN>
 
-<PARA>
-Pas på ikke at bruge kommandoen <COMMAND>-c</COMMAND> anden gang, for
+<para>
+Pas på ikke at bruge kommandoen <command>-c</command> anden gang, for
 så slettes filen.
 Filen med de to brugere ser nu således ud:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 demo:2iYw72d6bnpxg
 john:..HEJdavUser2
-</PROGRAMLISTING>
+</programlisting>
 
-<PARA>
+<para>
  Begge adgangskoder er krypteret med 'crypt', så de kan ikke læses. Brugeren
  'john's adgangskoder er ikke det du ser, men noget meget kryptisk. Med
  brugerfilen oprettet, kan den første <filename>.htaccess</filename> oprettes.
  I dette eksempel ligger filen i
  <filename>/home/chlor/public_html/htaccess/</filename> og ser således ud:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 AuthType Basic
 AuthName "Beskyttet webside"
 AuthUserFile /home/chlor/htuser
 Require valid-user
-</PROGRAMLISTING>
+</programlisting>
 
-<PARA>
- <COMMAND>AuthType</COMMAND> er sat til <COMMAND>Basic</COMMAND> da det er det
- enkleste. <COMMAND>AuthName</COMMAND> er den tekst, der vises når man skal
+<para>
+ <command>AuthType</command> er sat til <command>Basic</command> da det er det
+ enkleste. <command>AuthName</command> er den tekst, der vises når man skal
  logge ind på siden. Det nemmeste er at se på eksempel her:
 <ULINK URL="http://www.sslug.dk/~chlor/htaccess/">http://www.sslug.dk/~chlor/htaccess/</ULINK>
 hvor du samtidigt kan prøve at logge ind.
-Alle brugere der er nævnt i <FILENAME>/home/chlor/htuser</FILENAME> har adgang
-ved at bruge kommandoen <COMMAND>Require valid-user</COMMAND>.
-</PARA>
+Alle brugere der er nævnt i <filename>/home/chlor/htuser</filename> har adgang
+ved at bruge kommandoen <command>Require valid-user</command>.
+</para>
 
-<PARA>
+<para>
 Dernæst ønsker vi et andet subdir hvor kun 'demo' og 'john' har adgang.
 Dette kan gøres enten ved at skrive alle de brugere der har adgang,
 eller ved at oprette en gruppe fil.
 Det nemmeste er at skrive navnene, og så ser filen
-<FILENAME>/home/chlor/public_html/htaccess/demojohn/.htaccess</FILENAME>
+<filename>/home/chlor/public_html/htaccess/demojohn/.htaccess</filename>
 således ud:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 AuthType Basic
 AuthName "Beskyttet demojohn"
 AuthUserFile /home/chlor/htuser
 Require user john demo
-</PROGRAMLISTING>
+</programlisting>
 
-<PARA>
+<para>
 Har man mange forskellige sub-dir der nemmest administreres gruppevis,
 oprettes en gruppefil med navnet
-<FILENAME>/home/chlor/htgroup</FILENAME> 
-hvor gruppen hedder <COMMAND>fortrolig</COMMAND>
+<filename>/home/chlor/htgroup</filename> 
+hvor gruppen hedder <command>fortrolig</command>
 med følgende indhold:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 fortrolig: john demo
-</PROGRAMLISTING>
+</programlisting>
 
-<PARA>
+<para>
 Et nyt sub-dir oprettes hvor kun denne gruppe har adgang, i dette
-eksempel <FILENAME>/hemmelig/</FILENAME>.
-En ny <FILENAME>.htaccess</FILENAME> oprettes i
-<FILENAME>/home/chlor/public_html/htaccess/hemmelig/</FILENAME>
+eksempel <filename>/hemmelig/</filename>.
+En ny <filename>.htaccess</filename> oprettes i
+<filename>/home/chlor/public_html/htaccess/hemmelig/</filename>
 med følgende indhold:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 AuthType Basic
 AuthName "Beskyttet gruppe"
 AuthUserFile /home/chlor/htuser
 AuthGroupFile /home/chlor/htgroup
 Require group fortrolig
-</PROGRAMLISTING>
+</programlisting>
 
-<PARA>
+<para>
 Ovenstående kan afprøves her: 
 <ULINK URL="http://www.sslug.dk/~chlor/htaccess/hemmelig/">http://www.sslug.dk/~chlor/htaccess/hemmelig/</ULINK>.
 Er du allerede logget ind på siden med 'demo', må du enten prøve med programmet
-<COMMAND>lynx</COMMAND> eller lukke din browser ned og starte den igen for at blive
+<command>lynx</command> eller lukke din browser ned og starte den igen for at blive
 spurgt om adgangskode igen, samt se teksten "Beskyttet gruppe".
-</PARA>
+</para>
 
-<PARA>
-I det sidste eksempel på en <FILENAME>.htaccess</FILENAME> fil, er det kun
-brugeren 'john' der kan udføre en <COMMAND>POST</COMMAND> kommando,
+<para>
+I det sidste eksempel på en <filename>.htaccess</filename> fil, er det kun
+brugeren 'john' der kan udføre en <command>POST</command> kommando,
 hvor alle andre brugere
-kun kan udføre en <COMMAND>GET</COMMAND>.
+kun kan udføre en <command>GET</command>.
 Dette kan bruges i et sub-dir hvor det kun er 'john' der må bruge en html-side
-med en submit-knap der udfører en <COMMAND>POST</COMMAND>.
-</PARA>
+med en submit-knap der udfører en <command>POST</command>.
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 AuthType Basic
 AuthName "Beskyttet, kun john må skrive"
 AuthUserFile /home/chlor/htuser
@@ -509,14 +565,14 @@ Require valid-user
 &lt;LIMIT GET POST&gt;
 Require user john
 &lt;/LIMIT&gt;
-</PROGRAMLISTING>
+</programlisting>
 
 
-<PARA>
+<para>
  For at aktiverer adgangskoder skal apaches konfigurations file /etc/httpd/conf/httpd.conf rettes fra:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 #
 # This should be changed to whatever you set DocumentRoot to.
 #
@@ -525,13 +581,13 @@ Require user john
 AllowOverride None
 ....
 &lt;/Directory&gt;
-</PROGRAMLISTING>
+</programlisting>
 
-<PARA>
+<para>
  Til:
-</PARA>
+</para>
 
-<PROGRAMLISTING>
+<programlisting>
 #
 # This should be changed to whatever you set DocumentRoot to.
 #
@@ -540,9 +596,9 @@ AllowOverride None
 AllowOverride All
 ....
 &lt;/Directory&gt;
-</PROGRAMLISTING>
+</programlisting>
 
-</SECT2>
+</sect2>
 
 <sect2 id="apache-virtuelle-hosts">
  <title>Virtuelle værter med Apache</title>
@@ -564,10 +620,10 @@ AllowOverride All
   sit webserver maskinnavn. Eksempel for et hjemmenetværk:
  </para>
 
-<PROGRAMLISTING>
+<programlisting>
 192.168.1.1     www.hjemmenet www
 192.168.1.1     test.hjemmenet test 
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 Dernæst skal webserveren sættes op, så de to virtuelle webservere
@@ -584,7 +640,7 @@ Man skal redigere <filename>httpd.conf</filename> (Red Hat
 <filename>/etc/httpd/conf/httpd.conf</filename>). Led efter følgende tekst
 </para>
 
-<PROGRAMLISTING>
+<programlisting>
 ### Section 3: Virtual Hosts
 #
 # VirtualHost: If you want to maintain multiple domains/hostnames on your
@@ -593,7 +649,7 @@ Man skal redigere <filename>httpd.conf</filename> (Red Hat
 # for further details before you try to setup virtual hosts.
 # You may use the command line option '-S' to verify your virtual host
 # configuration.
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 Efter dette indsætter du først IP-adressen på webserveren under
@@ -601,7 +657,7 @@ Efter dette indsætter du først IP-adressen på webserveren under
 </para>
 
 
-<PROGRAMLISTING>
+<programlisting>
 NameVirtualHost 192.168.1.1
 
 &lt;VirtualHost 192.168.1.1&gt;
@@ -637,7 +693,7 @@ NameVirtualHost 192.168.1.1
   ErrorLog logs/test-error_log
   CustomLog logs/test-access_log common
 &lt;/VirtualHost&gt;
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 Som det kan ses har vi tilladt at man følger links "FollowSymLinks"
@@ -651,9 +707,9 @@ webserveren skal fortolke hjemmesider, så du kan opdele siderne i
 forskellige filer, der så indlæses af serveren via linier, såsom
 </para>
 
-<PROGRAMLISTING>
+<programlisting>
 &lt;!--#include virtual="venstremenu.incl" --&gt;
-</PROGRAMLISTING>
+</programlisting>
 </sect2>
 
 </sect1>
@@ -822,9 +878,9 @@ kan laves ved som brugeren root at køre:
 
 
 <screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /etc/httpd/conf</USERINPUT>
-<PROMPT>[root@linus /etc/httpd/conf]#</PROMPT> <USERINPUT>rm ssl.crt/server.crt</USERINPUT>
-<PROMPT>[root@linus /etc/httpd/conf]#</PROMPT> <USERINPUT>make testcert</USERINPUT>                          
+<prompt>[root@linus /root]# </prompt><userinput>cd /etc/httpd/conf</userinput>
+<prompt>[root@linus /etc/httpd/conf]# </prompt><userinput>rm ssl.crt/server.crt</userinput>
+<prompt>[root@linus /etc/httpd/conf]# </prompt><userinput>make testcert</userinput>                          
 </screen>
 
 <para>
@@ -875,12 +931,12 @@ derfor skal du tilføje disse to linier til
 <filename>/etc/http/conf/httpd.conf</filename>:
 </para>
 
-<PROGRAMLISTING>
+<programlisting>
 # For de almindelige WML-sider
 AddType text/vnd.wap.wml     .wml
 # For WML indlejret grafik
 AddType image/vnd.wap.wbmp   .wbmp    
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 Nu skal du bare genstarte Apache, og du har en WAP-server. Lad os lige
@@ -894,7 +950,7 @@ tage to eksempler.
 Det enkleste eksempel på en WAP-side er nok denne
 </para>
 
-<PROGRAMLISTING>
+<programlisting>
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN"
    "http://www.wapforum.org/DTD/wml_1.1.xml"&gt;
@@ -905,7 +961,7 @@ Her kommer teksten på min f&amp;oslash;rste WAP-side
   &lt;/p&gt;
  &lt;/card&gt;
 &lt;/wml&gt;
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 Det vigtigste, der skal bemærkes sammenlignet med HTML, er at næsten alle
@@ -924,7 +980,7 @@ kan ses i næste eksempel
 </para>
 
 
-<PROGRAMLISTING>
+<programlisting>
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN"
    "http://www.wapforum.org/DTD/wml_1.1.xml"&gt;
@@ -937,7 +993,7 @@ kan ses i næste eksempel
     &lt;/p&gt;
   &lt;/card&gt;
 &lt;/wml&gt;
-</PROGRAMLISTING>
+</programlisting>
 </example>
 
 <para>
@@ -971,41 +1027,41 @@ Når et PHP-program starter med at sende data tilbage til modtageren,
 sender PHP først noget et <emphasis>HTTP-hoved</emphasis>.
 Hovedet indeholder dato, serverudgave og meget andet, men især
 hvilken type data der vil blive sendt.
-Hvis intet er anført i hovedet sendes <EMPHASIS>Content-type: text/html</EMPHASIS>,
+Hvis intet er anført i hovedet sendes <emphasis>Content-type: text/html</EMPHASIS>,
 og dette kan ændres med en enkelt kommando: 
-<EMPHASIS>Content-type: text/vnd.wap.wml</EMPHASIS>.
-Herunder er eksemplet fra før hvor filen hedder <FILENAME>test.php</FILENAME> i stedet
-for <FILENAME>test.wml</FILENAME>, hvorefter Apache vil overgive kontrollen med
+<emphasis>Content-type: text/vnd.wap.wml</EMPHASIS>.
+Herunder er eksemplet fra før hvor filen hedder <filename>test.php</filename> i stedet
+for <filename>test.wml</filename>, hvorefter Apache vil overgive kontrollen med
 filen til PHP.
 </para>
 
-<PROGRAMLISTING>
-<COMMAND>&lt;?php
+<programlisting>
+<command>&lt;?php
    // Filnavn: test.php
    header("Content-type: text/vnd.wap.wml");
-?&gt;</COMMAND>&lt;?xml version="1.0"?&gt;
+?&gt;</command>&lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN"
    "http://www.wapforum.org/DTD/wml_1.1.xml"&gt;
 &lt;wml&gt;
  &lt;card id='home'&gt;
   &lt;p&gt;
-  Dato idag er <COMMAND>&lt;?php echo date("Y-m-d"); ?&gt;</COMMAND>
+  Dato idag er <command>&lt;?php echo date("Y-m-d"); ?&gt;</command>
   &lt;/p&gt;
  &lt;/card&gt;
 &lt;/wml&gt;
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 I Perl skrives HTTP-hovedet i starten og efterfølges af to '\n'.
 Dette eksempel skal placeres i <filename>/cgi-bin/</filename>-kataloget.
 </para>
 
-<PROGRAMLISTING>
+<programlisting>
 #!/usr/bin/perl -w
 # Filnavn: test.pl
  
 # Bemærk to gange '\n' som afslutter HTTP-hovedet
-<COMMAND>print "Content-type: text/vnd.wap.wml\n\n";</COMMAND>
+<command>print "Content-type: text/vnd.wap.wml\n\n";</command>
  
 print "&lt;?xml version=\"1.0\"?&gt;\n";
 print "&lt;!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.1//EN\"\n";
@@ -1016,11 +1072,11 @@ print "  &lt;p&gt;\n";
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
     = localtime(time);
 my $today=sprintf("%04d-%02d-%02d",$year+1900,$mon+1,$mday);
-<COMMAND>print "  Dato idag er $today\n";</COMMAND>
+<command>print "  Dato idag er $today\n";</command>
 print "  &lt;/p&gt;\n";
 print "  &lt;/card&gt;\n";
 print "&lt;/wml&gt;\n";
-</PROGRAMLISTING>
+</programlisting>
 
 <para>
 SSLUG har eksempelvis siden november 1999 vist sin kalender i WAP/PHP-format.
