@@ -283,16 +283,16 @@
 
 <screen>
 <prompt>[daisy@linus daisy]$ </prompt><userinput>cvs \
--d sparre@cvs.sslug.dk:/usr/local/CVSROOT checkout linuxbog</userinput>
+-d daisy@cvs.sslug.dk:/usr/local/CVSROOT checkout linuxbog</userinput>
 </screen>
 
    <itemizedlist>
     <listitem>
      <para>
-      "-d sparre@cvs.sslug.dk:/usr/local/CVSROOT" betyder 
+      "-d daisy@cvs.sslug.dk:/usr/local/CVSROOT" betyder 
       at det CVS-arkiv projektet skal hentes fra ligger i kataloget
       <filename>/usr/local/CVSROOT</filename> på maskinen
-      "cvs.sslug.dk" og at du vil hente det som brugeren "sparre".
+      "cvs.sslug.dk" og at du vil hente det som brugeren "daisy".
      </para>
     </listitem>
 
@@ -613,6 +613,56 @@ log-beskeder direkte
 </screen>
     og her kan et udgavenummer tilføjes, så man kan se, hvordan den lokale
     kildetekst afviger fra kildeteksten med den valgte revision.
+   </para>
+  </sect3>
+
+  <sect3 id="cvs-doervogter">
+   <title><command>cvs diff</command></title>
+
+   <indexterm>
+    <primary>CVS gennem en dørvogter</primary>
+   </indexterm>
+
+   <indexterm>
+   <indexterm>
+    <primary>CVS med SSH på en alternativ port</primary>
+   </indexterm>
+
+   <indexterm>
+    <primary>dørvogter</primary>
+    <secondary>CVS gennem</secondary>
+   </indexterm>
+
+   <indexterm>
+    <primary>SSH på en alternativ port</primary>
+    <secondary>CVS gennem</secondary>
+   </indexterm>
+
+   <para>
+    Hvis CVS-arkivet ligger på en maskine der står bag en dørvogter eller
+    SSH af andre mystiske omstændigheder ikke kører på port 22 er det lidt
+    sværere at få <command>cvs</command> til at kontakte arkivet. Problemet
+    kan klares ved at man fortæller SSH hvilken port SSH kører på
+    <emphasis>uden</emphasis> at fortælle CVS det. Det gør man i SSH's
+    opsætningsfil <filename>$HOME/.ssh/config</filename>, hvor man for
+    eksempel kan tilføje:
+<screen>
+Host cvs.virksomhed.dk
+   Hostname cvs-bag-doervogter.virksomhed.dk
+   Port 4444
+</screen>
+    hvilket betyder at når CVS -- og dermed SSH -- bliver bedt om at kontakte
+    "cvs.virksomhed.dk" (underforstået at det er på port 22), så vil SSH i
+    virkeligheden kontakte "cvs-bag-doervogter.virksomhed.dk" på port 4444.
+   </para>
+
+   <para>
+    Nu kan du altså kontakte CVS-arkivet bag dørvogteren ganske som i
+    eksempel <xref linkend="cvs-kom-i-gang-ssh">:
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cvs \
+-d daisy@cvs.virksomhed.dk:/usr/local/CVSROOT checkout hemmeligt_projekt</userinput>
+</screen>
    </para>
   </sect3>
  </sect2>
