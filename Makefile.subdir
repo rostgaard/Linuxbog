@@ -98,6 +98,7 @@ version:
 ################################################################################
 # Pak SGML-filerne sammen
 ################################################################################
+.PHONY : sgml
 if BUILD_SGML
 sgml: $(targetname)-sgml-$(version).tar.gz
 $(targetname)-sgml-$(version).tar.gz: $(dep_sgml_filer)
@@ -116,8 +117,8 @@ endif !BUILD_SGML
 # Byg Palm Pilot udgaven
 ################################################################################
 # Laver en zip fil, kræver html target
-if BUILD_PALM
 .PHONY : palmpilot
+if BUILD_PALM
 palmpilot: $(targetname)-$(version).palm.zip
 $(targetname)-$(version).palm.zip: html
 	@echo ".........................................."
@@ -140,8 +141,8 @@ endif !BUILD_PALM
 ################################################################################
 # Pak HTML-filer ned
 ################################################################################
-if BUILD_PAKHTML
 .PHONY : pakhtml
+if BUILD_PAKHTML
 pakhtml: $(targetshortname)/$(targetname)-html-$(version).tar.gz
 
 $(targetshortname)/$(targetname)-html-$(version).tar.gz: html
@@ -174,8 +175,8 @@ endif !BUILD_PAKHTML
 ################################################################################
 # Byg HTML-filerne
 ################################################################################
-if BUILD_HTML
 .PHONY : html
+if BUILD_HTML
 html: bog/index.html 
 bog/index.html: $(dep_sgml_filer)
 	@echo ".........................................."
@@ -218,9 +219,8 @@ endif !BUILD_HTML
 ################################################################################
 # Byg PDF filen
 ################################################################################
-
-if BUILD_PDF
 .PHONY : pdf
+if BUILD_PDF
 pdf: $(targetname)-$(version).pdf
 $(targetname)-$(version).pdf: $(dep_sgml_filer)
 	@echo ".........................................."
