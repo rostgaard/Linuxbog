@@ -289,9 +289,9 @@ for at få hele skærmen gemt.
 <indexterm><primary>GIMP</primary></indexterm>
 <indexterm><primary>Photoshop</primary></indexterm>
 
-<para>Til Linux findes et ekstremt godt grafik-program <emphasis>the
-GIMP</emphasis> (the GNU Image Manipulation Program), der har den
-samme funktionalitet som Photoshop. GIMP har brushes, lag,
+<para>Til Linux findes et fremragende grafik-program <emphasis>the
+GIMP</emphasis> (the GNU Image Manipulation Program), der har stort
+set den samme funktionalitet som Photoshop. GIMP har brushes, lag,
 strukturerede underlag og meget andet. Med Gimp følger en masse ekstra
 moduler til at lave forskellige visuelle effekter (du kan endda
 programmere dine egne moduler), og GIMP har et indbygget script-sprog
@@ -368,10 +368,87 @@ Gimp.</para>
 http://gimp-savvy.com/BOOK/</ulink> findes bogen "Grokking the GIMP"
 som kan anbefales. På <ulink url="http://manual.gimp.org">
 http://manual.gimp.org</ulink> findes en brugervejledning til Gimp og
-meget andet.</para>
+meget andet. Endeligt har Eric Jeschke lavet en række fremragende
+<ulink
+url="http://cs.uhh.hawaii.edu/~jeschke/photography/articles/gimp/tutorials.shtml">
+tutorials</ulink> der gennemgår en række specifikke opgaver der er en
+virkelig god indføring i GIMP.</para>
 
 </sect2> <!-- Gimp -->
 
+
+<!-- =================================================================== -->
+<!-- Panorama billeder -->
+<!-- =================================================================== -->
+
+<sect2 id="roedeoejne">
+<title>Fjernelse af røde øjne</title>
+<indexterm><primary>Røde øjne</primary><secondary>fjernelse af</secondary></indexterm>
+<indexterm><primary>gimp-config</primary></indexterm>
+<indexterm><primary>Gimp plugin</primary><secondary>til fjernelse af røde øjne</secondary></indexterm>
+
+<para>Fjernelse af røde øjne er en operation man hurtigt kan få brug
+for, især hvis man har taget billeder med f.eks. et mindre
+digitalkamera, hvor blitzen sidder rimeligt tæt på objektivet.</para>
+
+<para>Eric Jeschke har lavet en <ulink
+url="http://cs.uhh.hawaii.edu/~jeschke/photography/articles/gimp/RedEye2/">
+tutorial</ulink> der gennemgår fjernelse af røde øjne i Gimp. Denne
+tutorial er meget nem at følge. Hvis du synes det er kompliceret, så
+bladr endelig frem til slutningen, hvor der præsenteres en måde at
+automatisere processen på. Det kræver dog at man installerer et par
+ekstra plugins til Gimp &ndash; men det er rimeligt enkelt.</para>
+
+<para>Først og fremmest skal du sørge for at de nødvendige filer til
+at oversætte plugins til Gimp er til stede. Det er blandt andet
+programmet <command>gimp-config</command> du skal have. Det følger
+formentlig med din distribution, sammen med en pakke kaldet noget i
+retning af "libgimp-devel".</para>
+
+<para>Dernæst skal du installere et plugin til at mixe farvekanaler
+med. Du kan finde plugin'et <ulink
+url="http://registry.gimp.org/plugin?id=1918">her</ulink>.
+Installationen er meget enkel</para>
+
+
+<screen><prompt>[tyge@hven ~]$ </prompt><userinput>tar -zxvf channel_mixer-1.1.tar.gz</userinput>
+channel_mixer-1.1/
+channel_mixer-1.1/channel_mixer.c
+channel_mixer-1.1/channel_mixer-intl.h
+channel_mixer-1.1/channel_mixer.html
+channel_mixer-1.1/Makefile
+channel_mixer-1.1/README
+<prompt>[tyge@hven ~]$ </prompt><userinput>cd channel_mixer-1.1/</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>make</userinput>
+...
+<prompt>[tyge@hven ~]$ </prompt><userinput>make install</userinput>
+gimp-config --install-bin channel_mixer
+/usr/bin/install -c channel_mixer /home/tyge/.gimp-1.2/plug-ins/channel_mixer
+</screen>
+
+<para><command>make</command> skridtet kan godt give et par advarsler,
+men det betyder ikke noget.</para>
+
+<para>Det næste skridt er at installere selve det script der
+automatiserer processen. Det kan findes <ulink
+url="http://cs.uhh.hawaii.edu/~jeschke/photography/articles/gimp/RedEye2/red-eye.scm">
+her </ulink>, og skal blot placeres i dit Gimp script katalog, f.eks.
+<filename>~/.gimp-1.2/scripts/</filename>.</para>
+
+<para>Nu kan du starte Gimp, f.eks. med <filename>gimp
+fil</filename>. Herefter kan du blot markere et lille område af den
+røde pupil, og vælge "Script-Fu|Markering|Red Eye...". Du kan nu
+eksperimentere med værdierne. Generelt skal man bruge lavere værdier
+for Radius og Threshold jo mindre røde øjnene er. På <xref
+linkend="roedeoejne-fig"/> kan du se et eksempel på en rødøjereduktion
+med den procedure beskrevet i dette afsnit.</para>
+
+<figure id="roedeoejne-fig" float="1">
+<title>Rødøje reduktion</title>
+<graphic fileref="roedeoejne.&magic;"  scale="50"></graphic>
+</figure>
+
+</sect2> <!-- Røde øjne -->
 
 <!-- =================================================================== -->
 <!-- Panorama billeder -->
