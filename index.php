@@ -173,8 +173,8 @@ function vistype($type) {
       )
     ),
     "itplatform" => array(
-      title => "Linux - Friheden til at vælge itplatform",
-      comment => "Valg af Linux-baseret itplatform",
+      title => "Linux - Friheden til at vælge IT-løsning",
+      comment => "Valg af Linux-baseret IT-løsning",
       auth => array(
         "Michael Rasmussen" => "mir@miras.org"
       )
@@ -224,6 +224,23 @@ function vistype($type) {
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
+<<<<<<< index.php
+    ),
+    "kontorbruger" => array(
+      title => "Linux - Friheden til at vælge kontorprogrammer",
+      comment => "Basal anvendelse af Linux-programmer",
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk"
+      )
+    ),
+    "kontorplatform" => array(
+      title => "Linux - Friheden til at vælge IT-løsning",
+      comment => "Valg af Linux-baseret IT-løsning",
+      auth => array(
+        "Michael Rasmussen" => "mir@miras.org"
+      )
+=======
+>>>>>>> 1.69
     ),
    "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
