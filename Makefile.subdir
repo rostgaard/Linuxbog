@@ -35,6 +35,9 @@ sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
 # Her er  en liste af alle eksempler
 alleeksfiles:=$(wildcard eksempler/*)
 
+# Lokal Makefile ?
+lokmake:=$(wildcard Makefile_local)
+
 # Her er en liste af sgml-filer der skal checkes
 eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
 
@@ -260,7 +263,14 @@ endif
 
 
 clean:
+	@echo clean $(targetshortname)
 	@rm -rf dato.sgml version.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9]
+	
+ifeq ($(lokmake),Makefile_local)
+	echo X $(lokmake) X
 	@make -f Makefile_local clean
+else
+	echo "Ingen lokal Makefile"
+endif
+	@echo "Færdig med clean $(targetshortname)"
 
-	@echo Cleaning.
