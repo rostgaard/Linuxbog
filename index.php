@@ -244,6 +244,12 @@ Filtyper:
 ?>
 </ul>
 
+<hr>
+<?php
+  include("sidsteudgave.incl");
+?>
+
+<hr>
 <p>
 Benyt vores "Et-klik-service" for at downloade og læse bøgerne,
 eller køb en indbundet udgave hos følgende forretninger:
@@ -315,11 +321,6 @@ Vores arbejdskopi kan findes på <a
 href="http://cvs.sslug.dk/linuxbog/">http://cvs.sslug.dk/linuxbog/</a>,
 men indtil endelig release, kan der være graverende fejl i den.  
 </p>
-
-<?php
-  include($DOCUMENT_ROOT."/sidsteudgave.incl");
-?>
-
 
 <hr>
 <a name="matrix"></a>
