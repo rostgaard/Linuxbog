@@ -2,7 +2,9 @@
 
 
 <h1 align="center">SSLUG - Friheden til at vælge</h1>
-
+<!--
+$Id$
+-->
 <?php
 
 function href($url,$desc) {
@@ -89,11 +91,11 @@ function fsize_text( $filename ) {
     // Eks: linux-frihed.tgz
     "HTML" => array(
       first => "linux-",
-      last => "-html.tgz"
+      last => ".html.tgz"
     ),
     "HTML u/billeder" => array(
       first => "linux-",
-      last => "-html-ub.tgz"
+      last => ".html-ub.tgz"
     ),
     "PostScript" => array(
       first => "linux-",
@@ -106,15 +108,15 @@ function fsize_text( $filename ) {
     ),
     "Tekst" => array(
       first => "linux-",
-      last => "-txt.gz"
+      last => ".txt.gz"
     ),
     "PalmPilot" => array(
       first => "linux-",
-      last => "-palm.gz"
+      last => ".palm.gz"
     ),
     "SGML" => array(
       first => "linux-",
-      last => "-sgml.tgz"
+      last => ".sgml.tgz"
     )
   );
 
