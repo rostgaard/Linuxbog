@@ -1797,6 +1797,7 @@ boot=/dev/hda
 map=/boot/map
 install=/boot/boot.b
 prompt
+lba32
 timeout=50
 image=/boot/bzImage
         label=linux
@@ -1824,15 +1825,9 @@ to forskellige kerner (linjerne med image). Begge starter op med root
 partition på <FILENAME>/dev/hda3</FILENAME>. Feltet "label" (Mærkat)
 er det, du ser på skærmen som opstarts-valgmulighed. Den sidste
 mulighed i eksemplet er, at DOS opstartes på den første partition
-(hda1) på første IDE disk.
+(hda1) på første IDE disk. <filename>lba32</filename> er tilføjet for
+at kunne understøtte meget store harddiske.
 </PARA>
-
-<para>
-<indexterm><primary>Slette LILO</primary></indexterm>
-<indexterm><primary>LILO</primary><secondary>Slette</secondary></indexterm>
-<emphasis>Tip:</emphasis> LILO kan fjernes ved at køre
-<userinput>fdisk /mbr</userinput> i en DOS vindue under DOS/Windows.
-</para>
 
 <para>
 I eksemplet er der benyttet kommandoen <command>restricted</command>
@@ -1846,7 +1841,6 @@ ikke bør kunne læses af andre end root, dvs. kør en gang for alle
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT> chmod 600 /etc/lilo.conf</userinput>
 </screen>
 
-
 <PARA>
 Lilo kan en hel del, men kan være et lige så besværligt værktøj, som
 det kan være suverænt. Du bør måske læse den mini-HOWTO om LILO, som
@@ -1855,6 +1849,23 @@ url="http://sunsite.dk/ldp">http://sunsite.dk/ldp</ulink>.
 Specielt kan det være at de to alternativer "restricted" eller "password" 
 (adgangskode) er værd at forstå.
 </PARA>
+
+
+<sect3 id="slette-lilo">
+<title>Slette LILO</title>
+<para>
+<indexterm><primary>Slette LILO</primary></indexterm>
+<indexterm><primary>LILO</primary><secondary>Slette</secondary></indexterm>
+<emphasis>Tip:</emphasis> LILO kan fjernes i DOS ved at køre
+<userinput>fdisk /mbr</userinput> i en DOS vindue under DOS/Windows.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> LILO kan i Linux fjernes ved at køre
+<command>/sbin/lilo -u /dev/hda</command>, hvis din boot-harddisk er
+<filename>/dev/hda</filename>.
+</para>
+</sect3>
 
 <sect3 id="lilo-rescue">
 <title>LILO gik galt!</title>
