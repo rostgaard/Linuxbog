@@ -8,6 +8,9 @@
 <LINK REL="STYLESHEET" HREF="/style/sslug.css" TYPE="text/css">
 </HEAD>
 <BODY>
+<?php
+  include($DOCUMENT_ROOT."includes/top.phtml");
+?>
 
 <h1 align="center">SSLUG - Friheden til at vælge</h1>
 <!--
@@ -279,8 +282,10 @@ function form_filename( $bookname, $format ) {
 </table>
 
 <!-- Text slut -->
-<!--#include virtual="/includes/bottom.html" -->
 <!-- Husk din email-adresse: -->
+<?php
+  include($DOCUMENT_ROOT."includes/top.phtml");
+?>
 <center><p>Denne side vedligeholdes af Hans Schou (&lt;<A HREF="mailto:chlor@sslug.dk">chlor@sslug.dk</a>&gt;)</p>
 </center>
 </BODY>
