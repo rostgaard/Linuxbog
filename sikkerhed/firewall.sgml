@@ -1132,8 +1132,9 @@ http://www.netfilter.org/documentation/index.html#HOWTO</ulink>
 efter Networking Concepts HOWTO.  </para>
 
 <para>
-Senere vil vi desuden kigge nærmere på proxy opsætning med squid, samt
-se på Network Address Translation.
+Senere omtales proxy opsætning med squid, og de mere avancerede
+anvendelser af Network Address Translation, NAT, omtales sidst i
+denne del (<xref linkend="NAT" />).
 </para>
 
 
@@ -1163,7 +1164,13 @@ kan kontrolleres med <command>ls -l /proc/net/ip_conntrack
 </command>
 </para>
 
-<graphic fileref="fs00.&magic;"  scale="40"></graphic>
+<figure>
+<title>Firestarter giver ikke ligefrem indtryk af at være en
+sikker firewall, tværtimod står den vildt udseende pingvin med en
+tændstik her. Men det *er* linux-humor og ikke en trussel!
+</title>
+<graphic fileref="fs00.&magic;"  scale="40"/>
+</figure>
 
 <para>
 Der mange gode front ends til iptables kommandoen. Hvis man er
@@ -1185,23 +1192,26 @@ direkte, så står der mere om det i de efterfølgende afsnit, som
 beskriver <command> iptables </command>
 anvendelse<footnote>
   <para>
-  Ved afprøvningen af Firestarter konstatererede jeg, at den
-  laver om på filer i /etc/ uden at aflevere en liste over hvilke
-  filer, den har ændret. Firestarter kan ikke save sine resultat
-  filer uden at køre iptables kommandoen. Derfor kan man ikke "se
-  den over skulderen" inden man vælger at acceptere den. Det betyder
-  ikke noget, hvis man har ekstra maskiner, som man så blot kan
-  scratche og sætte op igen, men i en meget lille husholdning er
-  det sådan nogen ting, der bevirker at en
-  systemadministrator vil foretrækker kommandolinie interfacet.
+  Der kan være mange grunde til, at man selv vil skrive iptables
+  kommandoerne. Ved afprøvningen af Firestarter konstatererede
+  jeg, at den laver om på filer i /etc/ uden at aflevere en liste
+  over hvilke filer, den har ændret. Firestarter kan ikke save
+  sine resultat filer, firewall scriptet, uden at køre iptables
+  kommandoen.  Derfor kan man ikke "se den over skulderen" inden
+  man vælger at acceptere den. Jeg kørte den i en 'chroot'ed
+  partition og den stoppede min firewall uden at spørge.
   </para>
   <para>
-  Ældre versioner af firewall-config (RedHat 7.2) bruger ipchains
+  For en begynder er det nok en fordel, at den opfører sig så
+  håndfast uden at spørge.
+  </para>
+  <para>
+  Ældre versioner af Red Hats firewall-config bruger ipchains
   og forventer, at man har en modulariseret (distributions)kerne.
   Det gør ikke så meget, at den råber FEJL når man kører med
-  optimeret non-modul kerne, hvis den i øvrigt bare fungerer, men
-  den har heller ikke den funktionalitet, at kan vise, hvad den
-  vil gøre <emphasis> uden </emphasis> at gøre det.
+  optimeret non-modul kerne, hvis den i øvrigt bare fungerer.
+  Den kan heller ikke vise, hvad den vil gøre <emphasis> uden
+  </emphasis> at gøre det.
   </para>
   <para>
   I de senere afsnit vises, hvordan man skriver et script med
@@ -1249,10 +1259,14 @@ Det er meget fine forklaringer, også på det næste skærmbillede,
 hvor man rådes til i første omgang at lukke for alle "offentlige"
 services (disable public access to all services), så intet er
 tilgængeligt udefra. Så kan man åbne for dem senere, hvis man får
-brug for dem.
+brug for dem. Der burde stå, at man ikke bør åbne for telnet, men
+derimod kan klare de fleste opgaver med ssh.
 </para>
 
-<graphic fileref="fs02.&magic;"  scale="40"></graphic>
+<figure>
+<title>Man kan åbne for de services, man har brug for</title>
+<graphic fileref="fs02.&magic;"  scale="40"/>
+</figure>
 
 <para>
 Der er et par skærmbilleder mere, som på en overskuelig måde
@@ -1279,7 +1293,11 @@ zoner og zonetyper.
 <graphic fileref="guarddog2_protocol.&magic;"  scale="40"></graphic>
 
 <para>
-Læg mærke til, at guarddog styrer protokollerne pr. zone. 
+Læg mærke til, at guarddog styrer protokollerne pr. zone. Det vil
+sige, at man kan lukke for alt fra fx. externe numre og åbne for
+sine lokale 4 maskiner. Man kan have flere zoner, fx. kan en
+anden afdeling huset få adgang til noget specielt, som de har
+brug for.
 </para>
 
 <para>
@@ -1305,9 +1323,22 @@ nedenfor nogle screenshots som svarer til <command> make xconfig
 at læse help teksterne, det er gode forklaringer.
 </para>
 
-<graphic fileref="kconf-netfilt.&magic;"  scale="40"></graphic>
-<graphic fileref="kconf-netfilt-2.&magic;"  scale="40"></graphic>
-<graphic fileref="kconf-netfilt-hlp.&magic;"  scale="40"></graphic>
+<figure>
+<title>make xconfig, vælg network packet filtering</title>
+<graphic fileref="kconf-netfilt.&magic;"  scale="40"/>
+</figure>
+
+<figure>
+<title>Længere nede vælges sub-menu for netfilter
+configuration</title>
+<graphic fileref="kconf-netfilt-2.&magic;"  scale="40"/>
+</figure>
+
+<figure>
+<title>Den engelske hjælpetekst er meget fyldestgørende, se
+appendix <xref linkend="sikkerhed-xconf-netfilt-help"/></title>
+<graphic fileref="kconf-netfilt-hlp.&magic;"  scale="40"/>
+</figure>
 
 <para>
 iptables kommandoen skal bygges, så den passer til den kerne, man
@@ -1757,7 +1788,7 @@ interfacet, altså eth1.
 </para>
 
 <screen>
-<prompt>[root@hven /]#</prompt> <userinput>iptables -N eth1-rules </userinput>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -N udefra </userinput>
 </screen>
 
 <para>
@@ -1775,7 +1806,7 @@ kæden.
 
 <programlisting>
                   __________
-                _|eth1-rules|__> eth1 rule 1 __> eth1 rule 2 ..._
+                _|  udefra  |--> regel 1 --> regel 2 ... 
                ^ |__________|                                    
               _|_____                                            
              /if eth1\                                           
@@ -1783,7 +1814,7 @@ kæden.
              \_______/ _                                         
                ^        |   
    ______      |        v   
-__|input |__> rule 1    rule 2 __> rule 3
+__|input |--> regel 1   regel 2 --> regel 3
   |______|
    ______
 __|output|
@@ -1796,7 +1827,7 @@ __|forward|
 <para>
 Det svarer til en if-sætning. Vi tester for om det var
 fra eth1 og hvis det er det, så fortsæt med regelkæden
-eth1-rules.
+<emphasis>udefra</emphasis>.
 </para>
 
 <programlisting>
@@ -1819,7 +1850,7 @@ droppes.
 
 
 <screen>
-<prompt>[root@hven /]#</prompt> <userinput>iptables -A eth1-rules -p tcp --dport 80 -j ACCEPT </userinput>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -A udefra -p tcp --dport 80 -j ACCEPT </userinput>
 </screen>
 
 <para>
@@ -1836,7 +1867,7 @@ specifikationer? senere, måske! /-->
 
 
 <screen>
-<prompt>[root@hven /]#</prompt> <userinput>iptables -A eth1-rules -j DROP </userinput>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -A udefra -j DROP </userinput>
 </screen>
 
 <para>
@@ -1851,20 +1882,20 @@ oprettet, skal accepteres.
 
 
 <screen>
-<prompt>[root@hven /]#</prompt> <userinput>iptables -I eth1-rules -m state --state ESTABLISHED,RELATED -j ACCEPT </userinput>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -I udefra -m state --state ESTABLISHED,RELATED -j ACCEPT </userinput>
 </screen>
 
 <para>
 Denne regel bliver nu nummer 1, og de andre rykker ned som 2 og
 tre. Hvis vi hellere vil sætte denne regel ind som nummer 2, skal
-kommandoen bruge <command> -I eth1-rules 2 </command> ; det er en
+kommandoen bruge <command> -I udefra 2 </command> ; det er en
 meget bedre løsning, for connection tracking koster trods alt
 mere tid, så man bør acceptere så mange pakker som muligt med
 simple regler inden man bruger connection-regler.
 </para>
 
 <screen>
-<prompt>[root@hven /]#</prompt> <userinput>iptables -I eth1-rules 2 -m state --state ESTABLISHED,RELATED -j ACCEPT </userinput>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -I udefra 2 -m state --state ESTABLISHED,RELATED -j ACCEPT </userinput>
 </screen>
 
 <para>
@@ -1882,30 +1913,32 @@ to tilstande, det må der ikke være.
 </para>
 
 <programlisting>
-      __________
-    _|eth1-rules|--> eth1-rule 1 --> eth1-rule 2 -->rule3
-   ^ |__________|    PORT 80?        RELATED?       DROP!
-   |                 ACCEPT          ACCEPT
-  _|_____
- /if eth1\
-|  else   |
- \_______/ _
-   |        |
-   |        v
+     +-----------------------------------------------------------
+    _|  udefra  ---> udefra-regel1 --> udefra-regel2 ---->regel3
+   ^ |  kæden        PORT 80?          RELATED?           DROP!
+   | +------------   ACCEPT            ACCEPT
+  _|_____               |                 |
+ /if eth1\              |                 |
+|  else   |             |                 |
+ \_______/------------> +-----------------+----------> Sendes videre
+   |     
+   |        
 INPUT-chain
 
 Lidt forsimplet af pladshensyn, man skal spørge både på
-ESTABLISHED og RELATED i regel 1 i eth1-rules kæden.
+ESTABLISHED og RELATED i regel 1 i <emphasis> "udefra" </emphasis> regel kæden.
 </programlisting>
 
 <para>
 Lad os nu antage, at vi slet ikke kan lide telnet protokollen,
 heller ikke internt på det lille net, og derfor vil blokere for
-al telnet. Nu er det jo så en applikationsprotokol, så vi kan
-ikke bruge <command> --protocol </command>. Med andre ord, telnet
-står ikke i <filename> /etc/protocols </filename> og derfor må vi
-"sigte efter telnet" på en anden måde, fx. ved at stoppe al
-trafik, som har destination port 23.
+al telnet. Nu er telnet jo så en applikationsprotokol, så vi kan
+ikke bruge <command> --protocol </command> optionen, idet den kun
+kender protokollerne tcp, udp, icmp eller "all", eller også et
+nummer fra filen <filename> /etc/protocols </filename>.  Med
+andre ord, telnet står ikke i <filename> /etc/protocols
+</filename> og derfor må vi "sigte efter telnet" på en anden
+måde, fx. ved at stoppe al trafik, som har destination port 23.
 </para>
 
 <screen>
@@ -1921,9 +1954,9 @@ Nyere versioner af iptables vil kunne matche generelt på --ports
 </para>
 
 <para>
-Eksemplet er ikke fuldkomment endnu, hvis de andre lokalnet
-maskiner har "private IP-adresser" - så næste opgave går ud på at
-opsætte NAT for de 4 lokalmaskiner.
+Eksemplet er ikke fuldkomment endnu, hvis maskinerne på
+lokalnettet har "private IP-adresser" - så næste opgave går ud på
+at opsætte NAT for lokalmaskiner.
 </para>
 </sect3>
 
@@ -1934,18 +1967,21 @@ opsætte NAT for de 4 lokalmaskiner.
 
 <para>
 NAT og Masquerading sker i nat-tabellens FORWARD kæde, når en
-datapakke skal til at forlade maskinen. Source adressen, som skal
-NATtes, er den interne eller private adresse, men man kan også
-angive netværket ved at skrive 0 for den sidste byte i en
-almindelig 192.168 - adresse og også angive netmaske, typisk
-192.168.1.0/24, så vil alle de lokale adresser blive NAT-ede.
+datapakke skal til at forlade maskinen. Det kan kun ske her.
+Source adressen, som skal NATtes, er den interne eller private
+adresse, men man kan også angive netværket ved at skrive 0 for
+den sidste byte i en almindelig 192.168 - adresse og også angive
+netmaske, typisk 192.168.1.0/24, så vil alle de lokale adresser
+blive NAT-ede.
 </para>
 
 <para>
-iptables har mange måder at angive adresser på, så hvis
-der opstår specielle behov, så kig lige en gang ekstra på manual
-page for iptables. Det er bedre at nøjes med én regel, som dækker
-flere adresser, end at have flere regler med hver deres adresse.
+<command> iptables </command> har mange måder at angive adresser
+på, navne, numre, netværk, og for NAT også intervaller m.v., så
+hvis der opstår specielle behov, så kig lige en gang ekstra på
+manual page for iptables. Det er bedre at nøjes med én regel, som
+dækker flere adresser, end at have flere regler med hver deres
+adresse.
 </para>
 
 <screen>
@@ -1953,15 +1989,15 @@ flere adresser, end at have flere regler med hver deres adresse.
 </screen>
 
 <para>
-Hvis man bruger en dynamisk IP adresse, skal kommandoen se lidt
-anderledes ud, og så bruger man betegnelsen <emphasis>
-masquerading </emphasis> om metoden. Dynamiske adresser benyttes
-typisk med modemforbindelser, eller når man har en Point-to-Point
-Protocol (PPP) forbindelse til sin ISP. Man får en ny adresse
-hver gang. Linux kan tage denne adresse og bruge som den
-officielle adresse for NAT-ing af interne maskiner.
-Masquerading er med andre ord dynamisk NAT, med kun en
-ekstern adresse.
+Hvis man får en dynamisk IP adresse fra sin internet leverandør,
+skal kommandoen se lidt anderledes ud, og så bruger man
+betegnelsen <emphasis> masquerading </emphasis> om metoden.
+Dynamiske adresser benyttes typisk med modemforbindelser, eller
+når man har en Point-to-Point Protocol (PPP) forbindelse til sin
+ISP. Man får en ny adresse hver gang. Linux kan tage denne
+adresse og bruge som den officielle adresse for NAT-ing af
+interne maskiner.  Masquerading er oftest dynamisk NAT,
+med kun en ekstern adresse.
 </para>
 
 <para>
@@ -2326,48 +2362,14 @@ beskrive det her, men der findes en mini-HOWTO på
 <indexterm><primary>Masquerading</primary></indexterm>
 
 <para>
-Masquerading er ikke proxying men en speciel form for NAT
-(<emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress
-<emphasis>T</emphasis>ranslation). Det giver delvis samme
-funktionalitet som proxying, - at man kan få sit lokalnetværk på
-internettet med kun een gyldig IP-adresse - men det giver ikke den
-samme sikkerhed som proxying.  Linux-kernen understøtter masquerading
-som en del af ipchains.
-</para>
-
-<para><emphasis>Bemærk at masquerading ikke er særlig sikkert. Der er
-fundet flere sikkerhedshuller. Bl.a et som går ud på, at man kan
-omskrive portnummeret på udp svarpakkerne til en masqueraded maskine,
-og derved kan få adgang til selv at sende pakker til en host inde
-bagved masquerading.</emphasis> </para>
-
-<para>
-Med IP masquerading opnås, at mange forskellige maskiner kan komme på internet
-med kun én IP-adresse - såkaldt "Source NAT" (SNAT). Man sætter en masquerading 
-server op, og alle 
-maskinerne bagved skal bruge den som default gateway. Masquerading serveren 
-omskriver så alle pakkerne, der kommer forbi, til at have dens egen IP-adresse
-som afsender. Den "husker" så hvilke pakker, der har været sendt ud, og bruger 
-denne information til at genkende svaret, så den kan sørge for, at svaret 
-kommer til den maskine, der sendte forespørgslen ud.
+I Linux-kerne 2.2 hedder firewall kommandoen <command> ipchains </command>, og denne
+kommando bruges også til opsætning af masquerading.
 </para>
 
 <para>
-I sagens natur skal forwarding være slået til her, og der
-<emphasis>er</emphasis> oprettet direkte forbindelse imellem den
-lokale maskine og en maskine ude på internettet.  Fællestrækket ved proxy
-og masquerading er, at man kan sætte mange maskiner på internettet ved
-hjælp af kun én "ægte" ip-adresse. En fordel ved masquerading fremfor
-proxying er, at med masquerading kan man alt - der er ting, man ikke
-kan få igennem en proxy.  Men det er på bekostning af sikkerheden:
-Masquerading giver ikke den samme beskyttelse som en proxy. Man kan
-dog beskytte sig en del ved at sætte firewallregler op i kernen. Se
-afsnittet om pakkefiltrering tidligere i artiklen.
-</para>
-
-<para>
-Vi skal nu til at sætte forwardkæden op - den kan ud over de tre 
-almindelige policies også sættes til MASQ.
+Forwardkæden sættes op med en default target MASQ eller, hvis
+default politik (policy). Den kan stadig væk smide væk, men i
+<command> ipchains </command> hedder det DENY.
 </para>
 
 <para>
@@ -2418,7 +2420,7 @@ hensyn. Det er bla. ftp, realaudio, irc og forskellige spil.
 <para>
 For at kunne bruge ftp, real audio, irc, spille quake mm via
 masquerading, er vi nødt til gøre det lidt mere indviklet. Der findes
-moduler til ipchains, der kan håndtere en del forskellige
+moduler til <command> ipchains </command>, der kan håndtere en del forskellige
 applikationer: ip_masq_ftp, ip_masq_raudio, ip_masq_irc, ip_masq_quake
 etc. For at kunne bruge disse moduler, skal de være oversat med, da
 man lavede kernen. Det er inde under networking options, hvor man skal
@@ -2480,15 +2482,7 @@ HOWTO'en indeholder også referencer til en række gode ressourcer.
 
 <indexterm><primary>NAT</primary></indexterm>
 <para>
-I kerne 2.4 er ipchains erstattet af iptables, som er en del af
-netfilter. Ipchains understøtter en bestemt form for NAT kaldet
-ip-masquerading. Iptables kan meget mere indenfor NAT. Ud over NAT
-bruges iptables også til pakkefiltrering, som er beskrevet tidligere i
-kapitlet.  For at kunne afbilde alle svarene på NAT pakkerne rigtigt,
-benytter iptable sig af connection tracking - den holder styr på de
-oprettede forbindelser.  Dette kan man tjeke på i sit pakkefilter -
-en meget spændende ny feature.  Se afsnittet om
-"state" under Iptables (Netfilter) - kerne 2.4.
+I det følgende ses på henholdsvis source NAT og destination NAT.
 <!-- UPS -->
 </para>
 
@@ -2497,20 +2491,24 @@ en meget spændende ny feature.  Se afsnittet om
 <indexterm><primary>Source NAT</primary></indexterm>
 
 <para>
-NAT går ud på at man kan afbilde IP-adresser. F.eks. kan man afbilde en 
-række lokale IP-adresser til en begrænset pulje af rigtige 
-internet-IP-adresser. IP masquerading er et særtilfælde af dette, hvor 
-man afbilder alle sine lokale IP-adresser til kun een gyldig internet-IP-adresse.
-I ovenstående tilfælde er det source adressen, man manipulerer - Source NAT.
+Source NAT er det almindeligste, og er det, som vi hidtil har set
+på <!--TODO reference/--> i forbindelse med i192.168-numre
+klienter bag en firewall. Man kan sige, at vi afbilder source
+adressen plus portnummer som en global (offentlig) IP adresse med
+et andet portnummer.  Derved kan mange lokale maskiner deles om
+et enkelt IP nummer. Teoretisk set kan man løbe tør for portnumre
+på NAT maskinen, og det er der skam også taget højde for, idet
+maskinen simpelthen dropper alle pakker som ikke kan mappes til
+dens range af IP-numre+portnumre.
 </para>
 </sect4>
 
 <sect4 id="Desination-NAT">
 <title>Destination NAT</title>
 <para>
-Man kan også afbilde destinationsadressen - Destination NAT - så folks 
-forespørgsler f.eks. bliver redirigeret hen til den lokale webserver eller 
-til en server pool. 
+Man kan også afbilde destinationsadressen - Destination NAT - så
+folks forespørgsler f.eks. bliver omdirigeret hen til den lokale
+webserver eller til en server pool. 
 </para>
 
 <para>
@@ -2682,6 +2680,99 @@ har taget en del af Linux-mulighederne, men der er meget, vi ikke har dækket:
   </para></listitem>
 </itemizedlist>
 
+
+</sect1>
+
+<!-- TODO: Dette afsnit kan måske komme i et appendix eller hvad?
+ /-->
+
+<sect1 id="sikkerhed-xconf-netfilt-help">
+<title>Oversættelse af xconfig netfilter configuration help
+tekst.</title>
+
+<para>
+Netfilter er en række faciliteter til at filtrere og berarbejde
+de pakker, som kommer igennem din Linux box.
+</para>
+
+<para>
+Den mest almindelige anvendelse af netfilter er at bruge din
+Linux box som firewall, der beskytter et lokalt netværk mod
+Internettet. Den type firewall, som denne kerne supporterer,
+kaldes et pakkefilter, hvilket betyder, at den kan afvise
+individuelle pakker baseret på type, afsenderadresse, modtager
+etc. Den anden slags firewall er "proxy-baseret", den er mere
+sikker men mere besværlig at sætte op. Den inspicerer
+netværkstrafikken meget mere i detailler, modificerer den og har
+viden om de højere protokol-lag, som et pakkefilter ikke ved
+noget om. Endvidere kræver proxy'er ofte ændringer i de
+programmer, som kører på den lokale klient. Proxy baserede
+firewalls har ikke brug for support i kernen, men de er ofte
+kombineret med et pakkefilter, som kun virker, hvis du siger Y
+(Yes, ja) her.
+</para>
+
+<para>
+Du bør sige Y her, hvis du har tænkt dig at bruge Linux som en
+gateway til Internettet for et lokalt netværk af maskiner uden
+globalt gyldige IP-adresser. Dette kaldes masquerading: Hvis en
+af dine lokale maskiner ønsker at sende noget til verden udenfor,
+kan din box "forklæde sig" (maskere sig) som den maskine, d.v.s.
+den videresender pakkerne til den angivne ydre destination, men
+modificerer pakkerne, så de ser ud, som om de kommer fra
+firewall-boxen selv. Det fungerer begge veje: Hvis hosten udenfor
+svarer, vil linuxboxen uden yderligere kommentarer sende pakkerne
+videre til den rigtige lokale computer. På denne måde er
+maskinerne på indersiden af firewallen fuldstændig usynlige for
+verden udenfor, selv om de kan nå udenfor og får svar. Det er
+endog muligt at køre globalt synlige servere inde fra et
+masqueraded lokal netværk ved at anvende en mekanisme, som kaldes
+port-forwarding. Masquerading kaldes også ofte NAT (Network
+Address Translation)<footnote>
+<para>
+NAT bruges dog oftest om en gateway, som har flere IP adresser,
+som den kan bruge for mapning af de lokale maskiner. Det er som
+regel nok med 2 - 3 stykker, idet man sjældent løber tør for
+portnumre som jo er en 16-bit størrelse. Masquerading har
+yderligere den egenskab, at det oftest kan sættes op til at ske
+automatisk på et dynamisk tildelt IP-nummer for en klient, som
+fx. benytter PPP på en modem-linje.
+</para>
+</footnote>.
+</para>
+
+<para>
+En anden anvendelse er transparent proxy-ing. Hvis en maskine på
+lokalnettet prøver at få skabe forbindelse til en maskine
+udenfor, kan Linux-boxen uden at det mærkes sende pakkerne til en
+lokal host, som typisk vil være en caching server.
+</para>
+
+<para>
+Der er forskellige moduler, som erstatter tidligere masquerading
+(ipmasquadm), packet filtering, transparent proxying og
+portforwarding mekanismer. Se venligst ~kernel/Documentation/Changes
+for placeringen af af disse pakker.
+</para>
+
+<para>
+Vær sikker på at svare N til "Fast switching" nedenfor, hvis du
+siger ja til netfilter her, eftersom "Fast switching" i den
+aktuelle version laver bypass på netfilter.
+</para>
+
+<para>
+Du bør nok sige Y her, hvis du oversætter en kerne, som skal
+fungere som router, og N, hvis det er til en almindelig host.
+Hvis du er usikker, så svar Y.
+</para>
+
+<para>
+[Oversætterens anmærkning: Det er i dag bedst at sige Y til
+netfilter, idet man også på et lokalnet kan have fordel af at
+kunne spærre af for uønskede pakker udefra. De store
+distributioner har det altid med.]
+</para>
 
 </sect1>
 </chapter>
