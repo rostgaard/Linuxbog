@@ -31,6 +31,7 @@ pspdf:
 	perl /usr/local/bin/collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	mkdir bogps
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% convert -antialias images/%.png eps2:bogps/%.eps
+	echo '<!ENTITY magic "png">' > magic.sgml
 	cp *.sgml bogps
 	(cd bogps; db2ps bog.sgml)
 	mv bogps/bog.ps $(targetname).ps
@@ -78,6 +79,6 @@ pdf:
 	gzip -9 $(targetname).pdf
 
 clean:
-	rm -rf magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname).pdf.gz $(targetname).ps.gz
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname).pdf.gz $(targetname).ps.gz
 
 
