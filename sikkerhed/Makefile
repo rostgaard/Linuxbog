@@ -13,7 +13,7 @@ statusfiler:
 
 html:
 	@echo "Target er HTML i" $(notdir $(locdirname))/bog
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-html-*.tgz
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl /usr/local/bin/collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -24,7 +24,7 @@ html:
 	db2html bog.sgml
 	cp linuxbog.css bog
 	cp images/*.png bog
-	tar cvzf $(targetname)-html-$(version).tgz bog
+	tar cvzf $(targetname)-$(version).html.tgz bog
 	@echo "Done HTML (html)"
 	@echo ""
 
@@ -61,6 +61,6 @@ pspdf:
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-html-*.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz
 
 
