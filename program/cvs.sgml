@@ -356,12 +356,12 @@ funktionalitet af et revisionskontrolsystem.
 
 <para>
 RCS og SCCS er bedst når man gennem flere år har fundet en arbejdsgang
-og har opbygget et bibliotek af shell scripts så den valgte arbejdsgang er
-implementeret igennem dette script bibliotek. RCS og SCCS i sig selv nærmer
-sig assembler programmering i sammenligning med CVS og nogle af de
+og har opbygget et bibliotek af kommandofortolkerprogrammer så den valgte arbejdsgang er
+implementeret igennem dette bibliotek. RCS og SCCS i sig selv nærmer
+sig assemblerprogrammering i sammenligning med CVS og nogle af de
 kommercielle produkter der findes. RCS og SCCS må samtidigt siges at høre
 Unix verden til og er beregnet til brug ved udvikling i et lokalt miljø
-hvor diske kan mountes uden sikkerhedsmæssige problemer. RCS findes vist også
+hvor diske kan monteres uden sikkerhedsmæssige problemer. RCS findes vist også
 til Windows.
 </para>
 
@@ -390,11 +390,11 @@ dyrere til Unix-systemerne.
 
 <para>
 CVS er et nyere revisionskontrolsystem som oprindeligt er opstået som en
-række shell scripts baseret på RCS. Personen der havde denne store samling
-af shell scripts, Dick Grune, offentliggjorde disse shell scripts på USENET
-gruppen <ulink url="news:comp.sources.unix">comp.sources.unix</ulink> engang
+række kommandofortolkerprogrammer baseret på RCS. Personen der havde
+denne store samling, Dick Grune, offentliggjorde den på nyhedsgruppen
+<ulink url="news:comp.sources.unix">comp.sources.unix</ulink> engang
 tilbage i 1986. Idag er hele CVS bygget op fra bunden i C, men det er
-stadig Dick Grunes ide omkring konfliktløsning der er en af hjørnestenene i
+stadig Dick Grunes idé omkring konfliktløsning der er en af hjørnestenene i
 CVS.
 </para>
 
@@ -439,9 +439,9 @@ sammensmeltningen af de lokale distributioner af koden.
 <para>
 CVS understøtter at repositoriet (samlingen af revisionskontrolsystemets
 informationer inklusivt kildetekster) kan lægges på nettet uden at man
-behøver at mounte (share) diske. Almindeligvis anvendes remote shell (rsh)
-eller secure shell kald mellem maskinerne til udveksling af
-kildetekster.
+behøver at montere diske fra andre maskiner. Almindeligvis anvendes
+<command>rsh</command> eller <command>ssh</command> til udveksling af
+data mellem maskinerne.
 </para>
 
 <para>
@@ -638,7 +638,7 @@ og hvordan man starter databasen.
 
 <para>
 Er det dig som skal starte CVS databasen op for første gang, så find
-et katalog (kaldet CVSROOT) som du vil anvende til CVS,
+et katalog (kaldet <literal>CVSROOT</literal>) som du vil anvende til CVS,
 f.eks. <filename>/usr/local/CVSROOT</filename>. Sørg for at du og de
 andre som skal bruge det katalog har læse og skriverettighed til det.
 </para>
@@ -659,13 +659,11 @@ og tilsvarende for tcsh/csh:
 
 
 <para>
-Hver af brugerne skal selv indføje
-<filename>CVSROOT</filename>-variablen i deres
-<filename>~/.bashrc</filename> eller <filename>~/.profile</filename>
-med syntaken <filename>BRUGER@CVS-SERVER:KATALOG</filename>. Variablen
-<filename>CVSROOT</filename> er sat når man starter en ny shell. Check
-dette ved at skrive
-</para>
+ Hver af brugerne skal selv føje variablen <literal>CVSROOT</literal> til
+ deres <filename>~/.bashrc</filename> eller <filename>~/.profile</filename>
+med syntaksen <filename>BRUGER@CVS-SERVER:KATALOG</filename>. Variablen
+<literal>CVSROOT</literal> er sat når man starter en ny
+kommandofortolker. Check dette ved at skrive
 
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>bash</userinput>
@@ -673,9 +671,10 @@ dette ved at skrive
 CVS_RSH=ssh
 CVSROOT=anne@cvs.sslug.dk:/usr/local/CVSROOT
 </screen>
+</para>
 
 <para>
-tilsvarende skal tcsh-brugere starte en nyt terminal-vindue eller
+tilsvarende skal <command>tcsh</command>-brugere åbne en nyt terminal-vindue eller
 skrive <command>tcsh</command> for at checke.
 </para>
 
@@ -691,7 +690,7 @@ den CVS-server (ikke nødvendigvis det samme på på egen maskine).
 Da vi anvendte <command>grep</command> på alt der startede med "CVS",
 fik vi også en anden variabel med <filename>CVS_RSH</filename>, som
 angiver hvordan man kommunikerer med CVS-serveren. Er det en og samme
-maskine udelades den variabel, og er det en fjern-maskine anvendes
+maskine udelades den variabel, og er det en anden maskine anvendes
 enten secure shell (<command>ssh</command>) eller remote shell
 (<command>rsh</command>). Se mere om <command>ssh</command> i bogen
 "Linux - friheden til sikkerhed på internettet").
@@ -729,7 +728,7 @@ Det kan også nævnes at en række ekstra værktøjer fås til CVS, se
 CVS. Et af disse er cvs2html, der findes fra <ulink
 url="http://cvs.sslug.dk/cvs2html">http://cvs.sslug.dk/cvs2html</ulink>.
 cvs2html anvendes til at reformattere den log information, der er
-skrevet ind for hver fil ved "cvs commit", til HTML filer. For
+skrevet ind for hver fil ved "cvs commit", til HTML-filer. For
 internetbaserede samarbejdsprojekter er dette virkeligt smart.
 </para>
 
@@ -772,15 +771,16 @@ Vi har tidligere vist, at projekt/kildetekst hentes med:
  
 <para>
 Men for folk, der deltager i mange projekter er det interessant at man
-faktisk også kan angive CVSROOT-variablen som kommando argument
-</para>
+faktisk også kan angive variablen <literal>CVSROOT</literal> som argument på
+kommandolinien:
   
 <screen>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs -d USER@tux.hjemme:/usr/local/CVSROOT checkout projektnavn</userinput>
 </screen>
+</para>
 
 <para>
-og det skal bemærkes at man faktisk ikke anvender CVSROOT-variablen
+og det skal bemærkes at man faktisk ikke anvender <literal>CVSROOT</literal>
 efter at man har kørt <command>cvs checkout</command>. Hvis man ser
 efter i <filename>projekt-katalog/CVS</filename>, så finder man der
 tre filer, som tilhører CVS.
@@ -794,7 +794,7 @@ tre filer, som tilhører CVS.
 </listitem>
 <listitem> 
  <para>
-<filename>Root</filename> indeholder CVSROOT-variablen for det
+<filename>Root</filename> indeholder <literal>CVSROOT</literal> for det
 pågældende projekt.
  </para>
 </listitem>
