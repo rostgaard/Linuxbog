@@ -29,6 +29,19 @@ filer:  Makefiler
 	$(MAKE) -C itplatform
 	$(MAKE) -C alle 
 
+pspdf:	Makefiler
+	$(MAKE) -C friheden      pspdf
+	$(MAKE) -C applikationer pspdf
+	$(MAKE) -C admin         pspdf
+	$(MAKE) -C program       pspdf
+	$(MAKE) -C web           pspdf
+	$(MAKE) -C sikkerhed     pspdf
+	$(MAKE) -C c             pspdf
+	$(MAKE) -C docbook       pspdf
+	$(MAKE) -C kontorbruger  pspdf
+	$(MAKE) -C itplatform    pspdf
+	$(MAKE) -C alle          pspdf
+
 statusfiler:  Makefiler
 	$(MAKE) -C friheden statusfiler
 	$(MAKE) -C applikationer  statusfiler
