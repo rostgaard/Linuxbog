@@ -58,7 +58,7 @@ alias  xtyge='xterm -T tyge  -e ssh tyge.sslug.dk'
 #-----------------------------------------------------------------------------
 #--  World Wide Web:
 
-alias lynx='lynx -noreferer -pseudo_inlines +image_links'
+alias lynx='lynx -useragent="Any Browser, HTML 4.01" -pseudo_inlines +image_links'
 
 alias               oversæt='lynx http://babel.altavista.com/tr\?'
 alias                  LEGO='lynx http://www.lego.com/'
