@@ -2331,6 +2331,12 @@ læse programmets man-page.</para>
  <primary>fg</primary>
 </indexterm>
 <indexterm>
+ <primary>&amp;</primary>
+</indexterm>
+<indexterm>
+ <primary>^z</primary>
+</indexterm>
+<indexterm>
  <primary>Kommandooversigt</primary>
  <secondary>fg</secondary>
 </indexterm>
@@ -2363,19 +2369,27 @@ ikke da Linux er et ægte multitasking styresystem!</para>
 <para>
 Du kan løse dit ventetidsproblem ved at udføre
 programmet eller kommandoen i baggrunden. For at udføre et program i
-baggrunden sætter vi et <command>&</command> efter kommandoen.
+baggrunden sætter vi et <command>&amp;</command> efter kommandoen.
+Et program der tager noget tid at køre, hvis du har mange filer,
+er <command>updatedb</command>. <command>updatedb</command> opretter
+den database der bruges af <command>locate</command>, og det tager
+typisk lang tid at køre denne kommando.
 </para>
 
 <screen>
-<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ls -R /usr &gt; usr.dir &</userinput>
-[1] 585
-<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ps</userinput>
-  PID TTY STAT TIME COMMAND
-  435  2   S   0:00 /bin/login -- anne
-  436  2   S   0:00 -bash
-  447  2   R   0:00 ps
-  585  2   R   0:02 ls
-<prompt>[anne@linus MitKatalog]$ </prompt>
+<prompt>[root@linus root]$ </prompt><userinput>updatedb &amp;</userinput>
+[1] 7446
+<prompt>[root@linus root]$ </prompt><userinput>ps</userinput>
+  PID TTY          TIME CMD
+ 7413 pts/2    00:00:00 su
+ 7416 pts/2    00:00:00 bash
+ 7446 pts/2    00:00:00 updatedb
+ 7447 pts/2    00:00:00 slocate
+ 7448 pts/2    00:00:00 ps
+<prompt>[root@linus root]$ </prompt><userinput>cat /proc/loadavg</userinput>
+1.14 1.02 0.50 1/113 7479
+[1]+  Done                    updatedb
+<prompt>[root@linus root]$ </prompt>
 </screen>
 
 <para>
@@ -2383,17 +2397,242 @@ Programmet eller kommandoen kører nu samtidig
 med at du kan indtaste og udføre nye kommandoer. Grunden til vi
 siger, at programmet kører i baggrunden er, at du ikke sidder med
 det ved din konsol (som vi så kalder for forgrunden).
+Så mens <command>updatedb</command> kører i baggrunden, kan vi
+så kører kommandoen <command>ps</command> og se processen.
+Efter at have tastet en del andre kommandoer, her illustreret
+ved <command>cat /proc/loadavg</command>, er <command>updatedb</command>
+færdig med at køre, og kommer ud og skriver <emphasis>Done</emphasis>.
+Her er det så baggrundsprocess nummer [1] der er færdig med at køre.
+<command>&amp;</command>-kommandoen bruges på direkte fra
+kommandolinjen og inde i shell-scripts.
 </para>
 
 <para>
-Det kan i øvrigt nævnes at glemte du <command>&</command>, så kan du
+Glemte du <command>&amp;</command> sidst på kommandolinjen, så kan du
 trykke Ctrl-z og så har du suspenderet jobbet (eng. "suspended"). Med
 <command>fg</command> 
 (eng. "foreground") og <command>bg</command> (eng. "background") kan
 du styre hvad der er aktivt.
 </para>
 
-</sect2>
+<screen>
+<prompt>[root@linus root]$ </prompt><userinput>updatedb</userinput>
+(tast Ctrl-z)
+[1]+  Stopped                 updatedb
+<prompt>[root@linus root]$ </prompt><userinput>bg</userinput>
+[1]+ updatedb &
+<prompt>[root@linus root]$ </prompt>
+</screen>
+
+<para>
+Har du fået sat et job igang i baggrunden, som du gerne
+vil stoppe, skal du først tilbage til programmet med
+<command>fg</command>. Tast dernæst Ctrl-c for at stoppe
+programmet.
+</para>
+
+<screen>
+<prompt>[root@linus root]$ </prompt><userinput>updatedb &amp;</userinput>
+[1] 7446
+<prompt>[root@linus root]$ </prompt><userinput>fg</userinput>
+updatedb
+(tast Ctrl-c)
+<prompt>[root@linus root]$ </prompt>
+</screen>
+
+<para>
+Ctrl-z kan med fordel bruges mange steder. Det kunne være indefra
+dit post-program eller din tekst-editor.
+Situationen er at du sidder og er igang med at skrive et script, og så
+vil du lige prøve det. Efter afprøvning vil du tilbage samme sted
+i editoren, og stå det samme sted med markøren.
+Herunder er vist at editoren startes. Så tastes Ctrl-z og scriptet
+afprøves, hvilket giver en fejl.
+Til slut tilbage til editoren med kommandoen <command>fg</command>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>vi entest</userinput>
+(inde i editoren tastes Ctrl-z)
+<prompt>[anne@linus ~]$ </prompt> <userinput>./entest</userinput>
+entest: line 4: syntax error: unexpected end of file
+<prompt>[anne@linus ~]$ </prompt> <userinput>fg</userinput>
+</screen>
+
+<para>
+Det er muligt at have flere programmer kørende i baggrunden samtidigt.
+Det kan hurtigt blive lidt overskueligt at gøre det, men det vil i
+nogle tilfælde være en fordel.
+For overskueligehedens skyld anvendes i det følgende blot kommandoen
+<command>sleep</command>, der holder en pause på nogle sekunder
+for så at returnerer til prompten.
+Ved at starte <command>sleep 100</command> og <command>sleep 200</command>
+skulle det være lidt nemmere at følge med i hvilket program man vender
+tilbage til. Herunder starter vi så de to kommandoer, og vender så
+tilbage til 
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>sleep 100 &amp;</userinput>
+[1] 7533
+<prompt>[anne@linus ~]$ </prompt> <userinput>sleep 200 &amp;</userinput>
+[2] 7534
+<prompt>[anne@linus ~]$ </prompt> <userinput>fg</userinput>
+sleep 200
+</screen>
+
+<para>
+Ovenstående er helt som ønsket, hvis det altså er process 2 man vil
+tilbage til.
+Hvis man i stedet vil tilbage til process 1, skal kommandoen
+<command>%1</command> bruges, hvilket angiver baggrundsprocess
+nummer [1].
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>sleep 100 &amp;</userinput>
+[1] 7533
+<prompt>[anne@linus ~]$ </prompt> <userinput>sleep 200 &amp;</userinput>
+[2] 7534
+<prompt>[anne@linus ~]$ </prompt> <userinput>%1</userinput>
+sleep 100
+</screen>
+
+<para>
+Og selvfølgelig kan man starte flere programmer samtidigt på
+kommandolinjen og lægge dem alle i baggrunden, så de
+stadig kører samtidigt.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>sleep 100 &amp; sleep 200 &amp;</userinput>
+[1] 7550
+[2] 7551
+<prompt>[anne@linus ~]$ </prompt>
+</screen>
+
+<para>
+Er du startet op i grafisk tilstand og gerne vil starte et
+grafisk program, men ikke lige vil flytte hånden over til musen
+og bruge menuerne, så er det:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>gimp &amp;</userinput>
+</screen>
+
+</sect2><!-- id="baggrunden" -->
+
+<sect2 id="koerflere">
+<title>Kør flere programmer efter hinanden</title>
+<indexterm><primary>Start flere programmer efter hinanden</primary></indexterm>
+<indexterm>
+ <primary>;</primary>
+</indexterm>
+
+<para>
+Ofte har man brug for at køre flere programmer efter hinanden flere gange
+på kommandolinjen.
+Nu kan man jo blot taste pil op et par gange, og køre kommandoen igen.
+Som eksempel er det følgende to kommandoer vi vil kører gentagende gange.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>date&gt;foo</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>md5sum foo</userinput>
+7643ce159d2b9269e21cdd1fb88f79ba  foo
+<prompt>[anne@linus ~]$ </prompt>
+</screen>
+
+<para>
+Ovenstående kunne løses ved at lave et script med disse to linier,
+men det er lidt meget at gøre ud af det, når scriptet ikke senere skal bruges til noget.
+I stedet kan man sætte et <command>;</command> (semikolon) imellem,
+og derved først køre det ene program, efterfulgt af det andet.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>date&gt;foo ; md5sum foo</userinput>
+6d1a33063a8eba547c278a9776b7b59d  foo
+<prompt>[anne@linus ~]$ </prompt>
+</screen>
+
+<para>
+I ovenstående eksempel sker der nok ikke nogen fejl - tror vi.
+Nu kunne man være så uheldig at filen <filename>foo</filename>
+var skrivebeskytte, hvilket gør at der ikke bliver skrevet nye data til filen.
+Dette beyder så at det ikke giver mening efterfølgende at køre <command>md5sum</command>.
+Først et eksempel på hvor galt det kan gå.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>date&gt;foo ; md5sum foo</userinput>
+bash: foo: Permission denied
+6d1a33063a8eba547c278a9776b7b59d  foo
+<prompt>[anne@linus ~]$ </prompt> <userinput>date&gt;foo ; md5sum foo</userinput>
+bash: foo: Permission denied
+6d1a33063a8eba547c278a9776b7b59d  foo
+<prompt>[anne@linus ~]$ </prompt>
+</screen>
+
+<para>
+Problemet er at kommandoen <command>md5sum</command> bliver kørt, til
+trods for at det gik galt med den forgående kommando.
+Som vist bliver der hele tiden udregnet den samme md5-sum, hvilket ikke var meningen.
+Dette kan løses ved i stedet at bruge kommandoen <command>&amp;&amp;</command>.
+Derved bliver den næste kommando kun kørt, hvis den første gik godt.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>date&gt;foo &amp;&amp; md5sum foo</userinput>
+bash: foo: Permission denied
+<prompt>[anne@linus ~]$ </prompt>
+</screen>
+
+<para>
+Et mere praktisk eksempel på ovenstående vil være at kompilere en Linux-kerne.
+Først <command>make dep</command>, så <command>make</command>, så osv. osv.
+Men de efterfølgende kommandoer må kun køres hvis den forgående gik godt.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cd /usr/src/linux</userinput>
+<prompt>[anne@linus linux]$ </prompt> <userinput>make dep &amp;&amp; make &amp;&amp; make install</userinput>
+</screen>
+
+<para>
+Eksemplet med <command>make</command> vil man både bruge på kommandolinjen
+og i shell-scripts.
+Et andet eksempel som typisk kun ville blive brugt i shell-scripts,
+kunne være først at teste om en fil eksiterer, og i herefter gøre noget
+med den.
+</para>
+
+<programlisting>
+#! /bin/sh
+[ -e foo ] &amp;&amp; md5sum foo
+</programlisting>
+
+<para>
+Mange syntes ikke om den måde at skrive det på,
+og det er nok også nemmere at læse det,
+hvis der i stedet står:
+</para>
+
+<programlisting>
+#! /bin/sh
+if [ -e foo ]; then
+	md5sum foo
+fi
+</programlisting>
+
+<para>
+Kommandoen <command>[</command> er blot et symlink til <command>test</command>.
+Læs om den under <command>man test</command>.
+</para>
+
+</sect2><!-- id="koerflere" -->
+
 
 <sect2 id="kill">
 <title>Dræb en proces</title>
