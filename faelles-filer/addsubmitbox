@@ -1,0 +1,15 @@
+#!/bin/sh
+# af Hans Schou 2003
+# $Id$
+
+# Script bruges sammen med "submit.inc".
+# Bruges til at lave online forslag til rettelser i bunden af alle HTML-filer.
+# Hvis host er tyge.sslug.dk så køres scriptet, ellers ikke.
+
+[ "tyge.sslug.dk" != "$HOSTNAME" ] && exit
+
+ls -U *.html | while read FILE
+do
+	perl -i -pe 's/^ ( <\/BODY>)$/<?php include("\$DOCUMENT_ROOT\/submit.inc") \?> $1/' $FILE
+	mv $FILE $FILE.php
+done
