@@ -41,12 +41,8 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 SUBDIRS = applikationer admin program unix web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html  pakhtml palmpilot sgml flytalle
+all: html  pakhtml palmpilot sgml
 
-
-flytalle:
-	@rm -rf bog/
-	@mv alle/ bog/
 
 versionfil:
 	@cp ../friheden/version.sgml .
@@ -70,17 +66,20 @@ $(targetname)-$(version).sgml.zip:
 
 palmpilot: $(targetname)-$(version).palm.zip
 
-$(targetname)-$(version).palm.zip: html
+$(targetname)-$(version).palm.zip: alle/index.html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
 	zip $(targetname)-$(version).palm.zip palm/*.prc palm/*.pdb
+	rm -f  palm/*.prc palm/*.pdb
 
 html: statusfiles versionfil $(targetshortname)
 
-$(targetshortname): $(sgmlfiler)
+$(targetshortname): alle/index.html
+
+alle/index.html: $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*
+	rm -rf tempdir stikord.sgml magic.sgml bog alle
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -89,12 +88,13 @@ $(targetshortname): $(sgmlfiler)
 	(cd tempdir; perl ../collateindex.pl -s Symboler  -x -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
 	#db2html bog.sgml
 	(cd tempdir;jade -t sgml -ihtml -d $(cygnusdsl)\#html bog.sgml)
-	mkdir alle
+	mkdir $(targetshortname)
 	cp tempdir/*.html $(targetshortname)
 	for dir in $(SUBDIRS); do \
 		cp ../$$dir/images/*.png $(targetshortname); \
 	done;
 	cp linuxbog.css $(targetshortname)
+	ln -s alle bog
 	rm -rf tempdir
 	echo %define buildname $(targetshortname) > $(targetshortname)/$(targetname).spec
 	echo Name: linuxbog-$(targetshortname) >> $(targetshortname)/$(targetname).spec
@@ -115,19 +115,20 @@ else
 endif
 
 
-pakhtml: $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip	
+pakhtml: $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip
 
-$(targetname)-$(version).html.tar.gz:
+$(targetname)-$(version).html.tar.gz: alle/index.html 
 	tar czf $(targetname)-$(version).html.tar.gz $(targetshortname)
 
-$(targetname)-$(version).html-ub.tar.gz:
+$(targetname)-$(version).html-ub.tar.gz: alle/index.html 
 	tar czf $(targetname)-$(version).html-ub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
 
-$(targetname)-$(version).png.tar.gz:
+$(targetname)-$(version).png.tar.gz: alle/index.html 
 	tar czf $(targetname)-$(version).png.tar.gz $(targetshortname)/*.png
 
-$(targetname)-$(version)_html.zip:
+$(targetname)-$(version)_html.zip: alle/index.html 
 	zip $(targetname)-$(version)_html.zip $(targetshortname)/*
+
 
 pspdf:	$(targetname)-$(version)_pdf.zip
 $(targetname)-$(version)_pdf.zip: statusfiles
@@ -168,5 +169,5 @@ test:
 	echo $(sgmlfiler)
 
 .PHONY clean:
-	rm -rf version.sgml dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images
+	rm -rf version.sgml dato.sgml magic.sgml bog DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images
 
