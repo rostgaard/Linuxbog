@@ -639,6 +639,29 @@ vist hvor mange mails og størrelsen af disse som er blevet fordelt til
 de forskellige foldere. 
 </para>
 
+<para>
+Et smart procmail-filter er følgende, som retter subject af
+mailen til en advarsel om et potentielt virus-angreb hvis attachment
+kan indeholde en virus.
+</para>
+
+<screen>
+:0
+* ^Content-type: (multipart/mixed|application/octet-stream)
+{
+    :0 HB
+    *  ^Content-Disposition: attachment;
+    *filename=.*\.(exe|vbs|shs|com|pif|bat|src|wfs|vbe|wsh|hta)
+    {
+        :0 fhw
+        | formail -i "Subject: Attachments kan indeholde virus !"
+    
+        :0:
+        $DEFAULT
+    }
+}
+</screen>
+
 </sect2>
 
 </sect1>
