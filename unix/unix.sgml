@@ -3124,6 +3124,9 @@ Linux har en række mindre værktøjer til håndtering af tekstfiler. Vi
 vil i dette afsnit se lidt nærmere på dem.
 </para>
 
+<sect3 id="diff">
+<title>diff</title>
+
 <para>
 <command>diff</command> udskriver forskellen mellem to filer. Lad os
 se på filerne <filename>fil1</filename> og <filename>fil2</filename>.
@@ -3155,7 +3158,93 @@ se på filerne <filename>fil1</filename> og <filename>fil2</filename>.
   > Bjarne (oversat: ind kom Bjarne)
 </screen>
 
-<indexterm><primary>cat</primary></indexterm>
+<example id="ex-diff-dir">
+<title>diff mellem hele katalog-strukturer</title>
+<para>
+Kommandoen <command>diff</command> er faktisk ret smart. Man kan endda få 
+den til at finde alle rettelser lavet mellem to kataloger, hvor der laves
+rekursiv søgning. Har man f.eks. katalogerne 
+<filename>tux-ny</filename> og
+<filename>tux</filename> og skal vide hvad der er lavet om fra 
+<filename>tux</filename> til
+<filename>tux-ny</filename>, så skriver man 
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>diff -ur --new-file tux tux-ny</userinput>
+diff -ur --new-file tux/README tux-ny/README
+--- tux/README    Sun Jan  6 00:24:23 2002
++++ tux-ny/README Sun Jan  6 00:22:13 2002
+@@ -1,5 +1,3 @@
+-Dette katalog indeholder tekster svarende til
+-bogen, hvis vi har ment dette er relevant.
+
+ Seneste bøger kan findes på
+ http://www.sslug.dk/linuxbog
+</screen>
+
+<para>
+Parameteren <literal>u</literal> giver en pænere diff-fil med en
+rimelig syntaks (unified diff). Parameteren <literal>r</literal>
+betyder rekursiv søgning ned i katalog-strukturen og endelig så er 
+<literal>--new-file</literal> med for at sørge for at nye filer også
+kommer med.
+</para>
+
+</example>
+</sect3>
+
+<sect3 id="patch">
+<title>patch</title>
+
+<indexterm><primary>patch</primary></indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>patch</secondary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>Grundlæggende kommandobeskrivelse</secondary>
+ <tertiary>patch</tertiary>
+</indexterm
+
+<para>
+Vi fortsætter ud fra <xref linkend="ex-diff-dir">.  Hvad der nu er
+smart er at en anden bruger tyge, der har den gamle katalog-struktur
+<filename>tux</filename>, og denne skal opgraderes med
+ændringerne fra brugeren anne. Først gemmer anne ændringerne i en 
+fil <filename>patch_file</filename> og sender denne til tyge.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>diff -ur --new-file tux tux-ny &gt; patch_file</userinput>
+</screen>
+
+<para>
+Brugeren tyge kan derefter tage filen og køre <command>patch</command>
+for at få opdateret underkataloget <filename>tux</filename>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>patch -p0 -u &lt; patch_file</userinput>
+patching file tux/tagbal01.c
+patching file tux/tagbal02.c
+patching file tux/tagbal03.c
+patching file tux/unknown.c
+patching file tux/unsigned.c
+patching file tux/vi.F
+</screen>
+
+<para>
+Nye filer skabes og slettede filer forsvinder automatisk. Det er på
+denne måde rettelser (patches) til Linux-kernen distribueres.
+</para>
+
+</sect3>
+
+<sect3 id="cat-og-uniq">
+<title>cat, uniq, wc og cmp</title>
+
 <indexterm><primary>uniq</primary></indexterm>
 <indexterm>
  <primary>Kommandooversigt</primary>
@@ -3166,6 +3255,32 @@ se på filerne <filename>fil1</filename> og <filename>fil2</filename>.
  <secondary>Grundlæggende kommandobeskrivelse</secondary>
  <tertiary>uniq</tertiary>
 </indexterm
+
+<indexterm><primary>cat</primary></indexterm>
+<indexterm><primary>cmp</primary></indexterm>
+<indexterm><primary>wc</primary></indexterm>
+
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>cmp</secondary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>Grundlæggende kommandobeskrivelse</secondary>
+ <tertiary>cmp</tertiary>
+</indexterm
+
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>wc</secondary>
+</indexterm>
+<indexterm>
+ <primary>Kommandooversigt</primary>
+ <secondary>Grundlæggende kommandobeskrivelse</secondary>
+ <tertiary>wc</tertiary>
+</indexterm
+
+
 <para>
 <command>uniq</command> fjerner ens linier, der kommer efter hinanden,
 hvilket illustreres nedenfor.
@@ -3223,6 +3338,7 @@ betyder, at det er et "directory" - et katalog. <command>grep
 <filename>d</filename> passere. <command>wc -l</command> tæller
 antallet af linier den modtager.
 </para>
+</sect3>
 
 <sect3 id="Unixapp-tail">
 <title>Hoved og hale</title>
