@@ -24,7 +24,7 @@ allesgmlfiles=$(wildcard *.sgml)
 sgmlfiler=$(allesgmlfiles)
 
 # her er det der skal laves
-all:	html pspdf palmpilot sgml exit
+all:	html palmpilot sgml billeder pspdf exit
 
 sgml: $(targetname)-$(version).sgml.tgz
 
@@ -53,12 +53,12 @@ exit:
 	@echo 
 
 billeder:
-	cp ../friheden/images/* images
-	cp ../admin/images/* images
-	cp ../web/images/* images
-	cp ../program/images/* images
-	cp ../applikationer/images/* images
-	cp ../sikkerhedimages/* images
+	cp ../friheden/images/*.png images
+	cp ../admin/images/*.png images
+	cp ../web/images/*.png images
+	cp ../program/images/*.png images
+	cp ../applikationer/images/*.png images
+	cp ../sikkerhed/images/*.png images
 
 
 htmlfiler: 
@@ -119,10 +119,10 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
 	echo '<!ENTITY magic "eps">' > magic.sgml
-	perl ./collateindex.pl  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	perl ./collateindex.pl  -t Stikordsregister -x -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
 	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print -V html-index -V nochunks bog.sgml > ged.html)
-	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
+	perl ./collateindex.pl -s Symboler -x -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	mkdir bogps
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% convert -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
@@ -151,6 +151,6 @@ test:
 
 
 clean:
-	rm -rf dato.sgml magic.sgml $(targetname)-* DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt
+	rm -rf dato.sgml magic.sgml $(targetname)-* DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt images/*
 
 
