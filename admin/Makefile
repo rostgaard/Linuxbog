@@ -10,7 +10,8 @@ sgml:
 
 palmpilot:
 	rm -f palm/*.prc palm/*.pdb
-	(cd palm; python /usr/lib/python1.5/site-packages/PyPlucker/Spider.py -v -p . -f $(targetname);cp ../../misc/*.prc .)
+	(cd palm;plucker-build -v -P . -f $(targetname))
+	cp ../misc/*.prc palm
 	tar cvzf $(targetname)-$(version).palm.tgz palm/*.prc palm/*.pdb
 
 statusfiler:
@@ -18,7 +19,7 @@ statusfiler:
 	@echo Version er $(version)
 	@echo Dato sat til $(dato)
 
-html:
+html:	statusfiler
 	@echo "Target er HTML i" $(notdir $(locdirname))/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -36,7 +37,7 @@ html:
 	@echo "Done HTML (html)"
 	@echo ""
 
-pspdf:
+pspdf:	statusfiler
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
