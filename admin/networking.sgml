@@ -887,6 +887,133 @@ Postfix har hjemmesiden <ulink url="http://www.postfix.org/">www.postfix.org</ul
 hvor der også er en god FAQ.
 </para>
 
+<sect2 id="postfix-virtual">
+<title>Modtage e-mail for flere domæner samtidigt</title>
+<indexterm><primary>Postfix</primary><secondary>virtual</secondary></indexterm>
+<indexterm><primary>E-post</primary><secondary>skyggedomæner</secondary></indexterm>
+<indexterm><primary>/etc/postfix/virtual</primary></indexterm>
+<indexterm><primary>/etc/postfix/main.cf</primary></indexterm>
+<indexterm><primary>Stjerne-email</primary></indexterm>
+
+<!-- Vibber spurgte hvordan det der "virtual" virkede
+     - hun faldt vist i søvn. /chlor -->
+
+<para>
+Postfix kan nemt sættes op til at modtage e-mail fra flere domæner samtidigt,
+og sende disse e-mails videre til flere forskellige steder.
+Filen der styre dette ligger i filen <filename>/etc/postfix/virtual</filename>,
+der er grundlaget for databasen <filename>/etc/postfix/virtual.db</filename>.
+</para>
+
+<para>
+Det første der skal sættes op, er at få Postfix til at bruge filen
+<filename>/etc/postfix/virtual</filename> til at slå domæner og 
+brugere op.
+I filen <filename>/etc/postfix/main.cf</filename> indsættes følgende
+linie:
+</para>
+
+<programlisting>
+# Filnavn: /etc/postfix/main.cf
+virtual_maps = hash:/etc/postfix/virtual
+</programlisting>
+
+<para>
+Og så lige den obligatoriske reload:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/etc/init.d/postfix reload</userinput>
+</screen>
+
+<para>
+Postfix kan ved hjælp af koden <emphasis>hash:</emphasis> se
+at det er filen <filename>/etc/postfix/virtual.db</filename>
+der skal slås op i.
+Dette er en binær fil der skal genereres hver gang der sker
+ændringer i <filename>/etc/postfix/virtual</filename>.
+</para>
+
+<para>
+Herefter kan domæner oprettes i filen
+<filename>/etc/postfix/virtual</filename>.
+For overskuelighedens skyld, er her først vist opsætning
+for eet domæne.
+Der er kun e-mailadressen
+<emphasis>postmaster@eksempel.dk</emphasis>, og e-mail
+sendes til brugeren <emphasis>root</emphasis>, der har
+en konto lokalt på maskinen.
+</para>
+
+<programlisting>
+# Filnavn: /etc/postfix/virtual
+eksempel.dk anything
+postmaster@eksempel.dk root
+</programlisting>
+
+<para>
+<filename>virtual</filename> kan nu afprøves ved
+kompile den til <filename>virtual.db</filename>,
+hvilket skal gøres hver gang der er ændret i <filename>virtual</filename>.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>postmap hash:/etc/postfix/virtual</userinput>
+</screen>
+
+<para>
+Hvis man gerne vil have at al anden mail end ovenstående,
+skal sendes til brugeren <emphasis>linus</emphasis>,
+tilføjes en ekstra linie hvor der ikke er noget user-name.
+</para>
+
+<programlisting>
+# Filnavn: /etc/postfix/virtual
+eksempel.dk anything
+@eksempel.dk           linus
+postmaster@eksempel.dk root
+</programlisting>
+
+<para>
+Mail kan også sendes videre til en helt anden bruger
+på en helt anden server.
+Herunder er brugeren <emphasis>abuse@eksempel.dk</emphasis>
+tilføjet, og sendes videre til et domæne udenfor serveren.
+</para>
+
+<programlisting>
+# Filnavn: /etc/postfix/virtual
+eksempel.dk anything
+@eksempel.dk           linus
+abuse@eksempel.dk      nogen@tagersigafdet.com
+postmaster@eksempel.dk root
+</programlisting>
+
+<para>
+Når der skal tilføjes et domæne mere, skal
+der være en blank linie til næste blok.
+Herunder er der tilføjet domænet 
+<emphasis>linux.dk</emphasis>.
+E-mailreglerne for disse to domæner er de samme,
+så al mail der måtte komme sendes blot videre
+<emphasis>eksempel.dk</emphasis>.
+Mail til <emphasis>postmaster@linux.dk</emphasis> vil
+således blive sendt videre til <emphasis>root</emphasis>.
+</para>
+
+<programlisting>
+# Filnavn: /etc/postfix/virtual
+eksempel.dk anything
+@eksempel.dk           linus
+abuse@eksempel.dk      nogen@tagersigafdet.com
+postmaster@eksempel.dk root
+
+linux.dk anything
+@linux.dk              @eksempel.dk
+</programlisting>
+
+</sect2><!-- postfix-virtual -->
+
 </sect1><!-- postfix -->
 
 <sect1 id="news-server">
