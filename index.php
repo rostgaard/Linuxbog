@@ -136,6 +136,13 @@ function form_filename( $bookname, $format ) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
+    "kontorplatform" => array(
+      title => "Linux - Friheden til at vælge kontorplatform",
+      comment => "Valg af Linux-baseret kontorplatform",
+      auth => array(
+        "Michael Rasmussen" => "mir@miras.org"
+      )
+    ),
   "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
