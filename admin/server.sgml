@@ -25,15 +25,15 @@ til din Linux-maskine via modem (eng. dial-in modem).
 <para>
 Hvis man har mere end et par computere på sit netværk, eller hvis man
 ofte flytter computerne mellem forskellige netværk, så bliver det 
-hurtigt besværligt at skulle konfigurere deres IP-adresser,
+hurtigt besværligt at skulle ændre deres IP-adresser,
 standard-gatewayadresse og navneserver hver gang man flytter dem rundt.
 </para>
 
 <para>
 Løsningen på det problem er at bruge DHCP &ndash; "Dynamic Host
 Configuration Protocol". Som navnet antyder, så er det en speciel
-protokol som er beregnet til at en computer kan blive konfigureret
-automatisk, uden at man skal ind og pille i opsætningen på hver enkelt
+protokol som er beregnet til at en computer kan blive sat op
+automatisk, uden at man skal ind og pille i opsætningsfiler på hver enkelt
 maskine.
 </para>
 
@@ -41,7 +41,7 @@ maskine.
 Bemærk, at hvis du har mere end én DHCP-server på samme netværks
 segment bør disse være koordineret.
 Hvis de ikke er koordineret vil du kunne opleve at det kun virker en gang imellem &ndash; 
-nemlig når klienten får svaret fra den server, der er konfigureret korrekt.
+nemlig når klienten får svaret fra den server, der er sat korrekt op.
 </para>
 
 <sect2 id="dhcp-virkemaade">
@@ -50,7 +50,7 @@ nemlig når klienten får svaret fra den server, der er konfigureret korrekt.
 Når man tænder en computer der bruger DHCP, så vil den sende en
 forespørgsel ud på sit lokale netværk for at spørge efter en
 DHCP-server. Hvis der er en DHCP-server på nettet, så tager serveren en
-ubrugt IP-adresse fra den pulje af adresser, den er konfigureret til
+ubrugt IP-adresse fra den pulje af adresser, den er sat op til
 at bruge, og sender et svar tilbage om at den nye computer kan bruge
 den pågældende IP-adresse. Sammen med IP-adressen sendes også andre
 oplysninger som er nødvendige for at netværket kan fungere &ndash; som regel
@@ -82,11 +82,11 @@ form for server-funktion &ndash; dvs. almindelige arbejdsstationer.
 </para>
 
 <para>
-Det er dog muligt at konfigurere sin DHCP-server på en måde, så visse
+Det er dog muligt at sætte sin DHCP-server op på en måde, så visse
 IP-adresser bliver reserveret til bestemte maskiner, og derved kan man
 sikre at den pågældende maskine altid har en bestemt IP-adresse. 
 Derfor kan man godt bruge DHCP til servere, f.eks. hvis man
-vil styre netværks-konfigurationen centralt.
+vil styre netværks-opsætningen centralt.
 </para>
 </sect2>
 
@@ -118,7 +118,7 @@ har en DHCP-server indbygget.
 </para>
 
 <para>
-Hvis ikke alle DHCP-serverne er konfigureret korrekt og koordineret
+Hvis ikke alle DHCP-serverne er sat korrekt og koordineret op
 kan du opleve at det kun virker en gang imellem.  Du skal være
 opmærksom på at du kan komme ud for udstyr som kun
 <emphasis>tænder</emphasis> for DHCP-serveren når det ikke kan finde
@@ -132,7 +132,7 @@ netværksenhederne i en bestemt rækkefølge.
 <title>ISC DHCP-server</title>
 <indexterm><primary>DHCP</primary><secondary>ISC</secondary></indexterm>
 <para>
-ISC's DHCP-server bruger én konfigurationsfil. Normalt ligger den i
+ISC's DHCP-server bruger én opsætningsfil. Normalt ligger den i
 <filename>/etc/dhcpd.conf</filename>. Derudover bruger den
 en midlertidig fil til at holde styr på hvilke IP-adresser den har
 uddelt til de forskellige maskiner på nettet; den ligger normalt i
@@ -150,7 +150,7 @@ Installér dernæst følgende RPM-pakke for at få DHCP-serveren ind på Red Hat:
 
 
 <para>
-For at konfigurere DHCP-serveren skal du bestemme dig for, hvilke
+For at sætte DHCP-serveren op skal du bestemme dig for, hvilke
 oplysninger den skal uddele til de computere, der spørger den om en 
 IP-adresse. Dvs. du skal vælge:
 </para>
@@ -193,7 +193,7 @@ max. gyldigt i 24 timer.</para></listitem>
 </itemizedlist>
 
 <para>
-Konfigurationsfilen <filename>/etc/dhcpd.conf</filename> skal så se således ud:
+Opsætningsfilen <filename>/etc/dhcpd.conf</filename> skal så se således ud:
 </para>
 
 <programlisting>
@@ -290,8 +290,8 @@ oftere. Det er en afvejning, man må gøre.
 <para>
 DHCP-serveren kan håndtere flere "subnet" &ndash; f.eks. hvis
 serveren også fungerer som router, så der er flere
-netkort installeret i maskinen. Så kan man konfigurere
-én DHCP-server, som deler adresser ud til de forskellige
+netkort installeret i maskinen. Så kan man sætte
+én DHCP-server op, som deler adresser ud til de forskellige
 netværk. Almindeligvis har man dog kun ét netværk, der
 får adresser fra sin DHCP-server &ndash; men derfor skal der
 være en "subnet"-erklæring, der fortæller hvad det er
@@ -395,7 +395,7 @@ IP-adresse, selv om de får oplysningerne via DHCP.
 <para>
 Hvis man ønsker at en bestemt maskine altid får den samme IP-adresse fra 
 DHCP-serveren, så kan man give den en statisk tildeling i 
-DHCP-server-konfigurationen. 
+DHCP-server-opsætningen. 
 Her bruger man den maskinens ethernet-kortets adresse, 
 hvis maskinen tidligere har fået en IP-adresse fra DHCP-serveren, 
 så kan man se ethernet-kortets -adresse i server-maskinens log-fil. 
@@ -456,7 +456,7 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
 
 <para>
 "host eric" indleder en særlig specifikation af hvordan en enkelt vært
-skal konfigureres. For at DHCP-serveren kan kende værten bruger vi
+skal sættes op. For at DHCP-serveren kan kende værten bruger vi
 Ethernet-adressen &ndash; den tager vi fra
 <command>ifconfig</command>-beskeden. For at tildele denne host en
 fast adresse bruges "fixed-address 192.168.0.4", og den adresse vil
@@ -469,7 +469,7 @@ det område af IP-adresser, der står i "range"-specifikationen.
 </para>
 
 <para>
-Fordelen ved også at konfigurere servere med IP-adresser fra en 
+Fordelen ved også at sætte servere op med IP-adresser fra en 
 DHCP-server er, at hvis nogle af de andre oplysninger ændrer sig -
 f.eks. navneserveren eller standard-gateway &ndash; så skal man kun ændre det
 ét sted, nemlig på DHCP-serveren. Alle andre servere og
@@ -1442,14 +1442,14 @@ din kerne om, med dette tilvalg slået til.
 <para>
 Det program der gør AppleTalk-shares tilgængelige i
 både Classic AppleTalk og AppleShareIP hedder <command>afpd</command> og
-får sin konfiguration fra en fil der hedder <filename>afpd.conf</filename>.
+får sin opsætning fra en fil der hedder <filename>afpd.conf</filename>.
 </para>
 
 <para>
 Den simpleste <filename>afpd.conf</filename>-fil indeholder
 kun ét - (minus), hvilket står for "Denne computer" med alle
 standard options koblet til. En lidt mere kompliceret
-konfiguration kunne være følgende:
+opsætning kunne være følgende:
 </para>
 
 <programlisting>
@@ -1463,7 +1463,7 @@ MinLinuxMac -port 12000
 </programlisting>
 
 <para>
-Forklaring af konfigurationsfilen:
+Forklaring af opsætningsfilen:
 </para>
 
 <para>
@@ -1485,7 +1485,7 @@ spørger om adgangskode og som giver login-beskeden "Vær venlig...".
 Linjen "Boksen" -noguest -port 12000 laver en volume på port 12000 der
 ikke tillader gæsteadgang.  Linjen "Det Helligste" -notcp -defaultvol
 &lt;path&gt; -systemvol &lt;path&gt; laver en server der ikke bruger
-TCP/IP (kun DDP) og som bruger to alternative konfigurationsfiler i
+TCP/IP (kun DDP) og som bruger to alternative opsætningsfiler i
 stedet for de to standardfiler
 <filename>AppleVolumes.default</filename> og
 <filename>AppleVolumes.system</filename>. Husk at rette i &lt;path&gt;
@@ -1537,8 +1537,8 @@ AppleTalk-routing mellem flere netkort.
 </para>
 
 <para>
-Atalkd er styret af konfigurationsfilen
-atalkd.conf. Den enkleste form for konfigurationsfil
+Atalkd er styret af opsætningsfilen
+atalkd.conf. Den enkleste form for opsætningsfil
 (og også den enkleste måde at konfigurere atalkd på) er
 en tom fil. Denne fil vil atalkd så selv overskrive med
 nogle ganske fornuftige opsætninger. Det er tilrådeligt
@@ -1548,7 +1548,7 @@ atalkd selv route AppleTalk-pakker mellem netkortene.
 </para>
 
 <para>
-Følgende konfiguration kunne overvejes:
+Følgende opsætning kunne overvejes:
 </para>
 
 <programlisting>
@@ -1886,7 +1886,7 @@ Den fundne enhed skal så linkes til enheden
 </screen>
 
 <para>
-Tilføj nedenstående linje i konfigurationsfilen 
+Tilføj nedenstående linje i opsætningsfilen 
 <filename>/etc/inittab</filename>
 </para>
 
@@ -1919,11 +1919,11 @@ For at brugeren der kommer ind skal kunne køre
 
 <para>
 Så er turen kommet til tilretning af 
-<command>mgetty</command> via dets konfigurationsfiler. 
+<command>mgetty</command> via dets opsætningsfiler. 
 </para>
 
 <para>
-Opret en ny konfigurationsfil 
+Opret en ny opsætningsfil 
 <filename>/etc/ppp/options.server</filename>
 for <command>ppp</command>-serveren med følgende 
 indhold:
