@@ -108,7 +108,7 @@ reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(SAMLING))
 .PHONY : all html pdf pakhtml palmpilot eksempelbackup
 all html pdf pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(SAMLING))
 	touch stikordsfiler;
-	@for dir in $(SUBDIRS) $(SAMLING); do \
+	@for dir in $(SUBDIRS); do \
 		echo "*** Kører make $@ i $$dir" && \
 		cd $$dir && touch toplevel-kald && \
 		$(MAKE) $@ ; \
@@ -118,7 +118,13 @@ all html pdf pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$
 		bin/splitstikord.pl `cat stikordsfiler`; \
 	fi
 	rm -f stikordsfiler
-
+	@if "x$(SAMLING)" != "x"; then \
+		echo "*** Kører make $@ i samling" && \
+		cd $$dir && touch toplevel-kald && \
+		$(MAKE) $@ ; \
+		rm -f toplevel-kald ; cd .. ; \
+	done ;
+ 
 
 ################################################################################
 #
