@@ -61,7 +61,7 @@ harddisken, hvilket er betydeligt mindre effektivt.
  <para>
  <emphasis>Dynamisk cache for harddisken</emphasis> Brugere af MS-DOS
 og Windows er kendt med behovet for at reservere hukommelse af en
-bestemt størrelse til harddisk-cache-programmer som SMARTDRIVE.  Linux
+bestemt størrelse til harddisk-cache-programmer som SMARTDRIVE. Linux
 justerer dynamisk størrelsen af cache-hukommelse som bruges, for at
 tilpasse sig den nuværende hukommelsessituation. Hvis der ikke er mere
 hukommelse tilbage på et givet tidspunkt, reduceres størrelsen af
@@ -375,7 +375,7 @@ nemlig /sbin/init. Som parameter får init-programmet det
 der normalt fortolkes som "run-level 1".
 </para>
 
-<para> init kigger så i <filename>/etc/inittab</filename>, og udfører
+<para><command>init</command> kigger så i <filename>/etc/inittab</filename>, og udfører
 de kommandoer der står som aktive for run-level 1, eller alle
 run-levels. På min Red Hat er det f.eks.
 </para>
@@ -432,7 +432,7 @@ er, at et antal processer kan have adgang til den samme hukommelse, så
 længe der ikke er nogen af processerne, der laver ændringer i data.
 Således bliver de relevante pages af hukommelse ikke kopieret ved
 systemkaldet <command>fork()</command>, men den fælles hukommelse bliver
-skrivebeskyttet.  Hvis en af processerne forsøger at skrive til hukommelsen,
+skrivebeskyttet. Hvis en af processerne forsøger at skrive til hukommelsen,
 bliver processen afbrudt, og kernen laver en kopi af den relevante
 page. Herefter kan der tildeles en kopi til hver proces. Den store
 fordel ved denne metode er, at data kun bliver kopieret hvis det er
@@ -717,7 +717,7 @@ Hvorfor denne redundans, kan man så spørge? At både
 og kernen skal have alle disse informationer? Det har nok været den
 mest indlysende og overskuelige måde at designe det på i tidernes
 morgen. Men som antallet af devices stiger, bliver det mere og mere
-uoverskueligt og tidskrævende at administrere.  Og det kan Devfs gøre
+uoverskueligt og tidskrævende at administrere, og det kan Devfs gøre
 noget ved.
 </para>
 </sect2>
@@ -730,8 +730,8 @@ samme funktion som <filename>/dev</filename>, men som
 ikke ligger fysisk på harddisken. Umiddelbart vil det ligne <filename
 class=directory>/dev</filename>, da man tilgår device-filer igennem
 kataloget <filename>/dev</filename>. Linket går bare
-ikke ned på disken, men direkte ind i kernen (efter samme princip 
-<filename>/proc</filename>.
+ikke ned på disken, men direkte ind i kernen (efter samme princip som 
+<filename>/proc</filename>).
 Dermed er man fri for administrationen og redundans, da filerne altid
 svarer til de devices som kernen har fundet.
 </para>
@@ -839,13 +839,14 @@ f.eks. museprogrammet <command>gpm</command>. <command>gpm</command>
 benytter som default device-filen <filename>/dev/mouse</filename>. I
 dette tilfælde vil det være en god idé at sørge for at
 <command>gpm</command> gør brug af <filename>/dev/psaux</filename>
-direkte (eller en anden "rigtig" device-fil for mus).  Da der ikke er en
+direkte (eller en anden "rigtig" device-fil for mus). Da der ikke er en
 konfigurationsfil til <command>gpm</command> bliver man nødt til at gå
 direkte ind i scriptet for startup-scriptet til <command>gpm</command>
 (se <xref linkend="etcrcdfilen">) og tilføje parameteren:
-"<parameter>-m /dev/psaux</parameter>".  Red Hat 7.1 har forbedret det
+"<parameter>-m /dev/psaux</parameter>". Red Hat 7.1 og senere versioner 
+har forbedret det
 lidt, ved at man kan specificere et device i
-<filename>/etc/sysconfig/gpm</filename>.  Opstartsprogrammet
+<filename>/etc/sysconfig/gpm</filename>. Opstartsprogrammet
 <filename>/etc/rc.d/init/gpm</filename> indeholder dog en fejl som
 gør at devicet altid vil være <filename>/dev/mouse</filename>. Ændr
 derfor følgende i <filename>/etc/rc.d/init/gpm</filename>:
@@ -1039,7 +1040,7 @@ kan der findes en <filename>.config</filename>-fil under
 (<filename>linux/.config</filename>) dannes når man kører
 <command>make xconfig</command> eller <command>make
 menuconfig</command> (tekstbaseret). Filen vil tilsvarende anvendes når
-man kører en af de to make-kommandoer.  
+man kører en af de to make-kommandoer. 
 </para>
 
 
@@ -1058,7 +1059,7 @@ man kører en af de to make-kommandoer.
 <para>
 Du er nu klar til at generere en ny kerne. Der er en række skridt, som
 du bare skal følge. Først gennemgås alle afhængigheder i kernen
-(<command>make dep</command>).  Selve oversættelsen af kernen
+(<command>make dep</command>). Selve oversættelsen af kernen
 (<command>make bzImage</command>) og moduler (<command>make
 modules</command>) kan godt tage en rum tid afhængig af hvor meget
 du har taget med, og hvor hurtig din maskine er.
@@ -1079,12 +1080,6 @@ til sidst at du bliver nødt til at være root.
 <prompt>[root@linus /home/anne/linux]# </prompt> <userinput>make modules_install</userinput>
 </screen>
 
-<para>
-Bemærk at det kun er ved selve installationen af eventuelle moduler 
-til sidst at du bliver nødt til at være root.
-</para>
-
-
 <para> 
 Bagefter kan du finde den nye Linux-kerne i
 <filename>linux/arch/i386/boot/bzImage</filename> (hvis du
@@ -1095,12 +1090,13 @@ teste på denne måde. Er du tilfreds med den nye kerne, kan du kopiere
 kernen til <filename>/boot</filename> og rette i LILO's
 konfigurationsfil (<filename>/etc/lilo.conf</filename>) og køre
 <command>/sbin/lilo</command>, hvis du anvender LILO til at starte
-maskinen.  </para>
+maskinen.
+</para>
 
 <para>
 Moduler laves til kernen svarende til kernens versionsnummer under
 <filename>/lib/modules</filename>, dvs. for kerne 2.4.10 gemmes de i
-<filename>/lib/modules/2.4.10</filename>.  Nu spørger du måske om,
+<filename>/lib/modules/2.4.10</filename>. Nu spørger du måske om,
 hvorfor man i det hele taget laver en kerne og så moduler. Dels kan
 kernen blive mindre og derfor ofte hurtigere. Men er der fejl i et
 modul, kan man hurtigt rette i modulets kildetekst, genoversætte
@@ -1389,9 +1385,9 @@ om, hvilke moduler et modul afhænger af. Filen er en tekstfil, så du
 kan bladre i den ved hjælp af <command>less</command> eller
 <command>more</command>. Filen skal du ikke pille ved - den bliver
 automatisk genereret under opstart af Linux ved at <command>depmod
--a</command> køres.  Næste gang din maskine starter, kan du se efter
+-a</command> køres. Næste gang din maskine starter, kan du se efter
 linjen "Finding module dependencies" - på det tidspunkt genereres
-filen.  Derved sikrer man sig at der anvendes det rigtige modul, dette
+filen. Derved sikrer man sig at der anvendes det rigtige modul, dette
 er specielt vigtigt hvis man har flere kerneversioner installeret.
 </para>
 </sect2>
@@ -1443,7 +1439,7 @@ indsætte følgende linjer:
 
 <programlisting>
 alias eth0 3c90x
-option 3c90x media_select=1
+options 3c90x media_select=1
 </programlisting> 
 
 
@@ -1471,10 +1467,10 @@ skal udføres efter modulet er indlæst.
 <para>
 I Debian bør man ikke rette
 <filename>/etc/conf.modules</filename> da programmet
-<command>update-modules</command> vil overskrive filen.  Programmet
+<command>update-modules</command> vil overskrive filen. Programmet
 henter konfigurationen fra filerne i
 <filename>/etc/modutils/</filename>, bl.a. stier, options 
-og aliaser.  Skal man lave rettelser bør det gøres i disse filer og
+og aliaser. Skal man lave rettelser bør det gøres i disse filer og
 efterfølgende bør <command>update-modules</command> udføres.
 </para>
 </sect2>
@@ -1520,7 +1516,7 @@ For det første er antallet af platforme, der understøttes
 mainframe-system), nye 64-bit MIPS-processorer samt Intels kommende
 Itanium. Specielt S/390 synes mange er spændende, idet det bringer
 Linux ind på mainframe-markedet. F.eks. har Telia i december 2000 købt
-en sådan maskine som erstatning for 70 Sun-computere.  Desuden
+en sådan maskine som erstatning for 70 Sun-computere. Desuden
 udnytter 2.4 MMX-instruktioner og andre udvidelser til det klassiske
 x86-instruktionssæt bedre end den gamle kerne.
 </para>
@@ -1535,7 +1531,7 @@ processorer forbedret markant.
 
 <para>
 Kerne 2.4 skulle umiddelbart ikke kræve mere hukommelse end kerne
-2.2-serien - men den understøtter meget mere hukommelse.  En af de
+2.2-serien - men den understøtter meget mere hukommelse. En af de
 ting, som nogle var utilfredse med i kerne 2.2-serien, var mængden af
 hukommelse, som Linux-kernen kunne bruge. Når man konfigurerer
 2.4-kernen, er der spørgsmål om hvor meget hukommelse man har. Tre
@@ -1599,7 +1595,7 @@ Man kunne nemt lave en firewall med en kerne 2.2, idet kernen havde et
 rimelig enkelt grænsesnit til formålet, kaldet
 <emphasis>ipchains</emphasis>. Med <command>ipchains</command> kunne
 man sætte regler op for hvilke pakker som kunne tillades igennem
-firewall'en.  I kerne 2.4 er hele firewall-kontrollen omskrevet til et
+firewall'en. I kerne 2.4 er hele firewall-kontrollen omskrevet til et
 meget stærkere koncept kaldet <emphasis>netfilter</emphasis>, som kan
 styre tilstandshåndterende firewalls. Dette er forklaret i bogen
 "Linux - Friheden til sikkerhed på internettet", som kan findes på <ulink
@@ -1662,11 +1658,13 @@ Hvad der ikke kom med i kerne 2.4.0, men som er kommet med i kerne 2.4.1,
 er et <emphasis>journaling filesystem</emphasis>. Det sidste år har
 der været arbejdet meget hårdt på tre forskellige avancerede
 filsystemer, som skriver data til disk på en meget sikker måde i
-forhold til det gamle ext2-filsystem.  I tilfælde af f.eks. strømsvigt
+forhold til det gamle ext2-filsystem. I tilfælde af f.eks. strømsvigt
 eller lign. vil de nye filsystemer være meget mere robuste. ReiserFS
 vil være det første til at komme med i kernen, mens SGI's
-XFS-filsystem og ext3 fra Red Hat er stærkt på vej, men endnu er det
+XFS-filsystem og JFS, men endnu er det
 uklart, hvornår de er produktionsklare. 
+Filsystemet ext3 fra Red Hat er allerede i produktion som det primære 
+filsystem i nyere Red Hat versioner.
 En glimrende oversigtsartikel, der sammenligner det gamle ext2, det
 nyere ext3, ReiserFS og endelige XFS kan læses på 
 <ulink
