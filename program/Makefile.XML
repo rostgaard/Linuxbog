@@ -1,5 +1,4 @@
 # Lokalt katalog (fuld sti)
-
 locdirname:=$(shell pwd)
 
 # Kort navn
@@ -11,7 +10,7 @@ targetname:=linuxbog-$(notdir $(locdirname))
 # version
 version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
 
-all: html pdf pakket_html
+all: html pdf pakket_html pakket_sgml
 
 html: stikord dato udgave
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -30,6 +29,13 @@ pakket_html: html
 	cp -p bog/*.{html,png} $(targetname)-$(version)-html/
 	tar czvf $(targetname)-$(version)-html.tar.gz $(targetname)-$(version)-html
 	rm -rf $(targetname)-$(version)-html
+
+pakket_sgml:
+	mkdir -p $(targetname)-$(version)-sgml/images
+	cp -p *.sgml $(targetname)-$(version)-sgml/
+	cp -p images/*.png $(targetname)-$(version)-sgml/images/
+	tar czvf $(targetname)-$(version)-sgml.tar.gz $(targetname)-$(version)-sgml
+	rm -rf $(targetname)-$(version)-sgml
 
 stikord:
 	perl  ./collateindex.pl    -s Symboler -t Stikordsregister -g -i stikord    -o stikord.sgml -N
