@@ -430,6 +430,161 @@ set-UID på binære filer, ikke på shell scripts.
 </sect2>
 </sect1>
 
+<sect1 id="kerne-proc">
+<title>proc-filsystemet</title>
+<indexterm><primary>/proc</primary></indexterm>
+<para>
+Som systemadministrator (root) er der gode muligheder for at følge,
+hvad Linux-kernen laver. Prøv at skrive <command>mount</command>. En
+af de linierm som kommer frem er
+</para>
+
+<screen>
+none on /proc type proc (rw)
+</screen>
+
+<para>
+I modsætning til de almindelige filsystemer, som er monteret
+(f.eks. <filename>/dev/hda1</filename>, <filename>/dev/hda2</filename>
+osv.), så er <filename>/proc</filename> meget specielt. Prøv
+f.eks. som det første eksperiment at se følgende fil.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>ls -l /proc/kcore</userinput>
+-r--------    1 root     root     134156288 jan 22 23:18 /proc/kcore   
+</screen>
+
+<para>
+Betyder dette, at der ligger en ca. 128 MB stor fil? Nej - alt hvad
+der ligger under <filename>/proc</filename> er virtuelt. Der er
+Linux-kernen som på en elegant måde giver adgang til en række nyttige
+kerne-informationer. I eksemplet er <filename>/proc/kcore</filename>
+en adgang til hele den fysiske RAM i maskinen. Lad os se mere på hvad
+der sker i <filename>/proc</filename>
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>ls -l /proc/</userinput>
+1/     1150/  529/ 741/  9725/ 9794/       fs/        partitions
+10023/ 15656/ 539/ 765/  9726/ 9795/       ide/       pci
+10030/ 15657/ 554/ 809/  9727/ 9797/       interrupts rtc
+10043/ 15658/ 570/ 825/  9765/ 9798/       ioports    scsi/
+1017/  17917/ 571/ 961/  9767/ 9800/       kcore      self@
+10313/ 17931/ 581/ 965/  9769/ 984/        kmsg       slabinfo
+10317/ 17964/ 596/ 966/  9771/ 9950/       ksyms      sound
+1051/  18243/ 6/   967/  9776/ 9958/       loadavg    stat
+1052/  18246/ 61/  968/  9777/ apm         locks      swaps
+1053/  18250/ 698/ 969/  9780/ bus/        mdstat     sys/
+1054/  18524/ 701/ 970/  9782/ cmdline     meminfo    tty/
+1055/  2/     702/ 971/  9784/ cpuinfo     misc       uptime
+10571/ 3/     703/ 9717/ 9786/ devices     modules    version
+10723/ 307/   704/ 972/  9788/ dma         mounts
+1083/  4/     717/ 9722/ 9789/ fb          mtrr
+11294/ 5/     732/ 9723/ 9791/ filesystems net/                          
+</screen>
+
+<para>
+<indexterm><primary>PID</primary></indexterm>
+<indexterm><primary>Proces-ID</primary></indexterm>
+<indexterm><primary>ps</primary></indexterm> Som det kan ses er der en
+mængde kataloger med numre. Der er et katalog for hver proces på
+maskinen. Lad os se på et af katalogerne i større detalje. Der kører
+netop nu en <command>emacs</command> på maskinen med PID=18243 (PID
+betyder proces-ID). Dette findes ved brug af
+<filename>ps</filename>. Tilsvarende kan vi se hvad kataloget i
+<filename>/proc/18243</filename> indeholder.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>ps aux | grep emacs</userinput>
+pto  18243  0.1  4.7  8940 6076 pts/1   S  22:11  0:09 emacs kerne.sgml 
+<prompt>[anne@linus ~]$ </prompt><userinput>ls -l /proc/18243</userinput>
+totalt 0
+dr-xr-xr-x  3 pto  www  0 jan 22 23:39 .
+dr-xr-xr-x 98 root root 0 jan 21 03:19 ..
+-r--r--r--  1 pto  www  0 jan 22 23:39 cmdline
+lrwx------  1 pto  www  0 jan 22 23:39 cwd -> /home/pto/linuxbog/admin
+-r--------  1 pto  www  0 jan 22 23:39 environ
+lrwx------  1 pto  www  0 jan 22 23:39 exe -> /usr/bin/emacs
+dr-x------  2 pto  www  0 jan 22 23:39 fd
+pr--r--r--  1 pto  www  0 jan 22 23:39 maps
+-rw-------  1 pto  www  0 jan 22 23:39 mem
+lrwx------  1 pto  www  0 jan 22 23:39 root -> /
+-r--r--r--  1 pto  www  0 jan 22 23:39 stat
+-r--r--r--  1 pto  www  0 jan 22 23:39 statm
+-r--r--r--  1 pto  www  0 jan 22 23:39 status      
+</screen>
+
+<para>
+Det første underlige, er at filerne har filstørrelse nul. Det kan man
+ikke lade sig snyde af. Alt er virtuelt her - og nogle gange kan filer
+i <filename>/proc</filename> have indhold. Prøv selv at køre
+<command>more /proc/PID/cmdline</command>, hvor PID er en af de
+proces-ID på din maskine, f.eks. for en editor, du har startet på på
+kommando-linien.
+</para>
+
+<para>
+Via <filename>/proc/PID/cwd</filename> er der direkte adgang til de
+katalog, som programmet blev startet op i. Filerne
+<filename>/proc/PID/stat*</filename> (tre filer) fortæller mere om
+f.eks. hukommelsesforbrug og andre status-parametre.
+</para>
+
+<para>
+Lad os nu forlade hvad der gemmes for det enkelte program, og se på
+mere information, som kan findes i <filename>/proc</filename>. 
+</para>
+
+<para>
+Belastning af maskinen (load) - eller rettere - hvor mange processor prøver
+at tilgå kernen i snit kan ses direkte ud fra
+<filename>/proc/loadavg</filename>. Det er samme tal som
+<command>uptime</command> har til sidst - belastning det sidste minut,
+sidste 5 minutter, og endelig de sidste 15 minutter.
+<indexterm><primary>uptime</primary></indexterm>
+<indexterm><primary>load</primary></indexterm>
+</para>
+
+<para>
+Vil du vide mere om hvor meget hukommelse, som er brugt, så kan du få
+dette fra kommandoen <command>free</command>, men der er endnu mere
+detalje fra filen <filename>/proc/meminfo</filename>
+</para>
+
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>free </userinput>
+             total   used  free shared buffers cached
+Mem:        127760 124336  3424 135860    4684  52104
+-/+ buffers/cache:  67548 60212
+Swap:        68504   7120 61384       
+<prompt>[anne@linus ~]$ </prompt><userinput>more /proc/meminfo</userinput>
+        total:    used:    free:  shared: buffers:  cached:
+Mem:  130826240 127242240  3584000 139255808  4788224 53280768
+Swap: 70148096  7290880 62857216
+MemTotal:    127760 kB
+MemFree:       3500 kB
+MemShared:   135992 kB
+Buffers:       4676 kB
+Cached:       52032 kB
+BigTotal:         0 kB
+BigFree:          0 kB
+SwapTotal:    68504 kB
+SwapFree:     61384 kB
+</screen>
+
+<para>
+I <filename>/proc/net/</filename> er der en masse nyttig information
+om hvordan netværket ser ud lige nu. De fleste filer er direkte
+læsbare for alle, mens f.eks. firewall-filerne (for kerne 2.2)
+<filename>/proc/net/ip_fwchains</filename> (med firewall-konfigurationen) og 
+<filename>/proc/net/ip_fwnames</filename> kun kan læses af root (sikkerhed).
+</para>
+
+</sect1>
+
 <sect1 id="kerne-2-4">
 <title>Kerne 2.4</title>
 <para>
