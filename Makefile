@@ -10,6 +10,7 @@ Makefiler:
 	cp Makefile.subdir program/Makefile
 	cp Makefile.subdir web/Makefile
 	cp Makefile.subdir sikkerhed/Makefile
+	cp Makefile.subdir C/Makefile
 
 filer:  Makefiler
 	make Makefiler
@@ -19,6 +20,7 @@ filer:  Makefiler
 	make -C program
 	make -C web
 	make -C sikkerhed
+	make -C C
 	make -C alle 
 
 statusfiler:  Makefiler
@@ -28,6 +30,7 @@ statusfiler:  Makefiler
 	make -C program  statusfiler
 	make -C web  statusfiler
 	make -C sikkerhed  statusfiler
+	make -C C  statusfiler
 	make -C alle  statusfiler
 
 
@@ -38,13 +41,8 @@ clean: Makefiler
 	make -C program clean
 	make -C web clean 
 	make -C sikkerhed clean 
+	make -C C clean 
 	make -C alle clean 
-	rm -f friheden/Makefile
-	rm -f applikationer/Makefile
-	rm -f admin/Makefile
-	rm -f web/Makefile
-	rm -f program/Makefile
-	rm -f sikkerhed/Makefile
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
 
