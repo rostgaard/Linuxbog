@@ -24,6 +24,6 @@ undef ($/);
     .*?</ulink>       # www.sslug.dk/linuxbog</ulink>
   !
     $http=$1;$path=$2;$path =~ s@/@ /@g;
-    "<tilename>$http$path</filename>"
+    "<filename>$http$path</filename>"
   !gsixe;             # Global SingleString IgnoreCase eXtentedComments Expression
 
