@@ -24,6 +24,9 @@
       .....
       ... [topmenu] ...
    */
+   if (!ini_get('register_globals')) {
+   	echo "<h1>'register_globals' er slået fra i /etc/php.ini</h1><hr>\n";
+   }
    $htmltitle_en="Liberty of writing books";
    $htmltitle_da="Friheden til at skrive bøger";
    $htmltitle_sv="Friheden til at skrive böcker";
