@@ -1,0 +1,2769 @@
+<!-- $Id$ -->
+<CHAPTER ID="Basal-Unix">
+<title>Basal Unix</title>
+<indexterm><primary>Unix</primary></indexterm>
+<indexterm><primary>Kommandolinie</primary></indexterm>
+
+<para>
+Linux er et Unix-lignende styresystem med alle dets fordele
+og ulemper. Unix' historie går tilbage til slutningen af
+1960'erne, hvor en gruppe forskere ved AT&amp;T's forskningslaboratorium
+eksperimenterede med computerens uanede muligheder.
+</para>
+
+<para>
+Dengang Unix var ungt var der ikke noget, der hed grafiske
+brugergrænseflader og mus. Næh, brugeren sad foran en
+tekstterminal og tastede alle kommandoer ind. Denne noget
+primitive måde at arbejde med en computer på, genfinder
+vi i moderne Unix, og eftersom Linux er et Unix-lignende
+styresystem, har du naturligvis også mulighed for at
+indtaste kommandoerne på dit tastatur. Begynder du at bruge Linux seriøst,
+vil du dog nok finde ud af, at tekst-kommandoerne ikke er
+en primitiv arbejdsform - men på en lang række områder langt 
+mere effektivt og hurtigere end
+Windows-måden.
+</para>
+
+<para>
+Nu må du ikke tro, at det kun er af gammel vane, at Unix-brugere
+taster deres kommandoer ind på en kommandolinie; faktisk er det muligt
+at udføre endda meget komplekse opgaver med meget lidt
+tastearbejde. Det skyldes, at der med Unix altid følger et hav af
+hjælpeprogrammer. Lad os give dig et eksempel - bare rolig, vi
+forventer ikke, at du allerede nu kan gennemskue, hvordan det
+fungerer, men vi vil bare vise dig, hvor lidt tastearbejde der skal
+til for at udføre store opgaver. Lad os antage, at du har en
+hjemmeside liggende på maskinen <filename>www.andeby.dk</filename>. Du
+er en produktiv person med mange interesser, så din hjemmeside består
+af mange HTML-filer. En dag flytter du, og din hjemmeside skal skifte
+maskine - din nye maskine hedder
+<filename>www.kongeh.org</filename>. Dit problem er, at du skal rette
+alle henvisninger på dine sider. I Unix (og dermed også Linux) kan det gøres
+ganske let ved at udføre kommandoen (du skal ikke gøre det):
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>find -iregex '.*html?' |\
+xargs perl -i -pe 's/www\.andeby\.dk/www.kongeh.org/gi'</userinput>
+</SCREEN>
+
+<para>
+Når du udfører kommandoen, bliver alle filer, som
+ender på "html" (bl.a. også "HTML" og "htm"), fundet
+(<command>find</command>). Du benytter et program ved navn
+<command>perl</command> til at foretage selve
+søg-og-erstat-proceduren. Dette eksempel er nok lidt for avanceret til
+vores bog her, men vi håber, at du nu kan se, hvor kraftfuld en
+enkel kommandolinie kan være i Unix.
+</para>
+
+<para>
+Når du indtaster kommandoer på en kommandolinie, benytter du dig af et 
+program, som i daglig tale omtales skallen eller shellen eller kommandofortolkeren.
+Der findes mange forskellige skaller, men BASH (Bourne Again SHell) er
+den mest udbredte under Linux. Skallen fortolker hvad du skriver, og
+udfører de kommandoer, du ønsker.
+</para>
+
+<para>
+Vi kan også fra starten fortælle dig, at store og små bogstaver ikke
+er det samme for filnavne. Du kan også godt bruge meget lange filnavne,
+og der er ikke den samme DOS-opbygning med fil-endelser på maksimalt tre
+bogstaver (<filename>CONFIG.SYS</filename> osv.). I modsætning til
+Microsoft Windows vises alle filer med
+<filename>*</filename> og ikke <filename>*.*</filename> - dertil
+kommer skjulte filer, som starter med et punktum <filename>.*</filename> - det er ret vigtigt.
+</para>
+
+<para>
+Du skal også lege lidt med tasterne pil-op og pil-ned, som løber igennem de
+gamle kommandoer igen. Ctrl-A og Ctrl-E bruges til at gå til starten og
+slutningen af en linie.
+</para>
+
+<para>
+<indexterm><primary>Tabulator</primary></indexterm>
+Kommando- og filudvidelsesfunktionerne er utroligt rare, hvis man vil
+slippe for at skrive lange program- og filnavne igen og igen. Når man
+har skrevet starten på et program- eller filnavn kan man ved at trykke
+på tabulatortasten få shellen til at gætte hvad man mener. Hvis der
+kun er én mulighed fylder shellen resten af navnet på. Er der flere
+muligheder, kan du trykke endnu en gang på tabulatortasten for at få
+vist alle mulighederne.
+</para>
+
+<para>
+Hvis du skriver
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt><userinput>tou&lt;TAB&gt; sikke_et_langt_filnavn</userinput>
+</SCREEN>
+
+<para>
+skulle det gerne blive til
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt><userinput>touch sikke_et_langt_filnavn</userinput>
+</SCREEN>
+
+<indexterm><primary>Kommando-udfyldning</primary></indexterm>
+
+<para>
+idet der ikke er andre kommandoer, der begynder med 'tou'
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt><userinput>rm sik&lt;TAB&gt;</userinput>
+</SCREEN>
+
+<para>
+Det fungerer i øvrigt ved, at kommandofortolkeren i første "ord" leder
+efter en eksekverbar fil i de biblioteker, som er angivet i
+systemvariablen $PATH eller i den sti, som angives foran selve
+kommandoen. Efter kommandoen ledes der efter filnavne i det angivne
+bibliotek.
+</para>
+
+<sect1 id="filtraet">
+<title>Hvad ligger hvor på en Linux-maskine</title>
+<indexterm><primary>Filer</primary><secondary>Placering af</secondary></indexterm>
+
+<para>
+Linux har en meget velorganiseret måde at gemme forskellige filer.
+Der er kataloger til delte biblioteker, nogle til programmer, og andre
+kataloger til brugerdata.
+</para>
+
+<table>
+<title>Oversigt over filtræet.</title>
+<indexterm><primary>Filtræet</primary></indexterm>
+<tgroup cols=2 align="char">
+<thead>
+<row>
+<entry>Filtræ
+</entry>
+
+<entry>
+Forklaring
+</entry>
+
+</row>
+</thead>
+
+<tbody>
+
+<row>
+<entry><filename>/</filename></entry> 
+<entry>Toppen af katalogstrukturen ("Min Computer" i Windows).</entry>
+</row>
+
+<row>
+<entry><filename>/bin</filename></entry> 
+<entry>Her er de mest nødvendige systemkommandoer gemt.</entry> 
+</row>
+
+<row>
+<entry><filename>/boot</filename></entry> 
+<entry>Dette katalog er reserveret til systemkernen,
+men nogle Linux-distributioner vælger at placere kernen i roden, dvs.
+<filename>/</filename>.</entry>
+</row>
+
+<row>
+<entry><filename>/dev</filename></entry> 
+<entry>Indeholder alle device-filer, dvs. adgang til alle enheder
+såsom harddiske, cdrom-drev, diskette, mus, tastatur og printer
+går igennem dette .</entry>
+</row>
+
+<row>
+<entry><filename>/etc</filename></entry> <entry>Dette katalog
+indeholder systemopsætningsfilerne, såvel som filerne, der er
+ansvarlige for systemets opstart, og grafiksystemets opsætning (noget
+lignende filerne <filename>CONFIG.SYS</filename> og
+<filename>AUTOEXEC.BAT</filename> i DOS og Windows).</entry>
+</row>
+
+<row>
+<entry><filename>/home</filename></entry> 
+<entry>Dette er kataloget for alle brugerkonti. Ja, Linux giver
+mulighed for, at mange personer kan arbejde på den samme
+computer samtidig - uden at blande dem sammen. Linux er et
+flerbrugerstyresystem.  Vi kan anbefale, at man opretter en bruger til de mest
+normale jobs og <emphasis>kun</emphasis> bruger root til
+administration, da du som root ved en fejl kan komme til at slette
+vigtige filer, hvilket ville være umuligt som almindelig bruger.
+</entry>
+</row>
+
+<row>
+<entry><filename>/lib</filename></entry> 
+<entry>Indeholder systemets delte
+filer. Linux sparer hukommelse ved at lægge
+kode, som bruges af mange programmer, ind i en fil, kaldet "shared
+library" - svarende til DLL'er i Windows. På
+den måde vil der kun eksistere én kopi af filen i hukommelsen,
+når den bliver brugt.
+</entry>
+</row>
+
+<row>
+<entry><filename>/opt</filename></entry> 
+<entry>
+SuSE anvender dette katalog til at installere store programpakker,
+såsom KDE og StarOffice. Hvis du installerer SuSE skal du derfor 
+sørge for, at dette katalog har en del plads.
+</entry>
+</row>
+
+<row>
+<entry><filename>/lost+found</filename></entry>
+<entry>Du har måske prøvet at bruge Norton Utilities til at genskabe
+en fil, som er tabt i en defekt del af harddisken. Vær mere rolig
+under Linux.  Hvis harddisken laver fejl, vil systemet selv forsøge at
+genskabe filerne, og hvis det ikke kan finde ud af, hvor i filtræet
+filen var placeret, vil den blive placeret i
+<filename>/lost+found</filename>.
+</entry>
+</row>
+
+<row>
+<entry><filename>/mnt</filename></entry> <entry>Hvis du vil have
+adgang til en cdrom, et ZIP-drev eller en diskette, er det som regel i denne 
+del af filsystemet, du får adgang til dem.
+</entry></row> 
+
+
+<row>
+<entry><filename>/proc</filename> </entry>
+<entry>Dette katalog indeholder en hel del information om de kørende
+programmer og Linux-kernens status.
+</entry>
+</row>
+
+<row>
+<entry><filename>/root</filename></entry> 
+<entry>Superbrugerens hjemmekatalog.</entry>
+</row>
+
+<row>
+<entry><filename>/sbin</filename></entry> <entry>Her ligger de
+avancerede kommandoer til systemadministration, og af sikkerhedsgrunde
+skal det kun være muligt for systemadministratoren (root) at få
+adgang til dette katalog.</entry>
+</row>
+
+<row>
+<entry><filename>/tmp</filename></entry> 
+<entry>Programmerne bruger dette
+katalog som den normale placering for
+midlertidige filer og affald. Som regel sletter systemet dem, når det
+starter op.</entry>
+</row>
+
+<row>
+<entry><filename>/usr</filename></entry> 
+<entry>Her ligger de fleste programmer - såvel som dokumentation 
+<filename>/usr/doc</filename> og biblioteker.
+</entry>
+</row>
+
+<row>
+<entry><filename>/usr/local</filename></entry> 
+<entry>Alt andet specifikt for den
+enkelte maskine. F.eks. bør du lægge dine egne tilføjede programmer 
+herunder.</entry>
+</row>
+
+<row>
+<entry><filename>/var</filename></entry> 
+<entry>Indeholder en mængde
+midlertidige filer, som gemmer systembeskeder, brugernes post, printerjobs osv.
+</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+
+<para>
+Der kan være yderligere dele af filtræet, såsom en
+Windows-disk som man ofte giver tilgang til via
+<filename>/dos</filename> eller <filename>/dosc</filename>.
+</para>
+
+
+<para>
+Læs i øvrigt 
+<ulink url="http://www.pathname.com/fhs/announce-2.0.html">http://www.pathname.com/fhs/announce-2.0.html</ulink>
+for mere information om filers placering.
+</para>
+
+</sect1> <!-- sect1 filtraet -->
+
+<sect1 ID="virtuel-konsol">
+<title>Virtuelle konsoller</title>
+<para>
+<indexterm><primary>Virtuelle konsoller</primary></indexterm>
+Nu skal du til at lære kommandoer til Linux. I starten af dette 
+kapitel har du faktisk benyttet to kommandoer uden at vide det - 
+nemlig <command>touch</command> og <command>rm</command>
+(mere om dem senere i kapitlet). 
+Det sted, hvor du i den simple tekstmode skrev disse kommandoer, 
+kalder vi for konsollen. Linux-konsollen
+er i virkeligheden ikke så primitiv, som den umiddelbart ser ud til.
+</para>
+
+<para>
+<indexterm><primary>Alt-F1</primary></indexterm>
+<indexterm><primary>Ctrl-Alt-F1</primary></indexterm>
+Der er faktisk mere end én konsol. Konsolsystemet består
+af en række virtuelle konsoller. Du skifter mellem dem ved at
+trykke på Alt og en funktionstast mellem F1 og F7, hvor "Alt-F7" dog er
+tilbage til den grafiske X skærmflade, hvis den er startet op. Hvis du
+står i X og skal tilbage til de tekstbaserede konsoller, skal du bruge
+"Ctrl-Alt-F1" op til "Ctrl-Alt-F6". Linux er et ægte multitasking-system,
+så du kan bare logge ind på flere terminaler og arbejde. I hver konsol 
+kører der en skal, som fortolker dine kommandoer. Linux er - som vi
+allerede har sagt mange gange - meget fleksibelt, så faktisk kan du
+have forskellige skaller kørende i forskellige konsoller!
+</para>
+</sect1>
+
+
+<sect1 ID="Filer">
+<title>Filer og deres rettigheder</title>
+<indexterm><primary>Fil-rettigheder</primary></indexterm>
+<para>
+En harddisk i Linux er opbygget i et hierarki af kataloger (eng. "directory"),
+underkataloger samt filer. På den måde adskiller Linux sig hverken fra
+Unix, MS-DOS eller Windows 95/98. En del af katalogerne har forskellige
+formål, f.eks. er alle brugernes filer placeret i underkataloger til
+<FILENAME>/home</FILENAME>.  Filer ejet af brugeren
+<filename>anne</filename> vil ligge i kataloget
+<FILENAME>/home/anne</FILENAME> eller i underkataloger til
+dette. Kataloget <FILENAME>/home/anne</FILENAME> kaldes i daglig tale
+for hjemmekataloget for <filename>anne</filename> (eng. "home
+directory").
+</para>
+
+<para>
+Når du logger ind på din Linux-maskine i tekst-mode, vil du blive mødt af en
+kommando-prompt, dvs. en linie der ligner denne:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$</prompt>
+</SCREEN>
+
+<para>
+Logger du ind grafisk, så skal du starte et terminal-vindue op -
+<command>xterm</command> er her den mest anvendte.
+</para>
+
+<para>
+Dit hjemmekatalog er som sagt stedet, hvor dine filer og underkataloger
+ligger placeret. Linux er et flerbrugersystem, og det er derfor
+vigtigt at kunne holde styr på, hvor de enkelte
+brugeres filer er. Kommandoen <command>pwd</command> (eng. "print
+working directory") fortæller dig, hvor i katalogstrukturen du
+pt. er.
+</para>
+
+<indexterm><primary>pwd</primary></indexterm>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>pwd</userinput>
+/home/anne
+</SCREEN>
+
+<para>
+I det ovenstående eksempel er du i kataloget
+<FILENAME>/home/anne</FILENAME>. Dette katalog er dit hjemmekatalog.
+Der er to vigtige ting at bemærke. Du skal dels lægge mærke til,
+at Linux (generelt Unix) bruger en <filename>/</filename> (slash) og
+ikke en <filename>\</filename> (backslash) i stier, som det kendes 
+fra Windows. Det er også vigtigt, at du
+husker at store og små bogstaver er forskellige i Linux. Filerne
+<filename>Linux.html</filename> og <filename>linux.html</filename> er
+således <emphasis>ikke</emphasis> den samme fil.
+</para>
+
+<para>
+Det er let at oprette underkataloger. F.eks. kan du oprette et
+underkatalog ved navn <FILENAME>MitKatalog</FILENAME> ved at skrive:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>mkdir MitKatalog</userinput>
+</SCREEN>
+
+<para>
+<indexterm><primary>mkdir</primary></indexterm>
+Kommandoen, som opretter et underkatalog, hedder med andre ord
+<command>mkdir</command> (eng. "make directory"). I Linux er der
+forskel på små og store bogstaver, og det er faktisk en god idé at
+bruge stort begyndelsesbogstav i dine egne underkataloger, mens filer
+begynder med et lille bogstav. Du kan nu skifte katalog
+vha. kommandoen <command>cd</command> (eng. "change directory"). Lad
+os skifte til kataloget <FILENAME>MitKatalog</FILENAME>:
+</para>
+
+<indexterm><primary>cd</primary></indexterm>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cd MitKatalog</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>pwd</userinput>
+/home/anne/MitKatalog
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>cd ..</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>pwd</userinput>
+/home/anne
+<prompt>[anne@linus ~]$ </prompt>
+</SCREEN>
+
+<para>
+Som du kan se af ovenstående kommando-serie, skifter du til et
+katalog et niveau højere oppe i strukturen ved at skrive <command>cd
+..</command> Husk, at der skal være mellemrum efter <command>cd</command>.
+I Linux betyder <FILENAME>..</FILENAME> altid kataloget
+et niveau højere oppe (nogle gange kaldt forældrekataloget -
+eng. "parent directory"). Hvis du ønsker at slette et tomt
+underkatalog, der altså hverken indeholder filer eller underkataloger,
+kan du bruge kommandoen <command>rmdir</command> (eng. "remove directory").
+</para>
+
+<indexterm><primary>rmdir</primary></indexterm>
+<indexterm><primary>slette katalog</primary></indexterm>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>rmdir MitKatalog</userinput>
+<prompt>[anne@linus ~]$ </prompt>
+</SCREEN>
+
+<para>
+Lad os nu se på indholdet af dit hjemmekatalog. Kommandoen
+<command>ls</command> viser indholdet af det aktuelle
+katalog. Kommandoen har dette lidt mærkelige navn, fordi det er en
+forkortelse af det engelske "list". Korte og lidt kryptiske
+kommandonavne er typisk for Linux. Hvis <command>ls</command> er din
+første kommando på dit nye Linux-system, er resultatet noget kedeligt:
+</para>
+
+<indexterm><primary>ls</primary></indexterm>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls</userinput>
+<prompt>[anne@linus ~]$ </prompt>
+</SCREEN>
+
+<para>
+Det er nu ikke så svært at forstå: Du har jo ingen filer eller
+underkataloger i dit hjemmekatalog endnu. Og dog, det er ikke helt
+rigtigt, for skriver du <command>ls -a ~</command>, ser du, at der er
+et par filer, der starter med punktum og ligger i
+<filename>~</filename> (hjemmekataloget). 
+Den lille krøllede dims <filename>~</filename> hedder i øvrigt en "tilde".
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls -a</userinput>
+.              .Xdefaults     .bash_profile
+..             .bash_logout   .bashrc
+</SCREEN>
+
+<para>
+Filer, der starter med punktum, anvendes oftest til at gemme din
+opsætning for de enkelte programmer. De skal normalt ikke ændres
+særlig tit, og derfor vises de først, når du tilføjer
+<filename>-a</filename> som argument til <command>ls</command>.
+</para>
+
+<para>
+Vi vil skynde os at lære
+dig en vigtig Linux-kommando: <command>cp</command>. Denne kommando
+kopierer (eng. "copy") en fil. Du kopierer filen
+<FILENAME>passwd</FILENAME> fra kataloget <FILENAME>/etc</FILENAME> til
+det aktuelle katalog (kaldet <FILENAME>.</FILENAME>), som pt. er vores
+hjemmekatalog:
+</para>
+
+<indexterm><primary>cp</primary></indexterm>
+<indexterm><primary>kopiere filer</primary></indexterm>
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cp /etc/passwd .</userinput>
+<prompt>[anne@linus ~]$ </prompt>
+</SCREEN>
+
+<para>
+Hvis du nu udfører <command>ls</command>-kommandoen igen, ser
+du, at der nu er dukket en fil ved navn <FILENAME>passwd</FILENAME> op i dit
+hjemmekatalog:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls</userinput>
+passwd
+<prompt>[anne@linus ~]$ </prompt>
+</SCREEN>
+
+<para>
+Langt de fleste Linux-kommandoer kan udføres med forskellige
+funktioner slået til eller fra. Denne ekstra funktionalitet i en
+kommando styres oftest vha. en option. I Unix-verdenen gives en option
+typisk til kommandoen ved at angive en bindestreg og et bogstav.
+<command>ls</command>-kommandoen har en nyttig option, som viser
+indholdet af et katalog i langt format (derfor bruges bogstavet l for
+det engelske "long").
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls -l</userinput>
+-rw-r--r--   1 anne    anne         652 Jul 14 22:32 passwd
+<prompt>[anne@linus ~]$ </prompt>
+</SCREEN>
+
+<para>
+Lad os forklare linien bagfra. Det sidste, du ser, er filens
+navn, som jo er <FILENAME>passwd</FILENAME>. Inden da kan du læse,
+hvornår filen blev oprettet eller sidst blev ændret. Vi kopierede
+filen den 14. juli kl. 22.32. Tallet 652 fortæller, hvor mange bytes
+filen fylder.
+</para>
+
+<para>
+De to gange "anne" er vigtige at forstå. Alle filer og kataloger i et
+Linux-system har en ejer og tilhører en gruppe. Ejeren er en af
+brugerne på systemet, mens en gruppe består af én eller flere
+brugere. En bruger kan godt tilhøre flere grupper. Gruppebegrebet i
+Linux er særligt smart, hvis man arbejder i et firma, hvor der
+eksisterer flere afdelinger, idet hver afdeling kan have deres egen
+gruppe. I gamle dage (SuSE og tidligere versioner af Red Hat) tilhørte alle
+brugerne den samme gruppe, men i Red Hat Linux har man valgt at lade
+hver bruger have deres egen gruppe af sikkerhedsmæssige grunde. Som du
+kan se, ejes filen <FILENAME>passwd</FILENAME> af brugeren "anne" og er
+tilknyttet gruppen "anne".
+</para>
+
+<para>
+1-tallet fortæller at der en 1 reference til filen. Det kryptiske
+"-rw-r--r--" handler om rettigheder. Som allerede nævnt har alle filer
+og kataloger en ejer 
+og er tilknyttet en gruppe. Det er netop, hvad disse kryptiske tegn
+fortæller noget om. Det første tegn er filtypen,
+dvs. om det er en fil "-" eller et katalog "d". De andre ni tegn
+falder i tre grupper, som er rettigheder for ejeren, gruppen og alle
+andre. Et "r" fortæller, at det er tilladt at læse (eng. "read") en fil, et "w"
+betyder, at det er tilladt at skrive (eng. "write") til filen, dvs. ændre og
+evt. slette filen. Et "x" er en smule mere kompliceret: Hvis det drejer
+sig om en fil, er det tilladt at udføre den (eng. "execute") som program,
+og hvis der er tale om et katalog, er det tilladt at se indholdet af kataloget.
+</para>
+
+<FIGURE ID="rettigheder-fig" FLOAT="1">
+<title>Fil rettigheder
+</title>
+<GRAPHIC FILEREF="rettigheder.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+
+<para>
+<FILENAME>passwd</FILENAME> er - som du ser - en fil, hvor
+ejeren (brugeren "anne") har tilladelse til at læse og skrive, mens gruppen
+"anne" kun har ret til at læse. De samme rettigheder gælder for alle andre
+brugere, som ikke er med i gruppen "anne".
+</para>
+
+<para>
+Det er naturligvis muligt at ændre på en fils rettigheder. Til dette
+formål bruger du kommandoen <command>chmod</command> (eng. "change
+mode"). Lad os ændre rettigheder på filen <FILENAME>passwd</FILENAME>,
+så gruppen kan skrive i filen:
+</para>
+
+<indexterm><primary>chmod</primary></indexterm>
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>chmod g+w passwd</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls -l</userinput>
+-rw-rw-r--   1 anne    anne         652 Jul 14 22:32 passwd
+</SCREEN>
+
+<para>
+Det lille "g" betyder gruppe, dvs. vi ønsker at ændre på gruppens 
+rettigheder. Hvis det var ejeren, skulle vi bruge "u" (eng. "user"), 
+mens et "o" betyder andre (eng. "other") og alle sammen kan ændres med 
+"a" (eng. all). Bogstavet "w" betyder, at vi vil ændre på 
+skriverettighederne, og et "+" betyder, at vi vil tillade det, mens et 
+"-" vil forbyde det. Grupper kan oprettes, så kun nogle kan bruge dit 
+program eller læse og/eller skrive i dine filer.
+</para>
+
+<para>
+Rettighederne kan også skrives som et tal bestående af tre cifre. Det
+første ciffer fortæller om rettigheder for ejer, det andet for gruppen
+og det sidste for alle andre. Read (r) tillægges værdien 4, write
+tillægges værdien 2 og execute tillægges værdien 1. Hvis vi lægger
+disse værdier samme får vi fra eksemplet ovenfor 6, 6 og 4 - altså
+664.
+</para>
+
+</sect1>
+
+<sect1 id="vis">
+<title>Indholdet af filer</title>
+
+<para>
+Indtil nu har du arbejdet med filer, men du har stadig ikke
+set på deres indhold. Indholdet af tekstfiler kan let
+vises. Kommandoen <command>cat</command> viser indholdet af en fil,
+f.eks. kan du se indholdet af <FILENAME>passwd</FILENAME> ved at
+skrive:</para>
+
+<indexterm><primary>cat</primary></indexterm>
+<indexterm><primary>vis indholdet af filer</primary></indexterm>
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat passwd</userinput>
+daemon:*:2:2:daemon:/sbin:
+adm:*:3:4:adm:/var/adm:
+lp:*:4:7:lp:/var/spool/lpd:
+sync:*:5:0:sync:/sbin:/bin/sync
+shutdown:*:6:0:shutdown:/sbin:/sbin/shutdown
+halt:*:7:0:halt:/sbin:/sbin/halt
+mail:*:8:12:mail:/var/spool/mail:
+news:*:9:13:news:/var/spool/news:
+uucp:*:10:14:uucp:/var/spool/uucp:
+operator:*:11:0:operator:/root:
+games:*:12:100:games:/usr/games:
+gopher:*:13:30:gopher:/usr/lib/gopher-data:
+ftp:*:14:50:FTP User:/home/ftp:
+nobody:*:99:99:Nobody:/:
+anne:x:501:501:Anne,,,,:/home/anne:/bin/bash
+</SCREEN>
+
+<para>
+<command>cat</command> er, som du ser, meget let at bruge, men
+kommandoen har en dårlig side: Hvis filens indhold fylder mere end en
+skærmside, kommer filen alt for hurtigt over skærmen, og bagefter ser du
+kun den sidste side (dvs. det antal linier, som kan vises på din
+skærm). Du kan dog se nogle få sider tilbage ved at bruger Shift+PageUp.
+Kommandoerne <command>less</command> og
+<command>more</command> er derfor mere velegnede, da det er muligt
+at bladre frem og tilbage i filen. Kommandoen viser en side ad gangen,
+og du kan bladre frem ved at trykke på <EMPHASIS>f</EMPHASIS>
+(eng. "forward") eller mellemrum og tilbage ved at trykke på
+<EMPHASIS>b</EMPHASIS> (eng. "backward"), og i <command>less</command>
+kan pil op og ned også anvendes. Det er også muligt at søge ved at 
+skrive <EMPHASIS>/søgestreng</EMPHASIS> og søgningen gentages ved 
+tryk på <EMPHASIS>n</EMPHASIS> (eng. "next"). Man forlader ved at 
+trykke <EMPHASIS>q</EMPHASIS> (eng. "quit").
+</para>
+</sect1>
+
+<sect1 ID="mv-rm">
+<title>Et par små nyttige kommandoer</title>
+
+<indexterm><primary>mv</primary></indexterm>
+<indexterm><primary>flytte filer</primary></indexterm>
+<indexterm><primary>omdøbe filer</primary></indexterm>
+<para>
+Du har allerede set, hvordan du kan kopiere filer og se indholdet
+af dem. Nu kan det tænkes, at du finder ud af, at en fil skal have
+et andet navn, dvs. den skal omdøbes. Til det formål har du
+kommandoen <command>mv</command> (eng. "move").
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cp passwd nyFil</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>mv nyFil megetNyFil</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls -l</userinput>
+-rw-rw-r--   1 anne    anne         652 Jul 14 22:32 passwd
+-rw-rw-r--   1 anne    anne         652 Jul 14 22:34 megetNyFil
+</SCREEN>
+
+<para>
+I eksemplet ovenfor tager vi først en kopi af filen
+<FILENAME>passwd</FILENAME>, og kopien døber vi
+<FILENAME>nyFil</FILENAME>. Bagefter omdøber vi filen til
+<FILENAME>megetNyFil</FILENAME>. Som kommandoens navn antyder, kan den
+mere end bare omdøbe filer: den kan flytte dem til andre steder i
+filsystemet. Eksemplet nedenfor viser dig hvordan du flytter filen
+<FILENAME>megetNyFil</FILENAME> til kataloget
+<FILENAME>MitKatalog</FILENAME>.</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>mkdir MitKatalog</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>mv megetNyFil MitKatalog</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cd MitKatalog</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+-rw-rw-r--   1 anne    anne         652 Jul 14 22:34 megetNyFil
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>cd ..</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls -l</userinput>
+drwxrwxr-x   2 anne    anne        1024 Jul 14 22:34 MitKatalog
+-rw-rw-r--   1 anne    anne         652 Jul 14 22:32 passwd
+</SCREEN>
+
+<indexterm><primary>rm</primary></indexterm>
+<indexterm><primary>slette filer</primary></indexterm>
+
+<para>Nu kan det tænkes, at du vil slette filen
+<FILENAME>megetNyFil</FILENAME>. Kommandoen <command>rm</command> er
+lige det, du mangler <command>rm</command> (eng. "remove").</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cd MitKatalog</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+-rw-rw-r--   1 anne    anne         652 Jul 14 22:34 megetNyFil
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>rm megetNyFil</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt>
+</SCREEN>
+
+<para>
+Du skal være meget forsigtig med at bruge <command>mv</command> og
+<command>rm</command>, idet der ikke er nogen mulighed for at
+fortryde. Hvis du vil blive spurgt, om det er rigtigt, at du vil
+flytte/slette, kan du tilføje et i-flag, og ovenstående eksempel
+bliver til
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>rm -i megetNyFil</userinput>
+rm: remove `megetNyFil'?
+</SCREEN>
+
+<indexterm><primary>alias</primary></indexterm>
+<para>
+Her kan du så svare <command>y</command> for ja, og
+<command>n</command> for nej. En videregående bemærkning: Du kan
+endda lave aliaser <command>alias rm='rm -i' ; alias mv='mv
+-i'</command> og gemme dette i din <filename>~/.bashrc</filename>, og
+så vil det altid bruges sikkert. Semikolonet benyttes til at adskille 
+kommandoer, så man kan have flere kommandoer på samme linie.
+</para>
+
+<indexterm><primary>touch</primary></indexterm>
+<indexterm><primary>oprette filer</primary></indexterm>
+<para>
+Du kan også oprette nye (tomme) filer med kommandoen 
+<command>touch</command>, som tillige ændrer tidsstemplet 
+på en eksisterende fil.
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>touch myXYZoptioner.txt</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+-rw-rw-r--   1 anne    anne           0 Jul 14 22:39 myXYZoptioner.txt
+<prompt>[anne@linus MitKatalog]$ </prompt>
+</SCREEN>
+
+<para>
+Hvis du så venter et par minutter og udfører <command>touch</command> 
+igen, så vil du se, at tidsstemplet ændres (brug pil-op et par gange).
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>touch myXYZoptioner.txt</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls -l</userinput>
+-rw-rw-r--   1 anne    anne           0 Jul 14 22:42 myXYZoptioner.txt
+<prompt>[anne@linus MitKatalog]$ </prompt>
+</SCREEN>
+<indexterm><primary>ln</primary></indexterm>
+<indexterm><primary>links</primary></indexterm>
+<indexterm><primary>lænker</primary></indexterm>
+<indexterm><primary>genveje til filer</primary></indexterm>
+<indexterm><primary>henvisninger</primary></indexterm>
+<para>
+Endelig skal vi også se på hvordan man kan lave links
+dvs. henvisninger. Har du ofte brug for at kunne redigere
+f.eks. <filename>~/myXYZoptioner.txt</filename> (et filnavn, du ikke
+gider at skrive mange gange), så kan du lave en symbolsk lænke (eng. link)
+med navnet <filename>o.txt</filename>
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ln -s myXYZoptioner.txt o.txt</userinput>
+</SCREEN>
+
+<para>
+Nu kan du redigere filen <filename>o.txt</filename> og via den
+symbolske lænke, så er det faktisk
+<filename>myXYZoptioner.txt</filename> der redigeres.  Du kan også se
+at det er en symbolsk lænke,
+</para>
+
+<screen>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls -l o.txt</userinput>
+lrwxrwxrwx  1 anne anne  4 jul 15 20:35 o.txt -> myXYZoptioner.txt
+</screen>
+
+<para>
+Endelig kan det nævnes at der ud over symbolske lænker (-s) også kan
+laves hårde lænker (uden -s). Effekten er den samme, men det er sværere
+at se hvilke filer, der er koblet til hinanden.
+</para>
+
+<para>
+En smart kommando til at ændre filnavne, er <command>rename</command>,
+som ofte, men ikke altid, findes på Unix og Linux-systemer.
+Skal du ændre filnavne systematisk, f.eks. alle ".htm"-filer til
+".html", så kan du bruge
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$</prompt> <userinput>rename htm html *</userinput>
+</SCREEN>
+
+</sect1>
+
+
+
+<sect1 id="man-og-info-sider">
+<title>On-line manualer</title>
+<indexterm><primary>man sider</primary></indexterm>
+<indexterm><primary>læse man sider</primary></indexterm>
+<indexterm><primary>hjælpe-funktioner</primary></indexterm>
+<indexterm><primary>KDE Konqueror</primary></indexterm>
+<indexterm><primary>Konqueror</primary></indexterm>
+
+<para>
+Det er naturligvis umuligt at huske alle kommandoer og deres
+muligheder (eng. options). Dette faktum har man i Unix-kredse erkendt
+for mange år siden, og manualerne til mange kommandoer og programmer
+ligger derfor på computeren, svarende til Windows F1-funktionen. Et
+programs manual kaldes i Unix-verdenen for dets <EMPHASIS>man
+page</EMPHASIS> - "man" står for "manual".
+</para>
+
+<para>
+For at se manualen til et program, bruger du programmet
+<command>man</command>. Lad os se på et eksempel. Hvis du vil læse
+manualen til <command>ls</command>, skal du taste:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>man ls</userinput>
+</SCREEN>
+
+<para>
+<emphasis>Tip:</emphasis> Du kan med fordel installere KDE2 og anvende
+den browser, der følger med - Konqueror tilbyder en rigtig god
+mulighed for at læse både man-sider og info-sider (et tilsvarende
+dokumentationssystem). Skriv <literal>man:ls</literal> i URL-feltet,
+eller <literal>info:</literal> for at bruge det.
+</para>
+
+<para>Uanset om du bruger kommandolinien eller Konqueror vil Linux nu
+vise dig manual-siden. Langt de fleste manualer består af en række faste
+afsnit: "Name", "Synopsis", "Description", "Options", "Bugs" og "See
+also". Nogle gange er der også eksempler under "Examples".
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para> 
+"Name" giver nok sig selv: det er navnet på programmet samt en meget kort 
+beskrivelse.
+</para></listitem>
+
+<listitem><para> 
+"Synopsis" viser hvordan programmet bruges. Det, der vises i kantet
+parentes, er valgfrie parametre. 
+</para></listitem>
+
+<listitem><para>
+"Description" er en kort beskrivelse af programmets virkemåde.
+</para></listitem>
+
+<listitem><para>
+"Options"-afsnittet opremser alle de muligheder,
+programmet har. Du har allerede set, at <command>ls</command> har en
+option <FILENAME>-l</FILENAME>, men programmet har faktisk mange
+andre. Der findes generelt to typer muligheder: Den korte, startende med 
+en bindestreg <FILENAME>-a</FILENAME>, og den lange med to bindestreger 
+<FILENAME>--all</FILENAME>.
+</para></listitem>
+
+<listitem><para>
+"Examples"-afsnittet viser forskellige eksempler på anvendelsen 
+af kommandoen, så man hurtigt får en fornemmelse af hvorledes
+den kan bruges. "Examples"-afsnittet er desværre ikke altid med.
+</para></listitem>
+
+<listitem><para>
+"Bugs"-afsnittet fortæller dig, om der er kendte fejl i programmet
+eller ting, du skal passe på. I Linux-verdenen er programmørerne ikke
+bange for at indrømme, at programmer ikke er fejlfrie.
+</para></listitem>
+
+<listitem><para>
+Endelig fortæller afsnittet
+"See also" dig, hvilke andre <command>man</command>-sider, der er værd
+at læse for bedre at forstå, hvordan programmet bruges eller henviser 
+til <command>man</command>-sider for lignende kommandoer..
+</para></listitem>
+</itemizedlist>
+
+<para>
+Du forlader <command>man</command>-siden ved at taste 
+<emphasis>q</emphasis>, som i mange andre konsolprogrammer.
+</para>
+
+
+
+
+<para>Det er ikke altid til at huske, hvad en kommando præcist hedder
+i Linux. Du sidder f.eks. og kan ikke huske, hvad en bestemt kommando hedder,
+men du kan huske, at den har noget med mail at gøre. Til at lede alle
+<command>man</command>-siderne igennem har du kommandoen
+<command>apropos</command>.</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$</prompt> <userinput>apropos mail</userinput>
+MIME (1)             - Multipurpose Internet Mail Extensions
+Rnmail (1)           - a program for replying via mail
+aliases (5)          - aliases file for sendmail
+biff (1)             - "be notified if mail arrives and who it is from"
+cmail (6)            - an email chess helper
+faces (1)            - visual mail, user and print face server.
+fetchmail (1)        - fetch mail from a POP, IMAP, or ETRN-capable server
+formail (1)          - mail (re)formatter
+logrotate (8)        - rotates, compresses, and mails system logs
+mail (1)             - send and receive mail
+</SCREEN>
+
+<para>
+Der kan være mange steder i <command>man</command>-siderne, hvor et
+ord indgår. Som du kan se, får du en kort beskrivelse med, som kan få
+dig til at huske, hvilket program du leder efter. Beskrivelsen er den,
+som står i "NAME"-afsnittet.
+</para>
+
+<para>
+Tallene, som står i parentes i eksemplet fra før, fortæller dig i
+hvilket afsnit (eng. "section") i den samlede manual den enkelte
+<command>man</command>-side står. De forskellige afsnit indeholder
+forskellige typer <command>man</command>-sider, f.eks. er afsnit 1 om
+programmer, som almindelige brugere kan bruge, mens afsnit 8
+indeholder manualer for systemadministratoren. Hvis du ønsker en kort
+introduktion til et afsnit af den samlede manual, slår du op på
+<command>intro</command>'s man page. Hvis du f.eks. ønsker at læse lidt om,
+hvad afsnit 3 indeholder, udfører du <command>man 3 intro</command>.
+</para>
+
+<para>
+Nogle <command>man</command>-sider hedder det samme, men tilhører
+forskellige afsnit.  F.eks. er der tre <command>man</command>-sider
+der hedder clock i hhv. afsnit 3, 8 og n.  <command>man</command> slår
+automatisk op i det afsnit med laveste nummer, så <command>man
+clock</command> vil give <command>man</command>-siden for clock i
+afsnit 3. Så for at være sikker på, at man får fat i den rigtige
+<command>man</command>-side angives afsnittet mellem
+<command>man</command> og <command>man</command>-siden
+f.eks. <command>man n clock</command>.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Før du kan bruge <command>apropos</command>,
+skal du som superbrugeren <filename>root</filename> have
+indekseret alle <command>man</command>-siderne ved at køre kommandoen
+<command>/usr/sbin/makewhatis</command>, som også bør køres når 
+du har installeret større programmer. I øvrigt er kommandoen
+<command>man man</command> en god måde at komme i gang med manual-sider.
+</para>
+
+
+<para>
+Tilsvarende til man-sider har man også på Unix-systemer en masse
+manualer med links som vi kender det fra HTML-sider. Systemet blev
+indført før HTML og kaldes info-sider. Du kan aktivere info-systemet
+ved at skrive <command>info</command> på kommandolinien. Du kan
+skifte side med mellemrum, vælge med retur-tasten og komme ud med
+"q". Brugen af info-kommandoen er rædselsfuld, og det kan stærkt anbefales
+at anvende KDE-browseren Konqueror til at læse info-sider. Skriv
+<command>info:/</command> i URL-feltet for at aktivere systemet.
+</para>
+
+</sect1>
+
+
+
+<sect1 id="joker-redir-pipe">
+<title>Joker-tegn, omdirigering og pipe</title>
+<indexterm><primary>Joker-tegn</primary></indexterm>
+<para>
+Vi vil i dette afsnit se på et par af systemets mere smarte
+funktioner, som gør livet lettere for dig som bruger.
+</para>
+
+<sect2 ID="joker">
+<title>Joker-tegnet</title>
+<para>
+<indexterm><primary>*</primary></indexterm>
+Forestil dig, at du har mange filer, som du gerne vil slette. Du
+kan naturligvis skrive <command>rm filnavn</command> for hvert enkelt
+navn, men bare med 5-10 filer bliver du hurtigt træt af
+det. Redningen er joker-tegnet. Lad os antage, at du har tre filer i et
+katalog, og at du gerne vil slette dem alle. Nedenfor ser du
+hvordan:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>touch aaa abc ccc</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls</userinput>
+ aaa  abc   ccc   myXYZoptioner.txt   o.txt
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>rm *</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt>
+</SCREEN>
+
+<para>
+Alle filer er det samme som <FILENAME>*</FILENAME>. Hvis du
+i stedet havde skrevet <FILENAME>a*</FILENAME>, betyder det alle filer
+som begynder med a.
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>touch aaa abc ccc</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls</userinput>
+ aaa  abb   ccc
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>rm a*</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls</userinput>
+ ccc
+<prompt>[anne@linus NytKatalog]$ </prompt>
+</SCREEN>
+
+<para>
+Stjernen, også kaldet joker-tegnet, kan bruges overalt.
+F.eks. betyder <FILENAME>a*b</FILENAME> alle filer, der begynder med
+a og slutter på b, hvilket vil inkludere filerne
+<FILENAME>ab</FILENAME>, <FILENAME>aDuErGodb</FILENAME>, men ikke en
+fil med navnet <FILENAME>abe</FILENAME>. Joker-tegnet kan bruges
+sammen med alle de mest almindelige kommandoer i Linux. F.eks. viser
+nedenstående eksempel hvordan du viser alle filer, der  begynder med 'ad' i
+kataloget <FILENAME>/usr/bin</FILENAME>
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls /usr/bin/ad*</userinput>
+/usr/bin/addftinfo /usr/bin/addr /usr/bin/addr2line
+</SCREEN>
+
+
+<para>
+Det er værd at bemærke, at jokertegn ekspanderes af 
+kommandofortolkeren - <emphasis>ikke</emphasis> af
+applikationen. Det har bl.a. den store fordel, at jokertegn altid
+fungerer - og fungerer konsistent på tværs af applikationer.
+</para>
+
+<para>
+Et meget simpelt eksempel: Et katalog indeholder 3 filer:
+<filename>fil1</filename>, <filename>fil2</filename> og
+<filename>ccc</filename>. Skriver du: <command>ls f*</command>, vil
+kommandofortolkeren først ekspandere f* og derefter kalde
+<command>ls</command> med: <command>ls fil1 fil2
+</command>. Output fra <command>ls f*</command> er blot: 
+
+<screen>
+<prompt>[anne@linus MitKatalog]$</prompt>  <userinput>touch fil1 fil2</userinput>
+<prompt>[anne@linus MitKatalog]$</prompt>  <userinput>ls</userinput>
+ccc   fil1   fil2
+<prompt>[anne@linus MitKatalog]$</prompt>  <userinput>ls f*</userinput>
+fil1   fil2
+</screen>
+og <command>ls</command> laver således et yderst banalt arbejde.
+</para>
+
+<para>
+Men der er flere muligheder i dette. Et eksempel: For at se forskellen
+mellem <filename>fil1</filename> og <filename>fil2</filename> kan
+du skrive: <command>diff fil1 fil2</command>. Men du kan også nøjes
+med at skrive: <command>diff f*</command> og således lade 
+kommandofortolkeren ekspandere 
+<command>f*</command> til <command>fil1 fil2</command>. 
+Da de to filer er ens (de indeholder ingenting nogen af dem), så 
+er der ingen forskel, og derfor intet at vise.
+</para>
+
+<screen>
+<prompt>[anne@linus MitKatalog]$</prompt>  <userinput>diff f*</userinput>
+<prompt>[anne@linus MitKatalog]$</prompt>
+</screen>
+
+<para>
+Somme tider kan denne konsekvente ekspansion af joker-tegn dog være
+en ulempe.
+</para>
+
+<para>
+Et tænkt eksempel: Et katalog indeholder 2 filer:
+</para>
+
+<screen>
+<prompt>[anne@linus film]$</prompt> <userinput>ls</userinput>
+dogme95.zip      film_index.html
+</screen>
+
+<para>
+Du kan også bruge zip-filer under Unix, og du kan se indholdet af
+zip-filen ved f.eks. at skrive:
+</para>
+
+<screen>
+<prompt>[anne@linus film]$</prompt> <userinput>unzip -v d*</userinput>
+Archive:  dogme95.zip
+Length Method Size Ratio Date    Time   CRC-32   Name
+------ ------ ---- ----- ----    ----   ------   ----
+ 14853 Defl:N 5224 65%  10-27-98 16:12 944a4af4 festen.html
+ 14844 Defl:N 5401 64%  11-14-98 19:53 e55c1636 idioterne.html
+  1941 Defl:N 1024 47%  03-12-99 22:12 5ecb7d23 mifune.html
+------       ----- ---                           -----
+ 31638       11649 63%                          3 files
+</screen>
+
+<para>
+Nu vil vi pakke <filename>festen.html</filename> ud af zip-filen. Det
+er den eneste fil i zip-filen, der starter med <filename>f</filename>,
+så under DOS kunne man blot skrive: <command>unzip d*
+f*</command>. Men prøver man det under Unix, går det galt:  
+</para>
+
+<screen>
+<prompt>[anne@linus film]$</prompt> unzip d* f*
+Archive:  dogme95.zip
+caution: filename not matched:  film_index.html
+</screen>
+
+<para>
+Hvorfor det? Fordi der i kataloget i forvejen ligger en fil, der
+matcher <filename>f*</filename>, så vil kommandofortolkeren ekspandere
+<emphasis>både</emphasis> <filename>d*</filename>  og
+<filename>f*</filename> og kalde <command>unzip</command> med:
+<command>unzip dogme95.zip film_index.html</command>. 
+</para>
+
+<para>
+Du bliver som minimum nødt til at skrive: <command>unzip d*
+fe*</command>. Der er ingen fil i kataloget, der matcher
+<filename>fe*</filename>, så kommandofortolkeren vil kun ekspandere
+<filename>d*</filename> og kalde unzip med: <command>unzip dogme95.zip
+fe*</command>. Det overlades nu til <command>unzip</command> at ekspandere
+<filename>fe*</filename>.
+</para>
+
+<para>
+Alternativt kan man sætte en '\' foran stjernen og derved
+fortælle kommandofortolkeren at stjernen ikke skal ekspanderes.
+Altså: <command>unzip d* f\*</command>
+</para>
+
+<para>
+Se også næste afsnit om regulære udtryk.
+</para>
+
+<para>
+<indexterm><primary>?</primary></indexterm>
+Det skal også nævnes, at hvis du kun vil finde et tegn, så brug et
+spørgsmålstegn. Vil du f.eks. finde alle filer aaa, baa, caa osv. men
+ikke caaa, så kan du bruge følgende
+</para>
+
+<screen>
+<prompt>[anne@linus MitKatalog]$</prompt> <userinput>touch aaa baa caa caaa</userinput>
+<prompt>[anne@linus MitKatalog]$</prompt> <userinput>ls </userinput>
+aaa   baa   caa   caaa   ccc   fil1   fil2
+<prompt>[anne@linus MitKatalog]$</prompt> <userinput>ls ?aa</userinput>
+aaa   baa   caa
+</screen>
+
+<sect3 ID="regexp">
+<title>Regulære udtryk (regex) og globbing</title>
+<indexterm><primary>Regulære udtryk</primary></indexterm>
+<indexterm><primary>Globbing</primary></indexterm>
+
+<para>
+Det bør også nævnes at mange programmer understøtter  en
+kraftfuld syntaks, kaldet <emphasis>regulære udtryk</emphasis>
+(eng. "regular expressions"), der er meget effektivt
+til at søge og erstatte i tekster.
+</para>
+
+<para>
+På kommandolinien i f.eks. <command>bash</command> kan
+man bruge noget der minder om regulære udtryk
+der kaldes <EMPHASIS>globbing</EMPHASIS>.
+Med globbing kan du f.eks. liste
+alle dine filer, der slutter med bogstavet a ved at skrive
+<command>ls *[a]</command>.
+For at liste filer der <EMPHASIS>ikke</EMPHASIS> slutter på a
+skrives <command>ls *[^a]</command>. 
+Det er vigtigt at skelne regex og globbing fra hinanden.
+</para>
+
+<TABLE ID="regex-vs-glob">
+<title>Forskel på globbing og regulære udtryk</title>
+<TGROUP cols=3 align="char">
+<THEAD><ROW>
+ <ENTRY>Globbing</ENTRY>
+ <ENTRY>Regulært udtryk</ENTRY>
+ <ENTRY>Beskrivelse</ENTRY>
+</ROW></THEAD>
+<TBODY>
+
+<ROW>
+ <ENTRY>*</ENTRY>
+ <ENTRY>.*</ENTRY>
+ <ENTRY>Match ingen eller mange tegn</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>?</ENTRY>
+ <ENTRY>.</ENTRY>
+ <ENTRY>Match ét vilkårligt tegn</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[a-d]</ENTRY>
+ <ENTRY>[a-d]</ENTRY>
+ <ENTRY>Match a, b, c eller d. Globbing i Mandrake matcher A, a, B, b, C, c, D eller d.</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[^a-d]</ENTRY>
+ <ENTRY>[^a-d]</ENTRY>
+ <ENTRY>Match ikke a, b, c eller d</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>{foo,bar}</ENTRY>
+ <ENTRY>(foo|bar)</ENTRY>
+ <ENTRY>Match 'foo' eller 'bar'</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>*foo??ba[rz]{fubar,qux}*quux</ENTRY>
+ <ENTRY>.*foo..ba[rz](fubar|qux).*quux</ENTRY>
+ <ENTRY><para>
+  <!-- Tak Ole Tange. Tak, det er rigeligt! /chlor -->
+  Match ingen eller et vilkårligt antal tegn, efterfulgt af 'foo'.
+  Så to vilkårlige tegn efterfulgt af 'bar' eller 'baz'.
+  Dernæst ordet 'fubar' eller 'qux' efterfulgt af ingen
+  eller et vilkårligt antal tegn og så 'quux' til sidst.
+  Med dette udtryk ses det (let) at man kan finde teksterne
+  'foo++barquxquux' og <filename></filename>'XYZfoo77bazfubarYESquux' i én og samme søgning.
+ </para></ENTRY>
+</ROW>
+
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<para>
+På kommandolinien understøttes altså globbing,
+hvorimod Emacs, vi, Perl, PHP, sed, ed, egrep og slocate understøtter
+regulære udtryk.
+Syntaksen til regulære udtryk er lidt forskellig i de nævnte programmer,
+så i det efterfølgende er nævnt regulære udtryk
+der virker med de fleste programmer:
+</para>
+
+<!-- Nedenstående er fra Claus Sørensens referat efter
+ Ole Tanges foredrag 2000-05-09 -->
+<TABLE ID="regex-def">
+<title>Definition af regulære udtryk</title>
+<TGROUP cols=2 align="char">
+<THEAD><ROW>
+ <ENTRY>RegEx</ENTRY>
+ <ENTRY>Beskrivelse</ENTRY>
+</ROW></THEAD>
+<TBODY>
+
+<ROW>
+ <ENTRY>[tegn]</ENTRY>
+ <ENTRY>Tegn der skal matches</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>RE1RE2</ENTRY>
+ <ENTRY>To forskellige regulære udtryk efter hinanden</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>RE*</ENTRY>
+ <ENTRY>Regulære udtryk skal passe nul eller flere gange</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>RE?</ENTRY>
+ <ENTRY>Regulære udtryk skal passe nul eller én gang. De regulære udtryk 
+        som følger POSIX-standarden benyttes dog "RE\?". Se f.eks. 
+        nedenstående eksempel med <command>slocate</command>.
+</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>RE+</ENTRY>
+ <ENTRY>Regulære udtryk skal passe én eller flere gange</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>RE1|RE2</ENTRY>
+ <ENTRY>Det ene eller det andet udtryk</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>(RE)</ENTRY>
+ <ENTRY>Gruppe som bl.a. kan benyttes som variabel. I <command>vi</command>, 
+        <command>emacs</command> og <command>sed</command> er det dog 
+        "\(RE\(".</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>^</ENTRY>
+ <ENTRY>Start af linie</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>$</ENTRY>
+ <ENTRY>Slutning af linie</ENTRY>
+</ROW>
+
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<!-- forkortelser -->
+<TABLE ID="regex-fork">
+<title>Forkortelser af regulære udtryk</title>
+<TGROUP cols=2 align="char">
+<THEAD><ROW>
+ <ENTRY>RegEx</ENTRY>
+ <ENTRY>Beskrivelse</ENTRY>
+</ROW></THEAD>
+<TBODY>
+
+<ROW>
+ <ENTRY>[a] = a</ENTRY>
+ <ENTRY>Matcher tegnet 'a'</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[\0-\m\o-\377] = .</ENTRY>
+ <ENTRY>Matcher alle tegn undtagen \n</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[*] = \*</ENTRY>
+ <ENTRY>Matcher tegnet '*'</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[abcd] = [a-d]</ENTRY>
+ <ENTRY>Matcher en række tegn</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[\0-ac-\377] = [^b]</ENTRY>
+ <ENTRY>Undlader at matche et tegn 'b'</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>\d = [0-9]</ENTRY>
+ <ENTRY>Matcher tallene 0-9</ENTRY>
+</ROW>
+
+<ROW>
+ <ENTRY>[a][a][a] = aaa = a{3}</ENTRY>
+ <ENTRY>Matcher serien af tre ens tegn 'aaa'</ENTRY>
+</ROW>
+
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<para>
+Et meget brugt regulært udtryk i tekst-programmer,
+er udtrykket der bytter om på to ord.
+Som eksempel kunne opgaven være at bytte "Linus Torvalds"
+om til "Torvalds, Linus" i hele dokumentet.
+Der skal så laves en søgning der dels matcher hvert ord,
+men også 'fanger' ordene og lægger dem ind i variable.
+Her bruges () til at 'fange' ordet og efterfølgende
+kan 'fangsterne' findes i nummererede variable 1, 2, 3 osv.
+</para>
+
+<example ID="regex-diff">
+<title>Notation af regulære udtryk i forskellige programmer</title>
+
+<para>
+<emphasis>Perl</emphasis>
+</para>
+<screen>
+s/(Linus) (Torvalds)/$2, $1/
+</screen>
+
+<para>
+<emphasis>Emacs</emphasis>
+</para>
+
+<screen>
+M-x replace-regexp RET
+\(Linus\) \(Torvalds\) RET
+\2, \1 RET
+</screen>
+
+<para>
+<emphasis>vi</emphasis>
+</para>
+
+<screen>
+:%s/\(Linus\) \(Torvalds\)/\2, \1/g
+</screen>
+
+<para>
+<emphasis>PHP</emphasis>
+</para>
+<screen>
+$a = preg_replace("/(Linus) (Torvalds)/", "\\2, \\1", $a);
+</screen>
+
+<para>
+<emphasis>sed</emphasis>
+</para>
+<screen>
+sed 's/\(Linus\) \(Torvalds\)/\2, \1/'
+</screen>
+
+</example>
+
+<para>
+Der er altså en lille forskel i de forskellige programmer
+på brugen af regulære udtryk, men princippet er det samme.
+</para>
+
+<!-- Eksempel -->
+
+<para>
+Et lille praktisk og anvendeligt eksempel er at finde
+alle de filer på dine diske som enten ender på 
+'.htm' eller '.html'.
+I regulære udtryk betyder '.' alle tegn undtaget \n
+så der skal en '\' foran.
+Med 'l\?' angives det, at der enten skal være et 'l' eller intet tegn.
+'$' angiver slutning på filnavnet (altså linien).
+Med <FILENAME>slocate</FILENAME> gøres dette således:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>slocate -r '\.html\?$'</userinput>
+</SCREEN>
+
+<para>
+Et eksempel på et regulært udtryk kunne være at finde
+alle brugernavne på systemet, som har brugergruppe-privilegier
+under 100.
+<FILENAME>/etc/passwd</FILENAME> indeholder oplysningerne.
+</para>
+
+<SCREEN>
+..
+halt:*:7:0:halt:/sbin:/sbin/halt
+..
+</SCREEN>
+
+<para>
+Brugernavn 'halt' tilhører gruppe '0' som angivet i fjerde kolonne.
+I Perl kunne kommandoen se således ud:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>perl -ne '/^[^:]+:[^:]+:[^:]+:..?:/ and print' /etc/passwd</userinput>
+</SCREEN>
+
+<para>
+Idéen i ovenstående er at gå tre kolonner frem, og se om der
+står et eller to tegn imellem kolon.
+Hvis udtrykket matches skal det printes ud.
+'/' er skille-tegnet.
+Der skal matches fra første tegn på linien '^'.
+'[^:]+:' betyder match et eller flere tegn som ikke
+er kolon, frem til næste kolon.
+Første match vil så være 'halt:'.
+Dette kolonne-match er gentaget tre gange.
+'..?:' matcher et eller to tegn, efterfulgt af kolon.
+Da der kun står tal i denne kolonne, er det kun '0'-'9'
+og '10'-'99' der vil blive listet.
+</para>
+
+<para>
+Skal man matche det samme mange gange, måske flere end
+tre, kan man bruge gentagelsesoperatoren {n},
+hvor n er et range.
+I førnævnte eksempel blev blokken '[^:]+:' gentaget
+tre gange. Da det er en blok skal der parenteser omkring
+før det virker: '([^:]+:){3}'.
+Den færdige linie ser nu således ud:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>perl -ne '/^([^:]+:){3}..?:/ and print' /etc/passwd</userinput>
+</SCREEN>
+
+<para>
+'.' matcher ethvert tegn og vil man være sikker på at
+det kun er tal der bliver matchet, skal man skrive '[0-9]' i
+stedet for '.'.
+I Perl er '[0-9]' også forkortet til '\d' (eng: decimal number) 
+så udtrykket kunne også se således ud:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>perl -ne '/^([^:]+:){3}\d\d?:/ and print' /etc/passwd</userinput>
+</SCREEN>
+
+<para>
+Hjemmeopgaven er nu at forklare hvad '[^#]+#' og '[^;]+;' matcher.
+Ekstraopgaven er '[^:]?:' og '[^:]*:'.
+</para>
+
+<para>
+Beskrivelse af regulære udtryk kan findes i manualsiderne med kommandoen
+<command>man 7 regex</command>.
+</para>
+
+<para>
+Læs mere om regulære udtryk på
+<ULINK URL="http://zez.org/article/articleview/11/1/">http://zez.org/article/articleview/11/1/</ULINK>
+</para>
+
+</sect3><!-- regex -->
+
+</sect2>
+
+<sect2 ID="redirect">
+<title>Omdirigering</title>
+<indexterm><primary>Redirection</primary></indexterm>
+<indexterm><primary>&gt;</primary></indexterm>
+<indexterm><primary>&lt;</primary></indexterm>
+<para>
+Det er ikke altid hensigtsmæssigt at få outputtet fra en
+kommando skrevet direkte på skærmen. Hvis du skriver
+<command>ls /usr/bin</command>, vil du forstå hvorfor. Derfor er
+det muligt at omdirigere output (eng. "redirect"). Til det formål
+bruger du tegnet <command>&gt;</command> til at omdirigere outputtet til en
+fil.</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls /usr/bin &gt; usrbin.dir</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>less usrbin.dir</userinput>
+</SCREEN>
+
+<para>
+Andre gange har man brug for at tilføje nye linier til en fil, hvilket 
+sker ved at benytte to større-end-tegn efter hinanden 
+<command>&gt;&gt;</command>. Dette bruges især til logfiler.
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>date &gt;&gt; tidsstempel</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>date &gt;&gt; tidsstempel</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>cat tidsstempel</userinput>
+lør jul 29 17:03:29 CEST 2000
+lør jul 29 17:03:31 CEST 2000
+</SCREEN>
+
+<para>
+Tilsvarende kan nogle programmer og kommandoer fødes med
+indholdet af en fil ved at bruge <command>&lt;</command>
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>cat < usrbin.dir</userinput>
+</SCREEN>
+
+<para>
+Hvilket dog i tilfældet med <command>cat</command> er det samme 
+som <command>cat usrbin.dir</command>.
+</para>
+
+<para>
+Du kan også sende skreven tekst ind til et program som forventer
+tastetryk.  Nedenstående lille program svarer "y" på et spørgsmål som
+"Interaktivkommando", beder brugeren at svare på.
+</para>
+
+
+<screen>
+#!/bin/sh
+Interaktivkommando &lt;&lt;EOF
+y
+EOF
+</screen>
+
+
+</sect2>
+
+
+<sect2 ID="pipes">
+<title>Pipe</title>
+<indexterm><primary>Pipes</primary></indexterm>
+<indexterm><primary>Rør</primary></indexterm>
+<indexterm><primary>|</primary></indexterm>
+<para>
+Som du så i det foregående afsnit, kan du omdirigere outputtet
+til en fil. Nu kan du med rette spørge hvorfor du skal omdirigere
+til en fil, hvis du kun skal se på den én gang? Svaret på dit
+spørgsmål er ligefremt: Det behøver du heller ikke. Du kan
+nemlig anvende  en pipe. Ordet "pipe" betyder på engelsk ikke blot en
+pibe, man ryger tobak i, men også et rør eller forbindelse, som kan bruges 
+til at lede f.eks. en væske fra et sted til et andet. I Linux betyder det, 
+at outputtet fra et program bruges som input til et andet. 
+Lad os give et lille ksempel:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls /usr/bin | less</userinput>
+</SCREEN>
+
+<para>
+Den lodrette streg (<command>|</command>) sætter en "pipe"
+op. Outputtet fra <command>ls /usr/bin</command> bruges som input
+til <command>less</command>. Det er naturligvis muligt at sætte
+en række pipes op efter hinanden og på den måde slippe for en
+masse midlertidige filer.
+</para>
+</sect2>
+
+<sect2 ID="grep">
+<title>Programmet grep</title>
+<indexterm><primary>grep</primary></indexterm>
+
+<para>Ofte vil du fra kommandoer som <command>cat</command>,
+<command>ls</command> og <command>find</command> få alt for meget
+information, og oftest ved du godt, at det kun er en begrænset del af
+de viste linier tekst, du er interesseret i. Hvis du f.eks. kun
+skal bruge de linier af <filename>/etc/passwd</filename>, der indeholder
+navnet "anne", kan du bruge <command>grep</command> til at
+begrænse outputtet med.
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>cat /etc/passwd | grep anne </userinput>
+anne:x:501:501:Anne,,,,:/home/anne:/bin/bash
+</SCREEN>
+
+<para>
+Du kan også bruge de forskellige i kombination. Eksemplet her 
+finder filer i <filename>/usr/bin</filename> som begynder med p 
+og indeholder ordet mail i filnavnet. 
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ls /usr/bin | grep ^p | grep mail</userinput>
+patch-metamail
+pilot-mail
+printmail
+procmail
+</SCREEN>
+
+<para>
+Hvilket også kunne have være gjort med kommandoen 
+<command>ls /usr/bin | grep ^p.*mail</command>
+</para>
+
+</sect2>
+</sect1>
+
+<sect1 ID="process">
+<indexterm><primary>ps</primary></indexterm>
+<indexterm><primary>processer</primary></indexterm>
+
+<title>Proces-kontrol</title>
+<para>
+Når du starter et program op, bliver det til et kørende
+program. Et kørende program kaldes i Unix-sammenhænge for en
+proces (eng. "process"). Hver proces har en unik indikator, som er et
+heltal. Vi kalder denne indikator for PID, hvilket kommer af det engelske
+"Process IDentifier".
+</para>
+
+<sect2 ID="ps">
+<title>ps viser processer</title>
+<para>
+Hvis du vil se hvilke programmer du har kørende, kan du bruge
+kommandoen <command>ps</command>. <command>ps</command> er en
+forkortelse for "process".
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt> <userinput>ps</userinput>
+  PID TTY STAT TIME COMMAND
+  435  2   S   0:00 /bin/login -- anne
+  436  2   S   0:00 -bash
+  447  2   R   0:00 ps
+<prompt>[anne@linus MitKatalog]$ </prompt>
+</SCREEN>
+
+<para>
+Ovenstående dialog viser, at der er et kørende program
+(<command>ps</command>) og to sovende
+(<command>/bin/login</command> og <command>bash</command>). At et
+program er kørende, ser du ved, at der under
+<FILENAME>STAT</FILENAME> står et "R" (for "running"), mens et sovende
+program i status-feltet har et "S" (for "sleeping"). En sovende
+proces er en proces, som er blevet startet, men ikke er aktiv, og
+nu står og venter på at blive aktiveret. Feltet, hvor der står
+<FILENAME>TTY</FILENAME>, viser, fra hvilken terminal programmet blev
+startet. I Linux kan du skifte mellem flere virtuelle konsoller, og
+hver virtuel konsol opfattes som en terminal.</para>
+
+<para>
+Det skal nævnes at <command>ps</command> kun viser processer med samme
+tty (samme terminal) som <command>ps</command>, og du kan anvende
+<command>ps aux</command> til at se alle processer.
+</para>
+
+</sect2>
+
+<sect2 ID="top">
+<title>Få et bedre overblik ved at bruge top</title>
+<indexterm><primary>top</primary></indexterm>
+<para>Som du så i foregående afsnit, kan <command>ps</command>
+bruges til at få et overblik over, hvilke processer du har
+kørende. Problemet er, at du kun får et statisk billede. Hvis du
+er interesseret i et mere dynamisk billede af din computers processer,
+kan du bruge programmet <command>top</command>. <command>top</command>
+opdaterer skærmen hvert femte sekund. Ved at trykke på "i" skifter
+du mellem "non-idle mode" og almindelig mode. I "non-idle mode" ser du
+kun de processer, som er aktive, mens du i almindelig mode ser alle.
+Du afslutter <command>top</command> ved at trykke på
+"q".</para>
+
+<para><command>top</command> leverer mange oplysninger, og derfor er
+det spændende at bruge programmet. Endvidere er det værd at
+læse programmets man-page.</para>
+</sect2>
+
+<sect2 ID="baggrunden">
+<title>At køre programmer i baggrunden</title>
+<indexterm><primary>Baggrundsprocesser</primary></indexterm>
+<indexterm><primary>fg</primary></indexterm>
+<indexterm><primary>bg</primary></indexterm>
+<para>
+Alle de kommandoer, vi har præsenteret dig for i dette
+kapitel, har taget meget kort tid at udføre. Antag, at du ønsker
+at køre et program eller kommando, som tager en time at udføre. Hvis
+du nu startede programmet op på kommandolinien, kunne du ikke
+udføre andre kommandoer i en time, da du ikke kunne komme til at
+taste nye kommandoer ind. Det er naturligvis ikke så smart, især
+ikke da Linux er et ægte multitasking styresystem!</para>
+
+<para>
+Du kan løse dit ventetidsproblem ved at udføre
+programmet eller kommandoen i baggrunden. For at udføre et program i
+baggrunden sætter vi et <command>&</command> efter kommandoen.
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ls -R /usr &gt; usr.dir &</userinput>
+[1] 585
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ps</userinput>
+  PID TTY STAT TIME COMMAND
+  435  2   S   0:00 /bin/login -- anne
+  436  2   S   0:00 -bash
+  447  2   R   0:00 ps
+  585  2   R   0:02 ls
+<prompt>[anne@linus MitKatalog]$ </prompt>
+</SCREEN>
+
+<para>
+Programmet eller kommandoen kører nu samtidig
+med at du kan indtaste og udføre nye kommandoer. Grunden til vi
+siger, at programmet kører i baggrunden er, at du ikke sidder med
+det ved din konsol (som vi så kalder for forgrunden).
+</para>
+
+<para>
+Det kan i øvrigt nævnes at glemte du <command>&</command>, så kan du
+trykke Ctrl-z og så har du suspenderet jobbet (eng. "suspended"). Med
+<command>fg</command> 
+(eng. "foreground") og <command>bg</command> (eng. "background") kan
+du styre hvad der er aktivt.
+</para>
+
+</sect2>
+
+<sect2 ID="kill">
+<title>Dræb en proces</title>
+<indexterm><primary>kill</primary></indexterm>
+<para>
+Nu kan det ske, at du har fået startet et program op, som du
+bliver træt af. Du vil altså gerne afbryde det, inden det er kørt
+færdigt. Unix-verdenen er barsk, for man taler ikke om at afbryde
+en proces, men om at slå den ihjel (eng. "kill"). Når du vil slå
+en proces ihjel, kan du bruge kommandoen <command>kill</command>. Som
+argument til <command>kill</command> giver du PID. Nedenfor er vist
+et eksempel.</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ps</userinput>
+  PID TTY STAT TIME COMMAND
+  435  2   S   0:00 /bin/login -- anne
+  436  2   S   0:00 -bash
+  447  2   R   0:00 ps
+  585  2   R   2:34 ls
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>kill 585</userinput>
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ps</userinput>
+  PID TTY STAT TIME COMMAND
+  435  2   S   0:00 /bin/login -- anne
+  436  2   S   0:00 -bash
+  763  2   R   0:00 ps
+</SCREEN>
+
+<para>
+Det skal også nævnes, at enkelte gange kan en proces være kørt helt i
+skoven, og så må du tage kraftigere skyts i brug. I stedet for
+<command>kill PROCESNUMMER</command> kan du bruge <command>kill -9
+PROCESNUMMER</command>.
+</para>
+</sect2>
+
+<sect2 ID="suid">
+<title>suid</title>
+<indexterm><primary>suid</primary></indexterm><para>
+Normalt vil det være sådan, at når du starter et program op, f.eks.
+kommandoen <command>ls</command>, vil Linux køre dette program som
+dén bruger, der startede programmet. Nogle gange kan det være
+nødvendigt at give en bruger flere rettigheder uden at skulle give
+personen superbrugerstatus, dvs. <filename>root</filename>-status.
+</para>
+
+<para>
+Suid (set user id) et et begreb (ikke et program), som giver mulighed for,
+at du kan udføre et program, som om du var en anden
+bruger. Det bruges normalt til at give almindelige brugere
+rettigheder til at udføre programmer, som om de var superbrugeren
+(<filename>root</filename>).
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>chmod +s FILNAVN</userinput>
+</SCREEN>
+
+Når kommandoen <command>FILNAVN</command> udføres, vil Linux-kernen
+køre programmet med rettighederne for brugeren, der
+<emphasis>ejer</emphasis> filen, og ikke som brugeren, der starter
+programmet. 
+</para>
+
+<para>
+Dette kan f.eks. ses ved programmet <command>ping</command>, der skal
+være suid root. Det skyldes, at det kun er root, der kan åbne den
+slags netværksforbindelse, som <command>ping</command> bruger.
+</para>
+
+<SCREEN>
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>ls /sbin/ping</userinput>
+-rwsr-xr-x   1 root     root        14804 Apr  7 23:21 /bin/ping
+</SCREEN>
+
+<para>
+Suid er den største sikkerhedssynder på Unix-systemer. Det er f.eks. en
+dødssynd at sætte suid root for kommandofortolkerprogrammer, da det er
+muligt for en bruger at narre programmet til at efterlade en
+kommandofortolker med systemoperatørrettigheder. Jo færre
+suid filer du har på dit system jo bedre, men nogle ting er nødt til at
+være suid root for at fungere.  Du kan se hvilke filer, der er suid root
+med følgende kommando:
+</para>
+
+<screen>
+<prompt>[anne@linus MitKatalog]$ </prompt><userinput>find / -user root -perm +4000
+</userinput>
+</screen>
+
+<para>
+Se mere i artiklen <ulink url="http://www.sslug.dk/artikler/Linux_sikkerhed/rootaccess.html">http://www.sslug.dk/artikler/Linux_sikkerhed/rootaccess.html</ulink>
+om problemer med Suid.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="miljoevar">
+<title>$variable, export og env</title>
+<indexterm><primary>env</primary></indexterm>
+<indexterm><primary>export</primary></indexterm>
+<indexterm><primary>miljø-variable</primary></indexterm>
+<indexterm><primary>environment-variable</primary></indexterm>
+<indexterm><primary>variable</primary></indexterm>
+<indexterm><primary>$</primary></indexterm>
+<indexterm><primary>$PATH</primary></indexterm>
+<indexterm><primary>$HOME</primary></indexterm>
+<indexterm><primary>$SHELL</primary></indexterm>
+<indexterm><primary>$DISPLAY</primary></indexterm>
+<indexterm><primary>PATH</primary></indexterm>
+<indexterm><primary>HOME</primary></indexterm>
+<indexterm><primary>SHELL</primary></indexterm>
+<indexterm><primary>DISPLAY</primary></indexterm>
+
+<para>
+I Unix (og dermed Linux) bruger man ofte systemvariable (eng. "environment
+variables") til at gemme vigtig opsætningsinformation for de enkelte
+programmer eller for hele systemets virkemåde. Prøv f.eks. at
+skrive:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$</prompt> <userinput>env</userinput>
+PWD=/home/pto/linuxbog
+VENDOR=intel
+PAGER=less
+.
+.
+.
+</SCREEN>
+
+<para>
+Der kom mange linier, som alle er formateret "VARIABEL=VÆRDI".
+Linien "PWD" betyder f.eks. at jeg nu står i kataloget
+<filename>/home/pto/linuxbog</filename>. De fleste er sat af
+systemet, mens brugeren kan vælge at tilføje nye eller overskrive de
+eksisterende. Typisk vil dette ske i <filename>~/.profile</filename>
+hvis brugeren anvender <command>bash</command>-shellen. Lad os se om
+det er tilfældet:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$</prompt> <userinput>env | grep SHELL</userinput>
+SHELL=/bin/bash
+</SCREEN>
+
+<para>
+En nem måde at se alle variable på er at skrive:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>echo $&lt;TAB&gt;&lt;TAB&gt;</userinput>
+$BASH            $HOME            $OPTERR          $SECONDS
+$BASH_VERSINFO   $HOSTNAME        $OPTIND          $SHELL
+$BASH_VERSION    $HOSTTYPE        $OSTYPE          $SHELLOPTS
+$COLORS          $IFS             $PATH            $SHLVL
+$COLUMNS         $LANG            $PIPESTATUS      $TERM
+$DIRSTACK        $LESSOPEN        $PPID            $UID
+$ENV             $LINENO          $PROMPT_COMMAND  $USER
+$EUID            $LINES           $PS1             $USERNAME
+$GROUPS          $LOGNAME         $PS2             $_
+$HISTCMD         $LS_COLORS       $PS4             $ftp_proxy
+$HISTFILE        $MACHTYPE        $PWD             $http_proxy
+$HISTFILESIZE    $MAIL            $QTDIR           $langfile
+$HISTSIZE        $MAILCHECK       $RANDOM          $sourced
+</screen>
+
+<para>
+Man kan også se <command>set</command> eller
+<command>printenv</command> for flere eksempler på bash-variable.
+</para>
+
+<para>
+Skal man så bruge den variabel i en udprintning, f.eks. på skærmen,
+anvendes $VARIABEL til at tilgå værdien:
+</para>
+
+<SCREEN>
+<prompt>[anne@linus ~]$</prompt> <userinput>echo "Jeg bruger $SHELL"</userinput>
+Jeg bruger /bin/bash
+</SCREEN>
+
+<para>
+Vil du sætte systemvariable (ligesom <command>set</command> i
+DOS), så er syntaksen <command>export VARIABEL=VÆRDI</command>.
+</para>
+
+<para>
+Lad os se på et par af de meget anvendte variable.
+$HOME (eller $USER) Beskriver stien til en brugers hjemmekatalog. Ofte
+er denne sat til <filename>/home/BRUGERNAVN</filename>
+</para>
+
+<para>
+$PATH Beskriver hvilke stier som søges efter et program, hvis man ikke
+angiver den fulde sti selv.  Ofte har en normal bruger ikke "/sbin" i
+sin $PATH, men root har.
+</para>
+
+<para>
+For at rette i $PATH se <filename>/etc/profile</filename> hvis
+ændringerne skal gælde alle brugere. Man kan også skrive "export
+PATH=$PATH:/home/mig/bin" Hvis man gerne vil have at ens shell også
+skal søge efter de programmer man har lagt i
+<filename>/home/mig/bin</filename>.
+</para>
+
+<para>
+$DISPLAY angiver hvilken X-server man vil have at et program skal vises
+på. Når du starter X, binder skærmen sig til 0:0 normalt på Ctrl + Alt
++ F7, man kan starte en ny X-server på 0:1 (F8) med <command>startx --
+:1</command> hvis man har lyst til det.
+</para>
+
+</sect1>
+
+<sect1 id="rette-tekstfiler">
+<title>Rette i tekstfiler</title>
+<indexterm><primary>Rette i tekstfiler</primary></indexterm>
+<indexterm><primary>tekstfiler</primary></indexterm>
+<para>
+Indtil videre har du set, hvordan du kan manipulere filer, men det er
+ofte meget nyttigt at kunne redigere i en tekstfil. Der er nok mange,
+som har vænnet sig til at bruge simple teksteditorer til Windows som
+WordPad, og installeres <command>nedit</command>, har man næsten samme
+enkle brugerflade, men <command>nedit</command> kan mere end WordPad,
+bl.a. har den oplysning af C kodesyntaks, så du nemt kan finde rundt i dine
+programmer. I KDE findes KWrite (skriv <command>kwrite</command>) som
+bl.a. har syntaksoplysning og er meget enkel at bruge. Til Gnome
+findes <command>gedit</command> og <command>gnp</command>. Sidstnævnte
+minder nok mest om Microsoft Windows Notepad, men den er samtidig en
+simpel HTML-editor. Se i øvrigt "Linux - Friheden til at vælge
+programmer" for flere muligheder - her er bla. de klassiske editorer
+Emacs og vi beskrevet.
+</para>
+</sect1>
+
+<sect1 id="Unix-mere">
+<title>Lad mig lære lidt flere Unix/Linux-kommandoer</title>
+
+<para>
+I dette appendiks vil vi gennemgå en række Unix/Linux-kommandoer.
+Gennemgangen er overfladisk, men du kan finde flere
+oplysninger i programmernes man-sider. Desuden er 
+<ulink url="http://www.sslug.dk/artikler/begyndertips.html">http://www.sslug.dk/artikler/begyndertips.html</ulink>
+et godt sted at få mere information.
+</para>
+
+<sect2 id="Unixapp-redirect">
+<title>Mere om omdirigering</title>
+<para>
+Linux (som Unix) arbejder med følgende input/output terminologi:
+</para>
+
+<para>
+<itemizedlist mark="bullet">
+  <listitem><para>Standard input (<filename>stdin</filename>). Normalt
+  tastaturet.</para></listitem>
+  <listitem><para>Standard output
+  (<filename>stdout</filename>). Normalt skærmen.</para></listitem>
+  <listitem><para>Standard error (<filename>stderr</filename>). Normalt
+    skærmen.</para></listitem>
+</itemizedlist>
+</para>
+
+<para>
+Vi har før været inde på, at <filename>stdout</filename> kan omdirigeres med <command>&gt;</command>.
+<command>cat fil1 fil2 > fil3</command> vil samle indholdet af filerne
+<filename>fil1</filename> og <filename>fil2</filename> i filen
+<filename>fil3</filename>.
+</para>
+
+<para>
+Da måden, du omdirigerer på, er afhængig af valg af kommandofortolker,
+er det en god idé at undersøge dette nu. Prøv med:
+</para>
+
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>env | grep ^SHELL | cut -d/ -f3</userinput>
+</screen>
+
+
+<para>
+Svaret skulle gerne være <command>bash</command>,
+<command>csh</command> eller <command>tcsh</command>. Det kan være, at du
+anvender en anden skal - der findes mange. Hvis det er tilfældet, kan du se i
+man-siden for den aktuelle skal (<command>man SKALLENS_NAVN</command>).
+</para>
+
+<para>
+Hvis du selv starter en ny skal (enten fra kommandolinien eller i et program),
+er det ikke sikkert, at ovenstående metode virker. Prøv derfor at skrive
+<command>ps</command>.  En liste over de kørende processer vil da
+blive udskrevet til skærmen. Den nederste proces, der ender på "sh",
+angiver din skal - normalt.
+</para>
+
+<para>
+Fælles for Bourne-Again Shell (<command>bash</command>) og C-Shell er
+følgende: Lad os antage, at filen <filename>fil3</filename> indeholder
+information, vi ønsker at bevare. Vi vil tilføje (append) indholdet af
+<filename>fil1</filename> og <filename>fil2</filename> til
+<filename>fil3</filename>. Det gøres ved:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat fil1 fil2 &gt;&gt; fil3</userinput>
+</screen>
+
+<para>
+Indholdet af en fil kan også anvendes som argument(er)
+til en kommando. F.eks. vil følgende kommando sende indholdet af filen
+<filename>megenRos</filename> til SSLUG's webmastere:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>sendmail www_admin@sslug.dk < megenRos</userinput>
+</screen>
+
+<para>
+Linux skelner (som Unix) mellem normale uddata
+(<filename>stdout</filename>) og fejluddata (<filename>stderr</filename>).
+Til tider kan det være rart kun at omdirigere det ene sæt meddelelser.
+</para>
+
+<para>
+Specielt for <command>bash</command> gælder følgende: Omdirigering af
+<filename>stdout</filename> (1) og <filename>stderr</filename> (2) i
+<command>bash</command> er forholdsvis simpel.
+</para>
+
+<para>
+Hvis kun fejlmeddelelserne fra en kommando - her <command>ls</command> -
+ønskes:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt>  <userinput>ls  1> /dev/null</userinput>
+</screen>
+
+<para>
+Hvis kun <filename>stdout</filename> ønskes vist og fejlmeddelelserne
+skal sendes til en fil:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls 2> fejlfil </userinput>
+</screen>
+
+<para>
+Og endelig, hvis du ønsker at akkumulere fejlmeddelelser i en fil, kan
+<command>&gt;&gt;</command> anvendes - f.eks.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls 2&gt;&gt; fejlfil</userinput>
+</screen>
+
+<para>
+De to skaller <command>csh</command> og <command>tcsh</command>
+adskiller sig fra <command>bash</command> på følgende måder. Når du omdirigerer med
+<command>&gt;</command> eller <command>&gt;&gt;</command>, er det kun
+<filename>stdout</filename>, der omdirigeres. Hvis
+<filename>stderr</filename> skal med, skal du anvende
+<command>&</command> efter
+omdirigeringen. <filename>stderr</filename> kan ikke omdirigeres
+alene, men med lidt krumspring lykkedes det alligevel:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>ls -l /* | tee >& fil1 | diff fil1 - >fejlFil</userinput>
+</screen>
+
+<para>
+Ovenstående kommando sender både <filename>stderr</filename> og
+<filename>stdout</filename> til filen <filename>fil1</filename>.
+</para>
+</sect2>
+
+
+<sect2 id="Unixapp-smaating">
+<title>En række nyttige værktøjer</title>
+
+<sect3 id="Unixapp-who">
+<title>Hvem er logget ind?</title>
+<indexterm><primary>who</primary></indexterm>
+<para>
+Hvis du ønsker at vide, hvilke brugere der er logget på samme computer
+som dig, bruger du kommandoen <command>who</command>. Du vil så få en
+liste med brugere, der har logget ind, og fra hvilken (virtuel) terminal
+de er koblet til. Denne kommando har ikke den store værdi, med mindre
+du arbejder i et flerbruger-system. Arbejder du i et større netværk,
+kan det være, at <command>rwho</command> virker. <command>rwho</command>
+viser dig, hvem der er logget ind på hvilke computere i netværket.
+</para>
+
+<para>
+Hvis du ikke er klar over, hvem du er logget ind som, skriver du blot
+<command>whoami</command>. Svaret synes indlysende, men alligevel:
+dit brugernavn dukker op og terminalens id ligeså.
+</para>
+</sect3>
+
+
+<sect3 id="Unixapp-find">
+<title>Søg og du skal finde</title>
+<indexterm><primary>find</primary></indexterm>
+
+<para>
+<command>find</command> bruges til at finde filer med. Syntaksen er:
+<command>find</command> hvorfra hvad [handling]. Ikke alle
+Linux/Unix-varianter kræver 3. argument. Lad os se nærmere på argumenterne.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+<para>
+1. argument, hvorfra:
+  <itemizedlist mark="bullet">
+  <listitem><para>
+    <filename>./</filename> angiver aktuelt katalog.
+  </para></listitem>
+  <listitem><para>
+    <filename>~/</filename> angiver hjemmekatalog.
+  </para></listitem>
+  <listitem><para>
+   <filename>/</filename> angiver roden.
+  </para></listitem>
+  <listitem><para>
+    <filename>/usr</filename> angiver <filename>usr</filename> og alt
+    under.
+  </para></listitem>
+</itemizedlist>
+</para>
+</listitem>
+<listitem>
+<para>
+2. argument, hvad:
+  <itemizedlist mark="bullet">
+  <listitem><para>
+    <screen>-name foo</screen> med navnet <filename>foo</filename>
+  </para></listitem>
+  <listitem><para>
+    <screen> -type d</screen> som er et katalog.
+  </para></listitem>
+</itemizedlist>
+</para>
+</listitem>
+
+<listitem>
+<para>
+3. argument, [handling]:
+  <itemizedlist mark="bullet">
+  <listitem><para>
+    <screen>-print</screen> udskriver, hvor filen er fundet
+  </para></listitem>
+  <listitem><para>
+    <screen>-ls</screen> udfører <command>ls -l</command> på
+    søgeresultatet
+  </para></listitem>
+  <listitem><para>
+    <screen>-exec cmd {}\;</screen> udfører kommandoen
+    <command>cmd</command> på søgeresultatet.
+  </para></listitem>
+  <listitem><para>
+    <screen>-ok</screen> som <screen>exec</screen> men spørger først.
+  </para></listitem>
+  </itemizedlist>
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+Som et sødt lille eksempel på hvor smart <command>find</command> er,
+så kan vi tælle det totale antal af linier i en række tekstfiler, der
+ligger spredt i nogle underbiblioteker.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>(find . -type f -exec cat {} \;) | wc -l</userinput>
+</screen>
+
+</sect3>
+
+
+<sect3 id="Unixapp-touch">
+<title>Hvordan ændres datomærkningen?</title>
+
+<indexterm><primary>touch</primary></indexterm>
+<para>
+Kommandoen <command>touch</command> anvendes til at oprette tomme
+filer eller til at ændre tidspunktet for sidste modifikation.
+</para>
+
+<para>
+Lad os antage, at filen <filename>minFil</filename> eksisterer, og
+filen <filename>minIkkeEksisterendeFil</filename> ikke gør, da vil
+<command>touch minFil</command> sætte tiden for sidste modifikation af
+filen til det aktuelle klokkeslet. Kommandoen <command>touch
+minIkkeEksisterendeFil</command> vil oprette en tom fil med
+navnet <filename>minIkkeEksisterendeFil</filename>.
+</para>
+
+</sect3>
+
+<sect3 id="Unixapp-file">
+<title>Hvilken filtype?</title>
+
+<indexterm><primary>file</primary></indexterm>
+<para>
+Kommandoen <command>file</command> forsøger at gætte, hvilken filtype
+der er givet som argument. Hvis <command>file</command> tror, at det er
+en ascii-fil, vil <command>file</command> læse de 512 første tegn og
+forsøge at gætte programmeringssproget.
+</para>
+
+<para>
+<command>file</command> gætter desværre forkert fra tid til anden og
+kan f.eks. ikke genkende filer, der indeholder programmer, som er
+skrevet i Pascal eller Lisp.
+</para>
+</sect3>
+
+<sect3 id="Unixapp-date">
+<title>Tid og dato</title>
+<indexterm><primary>date</primary></indexterm>
+
+<para>
+<command>date</command> udskriver den aktuelle dato og
+det aktuelle klokkeslet.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>date</userinput>
+ lør jan 16 17:50:55 CET 1999
+</screen>
+
+<indexterm><primary>cal</primary></indexterm>
+<indexterm><primary>Kalender</primary><secondary>cal</secondary></indexterm>
+<para>
+<command>cal</command> er en hel lille kalender.
+Uden argument udskrives kalenderen for den aktuelle måned.
+Med et argument (tal) regnes argumentet for et årstal. Vær i øvrigt
+opmærksom på, at <command>cal</command> er År 2000-klar,
+dvs. <command>cal 99</command> udskriver kalenderen for år 99, mens <command>cal
+1999</command> skriver kalenderen for 1999.
+</para>
+
+<para>
+Med 2 argumenter regnes det første som måned og det andet som
+årstal. Det er værd at bemærke, at <command>cal</command> antager, at
+skiftet fra den julianske kalender til den gregorianske kalender skete i september
+1752, hvilket passer til engelske forhold (i katolske lande skete det i 1582
+og i Danmark i 1700).
+</para>
+</sect3>
+
+<sect3 id="Unixapp-sort">
+<title>Sortering</title>
+
+<indexterm><primary>sort</primary></indexterm>
+<para>
+<command>sort</command> sorterer en fil linie for
+linie. <command>sort</command> kan også flette flere filer samtidig
+med at indholdet sorteres. Omdirigering af <command>sort</command> til
+en fil er mulig med optionen "-o". <command>sort fil1 fil2 >
+fil1</command> vil give et pudsigt resultat: Da
+<filename>stdout</filename> omdirigeres til <filename>fil1</filename>,
+som eksisterer i forvejen, slettes <filename>fil1</filename>, og en ny,
+tom <filename>fil1</filename> oprettes. Når <filename>fil1</filename>
+og <filename>fil2</filename> flettes og sorteres, vil
+<filename>fil1</filename> være tom. Derfor vil kun indholdet af
+<filename>fil2</filename> komme med i <filename>fil1</filename> -
+kryptisk - prøv selv! Husk blot, at <command>sort</command> er den
+eneste (standard) kommando, hvor <filename>stdout</filename>
+omdirigeres med en option "-o".
+</para>
+
+<para>
+Men <command>sort</command> kan mere: En fil kan være inddelt i
+poster, f.eks. filen <filename>navne</filename>.
+</para>
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat navne</userinput>
+   poul nyrup 52
+   holger beck-nielsen 90
+   william gates 55
+   torvald linus ??
+</screen>
+
+<para>
+Lad os illustrere <command>sort</command> ved en række eksempler.
+<command>sort +1 navne</command> vil sortere på efternavn (første felt
+er felt 0). <command>sort +2-n navne</command> vil sortere numerisk
+på hattestørrelse. <command>sort -r navne</command> vil sortere i
+omvendt rækkefølge.
+</para>
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>sort +2 -n -r navne</userinput>
+  torvald linus 91.2
+  holger beck-nielsen 90
+  william gates 55
+  poul nyrup 52
+</screen>
+</sect3>
+
+</sect2>
+
+<sect2 id="Unixapp-texttool">
+<title>En række tekstværktøjer</title>
+
+<para>
+Linux har en række mindre værktøjer til håndtering af tekstfiler. Vi
+vil i dette afsnit se lidt nærmere på dem.
+</para>
+
+<para>
+<command>diff</command> udskriver forskellen mellem to filer. Lad os
+se på filerne <filename>fil1</filename> og <filename>fil2</filename>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat fil1 </userinput>
+  Per
+  Poul
+  Bent
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat fil2 </userinput>
+  Per
+  Bjarne
+<prompt>[anne@linus ~]$ </prompt> <userinput>diff fil1 fil2 </userinput>
+  2,3c2
+  < Poul   (oversat: ud går Poul)
+  < Bent   (oversat: ud går Bent)
+  > Bjarne (oversat: ind kom Bjarne)
+</screen>
+
+<indexterm><primary>cat</primary></indexterm>
+<indexterm><primary>uniq</primary></indexterm>
+<para>
+<command>uniq</command> fjerner ens linier, der kommer efter hinanden,
+hvilket illustreres nedenfor.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt>  <userinput>cat per3 </userinput>
+  Per
+  Per
+  Per
+<prompt>[anne@linus ~]$ </prompt> <userinput>uniq per3</userinput>
+  Per
+</screen>
+
+<para>
+<command>cmp</command> sammenligner filer og stopper læsningen af
+filerne, når <command>cmp</command> finder en forskel.
+</para>
+
+<para>
+<command>wc</command> står for Word Count, og som navnet antyder,
+tæller den ord i en fil. <command>wc</command> har nogle optioner:
+"-l", "-w" og "-c" for Lines, Words og Characters.
+</para>
+
+<para>
+Vil du vide, hvor mange linier en fil indeholder, skriver du <command>wc
+-l fil</command>. <command>wc</command> er særlig god sammen med andre
+kommandoer og <command>|</command> (pipe), f.eks. vil nedenstående
+kommando tælle op, hvor mange filer, der er i kataloget
+<filename>/usr/bin</filename>
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls /usr/bin | wc -l</userinput>
+  1208
+</screen>
+
+<para>
+Eller hvis du vil vide, hvor mange kataloger der er i
+<filename>/etc</filename>
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>ls -l /etc | grep ^d | wc -l</userinput>
+  23
+</screen>
+
+<para>
+Forklaringen er som følger: <command>ls -l</command> giver den lange
+liste med egenskaberne for filerne med en fil pr. linie. Det
+allerførste tegn på linien angiver filtypen. <filename>d</filename>
+betyder, at det er et "directory" - et katalog. <command>grep
+^d</command> lader kun de linier, der starter med
+<filename>d</filename> passere. <command>wc -l</command> tæller
+antallet af linier den modtager.
+</para>
+
+<sect3 id="Unixapp-tail">
+<title>Hoved og hale</title>
+<indexterm><primary>tail</primary></indexterm>
+<indexterm><primary>head</primary></indexterm>
+<para>
+<command>tail</command> - uden optioner - udskriver de 10 sidste linier
+af en fil, "-5" vil udskrive de 5 sidste linier, og "+8" vil udskrive
+fra og med linie 8 i en fil. Lad os se på et eksempel.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat sang</userinput>
+    Jeg bærer med smil min byrde,
+    jeg drager med sang mit læs;
+    jeg er som den vilde hyrde,
+    der genner sit kvæg på græs.
+<prompt>[anne@linus ~]$ </prompt> <userinput>tail -2 sang</userinput>
+    jeg er som den vilde hyrde,
+    der genner sit kvæg på græs.
+</screen>
+
+<para>
+<command>tail</command> har en meget nyttig "f"-option. Den
+får <command>tail</command> til løbende at vise de sidste 10 linier
+af en fil, f.eks. vil du med <command>tail -f
+/var/log/messages</command> kunne følge med i, hvad alle system-dæmoner
+og lignende rapporterer.
+</para>
+
+<para>
+<command>head</command> svarer til <command>tail</command>, men i
+stedet for slutningen af en fil, er det begyndelsen.
+<command>head</command> - uden optioner - udskriver de 10 første
+linier af en fil. Optioner kan gives som for <command>tail</command>.
+</para>
+</sect3>
+
+<sect3 id="Unixapp-cut">
+<title>"cut" og "paste"</title>
+
+<para>
+<command>cut</command> tager det, du specificerer i optioner, ud af en
+ linie, dvs. -cx-y: tager fra tegn nr. x til tegn nr. y på hver linie
+ i den specificerede fil. Er der kun ét tal, tages kun dette tegn ud.
+ -fx-y er som for c, men her drejer det sig om felter, og -d'X'
+ angiver felt-separatoren.
+</para>
+
+<para>
+Vil du se, hvilke brugere der har adgang til systemet, så prøv:
+<command>cat /etc/passwd | cut -d':' -f1</command>
+</para>
+
+<para>
+<command>paste</command> samler filer lodret, hvor
+<command>cat</command> samler (kan samle) filer vandret. Lad os se på
+følgende eksempel. Du ønsker nu at samle to filer,
+<filename>navne</filename> og <filename>iq</filename>, således at
+linie 1 fra <filename>navne</filename> efterfølges af linie 1 fra
+<filename>iq</filename> (uden at dette dog skulle være konkluderende,
+for såvidt angår de tilfældige sammenstillinger af for- og efternavne
+samt tal).
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat navne</userinput>
+      poul nyrup 52
+      holger beck-nielsen 90
+      william gates 55
+      torvald linus ??
+<prompt>[anne@linus ~]$ </prompt> <userinput>cat iq</userinput>
+      50
+      230
+      120
+      ??
+<prompt>[anne@linus ~]$ </prompt> <userinput>paste navne iq</userinput>
+      poul nyrup 52 50
+      holger beck-nielsen 90 230
+      william gates 55 120
+      torvald linus ?? ??
+</screen>
+
+</sect3>
+
+<sect3 id="Unixapp-tr">
+<title>Søg og du skal erstatte</title>
+
+<para>
+<command>tr</command> erstatter det første argument med det andet.
+<command>tr</command> er en lidt speciel sag. Den forventer, at få
+input fra <filename>stdin</filename>. Derfor må du bruge følgende
+fremgangsmåde, hvis du vil erstatte noget i <filename>fil1</filename>,
+og skrive indholdet til <filename>fil2</filename>. Hvis du ønsker, at
+alle små tegn skal erstattes med store, skulle følgende kunne lade sig
+gøre:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>tr '[a-z,æ,ø,å]' '[A-Z,Æ,Ø,Å]' < fil1 > fil2</userinput>
+</screen>
+
+<para>
+Det er ikke sikkert, at din distribution eller dit system vil godtage
+de danske tegn, men vi har afprøvet det på Red Hat 6.0, hvor det virker.
+</para>
+</sect3>
+
+</sect2>
+
+
+
+
+
+<sect2 id="Unixapp-andre">
+<title>Andre Unix-kommandoer</title>
+<para>
+<table>
+<title>Oversigt over de mest anvendte andre Unix-kommandoer.</title>
+<tgroup cols=2 align="char">
+<thead>
+<row>
+<entry>Kommando
+</entry>
+
+<entry>
+Forklaring
+</entry>
+
+</row>
+</thead>
+<tbody>
+<row><entry>find</entry> <entry> Find fil(er). Anvend f.eks. <command>find /usr -name "*.gif"</command>
+      til at finde alle filer under biblioteket <filename>/usr</filename>, der ender
+      på <filename>.gif</filename>. Prøv også <command>locate FILNAVN</command>.
+</entry></row>
+<row><entry>whoami</entry> <entry> Viser hvilket brugernavn-navn der arbejdes under.
+</entry></row>
+<row><entry>who</entry> <entry> Viser hvem der er logget ind på maskinen.</entry></row>
+<row><entry>passwd</entry> <entry> Skift password. </entry></row>
+<row><entry>su</entry> <entry> Skift bruger-identitet.</entry></row>
+<row><entry>echo</entry> <entry> Kommandoen <command>echo "TEKST"</command>
+      skriver teksten på skærmen.</entry></row>
+<row><entry>chown</entry> <entry> ændrer ejerskabet af filer.</entry></row>
+<row><entry>date</entry> <entry> Viser dato og tid.</entry></row>
+<row><entry>xhost</entry> <entry> Anvendes til at tillade/begrænse andre maskiner at
+      koble til maskinens X-server, dvs. om de må vise grafik
+      på skærmen. Anvend <command>xhost +</command> til at tillade alle
+      maskiner at vise grafik på maskinen. Anvend tilsvarende
+      <command>xhost -maskinnavn</command> til at forhindre, at den
+      pågældende maskine viser grafik.
+</entry></row>
+<row><entry>lpr</entry> <entry> Print ordre. Anvend <command>lpr -Pprinternavn filnavn</command>
+      for at printe på printeren <command>printernavn</command>. De enkelte
+      printere er defineret i filen <filename>/etc/printcap</filename>.
+      De aktuelle printere kan være såvel lokale som netprintere.
+</entry></row>
+<row><entry>lpq</entry> <entry> Printerkø forespørgsel. Anvend <command>lpq -Plp</command> til
+      at vise, hvor langt printeren <command>lp</command> er med at
+      printe ud.
+</entry></row>
+<row><entry>lprm</entry> <entry> Anvendes til at fjerne printjobs, som ikke er skrevet endnu.
+      Se muligheder med <command>man lprm</command>.
+</entry></row>
+<row><entry>tar</entry> <entry> Anvendes til at pakke flere programmer sammen til
+      ét. Anvend f.eks. <command>tar cvf tfil.tar fil1 fil2</command> for at
+      pakke <filename>fil1</filename> og <filename>fil2</filename> sammen til filen <filename>tfil.tar</filename>.
+      Tilsvarende kan filen pakkes ud med <command>tar xvf tfil.tar</command>.</entry></row>
+<row><entry>compress</entry> <entry> Pakker filer ind/ud. Anvend
+      <command>compress filnavn</command> til at pakke filen til <filename>
+      filnavn.Z</filename>. Tilsvarende anvendes <command>uncompress</command> til at pakke ud.</entry></row>
+<row><entry>gzip</entry> <entry> Andet og bedre pakkeprogram, der
+      anvender <filename>.gz</filename> som
+      slutning af filnavn. Tilsvarende findes
+      <command>gunzip</command> til at pakke ud.
+      Normalt ses også filtypen <filename>.tgz</filename>,
+      som er en <filename>tar</filename> fil, hvor der efterfølgende er anvendt
+      <command>gzip</command>.
+</entry></row>
+<row><entry>diff</entry> <entry> Sammenligner to filer og rapporterer forskellene.
+</entry></row>
+<row><entry>free</entry> <entry> Viser, hvor meget hukommelse der er
+      brugt, og hvor meget der er til rådighed.
+</entry></row>
+<row><entry>df</entry> <entry> Viser, hvor meget diskplads der er
+      brugt, og hvor meget der er til rådighed
+      på samtlige diske.
+</entry></row>
+<row><entry>du</entry> <entry> Viser status over, hvor meget diskplads
+      der er brugt under det sted, hvor du står i filtræet.
+</entry></row>
+<row><entry>sort</entry> <entry> Sorterer en tekstfil.
+</entry></row>
+
+<row><entry>rsh</entry> <entry> <command>rsh henrik.kongehuset.dk
+date</command> betyder, at du udfører kommandoen
+<command>date</command> på maskinen
+<command>henrik.kongehuset.dk</command>, dvs. en anden Unix-maskine.
+Linux kan udføre kommandoer på andre maskiner og så vise
+grafik (og tekst) på din egen maskine.  </entry></row>
+
+</tbody>
+</tgroup>
+</table>
+</para>
+</sect2>
+
+<sect2 id="cygwin">
+<title>Cygwin: Unix på Windows</title>
+<indexterm><primary>Unix på Windows</primary></indexterm>
+<indexterm><primary>Linux på Windows</primary></indexterm>
+<indexterm><primary>Windows med Unix-væktøjer</primary></indexterm>
+<indexterm><primary>Cygwin</primary></indexterm>
+<para>
+De fleste af de værktøjer, som er gennemgået i dette kapitel kan også
+fås til Microsoft Windows. Windows har en rædselsfuld kommando-prompt
+uden ret gode værktøjer til at støtte det op. Med Cygwin 
+kan man få Unix-værtøjerne til at virke som om man havde en
+Linux-maskine. Det er fortrinsvis tekst-baserede værktøjer, der er
+oversat til Windows, såsom compilere, tekst-editorer (vi) osv. Se mere
+på <ulink url="http://sources.redhat.com/cygwin/">http://sources.redhat.com/cygwin/</ulink>
+og alle programmer kan hentes fra
+<ulink url="http://sunsite.org.uk/Mirrors/sourceware.cygnus.com/pub/cygwin/">http://sunsite.org.uk/Mirrors/sourceware.cygnus.com/pub/cygwin/</ulink>.
+</para>
+</sect2>
+</sect1>
+
+<sect1 ID="videre-med-Unix">
+<title>Videre med Linux</title>
+
+<para>
+Vi har vist en masse Linux-kommandoer, men 
+dermed skal du ikke tro, at vi har vist dig alle muligheder i
+Linux.  Dette kapitel yder på ingen måde Linux og Unix retfærdighed.
+Der er meget at lære, men fordelen er, at du hele tiden lærer
+noget nyt, men ikke behøver at være ekspert for at komme i gang. Der
+findes naturligvis et hav af bøger om Unix generelt - både gode og
+dårlige.
+</para>
+
+<para>
+Vi vil her anbefale tre: 
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<emphasis>Unix</emphasis> af Dave Taylor og James C. Armstrong,
+forlaget IDG. Er udkommet i år 2001 på dansk.
+ </para>
+</listitem>
+<listitem>
+ <para>
+Göran
+Andersons bog på svensk (<ulink url="http://www.sslug.dk/gnulinux">http://www.sslug.dk/gnulinux</ulink>)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>Introduktion til Unix</emphasis>
+af Knud Jørgen Kirkegaard og Torben Krog, Teknisk Forlag. </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Desuden kan du måske have glæde af John Ray: <emphasis>Linux på 10
+minutter</emphasis> fra IDG, som dog er noget overfladisk. Tilsvarende
+kan du måske også have glæde af <emphasis>Linux for dummies</emphasis>
+af Phil Hughes, som er udkommet på IDG. Begge bøger er oversat til dansk.
+</para>
+</sect1>
+</CHAPTER>
+
+

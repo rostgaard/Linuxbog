@@ -1,0 +1,1659 @@
+<!-- $Id$ -->
+<CHAPTER ID="frihedensysadm">
+<TITLE>Systemadministration af et enkeltbrugersystem</TITLE>
+
+<indexterm><primary>Systemadministration</primary></indexterm>
+<indexterm><primary>root</primary></indexterm>
+
+<PARA>
+Systemadministration er alle de opgaver, som handler om
+at vedligeholde hardware og software på en computer.
+</PARA>
+
+<sidebar>
+<para>
+Der er en del mere om systemadministration i bogen "Linux - Friheden
+til systemadministration".
+</para>
+</sidebar>
+
+<PARA>
+I Unix-verdenen består systemadministration ofte i at rette i en
+masse forskellige opsætningsfiler. Opsætningsfilerne er rene
+tekstfiler, og det vigtigste værktøj til systemadministration er
+en tekst-editor såsom <command>vi</command>. Red Hat har lavet om på
+dette: Der findes nu administrationssoftware, som er grafisk. Under
+overfladen bruges dog stadig rene tekstfiler. Vi vil i dette kapitel
+primært benytte os af Red Hats grafiske værktøjer.
+</PARA>
+
+<PARA>
+Systemadministration foretages af systemadministratoren, dvs. af
+brugeren <FILENAME>root</FILENAME>, som også kaldes for
+superbrugeren (eng. "super user"). Du kan enten logge ind som
+<FILENAME>root</FILENAME> eller skifte til denne med
+programmet <command>su</command> (ordet hemmelig vises ikke på skærmen).
+</PARA>
+
+
+<indexterm><primary>su</primary></indexterm>
+<indexterm><primary>root</primary></indexterm>
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su - root</USERINPUT>
+Passwd: <USERINPUT>hemmelig</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT>
+</SCREEN>
+
+<PARA>
+Ved at skrive "<userinput>su - root</userinput>" i stedet for blot
+"<userinput>su root</userinput>" sikrer vi os, at alt er glemt om
+brugeren (<FILENAME>anne</FILENAME>), som skiftede til
+systemadministrator ("<userinput>su</userinput>" og "<userinput>su
+root</userinput>" er i øvrigt det samme). Typisk har en bruger en del
+opsætning, f.eks. omkring e-post, og denne opsætning bør du ikke
+"kende" til som <filename>root</filename>. Bemærk også, at prompten
+ændrede sig, da du blev <filename>root</filename>. Dollar-tegnet
+blev til et hash-tegn. Da root har lov til alt på maskinen, bør du
+være meget omhyggelig med, om du er root eller almindelig
+bruger. Måske tror du, at det er smart at være root og kunne alt 
+- det er forkert! Som root kan du komme til at skrive <userinput>rm -rf
+/</userinput>, og så er hele dit Linux-system væk! For
+ikke at risikere at lave unødige fejl, bør du lave en brugerkonto til dig
+selv, også selv om du har root-adgangskoden. Skift kun til superbruger, hvis
+det er absolut nødvendigt, og skift tilbage til din almindelige brugerkonto
+hurtigst muligt.
+</PARA>
+
+<PARA>
+Der eksisterer to varianter af Unix: System V (udtales "system fem")
+og BSD (Berkeley Software Distribution). For en almindelig bruger er der
+ikke den store forskel; den ligger hovedsagelig i, hvor de
+forskellige opsætningsfiler er placeret i filsystemet, og hvordan
+startsekvensen (engelsk: "boot") foregår. Red Hat (og de fleste
+Linux-distributioner) har valgt side og hører til
+System V familien, men låner lidt fra BSD.
+</PARA>
+
+<SECT1 ID="Mount">
+<TITLE>Få adgang til andre diskdrev, cdrom og diskettedrev</TITLE>
+<indexterm><primary>mount</primary></indexterm>
+
+<sect2 id="mounte-filsystemer">
+<title>Montering af filsystemer</title>
+
+<para>
+For at kunne tilgå et filsystem under Linux skal det monteres
+(eng. "mount") som et katalog i det filtræ, som er blevet
+genereret af init-processen under opstarten.
+</para>
+
+<para>
+<indexterm><primary>/etc/fstab</primary></indexterm>
+rodfilsystemet monteres direkte mens kernen starter.
+Herefter vil systemet automatisk montere de filsystemer, der
+er angivet i filen <filename>/etc/fstab</filename>, og som har en
+parameter, der fortæller at filsystemet skal monteres under opstarten.
+<indexterm><primary>mount</primary></indexterm>
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -a</USERINPUT>
+</SCREEN>
+
+<para> 
+vil montere de relevante filsystemer i
+<filename>/etc/fstab</filename>. Denne kommando udføres under
+starten af et af de programmer, der findes i kataloget
+<filename>/etc/rc.d/</filename>. Derfor vil disse filsystemer være
+tilgængelige fra starten. Senere kan man så manuelt montere de ekstra
+filsystemer, der måtte være behov for.
+</para>
+
+<para>
+Eksempel på <filename>/etc/fstab</filename>:
+</para>
+
+<screen>
+#device mountpoint(dir) type   option dump fsck
+/dev/hda2  /           ext2    default             1 1
+/dev/hda3  /usr        ext2    default             1 2
+/dev/hda4  /home       ext2    default             1 2
+/dev/fdO   /mnt/floppy ext2    noauto,rw,user,exec 0 0
+/dev/cdrom /mnt/cdrom  iso9660 noauto,ro,user,exec 0 0
+none       /proc       proc    default             0 0
+</screen>
+
+<para>
+Parameterforklaring:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  defaults (rw, suid, dev, exec, auto, nouser, asunc)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  rw (read-write)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  ro (read-only)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  user (tillader en alm. bruger at montere filsystemet - forudsætter 
+   noexec, nosuid, nodev)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  noauto (kan kun monteres eksplicit, dvs. at
+  <command>mount -a</command> vil ikke montere filsystemet).
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+<indexterm><primary>fsck</primary></indexterm>
+<indexterm><primary>dump</primary></indexterm>
+De to sidste tal på linien henviser dels til dump-kommandoen, der
+benytter tallet til at sammenligne med antallet af dage, siden der
+sidst blev taget backup af filsystemet, således at systemadministratoren
+kan informeres. Se i øvrigt online-manualen for kommandoen
+<command>dump</command>. Den sidste parameter på linien benyttes af
+kommandoen <command>fsck</command> til at afgøre, om filsystemer kan
+checkes parallelt under opstarten (boot). Root-filsystemet (
+dvs. <filename>/</filename> ) checkes altid først. De andre
+filsystemer kan checkes parallelt (multitasking er jo understøttet i
+Linux), men der er ingen fordel i at checke flere filsystemer på samme
+fysiske disk samtidig, da det vil resultere i overflødig flytning af
+læsehovedet og dermed slid og spild af tid. En parameter på nul (0) eller ingen
+parameter (f.eks. floppy og cdrom) betyder, at filsystemet ikke checkes. 
+</para>
+
+<para>
+Se i øvrigt online-manualen for kommandoerne <command>fsck</command>,
+<command>dump</command> og <command>mount</command> (brug
+<command>man fsck</command> osv.)
+</para>
+
+<para>
+Mount-kommandoen er generelt kun beregnet for systemadministratoren,
+med mindre der står "user" i device-feltet i filen
+<filename>/etc/fstab</filename>.
+</para>
+
+<para>
+Formatet for mount-kommandoen er:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t type device mount-point</USERINPUT>
+</SCREEN>
+
+<para>
+Eksempler:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  1) Montering af harddisk:
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/hda2 /mnt/disk</USERINPUT>
+</SCREEN>
+
+ <para>
+ monterer diskafsnittet <filename>/dev/hda2</filename> som kataloget
+ <filename>/mnt/disk</filename>.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+ 2) Montering af diskette til Linux-filer (med ext2-filsystem)
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/fd0 /mnt/floppy</USERINPUT>
+</SCREEN>
+
+ <para>
+ Alternativ 1:
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/fd0</USERINPUT>
+</SCREEN>
+
+<para>
+henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
+</para>
+
+ <para>
+ Alternativ 2:
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /mnt/floppy</USERINPUT>
+</SCREEN>
+
+ <para>
+ henter ligeledes resten af oplysningerne fra <filename>/etc/fstab</filename>.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+ 3) Montering af diskette til DOS-filer (msdos)
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t msdos /dev/fd0 /mnt/floppy</USERINPUT>
+</SCREEN>
+</listitem>
+
+<listitem> 
+ <para>
+ 4) Montering af diskette til Windows-filer (vfat)
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t vfat /dev/fd0 /mnt/floppy</USERINPUT>
+</SCREEN>
+
+</listitem>
+
+<listitem> 
+ <para>
+ 5) Montering af cdrom (i iso9660-format)
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t iso9660 /dev/cdrom /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+ <para>
+ Alternativ 1: 
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom</USERINPUT>
+</SCREEN>
+
+<para>
+henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
+</para>
+
+ <para>
+ Alternativ 2: 
+ </para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+ <para>
+ henter ligeledes resten af oplysningerne fra <filename>/etc/fstab</filename>.
+ </para>
+</listitem>
+</itemizedlist>
+<para>
+ Det omvendte af at montere et filsystem, er at afmontere
+ (eng. "unmount") filsystemet. At afmontere et filsystem har to
+ virkninger:
+ <itemizedlist mark="letter">
+  <listitem>
+  <para>  
+   Det skriver alle data til den fysiske disk.
+  </para>  
+  </listitem>
+  <listitem>
+  <para>  
+   Derefter er filsystemet ikke længere til rådighed.
+   fra dets <emphasis>mount point</emphasis>.
+  </para>  
+  </listitem>
+ </itemizedlist>
+</para>
+
+<para>
+ Afmontering af et filsystem sker med kommandoen "umount"
+ (bemærk: kun med ét "n").
+</para>
+
+<para>
+Eksempel:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /dev/fd0 #(afmonterer disketten)</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /mnt/floppy #(afmonterer disketten)</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /dev/cdrom #(afmonterer disketten)</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /mnt/cdrom #(afmonterer cdrom)</USERINPUT>
+</SCREEN>
+
+<para>
+<indexterm><primary>sync</primary></indexterm>
+<emphasis>Vigtigt!</emphasis> Det er vigtigt at bemærke, at man ikke
+kan/skal fjerne diskette eller andre ydre medier, der er monteret, før
+<command>umount</command> er kørt, idet der så kan mangle dele af de data,
+der er skrevet til mediets filsystem, og det kan medføre store
+problemer. Man kan tvinge systemet til at foretage en synkronisering
+vha. kommandoen <command>sync</command>, idet alle filsystembuffere
+så skrives til mediet. Kommandoen <command>umount</command> gør det samme.
+</para>
+
+<para>
+Kommandoen <command>umount</command> kræver, at der ikke er
+nogen, der arbejder på det filsystem man vil afmontere,
+dvs. hvis du står i <filename>/mnt/cdrom</filename> hvor din cdrom
+er monteret, så kan du ikke afmontere den. 
+</para>
+
+<para>
+På samme måde vil kommandoen <command>mount</command> give
+fejlmeddelelsen "device already mounted", hvis man glemmer at
+afmontere et filsystem, når der forsøges med et nyt filsystem.
+</para>
+
+<para>
+En meget vigtig pointe er at root-brugeren kan montere alt, mens den
+almindelige bruger kun kan montere de enheder, der specifikt er nævnt med
+et "user"-flag i <filename>/etc/fstab</filename>. Typisk vil man kun
+give brugere adgang til at montere løse enheder som diskette og cdrom,
+og hvis man er forsigtig, giver man kun de brugere, der har fysisk adgang
+til maskinen lov til at læse og skrive disketter og cdrom'er. Det gøres
+ved at lade disse enheder høre til en brugergruppe, der kun består af
+de lokale brugere, og så slå skrive- og læserettigheder fra for alle andre
+end enhedernes ejer og gruppe. Se 
+<command>man chgrp</command>, <command>man chmod</command> og 
+<command>man usergrp</command> for information om
+hvordan det gøres.
+</para>
+
+</sect2>
+
+<sect2 id="mount-CDROM">
+<TITLE>cdrom</TITLE>
+<indexterm><primary>cdrom</primary></indexterm>
+<para>
+Først en gang Linux-gymnastik, som kun skal gøres én gang på din maskine.
+Skift til systemoperatørrettigheder ved at skrive <command>su -</command>.
+Kontrollér, at dit cdrom-drev er fundet og tillad alle at læse fra det:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ls -al /dev/cdrom</USERINPUT>
+lrwxrwxrwx   1 root  root  3 Sep  4 14:31 /dev/cdrom -> hdd
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chmod a+r /dev/hdd</USERINPUT>
+</SCREEN>
+
+<para>
+Lad os tage en anden måde at opnå det samme for brugeren "anne".
+Kontrollér, at dit cdrom-drev er fundet, tillad alle i gruppen floppy
+at læse fra det og føj derefter "anne" til gruppen floppy:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ls -al /dev/cdrom</USERINPUT>
+lrwxrwxrwx   1 root  root  3 Sep  4 14:31 /dev/cdrom -> hdd
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chgrp floppy /dev/hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chmod g+r /dev/hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chmod o-rwx /dev/hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>usermod -G floppy anne</USERINPUT>
+</SCREEN>
+
+
+<para>
+I eksemplerne er <filename>/dev/cdrom</filename> en henvisning til
+<filename>/dev/hdd</filename>, dvs. cdrom-drevet sidder på den
+sekundære IDE-bus som slave (typisk situation). Du skal ændre
+<command>chgrp</command>- og <command>chmod</command>-kommandoerne, så
+de svarer til den enhed dit cdrom-drev sidder på, og
+<command>usermod</command>-kommandoen skal ændres, så det er dit brugernavn
+der bruges.
+</para>
+
+<para>
+Redigér filen <filename>/etc/fstab</filename> med
+<command>vi /etc/fstab</command> eller lignende. Du har sikkert
+en linie, der starter med <filename>/dev/cdrom</filename>. Den skal du
+ændre til
+</para>
+
+<SCREEN>
+/dev/cdrom    /mnt/cdrom   iso9660  noauto,ro,user,exec   0 0
+</SCREEN>
+
+<para>
+Hvis du <EMPHASIS>ikke</EMPHASIS> finder en linie, som ligner ovenstående, 
+kan det være fordi supermount er installeret, så du automatisk får 
+adgang til dit cdrom- og diskettedrev, hvilket bl.a. Mandrake 
+benytter. I så fald skal du ikke ændre noget i 
+<filename>/etc/fstab</filename> og gå videre til næste afsnit.
+</para>
+
+<para>
+Første kolonne viser den enhed (<filename>/dev/cdrom</filename>),
+som du vil kunne tage fat i.  Næste kolonne viser det
+sted i filtræet, hvor den skal kunne ses. I eksemplet har vi valgt
+<filename>/mnt/cdrom</filename>.
+</para>
+
+<para>
+Tredje kolonne beskriver filformatet, her er det iso9960 til en cdrom.  
+Fjerde kolonne indeholder
+nøgleord, der beskriver egenskaber ved cdrom-drevet. 'noauto' betyder,
+at cdrom-drevet ikke automatisk monteres, når maskinen startes op. 'ro'
+betyder at man kun kan læse fra drevet (engelsk: "read-only"). 'user' gør det muligt at montere cdrom'er som
+almindelig bruger. 'exec' gør det muligt at køre Linux-programmer fra
+cdrom. Betydningen af de to nuller kan du finde frem til ved at udføre
+kommandoen <command>man mount</command>.
+</para>
+
+<para>
+Nu er du klar til at afprøve det. Stop som root ved at trykke Ctrl-D i
+den terminal, du arbejder i. Læg f.eks. din Red Hat-cdrom i dit 
+cdrom-drev, og skriv
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT> <USERINPUT>mount /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+<para>Nu bør du kunne skrive <userinput>df /mnt/cdrom</userinput> for at se, hvor
+meget data der ligger på skiven. Du kan nu kopiere og læse fra din cdrom.
+Når du er færdig med at læse din cdrom, kan du ikke bare tage den ud. Du skal
+først skrive
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT> <USERINPUT>umount /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+<para>
+Du skal også vide, at du sagtens kan bruge
+f.eks. <filename>/cdrom</filename> som stedet, du monterer din cdrom. Du
+skal bare først lave biblioteket med <userinput>mkdir /cdrom</userinput>
+og gentage ovenstående med den nye sti. Endelig findes der systemer til
+Linux (Automount, Supermount og AMD), hvor du mere eller mindre direkte 
+kan lægge
+din cdrom i drevet og få adgang til data uden at skulle bruge
+specielle kommandoer, men det skal sættes op særskilt.
+</para>
+</sect2>
+
+<sect2 id="mount-DOSdisk">
+<TITLE>Læse DOS/Windows-diskdrev</TITLE>
+<indexterm><primary>DOS</primary><secondary>læsning af diskdrev</secondary></indexterm>
+<indexterm><primary>Windows</primary><secondary>læsning af diskdrev</secondary></indexterm>
+<indexterm><primary>/etc/fstab</primary></indexterm>
+<para>
+Tilsvarende, som med cdrom-drevet, kan du automatisk føje dine
+DOS/Windows-diskdrev til Linux-filtræet, som f.eks. <filename>/dosc/</filename>
+og/eller <filename>/dosd/</filename>. Start med at lave de kataloger,
+du skal bruge (her vises for disk C og D):
+</para> 
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su</USERINPUT>
+Passwd: <USERINPUT>hemmelig</USERINPUT>
+<PROMPT>[root@linus /root]# mkdir /dosc </PROMPT>
+<PROMPT>[root@linus /root]# mkdir /dosd </PROMPT>
+</SCREEN>
+
+
+<para>
+Redigér filen <filename>/etc/fstab</filename> med <userinput>pico -w
+/etc/fstab</userinput> eller lignende. Under installationen har du
+måske sat dine DOS/Windows-diskdrev ind, så de kan ses fra Linux, men her
+er alligevel et eksempel på <filename>/etc/fstab</filename>.
+</para>
+
+<SCREEN>
+/dev/hda1    /dosc   msdos  defaults,umask=000   0 0
+/dev/hda2    /dosd   vfat   defaults,umask=000   0 0
+</SCREEN>
+
+<para>
+Den første linie tager <filename>/dev/hda1</filename>, dvs. første
+partition på den første IDE-disk, som her antages at være en
+MS-DOS-formateret partition, og lægger den ind som
+<filename>/dosc</filename>.  Tilsvarende med
+<filename>/dev/hda2</filename>, dvs. anden partition på den første
+IDE-harddisk, som her antages at være en vfat-formateret partition,
+dvs. en Windows-partition, hvor der anvendes lange filnavne. 
+</para>
+
+<para>
+Vi har her skrevet <literal>umask=000</literal>, som vil gøre at alle
+brugere kan læse og skrive alle filer på <filename>/dosc</filename> og 
+<filename>/dosd</filename>. Dvs. alle kan også slette systemet. Vurdér
+selv om dette er acceptabelt på dit system.
+</para>
+
+<para>
+Når du genstarter computeren vil du automatisk have adgang til dine
+DOS/Windows-partitioner. Vil du prøve om det virker med det samme,
+behøver du ikke at genstarte computeren. Du kan bare skrive
+<command>mount -a</command> i et terminalvindue. Det er unødvendigt
+at genstarte Linux for at gennemføre en triviel ændring, som man
+typisk skal i Windows.
+</para>
+</sect2>
+
+
+<sect2 id="mount-floppy">
+<TITLE>Diskettedrev</TITLE>
+<indexterm><primary>Disketter</primary></indexterm>
+<para>
+For at kunne læse dine DOS-disketter skal du gentage ovenstående
+med få ændringer (<filename>msdos</filename> i stedet for
+<filename>iso9660</filename> og <filename>rw</filename> i stedet for
+<filename>ro</filename>). Der er dog en langt nemmere måde: Installér
+RPM-pakken <filename>mtools</filename> fra din Red Hat cdrom (dette er
+nøjere beskrevet under RPM i næste afsnit).
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -i mtools*.rpm</USERINPUT>
+</SCREEN>
+
+<para>
+Giv læse- og skriveadgang til <filename>/dev/fd0</filename>:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chmod a+rwx /dev/fd0</USERINPUT>
+</SCREEN>
+
+<para>
+Med <userinput>man mtools</userinput> kan du se, at du reelt har fået de
+gamle MS-DOS-kommandoer, som bare har fået et m foran. Du kan bruge
+<command>mdir</command>, <command>mcopy</command>,
+<command>mcd</command> osv. Du kan endda bruge <filename>a:</filename>
+som i MSDOS. For at kopiere hele disketten til det bibliotek, du står i,
+skal du skrive:
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT> <USERINPUT>mcopy a:* .</USERINPUT>
+</SCREEN>
+
+<para>
+Med mtools har du også mulighed for at bruge lange filnavne, der
+passer med Windows 95, og du skal ikke tænke på
+<command>mount</command> og <command>umount</command>. Rigtig nyttige
+programmer.
+</para>
+</sect2>
+
+<sect2 id="autofs">
+<title>Automatisk montering af ydre enheder</title>
+<indexterm><primary>automount</primary></indexterm>
+<indexterm><primary>autofs</primary></indexterm>
+<indexterm><primary>Montering af cdrom og diskette - automatisk</primary></indexterm>
+
+<para>
+I Red Hat og SuSE er der mulighed for automatisk at få monteret
+eksterne enheder, såsom cdrom og diskettedrev. Det er nemt
+- du skal blot installere autofs-pakken. I Mandrake benyttes supermount, 
+som er endnu smartere.
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh autofs-*.rpm</USERINPUT>
+</SCREEN>
+
+<para>
+Sørg først for at autofs startes op i den "runlevel", du normalt
+arbejder i (oftest 3, hvilket i øvrigt står i
+<filename>/etc/inittab</filename>). Det gøres ved at starte
+<command>control-panel</command> og vælge ikonet med trafiklys på -
+eller direkte starte <command>tksysv</command> op. Du føjer blot
+autofs til runlevel 3.
+</para>
+
+<para>
+Derefter skal du se i <filename>/etc/auto.master</filename>, der viser,
+at <filename>/misc</filename> nu er under kontrol af automontøren.
+Går du ned i <filename>/misc</filename>, bliver der monteret enheder
+automatisk. Der er et tidsudløb på 60 sekunder i standardopsætningen -
+dvs. 60 sekunder efter du har besøgt f.eks. din cdrom, vil maskinen
+automatisk køre <command>umount</command> for dig.  Filen
+<filename>/etc/auto.misc</filename> er så der, hvor du skriver hvilke
+af dine eksterne enheder der automatisk skal monteres.  Filen kan
+f.eks. se ud som følger, for at din cdrom og dit diskettedrev automatisk
+monteres i  <filename>/misc/cdrom</filename> hhv.
+<filename>/misc/floppy</filename>
+</para>
+
+<screen>
+cdrom           -fstype=iso9660,ro      :/dev/cdrom
+floppy          -fstype=auto            :/dev/fd0
+</screen>
+
+<para>
+Der er mange muligheder her, og er du doven, kan du endda lave en lænke
+fra roden, så <filename>/cdrom</filename> peger på
+<filename>/misc/cdrom</filename>, og du kan så anvende
+<filename>/cdrom</filename> til at læse filer fra din
+cdrom. Tilsvarende kan det gøres for <filename>/floppy</filename>. Har
+du problemer med rettigheder, læs lige de forrige afsnit.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> SuSE 6.4 har via
+<filename>/etc/auto.net</filename> lavet mulighed for at man kan gå
+direkte ind på netværkets andre filservere (hvor dette er
+tilladt). Via <filename>/net/dykker.kongeh.dk/home/dykker</filename>
+får man adgang til kataloget <filename>/home/dykker</filename> på
+maskinen dykker.kongeh.dk, hvis dette er eksporteret korrekt.
+</para>
+
+</sect2>
+
+</SECT1>
+
+
+<SECT1 ID="GrafiskAdmin">
+<TITLE>De grafiske værktøjer</TITLE>
+<PARA>
+Som allerede nævnt i indledningen til dette kapitel findes
+der til Red Hat grafiske værktøjer til
+systemadministratoren. Vi vil her koncentrere os om
+<command>control-panel</command> og <command>linuxconf</command>.
+</PARA>
+
+<sect2 ID="control-panel">
+<title>control-panel</title>
+<para>
+Som root kan du foretage systemarbejde via <command>control-panel</command>.
+</para>
+
+<SECT3 ID="control-panel-opstart">
+<TITLE>control-panel startes op</TITLE>
+<PARA>
+At starte <command>control-panel</command> op er let. Du taster
+ganske simpelt programmets navn på kommandolinjen. På figuren
+nedenfor er hovedmenuen vist. Programmet er i
+virkeligheden en række forskellige programmer.
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]</PROMPT> <USERINPUT>control-panel</USERINPUT>
+</SCREEN>
+
+<FIGURE ID="control-panel-1" FLOAT="1">
+<TITLE>Hovedmenuen i <FILENAME>control-panel</FILENAME</TITLE>
+<GRAPHIC FILEREF="control-panel-1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</SECT3>
+
+<SECT3 ID="control-panel-bruger">
+<TITLE>Opret en ny bruger</TITLE>
+<indexterm><primary>Opret ny bruger</primary></indexterm>
+<PARA>
+En af systemadministratorens vigtigste opgaver er at
+administrere brugere, dvs. oprette nye brugere og nedlægge
+gamle. I tidligere versioner af Red Hat (version 5.0 og 5.1) havde
+<command>control-panel</command> et godt værktøj til netop denne
+opgave. Bruger du Red Hat 6.1 findes dette værktøj ikke, men du kan
+bruge <command>linuxconf</command> til at administrere brugere.
+<!-- - se xref linkend="linuxconf"-->
+</para>
+
+<para>
+Som sagt, bruger du tidligere udgaver af Red Hat, finder du dette
+værktøj som den første knap i hovedmenuen (et smilende ansigt). Ved at
+trykke på den får du et nyt vindue, som er vist nedenfor. 
+</para>
+
+<FIGURE ID="control-panel-2" FLOAT="1">
+<TITLE>Brugeradministration</TITLE>
+<GRAPHIC FILEREF="control-panel-2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Du kan oprette en ny bruger ved at trykke på "Add" (Tilføj)
+knappen. Lad os oprette en ny bruger, som ønsker brugernavnet
+pingo og i virkeligheden hedder Frederik. Figuren nedenfor viser
+denne situation. En række af felterne har systemadministratoren
+selv udfyldt, men <FILENAME>control-panel</FILENAME> er kommet med en
+række forslag, f.eks. vil bruger-ID (brugernr.) blive
+foreslået. Når du er færdig med at indtaste alle
+oplysningerne, trykker du på "Done"-knappen.
+</PARA>
+
+<FIGURE ID="control-panel-3" FLOAT="1">
+<TITLE>En ny bruger ved navn pingo</TITLE>
+<GRAPHIC FILEREF="control-panel-3.&magic;"  SCALE ="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>
+Nu har vi set lidt på de grafiske værktøjer du har til hjælp. Lad os
+nu også se på de tilsvarende tekst-baserede værktøjer. Som root kan
+du på et vilkårligt tidspunkt skifte en brugers adgangskode ved at
+skrive <userinput>passwd BRUGERNAVN</userinput>. Du kan 
+også nemt oprette en bruger ved at skrive <userinput>adduser
+BRUGERNAVN</userinput>. Derefter skal du bruge <userinput>passwd
+BRUGERNAVN</userinput> for at sætte en adgangskode.
+</PARA>
+
+</SECT3>
+
+<SECT3 ID="stil-uret">
+<TITLE>Stil uret</TITLE>
+<PARA>
+<command>control-panel</command> kan også bruges til at
+stille din computers ur. Du finder denne funktion som den anden i
+<command>control-panel</command>. Du kan ændre både klokken og
+datoen. For at ændre noget trykker du først på det, du vil
+ændre, f.eks. måneden. Derefter bruger du de to pile, og når
+du er færdig, trykker du først på "Set System Clock" og
+derefter på "Exit Time Machine".
+</PARA>
+
+<FIGURE ID="control-panel-4" FLOAT="1">
+<TITLE>Stil computerens ur</TITLE>
+<GRAPHIC FILEREF="control-panel-4.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Det kan også være praktisk er kende en systemkommando her. Skal du
+sætte BIOS-uret til 28. marts år 2000 kl. 23:44, så kan du gøre følgende:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]</PROMPT> <USERINPUT>/sbin/hwclock --set --date="03/28/2000 23:44:00"</USERINPUT>
+<PROMPT>[root@linus /root]</PROMPT> <USERINPUT>/sbin/hwclock --hctosys</USERINPUT>
+</SCREEN>
+
+<para>
+NB! - der skal to minus-tegn til kommandoerne
+(f.eks. <command>hctosys</command>) - ikke én. I PS og PDF-udgaven af
+denne bog ser det ud som om der kun er ét minus.
+</para>
+
+</SECT3>
+
+<SECT3 ID="runlevel-editor">
+<TITLE>Runlevel-editoren</TITLE>
+<PARA>
+Vi har tidligere i dette kapitel diskuteret runlevel, og hvordan
+de bruges og konfigureres. <command>control-panel</command> giver os
+et enkelt værktøj, nemlig runlevel-editoren. Du finder den som
+den anden knap fra oven i hovedmenuen. Figuren nedenfor viser, hvordan
+runlevel-editoren ser ud.
+</PARA>
+
+<FIGURE ID="control-panel-5" FLOAT="1">
+<TITLE>Runlevel-editoren</TITLE>
+<GRAPHIC FILEREF="control-panel-5.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Som du ser, kan du konfigurere runlevel 2 til 5. Foroven står
+de tjenester, som skal startes, når din maskine
+går ind i det givne runlevel, mens der forneden er anført de
+tjenester, som skal lukkes, når din maskine forlader et
+runlevel. Til venstre finder du de mulige tjenester, som kan startes
+op i hvert runlevel. Hvis du vil føje en tjeneste til et
+runlevel, begynder du med at trykke på den ønskede tjeneste til
+venstre. Derefter trykker du på "Add" (tilføj). Der kommer nu et lille
+vindue frem, og i det kan du vælge, hvilket runlevel den ønskede
+tjeneste skal startes op eller lukkes ned i.
+</PARA>
+
+<FIGURE ID="control-panel-6" FLOAT="1">
+<TITLE>Tilføj en ny tjeneste</TITLE>
+<GRAPHIC FILEREF="control-panel-6.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</SECT3>
+</SECT2>
+
+</SECT1>
+
+
+<SECT1 ID="lydkort">
+<TITLE>Et lydkort</TITLE>
+<indexterm><primary>Lydkort</primary></indexterm>
+<PARA>Mange mennesker har lydkort i deres computer, og Linux understøtter
+naturligvis en række af de lydkort, som du kan
+købe til en personlig computer. For at lette opsætningen af
+lydkort følger der med Red Hat et simpelt, men godt program til
+dette formål: <command>sndconfig</command>. I dette afsnit vil du
+se, hvor let det er. Lydkortet, vi bruger som eksempel, er et
+Plug-n-play SoundBlaster 32 fra Creative Labs.</PARA>
+
+<PARA>Du starter programmet ved at taste
+<command>sndconfig</command> på kommandolinjen (som root). Programmet er
+designet til at køre i tekst-tilstand, og du kan selv vælge, om du
+vil benytte dig af en <command>xterm</command> eller bruge
+konsollen. Første skærmbillede ser ud som vist nedenfor.
+</PARA>
+
+<FIGURE ID="sndconfig-start" FLOAT="1">
+<TITLE>Første skærmbillede i
+<command>sndconfig</command></TITLE>
+<GRAPHIC FILEREF="sndconfig-start.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Du fortsætter ved at trykke på ENTER. Det næste
+skærmbillede, som du ser nedenfor, fortæller, hvilket lydkort
+<command>sndconfig</command> har fundet, i dette tilfælde et
+SoundBlaster 32 - som forventet. Du bør naturligvis tjekke, om
+programmet finder det rigtige.
+</PARA>
+
+<FIGURE ID="sndconfig-2" FLOAT="1">
+<TITLE>Hvilket lydkort finder <command>sndconfig</command>?</TITLE>
+<GRAPHIC FILEREF="sndconfig-2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Det tredje skærmbillede tillader, at du vælger et
+lydkort. Hvis nu <command>sndconfig</command> ikke har været i
+stand til at finde dit lydkort, kan du nu vælge det rette. Vi
+vælger naturligvis vores SoundBlaster 32 lydkort. Du kan bevæge
+markøren vha. piletasterne, og du flytter markøren ned til OK og CANCEL
+ved at trykke på TAB-tasten.
+</PARA>
+
+<FIGURE ID="sndconfig-3" FLOAT="1">
+<TITLE>Der vælges et lydkort</TITLE>
+<GRAPHIC FILEREF="sndconfig-3.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>
+Det er nu tid til at vælge indstillinger for lydkortet. Her er det
+typisk lettest, hvis du kender dem på forhånd, så du ikke behøver at
+gætte dig frem. Det er reelt de samme oplysninger, som du i Microsoft
+Windows 95 finder under "egenskaber for enheder".
+</PARA>
+
+<FIGURE ID="sndconfig-4" FLOAT="1">
+<TITLE>Indstillinger for lydkortet vælges</TITLE>
+<GRAPHIC FILEREF="sndconfig-4.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Når du har valgt de rigtige indstillinger, vil
+<command>sndconfig</command> afspille en kort lydsekvens for
+dig. Når du hører den, betyder det, at lydkortet er korrekt
+konfigureret.
+</PARA>
+
+<FIGURE ID="sndconfig-5" FLOAT="1">
+<TITLE>En lydsekvens afspilles</TITLE>
+<GRAPHIC FILEREF="sndconfig-5.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>Gik det helt galt med dit lydkort, kan det være, at du ikke
+har den rette Linux-kerne og modulerne til det. Du kan
+læse videre i de følgende afsnit om, hvordan kernen oversættes.
+Se også på <ulink
+url="http://www.alsa-project.org/">http://www.alsa-project.org/</ulink>
+hvis dit lydkort ikke er understøttet direkte.
+</para>
+</SECT1>
+
+
+<sect1 id="grafik-3D">
+ <title>Linux og 3D-kort</title>
+
+ <indexterm><primary>3D-grafikkort</primary></indexterm>
+ <indexterm><primary>grafikkort</primary><secondary>3D</secondary></indexterm>
+
+ <para>
+  Som så mange andre styresystemer understøtter også Linux 3D-kort. I Linux
+  bliver 3D-grafikken håndteret af et system der hedder OpenGL. SGI har nu
+  udgivet OpenGL under en fri licens. Inden det skete var det meget
+  almindeligt at frie programmer brugte den frie OpenGL-efterligning Mesa.
+ </para>
+
+ <para>
+  OpenGL er et grafisk standardbibliotek, som bruges til at kommunikere med
+  3D-grafikkort. OpenGL blev udviklet af SGI (tidligere Silicon Graphics) til
+  brug i deres grafiske arbejdsstationer. OpenGL blev introduceret i 1992 og
+  er med tiden blevet et af de mest brugte programmeringsgrænseflader for både
+  to- og tre-dimensionel grafik. I dag bliver OpenGL varetaget af en uafhængig
+  sammenslutning af firmaer inden for 3D-branchen.
+ </para>
+
+ <para>
+  Hvis man ønsker at skrive styrerutiner til et 3D-grafikkort, som gør brug
+  af OpenGL-teknologien, kræver det, at man betaler for en licens og for en
+  bekræftelse af at styrerutinerne implementerer OpenGL korrekt.
+ </para>
+
+ <para>
+  Linux-brugere har alligevel mulighed for at bruge OpenGL i form af Mesa.
+  For at bruge 3D-grafikkort i Linux bliver man først nødt til at installere
+  de Mesa-styrerutiner, som passer til ens grafikkort. Mesa understøtter (på
+  nuværende tidspunkt) følgende grafikchips:
+
+  <itemizedlist>
+   <listitem>
+    <para>
+     3Dfx Voodoo1, Voodoo2, Voodoo Rush, Voodoo Banshee, Voodoo3
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     nVidia (bruges i TNT-kort)
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     Amiga Warp3D
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     (Matrox G200, styrerutinerne til dette kort kommer med en modificeret
+     udgave af Mesa)
+    </para>
+   </listitem>
+  </itemizedlist>
+ </para>
+
+ <para>
+  Når det er gjort, vil programmer, som skal bruge 3D-kortet, bruge
+  Mesa-biblioteket. Du kan læse mere om Mesa på <ulink
+  url="http://www.mesa3d.org/">http://www.mesa3d.org/</ulink> og om OpenGL på
+  <ulink url="http://www.OpenGL.org/">http://www.OpenGL.org/</ulink>.
+ </para>
+
+ <para>
+  Som du kan se er det desværre langt fra alle 3D-grafikkort, som understøttes
+  i Linux. Det skyldes, at kun få grafikkortfabrikanter offentliggør en
+  komplet beskrivelse af deres kort. Det gør at man ikke kan udnytte alle
+  kortets funktioner, og kortets ydelse vil derfor være under det niveau man
+  ser i Windows, hvor firmaet typisk selv har skrevet styrerutinerne til
+  kortet. Desuden er mange af forfatterne til styrerutinerne almindelige
+  programmører ofte uden den helt store tekniske indsigt, hvilket selvfølgelig
+  også påvirker udviklingsarbejdet.
+ </para>
+
+<para>
+De bedst understøttede 3D-kort er nok 3Dfx-kortene. Der kommer
+heldigvis hele tiden nye drivere, først og fremmest til de store
+fabrikanters 3D-kort.
+</para>
+
+<sect2 id="grafik-3dinstallation">
+<title>Installation af 3D-grafikkort under Linux</title>
+
+<sect3 id="grafik-3dfxinstallation">
+<title>3Dfx</title>
+<para>
+3Dfx var blandt de første 3D-kort, som blev tilgængelige for Linux-brugere.
+Det skyldes at 3Dfx-kortene kører med et system, som hedder
+Glide, der har været ret nemt at få overført til Linux.  Der findes to
+forskellige typer af Glide-drivere til Linux:
+</para>
+
+<para>
+Der findes en, som understøtter Voodoo1, Voodoo2 og
+Voodoo Rush. Se mere på  <ulink
+url="http://www.3dfxgamers.com/downloads.htm">http://www.3dfxgamers.com/downloads.htm</ulink>
+og <ulink url="http://glide.xxedgexx.com/3DfxRPMS_vb_glibc.html">http://glide.xxedgexx.com/3DfxRPMS_vb_glibc.html</ulink>.
+</para>
+
+<para>
+Og en der understøtter Voodoo Banshee og Voodoo3 kan findes
+på  <ulink
+url="http://glide.xxedgexx.com/3DfxRPMS_vb_glibc.html">http://glide.xxedgexx.com/3DfxRPMS_vb_glibc.html</ulink>.
+</para>
+
+<para>
+Voodoo Banshee og Voodoo3 er både et 2D og 3D-kort, så
+når du installerer denne driver, bliver din 2D-driver i X også
+opdateret. Når du har hentet den driver, som du skal bruge, skal den
+installeres. Det gøres således efter du har hentet Glide-RPM-pakken:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -Uvh Glide*.rpm</USERINPUT>
+</SCREEN>
+
+<para>
+Når det er gjort skal Mesa installeres. Mesa findes på <ulink
+url="http://www.mesa3d.org/">http://www.mesa3d.org</ulink> og ligger
+i to tar.gz-filer (MesaLib og MesaDemos), som begge skal
+nedlæses. Når de to filer er hentet og udpakket, skal Mesa
+oversættes. 
+Læs dokumentationen inden du går i gang:
+</para>
+
+
+<SCREEN>
+<PROMPT>[root@linus mesa]# </PROMPT> <USERINPUT>make linux-glide</USERINPUT>
+</SCREEN>
+
+
+<para>
+Du skal nu finde ud af, hvor i dit system de færdigt oversatte filer
+skal kopieres hen. Derefter skal du gøre som følger: 
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus mesa]# </PROMPT> <USERINPUT>cd include/</USERINPUT>
+<PROMPT>[root@linus include]# </PROMPT> <USERINPUT>cp -r GL/ /usr/include/</USERINPUT>
+<PROMPT>[root@linus include]# </PROMPT> <USERINPUT>cd ../lib</USERINPUT>
+<PROMPT>[root@linus lib]# </PROMPT> <USERINPUT>cp -d * /usr/lib/</USERINPUT>
+<PROMPT>[root@linus lib]# </PROMPT> <USERINPUT>ldconfig</USERINPUT>
+</SCREEN>
+
+<para>
+Nu skulle dit 3Dfx kort virke uden problemer. Hvis du ønsker at teste
+dit 3Dfx kort, skal du skrive:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus lib]# </PROMPT> <USERINPUT>/usr/local/glide/bin/test3Dfx</USERINPUT>
+</SCREEN>
+
+<para>
+Nu skulle der gerne komme et roterende 3Dfx-logo.
+</para>
+
+<para>
+<emphasis>Bemærk!</emphasis> Da din nuværende installation
+kommunikerer direkte med 3Dfx-kortet, bliver du nødt til at køre dine
+3Dfx-applikationer som "root". Da dette kan være irriterende og
+samtidig udgøre en sikkerhedsrisiko, findes der en måde, hvorpå
+man kan undgå dette problem. Det gøres med et såkaldt <emphasis>3Dfx
+kernel module</emphasis>. Når først dette kernemodul er installeret,
+vil de programmer (og spil), som skal bruge 3Dfx-kortet, kommunikere
+via <filename>/dev/3Dfx</filename>. Denne løsning har ydermere den
+fordel, at du kan bestemme, hvem der skal have adgang til kortet, men
+det har samtidig den ulempe, at hastigheden på 3Dfx-kortet bliver
+nedsat en smule.
+</para>
+<para>
+
+</para>
+<para>
+Det omtalte modul er at finde på 
+<ulink url="http://www.xs4all.nl/~carlo17/3dfx/">http://www.xs4all.nl/~carlo17/3dfx/</ulink>.
+For at installere det skal du nedlæse tar.gz-filen, og skrive følgende:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>mkdir dev3dfx</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>cd dev3dfx/</USERINPUT>
+<PROMPT>[root@linus dev3dfx]# </PROMPT> <USERINPUT>tar zxvf ../Dev3Df*.tar.gz</USERINPUT>
+<PROMPT>[root@linus dev3dfx]# </PROMPT> <USERINPUT>make</USERINPUT>
+<PROMPT>[root@linus dev3dfx]# </PROMPT> <USERINPUT>cp 3dfx.o /lib/modules/`uname -r`/misc
+</USERINPUT>
+<PROMPT>[root@linus dev3dfx]# </PROMPT> <USERINPUT>mknod /dev/3dfx c 107 0</USERINPUT>
+<PROMPT>[root@linus dev3dfx]# </PROMPT> <USERINPUT>insmod 3dfx</USERINPUT>
+</SCREEN>
+
+<para>
+Derefter skal du redigere din <filename>/etc/conf.modules</filename>
+således, at kommandoen <command>insmod 3dfx</command> bliver kørt,
+hver gang du starter/genstarter din computer.
+</para>
+
+<para>
+Ved hjælp af programmet GlideControl, som er at finde på 
+<ulink url="http://rpmfind.net/linux/RPM/contrib/libc6/i386////GlideControl-0.3-1.i386.html">http://rpmfind.net/linux/RPM/contrib/libc6/i386////GlideControl-0.3-1.i386.html</ulink>,
+kan man indstille sit Voodoo1- eller Voodoo2-kort under Linux.
+</para>
+
+<para>
+Skulle der være problemer, kan det være en god idé at kigge forbi
+<ulink url=" http://www.3dfxgamers.com/">http://www.3dfxgamers.com/</ulink>.
+</para>
+</sect3>
+
+<sect3 id="nVidia">
+<title>nVidia Riva chipsæt</title>
+<para>
+nVidia (bruges i TNT-kort) er et af de eneste firmaer, som officielt
+selv er ved at udvikle Linux-drivere til deres grafik-chipsæt.
+</para>
+<para>
+Deres drivere er at finde på <ulink
+url="http://www.nvidia.com/Products.nsf/htmlmedia/software_drivers.html">http://www.nvidia.com/Products.nsf/htmlmedia/software_drivers.html</ulink>.
+Yderligere information om installation af disse drivere er også at
+finde på denne side. Man skal dog lige være opmærksom på at disse
+drivere er på udviklingsstadiet, så de er ikke nær så hurtige og
+fejlfrie som dem, du muligvis kender fra Windows.
+</para>
+</sect3>
+
+<sect3 id="matroxg200">
+<title>Matrox G200</title>
+<para>
+Matroxs G200 chipsættet har for 3D-delens vedkommende i en del tid
+været understøttet i X. For nylig frigav Matrox specifikationer til
+3D-delen, hvilket har medført, at der er kommet nogle midlertidige
+drivere.
+</para>
+
+<para>
+Installationen indeholder en modificeret udgave af Mesa samt et
+"glx"-modul, som gør det muligt for X at arbejde med Mesa (OpenGL)
+kommandoer. G200-driverne er under kraftig udvikling og er
+ligesom nVidias drivere ikke særlig hurtige eller stabile. Så sørg for at
+læse dokumentationen, før du går i gang.
+</para>
+
+<para>
+Se også <ulink url="http://sunsite.dk/ftp/pub/os/linux/nl3dp/web">http://sunsite.dk/ftp/pub/os/linux/nl3dp/web</ulink>.
+</para>
+
+</sect3>
+</sect2>
+
+</sect1>
+
+
+
+
+<sect1 id="printere">
+<title>Printere</title>
+<indexterm><primary>Printer</primary></indexterm>
+<indexterm><primary>Udskrivning</primary></indexterm>
+<para>
+Skal du tilføje en printer, du kan skrive ud på, og du anvender Red
+Hat, skal du lige som "root" sætte printeren op med
+<command>printtool</command>. Det første billede du møder viser,
+hvor mange printere, der allerede er sat op. I dette tilfælde kun én.
+</para>
+
+<FIGURE ID="printtool1" FLOAT="1">
+<TITLE>Opsætning af ny printer med printtool i Red Hat</TITLE>
+<GRAPHIC FILEREF="printtool1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Vælger du nu "Add" (tilføj), skal du vælge, hvor printeren
+findes. Netværksprintere og printere på egen maskine er
+understøttet. Vi vælger en lokal printer til dette eksempel. Vælger du
+en netværksprinter, skal du have information fra din
+netværksadministrator om printertype og adresse.
+</para>
+
+<FIGURE ID="printtool2" FLOAT="1">
+<TITLE>Valg af printer type i Red Hat</TITLE>
+<GRAPHIC FILEREF="printtool2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Linux vil for lokale printere automatisk detektere, hvilken enhed
+der ser ud til at have en printer tilkoblet.
+</para>
+
+<FIGURE ID="printtool3" FLOAT="1">
+<TITLE>Detektion af printer-device i Red Hat</TITLE>
+<GRAPHIC FILEREF="printtool3.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu mangler vi bare at angive typen af printer, tryk derfor på "Select"
+(vælg) ud for "Input Filter" (inddata-filter).
+</para>
+
+<FIGURE ID="printtool4" FLOAT="1">
+<TITLE>Opsætning af ny printer med printtool i Red Hat</TITLE>
+<GRAPHIC FILEREF="printtool4.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Nu vælger du typen af printer. Winprintere kan du godt glemme, men
+mange gode printere er understøttet, og har du en PostScript-printer,
+er det slet intet problem. Husk at vælge grafikopløsning og
+papirstørrelse. Klik-feltet "Fix stair-stepping text" bør du vælge -
+det er for at klare den forskellige fortolkning af linieskift i Unix-
+kontra DOS-verdenen.
+</para>
+
+<FIGURE ID="printtool5" FLOAT="1">
+<TITLE>Opsætning af ny printer med printtool i Red Hat</TITLE>
+<GRAPHIC FILEREF="printtool5.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Efter at have trykket på "Ok", er du tilbage i hovedmenuen for
+printeropsætning og kan vælge at udskrive testsider. Håber det
+virker.
+</para>
+
+<para>
+Nu bør f.eks. din Netscape kunne udskrive og tilsvarende din gv (til PostScript-filer).
+Du kan udskrive tekstfiler med <command>lpr FILNAVN</command>,
+og du bør nok læse man-siderne for lpr, lprm, lpq og lpc.
+</para>
+
+<para>
+Til at udskrive tekstfiler, f.eks. C-kode, kan du med fordel
+installere a2ps, som laver meget pæne udskrifter, der viser kodesyntaks.
+Du finder a2ps på <ulink
+url="http://www.inf.enst.fr/~demaille/a2ps">http://www.inf.enst.fr/~demaille/a2ps</ulink>.
+Se i øvrigt <ulink
+url="http://www.linuxprinting.org">http://www.linuxprinting.org</ulink>
+for mere om printere og Linux.
+</para>
+
+<sect2 id="udskrivning-fra-andre-maskiner">
+<title>Udskrivning fra andre maskiner</title>
+<indexterm><primary>Printer</primary><secondary>fra andre Linux-maskiner</secondary></indexterm>
+<indexterm><primary>Udskrivning</primary><secondary>fra andre Linux-maskiner</secondary></indexterm>
+<para>
+Skal du skrive dokumenter ud fra en anden Linux-maskine til den
+printer, du har sat på din Linux-maskine, så bliver du nødt til at
+rette filen <filename>/etc/hosts.lpd</filename>, så den indeholder de
+maskiner, der kan skrive ud på printeren. Du kan også bruge jokertegn
+(eng. wildcards), f.eks. "*.kongeh.dk" for at tillade alle maskiner i
+domænet kongeh.dk.
+</para>
+</sect2>
+
+</sect1>
+
+
+
+
+
+<SECT1 ID="friheden-Opstart">
+<TITLE>Opstart af Linux</TITLE>
+<indexterm><primary>Boot af Linux</primary></indexterm>
+<indexterm><primary>Opstart af Linux</primary></indexterm>
+<indexterm><primary>Microsoft Windows</primary><secondary>98</secondary></indexterm>
+<indexterm><primary>Windows</primary><secondary>98</secondary></indexterm>
+
+<PARA>
+Som tidligere skrevet kan Linux fint eksistere sammen med Windows
+95/98 eller Windows NT. Hvad angår Windows 95/98, skal du se på LILO
+eller Loadlin som opstartsindlæser (bootloader), men med hensyn til
+Windows NT kommer der i det følgende en vejledning i at anvende Linux sammen
+med Windows NT's "OS Loader". 
+</para>
+
+<para>
+Et alternativ til dette er at benytte "bootpart" programmet - så kan
+du have LILO liggende på din Linux-partition i stedet for at ligge den i master
+boot record (MBR) - se
+<ulink url="http://www.winimage.com">http://www.winimage.com</ulink> og
+<ulink url="http://www.winimage.com/bootpart.htm">http://www.winimage.com/bootpart.htm</ulink>.
+</para>
+
+
+<sect2 id="lilo">
+<title>LILO</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>LILO</secondary></indexterm>
+<indexterm><primary>LILO</primary><secondary>LILO</secondary></indexterm>
+<para>
+Mange vil allerede under installationen af Red Hat have installeret
+LILO som opstarter (eng. Boot Manager). Senere kan det være, at du vil
+have mulighed for at opstarte med en ny kerne eller lignende. Du skal
+så ændre i opsætningsfilen <FILENAME>/etc/lilo.conf</FILENAME>, hvor
+der står en del for hvert af de styresystemer, der kan opstartes. Når
+du har rettet, skal du køre <command>/sbin/lilo</command> som "root",
+hvorefter rettelserne har effekt.
+</para>
+
+<para>
+Et eksempel på <FILENAME>/etc/lilo.conf</FILENAME> kan være
+</para>
+
+<SCREEN>
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+lba32
+timeout=50
+image=/boot/bzImage
+        label=linux
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+        append="max_loop=128 quiet"
+image=/boot/vmlinuz-2.0.35-2
+        label=linux2
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+other=/dev/hda1
+        label=dos
+        table=/dev/hda
+</SCREEN>
+
+<para>
+I eksemplet opstartes på første IDE-disk
+(<filename>hda</filename>).  En opstartsfil indlæses og lægges i
+opstartssektoren, og der opstartes efter 5 sekunder på den første af
+de tre muligheder. Der er her to muligheder for at opstarte Linux med
+to forskellige kerner (linierne med image). Begge starter op med root-partition
+på <FILENAME>/dev/hda3</FILENAME>. Feltet "label" (mærkat)
+er det, du ser på skærmen som opstarts-valgmulighed. Den sidste
+mulighed i eksemplet er, at DOS startes på den første partition
+(hda1) på første IDE-disk. <filename>lba32</filename> er tilføjet for
+at kunne understøtte meget store harddiske.
+</PARA>
+
+<para>
+I eksemplet er der benyttet kommandoerne <command>restricted</command>
+og <command>password</command>. De linier gør at man ikke kan starte
+op i enkeltbruger-tilstand (eng. single user mode) uden at give
+password "HEMLIPASSWORD". Husk at <command>/etc/lilo.conf</command>
+ikke bør kunne læses af andre end root, dvs. kør én gang for alle
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> chmod 600 /etc/lilo.conf</userinput>
+</screen>
+
+<para>
+I eksemplet ses også kommandoen <command>append=</command> som får
+LILO til at give kernen nogle ekstra direktiver til opstart.
+Læs mere om direktiverne i <xref linkend="kernelparm">.
+</para>
+
+<PARA>
+LILO kan en hel del, men kan være et lige så besværligt værktøj, som
+det kan være suverænt. Du bør måske læse den mini-HOWTO om LILO, som
+kan findes under "Linux Documentation Project" på <ulink
+url="http://sunsite.dk/ldp">http://sunsite.dk/ldp</ulink>.
+Specielt kan det være at de to alternativer "restricted" eller "password" 
+(adgangskode) er værd at forstå.
+</PARA>
+
+
+<sect3 id="slette-lilo">
+<title>Slette LILO</title>
+<para>
+<indexterm><primary>Slette LILO</primary></indexterm>
+<indexterm><primary>LILO</primary><secondary>Slette</secondary></indexterm>
+<emphasis>Tip:</emphasis> LILO kan fjernes i DOS ved at køre
+<userinput>fdisk /mbr</userinput> i en DOS-vindue under DOS/Windows.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> LILO kan i Linux fjernes ved at køre
+<command>/sbin/lilo -u /dev/hda</command>, hvis din boot-harddisk er
+<filename>/dev/hda</filename>.
+</para>
+</sect3>
+
+<sect3 id="lilo-rescue">
+<title>LILO gik galt!</title>
+<indexterm><primary>LILO</primary><secondary>problemer</secondary></indexterm>
+<para>
+Hvis uheldet er ude og du har Linux installeret og der er problemer
+med LILO, så maskinen ikke booter, så kan du bruge din
+installations-cdrom til at reparere systemet med.
+</para>
+
+<para>
+Du skal starte op på din Linux-cdrom og vælge
+<command>rescue</command>-muligheden. Du får ikke kontakt med din
+harddisk derved, men får Linux startet op med programmer til at klare
+problemerne. 
+</para>
+
+<para>
+Hvis vi antager at Linux er installeret med <filename>/</filename>
+(roden) på <filename>/dev/hda1</filename>, så kan du skrive følgende
+for at montere harddisk-roden på <filename>/mnt</filename>. 
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>mount /dev/hda1 /mnt</USERINPUT>
+</SCREEN>
+
+<para> 
+Nu kan du med <command>cd /mnt/etc</command> komme ned til
+<filename>/etc</filename> på harddisken. Husk at dit Linux-system er
+fra din cdrom og din cdrom er tilgængelig via
+<filename>/mnt</filename>. Du kan nu rette i
+<filename>lilo.conf</filename> eller rettere
+<filename>/mnt/etc/lilo.conf</filename>, f.eks. med
+<command>vi</command> eller <command>pico</command>. Derefter kan du
+køre <command>lilo -r /mnt</command>, der læser
+<filename>lilo.conf</filename>-filen fra
+<filename>/mnt/etc/lilo.conf</filename>, og installerer LILO, som om
+du havde <filename>/mnt</filename> som dit rod-filsystem.
+</para>
+
+<para>
+Husk at det kan være et problem at boote fra en harddisk, som har
+flere end 1024 cylindre - hvis de filer som LILO skal bruge for at
+boote ligger over cylinder 1024, 
+er det ikke altid LILO eller din BIOS kan finde
+ud af det, og derfor vil LILO i så fald komme med en advarsel. Det kan
+være årsagen til, at den ikke vil installeres automatisk. Heldigvis
+er dette kun et problem med ældre distributioner, 
+idet LILO fra version 0.21.4.2
+og fremover kan understøtte op til 2 Tb diske, hvilket vel stadig
+dækker de fleste personers behov :-)
+Husk dog at den nye LILO kun vil virke med BIOS'er der understøtter
+de udvidede LBA-funktioner til store diske, så ældre BIOS'er og
+nyere BIOS'er der ikke helt følger standarden kan stadig give problemer.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="loadlin">
+<title>Loadlin</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>Loadlin</secondary></indexterm>
+<PARA>
+En anden mulighed er at starte op i Windows 95 og dér lave en opstarter
+via <FILENAME>CONFIG.SYS</FILENAME> og
+<FILENAME>AUTOEXEC.BAT</FILENAME>-filerne. Først hentes DOS-programmet
+LOADLIN fra f.eks. <ulink url="http://freshmeat.net">http://freshmeat.net</ulink>.
+
+</PARA>
+
+<PARA>
+Vi har installeret <command>loadlin</command> i
+<FILENAME>c:\linux\loadlin</FILENAME> (loadlin kan hentes i
+zip-format og pakkes ud som vanligt med 
+<command>pkunzip</command> eller <command>WinZip</command>).  Vor
+Linux-kerne har vi kopieret til 
+<filename>c:\linux</filename> med navnet <filename>vmlinuz</filename>,
+og i nedenstående <filename>autoexec.bat</filename> har vi vores
+root-partition på <filename>/dev/hda3</filename> (tredje partition på
+hoveddisken). Du skal rette i linien
+<filename>c:\linux\loadlin\loadlin c:\linux\vmlinuz root=/dev/hda3
+ro</filename> svarende til din opsætning.
+</PARA>
+
+<PARA>
+I det følgende skal du erstatte indholdet for Windows 95 (Win95) med
+det, som du selv har. Linux har reelt kun noget i
+<FILENAME>AUTOEXEC.BAT</FILENAME>
+</PARA>
+
+<PARA>
+<EMPHASIS>CONFIG.SYS</EMPHASIS>
+</PARA>
+
+<SCREEN>
+[MENU]
+MENUITEM=Win95
+MENUITEM=Linux
+MENUDEFAULT=Linux,5
+
+[Win95]
+DEVICE=C:\UCD\UCDIDE.SYS /D:UCD0001
+DEVICE=C:\WINDOWS\SETVER.EXE
+DEVICE=C:\WINDOWS\HIMEM.SYS
+DOS=HIGH
+device=C:\WINDOWS\COMMAND\display.sys con=(ega,,1)
+Country=045,850,C:\WINDOWS\COMMAND\country.sys
+
+[Linux]
+
+</SCREEN>
+
+<PARA>
+<EMPHASIS>AUTOEXEC.BAT</EMPHASIS>
+</PARA>
+
+<SCREEN>
+GOTO %CONFIG%
+
+:Win95
+rem - By Windows Setup - C:\WINDOWS\COMMAND\MSCDEX /D:UCD0001
+@ECHO OFF
+PROMPT $p$g
+SET PATH=C:\WINDOWS;C:\WINDOWS\COMMAND;C:\DOS;
+SET TEMP=C:\DOS
+mode con codepage prepare=((850) C:\WINDOWS\COMMAND\ega.cpi)
+mode con codepage select=850
+keyb dk,,C:\WINDOWS\COMMAND\keyboard.sys
+GOTO END
+
+:Linux
+c:\linux\loadlin\loadlin c:\linux\vmlinuz root=/dev/hda3 ro
+GOTO END
+
+:END
+</SCREEN>
+</sect2><!-- loadlin -->
+
+<sect2 id="kernelparm">
+<title>Kerneparametre</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>kerneparametre</secondary></indexterm>
+<indexterm><primary>Boot af Linux</primary><secondary>kerneparametre</secondary></indexterm>
+<indexterm><primary>Kerneparametre</primary><secondary>LILO</secondary></indexterm>
+<indexterm><primary>LILO</primary><secondary>append</secondary></indexterm>
+
+<para>
+Når din computer bootes med LILO, holdes der typisk en pause. Pausen kan
+enten bruges til at vælge en anden kerne at boote med, men kan også bruges
+til at indtaste ekstra parametre til Linux.
+En ofte brugt kommando er at boote Linux op i "single user mode", hvilket gør
+at man kan udfører systemarbejde uden alt for mange programmer kørende,
+eller hvis du har glemt password til <command>root</command>.
+Kommandoen er:
+</para>
+
+<SCREEN>
+<PROMPT>boot:</PROMPT> <USERINPUT>linux single</USERINPUT>
+</SCREEN>
+
+<para>
+Flere parametre angives med et mellemrum imellem:
+</para>
+
+<SCREEN>
+<PROMPT>boot:</PROMPT> <USERINPUT>linux single debug</USERINPUT>
+</SCREEN>
+
+<para>
+Disse parametre kan også indsættes permanent i <filename>/etc/lilo.conf</filename>
+så de altid er med og man ikke skal taste dem ind hver gang computeren booter.
+Fra eksemplet om LILO i <xref linkend="lilo"> er der tilføjet to parametre
+med linien <command>append="max_loop=128 quiet"</command>:
+</para>
+
+<screen>
+...
+image=/boot/bzImage
+        label=linux
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+        <userinput>append="max_loop=128 quiet"</userinput>
+...
+</screen>
+
+<para>
+Der er mange parametre og de fleste af dem har til formål at give
+en bestemt type hardware, f.eks. en harddisk, nogle ekstra parametre
+om I/O eller interrupt. Her er en liste af nogle af de mere generelle
+parametre som kan skrives enten på boot-prompten eller i lilo.conf i
+<command>append</command>-linien.
+</para>
+
+<itemizedlist>
+ <listitem>
+  <para><command>console=ttyS0,9600n</command> - få output til skærmen ud på den
+  serielle port. Kommandoen kan bruges til at sende data til et modem eller en
+  seriel skærmterminal. Alternativt til en printer med kommandoen
+  <command>console=lp0</command>.
+  Læs mere i <filename>/usr/src/linux/Documentation/serial-console.txt</filename>.
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>debug</command> - modsat <command>quiet</command>
+  skriver denne parameter om muligt endnu mere information ud under boot.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>init=3</command> - bestemmer i hvilken mode Linux booter.
+  <command>init=3</command> svarer til at Linux booter op i tekstmode,
+  og <command>init=5</command> er boot i grafisk mode. Init-level bestemmes
+  normalt i <filename>/etc/inittab</filename>, men hvis man f.eks. skifter skærmkort
+  og dette ikke virker med den gamle grafik-opsætning bruges denne kommando.
+  <command>init=1</command> starter Linux i single user mode.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>max_loop=128</command> - øger antallet af loop-back
+  devices i Linux. Værdien kan være helt op til 255. Default-værdien er 8.
+  Loop-back bruges f.eks. til at mounte iso-filer:
+  <command>mount -o loop redhat.iso /mnt</command> .
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>panic=5</command> - antal sekunder der skal gå efter en kernel panic
+  før systemet rebooter.
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>quiet</command> - undertrykker de fleste informationslinier
+  Linux skriver ud under boot. Fejl udskrives stadig, men ligegyldig
+  information udskrives ikke. De beskeder der normalt ses, kan efter boot 
+  stadig læses med <command>dmesg</command>.
+  Denne kommando vil typisk være noget man med glæde skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>ro</command> - filsystemer bliver mounted read-only
+  under boot. Herefter kan man foretage systemarbejde på et "sygt" system.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>single</command> - starter Linux i single user-mode
+  hvilket er det samme som <command>init=1</command>.
+  Denne kommando vil nok mest blive tastet ind, men kan også skrives
+  i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+</itemizedlist>
+
+<para>
+Den fulde liste af kerneparametre kan findes på din harddisk:
+<filename>/usr/src/linux/Documentation/kernel-parameters.txt</filename>
+</para>
+
+</sect2><!-- kernelparm -->
+
+</sect1>
+</CHAPTER>
+
+
