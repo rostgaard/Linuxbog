@@ -9,12 +9,12 @@ do
     read -t 1 key
     if [ $key"x" == "Qx" ]
     then
-	break
+        break
     fi
     if [ ! -e $1 ]
     then
-	echo "filen $1 findes ikke!"
-	exit
+        echo "filen $1 findes ikke!"
+        exit
     fi
 # For eksemplets skyld er listningen udført med shell-kommandoer
 # selvom det ville være lettere (og hurtigere) at lave fx:
