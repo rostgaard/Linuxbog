@@ -47,7 +47,7 @@ Der er følgende restriktioner til sprog der kan medtages:
 <li>Sproget skal findes til Linux</li>
 <li>Sproget skal findes som "fri software" (Open Source)</li>
 <li>Sproget skal indeholde kontrol-strukture alá if/for/while/goto</li>
-<li>Sproget skal kunne porteres til en anden CPU-arkitektur</li>
+<li>Sproget skal kunne flyttes til en anden CPU-arkitektur</li>
 </ul>
 
 I listen er der sprog hvor der ikke er eksempler.
