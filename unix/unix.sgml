@@ -2347,7 +2347,7 @@ Emacs og vi beskrevet.
 </sect1>
 
 <sect1 id="Unix-mere">
-<title>Lad mig lære lidt flere Unix/Linux-kommandoer</title>
+<title>Flere Unix-kommandoer</title>
 
 <para>
 I dette appendiks vil vi gennemgå en række Unix/Linux-kommandoer.
@@ -3506,6 +3506,7 @@ installeres.
 </para>
 </sect2>
 
+<!--  Vi skal da ikke undervise folk i at bruge Microsoft Windows her.
 <sect2 id="cygwin">
 <title>Cygwin: Unix på Windows</title>
 <indexterm><primary>Unix på Windows</primary></indexterm>
@@ -3524,7 +3525,8 @@ og alle programmer kan hentes fra
 <ulink url="http://sunsite.org.uk/Mirrors/sourceware.cygnus.com/pub/cygwin/">http://sunsite.org.uk/Mirrors/sourceware.cygnus.com/pub/cygwin/</ulink>.
 </para>
 </sect2>
-</sect1>
+-->
+ </sect1>
 
 <sect1 id="shell-script">
 <title>Shell script</title>
@@ -3704,15 +3706,20 @@ Hello, world
 
 </sect2><!-- shell-flere-kom -->
 
-<sect2 id="shell-var">
-<title>Variabler</title>
-<indexterm><primary>Shell script</primary><secondary>variabler</secondary></indexterm>
-<para>
-I shell script kommer man tit ud for at skulle bruge den samme værdi eller
-tekst flere gange. Her kan man med fordel bruge en variabel til at gemme værdien i.
-Variabelnavne kan både skrives med majuskler og minuskler, men de fleste skriver
-kun variabelnavne med majuskler.
-</para>
+  <sect2 id="shell-var">
+   <title>Variable</title>
+
+   <indexterm>
+    <primary>Shell script</primary>
+    <secondary>variable</secondary>
+   </indexterm>
+
+   <para>
+    I shell script kommer man tit ud for at skulle bruge den samme
+    værdi eller tekst flere gange. Her kan man med fordel bruge en
+    variabel til at gemme værdien i.  Variabelnavne kan både skrives
+    med majuskler og minuskler, men de fleste skriver kun
+    variabelnavne med majuskler.
 
 <programlisting>
 #! /bin/sh
@@ -3720,59 +3727,65 @@ VERSION="0.1.2"
 echo "Dette er version $VERSION af programmet."
 echo $VERSION
 </programlisting>
+   </para>
 
-<para>
-Skal der være bogstaver eller tal lige efter variablen,
-er det nemmest at sætte et par {} omkring.
-Hvis ikke der sættes {} omkring variablen, vil fortolkeren
-opfatte den efterfølgende tekst som en del af variablens navn.
-Alternativt kunne man skrive to linjer, men det kan til
-tider ikke lade sig gøre.
-</para>
+   <para>
+    Skal der være bogstaver eller tal lige efter variablen, er det
+    nemmest at sætte et par {} omkring.  Hvis ikke der sættes {}
+    omkring variablen, vil fortolkeren opfatte den efterfølgende tekst
+    som en del af variablens navn.  Alternativt kunne man skrive to
+    linjer, men det kan til tider ikke lade sig gøre.
 
 <programlisting>
 #! /bin/sh
 VERSION="0.1.2"
 echo "Dette er version ${VERSION}beta af programmet."
 </programlisting>
+   </para>
 
-<para>
-Længden af en streng fås med <emphasis>${#NAVN}</emphasis>.
-</para>
+   <para>
+    Længden af en streng fås med <emphasis>${#NAVN}</emphasis>.
 
 <programlisting>
 #! /bin/sh
 echo "\$PATH indeholder ${#PATH} tegn"
 </programlisting>
+   </para>
 
-<para>
-Har en variabel ikke nogen start-værdi (default),
-kan en start-værdi bruges i stedet, eller den kan
-tildeles variablen.
-I det følgende er både vist <command>${:-}</command> og <command>${:=}</command> .
-</para>
+   <para>
+    Er en variabel ikke nødvendigvis allerede blevet tildelt en værdi,
+    kan man angive en standardværdi
+    (<literal>${VARIABELNAVN:-STANDARDVÆRDI}</literal>) eller tildele
+    den en standardværdi
+    (<literal>${VARIABELNAVN:-STANDARDVÆRDI}</literal>):
 
 <programlisting>
 #! /bin/sh
-# $FLOPPY har ingen værdi nu.
+unset FLOPPY # $FLOPPY har ingen værdi nu.
 echo "Data skrives til ${FLOPPY:-/dev/fd0}"
 echo "\$FLOPPY er stadig tom: '$FLOPPY'"
 echo "Hvis \$FLOPPY er tom, så tilskriv: '${FLOPPY:=/dev/fd0}'"
 echo "Nu har \$FLOPPY en værdi: '$FLOPPY'"
 </programlisting>
+   </para>
 
-<para>
-Og når scriptet køres:
-</para>
+   <para>
+    Og når scriptet køres:
 
 <screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>./hello</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>./hello</userinput>
 Data skrives til /dev/fd0
 $FLOPPY er stadig tom: ''
 Hvis $FLOPPY er tom, så tilskriv: '/dev/fd0'
 Nu har $FLOPPY en værdi: '/dev/fd0'
 </screen>
+   </para>
 
+   <para>
+    Som et mere praktisk eksempel, kan vi skrive et program der enten
+    monterer en diskette fra det første diskettedrev
+    (<filename>/dev/df0</filename>) eller fra det diskettedrev
+    programmet får på kommandolinjen:
 <programlisting>
 #! /bin/sh
 # Et mere praktisk eksempel hvor der enten bruges
@@ -3780,28 +3793,27 @@ Nu har $FLOPPY en værdi: '/dev/fd0'
 # (Du skal selvfølgelig selv slette 'echo')
 echo mount ${1:-/dev/fd0} /mnt/floppy
 </programlisting>
+   </para>
 
-<para>
-Scriptet skal afprøves med og uden parameter:
-</para>
+   <para>
+    Vi afprøver det her både med og uden en kommandolinjeparameter:
 
 <screen>
-<prompt>[tyge@hven ~]$</prompt> <userinput>./hello</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>./hello</userinput>
 mount /dev/fd0 /mnt/floppy
-<prompt>[tyge@hven ~]$</prompt> <userinput>./hello /dev/fd1</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>./hello /dev/fd1</userinput>
 mount /dev/fd1 /mnt/floppy
 </screen>
+   </para>
 
-<para>
-Variable kan splittes og manipuleres på forskellige
-måder med de indbyggede kommandoer.
-Nogle foretrækker de eksterne programmer såsom
-<command>cut</command> og <command>sed</command>,
-men de indbyggede kommandoer kan ofte klare opgaven.
-Skal man have fat i en del af en tekststreng,
-kan dette gøres med ${VAR:&lt;start&gt;:&lt;antal&gt;},
-første tegn starter ved 0 (nul):
-</para>
+   <para>
+    Variable kan splittes og manipuleres på forskellige måder med de
+    indbyggede kommandoer.  Nogle foretrækker de eksterne programmer
+    såsom <command>cut</command> og <command>sed</command>, men de
+    indbyggede kommandoer kan ofte klare opgaven.  Skal man have fat i
+    en del af en tekststreng, kan dette gøres med
+    ${VAR:&lt;start&gt;:&lt;antal&gt;}, første tegn starter ved 0
+    (nul):
 
 <programlisting>
 #! /bin/sh
@@ -3809,12 +3821,12 @@ TEKST=abcdef
 echo "Skriv kun 'bcd': ${TEKST:1:3}"
 echo "Man kan også regne: ${TEKST:1:10-7}"
 </programlisting>
+   </para>
 
-<para>
-Skal en del af en variabel udskiftes med noget andet,
-bruges en substituering.
-Herunder er det de først forekommende 3 tegn 'bcd' der udskiftes med 1 tegn 'X':
-</para>
+   <para>
+    Skal en del af en variabel udskiftes med noget andet, bruges en
+    substituering.  Herunder er det de først forekommende 3 tegn 'bcd'
+    der udskiftes med 1 tegn 'X':
 
 <programlisting>
 #! /bin/sh
@@ -3826,10 +3838,11 @@ echo "Udskift 'bcd' med 'X': ${TEKST/bcd/X}"
 <prompt>[tyge@hven ~]$</prompt> <userinput>./hello</userinput>
 Udskift 'bcd' med 'X': aXefabcdef
 </screen>
+   </para>
 
-<para>
-Skal alle forekomster af et eller flere tegn udskiftes bruges '//':
-</para>
+   <para>
+    Skal alle forekomster af et eller flere tegn udskiftes bruges
+    »//«:
 
 <programlisting>
 #! /bin/sh
@@ -3841,16 +3854,14 @@ echo "Udskift alle 'bcd' med 'X': ${TEKST//bcd/X}"
 <prompt>[tyge@hven ~]$</prompt> <userinput>./hello</userinput>
 Udskift alle 'bcd' med 'X': aXefaXef
 </screen>
+   </para>
 
-<para>
-Den første del af en tekst-streng kan slettes
-ved brug af '#'.
-Den tekst der skal fjernes, kan evt. matches
-ved brug af globbing, på samme måde som man kan
-liste filer med <command>ls</command>: *?[].
-Dette kan fx bruges til at slette den første
-del af hostname.
-</para>
+   <para>
+    Den første del af en tekst-streng kan slettes ved brug af '#'.
+    Den tekst der skal fjernes, kan evt. matches ved brug af globbing,
+    på samme måde som man kan liste filer med <command>ls</command>:
+    *?[].  Dette kan fx bruges til at slette den første del af
+    hostname.
 
 <programlisting>
 #! /bin/sh
@@ -3863,6 +3874,7 @@ echo "Uden maskinnavn: ${HOSTNAME#hven.}"
 Fuldt hostname: hven.sslug.dk
 Uden maskinnavn: sslug.dk
 </screen>
+   </para>
 
 <para>
 Rigtig smart bliver det ved brug af globbing,
