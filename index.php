@@ -127,7 +127,7 @@ function form_filename( $bookname, $format ) {
       first => "linux-",
       last => ".html.tgz"
     ),
-    "PNG" => array(
+    "PNG billeder" => array(
       first => "linux-",
       last => ".png.tgz"
     ),
