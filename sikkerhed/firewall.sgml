@@ -1132,9 +1132,10 @@ http://www.netfilter.org/documentation/index.html#HOWTO</ulink>
 efter Networking Concepts HOWTO.  </para>
 
 <para>
-Senere omtales proxy opsætning med squid, og de mere avancerede
-anvendelser af Network Address Translation, NAT, omtales sidst i
-denne del (<xref linkend="NAT" />).
+De mere avancerede anvendelser af Network Address Translation,
+NAT, omtales sidst i denne del (<xref
+linkend="sikkerhed-grundig-NAT" />).  Derefter omtales proxy
+opsætning med squid.
 </para>
 
 
@@ -2119,11 +2120,14 @@ trafik kan antallet af åbne porte begrænses meget.
 
 <para>
 Her vises en måde at åbne for alle FTP-pakker udefra, som ikke
-forsøger at indlede en konversation med en server. Det er en
-anden måde at specificere, at maskiner indenfor firewallen skal
-have lov til at gøre alt, men alligevel beskyttes de såkaldt
-priviligerede porte i intervallet 1 - 1024.
-
+forsøger at indlede en konversation. Optionen --syn betyder, at
+pakker, som ikkehar syn-flaget (synkroniserings-request) sat,
+skal have lov at passere. Det er en anden måde at specificere, at
+maskiner indenfor firewallen skal have lov til at gøre alt, men
+alligevel beskyttes de såkaldt priviligerede porte i intervallet
+1 - 1024. En angriber kan godt sende en pakke, som ikke har syn
+flaget sat, men det er jo sværere at komme igennem til noget
+sårbart, når man nu ikke kan sende til portnumre under 1024.
 </para>
 
 <para>
@@ -2157,17 +2161,85 @@ til at omdirigere trafikken, en stærk feature, når man vil lave
 en HTML proxy.
 </para>
 
-
 </sect2>
 
+
+
+<sect2 id="sikkerhed-grundig-NAT">
+<title>Source/Destination NAT og omdirigering</title>
+
+<indexterm><primary>NAT</primary></indexterm>
+<para>
+I det følgende ses på henholdsvis source NAT og destination NAT.
+<!-- UPS, gerne lidt mere -->
+</para>
+
+<sect3 id="source-NAT">
+<title>Source NAT</title>
+<indexterm><primary>Source NAT</primary></indexterm>
+
+<para>
+Source NAT er det almindeligste, og er det, som vi hidtil har set
+på <!--TODO reference/--> i forbindelse med i192.168-numre
+klienter bag en firewall. Man kan sige, at vi afbilder source
+adressen plus portnummer som en global (offentlig) IP adresse med
+et andet portnummer.  Derved kan mange lokale maskiner deles om
+et enkelt IP nummer. Teoretisk set kan man løbe tør for portnumre
+på NAT maskinen, og det er der skam også taget højde for, idet
+maskinen simpelthen dropper alle pakker som ikke kan mappes til
+dens range af IP-numre+portnumre.
+</para>
+</sect3>
+
+<sect3 id="destination-nat">
+<title>Destination NAT</title>
+
+<indexterm><primary>Destination NAT</primary></indexterm>
+
+<para>
+Man kan også afbilde destinationsadressen - Destination NAT - så
+folks forespørgsler f.eks. bliver omdirigeret hen til den lokale
+webserver eller til en server pool. 
+</para>
+
+<para>
+For TCP og UDP kan man lave portmapping med iptables, hvor man skifter
+destinationsporten ud. F.eks. kan en klient oprette en forbindelse til
+en web-server på port 80, og NAT-serveren kan afbilde pakkerne til sin
+egen port 3128, hvor der kører en squid. Dette kaldes redirect,
+men er også en form for destination NAT. Resultatet er transparent proxying.
+</para>
+
+<para>Lav destination NAT til ip 1.2.3.4, 1.2.3.5 eller 1.2.3.6</para>
+<programlisting>
+# iptables -t nat -A PREROUTING -i eth1 -j DNAT --to 1.2.3.4-1.2.3.6
+</programlisting>
+
+<para>Lav destinations NAT fra port 80 til den lokale port 3128, hvor squid kører</para>
+<programlisting>
+# iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 \ 
+-j REDIRECT --to-port 3128
+</programlisting>
+
+<para>
+Eksemplerne er taget mere eller mindre direkte fra Linux 2.4 NAT HOWTO, og
+er blot ment som illustration af, hvad man kan med iptables NAT.
+</para>
+
+<para>
+For nærmere beskrivelse, se Linux 2.4 NAT HOWTO på <ulink
+url="http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/index.html">http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/index.html</ulink>
+Se desuden man-siden for iptables.
+</para>
+
+</sect3>
+</sect2>
 
 
 
 <sect2 id="proxy-server">
 <title>Linux som proxy server</title>
 
-<!-- TODO flyt rundt så avanceret NAT kommer herop og bliver en
-selvstændig section2 /-->
 
 <itemizedlist mark="bullet">
 <listitem><para>Squid</para></listitem>
@@ -2402,10 +2474,16 @@ proxy-serveren.
 <indexterm><primary>transparent proxy</primary></indexterm>
 
 <para>
-Man kan lave noget transparent proxy med squid sammen med iptables.
-Kernen skal være oversat med "Transparent proxying". Vi vil ikke
-beskrive det her, men der findes en mini-HOWTO på
-<ulink url="http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html ">http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html </ulink>.
+Man kan lave transparent proxy med squid sammen med iptables.
+Kernen skal være oversat med "Transparent proxying". Se
+<xref linkend="destination-nat"/>
+</para>
+
+<para>
+Der findes også en mini-HOWTO på <ulink
+url="http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html
+">http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html
+</ulink>.
 </para>
 </sect3>
 
@@ -2530,127 +2608,6 @@ HOWTO'en indeholder også referencer til en række gode ressourcer.
 </sect4>
 </sect3>
 
-<sect3 id="NAT">
-<title>Network Address Translation med iptables (Netfilter) i kerne 2.4</title>
-
-<indexterm><primary>NAT</primary></indexterm>
-<para>
-I det følgende ses på henholdsvis source NAT og destination NAT.
-<!-- UPS -->
-</para>
-
-<sect4 id="source-NAT">
-<title>Source NAT</title>
-<indexterm><primary>Source NAT</primary></indexterm>
-
-<para>
-Source NAT er det almindeligste, og er det, som vi hidtil har set
-på <!--TODO reference/--> i forbindelse med i192.168-numre
-klienter bag en firewall. Man kan sige, at vi afbilder source
-adressen plus portnummer som en global (offentlig) IP adresse med
-et andet portnummer.  Derved kan mange lokale maskiner deles om
-et enkelt IP nummer. Teoretisk set kan man løbe tør for portnumre
-på NAT maskinen, og det er der skam også taget højde for, idet
-maskinen simpelthen dropper alle pakker som ikke kan mappes til
-dens range af IP-numre+portnumre.
-</para>
-</sect4>
-
-<sect4 id="Desination-NAT">
-<title>Destination NAT</title>
-<para>
-Man kan også afbilde destinationsadressen - Destination NAT - så
-folks forespørgsler f.eks. bliver omdirigeret hen til den lokale
-webserver eller til en server pool. 
-</para>
-
-<para>
-For TCP og UDP kan man lave portmapping med iptables, hvor man skifter
-destinationsporten ud. F.eks. kan en klient oprette en forbindelse til
-en web-server på port 80, og NAT-serveren kan afbilde pakkerne til sin
-egen port 3128, hvor der kører en squid. Dette kaldes redirect,
-men er også en form for destination NAT. Resultatet er transparent proxying.
-</para>
-</sect4>
-
-<sect4 id="hvordan-NAT">
-<title>Hvordan</title>
-<para>
-For at bruge NAT skal modulet <filename>iptables_nat</filename> være indlæst.
-NAT med iptables laves med "-t nat" option til iptables.
-<emphasis>-t</emphasis> fortæller iptables, at det er NAT-tabellen den skal bruge.
-Til pakkefiltrering bruges filter-tabellen.</para>
-
-<para><emphasis>Kæder:</emphasis> 
-NAT har tre kæder, hvor man kan sætte regler op for pakkerne:</para>
-<itemizedlist mark="bullet">
-  <listitem><para>PREROUTING - Destination NAT</para></listitem>
-  <listitem><para>POSTROUTING - Source NAT</para></listitem>
-  <listitem><para>OUTPUT - Destination NAT fra lokale porte</para></listitem>
-</itemizedlist>
-
-<para>
-<emphasis>Targets:</emphasis> 
-</para>
-<itemizedlist mark="bullet">
-  <listitem><para>SNAT -source NAT</para></listitem>
-  <listitem><para>DNAT - destination NAT</para></listitem>
-  <listitem><para>MASQUERADING - Masquerading på dial-up interface</para></listitem>
-  <listitem><para>REDIRECT - destination NAT til lokal port</para></listitem>
-</itemizedlist>
-
-<para>
-Man kan angive <filename>-p protokol</filename>, og for tcp og udp kan
-man også angive portnummer eller port range. <filename>--to</filename>
-angiver den/de ip-adresse(r) der skal NAT'es til.
-</para>
-</sect4>
-
-<sect4 id="eksempel-masq">
-<title>Eksempler</title>
-<para>Opsætning af IP masquerading med iptables:</para>
-
-<para>Med fast ip-adresse:</para>
-
-<programlisting>
-# iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to 1.2.3.4
-</programlisting>
-
-<para>Med dynamisk ip-adresse:</para>
-<programlisting>
-# iptables -t nat -A POSTROUTING -o ppp0 -j MASQUERADE
-</programlisting>
-
-<para>
-MASQUERADING target er specielt til masquerading med en dynamisk
-tildelt ip-adresse, som en dial-up forbindelse har. Den finder 
-selv ud af det, når ip-adressen på ppp0 skifter. 
-</para>
-
-<para>Lav destination NAT til ip 1.2.3.4, 1.2.3.5 eller 1.2.3.6</para>
-<programlisting>
-# iptables -t nat -A PREROUTING -i eth1 -j DNAT --to 1.2.3.4-1.2.3.6
-</programlisting>
-
-<para>Lav destinations NAT fra port 80 til den lokale port 3128, hvor squid kører</para>
-<programlisting>
-# iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 \ 
--j REDIRECT --to-port 3128
-</programlisting>
-
-<para>
-Eksemplerne er taget mere eller mindre direkte fra Linux 2.4 NAT HOWTO, og
-er blot ment som illustration af, hvad man kan med iptables NAT.
-</para>
-
-<para>
-For nærmere beskrivelse, se Linux 2.4 NAT HOWTO på <ulink
-url="http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/index.html">http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/index.html</ulink>
-Se desuden man-siden for iptables.
-</para>
-
-</sect4>
-</sect3>
 </sect2>
 </sect1>
 
