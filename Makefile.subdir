@@ -109,15 +109,14 @@ $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
 ################################################################################
 
 palmpilot: $(targetname)-$(version).palm.zip
-$(targetname)-$(version).palm.zip: $(sgmlfiler)
+$(targetname)-$(version).palm.zip: $(sgmlfiler) html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):palmpilot"
 	@echo ".........................................."
 ifneq   ("$(plucker)","")
 	rm -f $(targetname)-$(version).palm.zip $(targetname)-$(version).palm.tar.gz
-	$(MAKE) html
 	rm -f palm/*.prc palm/*.pdb
-	(cd palm;plucker-build -v -P . -f $(targetname))
+	(cd palm;plucker-build -v -P . -f $(targetname) `pwd`/home.html)
 	cp ../misc/*.prc palm
 	cp ../misc/*.pdb palm
 	cp ../misc/gpl.txt palm
