@@ -816,18 +816,12 @@ inden du går i gang med <application>Postfix</application>.
 <prompt>[root@linus /root]#</prompt> <userinput>cd /etc/rc.d/init.d</userinput>
 <prompt>[root@linus init.d]#</prompt> <userinput>./sendmail stop</userinput>
 Shutting down sendmail:                [ OK ]
-<prompt>[root@linus init.d]#</prompt> <userinput>rpm -e sendmail</userinput>
+<prompt>[root@linus init.d]#</prompt> <userinput>rpm -e --nodeps sendmail</userinput>
 </screen>
 
 <para>
 Du er nu klar til at downloade og installere
-<application>Postfix</application>.  Idet
-<application>Postfix</application> endnu ikke er et færdigt produkt,
-frigives der jævnligt nye versioner. Du kan finde programmet på <ulink
-url="ftp://sunsite.dk">ftp://sunsite.dk</ulink> i kataloget
-<filename>/mirrors/ftp.redhat.com/pub/contrib/libc6/i386/</filename>.
-Se efter en fil med navnet <filename>postfix-*.i386.rpm</filename> (*
-en en dato-stempling, som ændrer sig løbende).
+<application>Postfix</application>. Find den på <ulink url="http://www.postfix.org/">http://www.postfix.org/</ulink> eller <ulink url="http://rpmfind.net">http://rpmfind.net</ulink>. Se efter en fil kaldet <filename>postfix-*.i386.rpm</filename>.
 </para>
 
 <para>
@@ -841,7 +835,7 @@ Efter du har hentet filen, skal du installere den.
  <secondary>chkconfig, undersøger og indsætter nye funktioner i et runlevel </secondary>
 </indexterm>
 <screen>
-<prompt>[root@linus /root]#</prompt> <userinput>rpm -i postfix-19991231_pl07-1.i386.rpm</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>rpm -i postfix-1.1.7-1.i386.rpm</userinput>
 postfix-script: Warning: Creating missing Postfix pid directory
 postfix-script: Warning: Creating missing incoming directory
 postfix-script: Warning: Creating missing bounce directory
@@ -865,14 +859,27 @@ op, når du kører i runlevel 3 (den sidste kommandolinje).
 </para>
 
 <para>
-Konfigurationen af <application>Postfix</application> sker i filen 
-<filename>/etc/postfix/main.cf</filename>. Som et minimum skal du
-ændre <emphasis>myhostname</emphasis> og <emphasis>mydomain</emphasis> til 
-noget fornuftigt, men ofte er det ikke nødvendigt idet Postfix tager denne
-information fra sendmail.cf.
-Du kan få <application>Postfix</application>
-til at genindlæse en konfiguration ved at udføre kommandoen 
-<command>postfix reload</command> som root.
+Postfix er god til at tilpasse sig til dit system og behøver sjældent
+nogen konfiguration. Du skal dog sikre dig, at kommandoen hostname
+giver det korrekte navn på din maskine:
+</para>
+
+
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>hostname</userinput>
+linus.kongeh.dk
+</screen>
+
+<para>
+Navnet skal eksistere i DNS. 
+</para>
+
+<para>
+Hvis du ikke kan sende email til root@linus.kongeh.dk, så se i
+<filename>/var/log/maillog</filename> eller
+<filename>/var/log/mail/*</filename>. Her skriver postfix hvis der er
+noget galt.
 </para>
 
 <para>
