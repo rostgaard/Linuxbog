@@ -63,7 +63,7 @@ test:
 
 ################################################################################
 # her er det der skal laves
-all: start html pakhtml palmpilot pdf eksempelbackup addsubmitbox stop
+all: start html pakhtml palmpilot pdf eksempelbackup makeonline stop
 
 
 ################################################################################
@@ -161,26 +161,20 @@ palmpilot.clean:
 if BUILD_PAKHTML
 pakhtml: $(targetshortname)/$(targetname)-html-$(version).tar.gz
 
-$(targetshortname)/$(targetname)-html-$(version).tar.gz: html.stamp 
+$(targetshortname)/$(targetname)-html-$(version).tar.gz:
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pakhtml"
 	@echo ".........................................."
-# 	Fjerner et eventuelt eksisterende pakkekatalog
-	rm -Rf $(targetshortname)/
 # 	Roder lidt rundt med en spec fil (todo)
-	@echo %define buildname $(targetshortname) > bog/$(targetname).spec
-	@echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
-	@echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
-	@echo Version: `cat version.sgml` >> bog/$(targetname).spec
-	@echo Release: 1mdk >>  bog/$(targetname).spec
-	cat linuxbog.spec >> bog/$(targetname).spec
-# 	Flytter bog (fra html) til pakkekatalog for at kunne få et korrekt navn ved nedpakning
-	mv bog $(targetshortname)
+	@echo %define buildname $(targetshortname) > $(targetshortname)/$(targetname).spec
+	@echo Name: linuxbog-$(targetshortname) >> $(targetshortname)/$(targetname).spec
+	@echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> $(targetshortname)/$(targetname).spec
+	@echo Version: `cat version.sgml` >> $(targetshortname)/$(targetname).spec
+	@echo Release: 1mdk >>  $(targetshortname)/$(targetname).spec
+	cat linuxbog.spec >> $(targetshortname)/$(targetname).spec
 	(cd ..;tar hczf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
 	(cd ..;tar hczf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
-#	Flytter pakkekatalog tilbage igen
-	mv $(targetshortname) bog 
 # 	Tilsvarende for billeder.
 	mv images $(targetshortname)_images
 	(cd ..;tar hczf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
@@ -198,10 +192,12 @@ pakhtml.clean:
 
 
 ################################################################################
-# ADDSUBMITBOX
+# MAKEONLINE
 ################################################################################
-.PHONE : addsubmitbox
-addsubmitbox: html.stamp
+.PHONY : makeonline
+makeonline: 
+	rm -rf bog/
+	cp -R $(targetshortname) bog/
 if ADD_SUBMITBOX
 	(cd bog && ../../addsubmitbox)
 else !ADD_SUBMITBOX
@@ -220,21 +216,16 @@ html.stamp: $(dep_sgml_filer)
 	@echo ".........................................."
 	@echo "Target $(targetshortname):html"
 	@echo ".........................................."
-	@@echo "Target er HTML i" $(targetshortname)/bog
-	rm -rf $(targetname)/
-#	rm -rf stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
-# TODO: Hvordan fungerer afhængighederne imellem html og pakhtml?
-	rm -rf $(targetname)-*.html.tar.gz bog
+	rm -rf $(targetname)-*.html.tar.gz bog/ $(targetshortname)/
 	@echo '<!ENTITY magic "png">' > magic.sgml
-	rm -rf bog/
-	mkdir bog
 	db2html -V %stylesheet%=linuxbog.css -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
-	cp linuxbog.css bog
-	cp bog/$(targetshortname)-apprevhist.html bog/apprevhist.html
+	mv bog/ $(targetshortname)
+	cp linuxbog.css $(targetshortname)	
+	cp $(targetshortname)/$(targetshortname)-apprevhist.html $(targetshortname)/apprevhist.html
 if USE_SOFTLINKS
-	(cd bog && ln -sf ../images/*.png .)
+	(cd $(targetshortname) && ln -sf ../images/*.png .)
 else !USE_SOFTLINKS
-	cp images/*.png bog
+	cp images/*.png $(targetshortname)
 endif !USE_SOFTLINKS
 if HAVE_PERL_IMAGE_SIZE
 	(cd bog;perl ../misc/insertimagesize)
@@ -255,7 +246,7 @@ html:
 endif !BUILD_HTML
 
 html.clean:	
-	rm -Rf bog/ html.stamp
+	rm -Rf $(targetshortname)/ bog/ html.stamp
 
 
 ################################################################################
