@@ -1,7 +1,7 @@
 # $Id$
 all: Makefiler filer
 
-release : all cvs2html mail
+release : all cvs2html TAR mail
 
 Makefiler:
 	cp Makefile.subdir friheden/Makefile
@@ -44,6 +44,9 @@ clean: Makefiler
 	rm -f sikkerhed/Makefile
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
+
+eksempler:
+	sh program/eksempler/TAR
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
