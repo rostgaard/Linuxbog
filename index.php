@@ -172,7 +172,7 @@ function vistype($type) {
       )
     ),
     "kontorbruger" => array(
-      title => "Linux - Friheden til at bruge kontorprogrammer",
+      title => "Linux - Friheden til at vælge kontorprogrammer",
       comment => "Basal anvendelse af Linux kontorprogrammer",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
