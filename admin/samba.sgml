@@ -1,5 +1,6 @@
 <chapter id="samba"> 
-<!-- Michael Rasmussem mir@miras.org og Lars Madsen m@dsen.net -->
+<!-- Michael Rasmussem mir@miras.org, Lars Madsen m@dsen.net og -->
+<!-- Henrik Grove grove@sslug.dk -->
 <title>Linux som server i Windows-netværk (Samba)</title>
 
 <indexterm>
@@ -15,9 +16,9 @@
 
 
 <para>
-Selv om denne bog handler om Linux, skal man ikke glemme, at
-der findes andre styresystemer. Et af de mere udbredte er Windows -
-herunder wfw/95/98/NT/2000, som alle har indbygget muligheden for at
+Selv om denne bog handler om Linux, skal man ikke glemme, at der findes
+andre styresystemer. Et af de mere udbredte er Windows - herunder
+wfw/95/98/NT/2000, som alle har indbygget muligheden for at
 fungere i netværk. Hvis man allerede har et lokalnet med både Linux- og
 Windows-computere, kan man med fordel kigge nærmere på Samba.
 </para>
@@ -85,19 +86,18 @@ som virker uden de store ændringer.
 </para>
 
 <para>
- Denne standard
-<filename>smb.conf</filename> er desuden meget velkommenteret, hvilket
-yderligere letter tilpasning. Her er et eksempel på en lille
-<filename>/etc/smb.conf</filename>-fil, som ud over at sætte Samba op
-som fil- og printerserver også konfigurerer Samba som domænekontroller.
-</para>
+ Denne standard <filename>smb.conf</filename> er desuden meget
+velkommenteret, hvilket yderligere letter tilpasning. Her er et eksempel
+på en lille <filename>/etc/smb.conf</filename>-fil, som ud over at sætte
+Samba op som fil- og printerserver også konfigurerer Samba som
+domænekontroller.
 
 <indexterm>
  <primary>Samba, Konfigurationsfiler (eksempler) </primary>
  <secondary>/etc/smb.conf [ 1 ]</secondary>
 </indexterm>
 
-<screen>
+<programlisting>
 [global]
    workgroup = hjemme
 
@@ -138,8 +138,8 @@ som fil- og printerserver også konfigurerer Samba som domænekontroller.
    public = no
    writable = no
    create mode = 0700
-
-</screen>
+</programlisting>
+</para>
 
 <para>
 <emphasis>Tip:</emphasis> I Windows 2000 skal man udføre kommandoen
@@ -151,54 +151,101 @@ men derimod til 457 selvom man sætter sin locale til dansk under
 installationen. 
 </para>
 
+<sect2 id="samba-tillidsforhold">
+<title>Tillidsforhold mellem maskinerne</title>
+
 <para>
-For at dine Windows-klienter skal få lov til at logge sig på
+For at dine Windows NT/2000/XP-klienter skal få lov til at logge sig på
 Samba-serveren, skal Samba kende til dem - ikke brugerne, men de
-enkelte maskiner. For at Samba vil vedkende sig en maskine, skal den
-have en Machine Trust Account (MTA), og til dette formål skal man
-benytte kommandoen <command>smbpasswd</command>. Samba skelner mellem
-de enkelte maskiner vha. et Machine ID, som den henter fra den enkelte
-maskine, når den logger på første gang.
+enkelte maskiner. Første gang en maskine tilsluttes genereres et
+ID-nummer for maskinen som serveren skal huske, til dette formål bruger
+Samba såkaldte "Machine Trust Accounts" (MTA). Med samba består sådanne
+af to dele:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+En sambakonto, sædvanligvis gemt i din
+<filename>smbpasswd</filename>-fil. 
+</para>
+</listitem>
+<listitem>
+<para>
+En tilhørende Unix-konto, sædvanligvis gemt i
+<filename>/etc/passwd</filename>.
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+Der er flere måder at klare oprettelsen af disse på:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+Man kan oprette begge dele direkte på serveren, før man slutter
+arbejdsstationerne til domænet. Det åbner en mulighed for at andre kan
+nå at tilslutte en maskine og "stjæle" kontoen. Hvis man kan overskue
+netværket eller stoler på de folk der har adgang til bygningen er dette
+næppe et problem.
+</para>
+</listitem>
+<listitem>
+<para>
+Man kan få samba til at oprette det hele undervejs. Det kræver at root
+er oprettet som sambabruger (bemærk at root skal være den første bruger
+i <filename>smbpasswd</filename>-filen), men til daglig kan man jo
+deaktivere kontoen. Brug for en sikkerheds skyld også forskellige
+kodeord for root som unix- og sambabruger.  Derudover kræver det lidt
+arbejde at få lavet et script der kan klare oprettelsen af Unixkontoen.
+</para>
+</listitem>
+<listitem>
+<para>
+Man kan oprette Unixkontoen på forhånd, og lade samba oprette
+sambakontoen undervejs. Det kræver at root er oprettet som sambabruger
+(bemærk at root skal være den første bruger i
+<filename>smbpasswd</filename>-filen), men til daglig kan man jo
+deaktivere kontoen. Brug for en sikkerheds skyld også forskellige
+kodeord for root som unix- og sambabruger. Til gengæld slipper man for
+at skriver et script til oprettelse af Unixkontoen og for at oprette
+sambakontoerne ved håndkraft.
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+Hvis windowsmaskinen hedder WS1 (hvor det sættes afhænger lidt af
+windowsversionen, men det er noget i retning af "kontrolpanel/netværk"),
+skal Unix- og sambakontoen hedde WS1$. Dette dollartegn fortæller
+serveren at der er tale om en maskinkonto.
 </para>
 
 <para>
-Sådan tildeles vores Windows-klient en MTA:
-Først skal vi i filen <filename>/etc/passwd</filename> tilføje vores
-Windows-klient med det navn, som vi har givet den. Se hvordan
-senere. Dette gøres på følgende måde:
+Da forfatteren ikke kan se nogen god grund til ikke at oprette
+unixkontoerne på serveren, vil vi ikke gennemgå metode 2. Lige meget
+hvilken af de to andre metoder du vil benytte skal du læse næste afsnit,
+og hvis du vil benytte metode 1 skal du også læse det næste igen.
 </para>
+
+<sect3 id="smaba-unixkontoen">
+<title>Oprettelse af unixkontoen</title>
 
 <para>
-Åbn <filename>/etc/passwd</filename> i en teksteditor, f.eks
-<command>pico</command>, og skriv følgende:
+Unixkontoen skal oprettes i filen <filename>/etc/passwd</filename>.
+Dette kan enten gøres med en kommando i stil med <command>useradd -u 801
+-g 800 -c "Arbejdsstation 1" -h /dev/null -s /bin/false ws1$ </command>,
+eller ved at indsætte en linie (brug din favoriteditor) à la:
+<programlisting>
+ws1$:801:800:Arbejdsstation 1:/dev/null:/bin/false
+</programlisting>
 </para>
+</sect3>
 
-<screen>
-WS1$:*:801:800:Arbejdsstation 1:/dev/null:/bin/false
-WS2$:*:802:800:Arbejdsstation 2:/dev/null:/bin/false
-			.
-			.
-			Osv.	
-</screen>
-
-
-<para>
-Bemærk: Der <emphasis>skal</emphasis> oprettes en tilsvarende MTA for
-hver Windows-klient, og hvis man f.eks opgraderer sit styresystem,
-eller ændrer computernavn, skal denne procedure gentages.
-</para>
-
-<para>
-Vær opmærksom på, at WS1$ og WS2$ i eksemplet her medfører, at dine
-windows-maskiner skal have navnet WS1, WS2 osv., ellers genkendes de ikke.
-Dette navn sættes op via "kontrolpanel"->"netværk".
-</para>
-
-<para>
-På Windows maskinen skal der ikke indgå et "$" tegn i navnet, det tjener
-alene til at vise Linux, at der er tale om en maskinkonto i modsætning til
-en brugerkonto.
-</para>
+<sect3 id="samba-sambakontoen">
+<title>Oprettelse af sambakontoen</title>
 
 <indexterm>
  <primary>smbpasswd</primary>
@@ -216,26 +263,29 @@ en brugerkonto.
 Når vi har tilføjet vores Windows-klient i
 <filename>/etc/passwd</filename>, skal vi få Samba til at generere
 vores MTA. Det gøres med kommandoen
-</para>
-
 <screen>
 <prompt>[root@linus /root]#</prompt> <USERINPUT>smbpasswd -a -m WS1</USERINPUT>
 </screen>
+</para>
 
 <para>
 Når man har afviklet <command>smbpasswd</command>, vil man kunne se
 følgende linje i filen <filename>/etc/samba/smbpasswd</filename> (hvor
 noget af linjen er forkortet):
-</para>
-
-<screen>
+<programlisting>
 WS1$:801:996FE367692....05AA1BE70:[W    ]:LCT-397A3E6E
-</screen>
+</programlisting>
+</para>
 
 <para>
 N.B. Det kan være at <filename>smbpasswd</filename> ligger i
 <filename>/etc/</filename>. 
 </para>
+</sect3>
+</sect2>
+
+<sect2 id="samba-andet">
+<title>Andre ting om samba</title>
 
 <para>
 Som noget nyt i version 2.x.x har man nu mulighed for at sætte Samba op som
@@ -273,7 +323,7 @@ http://www.linuxworld.com/linuxworld/lw-1998-10/lw-10-samba.html</ulink>)
  <primary>Samba, Konfigurering </primary>
  <secondary>Swat (Samba Web Administration Tool)</secondary>
 </indexterm>
-
+</sect2>
 </sect1>
 
 <sect1 id="swat">
