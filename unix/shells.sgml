@@ -548,95 +548,116 @@ alias sa="ssh-add ~/.ssh/id_dsa"
    </para>
   </sect2>
 
-<sect2 id="unix-tcsh">
-<title>Tcsh</title>
+  <sect2 id="unix-tcsh">
+   <title>Tcsh</title>
 
-<para>
-Tcsh er en af de meget populære kommando-fortolkere i UNIX-verdenen,
-da den tilbyder de samme gode muligheder som bash, og er
-tilbagekompatibel med den aldrende csh-kommandofortolker, der typisk
-findes på alle UNIX-maskiner.
-</para>
-
-<para>
-Tcsh er god på mange måder. Man kan ligesom
-bla. <command>bash</command> få ekspanderet filnavne, hvis blot man
-skriver starten af dem og derefter trykker på tabulator-knappen. Og i
-modsætning til de andre Bash kan man let selv justere
-filnavnsekspansionen, så det kun er de relevante filer der bliver
-foreslået.
-</para>
+   <para>
+    Tcsh er en af de meget populære kommandofortolkere i
+    unix-verdenen, da den giver stort set alle de samme muligheder som
+    bash (omend med en anden syntaks), er bagudkompatibel med den
+    aldrende csh-kommandofortolker, og har en lidt mere raffineret
+    kommando- og filnavnsekspansionsfunktion, som man som bruger selv
+    kan indstille så det kun er de relevante filer der bliver
+    foreslået.  Et eksempel:
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>ls -al /etc/sh&lt;TAB&gt;</userinput>
--rw-r--r--    1 root     root          185 sep 28  2000 /etc/shells
+<prompt>[anne@linus ~]$ </prompt><userinput>ls</userinput>
+linuxbog-unix.ps
+linuxbog-unix-html.tar.gz
+<prompt>[anne@linus ~]$ </prompt><userinput>gv l&lt;tab&gt;</userinput>
 </screen>
 
-<para>
-I eksemplet er vist hvordan man ikke behøver at skrive hele filnavnet. 
-Skulle der være flere filer som passer med starten af det man skriver, vil
-alle muligheder blive vist og man må fylde lidt flere bogstaver på før 
-kommandofortolkeren automatisk kan gætte resten. Tricket med at trykke
-tabulator kan anvendes hele tiden.
-</para>
-
-<para>
-Skulle man få brug for at udføre en af de forrige kommandoer igen, da
-trykker man blot på pil op (og ned) for at gå igennem de forrige mange
-kommandoer. Det er i praksis en funktion man anvender meget. Anvend
-Ctrl-a og Ctrl-e for at gå til starten hhv. slutningen af linien.
-</para>
-
-<para>
-Tcsh har også en smart mulighed for at kun vise de filer som passer med
-det program man først har skrevet. Står man i et katalog hvor der er flere
-hundrede filer, man kun en Postscript-fil, da kan man nemt få valgt den
-til visning i programmet <command>gv</command>.
-</para>
+    bliver til
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>gv TAB&gt;</userinput>
-eps/ folder.ps ekstra/
+linuxbog-unix.ps
+<prompt>[anne@linus ~]$ </prompt><userinput>gv linuxbog-unix.ps</userinput>
 </screen>
 
-<para>
-Selvom der er masser af andre filer, så vil <command>tcsh</command>
-filtrere filerne intelligent, da den ved at første argument efter
-<command>gv</command> kun kan være en Postscript-fil - evt. i et af
-underkatalogerne. Tcsh kan sættes op til at genkende alle programmers
-filtyper. I bogens eksempler på <ulink url="http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh">http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh</ulink> kan findes <filename>dot.complete.tcsh</filename>, som viser hvordan
-mange programmer er tilpasset.
-</para>
+    hvis brugeren (eller systemadministratoren) har indstillet
+    <command>tcsh</command> så den går ud fra at programmet
+    <command>gv</command> kun bruger filer der ender på
+    "<filename>.ps</filename>".  Lige netop denne indstilling laves
+    med linien:
 
-<para>
-Aliaser er nemme at sætte op i Tcsh. Opret filen <filename>~/.alias</filename> og indskriv
-aliaser efter skemaet <literal>alias ALIAS-NAVN "kommando"</literal>. Hvis man senere vil se 
-hvilke aliaser man anvender kan <command>alias</command> vise dem alle.
-</para>
+<programlisting>
+complete gv       'p/*/f:*.{ps,pdf,eps}/'
+</programlisting>
 
-<para>
-Tcsh vil ved login læse og køre filen
-<filename>~/.login</filename> en gang. For hver gang
-en terminal startes op vil filen <filename>~/.tcshrc</filename>
-læses og udføres. På denne måde kan den personlige opsætning
-styres.
-</para>
+    (filnavne der ender på "<filename>.pdf</filename>" og
+    "<filename>.eps</filename>" kan også bruges).  Som bruger føjer
+    man den til filen "<filename>~/.tcshrc</filename>", mens man som
+    systemadministrator kan føje den til
+    "<filename>/etc/csh.cshrc</filname>", hvorved alle der bruger Tcsh
+    vil få fornøjelse af det.
+   </para>
 
-<para>
-Variable sættes i Tcsh med <command>setenv VARIABELNAVN
-VÆRDI</command>.  Bemærk at der bare er et mellemrum mellem variablens
-navn og den værdi den skal tildeles. Man kan se om en variabel er
-defineret ved at se på indholdet af
-<literal>${?VARIABELNAVN}</literal>:
+   <para>
+    Selvom der er masser af andre filer, så vil
+    <command>tcsh</command> filtrere filerne intelligent, da den ved
+    at første argument efter <command>gv</command> kun kan være en
+    Postscript-fil - evt. i et af underkatalogerne. Tcsh kan sættes op
+    til at genkende alle programmers filtyper. I bogens eksempler på
+    <ulink
+    url="http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh">http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh</ulink>
+    kan findes <filename>dot.complete.tcsh</filename>, som viser
+    hvordan mange programmer er tilpasset.
+   </para>
+
+   <para>
+    I eksemplet er vist hvordan man ikke behøver at skrive hele
+    filnavnet.  Skulle der være flere filer som passer med starten af
+    det man skriver, vil alle muligheder blive vist og man må fylde
+    lidt flere bogstaver på før kommandofortolkeren automatisk kan
+    gætte resten.  Tricket med at trykke tabulator kan anvendes hele
+    tiden.
+   </para>
+
+   <para>
+    Skulle man få brug for at udføre en af de forrige kommandoer igen,
+    da trykker man blot på pil op (eller ned) for at gå igennem de
+    forrige mange kommandoer. Det er i praksis en funktion man
+    anvender meget. Hvis man skal til starten eller slutningen på den
+    kommando man er ved at skrive bruger man henholdsvis Ctrl-A og
+    Ctrl-E.
+   </para>
+
+   <para>
+    Hvis man vil lave genveje til kommandoer med aliaser kan man sætte
+    dem ind i filen "<filename>~/.tcshrc</filename>", der bliver læst
+    når Tcsh starter.  Skemaet er <literal>alias navn
+    "kommando"</literal>.  Hvis man senere vil se hvilke aliaser man
+    har defineret bruger man kommandoen <command>alias</command>.
+   </para>
+
+   <para>
+    Hvis <command>tcsh</command> startes som login-kommandofortolker
+    vil den (udover nogle systemopsætningsfiler) læse filerne
+    "<filename>~/.tcshrc</filename>",
+    "<filename>~/.history</filename>", "<filename>~/.login</filename>"
+    og "<filename>~/.cshdirs</filename>".  Hvis
+    <command>tcsh</command> ikke startes som login-kommandofortolker
+    vil den (udover nogle systemopsætningsfiler) kun læse
+    "<filename>~/.tcshrc</filename>".  Det er altså i filen
+    "<filename>~/.tcshrc</filename>" man som bruger kan vælge sin
+    personlige opsætning af Tcsh.
+   </para>
+
+   <para>
+    Systemvariable sættes i Tcsh med <command>setenv VARIABELNAVN
+    VÆRDI</command>.  Bemærk at der bare er et mellemrum mellem
+    variablens navn og den værdi den skal tildeles. Man kan se om en
+    variabel er defineret ved at se på indholdet af
+    <literal>${?VARIABELNAVN}</literal>:
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>echo ${?PRINTER}</userinput>
 0
 </screen>
-1 betyder at variablen er defineret og 0 at den ikke er defineret.
-</para>
+    1 betyder at variablen er defineret og 0 at den ikke er defineret.
+   </para>
 
-<para>
-Til sammenligning kan vi så prøve at tildele variablen
+   <para>
+    Til sammenligning kan vi så prøve at tildele variablen
 <literal>PRINTER</literal> navnet på vores foretrukne printer:
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>setenv PRINTER lp1</userinput>
@@ -645,21 +666,23 @@ lp1
 <prompt>[anne@linus ~]$ </prompt><userinput>env | grep PRINTER</userinput>
 PRINTER=lp1
 </screen>
-</para>
+   </para>
 
-<para>
-Tcsh har i øvrigt et lille irriterende problem - har man installeret
-et nyt program kan dette ikke findes i den nuværende
-kommando-fortolker, da denne har "cashet" information om programmer da
-denne startede op. Vil man slette cashen kan man anvende kommandoen
-<command>rehash</command>.
-</para>
+   <para>
+    Tcsh har i øvrigt et lille irritationsmoment. &ndash; Har man
+    installeret et nyt program kan dette ikke umiddelbart køres fra en
+    allerede aktiv kommandofortolker, da denne har "cashet"
+    information om programmer da denne startede op.  Vil man opdatere
+    cashen bruger man kommandoen <command>rehash</command>.
+   </para>
 
-<para>
-På <ulink url="http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh">http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh</ulink>
-kan findes et forslag til følgende <filename>~/.tcshrc</filename>.
-På samme URL kan findes et forslag til <filename>~/.login</filename>.
-</para>
+   <para>
+    På <ulink
+    url="http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh">http://www.sslug.dk/linuxbog/unix/eksempler/shells/tcsh</ulink>
+    kan findes et forslag til følgende <filename>~/.tcshrc</filename>.
+    På samme URL kan findes et forslag til
+    <filename>~/.login</filename>.
+   </para>
 
 <example id="eks-dot-tcshrc">
 <title>Eksempel på en .tcshrc-fil</title>
@@ -699,25 +722,25 @@ if ( -e ~/.complete.tcsh ) source ~/.complete.tcsh
 </screen>
 </example>
 
-<para>
-Flere forslag til at skrive en <filename>~/.tcshrc</filename> kan findes på
-<ulink url="http://tcshrc.sourceforge.net">http://tcshrc.sourceforge.net</ulink>.
-</para>
+   <para>
+    Flere forslag til at skrive en <filename>~/.tcshrc</filename> kan
+    findes på <ulink
+    url="http://tcshrc.sourceforge.net">http://tcshrc.sourceforge.net</ulink>.
+   </para>
+  </sect2>
 
-</sect2>
+  <sect2 id="unix-ksh">
+   <title>Korn Shell (ksh)</title>
 
-<sect2 id="unix-ksh">
-<title>Korn Shell (ksh)</title>
-
-<para>
-En af den halv-gamle kommando-fortolkere med et ret avancerete
-scripting-muligheder er Korn Shell (ksh). Denne følger typisk med de
-kommercielle UNIX-varianter, men ikke med Linux. Der er udviklet en
-erstatning for <command>ksh</command> til Linux med navnet
-<command>pdksh</command> (Public Domain ksh). Denne anvendes dog ikke
-ret mange steder.
-</para>
-</sect2>
+   <para>
+    En af de halv-gamle kommando-fortolkere med et ret avancerete
+    scripting-muligheder er Korn Shell (ksh). Denne følger typisk med
+    de kommercielle UNIX-varianter, men ikke med Linux. Der er
+    udviklet en erstatning for <command>ksh</command> til Linux med
+    navnet <command>pdksh</command> (Public Domain ksh). Denne
+    anvendes dog ikke ret mange steder.
+   </para>
+  </sect2>
 
 <sect2 id="unix-zsh">
 <title>Zsh</title>
