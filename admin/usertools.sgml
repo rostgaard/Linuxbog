@@ -100,26 +100,26 @@ kernen understøtter officielt, men det er allerede bebudet at i kerne
 
 <para>
 ReiserFS er en anden type filsystem end den der kendes fra Linux'
-ext2, og DOS/Windows FAT-drev, idet ReiserFS er et journaliserende
+ext2, og DOS/Windows' FAT-drev, idet ReiserFS er et journaliserende
 filsystem. Det betyder, at alle filer til en hver tid er
 opdaterede. Det betyder, at hvis din computer går ned pga. en
-strømafbrydelse vil du ikke miste data. Endvidere betyder det, at de
-partitioner som er formateret ved hjælp af ReiserFS ikke skal tjekkes
+strømafbrydelse, vil du ikke miste data. Endvidere betyder det, at de
+partitioner som er formateret ved hjælp af ReiserFS, ikke skal tjekkes
 ved opstart. Hvis du har meget store harddiske vil det betyde at du
 får en meget kortere opstartstid. Dette kan være vigtigt, hvis din
-computer er server med f.eks. 100 GB harddisk (ikke ualmindelig i den
+computer er server med f.eks. 100 GB harddisk (ikke ualmindeligt i den
 virkelige serververden).
 </para>
 
 <para>
 Tidligere versioner af ReiserFS ville ikke virke med Lilo boot fra en
-ReiserFS-partion.  Dette kunne løses ved at lægge
+ReiserFS-partition.  Dette kunne løses ved at lægge
 <filename>/boot</filename> på en ext2-partition, og hvis
 <filename>/boot</filename> er en lille selvstændig partition, kan
-<filename>/</filename>-partitionen være ReiserFS-formatteret.
+<filename>/</filename>-partitionen være ReiserFS-formateret.
 I de nyeste versioner af ReiserFS (november 2000) bør denne
 begrænsning være væk, blot man monterer boot-partitionen med et ekstra
-flag; "notail":
+flag, "<literal>notail</literal>":
 </para>
 
 <screen>
@@ -130,7 +130,7 @@ flag; "notail":
 <para>
 ReiserFS følger med Mandrake (fra version 7.1) og SuSE (fra
 6.4) og under disse distributioner er det let at vælge
-formattering med ReiserFS istedet for ext2 under
+formatering med ReiserFS i stedet for ext2 under
 installation.
 Men selv under andre distributioner er det ikke
 svært. Du skal sikre dig, at kernen understøtter ReiserFS som
@@ -138,7 +138,7 @@ filsystem. Måske skal du omkonfigurere din kerne (se også <xref
 linkend="kernelcompile">). Det kan godt betale sig at få ReiserFS
 oversat som et kernemodul. Modulsystemet vil typisk selv finde ud af,
 at modulet skal bruges, dvs. når du begynder at bruge kommandoer som
-involvere en ReiserFS-baseret partition, vil modulet automatisk blive
+involverer en ReiserFS-baseret partition, vil modulet automatisk blive
 indlæst.
 </para>
 
@@ -153,7 +153,7 @@ oprettet.
 
 <para>
 <screen>
-  <prompt>[root@linus root]#</prompt><userinput>mkreiserfs /dev/hda5</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>mkreiserfs /dev/hda5</userinput>
 <-----------MKREISERFS, 1999----------->
 ReiserFS version 3.5.18
 Block size 4096 bytes
@@ -161,7 +161,7 @@ Block count 325576
 First 16 blocks skipped
 Super block is in 16
 Bitmap blocks are : 
-	17, 32768, 65536, 98304, 131072, 163840, 196608, 229376, 262144, 294912
+   17, 32768, 65536, 98304, 131072, 163840, 196608, 229376, 262144, 294912
 Journal size 8192 (blocks 18-8210 of device 0x3:0x5)
 Root block 8211
 Used 8221 blocks
@@ -215,45 +215,45 @@ under opstart.
 <indexterm><primary>/etc/rc.d</primary></indexterm>
 <indexterm><primary>Start i grafisk tilstand</primary></indexterm>
 <PARA>
-Et runlevel er den tilstand, som systemet kører i. Computeren kan køre i
-tilstande så som "ved at starte systemet", "enkelbruger system",
+Et runlevel er den tilstand, som systemet kører i. Computeren kan køre
+i tilstande så som "ved at starte systemet", "enkelbrugersystem",
 "flerbrugersystem", "genstarter system" og "slukker computeren". Hvis
 man f.eks. vil kopiere <filename>/home</filename> kataloget over på en
-større harddisk fordi ens brugere har for mange MP3 filer liggende. <!--Se
-xref linkend="tar-flytning").--> Så er det nødvendigt, at sikre at
-der ikke er nogen brugere, der har filer åbne, mens man kopierer, idet
-der så kan opstå en fejl i kopieringen. Dette kan man sikre sig ved at
-skifte til Enkelt bruger tilstand, der svarer lidt til fejlsikret
-tilstand i Windows. Når man er færdig med system arbejdet, hopper man
-tilbage til "flerbrugersystem" og folk har igen adgang til
-computeren, og vil ikke bemærke at deres filer pludseligt ligger på et
-andet drev.
+større harddisk fordi ens brugere har for mange MP3 filer liggende.
+Så er det nødvendigt at sikre, at der ikke er nogen brugere, der har
+filer åbne, mens man kopierer, idet der så kan opstå en fejl i
+kopieringen. Dette kan man sikre sig ved at skifte til
+enkeltbruger-tilstand, der svarer lidt til fejlsikret tilstand i
+Windows. Når man er færdig med systemarbejdet, hopper man tilbage til
+"flerbrugersystem" og folk har igen adgang til computeren, og vil ikke
+bemærke at deres filer pludseligt ligger på et andet drev.
 </para>
 
 <para>
-Computeren kører en masse services for brugerne, dette kunne f.eks. være
-netværksforbindelse (network) og forskellige netværks relaterede
-services som f.eks. e-post (sendmail/routed/named/snmpd/portmap), adgang
-til filsystemer på andre computere (nfsfs), mulighed for at udskrive
-til printer (lpd) og lydkort (sound). Men mens Linux er ved at starte
-har man ikke brug for at have adgang til printeren, så printer
-servicen startes først når systemet går ind i "flerbrugersystem"
-tilstanden.  Når man er ved at genstarte eller slukke computeren,
-slukker man igen for printer forbindelsen. Når computeren skiftes fra
-en tilstand til en anden tilstand, udføres en række scripts der
-bestemmer hvad for services der skal tændes og slukkes. Hvilke
-scripts, der kører ved skift til f.eks.  runlevel 3 (Flerbrugersystem),
-bestemmes af, hvilke scripts der er placeret i kataloget
+Computeren kører en masse services for brugerne, dette kunne
+f.eks. være netværksforbindelse (network) og forskellige
+netværksrelaterede services som f.eks. e-post
+(sendmail/routed/named/snmpd/portmap), adgang til filsystemer på andre
+computere (nfsfs), mulighed for at udskrive til printer (lpd) og
+lydkort (sound). Men mens Linux er ved at starte, har man ikke brug
+for at have adgang til printeren, så printer-servicen startes først
+når systemet går ind i "flerbrugersystem" tilstanden.  Når man er ved
+at genstarte eller slukke computeren, slukker man igen for
+printer-forbindelsen. Når computeren skiftes fra en tilstand til en
+anden tilstand, udføres en række scripts der bestemmer hvad for
+services der skal tændes og slukkes. Hvilke scripts der kører ved
+skift til f.eks.  runlevel 3 (Flerbrugersystem), bestemmes af, hvilke
+scripts der er placeret i kataloget
 <filename>/etc/rc.d/rc3.d</filename> (Corel og Debian har tilsvarende
 <filename>/etc/rc3.d</filename>).
 </PARA>
 
 <SCREEN>
 <PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls /etc/rc.d/rc3.d</USERINPUT>
-K30mcserv    K40snmpd	  K55routed    K75gated     K80random	 K95nfsfs
-K96pcmcia    K97network   S01kerneld   S30syslog    S40atd	 S40crond
-S40portmap   S50inet	  S55named     S60lpd	    S75keytable  S80sendmail
-S85sound     S99local
+K30mcserv  K40snmpd   K55routed  K75gated  K80random   K95nfsfs
+K96pcmcia  K97network S01kerneld S30syslog S40atd      S40crond
+S40portmap S50inet    S55named   S60lpd    S75keytable S80sendmail
+S85sound   S99local
 </SCREEN>
 
 <PARA>
@@ -265,8 +265,8 @@ til tilstand 3 (Flerbrugersystem). Tallet bestemmer rækkefølgen
 servicen dræbes efter <filename>K30mcserv</filename>. Hver fil i dette
 katalog er i virkeligheden en lænke til et script i
 <filename>/etc/rc.d/init.d/</filename> og "S50inet" betyder i
-virkeligheden at "/etc/rd.d/init.d/inetd start" udføres, hvilke
-starter alle internet services.
+virkeligheden at "/etc/rd.d/init.d/inetd start" udføres, hvilket
+starter alle net-services.
 </PARA>
 
 <PARA>
@@ -280,7 +280,7 @@ N 3
 </SCREEN>
 
 <PARA>
-3-tallet viser dig, at din pc er i runlevel 3. Det er muligt
+3-tallet viser dig, at din PC er i runlevel 3. Det er muligt
 at skifte runlevel uden at lukke computeren ned, men N'et
 viser, at der intet tidligere runlevel er, dvs. computeren har været i
 runlevel 3, siden den blev tændt. Du skifter runlevel
@@ -347,14 +347,18 @@ bruge kommandoen <command>reboot</command> (genstart), skiftes der til runlevel
 <PARA>
 Enkeltbrugertilstand er et meget nyttigt runlevel. Hvis det sker, at du
 kommer til at konfigurere et eller andet forkert en dag - ja, det vil ske
-på et eller andet tidspunkt! - og din pc låser under
+på et eller andet tidspunkt! - og din PC låser under
 opstarten, kan du starte den op i Enkeltbrugertilstand og foretage diverse
 rettelser.
 </PARA>
 
+<indexterm><primary>/etc/inittab</primary></indexterm>
+<indexterm><primary>runlevel</primary></indexterm>
+<indexterm><primary>opstart af Linux</primary></indexterm>
+
 <PARA>
-I filen <FILENAME>/etc/inittab</FILENAME> angives hvilket
-runlevel, der er den forvalgte runlevel. Vil du ændre at man f.eks. starter
+I filen <FILENAME>/etc/inittab</FILENAME> angives, hvilket
+runlevel der er det forvalgte runlevel. Vil du ændre at man f.eks. starter
 i runlevel 5 og ikke 3, så skal du ændre linien
 </para>
 
@@ -394,6 +398,7 @@ Som vi viste i <xref linkend="runlevel">, er runlevel 0 det samme som
 at lukke ned. En generel, men lidt besværlig måde at lukke en UNIX-maskine
 på, er at skifte til root og skrive <userinput>init 0</userinput>
 eller <userinput>telinit 0</userinput>
+</para>
 
 <SCREEN>
 <PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su -</USERINPUT>
@@ -401,8 +406,11 @@ Passwd: <USERINPUT>hemlig</USERINPUT>
 <PROMPT>[root@linus /root]# init 0</PROMPT>
 </SCREEN>
 
+<indexterm><primary>Ctrl-Alt-Delete</primary></indexterm>
+
+<para>
 Det er dog nemmere at stoppe den grafiske brugerflade med en
-<command>exit</command> til tekst-login konsoller (evt. kan
+<command>exit</command> i en tekst-login konsol (evt. kan
 "Ctrl-Alt-Backspace" bruges) og så trykke
 "Ctrl-Alt-Delete", når du er i en tekstkonsol. 
 </para>
@@ -411,30 +419,37 @@ Det er dog nemmere at stoppe den grafiske brugerflade med en
 Du skal dog en gang for alle lave en ændring, så "Ctrl-Alt-Delete"
 kommer til at medføre at Linux lukkes ned. Ændres intet, genstarter
 systemet (og du vil nok her synes, at det er sjovt, at det minder om
-den mest kendte DOS kommando).  For at få maskinen til at stoppe (kaldes
-Halt), skal du ændre i <FILENAME>/etc/inittab</FILENAME>
+den mest kendte DOS-kommando).  For at få maskinen til at stoppe
+kaldes <command>/sbin/halt</command>, og skal du ændre i
+<FILENAME>/etc/inittab</FILENAME>
+</para>
 
 <SCREEN>
 # Trap CTRL-ALT-DELETE
 ca::ctrlaltdel:/sbin/shutdown -t3 -r now
 </SCREEN>
 
+<para>
 så der kommer til at stå
+</para>
 
 <SCREEN>
 # Trap CTRL-ALT-DELETE
 ca::ctrlaltdel:/sbin/shutdown -t3 -h now
 </SCREEN>
 
+<para>
 Du kan selvfølgelig være fræk, så maskinen slet ikke kan stoppes fra
 tastaturet med "Ctrl-Alt-Delete", f.eks. kan du
 ændre <FILENAME>/etc/inittab</FILENAME> til
+</para>
 
 <SCREEN>
 # Trap CTRL-ALT-DELETE
 ca::ctrlaltdel:echo "No reboot for you my friend!\n"
 </SCREEN>
 
+<para>
 Dette er uhyre praktisk, hvis din maskine står et sted, hvor der er
 mange pilfingre, f.eks. edb-lokalet på en skole!
 </PARA>
@@ -490,13 +505,13 @@ tekst for maskiner, der er direkte på Internettet. Det er alt for usikkert.
 <indexterm><primary>Cron</primary><secondary>crontab</secondary></indexterm>
 <para>
 Crontab er et smart system til automatisk at køre programmer på givne
-tidspunkter, såsom daglig backup. Det er en standarddel af et UNIX
-system og er derfor altid med i Linux.
+tidspunkter, såsom daglig backup. Det er en standarddel af et
+UNIX-system og er derfor altid med i Linux.
 </para>
 
 <para>
 Man kan få kørt vilkårlige programmer på vilkårlige tidspunkter,
-f.eks. hvert minut, time, dag, ugedag eller månedsdag.  I filen
+f.eks. hvert minut, hver time, hver dag, ugedag eller månedsdag.  I filen
 <filename>/etc/crontab</filename> retter man normalt ikke, men denne
 fil viser, at der køres jobs hver time fra
 <filename>/etc/cron.hourly</filename> til tilsvarende hver dag, uge og
@@ -509,7 +524,7 @@ kommandoen <command>crontab ~/.crontab</command>.
 </para>
 
 <para>
-Syntaksen for alle disse crontab filer er den samme: En kommando per linje
+Syntaksen for alle disse crontab-filer er den samme: En kommando per linje
 og i rækkefølge fra venstre mod højre, minut (0-59), time (0-23),
 månedsdag (0-31), måned (0-12), ugedag (0-7, hvor 0 og 7 begge er søndag)
 og endelig den kommando du vil have udført. Hvert felt adskilles af et
@@ -573,7 +588,7 @@ efter installationen, men under alle omstændigheder
 starte op i Linux igen! Opstartsdisketten kan fremstilles efter
 installeringen med Linux-kommandoen
 <command>mkbootdisk</command>. Husk at have en formateret diskette
-parat. Disketten skal være formatteret 'unconditional', så der ikke
+parat. Disketten skal være formateret 'unconditional', så der ikke
 ligger information skjult på den, for eksempel <command>FORMAT A:
 /U</command> i en DOS-prompt eller Linux-kommandoen
 <command>fdformat</command>. Det er vigtigt, at disketten er 100% fri
@@ -717,8 +732,8 @@ kopiere 512 byte fra starten af Linux-partitionen
 </screen>
 
 <para>
-Har du ikke adgang til den DOS-partition, hvor du starter op fra (eller er
-det NTFS formatteret), kan du i stedet kopiere filen ud på en
+Har du ikke adgang til den DOS-partition, hvor du starter op fra
+(eller er den NTFS-formateret), kan du i stedet kopiere filen ud på en
 diskette med brug af <command>mcopy</command>.
 </para>
 
@@ -757,13 +772,14 @@ Linux-cdrommen hedder filen <filename>/doc/HOWTO/mini/LILO</filename>
 <sect2 id="hvad-er-raid">
 <title>Hvad er RAID?</title>
 <para>
-RAID er en metode til at slå flere diske sammen til en volume, det
-kan gøres for at opnå et større brugerdrev eller for at højne
-sikkerheden ved redundans.
+RAID er en metode til at slå flere diske sammen til en
+<emphasis>volume</emphasis> (dvs. en logisk disk); det kan gøres for
+at opnå et større brugerdrev eller for at højne sikkerheden ved
+redundans.
 </para>
 
 <para>
-Derfor er der flere måder at kombinere diske til et RAID og man har
+Derfor er der flere måder at kombinere diske til et RAID, og man har
 derfor vedtaget nogle RAID-levels.
 </para>
 </sect2>
@@ -772,8 +788,8 @@ derfor vedtaget nogle RAID-levels.
 <title>Forskel mellem hardware- og software-RAID</title>
 
 <para>
-RAID kan lave hardwaremæssigt eller softwaremæssigt, det sikreste
-er via. hardware eller med andre ord en RAID-kontroller.
+RAID kan laves hardware- eller software-mæssigt, det sikreste
+er via hardware eller med andre ord en RAID-controller.
 </para>
 
 <sect3 id="Hardwareraid">
@@ -789,9 +805,9 @@ BIOS.
 </para>
 
 <para>
-Ulempen er et disse kort som regel er dyre at anskaffe og ofte
-benytter sig af de noget dyrere scsi-diske. Med andre ord en
-RAID-kontroller er ofte "bare" en avanceret scsi-kontroller.
+Ulempen er at disse kort som regel er dyre at anskaffe og ofte
+benytter sig af de noget dyrere scsi-diske. Med andre ord: En
+RAID-controller er ofte "bare" en avanceret scsi-controller.
 </para>
 </sect3>
 
@@ -819,13 +835,13 @@ det lidt besværligt.
 <secondary>spejling</secondary></indexterm>
 
 <para>
-Et disk spejl er hvis man ønsker 2 diske som en logisk enhed,
+Et disk-spejl er hvis man ønsker 2 diske som en logisk enhed,
 hvor begge diske indeholder samme data. Sikkerheden er her at hvis en
 disk står af, så kører den anden videre.
 </para>
 
 <para>
-Hvis man ønsker yderligere sikkerhed kan man benytte en ekstra
+Hvis man ønsker yderligere sikkerhed, kan man benytte en ekstra
 sparedisk som vil kunne erstatte en nedbrudt disk i spejlet, på den
 måde undværer man kun sikkerheden i den tid som det tager
 RAID-softwaren at opbygge et nyt spejl på sparedisken.
@@ -836,27 +852,30 @@ RAID-softwaren at opbygge et nyt spejl på sparedisken.
 
 <itemizedlist mark="bullet" spacing="compact">
 <listitem><para>
-  Start i singleusermode - (<command>linux s</command> ved opstart eller
-  <command>init 1</command>)
+Start i singleusermode - (<command>linux s</command> ved opstart eller
+<command>init 1</command>).
 </para></listitem>
+
 <listitem><para>
-  Opret partition med fdisk på begge diske, filsystemet skal være
-  (Linux RAID autodetect) og skriv devicenummeret ned.
+Opret partition med fdisk på begge diske, filsystemet skal være
+(Linux RAID autodetect), og skriv devicenummeret ned.
 </para></listitem>
+
 <listitem><para>
-  Opret en <filename>/etc/raidtab</filename> fil, men indhold som
-  kunne se således ud:</para>
- <screen>
-raiddev              /dev/md0
-raid-level                  1
-nr-raid-disks               2
-chunk-size                  8
-persistent-superblock       1
-nr-spare-disks      	    0
+Opret en <filename>/etc/raidtab</filename> fil, med indhold som
+kunne se således ud:</para>
+
+<screen>
+raiddev               /dev/md0
+raid-level                   1
+nr-raid-disks                2
+chunk-size                   8
+persistent-superblock        1
+nr-spare-disks               0
     device           /dev/sdc1
-    raid-disk     	    0
+    raid-disk                0
     device           /dev/sdd1
-    raid-disk     	    1         
+    raid-disk                1         
 </screen>
 </listitem>
 
@@ -923,11 +942,11 @@ raid-level                  linear
 nr-raid-disks               2
 chunk-size                  8
 persistent-superblock       1
-nr-spare-disks      	    0
+nr-spare-disks              0
     device           /dev/sdc1
-    raid-disk     	    0
+    raid-disk               0
     device           /dev/sdd1
-    raid-disk     	    1         
+    raid-disk               1         
 </screen>
 </sect2>
 
@@ -939,7 +958,7 @@ nr-spare-disks      	    0
 <para>
 Det er muligt at tilføje og fjerne diske fra RAID-systemet medens systemet
 kører. Det kan være en god ting, hvis filsystemet af en eller anden
-grund er gået i stykker på den ene af diskene. Det kan ske
+grund er gået i stykker på den ene af diskene. Det kan
 ske uden, at disken rent fysisk har fejlet.
 </para>
 
@@ -948,7 +967,7 @@ ske uden, at disken rent fysisk har fejlet.
 </para>
 
 <para>
-eks. fjern disk <filename>/dev/hdd1</filename> fra RAID-systemet
+F.eks. fjern disk <filename>/dev/hdd1</filename> fra RAID-systemet:
 </para>
 
 <screen>
@@ -964,7 +983,7 @@ Nu kan man arbejde på disken med <command>fdisk</command>
 </para>
 
 <para>
-Disken som er blevet reparttioneret kan tages i brug således
+Disken som er blevet repartioneret, kan tages i brug således:
 </para>
 
 <screen>
@@ -972,9 +991,9 @@ Disken som er blevet reparttioneret kan tages i brug således
 </screen>
 
 <para>
-RAID-systemet vil automatisk blive opdateret og et evt. spejl vil blive
+RAID-systemet vil automatisk blive opdateret, og et evt. spejl vil blive
 genopbygget medens produktionen kører, performancenedgangen er lille
-selv ved IDE diske.
+selv ved IDE-diske.
 </para>
 
 </sect2>
