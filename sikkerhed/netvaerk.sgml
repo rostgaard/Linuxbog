@@ -1,12 +1,18 @@
 <!-- $Id$ -->
 <chapter id="remote-login">
-<title>Remote login og netværksaflytning</title>
-<indexterm><primary>Remote login</primary></indexterm>
-<indexterm><primary>Netværksaflytning</primary></indexterm>
+ <title>Remote login og netværksaflytning</title>
 
-<para>
-En af de store styrker ved en Linux (UNIX) maskine er, at
-man kan administrere den fra en anden maskine via netværk. For at være
+ <indexterm>
+  <primary>remote login</primary>
+ </indexterm>
+
+ <indexterm>
+  <primary>netværksaflytning</primary>
+ </indexterm>
+
+ <para>
+  En af de store styrker ved et Linux-system (eller et andet Unix-system)
+  er, at man kan administrere den fra en anden maskine via netværk. For at være
 kompatibel med alle andre UNIX varianter følger de gode gamle værktøjer 
 telnet og ftp med i Linux-distributionerne, og de er meget anvendte 
 til fjernadministration. Vi vil i dette kapitel se på, hvorfor 
@@ -20,11 +26,12 @@ Meget af det, der beskrives i artiklen, gælder ikke blot for Linux, men
 også for andre UNIX'er.
 </para>
 
-<sect1 id="usikker-nettrafik">
-<title>Nem men usikker netværkstrafik</title>
-<para>
-Fra en Linux-maskine kan man nemt logge ind på en anden Linux-maskine
-og køre programmer, endog grafiske programmer. Dermed kan man køre
+ <sect1 id="usikker-nettrafik">
+  <title>Nem men usikker netværkstrafik</title>
+
+  <para>
+   Fra en Linux-maskine kan man nemt logge ind på en anden Linux-maskine
+   og køre programmer, endog grafiske programmer. Dermed kan man køre
 tunge programmer på en stærk server og få vist resultater på en anden 
 (måske langsommere) maskine. 
 </para>
@@ -60,10 +67,10 @@ bohr benytter dens display.  Dette gøres ved at føje bohr til
 listen over godkendte hosts med kommandoen xhost:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>xhost + bohr</userinput>
 bohr being added to access control list 
-</SCREEN>
+</screen>
 
 <para>Dermed vil grafiske programmer fra bohr vil blive accepteret af
 hven. Udelades maskinnavnet, betyder det, at alle maskiner kan vise
@@ -75,7 +82,7 @@ en dårlig ide.
 Lad os nu logge ind på bohr med telnet,
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>telnet bohr</userinput>
 Trying 192.168.0.2...
 Connected to bohr.herne.dk.
@@ -84,7 +91,7 @@ Debian GNU/Linux 2.1 bohr.herne.dk
 
 bohr login: tyge
 Password:
-</SCREEN>
+</screen>
 
 <para>
 Efter at have skrevet loginnavn og password på bohr maskinen får
@@ -98,9 +105,9 @@ vise sig på hven' skærm er det nødvendigt at sætte DISPLAY
 environment variablen:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>export DISPLAY=hven:0.0</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Mange X-programmer kan dog også kaldes med "-display" som option. 
@@ -112,14 +119,14 @@ bohr. Programmet kører på bohr, men
 alt grafik vises på hven, og programmet styres fra hven. 
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>xload -display hven:0.0 -geometry 60x60 -nolabel &amp;</userinput>
-</SCREEN>
+</screen>
 
-<FIGURE ID="xload-fig" FLOAT="1">
-<TITLE>xload</TITLE>
-<GRAPHIC FILEREF="xload.&magic;"  SCALE="40"></GRAPHIC>
-</FIGURE>  
+<figure id="xload-fig" FLOAT="1">
+<title>xload</title>
+<graphic fileref="xload.&magic;"  SCALE="40"></GRAPHIC>
+</figure>  
 
 <para>
 Problemet er ikke at du nu kan kalde grafik op på en anden skærm end
@@ -184,17 +191,17 @@ Sniffit skal køres som root.
 <para>
 Lad os antage, at den ondsindede "nottingham" (192.168.0.3) lytter med på, 
 hvad vi laver mellem "hven" (192.168.0.1) og "bohr" (192.168.0.2).
-Programmet sniffit startes  i interactive mode med angivelse af
+Programmet sniffit startes  i interaktiv modus med angivelse af
 hvilket netværks-interface, der skal lyttes på: 
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@nottingham root]# </prompt><userinput> sniffit -F eth0 -i</userinput> 
-</SCREEN>
+</screen>
 
 <para>
 hvor eth0 betyder første ethernet kort i maskinen, og i betyder
-interactive mode. Ud kommer nedenstående billede, hvor man ser, at
+interaktiv modus. Ud kommer nedenstående billede, hvor man ser, at
 maskinen med netværksadresse 192.168.0.1 (hven) har oprettet en
 forbindelse til port 23 på maskinen med netværksadresse 192.168.0.2
 (bohr). Port 23 er den port, telnet lytter på. Port 3211, som man
@@ -212,10 +219,10 @@ at dette program nemt kan sættes til at dumpe samhørende loginnavne og
 passwords ned i en fil over en periode, indtil der er gevinst. 
 </para>
 
-<FIGURE ID="sniffit2-fig" FLOAT="1">
-<TITLE>Sniffit</TITLE>
-<GRAPHIC FILEREF="sniffit2.&magic;"  SCALE="40"></GRAPHIC>
-</FIGURE>  
+<figure id="sniffit2-fig" FLOAT="1">
+<title>Sniffit</title>
+<graphic fileref="sniffit2.&magic;"  SCALE="40"></GRAPHIC>
+</figure>  
 
 
 <para>
@@ -250,9 +257,9 @@ ankommer til "bohr" (192.168.0.2), og man kan nemt se,
 hvad der sker.
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@nottingham root]# </prompt><userinput> sniffit -t192.168.0.2 -a -F eth0</userinput>
-</SCREEN>
+</screen>
 
 <programlisting>
 Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1299-192.168.0.2.21
@@ -307,28 +314,28 @@ ind direkte fra hven til bohr og køre kommandoen "df" (som viser
 hvor fyldte dine diske er).
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>rsh bohr df</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Nu prøver vi at køre sniffit på en rlogin session for at se, hvad man kan se.
 På maskinen "nottingham" kører vi sniffit:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@nottingham root]# </prompt><userinput>sniffit -x -s192.168.0.1 -a -F eth0</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Vi logger ind fra hven til bohr med kommandoen:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>rlogin bohr</userinput>
 Password: qwe123
 $ 
-</SCREEN>
+</screen>
 
 <para>
 hvor password'et naturligvis ikke kan ses på skærmen, når man taster det ind.
@@ -429,9 +436,9 @@ skrevet meget anvendt. Alternativt kan remote copy
 <filename>.emacs</filename> fra hven til bohr, sker dette med
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>rcp .emacs bohr:</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Sikkerhedsmæssigt er <command>rcp</command> på linje med
@@ -524,17 +531,17 @@ slette dem (og skælde brugeren ud).  Hvis brugerne har hjemmekataloger
 under <FILENAME>/home/</FILENAME>, så kan dette gøres med
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@hven root]# </prompt><userinput>find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print;</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Hvis man samtidigt vil slette de fundne .rhosts filer kan man anvende
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@hven root]# </prompt><userinput>find /home/* -maxdepth 1 -name <FILENAME>.rhosts</FILENAME> -print -exec rm {} \;</userinput>
-</SCREEN>
+</screen>
 
 
 <para>
@@ -570,10 +577,10 @@ Her i <ulink url="http://www.userfriendly.org/cartoons/archives/97dec/19971212.h
 aflytte netværkstrafikken i forsvarsministeriet...
 </para>
 
-<FIGURE ID="uf16x122-fig" FLOAT="1">
-<TITLE>User Friendly</TITLE>
-<GRAPHIC FILEREF="uf16x122.&magic;"  SCALE="40"></GRAPHIC>
-</FIGURE>  
+<figure id="uf16x122-fig" FLOAT="1">
+<title>User Friendly</title>
+<graphic fileref="uf16x122.&magic;"  SCALE="40"></GRAPHIC>
+</figure>  
 
 <para>
 Fortsættelsen kan findes på <ulink url="http://www.userfriendly.org/cartoons/archives/97dec/19971216.html">http://www.userfriendly.org/cartoons/archives/97dec/19971216.html</ulink> :-)
@@ -951,7 +958,7 @@ kommet filer tre steder. (1) /etc/ssh, (2) /etc/init.d/, (3)
 
 
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ls -al /etc/ssh/*</userinput>
 -rw-r--r-- 1 root root  932 okt  6 00:09 ssh_config
 -rw------- 1 root root  668 okt 11 01:33 ssh_host_dsa_key
@@ -959,7 +966,7 @@ kommet filer tre steder. (1) /etc/ssh, (2) /etc/init.d/, (3)
 -rw------- 1 root root  529 okt 11 01:33 ssh_host_key
 -rw-r--r-- 1 root root  333 okt 11 01:33 ssh_host_key.pub
 -rw------- 1 root root 1194 okt  6 00:09 sshd_config      
-</SCREEN>
+</screen>
 
 <para>
 Filerne <filename>/etc/ssh/*</filename> er konfigurationsfiler, der styrer
@@ -993,11 +1000,11 @@ Hvis sshd er startet op, er alt klar til at kommunikere sikkert,
 også over usikre netværk. Start med at skrive
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ssh bohr</userinput>
 Host key not found from the list of known hosts.
 Are you sure you want to continue connecting (yes/no)?          
-</SCREEN>
+</screen>
 
 <para>
 Første gang du kobler til en fremmed maskine, der ligeledes har fået
@@ -1025,9 +1032,9 @@ sammen som nævnt ovenfor.
 <indexterm><primary>ssh</primary><secondary>config-fil</secondary></indexterm>
 
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ssh -2 tuck@bohr</userinput>
-</SCREEN>
+</screen>
 
 <para>
 I dette eksempel tvinges OpenSSH til at anvende SSH version 2, og 
@@ -1061,10 +1068,10 @@ copy) eller beder systemadministratoren at lægge filen ind hvis du
 ikke kan få adgang.
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>cd ~/.ssh</userinput>
 <prompt>[tyge@hven .ssh]$ </prompt><userinput>scp id_dsa.pub bohr:authorized_keys2</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Nu skal du lave den sidste opsætning på bohr. Du laver kataloget
@@ -1077,14 +1084,14 @@ klog, men det er også nødvendig for at din offentlige nøgle
 </para>
 
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ssh bohr</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>mkdir ~/.ssh</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>mv authorized_keys ~/.ssh</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>chmod go-w ~</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>chmod -R go-rwx .ssh</userinput>
 <prompt>[tyge@bohr tyge]$ </prompt><userinput>exit</userinput>
-</SCREEN>
+</screen>
 </sect2>
 
 <sect2 id="krypteret-data">
@@ -1095,10 +1102,10 @@ frygte for netværkssikkerheden logge ind på bohr. F.eks. kan du
 starte et grafik program såsom "xload" ved at skrive
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ssh bohr xload</userinput>
 Enter passphrase for RSA key 'tyge@bohr': V1 hANDLER me spaghett1
-</SCREEN>
+</screen>
 
 <para>
 Du blev nu mødt af noget nyt igen, idet du skulle skrive din
@@ -1121,9 +1128,9 @@ Skal du kopiere en fil fra hven til bohr, skriver du
 </indexterm>
 <indexterm><primary>scp</primary></indexterm>
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>scp LOKALT_FILNAVN bohr:FJERN_FILNAVN</userinput>
-</SCREEN>
+</screen>
 
 <indexterm><primary>sftp</primary></indexterm>
 <indexterm><primary>scp</primary></indexterm>
@@ -1142,6 +1149,14 @@ få endnu nemmere adgang til de andre maskiner ved, at du en
 gang for alle i den X session, du har igang, giver din passphrase.
 </para>
 
+ <indexterm>
+  <primary>SSH-nøgler</primary>
+  <secondary>huske</secondary>
+ <indexterm>
+
+ <indexterm>
+  <primary>huske SSH-nøgler</primary>
+ <indexterm>
 
 <indexterm>
  <primary>ssh-add</primary>
@@ -1162,11 +1177,11 @@ gang for alle i den X session, du har igang, giver din passphrase.
 </indexterm>
 
 
-<SCREEN>
+<screen>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ssh-agent bash</userinput>
 <prompt>[tyge@hven ~]$ </prompt><userinput>ssh-add ~/.ssh/id_dsa</userinput>
 Enter passphrase for /home/pto/.ssh/id_dsa:
-</SCREEN>
+</screen>
 
 <para>
 Derefter kan du med ssh fra den terminal logge ind og ud af "bohr" 
@@ -1216,10 +1231,10 @@ af vilkårlige og almindelige Linux-kommandoer - i dette tilfælde "ls
 -al /home".
 </para>
 
-<FIGURE ID="sniffit3-fig" FLOAT="1">
-<TITLE>Sniffit</TITLE>
-<GRAPHIC FILEREF="sniffit3.&magic;"  SCALE="40"></GRAPHIC>
-</FIGURE>  
+<figure id="sniffit3-fig" FLOAT="1">
+<title>Sniffit</title>
+<graphic fileref="sniffit3.&magic;"  SCALE="40"></GRAPHIC>
+</figure>  
 
 <para>
 Endelig kan det nævnes at følgende link giver en god gennemgang af
