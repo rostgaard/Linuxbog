@@ -4231,13 +4231,13 @@ Alle shell kommandoer man kan udfører på kommando-linjen,
 kan udføres i et shell script.
 Først skrives shell-fortolkeren og kommandoen i en fil, dernæst skal filen gøres eksekverbar.
 Kommandoen skal skrives i en fil, og denne kan så efterfølgende køres med en fortolker.
-Et simpelt eksempel er udskrivning af "Hello, world!".
+Et simpelt eksempel er udskrivning af "Hello, world".
 På kommando-linjen skrives blot:
 </para>
 
 <screen>
-<prompt>[tyge@hven ~]$ echo "Hello, world!"</prompt>
-Hello, world!
+<prompt>[tyge@hven ~]$ echo "Hello, world"</prompt>
+Hello, world
 </screen>
 
 <para>
@@ -4245,7 +4245,7 @@ I shell-scriptet skal der så blot stå det samme.
 </para>
 
 <programlisting>
-echo "Hello, world!"
+echo "Hello, world"
 </programlisting>
 
 <para>
@@ -4256,7 +4256,7 @@ Her vælger vi at bruge den simple shell, der blot hedder <command>sh</command>.
 
 <screen>
 <prompt>[tyge@hven ~]$ sh hello</prompt>
-Hello, world!
+Hello, world
 </screen>
 
 <para>
@@ -4270,7 +4270,7 @@ Fortolkeren <emphasis>skal</emphasis> skrives på første linje i filen.
 <programlisting>
 #! /bin/sh
 # Filnavn: hello (denne linje er en kommentar)
-echo "Hello, world!"
+echo "Hello, world"
 </programlisting>
 
 <para>
@@ -4297,7 +4297,7 @@ filnavnet når scriptet skal køres.
 
 <screen>
 <prompt>[tyge@hven ~]$ ./hello</prompt>
-Hello, world!
+Hello, world
 </screen>
 
 </sect2><!-- shell-hello -->
@@ -4313,9 +4313,9 @@ ved at angive et ; imellem kommandoerne.
 </para>
 
 <screen>
-<prompt>[tyge@hven ~]$ echo "Hello, world!" ; echo "Hej, verden!"</prompt>
-Hello, world!
-Hej, verden!
+<prompt>[tyge@hven ~]$ echo "Hello, world" ; echo "Hej, verden"</prompt>
+Hello, world
+Hej, verden
 </screen>
 
 <para>
@@ -4324,7 +4324,7 @@ I et shell-script kan dette så enten skrives som:
 
 <programlisting>
 #! /bin/sh
-echo "Hello, world!" ; echo "Hej, verden!"
+echo "Hello, world" ; echo "Hej, verden"
 </programlisting>
 
 <para>
@@ -4333,15 +4333,15 @@ eller med en ny linje imellem hver kommando:
 
 <programlisting>
 #! /bin/sh
-echo "Hello, world!"
-echo "Hej, verden!"
+echo "Hello, world"
+echo "Hej, verden"
 </programlisting>
 
 <para>
 Bemærk at <emphasis>;</emphasis> blot betyder det samme som en ny linje
 med en ny kommando.
 I de følgende eksempler vil ; blive brugt flittigt, men det er egentlig
-kun for at få scriptet til at se pænere ud ud og blive mere læseligt.
+kun for at få scriptet til at se pænere ud og blive mere læseligt.
 </para>
 
 <para>
@@ -4355,7 +4355,7 @@ eller andet tegn efterfølgende.
 <programlisting>
 #! /bin/sh
 echo "Hello, " \
- "world!"
+ "world"
 </programlisting>
 
 <para>
@@ -4369,13 +4369,13 @@ der bliver udført.
 <programlisting>
 #! /bin/sh
 set -x
-echo "Hello, world!"
+echo "Hello, world"
 </programlisting>
 
 <screen>
 <prompt>[tyge@hven ~]$ ./hello</prompt>
-+ echo 'Hello, world!'
-Hello, world!
++ echo 'Hello, world'
+Hello, world
 </screen>
 
 
@@ -4387,6 +4387,8 @@ Hello, world!
 <para>
 I shell script kommer man tit ud for at skulle bruge den samme værdi eller
 tekst flere gange. Her kan man med fordel bruge en variabel til at gemme værdien i.
+Variabelnavne kan både skrives med majuskler og minuskler, men de fleste skriver
+kun variabelnavne med majuskler.
 </para>
 
 <programlisting>
@@ -4620,11 +4622,79 @@ for FIL in *.gif; do
 done
 </programlisting>
 
+<para>
+Og kør scriptet:
+</para>
+
 <screen>
 <prompt>[tyge@hven ~]$ ./hello</prompt>
 Konverterer otto.gif til otto.jpg
 Konverterer axel.gif til axel.jpg
 </screen>
+
+<para>
+Skal man splitte en tekststreng der er adskildt af et tegn,
+kan det gøres på flere måder.
+Nogle vil nok foretrække den mere behændige kommando
+<command>cut</command>, men det kan gøres direkte
+med de indbyggede kommandoer i shell.
+I det forgående er beskrevet hvordan ${X#*.} kan slette
+starten af en tekst der matcher <emphasis>#*.</emphasis>.
+Kommandoen ${X%%.*} sletter den sidste del der matcher
+<emphasis>%%.*</emphasis>.
+Hvis disse to regler kombineres lidt, kan tekststrengen
+splittes ved fx tegnet punktum.
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ echo "Første del: ${HOSTNAME%%.*}"</prompt>
+Første del: hven
+<prompt>[tyge@hven ~]$ echo "Resten: ${HOSTNAME#*.}"</prompt>
+Resten: sslug.dk
+</screen>
+
+<para>
+Nu mangler vi så blot at gå ind i en løkke,
+indtil alle dele adskildt af '.' er skrevet ud.
+Til det formål skal vi bruge kommandoen
+<emphasis>while</emphasis>, hvilket vi kommer tilbage til.
+Ved det sidste element i listen går det galt,
+for da er der ikke noget punktum tilbage der kan slettes.
+Derfor kan løkken stoppes når både <emphasis>REST</emphasis>
+og <emphasis>DEL</emphasis> er ens.
+Sådan kan det gøres:
+</para>
+
+<programlisting>
+#! /bin/sh
+REST=$HOSTNAME
+DEL=""
+while [ "$REST" != "$DEL" ]; do
+        echo "Rest: '$REST'"
+        DEL=${REST%%.*}  # slet bagfra til sidste forkomne punktum
+        REST=${REST#*.}  # slet frem til og med første punktum
+        echo "Del : '$DEL'"
+done
+</programlisting>
+
+<para>
+Og kør scriptet:
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ ./hello</prompt>
+Rest: 'hven.sslug.dk'
+Del : 'hven'
+Rest: 'sslug.dk'
+Del : 'sslug'
+Rest: 'dk'
+Del : 'dk'
+</screen>
+
+<para>
+Hvis du lige fjerne den linje der skriver $REST ud,
+så er det nok noget nær det du gerne vil have.
+</para>
 
 <para>
 Læs mere om streng-manipulering med
@@ -5255,7 +5325,7 @@ Mumle let N=1+$NUM
 <programlisting>
 (( N=1 ))
 N=1
-
+echo "Antal filer: $(( N+2 ))"
 (( N += 1))
 let N += 1
 
