@@ -1265,13 +1265,18 @@ tilsvarende navn=.. felt. I perl vil dette svare til %data{'navn'} hvor "navn"
 ikke findes i hashen og den returnere "", så det er ikke noget stort
 problem.</para>
 
-<para>En typisk problem kan være at data fra en webformular kan bruges som
-filnavn til at gemme information, og derfor overskrive filer der ikke burde
-overskrives, det bør derfor altid checkes om filen findes i forvejen, og hvad
-der så skal ske. Istedet for et filnavn kan programmet måske snydes til at
-anvende en pipe istedet "|program", det betyder at det programmet tror at det
-gemmer i en fil bliver brugt som input i en pipe til at udføre en arbitrær
-kommando.</para>
+<para>
+ En typisk problem kan være at data fra en webformular kan bruges som
+ filnavn til at gemme information, og derfor overskrive filer der ikke burde
+ overskrives, det bør derfor altid checkes om filen findes i forvejen, og hvad
+ der så skal ske. I stedet for et filnavn kan programmet måske snydes til at
+ anvende en kanal (engelsk "pipe"). For eksempel betyder
+ <filename>|program</filename> at mens programmet tror det skriver til en fil,
+ skriver det i virkeligheden til en kanal, der leder dataene videre til
+ programmet <command>program</command>. På denne måde kan man altså udefra
+ komme til at køre en vilkårlig kommando på systemet, hvis kanal-tegnet (|)
+ ikke bliver fjernet fra filnavne.
+</para>
 
 <para>Det kan også være farligt at udskrive for meget information om den server
 som programmet kører på, siden at den type information kan misbruges af hackere.
@@ -1518,7 +1523,7 @@ normale Perl-programmer er at Perl-programmer løbende udskriver print bufferen t
 webserveren, mens FastCGI-programmer kun returnere data når de afsluttes, eller
 hvis bufferen flushes med $request->Flush().</para>
 
-<para>Hvis man ændrer Perl-koden, og prøver programmet igen skal man være opmærksom
+<para>Hvis man ændrer kildeteksten, og prøver programmet igen skal man være opmærksom
 på at man kan fælde et antal af gamle fcgi-programmer, der må dræbes manuelt med
 "kill &lt;pid>". FastCGI-programmer kan også laves i C og Tcl se <ulink url="http://www.fastcgi.com">http://www.fastcgi.com</ulink> for mere
 dokumentation om protokollen og hvordan den anvendes.</para>
