@@ -605,14 +605,28 @@ Et alternativ til telnet er stelnet, som står for secure telnet. Programmet
 baserer sig på SSL (Secure Sockets Layer), som er en måde at lave 
 krypterering af datatrafikken. Kombinationen af stelnet og SSL er ikke så 
 udbredt som SSH, og det er ikke så nemt at sætte op som SSH. 
-Programmet stelnet kan findes på <ulink url="http://www.quick.com.au/ftp/pub/sjg">http://www.quick.com.au/ftp/pub/sjg</ulink>,
+Programmet stelnet kan findes på 
+<ulink url="http://www.crufty.net/ftp/pub/sjg/">
+http://www.crufty.net/ftp/pub/sjg/</ulink>
 og selve krypteringslaget SSL til Linux kan findes på <ulink
-url="http://www.psy.uq.oz.au/~ftp/Crypto/">http://www.psy.uq.oz.au/~ftp/Crypto/</ulink>. Denne sidste URL har også en hel del dokumentation.
+url="http://www.psy.uq.oz.au/~ftp/Crypto/">
+http://www.psy.uq.oz.au/~ftp/Crypto/</ulink>.
+Denne sidste URL har også en hel del dokumentation.
+</para>
+
+<para>
+Forhistorien er, at den gamle U.S. version af telnet
+allerede supporterede TELOPT_AUTHENTICATION og TELOPT_ENCRYPTION,
+men alle spor af krypteringskoden er fjernet fra den
+internationalt udbredte og anvendte telnet-kode.
 </para>
 
 <para>
 Et andet alternativ til telnet og ftp, som er på vej, er SRP. Se mere
-om SRP på <ulink url="http://srp.stanford.edu/srp">http://srp.stanford.edu/srp</ulink>.</para>
+om SRP på 
+<ulink url="http://srp.stanford.edu/">
+http://srp.stanford.edu/</ulink>.
+</para>
 
 <para>
 Det, der umiddelbart i dag er det bedste valg som erstatning for
@@ -624,32 +638,44 @@ SSH har bl.a. den store fordel fremfor stelnet, at grafiske vinduer
 </para>
 
 <para>
-Det er et reelt problem, at den tilsvarende kommecielle SSH ikke er
+Det er et reelt problem, at den oprindelige kommercielle SSH ikke er
 <ulink url="http://www.opensource.org/">Open Source</ulink>, og derfor er
 der startet et GNU-projekt under navnet PSST for at genskrive koden.
 Du kan finde mere information om dette på <ulink
 url="http://www.net.lut.ac.uk/psst">http://www.net.lut.ac.uk/psst</ulink>.
 PSST's hjemmeside bør følges fra tid til anden, men status i øjeblikket
-(december 2000) er, at man er stadig igang med at implementere, og derfor
-ikke kan garantere for at koden virker, eller at den er sikker. Status er
-ikke ændret meget det sidste års tid...
+(April 2003) er en fungerende version 1.5.1, og den siges at
+fungere sammen med OpenSSH. LSH kører kun ssh-protokol version 2,
+men roser sig af at have god kryptering og bedre random-generator
+for maskiner uden /dev/random. For at køre sammen med ssh kræves
+nogle scripts, fordi filformater for nøglefiler ikke er det
+samme.
 </para>
 
 <para>
 En anden implementation af SSH-protokollen er OpenSSH,
-som er fri og er lavet af OpenBSD-folkene.  Den er allerede er
-lagt ind i OpenBSD-distributionen, der har ry for at være særdeles
-sikker. OpenSSH er ligeledes at finde i de fleste nyere Linux-distributioner.
-Hjemmesiden for OpenSSH er 
+som er fri og er lavet af OpenBSD-folkene. Et separat hold
+programmører sørger for at lave en version for andre platforme,
+den portable version.  OpenSSH er allerede lagt ind i
+OpenBSD-distributionen, der har ry for at være særdeles
+sikker. OpenSSH er ligeledes at finde i de fleste
+Linux-distributioner.  Hjemmesiden for OpenSSH er 
 <ulink url="http://www.openssh.com/">http://www.openssh.com/</ulink>.
-OpenSSH er baseret på OpenSSL, som kan hentes under "support" samme
-sted, som OpenSSH findes. Man kan enten oversætte programmerne selv
-eller installere de allerede oversatte RPM-pakker.
-</para>
+OpenSSH er baseret på OpenSSL, som skal oversættes først (hvis
+man vil bygge sin egen) Læs den medfølgende dokumentation, da der
+er nogle options for library generation, som ikke er helt
+trivielle. Den kan hentes under "support" samme
+sted, som OpenSSH findes, eller direkte fra <ulink
+url="http://www.openssl.org/">http://www.openssl.org/"</ulink>.
+Man kan enten oversætte programmerne selv eller installere de
+allerede oversatte RPM-pakker.  </para>
 
 <para>
-OpenSSH er en godt projekt, som har lavet en fri implementering af SSH
-og SSH2. Der er glimrende support fra OpenBSD teamet og det virker.
+OpenSSH er en godt projekt. Den omfatter en server, en klient og
+omfattende dokumentation af konfigurationen. Den kan køre
+protokol version 2 og version 1. Hvis den er konfigureret til
+det, kan den endda starte rsh op, hvis alt andet fejler.
+Der er glimrende support fra OpenBSD teamet og det virker.
 Der er versioner af OpenSSH til alle Unix varianter også Linux, så i
 praksis er der ingen grund til at vælge den kommercielle SSH længere i
 forhold til OpenSSH.
@@ -668,11 +694,16 @@ Har du problemer med SSH, så læs
 <para>
 OpenSSH kan hentes fra <ulink
 url="http://www.openssh.com">http://www.openssh.com</ulink>. Version
-bør være højere end 2.3.0. Der kan henter tar-filer, som du selv kan
+bør være højere end 3.4 og openssl bør være nyere end 0.9.6g,
+hvis man vil undgå sårbarhed for buffer overflow.
+</para>
+
+<para>
+Du kan hente tar-filer, som du selv kan
 oversætte, eller du kan få OpenSSH som RPM-filer. Som RPM-filer, skal
 du bruge openssh-*.i386.rpm, openssh-clients-*.i386.rpm og
 openssh-server-*.i386.rpm, hvor * betyder et versionsnummer, såsom
-2.9.0. Du skal også bruge Zlib, som sikkert allerede er installeret på
+3.4.0. Du skal også bruge zlib, som sikkert allerede er installeret på
 din Linux-maskine. Er dette ikke tilfældet (se om du får fejl), så kan dette bibliotek hentes fra 
 <ulink url="http://www.freesoftware.com/pub/infozip/zlib/">http://www.freesoftware.com/pub/infozip/zlib/</ulink>. Igen kan du vælge mellem tar-filer og RPM.
 </para>
@@ -682,35 +713,40 @@ din Linux-maskine. Er dette ikke tilfældet (se om du får fejl), så kan dette bib
 
 <para> 
 OpenSSH anvender OpenSSL - et værktøj der implementerer Secure
-Socket Layer (SSL) til at lave stærk kryptering af transportlaget. Du
-skal fra også bruge dette - det kan hentes samme sted som OpenSSH
-RPM-filerne findes, eller fra <ulink
-url="http://www.openssl.org">http://www.openssl.org</ulink>.  
+Socket Layer (SSL) til at lave stærk kryptering af transportlaget. 
 </para>
 
 <para>
-Skal du installere SSH via RPM så er det fra og med Red Hat 7.0
-rigtig nemt, idet alle filerne følger med distibutionen.
+Fra RedHat-7.0 og senere er ssh en del af normal installation; det samme
+gælder de fleste andre Linux distributioner.
 </para>
 
 <screen>
 <PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh zlib-1.1.3-i386.rpm</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssl-0.9.5a-i386.rpm</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssh-2.3.0p1-1.i386.rpm</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssh-clients-2.3.0p1-1.i386.rpm</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm ivh openssh-server-2.3.0p1-1.i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm -ivh zlib-1.1.3-i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm -ivh openssl-0.9.6g-i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm -ivh openssh-3.4-1.i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm -ivh openssh-clients-3.4-1.i386.rpm</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>rpm -ivh openssh-server-3.4-1.i386.rpm</userinput>
 </screen>
 
 <para>
-Installerede du på denne måde, kan du springe det næste over, og gå
+For at undgå de vanvittig lange indtastninger bruger man
+selvfølgelig tabulator tasten, når man har tastet de første par
+tegn ind, idet shell'en selv kan finde resten af filnavnet. Hvis
+der er flere filnavne der ligner, så taster man lidt flere tegn,
+og så igen tabulator.
+</para>
+
+<para>
+Installerede du på denne måde, kan du springe det næste over og gå
 direkte frem til at generere bruger-nøgler med <command>ssh-keygen</command>.
 Vil du installere via tar-filer, så er det ret nemt, men der er et par
 skridt du skal igennem.
 </para>
 
 <para>
-Først Zlib, hvis dette ikke er installeret (check om
+Først "zlib", hvis dette ikke er installeret (check om
 <filename>/usr/lib/libz.so</filename> findes).
 </para>
 
@@ -724,17 +760,21 @@ Først Zlib, hvis dette ikke er installeret (check om
 </screen>
 
 <para>
-Dernæst skal OpenSSL installeres
+Dernæst skal OpenSSL installeres. Den har en variant af
+configure. Den er bl.a. god til at kryds-kompilere.  Det nemmeste
+er at bruge kommandoen <command>./config </command> idet den
+foretager bestemmelse af maskintype og system, og derefter
+starter ./Configure.
 </para>
 
 
 <screen>
 <PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf openssl-0.9.5a.tar.gz</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>cd openssl-0.9.5a</userinput>
-<prompt>[root@hven openssl-0.9.5a]# </prompt><userinput>./configure</userinput>
-<prompt>[root@hven openssl-0.9.5a]# </prompt><userinput>make</userinput>
-<prompt>[root@hven openssl-0.9.5a]# </prompt><userinput>make install</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf openssl-0.9.6g.tar.gz</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>cd openssl-0.9.6g</userinput>
+<prompt>[root@hven openssl-0.9.6g]# </prompt><userinput>./config</userinput>
+<prompt>[root@hven openssl-0.9.6g]# </prompt><userinput>make</userinput>
+<prompt>[root@hven openssl-0.9.6g]# </prompt><userinput>make install</userinput>
 </screen>
 
 <para>
@@ -743,12 +783,12 @@ Og slutteligt skal OpenSSH oversættes og installeres
 
 <screen>
 <PROMPT>[tyge@hven ~]# </prompt><userinput>su</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf openssh-2.3.0p1.tar.gz</userinput>
-<prompt>[root@hven /home/tyge]# </prompt><userinput>cd openssh-2.3.0p1</userinput>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>./configure --sysconfdir=/etc/ssh</userinput>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>make</userinput>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>make install</userinput>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>make host-key</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>tar xzvf openssh-3.4.tar.gz</userinput>
+<prompt>[root@hven /home/tyge]# </prompt><userinput>cd openssh-3.4</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>./configure --sysconfdir=/etc/ssh</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>make</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>make install</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>make host-key</userinput>
 </screen>
 
 <para>
@@ -778,13 +818,15 @@ Linux-distributioner.
 </screen>
 
 <para>
-Har du oversat OpenSSH selv, mangler du stadig at få OpenSSH startet
-op på maskinen efter system-genstart. Du kan for SuSE kopiere
+Har du oversat OpenSSH selv, mangler du stadig et start/stop
+script, som kan starte OpenSSH efter reboot. Som regel finder man
+et af de simple start/stop scripts i /etc/init.d og kopierer,
+retter til. I OpenSSH distributionen er der nogle eksempler på
+start/stop-scripts. Du kan for SuSE kopiere
 </para>
 
-
 <screen>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.config.d/sshd.rc.config</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.config.d/sshd.rc.config</userinput>
 </screen>
 
 
@@ -793,7 +835,10 @@ og for Red Hat
 </para>
 
 <screen>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>cp contrib/rc.config.sshd /etc/rc.d/init.d/sshd.rc.config</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>cp contrib/rc.config.sshd /etc/init.d/sshd</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>chkconfig --level 234 sshd on</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput> # eller bare </userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>chkconfig sshd on</userinput>
 </screen>
 
 
@@ -809,7 +854,15 @@ maskinen udefra. For Red Hat køres
 </para>
 
 <screen>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>/etc/rc.d/init.d/sshd start</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>/etc/init.d/sshd start</userinput>
+</screen>
+
+<para>
+eller
+</para>
+
+<screen>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>service sshd start</userinput>
 </screen>
 
 <para>
@@ -817,7 +870,7 @@ og tilsvarende for SuSE køres
 </para>
 
 <screen>
-<prompt>[root@hven openssh-2.3.0p1]# </prompt><userinput>/sbin/init.d/sshd start</userinput>
+<prompt>[root@hven openssh-3.4]# </prompt><userinput>/sbin/init.d/sshd start</userinput>
 </screen>
 
 <para>
@@ -829,7 +882,7 @@ Check at SSH dæmonen (dvs. serveren) kører ved at skrive
 Trying 127.0.0.1... 
 Connected to localhost. 
 Escape character is '^]'.
-SSH-1.99-OpenSSH_2.3.0p1
+SSH-1.99-OpenSSH_3.4
 </programlisting>
 </sect2>
 
@@ -839,12 +892,24 @@ SSH-1.99-OpenSSH_2.3.0p1
 
 <para>
 Hver bruger skal have sit eget sæt af privat/offentlig nøgle. Den
-private skal aldrig sendes via netværk, idet den kan dekryptere
+private må aldrig sendes via netværk, idet den kan dekryptere
 datatrafik. Den offentlige nøgle anvendes til at kryptere data med, og
 den kan man så distribuere til andre maskiner, man skal kunne logge
-ind på.  Brugeren skal selv generere sine nøgler og selv vælge en
-"pass-phrase" - svarende til et password, dog kan det være meget langt.
-Lav det tilpas kryptisk, men du skal kunne huske det.
+ind på.
+</para>
+
+<para>
+Den fjerne maskine (remote-maskinen) kan nu kryptere trafikken på
+en måde, så kun os, der udleverede den offentlige nøgle, kan
+afkryptere datastrømmen. Dertil bruger vi naturligvis den private
+nøgle. Det er derfor, denne privat-nøgle ikke må gå over nettet.
+</para>
+
+<para>
+Brugeren kan selv generere nøgler til password-løs login (hvilket
+faktisk anses for mere sikkert!) og man kan hertil selv vælge en
+"pass-phrase" - svarende til et password, som kan være meget langt.
+Lav det tilpas kryptisk, men på en måde, så du har nemt ved at huske det.
 </para>
 
 <screen>
@@ -861,22 +926,18 @@ ea:20:20:ae:b3:39:6f:d9:1b:a2:ef:02:0c:05:c5:fb tyge@hven
 
 
 <para> 
-Anvender man ikke option "-d" fås en RSA-nøgle, som anvendes
-til SSH version 1 servere, mens option "-d" danner en DSA nøgle
-svarende til SSH2 servere (begge generationer af servere anvendes i
-dag - spørg evt. systemadministratoren om hvad der skal bruges. Kan du
-selv vælge så brug SSH2 server). Når du kører
+Når du kører
 <command>ssh-keygen</command> spørges du om du vil gemme i default
 stedet <filename>/home/tyge/.ssh/id_dsa</filename>. Dette giver dig
 mulighed for at have mere end et sæt nøgler. Din private nøgle gemmes
-i <filename>$HOME/.ssh/identity</filename> (for RSA nøglen) or
-<filename>$HOME/.ssh/id_dsa</filename> (for DSA nøglen). Tilsvarende
+i <filename>$HOME/.ssh/id_dsa</filename> (for DSA nøglen). Tilsvarende
 er den offentlige nøgle gemt med samme filnavn med et ".pub" tilføjet.
 </para>
 
 <para>
 Lad os først se på et par af de filer, der blev installeret. Der er
-kommet filer tre steder, som vi nu vil se nærmere på.
+kommet filer tre steder. (1) /etc/ssh, (2) /etc/init.d/, (3)
+/usr/sbin/sshd og så også i hjemmekataloget, ~/.ssh  .
 </para>
 
 
@@ -894,7 +955,10 @@ kommet filer tre steder, som vi nu vil se nærmere på.
 <para>
 Filerne <filename>/etc/ssh/*</filename> er konfigurationsfiler, der styrer
 ssh opsætningen. Det er kun <filename>/etc/ssh/sshd_config</filename>,
-du evt. skal rette i. F.eks. kan du ændre "PermitRootLogin yes"
+du evt. skal rette i. <footnote><para>Hvis du har installeret fra
+source-tar-balls er disse filer default lagt i
+/usr/local/etc</para></footnote>
+F.eks. kan du ændre "PermitRootLogin yes"
 til "PermitRootLogin no", hvis du mener, at root ikke må logge ind via
 ssh. Det kan være en god ide at forbyde root remote login i det hele taget.
 Tilsvarende kan du forbyde tomme passwords ved at ændre
@@ -935,7 +999,7 @@ spørgsmål. Efter at have svaret "yes" skal du aflevere dit
 almindelige password, og du er så logget ind på maskinen. Dette kan du
 fortsætte med, men hvis du vil højne sikkerheden yderligere, bør du
 gemme din offentlige nøgle på fjernmaskinen. Har du denne nøgle gemt, 
-kan man ikke logge ind med dit password men kun med din lange og 
+kan man ikke logge ind med dit password, men kun med din lange og 
 kryptiske passphrase.
 </para>
 
@@ -943,7 +1007,7 @@ kryptiske passphrase.
 Hvis du ikke fik adgang til maskinen, så kan der være flere grunde.
 Enten kan det skyldes, at du bruger den forkerte protokol. Nyere versioner
 af OpenSSH kan både køre SSH version 1 og 2. Version 2 og DSA-nøglen hænger
-sammen ovenfor. 
+sammen som nævnt ovenfor. 
 </para>
 
 <indexterm><primary>OpenSSH</primary><secondary>Version 2</secondary></indexterm>
