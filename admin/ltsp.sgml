@@ -1,4 +1,271 @@
+<!-- $Id$ -->
+<!-- Skrevet af Keld Jørn Simonsen -->
 <chapter id="ltsp">
-<title>LTSP - Linux Terminal Server Project</title>
+<title>Tynde klienter med Linux</title>
 
+<indexterm><primary>LTSP</primary></indexterm>
+<indexterm><primary>Linux Terminal Server Project</primary></indexterm>
+<indexterm><primary>Tynde klienter</primary></indexterm>
+<indexterm><primary>Linux</primary><secondary>Tynde klienter</secondary></indexterm>
+
+<para>
+Tynde klienter er maskiner der blot virker som en terminal, og al den
+væsentlige databehandling sker på en server.
+</para>
+
+<para>
+Terminalen kan derfor 
+være ganske begrænset udstyret. Fx kan man benytte ældre PC'er af
+pentiumtypen med blot en 100 MHz CPU og 16 Mb RAM, og uden disk,
+og få ganske rimelig ydelse ud af den. Man kan også købe nye maskiner,
+der havde begrænset udstyr, såsom kun lidt RAM og ingen disk, og 
+derved spare penge per arbejdsstation.
+</para>
+
+<para>
+En anden fordel er at i
+større miljøer med mange arbejdsstationer, kan en maskinpark med
+tynde klienter betyde en væsentlig arbejdsbesparelse, nogen
+undersøgelser viser op mod 50 % besparelse i de totale 
+driftsomkostninger (TCO) i.fh.t. almindelige fritstående
+Linux-maskiner med netværk, og op mod 75 % besparelse i.fh.t.
+almindelige Microsoft Windows fritstående maskiner i netværk.
+</para>
+
+<para>
+En tredje fordel kan være et bedre miljø, idet den manglende disk
+og mindre behov for CPU-kraft kan betyde mindre støj og mindre
+varmeudvikling.
+</para>
+
+<para>
+Tynde klienter kan således være aktuelt i både større og mindre
+virksomheder, som arbejdsstationer, i skoler, og også i hjemmene,
+hvor en gammel PC måske kan gives et helt nyt liv.
+</para>
+
+<para>
+Tynde klienter som det omtales her kræver et lokalnet, (mindst 10 Mbit,
+gerne 100 Mbit)
+for at fungere ordentligt. Tung grafik såsom film eller
+grafikintensive spil vil køre meget langsomt, mens de fleste andre
+anvendelser, såsom netlæser, kontorpakker vil køre ganske fortrinligt.
+Microsoft Windows programmer kræver særlig opsætning og formentlig
+køb af særligt programmel.
+</para>
+
+<para>
+Tynde klienter kræver en server, som så skal have den nødvendige
+kapacitet. Dette behøver ikke at være alverden: folk har været
+imponeret over ydeevnen på en server med en 650 MHz CPU og 200 Mb
+RAM, hvilket er en del mindre end de mindste maskiner der sælges i dag
+på markedet. Der skal også være nødvendig diskkapacitet, selve
+det system, der omtales nedenfor fylder under 300 Mb udover det
+basale Linux-driftssystem. Det vigtigste er at have meget RAM, 
+20-80 Mb RAM per klient, afhængig om der køres mange store programmer
+såsom kontorpakker, og aftagende med antallet af klienter.
+CPU-hastigheden er ikke så afgørende, 1 GHz er fint.
+Og man skal selvfølgelig
+afsætte diskplads, afhængig af hvor mange brugere der skal være,
+og deres forventede brug.
+</para>
+
+<sect1 id="LTSP">
+<title>LTSP</title>
+<para>
+Tynde klienter har været muligt under Linux og UNIX i mange
+år, via X Windows. En pakke, som gør det nemt at installere,
+er <emphasis>LTSP - Linux Terminal Server Project</emphasis> som
+findes på <ulink url="http://www.ltsp.org">http://www.ltsp.org</ulink>.
+Hovedmanden hedder Jim McQuillan.
+</para>
+
+<para>
+Det, LTSP laver, er først og
+fremmest et system til at køre X Windows på en klient, det
+implementerer at PC'en er en X Windows skærm. På
+serveren kan man køre de fleste distributioner, fx Red Hat,
+Mandrake, Debian, SuSE, og det er således serverens system som
+klienterne vil køre.
+</para>
+
+<para>
+Der er 4 pakker som skal installeres for at lave en X skærm,
+de kan hentes fra www.ltsp.org, og findes i de forskellige 
+pakkeformater der passer til den valgte distribution (.rpm, .deb,
+.tgz etc.) Pakkerne er:
+</para>
+
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+ltsp-core - skal installeres først.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ltsp-kernel - linux-kerne mv.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ltsp-x-core - kan undværes hvis man kun vil køre kommando-skal.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ltsp-x-fonts - kan undværes hvis man vil benytte serverens fonte.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Desuden findes der en masse anden information på <ulink
+url="http://www.ltsp.org">http://www.ltsp.org</ulink>,
+om generel installation, postlister for diskussion,
+udvikling og annoncering, opsætning af lyd, floppy,
+kørsel af programmer på klientens CPU, støtte for gamle
+skærme mm.  Der findes en dansk side om LTSP på
+<ulink url="http://www.klid.dk/sw/ltsp/">http://www.klid.dk/sw/ltsp/</ulink>.
+</sect1>
+
+<sect1 id="LTSP-internt">
+<title>LTSP virkemåde</title>
+
+<para>
+LTSP har en række trin som gennemgås før PC-en kører som X-terminal.
+</para>
+
+<orderedlist>
+<listitem>
+ <para>
+Klienten bootes via diskette, eller en bootprom på netkortet
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Klienten får en IP-adresse fra serverens DHCP
+ </para>
+</listitem>
+<listitem>
+ <para>
+Linux-kernen overføres via TFTP
+ </para>
+</listitem>
+<listitem> 
+ <para>
+initrd RAM-filsystem overføres via TFTP
+ </para>
+</listitem>
+<listitem>
+ <para>
+klienten bootes fra RAM-disk og kerne
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Klienten får parametre til X-terminal fra LTSP
+ </para>
+</listitem>
+<listitem>
+ <para>
+Klient monterer diske på server via NFS
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Klienten kører X
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Klienten får login fra server
+ </para>
+</listitem>
+</orderedlist>
+
+<para>
+Når man logger ind, kører programmerne så på serveren. Man skal derfor
+have en konto for hver bruger der skal bruge serveren. Samme bruger
+kan godt være logget ind flere gange samtidigt.
+</para>
+</sect1>
+
+<sect1 id="ltsp-konfiguration-af-server">
+<title>Konfiguration af server</title>
+
+<orderedlist>
+<listitem>
+ <para>
+LTSP installeres fra de ovennævnte 4 pakker.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Konfigurationsfiler laves for DHCP, TFTP, NFS, se LTSP-vejledning.
+ </para>
+</listitem>
+<listitem>
+ <para>
+LTSP konfigurationsfil opsættes i 
+<filename>/opt/ltsp/i386/etc/lst.conf</filename>
+med info om skærm, tastatur, mus, lyd etc.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Der skal opsættes DHCP per klient med IP-nummer ud fra Ethernet
+   MAC-adresse og evt info om X-driver for ældre skærmkort der ikke 
+   kan køre XFree86 version 4.
+ </para>
+</listitem>
+<listitem>
+ <para>
+<filename>/etc/hosts</filename> skal have en indgang per klient
+ </para>
+</listitem>
+<listitem> 
+ <para>
+NFS <filename>/etc/exports</filename> skal opsættes
+ </para>
+</listitem>
+</orderedlist>
+</sect1>
+
+<sect1 id="ltsp-konfiguration-af-klient">
+<title>Konfiguration af klient</title>
+<para>
+Der skal genereres en diskette, eller en bootprom. Dette kan gøres
+via netstedet 
+<ulink url="http://www.rom-o-matic.net">http://www.rom-o-matic.net</ulink>, der indeholder drivere for en 
+amsse netkort, til at generere både en opstartsdiskette og 
+kode til en bootprom. Brænding af bootprommer er et kapitel for sig,
+der findes info om dette på 
+<ulink url="http://www.ltsp.org">http://www.ltsp.org</ulink>.
+</para>
+
+<para>
+Desuden skal der laves konfiguration på serveren for hver
+klient, som nævnt ovenfor. 
+</para>
+</sect1>
+
+<sect1 id="ltsp-problemer">
+<title>Problemløsning</title>
+<para>
+</para>
+Grafikkort virker som regel med udgave 4 af XFree86, men
+ved ældre grafikkort kan man blive nødt til at finde ud af hvilken
+X-driver der skal bruges, samt andre parametre for grafikkortet
+og skærmen. Det kan her være en hjælp at installere grafikkort og 
+skærm på en fritstående Linux-maskine med disk og X installeret.
+</para>
+
+<para>
+Standardværdierne for netværk, gateway mm er måske ikke rigtige, de
+skal evt rettes til Og man kan have problemer hvis man har mere end 
+én DHCP-server på nettet, så må flere DHCP-servere integreres til én.
+</para>
+</sect1>
 </chapter>
