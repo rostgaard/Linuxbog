@@ -1,0 +1,535 @@
+<chapter id="web">
+<title>web</title>
+
+<sect1 id="webserver">
+<title>Webserver</title>
+<para>
+I dette afsnit skal vi se nærmere på webservere - i praksis Apache,
+som idag anvendes af ca. 60% af alle webservere på Internet.
+</para>
+
+<sect2 id="apache">
+<title>Apache</title>
+<indexterm><primary>Webserver</primary><secondary>Apache</secondary></indexterm>
+<indexterm><primary>Apache</primary></indexterm>
+
+<para>
+Når du har fået din Linux-server op at køre, er en af de muligheder du
+kan gå i gang med, at installere en webserver. Du kender sikkert allerede
+webservere, idet de anvendes til websites, intranet, ekstranet og meget 
+andet.
+</para>
+
+<para>
+Her kan du læse hvordan du selv kommer i gang med at være webmaster på din
+egen webserver.
+</para>
+</sect2>
+
+<sect2 id="Hvad-er-en-webserver">
+<title>Hvad er en webserver?</title>
+<para>
+En webserver var oprindelig en rimelig simpel server, hvis eneste funktion
+i livet var at kopiere filer fra sin harddisk til den klient, der bad om dem.
+</para>
+
+<para>
+Der er sidenhen kommet et væld af ekstra funktionaliteter og
+faciliteter i webservere, så det i dag også er det en del af
+webserverens job indsætte kode i sider når en bruger beder om den,
+fx. sidste gang filen blev rettet (Server Side Include). Webserveren
+kan udføre programmer og returnere uddata i form af tekst, billed, lyd
+og animationer til browseren. Når man indtaster og submitter data i
+forms på nettet, så er det også webserverens job at modtage data og
+filer, og at sende disse data vidre til programmer der bearbejder dem
+(CGI scripts). Webserveren kan også udføre indlejret script kode så
+man fx. kan indsætte data fra en database direkte i sider (Perl/PHP/Python).
+</para>
+
+<sect3 id="apache-historie">
+<title>Lidt historie bag Apache</title>
+<para>
+Apache serveren startede sit liv som et "patch-kit" (et sæt ændringer)
+til NCSA-serveren, og det er da også der navnet oprindligt kommer - A
+PAtCHy Server.
+</para>
+
+<para>
+Da udviklingen af NCSA's webserver stoppede, fortsatte udviklingen af
+Apache, og således er Apache-serveren ny blevet den markedsledende
+webserver.
+</para>
+
+<para>
+Apache ejes og styres af Apache Software Foundation og er Open Source
+og gratis.
+</para>
+
+<para>
+Apache er i skrivende stund nået til version 1.3.12, og er en af de
+hurtigste og mest stabile webservere. Der arbejdes på version 2.0, som
+bliver den næste større release.  Denne forventes klar i den sidste
+del af år 2000. Den nye udgave vil blandt andet blive endnu mere
+modulær end den eksisterende.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="apache-installation">
+<title>Apache installation</title>
+<para>
+Når du skal installere en apache web-server, skal du sikre dig, at du
+har seneste udgave.  Du kan enten vælge at installere den fra nogle
+RPM-pakker eller oversætte den selv fra kildekoden. Som udgangspunkt
+anbefales det, at du installerer fra kildekoden, da det ikke er svært
+og det giver dig mulighed for selv at bestemme hvilke moduler, der
+oversættes ind i apache-serveren.
+</para>
+
+<sect3 id="apache-installation-fra-pakker">
+<title>Apache installation fra pakker</title>
+<para>
+Du kan normalt finde pakker til Red Hat, Debian og andre
+linux-distributioner med Apache.  At anvende pakker kræver normalt du
+har root-adgang til maskinen, du vil installere serveren på.  Hvis du
+vælger at benytte en sådan, vil du normalt blot få en "standard
+apache" (alt efter pakken), som installeres i
+<filename>/usr/local/apache</filename> og som kører på port 80.
+</para>
+
+<para>
+Dette kan være en løsning, hvis du blot har brug for at se hvorledes
+dine dokumenter ser ud når de kommer fra en browser, men hvis du for
+alvor vil lære apache at kende, og vil være sikker på hvad der faktisk
+er oversat ind i serveren, er det ofte en god ide at installere den
+direkte for sourcen.
+</para>
+</sect3>
+
+<sect3 id="apache-installation-fra-kildekode">
+<title>Apache installation fra pakker</title>
+<para>
+For at installere (og anvende) apache, behøver du ikke root-adgang til
+maskinen. Der vil blot være nogle begrænsninger af hvor du kan
+installere den og hvilke porte den kan køre på.  Hvis du ikke vil
+installere den som root, skal serveren køre på et port nummer større
+end 1024 (ofte anvendes 8000, 8080 eller 8088).
+</para>
+
+<para>
+Du kan hente seneste udgave af Apache serveren fra <ulink
+url="http://www.apache.org/dist/">http://www.apache.org/dist/</ulink>
+(eller et nærmere mirror. Filen du skal bruge hedder
+<filename>apache_&lt;versionsnummer&gt;.tar.gz</filename>.
+</para>
+
+<para>
+Filen pakkes ud med kommandoen <command>tar -zvxf
+apache_&lt;versionsnummer&gt;.tar.gz</command>.  Nu har du hele
+sourcekoden liggende i et directory der hedder
+<command>apache_&lt;versionsnummer&gt;</command>.  Gå ind i
+biblioteket (<command>cd apache_&lt;versionsnummer&gt;</command>).
+</para>
+
+<para>
+At få installeret og startet en apache webserver kræver normalt kun
+følgende trin:
+</para>
+
+<screen>
+01: $ ./configure --prefix=PREFIX
+02: $ make
+03: $ make install
+04: $ PREFIX/bin/apachectl start
+</screen>
+
+<para>
+I linje 01 konfigureres apache serveren. Her er det kun hvor den
+installeres, der ændres.  Istedet for PREFIX skal du skrive stien til
+det bibliotek hvor du vil have den installeret
+(f.eks. <filename>/home/myuser/apache</filename>). 
+Apache har også nogle prædefinerede PREFIX's såsom Red Hat layout.
+Istedet skrives så <command>--with-layout=RedHat</command>.
+Se <filename>config.layout</filename> for andre layout's.
+Du kan til
+configure-kommandoen også angive en lang række andre parametre, som
+ændre på hvilke moduler der installeres, hvilken bruger den vil køre
+som osv. Du kan ændre på en stor del af de samme parametre efter
+apache er blevet oversat og installeret.
+</para>
+
+<para>
+Linje 02 bygger selve webserveren. På en standard Linux-maskine vil
+der normalt ikke ske andet end hele "build" processen skrives ud til
+skræmen.
+</para>
+
+<para>
+Linje 03 installerer serveren. Hvis du har valgt standard
+installationen skal du skifte til root brugeren for at installere
+den. Det samme gælder hvis du har valgt at installere apache et sted
+hvor din bruger ikke har skrive adgang (trin 01 og 02 kan saktens
+udføres som din normale bruger).
+</para>
+
+<para>
+Linje 04 starter webserveren. Inden du gør dette vil du dog normalt
+skulle ændre i konfigurationsfilerne, hvilket er beskrevet nærmere i
+næste afsnit. Hvis du starter den uden yderligere ændringer, kan du
+normalt finde din nye webserver på adressen: <ulink
+url="http://localhost:8080/">http://localhost:8080/</ulink>.  Husk
+igen at erstatte PREFIX med stien til installations-biblioteket.
+</para>
+
+</sect3>
+</sect2>
+
+<sect2 id="apache-opsaetning">
+<title>Apache opsætning og konfiguration</title>
+<indexterm><primary>Apache</primary>
+<secondary>opsætning</secondary></indexterm>
+
+<para>
+Apache's configurations-filer kan du finde i PREFIX/conf. Den fil du
+skal have fat i er httpd.conf.  Httpd.conf indeholder et hav af
+indstillingsmuligheder, så vi vil kun lige berøre de mest basale her.
+</para>
+
+<sect3>
+<title>Port</title>
+<para>
+Denne parameter angiver hvilken port apache skal lytte på. Normalt
+kører en webserver på port 80, hvilket den dog kun kan hvis du har
+installeret den som root. Hvis du har installeret apache som standard
+bør du nok vælge port 80.
+</para>
+</sect3>
+
+<sect3>
+<title>Logfiler</title>
+<para>
+Apache laver 2 logfiler som udgangspunkt - en access-log, som
+fortæller hvem der har besøgt din server, og en error-log, som
+fortæller dig om alle fejl der opstår mens serveren kører. Hvilke
+oplysninger, der står i din access log afhænger af dels hvilke du
+konfigurer serveren til at skrive og dels hvilke oplysninger klienten
+vil aflevere. Dette konfigurerer du via et LogFormat.  I standard
+httpd.conf-filen er der lavet 4 skabeloner (combined, common, referer
+og agent), men du kan naturligvis også lave dit eget format.
+</para>
+
+<para>
+Ved ErrorLog'en kan du også bestemme hvor alvorlige begivenheder skal
+være førend de skrives ned - dette defineres på 8 forskellige niveauer
+(fra debug til emergency).
+</para>
+
+<para>
+En tredie type logfil som kan være meget nyttig hvis du vil afvikle
+CGI-programmer på din webserver, er ScriptLog. Denne logfil vil føre
+en log over de fejlbeskeder dine CGI-programmer afgiver.  Det er dog
+vigtigt at der sættes en maksimum på størrelsen af denne logfil, da
+den ellers hurtigt kan blive for stor. Dette kan gøres med parameteren
+ScriptLogLength.  Eksempel på anvendelse:
+</para>
+
+<screen>
+ScriptLog	PREFIX/log/scriptlog
+ScriptLogLength 5192880
+</screen>
+
+<para>
+Dette fortæller apache at den skal lave en logfil der hedder
+scriptlog, og at denne fil må maksimalt være 5MB.
+</para>
+</sect3>
+
+<sect3>
+<title>Options</title>
+<para>
+Options er en af de vigtige direktiver at kende, idet den sætte nogle
+overordende regler for det område den gælder for (Ved Files, Directory
+og Location direktiverne kan man have forskellige options, der gælder
+for forskellige dele af serveren).
+</para>
+
+<para>
+De vigtigste parametre til Options er: 
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem> 
+  <para> 
+    Indexes - som bestemmer hvorvidt man må se indhold af directories.
+  </para>
+</listitem>
+<listitem> 
+  <para> 
+    ExecCGI - som bestemmer om det er muligt at køre CGI-programmer.
+  </para>
+</listitem>
+<listitem> 
+  <para> 
+     FollowSymLinks - som bestemmer om symbolske links i området skal
+  følges 
+  </para>
+</listitem>
+</itemizedlist>
+</sect3>
+
+<sect3>
+<title>Files, Directory og Location</title>
+<para>
+Gennem Files og Location direktiverne kan du påføre specielle regler
+for dele af din webserver.  Dette kunne f.eks. være at et givent
+område kun kunne ses, hvis man sad på serveren selv eller ligende.
+</para>
+
+<para>
+Location anvendes til at implementere regler relativt i forhold
+til deres URL. Alt i området <filename>/spoing/</filename> må kun ses
+fra .dk domæner eller ligende.
+</para>
+
+<para>
+Directory anvendes til at implementere regler, men tager udgangspunkt
+i filsystemet. Således ville man f.eks. kunne implementere en regel
+der beskyttede alt der ligger i
+<filename>/home/web/htdocs/spoing/</filename>, så det kun kan ses fra
+.dk domæner.
+</para>
+
+<para>
+Files kan anlægge filtre der gælder på fil-niveau. Typiske anvendelser
+af Files, kunne f.eks. være at sikre at dine
+<filename>.htaccess</filename> filer og conf-filer ikke kan hentes af
+brugere. Hvis du bruger emacs vil den ofte efterlade backup-filer der
+hedder <filename>FILNAVN~</filename>, disse kan man også sikre ikke
+kan ses gennem webserveren.
+</para>
+
+<para>
+Det er muligt at kombinere Files med enten Directory eller Location, således vil en given regel 
+kun gælde for nogle filer i et givent område. Et eksempel kunne være:
+</para>
+
+<screen>
+&lt;Directory /&gt;
+      Options +ExecCGI +FollowSymLinks
+      &lt;Files ~ "\.cgi$"&gt;
+      SetHandler cgi-script
+      &lt;/Files&gt;
+&lt;/Directory&gt;
+</screen>
+
+<para>
+Her tillades at der eksekveres cgi-programmer, hvis de har endelsen .cgi, overalt på serveren, mens
+alle ikke .cgi-filer vil blive leveret som normalt.
+</para>
+</sect3>
+</sect2>
+
+<sect2>
+<title>CGI-programmer</title>
+<indexterm><primary>CGI</primary></indexterm>
+<para>
+CGI står for Common Gateway Interface og tillader dig at kører
+programmer på din server, hvis indhold præsenteres af browseren
+(forudsat programmerne generer noget tekst, som browseren kan
+forstå. Det mest normale er at køre Perl-scripts gennem CGI, men det
+er også muligt at skrive C, C++, Python og mange andre sprog, som kan
+afvikles via CGI. I <XREF LINKEND="db-pgsql-shell"> er et eksempel på
+et CGI-script.
+</para>
+
+<para>
+Som udgangspunkt vil apache helst kun køre cgi-programmer fra
+<filename>/cgi-bin/</filename>-området (som placeres i
+<filename>cgi-bin</filename>-biblioteket under Apache-serverens
+installations bibliotek). Hvis du vil kunne køre CGI-programmer
+overalt, skal du fjerne udkommenteringen fra den linje der hedder
+"AddHandler cgi-script .cgi" og sikre at dine "Options" for det område
+cgi-programmerne skal kunne afvikles har parameteren ExecCGI.  Også
+selv om du kun vil køre CGI-programmer fra
+<filename>/cgi-bin/</filename>-biblioteket, skal du fjerne
+udkommenteringen for linien "AddHandler cgi-script .cgi".
+</para>
+
+<para>
+Bemærk at CGI-programmer kan åbne for en række sikkerhedsricisi, som
+du overveje nøje. Prøv f.eks. at kigge nærmere på:
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem> 
+  <para> 
+    <ulink url="http://www.w3.org/Security/Faq/wwwsf4.html">http://www.w3.org/Security/Faq/wwwsf4.html</ulink>
+  </para>
+</listitem>
+<listitem> 
+  <para> 
+    <ulink url="http://www.go2net.com/people/paulp/cgi-security/">http://www.go2net.com/people/paulp/cgi-security/</ulink>
+  </para>
+</listitem>
+</itemizedlist>
+
+</sect2>
+
+<sect2 id="apache-udvidelser">
+<title>Apache-udvidelser</title>
+<para>
+Der findes en række udvidelser i form af moduler til
+apache-serveren. Disse kan integere yderligere funktionalitet direkte
+ind i apache-serveren. For at tilføje moduler skal du normalt
+gen-oversætte din apache-server.
+</para>
+
+<para>
+Det kan dog lade sig gøre at oversætte moduler, som kan loades af
+apache, så man ikke behøver at oversætte helt forfra. Om og hvordan et
+modul kan oversættes som et selvstændigt modul, kan du læse mere om i
+dokumentationen for de enkelte moduler.
+</para>
+
+<para>
+I det følgende kan du finde en kort introduktion til nogle af de mest
+udbredte og anvendte moduler. Udover de her nævnte findes der en række
+andre. Den komplette liste findes i Apache Module Registry på
+<ulink url="http://modules.apache.org/">http://modules.apache.org/</ulink>.
+</para>
+
+
+<sect3 id="mod-perl">
+<title>mod_perl</title>
+<indexterm><primary>mod_perl</primary></indexterm>
+
+<para>
+mod_perl projektet fusionerer Apache-webserveren med Perl oversætteren.
+Hvis man har lavet sine cgi-programmer i Perl, er det virkeligt et modul
+der tramper speederen i bund.
+</para>
+
+<para>
+Udover fart forøgelserne, som mod_perl tilfører dine programmer, giver
+det tillige et komplet interface til selve Apache-serveren, og dermed
+mulighed for at lave nogle utroligt avancerede ting. Eksempler på
+dette kunne f.eks. været at køre adgangskontrol direkte op i mod en
+database, eller bruge en database som access og error log for din
+webserver.
+</para>
+
+<para>
+Du kan finde mere om mod_perl på 
+<ulink url="http://perl.apache.org/">http://perl.apache.org/</ulink>
+</para>
+
+<para>
+Hvis du ikke er interesseret i mod_perl eller syntes det virker
+for kompliceret, kan du eventuelt også kigge nærmere på Fast_CGI.
+</para>
+</sect3>
+
+<sect3 id="mod-php">
+<title>mod_php</title>
+<indexterm><primary>mod_php</primary></indexterm>
+
+<para>
+PHP er et scripting sprog der er indlejret i HTML koden. En del syntes PHP er 
+lettere at gå til en Perl. PHP sproget har blandt andet en række funktioner i 
+selve scripting sproget, der giver adgang til Databaser, Mail og flere andre
+ting.
+</para>
+</sect3>
+
+<sect3 id="mod-proxy">
+<title>mod_proxy</title>
+<indexterm><primary>mod_proxy</primary></indexterm>
+
+<para>
+mod_proxy giver Apache-serveren mulighed for at agere proxy. Det
+betyder at du kan omdirigere forespørgsler fra en adresse til en
+anden (helt usynligt hvis du ønsker det).
+</para>
+
+<para>
+Dette kunne f.eks. være, hvis du ville sprede belastningen mellem to
+servere eller ligende.
+</para>
+</sect3>
+
+<sect3 id="mod-ssl">
+<title>mod_ssl</title>
+<indexterm><primary>mod_ssl</primary></indexterm>
+
+<para>
+mod_ssl giver mulighed for at apache-serveren kan kommunikere med
+clienterne over en SSL-krypteret forbindelse. SSL bruges som
+krypterings-algoritme på de fleste websites som gerne vil beskytte
+informationen der sendes mellem server og client.
+</para>
+
+<para>
+Husk at SSL højest giver dig mulighed for at øge sikkerheden, men du
+skal dog selv forstå at implementere den gennem konfiguration og
+fornuftig drift af serveren.
+</para>
+
+</sect3>
+</sect2>
+
+<sect2 id="laes-mere-om-apache">
+<title>Læs mere om Apache</title>
+<para>
+Ben Laurie &amp; Peter Laurie: 
+<emphasis>Apache: The Definitive Guide</emphasis>, 
+O'Reilly &amp; Associates, Inc., ISBN: 1-56592-250-6, 246 sider + CDROM 
+</para>
+</sect2>
+
+<sect2 id="Alternative-webservere">
+<title>Alternative-webservere</title>
+<para>
+Udover Apache serveren er der et par andre, man også kan vælge
+mellem. De to mest interessante er beskrevet herunder. Ved at søge på
+<ulink url="http://www.linuxberg.org/">
+http://www.linuxberg.org/</ulink> kan du finde mange andre.
+</para>
+
+<sect3 id="Roxen">
+<title>Roxen</title>
+<indexterm><primary>Roxen</primary></indexterm>
+
+<para>
+Et godt alternativ til Apache er Roxen, som er lavet i Sverige. Roxen
+har et veludviklet makrosprog, hvilket gør det let at lave flersprogs
+understøttelse på websiderne. Roxen udmærker sig også ved at kunne
+konfigureres direkte via Internettet. Roxen kan downloades fra
+<ulink url="http://www.roxen.com">http://www.roxen.com</ulink>.
+</para>
+</sect3>
+
+<sect3 id="Netscape-Webservere">
+<title>Netscape Webservere</title>
+<para>
+En ting som ofte afskrækker nye web-mastere er at apache konfigureres
+via tekst filer.  Dette er ikke tilfældet for Netscape's webservere,
+som har et komplet browser-baseret interface til konfiguration,
+administration og anden vedlige hold af serverne.
+</para>
+
+<para>
+I lighed med apache, findes der en række moduler til Netscape
+Serverne, som f.eks.  giver mulighed for at afvilke Java på serveren,
+et modul der svarer til mod_perl og ligende.
+</para>
+
+<para>
+Netscapes webservere hedder i dag iPlanet, og kan kun erhverves på
+kommercielle vilkår.
+</para>
+</sect3>
+</sect2>
+</sect1>
+</chapter>

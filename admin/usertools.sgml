@@ -1,0 +1,2048 @@
+<chapter id="sysadm">
+<title>Systemadministration</title>
+
+<SECT1 ID="filsystem">
+<TITLE>Opbygningen af filsystemet</TITLE>
+<indexterm><primary>/etc/hosts</primary></indexterm>
+
+<sect2 ID="filsystempaspaa">
+<TITLE>Basalt systemarbejde</TITLE>
+
+<PARA>
+Linux-systemer er på mange måder meget standardiserede
+forstået på den måde, at diverse kataloger bruges til det
+samme. Vi fortalte mere om dette i installationskapitlet.
+</para>
+
+<para>
+Som allerede nævnt i <xref linkend="redhatpartitioner">, indeholder
+mappen <filename>/etc</filename> konfigurationsfiler til dit
+Linux-system. Filerne er vitale for dit Linux-system, så vær derfor
+forsigtig, når du vha. en teksteditor retter i filerne. Vi vil
+foreslå, at du <emphasis>altid</emphasis> først laver en kopi af den
+fil, du vil ændre, dvs.
+</para>
+
+<screen>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>cp hosts hosts.orig</USERINPUT>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>vi hosts</USERINPUT>
+</screen>
+
+<para>
+Hvis der skulle gå noget galt, kan du altid bruge den oprindelige
+udgave af filen.
+</para>
+
+<screen>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>cp hosts.orig hosts</USERINPUT>
+</SCREEN>
+</SECT2>
+
+
+
+<sect2 id="filsystemer">
+<title>Filsystemer</title>
+<indexterm><primary>Filsystemer</primary></indexterm>
+<para>
+Linux bruger som standard et filsystem kaldet Ext2 (Extended file
+system version 2), men kan også læse og skrive fra mange andre
+filsystemer f.eks. FAT-baserede filsystemer der bruges af DOS og
+Windows.
+</para>
+
+<para>
+Generelt formateres et filsystem under Linux ved at benytte kommandoen 
+<command>mkfs</command> (MaKe File System). Har du en uformateret partition 
+(her <filename>/dev/hda5</filename>), som du ønsker at formatere, sker
+formateringen ved at skrive (som root):
+</para>
+
+<para>
+<screen>
+  <prompt>[root@linus /root]#</prompt> <userinput>mkfs /dev/hda5</userinput>
+  <prompt>[root@linus /root]#</prompt> 
+</screen>
+</para>
+
+<para>
+Programmet <command>mkfs</command> finder selv ud af hvilket filsystem,
+du har valgt til den ønskede partition, idet denne oplysning findes i
+partition-tabellen.
+</para>
+
+<para>
+Når din computer går ned (ja, det sker, f.eks. når strømmen går), kan
+du komme ud for at dine filsystemer er i en fejlhæftet tilstand. Dette
+kan dog oftes reddes af programmet <command>fsck</command> (File
+System ChecK). Faktisk
+køres dette program altid ved opstart for at sikre at alle filsystemer
+er i en god tilstand.
+</para>
+
+<sect3 id="reiserFS">
+<title>ReiserFS</title>
+<indexterm><primary>ReiserFS</primary></indexterm>
+
+<indexterm><primary>Filsystemer</primary>
+<secondary>ReiserFS</secondary></indexterm>
+<para>
+ReiserFS er et af de nyere filsystemer til Linux. Faktisk er det så nyt,
+at det endnu ikke er en del af den officielle kerne. 
+ReiserFS er en anden type filsystem end den der kendes fra Linux's
+Ext2, og DOS/Windows FAT-drev, idet ReiserFS er et journaliserende
+filsystem. Det betyder, at alle filer til en hver tid er opdaterede. Det
+betyder, at hvis din computer går ned pga. en strømafbrydelse vil du ikke
+miste data. Endvidere betyder det, at de partitions som er formateret
+vha. ReiserFS ikke skal tjekkes ved opstart. Hvis du har meget store harddiske
+vil det betyde at du får en meget kortere opstartstid. Dette kan være 
+vigtigt, hvis din computer er server med f.eks. 100 GB harddisk (ikke
+ualmindelig i den virkelige serververden).
+</para>
+
+<para>
+ReiserFS følger med Mandrake 7.1 og under denne distribution er det
+let at installere. Men selv under andre distributioner er det ikke
+svært. Du skal sikre dig, at kernen understøtter ReiserFS som
+filsystem. Måske skal du omkonfigurere din kerne (se også <xref
+linkend="kernelcompile">). Det kan godt betale sig at få ReiserFS
+oversat som et kernemodul. Modulsystemet vil typisk selv finde ud af,
+at modulet skal bruges, dvs. når du begynder at bruge kommandoer som
+involvere en ReiserFS-baseret partition, vil modulet automatisk blive
+indlæst.
+</para>
+
+<para>
+Først og fremmest skal du have en partition som er tomt. Du kan 
+oprette en partition til formålet. Her kan du bruge programmer som 
+<command>fdisk</command> og <command>cfdisk</command>. Når du har 
+en partition klar, skal du formatere den. I eksemplet benytter vi
+partitionen <filename>/dev/hda5</filename>, som vi antager allerede er 
+oprettet.
+</para>
+
+<para>
+<screen>
+  <prompt>[root@linus root]#</prompt><userinput>mkreiserfs /dev/hda5</userinput>
+<-----------MKREISERFS, 1999----------->
+ReiserFS version 3.5.18
+Block size 4096 bytes
+Block count 325576
+First 16 blocks skipped
+Super block is in 16
+Bitmap blocks are : 
+	17, 32768, 65536, 98304, 131072, 163840, 196608, 229376, 262144, 294912
+Journal size 8192 (blocks 18-8210 of device 0x3:0x5)
+Root block 8211
+Used 8221 blocks
+ATTENTION: ALL DATA WILL BE LOST ON '/dev/hda5'! (y/n) <userinput>y</userinput>
+Initializing journal - 0%....20%....40%....60%....80%....100%
+Syncing..
+
+ReiserFS core development sponsored by SuSE Labs (suse.com)
+
+Journaling sponsored by MP3.com.
+
+Item handlers sponsored by Ecila.com
+
+To learn about the programmers and ReiserFS, please go to
+http://www.devlinux.com/namesys
+
+Have fun.
+  <prompt>[root@linus root]#</prompt>
+</screen>
+</para>
+
+<para>
+Du er nu klar til at mounte din partition. Følgende vil mounte partitionen
+<filename>/dev/hda5</filename> som <filename>/home</filename>.
+</para>
+
+<para>
+<screen>
+  <prompt>[root@linus root]#</prompt> <userinput>mount -t reiserfs /dev/hda5 /home</userinput>
+Checking ReiserFS transaction log (device 03:35)  ...
+Relayed 0 transaction in 0 seconds
+ReiserFS version 3.5.18
+  <prompt>[root@linus root]#</prompt>
+</screen>
+</para>
+
+<para>
+Naturligvis kan du indsætte din nye partition i filen <filename>/etc/fstab</filename>
+med typen <emphasis>reiserfs</emphasis>. Derved vil partitionen blive mountet
+under opstart.
+</para>
+
+</sect3>
+</sect2>
+
+
+<SECT2 ID="runlevel">
+<TITLE>Hvad er et runlevel?</TITLE>
+<indexterm><primary>Runlevels</primary></indexterm>
+<indexterm><primary>/etc/rc.d</primary></indexterm>
+<indexterm><primary>Boot i grafisk tilstand</primary></indexterm>
+<PARA>
+Et runlevel er den tilstand, som pc'en kører i. Computeren kan køre i
+tilstande så som "ved at starte systemet", "enkelbruger system",
+"flerbruger system", "genstarter system" og "slukker computeren". Hvis
+man fx. vil kopiere <filename>/home</filename> kataloget over på en
+større harddisk fordi ens brugere har for mange MP3 filer liggende (Se
+<xref linkend="tar-flytning">). Så er det nødventig at sikre sig at
+der ikke er nogen brugere, der har filer åbne mens man kopiere, idet
+der så kan opstå en fejl i kopieringen. Dette kan man sikre sig ved at
+skifte til Enkelt bruger tilstand, der svarer lidt til fejlsikret
+tilstand i Windows, når man er færdig med system arbejdet, hopper man
+tilbage til "flerbruger system" og folk har igen adgang til
+computeren, og vil ikke bemærke at deres filer pludseligt ligger på et
+andet drev.
+</para>
+
+<para>
+Computeren kører en masse services for brugerene, dette kunne fx. være
+netværksforbindelse (network) og forskellige netværks relaterede
+services som fx. e-post (sendmail/routed/named/snmpd/portmap), adgang
+til filsystemer på andre computere (nfsfs), mulighed for at udskrive
+til printer (lpd) og lydkort (sound). Men mens Linux er ved at starte
+har man ikke brug for at have adgang til printeren, så printer
+servicen startes først når systemet går ind i "flerbruger system"
+tilstanden.  Når man er ved at genstarte eller slukke computeren
+slukker man igen for printer forbindelsen. Når computeren skiftes fra
+en tilstand til en anden tilstand, udføres en række scripts der
+bestemmer hvad for services der skal tændes og slukkes. Hvilke
+scripts, der kører ved skift til fx.  runlevel 3 (Flerbruger system),
+bestemmes af, hvilke skripts der er placeret i kataloget
+<filename>/etc/rc.d/rc3.d</filename> (Corel og Debian har tilsvarende
+<filename>/etc/rc3.d</filename>).
+</PARA>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>ls /etc/rc.d/rc3.d</USERINPUT>
+K30mcserv    K40snmpd	  K55routed    K75gated     K80random	 K95nfsfs
+K96pcmcia    K97network   S01kerneld   S30syslog    S40atd	 S40crond
+S40portmap   S50inet	  S55named     S60lpd	    S75keytable  S80sendmail
+S85sound     S99local
+</SCREEN>
+
+<PARA>
+Disse filer svarer til services der skal startes (Dem der starter med
+S) eller dræbes (starter med K for Kill) når systemets tilstand ændres
+til tilstand 3 (Flerbruger system). Tallet bestemmer rækkefølgen
+<filename>S01kerneld</filename> startes altså før
+<filename>S30syslog</filename>, mens <filename>K96pcmcia</filename>
+servicen dræbes efter <filename>K30mcserv</filename>. Hver fil i dette
+katalog er i virkeligheden en lænke til et script i
+<filename>/etc/rc.d/init.d/</filename> og "S50inet" betyder i
+virkeligheden at "/etc/rd.d/init.d/inetd start" udføres, hvilke
+starter alle internet services.
+</PARA>
+
+<PARA>
+Det er ikke svært at finde ud af, hvilket runlevel din computer er
+i. Nedenfor er vist hvordan.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/runlevel</USERINPUT>
+N 3
+</SCREEN>
+
+<PARA>
+3-tallet viser dig, at din pc er i runlevel 3. Det er muligt
+at skifte runlevel uden at lukke computeren ned, men N'et
+viser, at der intet tidligere runlevel er, dvs. computeren har været i
+runlevel 3, siden den blev tændt. Du skifter runlevel
+med kommandoen <FILENAME>telinit</FILENAME>. Du bør altid synkronisere 
+dine harddiske (tømme filsystemernes buffere) inden du skifter
+runlevel, dvs. kør <command>sync</command> et par gange lige inden, du
+skifter runlevel med <command>telinit</command>.
+</PARA>
+
+<PARA>
+Runlevel 3 er det mest almindelige. Skemaet nedenfor viser
+betydningen af de forskellige runlevel.
+</PARA>
+
+<TABLE frame="all">
+  <TITLE>Runlevels</TITLE>
+  <TGROUP COLS=2 ALIGN="char">
+  <THEAD>
+    <ROW>
+      <ENTRY>Runlevel</ENTRY>
+      <ENTRY>Betydning</ENTRY>
+    </ROW>
+  </THEAD>
+  <TBODY>
+    <ROW>
+      <ENTRY>0</ENTRY>
+      <ENTRY>Lukker systemet ned (<userinput>shutdown -h now</userinput>)</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>1</ENTRY>
+      <ENTRY>Enkeltbrugertilstand (Single-user mode)</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>2</ENTRY>
+      <ENTRY>Flerbruger-tilstand uden NFS</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>3</ENTRY>
+      <ENTRY>Flerbruger-tilstand med NFS</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>4</ENTRY>
+      <ENTRY>Bruges ikke</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>5</ENTRY>
+      <ENTRY>Starter op i X11</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>6</ENTRY>
+      <ENTRY>Genstart pc'en (<userinput>reboot</userinput>)</ENTRY>
+    </ROW>
+  </TBODY>
+</TGROUP>
+</TABLE>
+
+<PARA>
+Som det fremgår af skemaet, er runlevel 6 det samme som at genstarte
+pc'en, dvs. når systemadministratoren genstarter pc'en ved at
+bruge kommandoen <command>reboot</command> (genstart), skiftes der til runlevel
+6.
+</PARA>
+
+<PARA>
+Enkeltbrugertilstand er et meget nyttigt runlevel. Hvis det sker, at du
+kommer til at konfigurere et eller andet forkert en dag - ja, det vil ske
+på et eller andet tidspunkt! - og din pc låser under
+opstarten, kan du starte den op i Enkeltbrugertilstand og foretage diverse
+rettelser.
+</PARA>
+
+<PARA>
+I filen <FILENAME>/etc/inittab</FILENAME> angives hvilket
+runlevel, der er den forvalgte runlevel. Vil du ændre at man f.eks. starter
+i runlevel 5 og ikke 3, så skal du ændre linien
+</para>
+
+<screen>
+id:3:initdefault:
+</screen>
+
+<para>
+til
+</para>
+<screen>
+id:5:initdefault:
+</screen>
+
+<para>
+Se også <xref linkend="runlevel-editor"> for mere om den grafiske
+måde at konfigure de enkelte runlevels grafisk. Og <xref
+linkend="etcrcdfilen"> for detaljer om forskelle mellem de forskellige
+Linux distributioner.
+</para>
+
+</SECT2>
+
+<SECT2 ID="Nedlukning">
+<TITLE>Nedlukning af Linux</TITLE>
+<indexterm><primary>Nedlukning</primary></indexterm>
+<indexterm><primary>Ctrl-Alt-Del</primary></indexterm>
+<PARA>
+En Linux maskine er, som du nok allerede har forstået, et meget stort
+system med mange muligheder. Du skal også være meget opmærksom på, at
+en Linux maskine må man ikke bare slukke for - den skal lukkes pænt ned.
+</PARA>
+
+<PARA>
+Som vi viste i <xref linkend="runlevel">, er runlevel 0 det samme som
+at lukke ned. En generel, men lidt besværlig måde at lukke en UNIX-maskine
+på, er at skifte til root og skrive <userinput>init 0</userinput>
+eller <userinput>telinit 0</userinput>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>su -</USERINPUT>
+Passwd: <USERINPUT>hemlig</USERINPUT>
+<PROMPT>[root@linus /root]# init 0</PROMPT>
+</SCREEN>
+
+Det er dog nemmere at stoppe den grafiske brugerflade med en
+<command>exit</command> til tekst-login konsoller (evt. kan
+"Ctrl-Alt-Backspace" bruges) og så trykke
+"Ctrl-Alt-Delete", når du er i en tekstkonsol. 
+</para>
+
+<para>
+Du skal dog en gang for alle lave en ændring, så "Ctrl-Alt-Delete"
+kommer til at medføre at Linux lukkes ned. Ændres intet, genstarter
+systemet (og du vil nok her synes, at det er sjovt, at det minder om
+den mest kendte DOS kommando).  For at få maskinen til at stoppe (kaldes
+Halt), skal du ændre i <FILENAME>/etc/inittab</FILENAME>
+
+<SCREEN>
+# Trap CTRL-ALT-DELETE
+ca::ctrlaltdel:/sbin/shutdown -t3 -r now
+</SCREEN>
+
+så der kommer til at stå
+
+<SCREEN>
+# Trap CTRL-ALT-DELETE
+ca::ctrlaltdel:/sbin/shutdown -t3 -h now
+</SCREEN>
+
+Du kan selvfølgelig være fræk, så maskinen slet ikke kan stoppes fra
+tastaturet med "Ctrl-Alt-Delete", f.eks. kan du
+ændre <FILENAME>/etc/inittab</FILENAME> til
+
+<SCREEN>
+# Trap CTRL-ALT-DELETE
+ca::ctrlaltdel:echo "No reboot for you my friend!\n"
+</SCREEN>
+
+Dette er uhyre praktisk, hvis din maskine står et sted, hvor der er
+mange pilfingre, f.eks. edb-lokalet på en skole!
+</PARA>
+</sect2>
+
+</SECT1>
+
+
+<SECT1 id="linuxconf">
+<title>linuxconf</title>
+<indexterm><primary>linuxconf</primary></indexterm>
+<para>
+Programmet <command>linuxconf</command> køres af
+<filename>root</filename>, og det bruges til at udføre 
+systemadministration på Linux maskinen. Programmet er meget
+omfattende, men nemt at bruge. Du kan konfigurere brugerkonti, grupper,
+alt om netværk, e-post spam-filtrering, PPP og meget andet.
+</para>
+
+<FIGURE ID="linuxconf-billede1" FLOAT="1">
+<TITLE>Systemadministration med <command>linuxconf</command></TITLE>
+<GRAPHIC FILEREF="../images/linuxconf.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Et smart trick med programmet er, at du kan køre det via en
+webbrowser. Din systemadministrator kan således administrere din
+maskine fra en anden vilkårlig maskine, som måske kører et helt andet
+styresystem. Start <command>linuxconf</command> i en
+<command>xterm</command>, og vælg [Config] -> [Networking] -> [Misc]
+-> [Linuxconf network access], og "activate the changes". Nu kan du
+via <filename>http://DINMASKINE:98</filename> administrere maskinen
+(dette kræver ikke at Apache webserveren kører). Har du et lille
+lukket netværk, er det smart, men du skal vide, at netværkstrafikken
+kan aflyttes, og dine kodeord transmitteres i klar tekst via dit
+netværk. Du må <emphasis>aldrig</emphasis> sende adgangskoder i klar
+tekst for maskiner, der er direkte på Internettet. Det er alt for usikkert.
+</para>
+
+<FIGURE ID="linuxconf-billede2" FLOAT="1">
+<TITLE>Systemadministration med <command>linuxconf</command> i en web-browser.</TITLE>
+<GRAPHIC FILEREF="../images/linuxconf-web.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+</sect1>
+
+<SECT1 ID="kernelcompile">
+<TITLE>Omkonfigurere Linux-kernen</TITLE>
+<indexterm><primary>Linux</primary><secondary>kernen</secondary></indexterm>
+<indexterm><primary>Kerne, omkonfigurering</primary></indexterm>
+
+<PARA>
+Kernen er det program, der styrer computeren. Den består af en
+række forskellige funktioner, og vi vil i dette afsnit diskutere,
+hvordan du kan omkonfigurere kernen, så den kommer til at passe bedre til
+din computer. Sagen er nemlig den, at den kerne, som følger med
+f.eks. Red Hat, indeholder en række funktioner, som du måske 
+ikke har brug for. Ved at omkonfigurere kernen slipper du for at spilde en
+masse hukommelse (og måske tid). Du kan måske også mangle understøttelse for
+en hardware-del, f.eks. USB (Universal Serial Bus). USB er for
+nylig kommet med i Linux-kernen, hvorfor du kan blive nødt til at
+lave en ny Linux kerne. 
+</PARA>
+
+<PARA>
+Vores gennemgang af kernekonfiguration er overfladisk, dvs. vi vil
+ikke gå i detaljer med, hvad de enkelte funktioner kan, men forklare
+dig, hvordan en konfiguration foregår.  Du kan installere den
+kernel HOWTO-guide som følger med flere af Linux distributionerne og
+lære meget mere om kernen.
+</PARA>
+
+<PARA>Et par bemærkninger omkring drivere til Linux er på sin
+plads. Drivere kan eksistere på to måder under Linux; som
+en del af kernen eller som et modul. Hvis driveren er en
+del af kernen, ligger den fast i hukommelsen hele tiden, men et modul
+indlæses først i det øjeblik, der er brug for det - ja,
+faktisk kan et modul også fjernes fra hukommelsen, når der ikke
+er brug for det længere (se <xref linkend="kerne-moduler">). Det er
+klart en fordel at benytte moduler, hvis man ikke har megen hukommelse.
+</PARA>
+
+<sect2 id="kernelklar">
+<title>Bliv klar til at oversætte kernen</title>
+
+<PARA>
+Første trin til at lave din egen kerne er at se, om du fik installeret
+hele kildekoden til Linux kernen. Der er to muligheder; enten fra den
+installations-cdrom du har, eller fra en helt ny kildetekst.
+</PARA>
+
+<para>
+Hvis du vil installere kildekoden til kernen, så skriv
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh /cdrom/RedHat/RPMS/kernel-headers-2.2.5-15.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh /cdrom/RedHat/RPMS/kernel-source-2.2.5-15.i386.rpm</USERINPUT>
+</SCREEN>
+
+Dette gør, at kildeteksten lægges ind i <filename>/usr/src/linux</filename>.
+</para>
+
+<para>
+I øvrigt kan det tilrådes at lade <filename>/usr/src/linux</filename> være et
+symbolsk link til et versionsafhængigt underkatalog:
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ls -l /usr/src/linux</USERINPUT>
+lrwxrwxrwx   1 root root   11 Jan 31 12:01 linux -> linux-2.2.5
+drwxr-xr-x  17 root root 1024 Jan 25 21:22 linux-2.0.36
+drwxr-xr-x  15 root root 1024 Jan 31 20:45 linux-2.2.5
+</screen>
+
+På denne måde er det nemt at teste forskellige versioner af Linux
+kernen. Antag, at du vil opgradere til kerne 2.3.1, som du henter hjem
+fra Internettet, dvs. nu vil du installere kildeteksten selv (uden
+RPM). Start med at lave en ny mappe og et symbolsk lænke til den nye
+mappe (du skal være root).
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rm /usr/src/linux</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>mkdir /usr/src/linux-2.3.1</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ln -s /usr/src/linux-2.3.1 /usr/src/linux</USERINPUT>
+</screen>
+
+Gå (brug <command>cd</command>) ned til
+<filename>/usr/src/linux</filename> og læs <filename>README</filename>
+(med <command>less README</command>). I denne fil er forklaret, hvordan du
+oversætter kernen. Du bør altid også læse
+<filename>/usr/src/linux/Documentation/Changes</filename>, som
+beskriver, hvordan dit system bør være konfigureret, for at du kan
+oversætte/kompilere kernen.
+</para>
+
+</sect2>
+
+<sect2 id="oversaet-kerne">
+<title>Oversæt Linux-kernen</title>
+<PARA>For det første skal du skifte til kataloget
+<FILENAME>/usr/src/linux</FILENAME>, hvor kildeteksten til kernen er
+placeret. Skriv nu <userinput>make xconfig</userinput>. Du vil nu se
+et vindue som det nedenfor.
+</PARA>
+
+<FIGURE ID="kerne-conf-main" FLOAT="1">
+<TITLE>Hovedmenu for konfiguration af Linux-kernen</TITLE>
+<GRAPHIC FILEREF="../images/kerne-config-main.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Som du kan se, er der en række punkter, som du kan
+konfigurere. Du kan nu trykke på "General Setup", og du vil få
+et vindue som nedenfor. I langt de fleste punkter i menuen kan du
+vælge mellem "y", "m" og "n". Vælges "y", bliver funktionen en
+del af kernen, mens "n" betyder, at den ikke kommer med. Hvis du vælger
+"m", bliver den ikke en del af kernen, men funktionen vil eksistere som
+et modul. Som du også kan se, er der mulighed for at få en
+forklaring ved at trykke på knappen "help". Når du har konfigureret
+kernen, trykker du på "Save and exit".
+</PARA>
+
+<FIGURE ID="kerne-conf-gs" FLOAT="1">
+<TITLE>"General Setup" menuen</TITLE>
+<GRAPHIC FILEREF="../images/kerne-general-setup.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<PARA>Du er nu klar til at generere en ny kerne. Der er en række
+skridt, som du bare skal følge. Den fjerde kommando antager, at du
+bruger LILO som opstartsindlæser (eng. boot-loader). Selve oversættelsen af kernen (tredje
+kommando) og moduler (femte kommando) kan godt tage en rum tid
+afhængigt af, hvor meget du har taget med, og hvor hurtig din maskine
+er.</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>cd /usr/src/linux</USERINPUT>
+<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make dep</USERINPUT>
+<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make clean</USERINPUT>
+<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make bzImage</USERINPUT>
+<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make modules</USERINPUT>
+<PROMPT>[root@linus linux]# </PROMPT> <USERINPUT>make modules_install</USERINPUT>
+</SCREEN>
+
+<para>
+Bagefter kan du finde den nye Linux kerne i
+<filename>/usr/src/linux/arch/i386/boot/bzImage</filename>. Du kan
+teste den nye kerne ved at kopiere den til en diskette og så starte
+fra denne. Brug <userinput>dd if=/usr/src/linux/arch/i386/boot/bzImage
+of=/dev/fd0</userinput> for at teste på denne måde. Er du tilfreds med
+den nye kerne, kan du kopiere kernen til <filename>/boot</filename> og
+rette i LILO's konfigurationsfil - læs mere i <xref linkend="lilo">.
+</para>
+
+<para>
+Moduler laves til kernen svarende til kernens versionsnummer under
+<filename>/lib/modules</filename>, dvs. for kerne 2.3.1 gemmes de i
+<filename>/lib/modules/2.3.1</filename>  Nu spørger du måske om,
+hvorfor man i det hele taget laver en kerne og så moduler. Dels kan
+kernen blive mindre og derfor ofte hurtigere. Men er der fejl i et
+modul, kan man hurtigt rette i modulets kildetekst, genoversætte
+koden og starte modulet påny - uden at genstarte maskinen!
+</para>
+
+</sect2>
+
+<sect2 id="rescuedisk">
+<title>Lav en rescuedisk</title>
+<para>
+Har du brug for at lave en rescue-disk, med Linux kernen på, som du
+kan boote din Linux maskine fra, så kan du gøre dette med
+<command>mkbootdisk</command>. Find først ud af hvilken
+kerne, der er på dit system. Kør f.eks. <command>ls
+/lib/modules/</command>. Står der 2.2.12-20, så skal du - som root -
+skrive 
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>/sbin/mkbootdisk --device /dev/fd0 2.2.12-20</USERINPUT>
+</SCREEN>
+
+Disken har Linux kernen, og du kan også bruge denne disk, hvis du skal
+flytte rundt på dine harddiske (fra primær til sekundær osv).
+</para>
+
+
+</sect2>
+
+</SECT1>
+
+<sect1 ID="kerne-moduler">
+<title>Moduler</title>
+<indexterm><primary>Linux</primary><secondary>kerne-moduler</secondary></indexterm>
+<indexterm><primary>Moduler</primary><secondary>Linux kerne-moduler</secondary></indexterm>
+<para>
+Moduler (eller mere korrekt: indlæsbare kerne-moduler) er en af de
+mere smarte ting ved Linux. Kort fortalt er et modul en driver, som
+systemadministratoren (root) kan indlæse og nedlægge, mens maskinen 
+kører, dvs. du kan indlæse en driver uden at genstarte. I dette
+afsnit vil vi introducere det mest basale omkring moduler.
+</para>
+
+<para>
+Modul-systemet blev skrevet om til kerne version 2.2 (som følger med
+Red Hat 6.2 og SuSE 6.3). Vi vil antage, at du har en version 
+2.2 kerne. Du kan evt. tjekke det ved at skrive <userinput>uname
+-r</userinput>. For en standard-installation af Red Hat 6.2 vil din
+maskine svare "2.2.14-20".
+</para>
+
+<sect2 id="lsmod">
+<title>Hvad findes der allerede indlæst?</title>
+<indexterm><primary>lsmod</primary></indexterm>
+<para>
+Inden vi går i krig med at indlæse moduler, kan det være rart at vide,
+hvilke der allerede er indlæst. For at finde ud af det skal du bruge
+kommandoen <command>lsmod</command>, som er en forkortelse for "list
+modules". Kommandoen kan udføres af alle brugere, men vær opmærksom på,
+at kommandoen ligger i kataloget <filename>/sbin</filename>, og at
+almindelige bruger ikke har dette katalog med i deres søgesti. Derfor
+skal du skrive <command>/sbin/lsmod</command>, hvis du ikke er logget
+ind som systemadministrator (root).
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>lsmod</userinput>
+Module                  Size  Used by
+ppp                    18316   0  (autoclean)
+slhc                    4328   0  (autoclean) [ppp]
+autofs                  9028   1  (autoclean)
+nfs                    29944   1  (autoclean)
+lockd                  30856   1  (autoclean) [nfs]
+sunrpc                 52356   1  (autoclean) [nfs lockd]
+nls_iso8859-1           2020   1  (autoclean)
+nls_cp437               3548   1  (autoclean)
+vfat                   11516   1  (autoclean)
+fat                    25664   1  (autoclean) [vfat]
+awe_wave              157804   0 
+sb                     33204   0 
+uart401                 5968   0  [sb]
+sound                  57208   0  [awe_wave sb uart401]
+soundlow                 300   0  [sound]
+soundcore               2372   7  [sb sound]
+</screen>
+
+<para>
+Tabellen, som <command>lsmod</command> producerer, indeholder navn på
+modulet, hvor meget hukommelse det bruger, hvor mange programmer der
+bruger modulet, samt om der er andre moduler, som bruger modulet. Tag
+nu ppp-modulet: det fylder 18315 bytes, og ingen programmer eller andre 
+moduler benytter det (logisk, idet forbindelsen til Internet-udbyderen 
+er lukket ned).
+</para>
+</sect2>
+
+<sect2 id="modprobe">
+<title>Indlæs et modul</title>
+<indexterm><primary>modprobe</primary></indexterm>
+<para>
+Typisk ligger moduler i et undermappe til
+<filename>/lib/modules</filename>. På en standard-installation af Red 
+Hat 6.2 hedder undermappen <filename>2.2.14-5.0</filename> efter
+kernen (husk svaret fra <command>uname</command>). Nede i
+<filename>/lib/modules/2.2.14-5.0</filename> finder du en række
+underkataloger. Alle modulerne er grupperet efter deres anvendelse,
+f.eks. indeholder undermappen <filename>cdrom</filename> drivere
+til cdrom-drev (alle andre end ATAPI-drev). Til at indlæse et modul
+bruger du kommandoen <command>insmod</command>, som er en forkortelse
+for "install module". Du kan kun indlæse moduler som
+systemadministrator. Nedenfor viser vi, hvordan du kan indlæse en
+driver til HPFS (OS/2's filsystem).
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>modprobe hpfs</userinput>
+</screen>
+
+<para>
+Det fine ved modul-systemet er, at du kun behøver at angive navnet på
+modulet; <command>insmod</command> finder selv ud af, hvor det er
+placeret.
+</para>
+
+<para>
+Det kan være, at du kommer til at angive det forkerte modul, dvs. du
+forsøger at indlæse et modul til et stykke hardware, som du ikke
+har. Nedenfor forsøger vi at indlæse driveren til et Intel
+EtherExpress Pro/100 kort; et kort, som <emphasis>ikke</emphasis>
+sidder i maskinen.
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>modprobe eepro100</userinput>
+/lib/modules/2.2.5-15/net/eepro100.o: init_module: Device or resource busy
+</screen>
+</sect2>
+
+<sect2 id="modprobe-r">
+<title>Nedlæg et modul</title>
+<indexterm><primary>modprobe</primary><secondary>-r</secondary></indexterm>
+<para>
+Det kan ske, at du bliver træt af et modul eller blot i længere tid
+ikke har brug for det, og du derfor gerne vil nedlægge det igen. Der
+er to måder, du kan gøre det på. Den første kræver simpel tålmodighed:
+efter 60 sekunder vil ubrugte moduler automatisk blive nedlagt. Dette
+søger en dæmon ved navn <command>kerneld</command> for. Den anden måde
+er at gøre det selv. Til denne metode skal du bruge kommandoen
+<command>modprobe -r</command> ("remove module").
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>modprobe -r hpfs</userinput>
+</screen>
+
+<para>
+Kigger du i mappen <filename>/lib/modules/2.2.14-5.0</filename>, ser
+du filen <filename>modules.dep</filename> Filen indeholder information
+om, hvilke moduler et modul afhænger af. Filen er en tekstfil, så du
+kan bladre i den vha. <command>less</command> eller
+<command>more</command>. Filen skal du ikke pille ved - den bliver
+automatisk genereret under opstart af Linux ved at <command>depmod
+-a</command> køres.  Næste gang din maskine starter, kan du se efter
+linjen "Finding module dependencies" - på det tidspunkt genereres
+filen.  Derved sikrer man sig at der anvendes det rigtige modul, dette
+er specielt vigtigt hvis man har flere kerneversioner installeret.
+</para>
+</sect2>
+
+<sect2 id="modulkonfiguration">
+<title>Konfiguration</title>
+<para>
+Når vi taler om moduler, findes der en meget vigtig fil, som
+systemadministratoren kan rette i, nemlig
+<filename>/etc/conf.modules</filename>. Det skal lige siges, at filen
+bliver rettet af mange af de værktøjer, som vi omtaler i
+dette kapitel, f.eks. <command>sndconfig</command>, så måske kommer du 
+aldrig selv til at rette i den. Lad os se på indholdet af en ikke helt
+ualmindelig <filename>conf.modules</filename>. 
+</para>
+
+<screen>
+# /etc/conf.modules
+alias parport_lowlevel parport_pc
+pre-install pcmcia_core /etc/rc.d/init.d/pcmcia start
+alias sound sb
+pre-install sound insmod sound dmabuf=1
+options opl3 io=0x388
+alias midi awe_wave
+post-install awe_wave /bin/sfxload /etc/midi/GU11-ROM.SF2
+options sb io=0x220 irq=5 dma=1 dma16=5 mpu_io=0x330
+</screen>
+
+<para>
+Syntaksen for filen er som følger: først et nøgleord, derefter et navn
+på et modul og til slut en række parametre.
+</para>
+
+<para>
+Lad os begynde med det "lette" nøgleord først. Det lette nøgleord er
+"alias". Et alias betyder simpelthen, at når systemet spørger efter et
+modul, mener systemet i virkeligheden et andet. Det lyder lidt
+mærkeligt, men det er meget nyttigt. Et alias som <userinput>alias
+eth0 eepro100</userinput> vil betyde at når Linux forsøger at
+initialisere ethernettet (eth0), skal driveren
+<filename>eepro100</filename> bruges. Ofte kan Linux ikke automatisk
+detektere udvidelseskort i gamle maskiner, og det kan derfor være nyttigt 
+at fortælle Linux, hvilket netkort der sidder i maskinen. Har du et
+gammelt kort, tilføjer du derfor en "alias"-linje som
+passer til dit kort. Et andet eksempel kan være hvis du skal sætte dit 
+3Com 90x netkort i 10 Mbit mode (og ikke 100 Mbit), så skal du
+indsætte følgende linier
+</para>
+
+<screen>
+alias eth0 3c90x
+option eth0 media_select=1
+</screen>
+
+
+<para>
+Et andet nøgleord er "options" (alternativer). Her kan systemadministratoren
+angive en række alternativer til en driver/modul. I det ovenstående
+eksempel på <filename>conf.modules</filename> står der
+f.eks. <userinput>options sb io=0x220 irq=5 dma=1 dma16=5
+mpu_io=0x330</userinput>. Denne linje fortæller modulet
+<filename>sb</filename> en række ting - i dette tilfælde de relevante
+oplysninger omkring et SoundBlaster lydkort (f.eks. at I/O adressen
+er 220, og interruptet er 5).
+</para>
+
+<para>
+Nøgleordet "pre-install" fortæller modul-systemet, at før et modul
+indlæses skal et andet modul være indlæst. Alt hvad der kommer
+efter modulets navn, tolkes som en kommando med tilhørende
+alternativer. Ligeledes findes "post-install", som angiver en kommando, der
+skal udføres efter modulet er indlæst.
+</para>
+
+<para>
+I Debian og Corel Linux bør man ikke rette
+<filename>etc/conf.modules</filename>/ da programmet
+<command>update-modules</command> vil overskrive filen.  Programmet
+henter konfigurationen fra filerne i
+<filename>/etc/modutils/</filename> , bla. stier, options arhc/i386,
+og aliaser.  Skal man lave rettelse bør det gøres i disse filer og
+efterfølgende bør <command>update-modules</command> udføres.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="crontab">
+<title>Crontab</title>
+<indexterm><primary>Cron</primary><secondary>crontab</secondary></indexterm>
+<para>
+Crontab er et smart system til automatisk at køre programmer på givne
+tidspunkter, såsom daglig backup. Det er en standarddel af et UNIX
+system og er derfor altid med i Linux.
+</para>
+
+<para>
+Man kan få kørt vilkårlige programmer på vilkårlige tidspunkter,
+f.eks. hvert minut, time, dag, ugedag eller månedsdag.  I filen
+<filename>/etc/crontab</filename> retter man normalt ikke, men denne
+fil viser, at der køres jobs hver time fra
+<filename>/etc/cron.hourly</filename> til tilsvarende hver dag, uge og
+måned via <filename>/etc/cron.daily</filename>,
+<filename>/etc/cron.monthly</filename> og
+<filename>/etc/cron.weekly</filename>.  For en almindelig bruger er
+det normalt, at man føjer de kommandoer man vil have kørt på et givet
+tidspunkt, til filen <filename>~/.crontab</filename> og kører
+kommandoen <command>crontab ~/.crontab</command>.
+</para>
+
+<para>
+Syntaksen for alle disse crontab filer er den samme: En kommando per linje
+og i rækkefølge fra venstre mod højre, minut (0-59), time (0-23),
+månedsdag (0-31), måned (0-12), ugedag (0-7, hvor 0 og 7 begge er søndag)
+og endelig den kommando du vil have udført. Hvert felt adskilles af et
+mellemrum, og hvis man vil have, at f.eks. alle dage køres
+programmet, så indsæt en "*" for månedsdag og måned.</para>
+
+<para> Vi giver nu et eksempel, hvor vi hver morgen kl. 7 fra mandag
+til fredag sender brugeren "root" et e-brev med, hvor meget belastning 
+der er på maskinen.
+<screen>
+0 7 * * 1-5 uptime | mail root
+</screen>
+Brug <command>man -a crontab</command> til at læse mere om
+crontab. Skift til næste man-fil ved at trykke 'q'.
+</para>
+</sect1>
+
+<sect1 id="Opstart">
+<title>Opstart af Linux</title>
+<sect2 ID="NTogLinux">
+<title>Samtidig installation af Windows NT og Linux</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>NT</secondary></indexterm>
+<indexterm><primary>Microsoft Windows</primary><secondary>NT</secondary></indexterm>
+<indexterm><primary>Windows</primary><secondary>NT</secondary></indexterm>
+
+<para>
+Windows NT og Linux kan sagtens være installeret på samme maskine, det eneste
+lidt problematiske er opstarts-proceduren. Du kan
+vælge mellem at starte op i LILO's opstarter eller i NT's. 
+Det helt ideelle vil være, at begge opstartere
+kan starte begge systemer. Denne løsning kan man kalde
+'den ideelle duét-opstartsløsning'.
+</para>
+
+<para>
+Når Windows NT installeres, bliver "Master Boot Recorden" (MBR) på
+harddisken altid overskrevet, således at NT's egen opstartsindlæser får
+kontrol over opstarten af maskinen. Når Linux installeres, får du en
+valgmulighed: du kan vælge at overskrive MBR med LILO, eller du kan
+vælge at installere LILO på en harddiskpartition.
+</para>
+
+<para>
+Det er netop det, vi skal udnytte til at duét-opstarte mellem
+LILO og Windows NT's "OS Loader".  Vi er ikke interesserede i at miste
+muligheden for at starte op i Linux ved hjælp af LILO, så det kan
+betragtes som en forebyggende handling at acceptere tingenes
+tilstand, det vil sige at placere  Windows NT's "OS Loader" i MBR og
+at placere LILO på en passende
+primær partition. Derfor skal du svare NEJ til at placere LILO i
+"Master Boot Recorden" (MBR). LILO bør i stedet placeres på den primære
+partition, Linux er installeret i.
+</para>
+
+<para>
+Når du vælger at installere LILO på en harddiskpartition i stedet for
+i "Master Boot Recorden" (MBR), er det nødvendigt at fremstille en
+opstartsdiskette til Linux, enten som en del af installationen eller efter
+installationen, men under alle omstændigheder <emphasis>før</emphasis>
+Linux lukkes 
+ned. Ellers får du svært ved at starte op i Linux igen! Opstartsdisketten
+kan fremstilles efter installeringen med Linux-kommandoen
+<command>mkbootdisk</command>. Husk at have en formateret diskette
+parat. Disketten skal være formatteret 'unconditional', så der ikke
+ligger information skjult på den, for eksempel <command>FORMAT /U
+A:</command> i en DOS-prompt eller Linux-kommandoen
+<command>fdformat</command>. Det er vigtigt, at disketten er 100% fri for 
+fysiske fejl!
+</para>
+
+<para>
+Eksempel:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>fdformat /dev/fd0H1440</USERINPUT>
+Double-sided, 80 tracks, 18 sec/track. Total capacity 1440 kB.
+Formatting ... done
+Verifying ... done
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>ls -l /lib/modules</USERINPUT>
+total 1
+drwxr-xr-x 10 root root 1024 Dec 1 22:40 2.0.36-0.7
+lrwxrwxrwx  1 root root   23 Dec 3 13:22 preferred -> /lib/modules/2.0.36-0.7
+</screen>
+
+<para>
+<filename>preferred</filename> peger på kataloget 2.0.36-0.7. Det
+benyttes i <command>mkbootdisk</command>-kommandoen:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mkbootdisk 2.0.36-0.7</USERINPUT>
+Insert a disk in /dev/fd0. Any information on the disk will be lost.
+Press &lt;Enter&gt; to continue or ^C to abort:
+</screen>
+
+<para>
+Microsoft anbefaler, at C-drevet under Windows NT kører FAT. Det giver
+muligheder for fejlfinding, der ikke eksisterer på et NTFS-drev.  En
+uventet, men glædelig sideeffekt af dette er, at Linux kan montere
+C-drevet. Det giver blandt andet mulighed for den ideelle
+duét-opstartsløsning beskrevet i dette afsnit.
+</para>
+
+<para>
+Standard-installationen af Red Hat-udgaven af Linux konfigurerer automatisk
+duét-funktionen for Linux's opstarter, LILO. Det
+eneste, du skal gøre, er at acceptere de to opstartsmuligheder 'dos' eller
+'Linux'.  Når LILO starter, kan du trykke på TAB-tasten for at få en
+oversigt over opstartsmulighederne. Typisk kan du vælge mellem 'Linux' og
+'dos'. Når du vælger 'dos', starter LILO Windows NT's "OS Loader".
+</para>
+
+<para>
+Det lidt mere omstændelige er konfigurering af Windows NT's "OS Loader", så
+LILO kan startes fra Windows NT's "OS Loader". Windows NT's "OS Loader"
+benytter sig af filreferencer i filen <filename>C:\BOOT.INI</filename>.
+</para>
+
+<para>
+Eksempel på BOOT.INI:
+</para>
+
+<SCREEN>
+[boot loader]
+timeout=5
+default=multi(0)disk(0)rdisk(0)partition(3)\WINNT
+[operating systems]
+multi(0)disk(0)rdisk(0)partition(3)\WINNT="NT Workstation 4.00 SP3"
+multi(0)disk(0)rdisk(0)partition(3)\WINNT="NT Workstation 4.00 SP3 [VGA mode]" /basevideo /sos
+C:\="Windows 95"
+</screen>
+
+<para>
+Når NT-systemet med denne <filename>BOOT.INI</filename> startes op,
+har brugeren fem sekunder til at fravælge standard-opstarten af WINNT.
+</para>
+
+<para>
+Filen skal nu tilrettes, så Linux også bliver en valgmulighed.
+</para>
+
+<para>
+Skriv i DOS/NT:
+</para>
+
+<screen>
+C:
+CD \
+ATTRIB -s -r BOOT.INI
+EDIT BOOT.INI
+</screen>
+
+<para>
+Tilføj følgende linje:
+</para>
+
+<screen>
+C:\BOOTSECT.LNX="Linux - Red Hat Distribution 6.x"
+</screen>
+
+<para>
+Sæt derefter filens attributter igen:
+</para>
+
+<screen>
+ATTRIB +s +r BOOT.INI
+</screen>
+
+<para>
+Filen <filename>BOOTSECT.LNX</filename> skal fremstilles fra
+Linux. Først skal vi finde 
+frem til navnet på Linux-partitionen i Linux. Udfør kommandoen
+<command>df</command>. Notér navnet på filsystemet for rod-disken
+(<filename>"/"</filename>). I det følgende ses på et eksempel med to
+SCSI diske (deraf <filename>sda</filename> og <filename>sdb</filename>).
+</para>
+
+<para>
+Eksempel:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>df</USERINPUT>
+Filesystem         1024-blocks  Used Available Capacity Mounted on
+/dev/sda2             692011  356539   299728     54%   /
+/dev/sda1             618288  424384   193904     69%   /dos
+/dev/sdb1             208592  196616    11976     94%   /dos2
+/dev/sdb3             513808  426136    87672     83%   /dos3
+</screen>
+
+<para>
+Navnet på Linux-partitionen er forskelligt fra system til system. I
+eksemplet ovenfor er navnet på Linux-roddisken 
+<filename>/dev/sda2</filename>.  Nu skal
+<filename>BOOTSECT.LNX</filename> fremstilles. Dette gøres ved at
+kopiere 512 byte fra starten af Linux-partitionen
+<filename>/dev/sda2</filename> til filen
+<filename>BOOTSECT.LNX</filename>.  Udfør kommandoerne:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> dd if=/dev/sda2 of=/bootsect.lnx bs=512 count=1</userinput>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mv /bootsect.lnx /dos/bootsect.lnx</userinput>
+</screen>
+
+<para>
+Har du ikke adgang til den DOS-partition, hvor du starter op fra (eller er
+det NTFS formatteret), kan du i stedet kopiere filen ud på en
+diskette med brug af <command>mcopy</command>.
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> dd if=/dev/sda2 of=/bootsect.lnx bs=512 count=1</userinput>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> mcopy /bootsect.lnx a:</userinput>
+</screen>
+
+
+<para>
+Genstart derefter din maskine. Hvis du vælger at geninstallere LILO i
+Linux, skal du huske at fremstille en ny
+<filename>BOOTSECT.LNX</filename>-fil. 
+</para>
+
+
+<para>
+Nu kan Linux' opstarter startes fra Windows NT's "OS Loader", således at
+du <emphasis>kan</emphasis> opnå valgfrihed - også med Windows NT!
+</para>
+
+<para>
+Hvis du vil vide meget mere om MBR-placering, opstartere og
+partitioner, kan det anbefales at læse HOWTO-guiden om LILO. På Red Hat
+Linux-cd'en hedder filen <filename>/doc/HOWTO/mini/LILO</filename>
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="etc-filer">
+<title>Hvor finder jeg konfigurationsfilerne?</title>
+
+<PARA>
+Dette afsnit vil beskrive, hvilke filer der er relevante at kende i
+et Linux system. Det er normalt at gemme konfigurationsfiler i
+<filename>/etc</filename>, så du kan have glæde af at læse de enkelte
+filer igennem, når du er blevet lidt erfaren i at styre Linux. Vi vil
+i dette afsnit give dig et overblik over de vigtigste
+konfigurationsfiler, så du selv kan forstå, hvad der foregår.
+</para>
+
+
+<sect2 id="etc-password-filen">
+<title>/etc/passwd</title>
+<indexterm><primary>/etc/passwd</primary></indexterm>
+<para>
+Filen <filename>/etc/passwd</filename> indeholder en linje per bruger,
+som har login på maskinen. Brugeren "root" har også en linje her. Kun
+hvis man kører NIS (tidligere kendt som "yellow pages"), kan man lade
+ekstra brugere være styret af andre servere.
+</para>
+
+<para>
+Et eksempel på en linje af adgangskodefilen, passwd, er 
+</para>
+
+<screen>
+daisy:x:500:501::/home/daisy:/bin/bash
+</screen>
+
+<para>
+Der står, at brugeren daisy er bruger nummer 500 på maskinen (ikke, at
+der faktisk er 500). Daisy er med i gruppe nummer 501, hvilket er
+styret af <filename>/etc/group</filename>. Brugeren daisy har
+hjemmemappe i <filename>/home/daisy</filename> og starter med
+<command>/bin/bash</command> som login-shell.  Det lille x betyder, at
+man kører med skygge-adgangskoder (eng. shadow-passwords), dvs. at
+adgangskoder står i <filename>/etc/shadow</filename>, og denne fil kan
+ikke læses af andre end "root" - dvs. skygge-adgangskoder er en
+sikring af dine adgangskoder.
+</para>
+
+<para>
+Hvis en person ikke skal have lov til at logge ind på maskinen, så kan
+du rette i <filename>/etc/passwd</filename> og indsætte en stjerne
+(dvs. *) foran det krypterede password. Har du krypterede passwords på
+maskinen, så er det i stedet i <filename>/etc/shadow</filename>, du
+skal indsætte * (efter første kolon).
+</para>
+
+
+</sect2>
+
+<sect2 id="etc-shadow-filen">
+<title>/etc/shadow</title>
+<indexterm><primary>/etc/shadow</primary></indexterm>
+
+<para>
+Formatet af
+shadow filen følger passwd-filen, en linje per bruger. Et eksempel er
+</para>
+
+<screen>
+daisy:$1$/hbYueDa$46ggNKFugoDABWOJZ3xvz0:10784:0:99999:7:::       
+</screen>
+
+<para>
+For brugeren daisy står der de krypterede adgangskoder. For Red Hat er
+det længere end for SuSE, idet Red Hat anvender en bedre
+krypteringsmåde. Derefter vises antal dage siden 1/1-1970 for sidste
+ændring af adgangskoderne. Antal dage siden sidste ændring af
+password. Antal dage før udløb af adgangskoder skal der sendes en
+advarsel (her 99999). Sidste anvendte felt (7) er antal dage siden 1/1
+1970 til kontoen bliver lukket. Endelig er der et felt som ikke anvendes.
+</para>
+<para>
+Hvis din maskine ikke kører skygge-adgangskoder, og vil du dette, så kør
+<command>/usr/sbin/pwconv</command> som brugeren root. Tilsvarende
+findes <command>/usr/sbin/pwunconv</command> til at få adgangskoderne gemt
+i selve passwd-filen og ikke shadow-filen.
+</para>
+</sect2>
+
+
+<sect2 id="etc-group-filen">
+<title>/etc/group</title>
+<indexterm><primary>/etc/group</primary></indexterm>
+<para>
+Hver person er med i en eller flere grupper, og dette bruger man til
+at udskille, hvem der har adgang til hvilke dataområder. Kommandoen
+<command>chmod g+w fil</command> vil f.eks. gør, at andre brugere, som
+er i sammen gruppe som ejeren af filen, kan skrive i
+<filename>fil</filename>. 
+</para>
+
+<para>
+Hver linje i <filename>/etc/group</filename> svarer til en gruppe. Et
+eksempel på en gruppe kan være
+</para>
+
+<screen>
+kongeh:x:1000:daisy,henri,dykker,landmand
+</screen>
+
+<para>
+Dvs. gruppen "kongeh" har gruppe ID nummer 1000, og "x" betyder, at en
+eventuelt adgangkode for gruppen (anvendes ved skift til ny gruppe med
+<command>newgrp</command>) findes i shadowfilen
+<filename>/etc/gshadow</filename>. Hvis "x" blev fjernet 
+anvendes gruppe-adgangskoder ikke. 
+Til sidst på linjen står der de login-navne (fra
+passwd-filen) som er medlemmer af gruppen.
+</para>
+</sect2>
+
+
+<sect2 id="etc-gshadow-filen">
+<title>/etc/gshadow</title>
+<indexterm><primary>/etc/gshadow</primary></indexterm>
+
+<para>
+Filen <filename>/etc/gshadow</filename> følger nøje
+<filename>/etc/group</filename> med en linje per gruppe. 
+</para>
+</sect2>
+
+
+
+<sect2 id="etc-fstab-filen">
+<title>/etc/fstab</title>
+<indexterm><primary>/etc/fstab</primary></indexterm>
+<indexterm><primary>Mount, cdrom</primary></indexterm>
+<indexterm><primary>Floppy</primary></indexterm>
+<indexterm><primary>Floppy, bruger</primary></indexterm>
+<indexterm><primary>Mount, floppy</primary></indexterm>
+
+<para>
+Filen <filename>/etc/fstab</filename> indeholder information om de
+disk-partitioner, som skal eller kan mountes ved systemopstart.
+Et eksempel kan være
+</para>
+
+<screen>
+/dev/hdb2   /            ext2    defaults        1 1
+/dev/hda1   /dosc        vfat    defaults        0 0
+/dev/hdb3   /home        ext2    defaults        1 2
+/dev/hdb1   swap         swap    defaults        0 0
+/dev/fd0    /mnt/floppy  vfat    noauto,user,rw  0 0
+/dev/cdrom  /mnt/cdrom   iso9660 noauto,user,ro  0 0
+none        /proc        proc    defaults        0 0
+none        /dev/pts     devpts  mode=0622       0 0  
+</screen>
+
+<para>
+De to sidste linjer er noget, Red Hat automatisk selv har sat op,
+det ser vi bort fra. Dernæst kan vi se, at der er to harddiske i
+maskinen hda og hdb. Den sekundære harddisk på første IDE-kontroller,
+dvs. hdb har tre partitioner. Swap partitionen er sat op på den første
+partition <filename>/dev/hdb1</filename> og de to næste partitioner
+på hdb, dvs. <filename>/dev/hdb2</filename> og
+<filename>/dev/hdb3</filename> er af typen ext2 (Linux-type), og de
+mountes i rækkefølge som vist yderst til højre, dvs
+<filename>/dev/hdb2</filename> (roden) før
+<filename>/dev/hdb3</filename> (brugerens hjemmekatalog i
+<filename>/home</filename>). De to sidste linjer viser, at en
+almindelig bruger (user) kan monterer cdrom'er og disketter, men at det ikke
+gøres automatisk (noauto) under opstart. cdrom'et vil efter
+<command>mount /mnt/cdrom</command> kunne findes under
+<filename>/mnt/cdrom</filename>. Se i øvrigt <xref linkend="Mount">, og
+brug <command>man mount</command>.
+
+</para>
+</sect2>
+
+<sect2 id="etc-hosts-filen">
+<title>/etc/hosts</title>
+<indexterm><primary>/etc/hosts</primary></indexterm>
+
+<para>
+Hosts-filen anvendes ofte på maskiner, som ikke har navneserver
+(eng. DNS server eller name server) til rådighed. Man skriver en
+ip-adressse, det fulde netværknavn og et eventuelt alias. Et eksempel
+kan være:
+</para>
+
+<screen>
+127.0.0.1        localhost.localdomain localhost
+192.168.0.1      daisy.kongeh.dk       daisy
+192.168.0.2      henri.kongeh.dk       henri
+192.168.0.3      dykker.kongeh.dk      dykker
+192.168.0.4      landmand.kongeh.dk    landmand
+</screen>
+
+<para>
+IP-adressen 127.0.0.1 er en speciel "loopback"-adresse, som ikke
+anvendes til andet end, at Linux-kernen hurtigt kan kommunikere med
+sig selv. De fire maskiner daisy, henri, dykker og landmand har fået
+IP adresser i 192.168.0.*, som er et lukket net - dvs. de adresser er
+garanteret ikke-eksisterende på Internettet. Se mere i <xref
+linkend="private-ip-adresser">.
+</para>
+
+<para> 
+Vi vil i øvrigt konsekvent anvende et
+.dk-domæne. Skal du selv sætte et hjemmedomæne op, hvor maskinerne
+ikke skal være kendte på Internet, og du vil være sikker på at dit
+hjemme-domænenavn ikke er kendt på Internet, så brug f.eks. at domænet
+hedder .hjemme, så daisy-maskinen bliver til daisy.hjemme - så får du
+aldrig overlap med en anden maskine.
+</para>
+
+<para>
+Uden DNS (navneserver - se <xref linkend="dns-opsaetning">) bruger
+systemet automatisk hosts-filen ved ssh, telnet, ftp, ping osv.
+</para>
+</sect2>
+
+<sect2 id="etc-resolv-conf-filen">
+<title>/etc/resolv.conf</title>
+<indexterm><primary>/etc/resolv.conf</primary></indexterm>
+<para>
+Resolver-filen viser, hvilken maskine der er navneserver, så man kan
+slå en vilkårlig adresse op på Internettet. Et eksempel kan være
+</para>
+
+<screen>
+search kongeh.dk
+nameserver 129.142.6.64
+nameserver 129.142.6.65
+</screen>
+
+<para>
+Første linje (search) viser domæne navnet for netværket. De to næste
+linjer er to navneservere (danpost-maskiner). Laver du Internet
+opkobling til din egen ISP, skal du have nogle andre ip-adresser
+end de viste. Se også <xref linkend="PPP">.
+</para>
+
+<para>
+NB: Brug <emphasis>IKKE</emphasis> ekstra nuller til at udfylde de
+cifre, der ikke bruges. I det ovenstående må du ikke skrive
+</para>
+
+<screen>
+search kongeh.dk
+nameserver 129.142.006.064
+nameserver 129.142.006.065
+</screen>
+
+</sect2>
+
+<sect2 id="etc-inetd-conf-filen">
+<title>/etc/inetd.conf</title>
+<indexterm><primary>/etc/inetd.conf</primary></indexterm>
+
+<para>
+Denne fil er vigtig for din netværksikkerhed, idet den viser en stribe
+af de servicer, som Linux-maskinen tilbyder netværket.
+Du vil f.eks. finde disse linjer:
+</para>
+
+<screen>
+ftp     stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a    
+telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd  
+</screen>
+
+<para>
+som viser, at du modtager ftp og telnet login. Hvis du kan undvære
+disse servicer, så udkommentér dem ved at sætte et # foran dem.  
+Næste gang du genstarter maskinen (eller inet dæmonen), kan man ikke logge
+på via <command>telnet</command>. 
+Prøv <command>man inetd</command> for at læse mere.
+</para>
+</sect2>
+
+<sect2 id="etc-issue">
+<title>/etc/issue.net og /etc/issue</title>
+<indexterm><primary>/etc/issue</primary></indexterm>
+<indexterm><primary>/etc/issue.net</primary></indexterm>
+<para>
+<filename>/etc/issue</filename> og <filename>/etc/issue.net</filename>
+kan være en god måde for en cracker at finde ud af hvilket system og
+version af Linux man kører. <filename>/etc/issue</filename> vises på skærmen lige op over
+login prompten og <filename>/etc/issue.net</filename> vises blandt andet når man logger på
+system via telnet. Derfor fjern alt tekst i begge filer og sæt
+havelåger foran dette i <filename>/etc/rc.d/rc.local</filename>:
+</para>
+
+<screen>
+# This will overwrite /etc/issue at every boot. So, make any changes you
+# want to make to /etc/issue here or you will lose them when you reboot.
+# echo "" > /etc/issue
+# echo "$R" >> /etc/issue
+# echo "Kernel $(uname -r) on $a $SMP$(uname -m)" >> /etc/issue
+# cp -f /etc/issue /etc/issue.net
+# echo >> /etc/issue
+fi
+</screen>   
+</sect2>
+
+<sect2 id="etcrcdfilen">
+<title>/etc/rc.d/</title>
+<indexterm><primary>/etc/rc.d/</primary></indexterm>
+<para>
+I mappen <filename>/etc/rc.d/</filename> findes styringen af,
+hvilke programmer, der automatisk startes op, når maskinen startes. Der
+er lidt forskel mellem Red Hat og SuSE, men begge har samme struktur,
+kaldes SysV (udtales system fem), i modsætning til BSD.
+</para>
+
+<sect3 id="RH-etc-rc-d-filen">
+<title>Red Hats opstartsfiler</title>
+
+<para>
+Red Hat har følgende indhold af <filename>/etc/rc.d/</filename>
+</para>
+
+<screen>
+init.d  rc.local    rc0.d  rc2.d  rc4.d  rc6.d
+rc      rc.sysinit  rc1.d  rc3.d  rc5.d         
+</screen>
+
+<para>hvor <filename>rc0.d</filename> op til <filename>rc6.d</filename> er
+mapper med links for hvert af de syv runlevels. Links laves til
+<filename>init.d</filename>, der indeholder skript-filer, som starter
+programmerne. Se i øvrigt <xref linkend="runlevel">.
+</para>
+
+<para>
+Filen <filename>rc.sysinit</filename> ændrer man oftest ikke, idet den
+styrer opstart af tastatur, tjek af filsystemer, montering af swap, samt
+andet basalt.
+</para>
+
+<para>
+I filen <filename>rc.local</filename> kan man selv tilføje kommandoer, som
+skal startes efter de almindelige programmer. 
+</para>
+
+<para>
+Alle de ovenstående filer kan læses af alle på et Red Hat system,
+mens SuSE har valgt, at kun "root" kan læse de filer.
+</para>
+</sect3>
+
+<sect3 id="SuSE-etc-rc-d-filen">
+<title>SuSE opstartsfiler</title>
+
+<para>
+SuSE kan have følgende indhold af <filename>/etc/rc.d/</filename>
+</para>
+
+<screen>
+README      cron        kbd         random      rcS.d       skeleton
+apmd        dummy       kerneld     rc          reboot      ssh
+at          gpm         lpd         rc0.d       route       syslog
+autofs      halt        network     rc1.d       routed      xdm
+boot        halt.local  nfs         rc2.d       rpc
+boot.d      inetd       nfsserver   rc3.d       rwhod
+boot.local  init.d      pcmcia      rc4.d       sendmail
+boot.setup  inn         pcnfsd      rc5.d       serial
+cdb         ipfwadm     powerfail   rc6.d       single           
+</screen>
+
+<para>
+Som det ses, er der mapper rcX.d (hvor X går fra 0 til 6),
+med links for hvert af de syv runlevels, ligesom Red Hat. I modsætning
+til Red Hat er der i SuSE intet <filename>init.d</filename>
+katalog, og skript-filerne, der linkes til, findes direkte i
+<filename>/etc/rc.d/</filename>. Indhold af hver af opstartsfilerne,
+f.eks. <filename>autofs</filename>, er kommandoer til at starte,
+stoppe, checke og genstarte den pågældende service. Man skriver
+således <command>/etc/rc.d/autofs stop</command> for at stoppe autofs
+og tilsvarende <command>/etc/rc.d/autofs start</command> for at starte
+den igen.
+</para>
+</sect3>
+</sect2>
+
+<sect2  id="etc-sysconfig-filen">
+<title>/etc/sysconfig/</title>
+<indexterm><primary>/etc/sysconfig</primary></indexterm>
+
+<para>
+I Red Hat er mappen <filename>/etc/sysconfig/</filename> vigtig.
+</para>
+
+<screen>
+apmd   console  keyboard  network          sendmail   static-routes
+clock  init     mouse     network-scripts  soundcard           
+</screen>
+
+<para>
+For Red Hat vil alle filer i dette katalog indeholde konfigurationsparametre 
+og er koblede til filerne i <filename>/etc/rc.d/init.d</filename>. F.eks. vil
+<filename>mouse</filename> indeholde musetype.
+</para>
+
+<para>
+Et skridt længere nede i filtræet finder du
+mappen <filename>/etc/sysconfig/network-scripts</filename>, som 
+f.eks. kan indeholde
+</para>
+
+<screen>
+chat-ppp0   ifcfg-ppp0   ifdown-ppp    ifup-plip    network-functions
+chat-ppp1   ifcfg-ppp1   ifdown-sl     ifup-post
+chat-ppp2   ifcfg-ppp2   ifup          ifup-ppp
+ifcfg-eth0  ifdown       ifup-aliases  ifup-routes
+ifcfg-lo    ifdown-post  ifup-ipx      ifup-sl          
+</screen>
+
+<para>
+Her er alle skript filer til at starte PPP-forbindelser og netkort op
+og tilsvarende lukke ned. Har du en meget underlig opkobling til
+Internet, ender du med at skulle rette i filer her.
+</para>
+</sect2>
+
+<sect2 id="etc-crontab-filen">
+<title>/etc/crontab</title>
+<indexterm><primary>/etc/crontab</primary></indexterm>
+<para>
+Crontab systemet og filstyring er forklaret i <xref linkend="crontab">.
+</para>
+</sect2>
+
+<sect2 id="etc-sendmail-cf-filen">
+<title>/etc/sendmail.cf</title>
+<indexterm><primary>/etc/sendmail.cf</primary></indexterm>
+
+<para>
+Sendmail er det gode gamle postprogram til Linux, som desværre
+tit viser sig at have sikkerhedsfejl.
+Tag et kik på Postfix i <XREF LINKEND="postfix">.
+Konfigurationsfilen til sendmail er notorisk svær, og du bør
+ikke rette ret meget i din. 
+Du kan dog med fordel rette feltet DS til 
+</para>
+
+<screen>
+DSsmtp.ISP.dk
+</screen>
+
+<para>
+hvis du sender post til din Internet-udbyder, og denne har en hurtig
+"mailforwarder" - ofte kaldet en SMTP maskine,  i eksemplet kaldet
+"smtp.ISP.dk".
+</para>
+</sect2>
+
+<sect2 id="etc-aliases-filen">
+<title>/etc/aliases</title>
+<indexterm><primary>/etc/aliases</primary></indexterm>
+<para>
+Hvis du har brug for at have nem adgang til at lave post-aliaser, så
+e-post til dronningen@kongeh.dk automatisk bliver videresendt
+(eng. forwarded) til daisy@kongeh.dk, og måske vil du have at alle e-breve
+til "root" skal ende hos daisy,
+så kan du i <filename>/etc/aliases</filename> nemt anføre dette.
+</para>
+
+<screen>
+dronningen: daisy
+root: daisy
+</screen>
+
+<para>
+Efter du har redigeret filen, skal du køre
+<command>newaliases</command> kommandoen.
+</para>
+</sect2>
+
+
+<sect2 id="etc-printcap-filen">
+<title>/etc/printcap</title>
+<indexterm><primary>/etc/printcap</primary></indexterm>
+
+<para>
+For hver printer vil programmet <command>printtool</command> i Red Hat
+tilføje en linje til <filename>/etc/printcap</filename> med definition
+af printeren, såsom
+</para>
+
+<screen>
+##PRINTTOOL3## LOCAL POSTSCRIPT 600x600 a4 {} PostScript Default 1
+lp:\
+        :sd=/var/spool/lpd/lp:\
+        :mx#0:\
+        :sh:\
+        :lp=/dev/lp0:\
+        :if=/var/spool/lpd/lp/filter:
+</screen>
+
+<para>
+Her er "sd" spool-directory. Printeren sidder på
+<filename>/dev/lp0</filename>, og der printes med filter som vist
+med "if". Der er mere forklaring i <xref linkend="printere">.
+</para>
+</sect2>
+
+<sect2 id="etc-conf-modules-filen">
+<title>/etc/conf.modules</title>
+<indexterm><primary>/etc/conf.modules</primary></indexterm>
+<para>
+Denne fil indeholder opsætning og parametre til de moduler, som kan
+læses ind og ud af systemet uden at genstarte. Der er mere forklaring i
+<xref linkend="kerne-moduler">.
+</para>
+</sect2>
+
+<sect2 id="etc-securetty-filen">
+<title>/etc/securetty</title>
+<indexterm><primary>/etc/securetty</primary></indexterm>
+<para>
+I <filename>/etc/securetty</filename> anføres alle de terminaler,
+hvorfra root-brugeren kan logge ind. Filen ser ofte således ud
+</para>
+
+<screen>
+tty1
+tty2
+tty3
+tty4
+tty5
+tty6
+tty7
+tty8    
+</screen>
+
+<para>
+<filename>tty1-tty8</filename> svarer til de terminal vinduer som er
+på selve maskinen. Det er således ikke tilladt for root at logge ind
+via telnet på maskinen, og det bør <emphasis>ikke</emphasis> tillades.
+</para>
+
+</sect2>
+
+
+
+<sect2 id="etc-exports">
+<title>/etc/exports</title>
+<indexterm><primary>/etc/exports</primary></indexterm>
+<para>
+Hvis din maskine skal køre NFS, dvs. kunne være diskserver for andre
+UNIX maskiner, skal du i <filename>/etc/exports</filename> skrive,
+hvilke mapper du vil lade andre montere. For at det virker, skal du
+have "portmap" og "nfs" kørende. 
+</para>
+
+<para>
+Desuden kal du anvende <command>man exports</command> for at lære
+syntaks af <filename>/etc/exports</filename>. Som eksempel viser vi,
+hvordan du lader alle maskiner læse (ikke skrive) fra dit cdrom-drev, som
+du her har monterer fast på <filename>/mnt/cdrom</filename>. Derudover
+lader vi maskiner i domænet kongeh.dk montere hele
+<filename>/usr/local/</filename> med både læse- og skrive-rettigheder,
+så alle maskinerne kan lægge nyt programmel ind hér og programmellet anvendes
+så på alle klient-maskinerne. Husk, at du måske også skal tænke over
+sikkerheden, når du distributerer data over netværket. Giv kun adgang
+til data til de personer, som skal have den adgang.
+</para>
+
+<screen>
+/mnt/cdrom      *(r)
+/usr/local      *.kongeh.dk(rw)
+</screen>
+</sect2>
+
+<sect2 id="XF86Config-filen-kort">
+<title>/etc/X11/XF86Config - /etc/XF86Config</title>
+<indexterm><primary>/etc/XF86Config</primary></indexterm>
+<indexterm><primary>/etc/X11/XF86Config</primary></indexterm>
+<para>
+I Red Hat er den basale Xwindow-konfigurationsfil
+<filename>XF86Config</filename> lagt i
+<filename>/etc/X11/XF86Config</filename>, og tilsvarende i SuSE er den
+i <filename>/etc/XF86Config</filename>. Syntaksen findes ved at skrive
+<command>man XF86Config</command>, men der er mere hjælp i 
+<xref linkend="nulGUIapp">.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="software-raid">
+<title>Software raid</title>
+<indexterm><primary>raid</primary></indexterm>
+
+
+<sect2 id="hvad-er-raid">
+<title>Hvad er raid?</title>
+<para>
+Raid er en metode til at slå flere diske sammen til en volume, det
+kan gøres for at opnå et større brugerdrev eller for at højne
+sikkerheden ved redundans.
+</para>
+
+<para>
+Derfor er der flere måder at kombinere diske til et raid og man har
+derfor vedtaget nogle raid-levels.
+</para>
+</sect2>
+
+<sect2 id="hw-sw-raid">
+<title>Forskel mellem hardware- og softwareraid</title>
+
+<para>
+Raidet kan lave hardwaremæssigt eller softwaremæssigt, det sikreste
+er via. hardware eller med andre ord en raidkontroller.
+</para>
+
+<sect3 id="Hardwareraid">
+<title>Hardwareraid</title>
+<indexterm><primary>raid</primary><secondary>Hardware</secondary></indexterm>
+
+<para>
+Ved at lade hardwaren styre diskene og "narre" operativsystemet til at
+tro at der er tale om et eller flere logiske drev, behøver man ikke at
+bekymre sig så meget om opsætning af linux, da hardwareproducenterne
+som regel har en brugervenlig opsætningsmenu installeret i kortets
+BIOS.
+</para>
+
+<para>
+Ulempen er et disse kort som regel er dyre at anskaffe og ofte
+benytter sig af de noget dyrere SCSI diske. Med andre ord en
+raidkontroller er ofte "bare" en avanceret SCSI-kontroller.
+</para>
+</sect3>
+
+<sect3 id="Softwareraid">
+<title>Softwareraid</title>
+<indexterm><primary>raid</primary><secondary>Software</secondary></indexterm>
+
+<para>
+Her lader man et stykke software styre raidet, hvilket sparer en
+raid-controller og det er muligt at blande SCSI-diske med IDE eller kun
+benytte sig af IDE.
+</para>
+
+<para>
+Ulempen er at man så selv skal konfigurere raidet og på linux er
+det lidt besværligt.
+</para>
+</sect3>
+</sect2>
+
+
+<sect2 id="spejlet-raid">
+<title>Opsætning af spejlede diske.</title>
+<indexterm><primary>raid</primary>
+<secondary>spejling</secondary></indexterm>
+
+<para>
+Et disk spejl er hvis man ønsker en 2 diske som en logisk enhed,
+hvor begge diske indeholder samme data. Sikkerheden er her at hvis en
+disk står af, så kører den anden videre.
+</para>
+
+<para>
+Hvis man ønsker yderligere sikkerhed kan man benytte en ekstra
+sparedisk som vil kunne erstatte en nedbrudt disk i spejlet, på den
+måde undværer man kun sikkerheden i den tid som det tager
+raidsoftwaren at opbygge et nyt spejl på sparedisken.
+</para>
+
+<sect3 id="spejlet-raid-howto">
+<title>Fremgangsmåde</title>
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>
+  Start i singleusermode - (<command>linux s</command> ved opstart eller
+  <command>init 1</command>)
+</para></listitem>
+<listitem><para>
+  Opret partition med fdisk på begge diske, filsystemet skal være
+  (Linux raid autodetect) og skriv devicenummeret ned.
+</para></listitem>
+<listitem><para>
+  Opret en <filename>/etc/raidtab</filename> fil, men indhold som
+  kunne se således ud:</para>
+ <screen>
+raiddev              /dev/md0
+raid-level                  1
+nr-raid-disks               2
+chunk-size                  8
+persistent-superblock       1
+nr-spare-disks      	    0
+    device           /dev/sdc1
+    raid-disk     	    0
+    device           /dev/sdd1
+    raid-disk     	    1         
+</screen>
+</listitem>
+
+<listitem><para>
+  Opret raid device med kommandoen <command>mkraid /dev/md0</command>.
+</para></listitem>
+
+<listitem><para> 
+ Opret filsystem til din logiske enhed
+ <filename>/dev/md0</filename> med kommandoen <command>mkfs
+ /dev/md0</command>.
+</para></listitem>
+
+<listitem><para> 
+ Mount det logiske drev eks. <command>mount /dev/md0 /spejl</command>
+</para></listitem>
+
+<listitem><para> 
+ Opret en linie i <filename>/etc/fstab</filename> svarende til det nye spejl.
+</para>
+
+<screen>
+/dev/sda1  /           ext2    defaults        1 1
+/dev/md0   /Spejl      ext2    defaults        1 2
+/dev/sda5  /home       ext2    defaults        1 2
+/dev/cdrom /mnt/cdrom  iso9660 noauto,owner,ro 0 0
+/dev/sdb5  /vol2       ext2    defaults        1 2
+/dev/sdb1  swap        swap    defaults        0 0
+/dev/fd0   /mnt/floppy ext2    noauto,owner    0 0
+none       /proc       proc    defaults        0 0
+none       /dev/pts    devpts  gid=5,mode=620  0 0
+</screen>
+
+</listitem>
+</itemizedlist>
+</sect3>
+</sect2>
+
+<sect2 id="linear-raid">
+<title>Opsætning af linear raid</title>
+<indexterm><primary>linear raid</primary></indexterm>
+
+<para>
+Linear raid er når man ønsker at slå flere diske sammen til en logisk
+enhed og udnytte den samlede kapacitet.  Eks. på 2 diske som slås
+sammen <filename>/etc/raidtab</filename>
+</para>
+
+
+<screen>
+raiddev              /dev/md0
+raid-level                  linear
+nr-raid-disks               2
+chunk-size                  8
+persistent-superblock       1
+nr-spare-disks      	    0
+    device           /dev/sdc1
+    raid-disk     	    0
+    device           /dev/sdd1
+    raid-disk     	    1         
+</screen>
+</sect2>
+
+
+</sect1>
+
+<SECT1 ID="sysadm-afslutning">
+<TITLE>Afsluttende bemærkninger</TITLE>
+<indexterm>
+ <primary>Dansk</primary>
+ <secondary>Tegn og sprog</secondary>
+</indexterm>
+
+<para>
+Anvender du Red Hat 6.1 (og tidligere) vil du mangle
+danske bogstaver. Dette kan du rette op på ved at lave filen
+<filename>/etc/sysconfig/i18n</filename> med følgende indhold
+</para>
+
+<screen>
+LANG=da
+LINGUAS=da
+LC_ALL=da_DK
+SYSFONT=lat0-sun16
+SYSFONTACM=iso15
+</screen>
+
+
+<PARA>
+Der er meget mere i systemadministration, end dette korte kapitel har
+præsenteret. Til Linux findes der især to dokumenter, som er gode at
+læse, nemlig "System Administrator's Guide" (SAG) og "Network
+Administrator's Guide" (NAG) - begge kan hentes fra 
+<ulink url="http://sunsite.auc.dk/ldp">http://sunsite.auc.dk/ldp</ulink> og
+findes på din Red Hat cdrom. De er en del af "Linux
+Documentation Project" (LDP). Red Hat's hjemmeside indeholder endvidere
+en række gode tricks og nyttige oplysninger. De bedste bøger om UNIX
+systemadministration er uden tvivl Æleen Frisch's "Essential System
+Administration" udgivet af O'Reilly, og "UNIX System Administration
+Handbook" (Evi Nemeth, Garth Snyder, Scott Seebass og Trent R. Hein) udgivet
+af Prentice Hall PTR.
+</PARA>
+
+<sect2 id="harddisk-tuning">
+<title>Harddisk tuning</title>
+<indexterm><primary>Harddisk tuning</primary></indexterm>
+<para>
+Har du brug for at få ekstra "tryk" på din IDE-harddisk
+så kan du bruge <command>hdparm</command> til at tune hastigheden.
+Her er givet de to vigtigste parametre (bruge DMA og lookahead), som
+nærmest alle nyere diske understøtter. Der kan tunes endnu mere - have
+fun :-)
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -d1 -A1 /dev/hda</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
+</screen>
+
+<para>
+Samme program kan bruges til at få harddisken til at spinne ned i
+hastighed - f.eks. efter 5 sekunder. Dette betyder mere slid på
+harddisken, men din maskine bliver stille.
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -S 1 /dev/hda</userinput>
+</screen>
+
+<para>
+Kernens IDE driver skal supportere det IDE chipsæt, der anvendes af
+bundkortet, og ikke alle IDE chipsæt er supporteret med (U)DMA.  så
+hvis en given funktion ikke tillades af <command>hdparm</command> så
+kan det være forklaringen.
+</para>
+
+<para>
+Hdparm har kun begrænset anvendelse med SCSI. Til SCSI skal man dels
+se på driveren, dvs. tilføje eventuelle modulparametre.  Symbios
+SCSI-driverne kan dog fintunes via <command>/proc/scsi</command> under
+drift.  Et nyttigt grafisk værktøj til at tune SCSI diske er
+<command>scsi-config</command>, selvom der normalt ikke er så meget at
+"tune".
+</para>
+
+</sect2>
+
+<sect2 id="hvad-laver-hvad">
+<title>Hvilke filer har programmet åbne?</title>
+<indexterm><primary>Fil</primary><secondary>åbne</secondary</indexterm>
+<para>
+Ofte vil dit program have filer åbne som du måske ikke lige
+vidste. Med <command>lsof</command> kan du se hvad der sker. Vi kan
+f.eks. se hvad programmet arbejder med. Som eksempel kan vi se hvad
+der sker, når man har <command>ping</command> kørende. Først finder vi
+den PID - proces ID - som <command>ping</command> kører med:
+</para>
+
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ps aux | grep ping</userinput>
+pto       9149  0.0  0.1  1264  228 pts/4    S    Apr29   0:00 ping dykker
+root      9418  0.0  0.4  1360  516 ttyp0    S    00:06   0:00 grep ping
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>lsof -p 9149</userinput>
+COMMAND  PID USER   FD   TYPE DEVICE    SIZE   NODE NAME
+ping    9149 root  cwd    DIR    3,7    4096  30919 /home/pto/tmp
+ping    9149 root  rtd    DIR    3,5    4096      2 /
+ping    9149 root  txt    REG    3,5   17968 114094 /bin/ping
+ping    9149 root  mem    REG    3,5  340663  16023 /lib/ld-2.1.3.so
+ping    9149 root  mem    REG    3,5  169720  16071 /lib/libresolv-2.1.3.so
+ping    9149 root  mem    REG    3,5 4101324  16030 /lib/libc-2.1.3.so
+ping    9149 root  mem    REG    3,5  246652  16061 /lib/libnss_files-2.1.3.so
+ping    9149 root    0u   CHR  136,4              6 /dev/pts/4
+ping    9149 root    1u   CHR  136,4              6 /dev/pts/4
+ping    9149 root    2u   CHR  136,4              6 /dev/pts/4
+ping    9149 root    3u   raw                 12743 0200A8C0:0001->00000000:0000 st=07
+</screen>
+
+<para>
+Så man kan se at programmer har fat i mange filer.
+</para>
+
+<para>
+Tilsvarende kan man have stor glæde af at kunne se hvilke programmer,
+der har filer åbne under et givet katalog i filtræet. Det er meget
+relevant ved afmontering af f.eks. cdrom-drev. Prøv følgende:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>lsof +D /var/spool</userinput>
+COMMAND  PID USER   FD   TYPE DEVICE SIZE  NODE NAME
+atd      459 root  cwd    DIR    3,5 4096 32594 /var/spool/at
+crond    473 root  cwd    DIR    3,5 4096    12 /var/spool/
+lpd     9299 root    4w   REG    3,5    5  4507 /var/spool/lpd/lpd.lock
+
+</screen>
+
+<para>
+Eksemplet viser, at der er tre programmer <command>at</command>,
+<command>crond</command> og <command>lpd</command> som pt. anvender
+filer under <filename>/var/spool</filename>. Meget nyttige ting for en
+systemadministrator.
+</para>
+
+</sect2>
+
+
+<sect2 id="glemt-passwd">
+<title>Har du glemt dit password?</title>
+
+<indexterm><primary>glemt password</primary></indexterm>
+<indexterm><primary>password</primary><secondary>glemt</secondary></indexterm>
+
+
+<para>
+Hvis du har dummet dig meget og glemt dit root-password, så kan du 
+få sat et nyt ind. 
+</para>
+
+<para>
+I så fald booter du med "linux init=/bin/sh" . Så starter den en
+shell som proces nr. 1. Herefter køres
+</para>
+
+<screen>
+<PROMPT>[root]# </PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
+<PROMPT>[root]# </PROMPT> <userinput>passwd</userinput>                       # skift password
+<PROMPT>[root]# </PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
+<PROMPT>[root]# </PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
+</screen>
+
+<para>
+Dette lyder jo som et stort sikkerhedhul og det er det også, hvis man
+har fysisk adgang til maskinen. Du kan dog undgå dette ved at tilføje 
+linien "password=MIT_PASSWORD" til din
+<filename>/etc/lilo.conf</filename>, men så skal du kunne huske
+root-password og det password du har sat i <filename>/etc/lilo.conf</filename>.
+</para>
+
+</sect2>
+</SECT1>
+</chapter>

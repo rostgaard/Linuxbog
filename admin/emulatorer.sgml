@@ -1,0 +1,242 @@
+<chapter id="emulatorer">
+<title>Emulatorer</title>
+<indexterm><primary>VMware</primary></indexterm>
+<indexterm><primary>Emulator</primary><secondary>VMware</secondary></indexterm>
+<indexterm><primary>Emulator</primary><secondary>SCO</secondary></indexterm>
+
+<para>
+En emulator er et program, som gør det muligt at afvikle programmer
+skrevet til en anden computer eller styresystem. Vi vil i dette afsnit 
+se på en række forskellige emulatorer, som du kan benytte under Linux.
+</para>
+
+<para>
+Med hensyn til emulatorer kan Linux køre SCO programmer
+(en kommerciel UNIX-variant) gennem det, der hedder iBCS biblioteket (Intel
+Binary Code Standard). Dette giver adgang til en del ekstra
+kommercielle database-programmer. 
+</para>
+
+<para>
+Har du en kraftig (gerne 128 MB RAM) og hurtig PC (gerne mere end 266
+MHz Pentium II), kan du <emphasis>købe</emphasis> VMware, som laver en
+emuleret processor og kobling til maskinen.  Så kan du køre dine
+Windows programmer samtidig med, at du kører dine Linux programmer -
+og principielt kan alle programmer køre. VMware kræver naturligvis, at
+Windows er installeret på computeren.  VMware findes på <ulink
+url="http://www.vmware.com">http://www.vmware.com</ulink>
+</para>
+
+<sect1 id="dosemu">
+<title>DOS-emulatoren dosemu</title>
+<indexterm><primary>DOS</primary><secondary>emulering, dosemu</secondary></indexterm>
+<indexterm><primary>Emulator</primary><secondary>dosemu, FreeDOS</secondary></indexterm>
+<para>
+Mangler du specifikke DOS programmer under Linux, kan du få en DOS
+emulator (<command>dos</command> (konsol-orienteret) og
+<command>xdos</command> (X-baseret)), således at du under Linux kan
+eksekvere DOS programmer. Programmet kan sågar køre grafikprogrammer
+(f.eks. Windows 3.1) - dog ikke nyere Win32 programmer. Du kan
+f.eks. anvende DOS-emulatoren til at køre Gyldendals røde ordbøger.
+</para>
+
+<para>
+DOS-emulatoren består egentlig af to dele. Den ene del gør det muligt
+at afvikle DOS programmer under Linux, mens den anden del er selve
+styresystemet DOS. Der følger en DOS ved navn FreeDOS med, men du kan
+i princippet bruge din egen, f.eks. hvis du en gang har købt DOS og
+stadig har installationsdisketterne liggende. I det følgende vil vi
+dog kun benytte FreeDOS. Begge dele er indeholdt i dosemu-pakken.
+</para>
+
+<para>
+Lad det være sagt med det samme: den version af DOS-emulatoren, som
+følger med Red Hat virker <emphasis>ikke</emphasis>. Grunden er
+den simple, at Red Hat har valgt at benytte den nyeste version. Men
+denne version er for udviklerne, dvs. den er fuld af fejl og
+mangler. Derfor skal du først nedgradere dit system til den stabile
+version. Nedenfor ser du, hvordan du gør det.
+</para>
+
+<screen>
+<prompt>[root@linus root]# </prompt><userinput>rpm -e dosemu-freedos-0.99.10-4</userinput>
+<prompt>[root@linus root]# </prompt><userinput>rpm -e xdosemu-0.99.10-4</userinput>
+<prompt>[root@linus root]# </prompt><userinput>rpm -e dosemu-0.99.10-4</userinput>
+<prompt>[root@linus root]# </prompt><userinput>rpm -i dosemu-0.98.8-1.i386.rpm</userinput>
+</screen>
+
+<para>
+Filen <filename>dosemu-0.99.8-1.i386.rpm</filename> kan du downloade
+fra <ulink
+url="ftp://sunsite.auc.dk/pub/os/linux/sunsite/system/emulators/dosemu">ftp://sunsite.auc.dk/pub/os/linux/sunsite/system/emulators/dosemu</ulink>.
+For at få DOS-emulatoren til at virke skal du have DOS
+installeret. Nedgraderer du som anvist ovenfor, kan du let få en
+gratis DOS (FreeDOS). Du skal blot omdøbe filen
+<filename>hdimage.first.rpmsave</filename> i kataloget
+<filename>/var/lib/dosemu</filename> til
+<filename>hdimage.first</filename>.
+</para>
+
+<screen>
+<prompt>[root@linus root]# </prompt><userinput>cd /var/lib/dosemu </userinput>
+<prompt>[root@linus dosemu]# </prompt><userinput>mv hdimage.first.rpmsave hdimage.first</userinput>
+</screen>
+
+<para>
+Eftersom du under DOS kan rode direkte med hardware (som du ikke som
+almindelig bruger under Linux kan), kan kun root køre
+DOS-emulatoren. Hvis du ønsker at ændre dette, skal du rette i filen
+<filename>/etc/dosemu.users</filename>. Den RPM-fil, som du har
+installeret som anvist ovenfor, tillader at alle bruger den, så du skal
+ikke rette noget.
+</para>
+
+<para>
+Under en standard installation af dosemu-pakken oprettes et billede
+af en harddisk. Billedet emulerer C-drevet. Dette billede finder du
+(under Red Hat 6.0) som
+<filename>/var/lib/dosemu/hdimage.first</filename>. Det er let at
+hente og gemme filer på dette billede fra Linux. Du skal blot føje
+linjen 
+<screen>drive g:  file="/var/lib/dosemu/hdimage" Offset=8832</screen> 
+til <filename>/etc/mtools.conf</filename>, og nu 
+kan du bruge <command>mcopy</command>, <command>mdir</command> osv.
+</para>
+
+<para>
+Vil du vide mere om DOS-emulatoren, er <ulink
+url="http://www.dosemu.org">http://www.dosemu.org</ulink> et godt sted 
+at begynde. FreeDOS finder du på <ulink
+url="http://www.freedos.org">http://www.freedos.org</ulink>
+</para>
+
+<FIGURE ID="fig-dosemu" FLOAT="1">
+<TITLE>WordPerfect 5.1 i DOS-emulatoren</TITLE>
+<GRAPHIC FILEREF="../images/wp51-dosemu.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+</sect1>
+
+<sect1 id="WINE">
+<title>Windows-emulatoren WINE</title>
+<indexterm><primary>Wine</primary></indexterm>
+<para>
+Der har længe været programmeret på WINE (<ulink
+url="http://www.winehq.com">http://www.winehq.com</ulink>) - et
+program til at kunne køre Windows emulator under Linux - og projektet
+virker mere lovende nu efter lang tids stilstand. På grund af
+Microsofts lukkede politik er det ikke alt, teamet har kunnet få
+tekniske detaljer på, og derfor er det langtfra sikkert, at du kan få
+nyere Windows programmer til at køre på denne måde under Linux. Wine
+står for Wine Is Not an Emulator!
+</para>
+
+<para>
+WINE er på ingen måder et færdigt produkt endnu, men det er muligt at
+finde "snapshots" af WINE rundt om på Internettet. Nedenfor viser vi,
+hvordan et "snapshot" fra  den 28. marts 1999 installeres (filen er
+fundet på <ulink
+url="ftp://sunsite.auc.dk">ftp://sunsite.auc.dk</ulink>). 
+
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>su -</userinput>
+Password: 
+<prompt>[root@linus root]# </prompt> <userinput>rpm -i wine-990328-1.i386.rpm</userinput>
+</screen>
+
+<para>
+Inden du kan komme i gang med at bruge WINE, bør du se lidt på
+konfigurationen af WINE, som sker i filen
+<filename>/etc/wine.conf</filename>. Du skal først og fremmest
+tilrette filen, så stier til dine Microsoft Windows kataloger er
+korrekte. Når du ønsker at køre et Windows-program, bruger du
+kommandoen <command>wine</command> (efterfulgt af navnet på det
+program, du ønsker at køre). Nedenfor ser du et eksempel på brugen af
+WINE - kabalespillet fra Windows kører, og <command>gtop</command> ses
+i baggrunden.
+</para>
+
+<FIGURE ID="wine-fig" FLOAT="1">
+<TITLE>Windows emulatoren WINE</TITLE>
+<GRAPHIC FILEREF="../images/wine.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Lad os bare indrømme det: vi har forsøgt med en del
+Windows-programmer, og kun få har virket i WINE. Men selvom WINE ikke
+virker helt endnu, er det nu alligevel værd at følge med i udviklingen 
+og prøve et "snapshot" i ny og næ.
+</para>
+
+<para>
+Slutteligt bør det nævnes, at der også findes en kommerciel Windows
+emulator under navnet WABI.
+</para>
+</sect1>
+
+
+<sect1 id="VICE">
+<title>Commodore emulering</title>
+<indexterm><primary>C64</primary></indexterm><para>
+Hvis du som denne bogs forfattere er vild med din gamle Commodore 64,
+er VICE noget for dig. VICE er en forkortelse for "Versatile Commodore
+8-bit Emulator" (eller måske VIC Emulator). VICE kan emulere Commodore
+64, Commodore 128, VIC 20 og Commodore PET. Ud over udgaver til Linux
+(UNIX) findes VICE til MS-DOS og Windows. VICE er i sandhed en alsidig
+emulator.
+</para>
+
+<para>
+VICE følger ikke med en standard Red Hat distribution, men du finder
+den let på et ftp-site, f.eks. <ulink
+url="ftp://sunsite.auc.dk">ftp://sunsite.auc.dk</ulink> under Red
+Hat-contrib. Installationen kan drille lidt, idet VICE kræver
+<filename>libstdc++</filename> version 2.9. Dette bibliotek er
+installeret ved en standard installation, men navnet kan være
+forkert. Nedenfor ser du, hvordan du kan installere VICE - du bør
+tjekke, hvilket navn <filename>libstdc++</filename> har i
+<filename>/usr/lib</filename>.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>su -</userinput>
+Password: 
+<prompt>[root@linus root]# </prompt> <userinput>cd /usr/lib</userinput>
+<prompt>[root@linus root]# </prompt> <userinput>ln -s libstdc++-2-libc6.1-1-2.9.0.so libstdc++.so.2.9</userinput>
+<prompt>[root@linus root]# </prompt> <userinput>rpm -ivh --nodeps vice-1.0-1.i386.rpm</userinput>
+</screen>
+
+<para>
+Efter installationen er du klar til at bruge VICE. Afhængigt af, hvilken
+Commodore-computer, du ønsker at emulere, skal du benytte et af
+følgende programmer: <command>x64</command> (Commodore 64),
+<command>x128</command> (Commodore 128), <command>xvic</command> (VIC
+20) eller <command>xpet</command> (PET).
+</para>
+
+<para>
+VICE kan emulere lyd og grafik samt ydre enheder, dvs. båndstationer,
+diskettestationer (Commodore 1571) og joystick. Din emulator kører i
+et selvstændigt vindue under X. Højre og venstre museknap giver dig
+menuer til at styre VICE. Bånd og disketter emuleres ved, at du har
+indholdet liggende i en fil på din harddisk. Trykker du på venstre
+museknap, kan du "attach a disk image" og "attach a tape image",
+dvs. du kan vælge, hvilken fil der er dit bånd eller din
+diskette. Bånd og disketter gemmes i særlige formater.
+</para>
+
+<para>
+Det er let at finde gamle spil til f.eks. Commodore 64 rundt om på
+Internettet. Tjek f.eks. <ulink
+url="http://www.c64.com">http://www.c64.com</ulink> som har ca. 2500
+liggende.
+</para>
+
+<FIGURE ID="vice-fig" FLOAT="1">
+<TITLE>Spillet Soccer</TITLE>
+<GRAPHIC FILEREF="../images/vice.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+</sect1>
+</chapter>

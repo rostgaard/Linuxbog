@@ -1,0 +1,4523 @@
+<chapter id="Linux-netvaerk-server">
+<title>Linux som server</title>
+<indexterm><primary>Netværk</primary></indexterm>
+
+<para>
+I dette kapitel vil vi se nærmere på Linux som server og det er på
+mere avanceret plan.  Først kommer der en mere grundlæggende
+forklaring af netværk, TCP/IP og netværksadresser, idet dette er helt
+centralt for alt med netværk. Dernæst vil der blive vist, hvordan man
+kan sætte en nameserver op (DNS), DHCP, NFS (UNIX fildeling), NIS
+(password-deling), SAMBA (Windows fildeling), Apache webserver og
+firewall.
+</para>
+
+<sect1 id="tcp-ip">
+<title>TCP/IP</title>
+
+<para>
+Det er i dag blevet meget almindeligt, også for privatbrugere, at
+koble flere computere sammen i et netværk. For at computerne kan
+"tale" sammen kræves en standard for hvorledes kommunikationen skal
+foregå, en sådan standard kaldes en protokol.
+</para>
+
+<para>
+En protokol består basalt set af nogle regler som blandt andet
+forhindrer computerne i at "snakke i munden på hinanden". Samtidig er
+der defineret hvor store portioner data som skal sendes af gangen,
+hvor lang tid computeren skal vente på at modparten svarer og
+lignende.
+</para>
+
+<para>
+<indexterm><primary>TCP/IP</primary></indexterm>
+Gennem tiden er forskellige standarder indenfor datakommunikation
+blevet udviklet.  TCP/IP og Internet har rødder tilbage til 1969, hvor
+den amerikanske regeringsorganisation DARPA (Defense Advanced Research
+Projects Agency) søsatte et forskningsprojekt, der havde til formål at
+udvikle teknologier til pålidelig datakommunikation. Resultatet kom
+til at hedde ARPANET. Efterhånden voksede ARPANET og delte sig i flere
+uafhængige, men indbyrdes forbundne netværk. Den stadige knopskydning
+og vækst omdannede efterhånden det oprindelige ARPANET til vore dages
+Internet.
+</para>
+
+<para>
+For at muliggøre kommunikation mellem vidt forskellige
+computersystemer er talrige standarder blevet vedtaget - og bliver
+løbende vedtaget. Kommunikation over Internet er bygget op om
+protokollen "TCP/IP", Transmission Control Protocol/Internet
+Protocol. I modsætning til andre operativsystemer har denne
+protokol altid været en del af Linux, hvilket betyder at Linux er
+meget overlegent til Internet kommunikation i forhold til øvrige
+systemer.
+</para>
+
+<para>
+Internet og TCP/IP har eksisteret i mange år, de første versioner blev
+udviklet af den amerikanske regering allerede i slutningen af
+60'erne. Sidenhen ekspanderede nettet kraftigt, og bredte sig ud over
+USA's grænser. Filosofien har fra starten været, at skabe et så
+uafhængigt netværk som muligt, uafhængigt at specifikke
+computersystemer, og uden én enkelt central computer til at bestemme.
+</para>
+
+<para>
+For at få alt sammen til at snakke sammen, eksisterer forskellige
+organisationer, som har hvert sit ansvarsområde. Disse består af
+frivillige teknikere/ingeniører, som tager stilling til forskellige
+forslag og diskuterer fremtiden for Internettet. Debatten er meget
+åben, før en standard bliver vedtaget kommer den ud til "Internet
+befolkningen" hvor enhver har mulighed for at kommentere. Herefter
+vil forslaget blive vedtaget og gjort til en endelig standard som de
+individuelle firmaer kan implementere i deres systemer.
+</para>
+
+<para>
+Internettets historie er der skrevet mange bøger om, stort set hver
+bog har sin egen version af historien. Der er ikke altid enighed om
+hvornår hvilken begivenhed indtraf eller hvem der stod bag. Men rent
+faktisk er det kun filosofien datidens "Internet" har til fælles med
+nutidens Internet. Derfor er det lidt udenfor denne bogs område, at
+beskrive datoerne og de individuelle organisationer i Internettets
+historie.
+</para>
+
+<sect2 id="laernetvaerk">
+<title>En lille formaning</title>
+
+<para>
+Fordi du nu bruger Linux, kommer du til at have fingrene lidt
+længere nede i netværksmaskineriet end med andre styresystemer. Derfor
+bliver du nødt til at lære lidt mere om, hvordan det hele er skruet sammen
+i stedet for bare at skrive en stribe magiske tal i nogle dialogbokse.
+</para>
+
+<para>
+Du kan i mange tilfælde teste tingene på din egen maskine uden at være
+forbundet til et eksternt netværk og dermed undgå at genere andre. Vær
+frem for alt ikke bange for at lege med tingene - du kan kun blive klogere af
+det!
+</para>
+</sect2>
+</sect1>
+
+
+
+<sect1 id="ip-adresser">
+<title>IP-adresser</title>
+<indexterm><primary>IP-adresser</primary></indexterm>
+
+<para>
+Kommunikation på Internet foregår ved at hver enkel computer
+tilkoblet Internettet, har et unikt nummer, kaldet en IP adresse. IP
+adresser ses i det daglige som decimal tal, eksempelvis:
+195.249.116.158.
+</para>
+
+<para>
+Men rent faktisk behandler computere dem ikke i decimal talsystemet
+men derimod i  det binære talsystem. Det binære talsystem består af
+bit, dem skal der bruges 32 af for at have en IP adresse. Hver bit
+kan enten have værdien 1 eller 0, på hardware niveau behandles 1 som
+forbindelse mellem 2 kredsløb og 0 som ikke forbindelse.
+</para>
+
+<para>
+I decimal tal er en IP adresse delt ind i 4 felter adskilt af
+punktum. For at sammenligne binært og decimal skal den binære version
+derfor også deles op i 4 felter; vi deler derfor de 32 bit med de 4
+felter, og kan derved udlede at hvert felt skal bestå af 8 bit.
+</para>
+
+<para>
+I binært talformat vil det første felt i ovenstående IP adresse (195)
+hedde: 11000011. Følgende metode benyttes for at omregne feltet til
+decimal tal:
+</para>
+
+<table id="net1">
+<title>Omregning af IP til binært format</title>
+<tgroup cols=3 align="char">
+
+<thead><row>
+ <entry>Bit nr:</entry>
+ <entry>Repræsenteret værdi:</entry>
+ <entry>Bit-værdi:</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>1</entry> 
+ <entry>1</entry>
+ <entry>1</entry> 
+</row>
+
+<row>
+ <entry>2</entry> 
+ <entry>2</entry>
+ <entry>1</entry> 
+</row>
+
+<row>
+ <entry>3</entry> 
+ <entry>4</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>4</entry> 
+ <entry>8</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>5</entry> 
+ <entry>16</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>6</entry> 
+ <entry>32</entry>
+ <entry>0</entry> 
+</row>
+
+<row>
+ <entry>7</entry> 
+ <entry>64</entry>
+ <entry>1</entry> 
+</row>
+
+<row>
+ <entry>8</entry> 
+ <entry>128</entry>
+ <entry>1</entry> 
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Hvis bit værdien er 1 betyder det blot at den repræsenterede værdi
+skal medregnes, hvis den er 0 skal den springes over, det giver
+følgende regnestykke: 1+2+64+128 = 195
+</para>
+
+<para>
+Dette regnestykke bruges for hvert af de 4 felter, og man kan på den
+måde omregne en IP adresse fra binært til decimal. Hvert felt kan
+således antage en værdi mellem 0 og 255 (begge inklusiv).
+</para>
+
+
+<para>
+Har du brug for at regne om fra binært, decimalt og til hexadecimalt,
+så har KDE er god lommeregner, <command>kcalc</command>, som gør dette nemt.
+</para>
+
+<sect2 id="netklasser">
+<title>Netklasser</title>
+
+<para>
+For at kunne opdele IP adresserne i portioner som kan delegeres til
+firmaer/institutioner er et system defineret til at inddele IP
+adresserne i net, også kaldet net klasser. 3 net klasser eksisterer:
+A, B og C, hver klasse har et specifikt adresseområde. Derudover
+afgør netklassen, hvor mange af felterne som er variable, følgende
+skema giver en oversigt over de omtalte netklasser:
+</para>
+
+<table id="tab-netklasser">
+<title>Netklasser</title>
+<tgroup cols=4 align="char">
+
+<thead><row>
+ <entry>Netklasse:</entry>
+ <entry>A</entry>
+ <entry>B</entry>
+ <entry>C</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>Adresseområde:</entry> 
+ <entry>0.*.*.* - 126.*.*.*</entry>
+ <entry>128.*.*.* - 191.*.*.*</entry> 
+ <entry>192.*.*.* - 223.*.*.*</entry> 
+</row>
+
+<row>
+ <entry>Fast/Variabel:</entry> 
+ <entry>Fast.*.*.*</entry>
+ <entry>Fast.fast.*.*</entry> 
+ <entry>Fast.fast.fast.*</entry> 
+</row>
+
+<row>
+ <entry>Mulige klasser:</entry> 
+ <entry>127</entry>
+ <entry>16.383</entry>
+ <entry>2.097.151</entry> 
+</row>
+
+<row>
+ <entry>Mulige IP adresser:</entry> 
+ <entry>16.777.214</entry>
+ <entry>65.534</entry> 
+ <entry>254</entry> 
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+
+<para>
+(* (Stjerne) angiver at værdien kan være mellem 0 og 255 (begge
+inklusiv)).
+</para>
+
+<para>
+Som det kan ses i "adresseområde" feltet er det udelukkende det
+første felt i IP adressen som afgører hvilken netklasse en IP adresse
+tilhører. Feltet "Fast/Variabel" viser hvilken del af IP adressen man
+selv kan bestemme når man får delegeret et net af den pågældende
+klasse. Den faste del kaldes også for netværksnummeret mens den
+variable del kaldes værtsnummer eller host-id. "Mulige klasser"
+fortæller hvor mange klasser af de forskellige typer som kan
+eksistere med de gældende standarder. Feltet "Mulige IP adresser"
+illustrerer hvor mange IP adresser hver klasse kan indeholde.
+</para>
+
+<para>
+Hvis man sammenligner vores test IP adresse: 195.249.116.158 med
+ovenstående skema fremgår følgende: Det første felt i IP adressen,
+"195" fortæller at IP adressen tilhører et C-klasse net, da tallet
+"195" ligger i området 192-223. For C-klasse net gælder det at de
+første 3 felter er faste, det er således kun det sidste felt man selv
+kan råde over. Samtidig kan det ses at der i alt kan eksistere
+2.097.151 C-klasse net, hver C-klasse net kan indeholde 254 IP
+adresser.
+</para>
+
+
+<sect3 id="subnet-maske">
+<title>Subnet maske</title>
+<indexterm>
+ <primary>Subnet maske</primary>
+</indexterm>
+
+<para>
+Når et IP net bliver delegeret til et firma/en institution får
+firmaet tildelt et netværksnummer og skal derfra selv tildele
+værtsnumre til de enkelte computere. Eftersom computerne sidder i et
+lokalnetværk og derfor er fysisk koblet sammen skal de formentlig
+primært udveksle data indbyrdes. For at muliggøre dette kræves det at
+en specifik subnet maske konfigureres samtidig med den individuelle
+IP adresse.
+</para>
+
+<para>
+Subnet masker består ligesom IP adresser af 32 bit, til et
+C-klassenet hedder subnetmasken i decimalt tal 255.255.255.0. De
+første 3 felter af en C-klasse IP adresse er som bekendt faste. I
+subnetmasken vises det ved at feltet har den maksimale værdi; 255.
+Mens det sidste felt som er variabelt har værdien 0, hvilket betyder
+at dette felt i IP adressen kan antage en hvilken som helst værdi
+mellem 0 og 255 og stadig være indenfor det givne IP net. Med en
+C-klasse net subnet maske skal de 3 første felter i en IP adresse
+altså være ens før 2 IP adresser stammer fra samme IP net.
+</para>
+
+<table id="subnet-eksempel">
+<title>Subnet masker</title>
+<tgroup cols=2 align="char">
+
+<thead><row>
+ <entry>IP Adresse:</entry>
+ <entry>Samme IP net som 195.249.116.158?</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>212.112.128.10</entry> 
+ <entry>Nej</entry> 
+</row>
+
+<row>
+ <entry>195.125.13.2</entry> 
+ <entry>Nej</entry>
+</row>
+
+<row>
+ <entry>195.249.116.15</entry> 
+ <entry>Ja!</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Ovenstående skema viser med nogle eksempler hvordan man ser om en
+given adresse er i samme IP net som en anden. Det første felt i den
+første adresse (212) er ikke lig 195, og derfor er de 2 adresser ikke
+i samme net. Ved den næste adresse matcher det første felt, men det
+andet felt (125), er ikke lig det andet felt i test adressen (249).
+Den sidste adresse er på samme IP net fordi de 3 første felter
+matcher, hvilket var kriteriet for en adresse med subnetmasken
+255.255.255.0.
+</para>
+
+<para>
+Du kan også på <ulink
+url="http://www.ko.sdu.dk/~pen/netmasker/ip-net.htmlx">http://www.ko.sdu.dk/~pen/netmasker/ip-net.htmlx</ulink>
+læse mere om IP adresser.
+</para>
+
+</sect3>
+</sect2>
+
+
+<sect2 id="netsammenkobling">
+<title>Sammenkobling af flere netværk</title>
+
+<para>
+Som nævnt tidligere kan alle computere i et netværk umiddelbart komme i
+kontakt med hinanden. Som eksempel kan vi forestille os, at vi har et
+klasse C netværk 192.168.100.0 (vært nummer 0 henviser ikke til en
+computer - men til hele netværket) med tre computere med flg. adresser:
+</para>
+
+<para>
+<table id="tab-eks-3-maskiner">
+<title>Netværket 192.168.100.0</title>
+<tgroup cols=2 align="char">
+<thead><row><entry>Værtsnavn</entry><entry>Adresse</entry></row></thead>
+
+<tbody>
+<row><entry>alfa</entry> <entry>192.168.100.1</entry></row>
+<row><entry>beta</entry> <entry>192.168.100.2</entry></row>
+<row><entry>gamma</entry> <entry>192.168.100.3</entry></row>
+</tbody>
+</tgroup>
+</table>
+</para>
+
+<para>
+De er allesammen på samme netværk og kan derfor hver især umiddelbart
+komme i kontakt med hinanden. Men lad os nu forestille os, at der i samme
+bygning er et andet lille netværk 192.168.200.0, som også består af tre
+maskiner:
+</para>
+
+<para>
+<table id="tab-eks2-3-maskiner">
+<title>Netværket 192.168.200.0</title>
+<tgroup cols=2 align="char">
+<thead><row><entry>Værtsnavn</entry><entry>Adresse</entry></row></thead>
+
+<tbody>
+<row><entry>svend</entry> <entry>192.168.200.1</entry></row>
+<row><entry>knud</entry> <entry>192.168.200.2</entry></row>
+<row><entry>valdemar</entry> <entry>192.168.200.3</entry></row>
+</tbody>
+</tgroup>
+</table>
+</para>
+
+</sect2>
+
+
+<sect2 id="default-gateway">
+<title>Standard gateway</title>
+<indexterm><primary>gateway</primary></indexterm>
+<indexterm><primary>Default gateway</primary></indexterm>
+<para>
+Nu viser det sig, at brugerne på de to netværk gerne vil i kontakt med
+hinanden via netværket. Man kunne så forestille sig, at man bare slog
+de to netværk sammen til et enkelt og delte nye netværksadresser ud,
+så alle kunne kontakte hinanden direkte. Det kunne også sagtens
+lade sig gøre, men vil måske komme på tværs af den måde, de to netværk
+administreres på.
+</para>
+
+<para>
+Normalt gør man i stedet det, at man vælger en enkelt maskine,
+der tildeles adresser på begge netværk. I eksemplet ovenfor kunne det være
+computeren svend (192.168.200.1), der blev udstyret med et ekstra
+netværkskort og forbundet til netværket 192.168.100.0. Den kunne så
+passende blive tildelt værtsnummeret 4 på dette netværk og har så to
+adresser.
+</para>
+
+<para>
+<FIGURE ID="gateway" FLOAT="1">
+<TITLE>De to forbundne netværk
+</TITLE>
+<GRAPHIC FILEREF="../images/gateway.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</para>
+
+<indexterm><primary>Gateway</primary></indexterm>
+<para>
+En maskine, der på den måde forbinder to netværk, kaldes en
+gateway. Computeren svend kan nu kontakte alle maskinerne på begge netværk
+direkte, og hvis vi fortæller de andre maskiner, at de skal lade
+henvendelser til det andet netværk gå igennem svend, kan alle i dette lille
+internet komme i kontakt med hinanden. Man fortæller altså, hvilken rute
+der skal bruges for at komme frem til en bestemt computer eller netværk, og
+det kaldes derfor rutning. Med det grafisk baserede program netcfg, der følger
+med Red Hat Linux, er det forholdsvis enkelt at konfigurere rutning.
+</para>
+
+<para>
+Hvis vi nu forestiller os, at alfa (192.168.100.1) er forbundet videre ud
+til den store verden, begynder det at blive rigtig interessant. Knud
+(192.168.200.2) vil gerne i kontakt med 192.168.30.1. Det er ikke en
+adresse på knuds eget netværk, så den sender sagen videre til svend, der
+konstaterer, at den heller ikke kan komme i direkte kontakt med netværket
+192.168.30.0. Den overlader problemet til alfa (192.168.100.1), der enten
+kan komme i direkte kontakt med 192.168.30.1 eller ved, hvem den kan give
+sorteper videre til.
+</para>
+
+<para>
+Computere i et TCP/IP netværk benytter altså subnet masken til at
+verificere om en anden computer som den skal kommunikere med er på
+det samme IP net. Hvis det ikke skulle være tilfældet skal computeren
+bruge en "default gateway" for at kommunikere med den aktuelle
+computer. En gateway er i princippet en enhed som skaber forbindelse
+mellem 2 netværk, det kan enten være en computer, en router eller
+lignende. For at benytte internettet vil det derfor altid være
+påkrævet at have en default gateway.
+</para>
+</sect2>
+
+
+
+
+<sect2 id="Klasseloest-internet">
+<title>Klasseløst internet</title>
+<indexterm><primary>Klasseløst internet</primary></indexterm>
+
+<para>
+Igennem 90'erne er antallet af brugere på internet mildest talt
+eksploderet, hvilket har udløst en akut mangel på IP adresser. Som
+følge deraf er internettet i dag rent faktisk blevet klasseløst, idet
+man ikke længere har nok adresser tilbage til at delegere A, B eller
+C-net til firmaer/institutioner. Man bliver derfor nødt til at uddele
+IP adresserne i meget mindre portioner. Følgende er en oversigt over
+de nye og langt mindre net:
+</para>
+
+
+<table id="net-klasser">
+<title>Nettyper</title>
+<tgroup cols=4 align="char">
+
+<thead><row>
+ <entry>Antal adresser:</entry>
+ <entry>Netklasse:</entry>
+ <entry>Subnet Maske:</entry>
+ <entry>Bit:</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>1</entry> 
+ <entry></entry>
+ <entry>255.255.255.255</entry> 
+ <entry>32</entry> 
+</row>
+
+<row>
+ <entry>2</entry> 
+ <entry></entry>
+ <entry>255.255.255.254</entry> 
+ <entry>31</entry> 
+</row>
+
+<row>
+ <entry>4</entry> 
+ <entry></entry>
+ <entry>255.255.255.252</entry> 
+ <entry>30</entry> 
+</row>
+
+<row>
+ <entry>8</entry> 
+ <entry></entry>
+ <entry>255.255.255.248</entry> 
+ <entry>29</entry> 
+</row>
+
+<row>
+ <entry>16</entry> 
+ <entry></entry>
+ <entry>255.255.255.240</entry> 
+ <entry>28</entry> 
+</row>
+
+<row>
+ <entry>32</entry> 
+ <entry></entry>
+ <entry>255.255.255.224</entry> 
+ <entry>27</entry> 
+</row>
+
+<row>
+ <entry>64</entry> 
+ <entry></entry>
+ <entry>255.255.255.192</entry> 
+ <entry>26</entry> 
+</row>
+
+<row>
+ <entry>128</entry> 
+ <entry></entry>
+ <entry>255.255.255.128</entry> 
+ <entry>25</entry> 
+</row>
+
+<row>
+ <entry>256</entry> 
+ <entry>C-Net</entry>
+ <entry>255.255.255.0</entry> 
+ <entry>24</entry> 
+</row>
+
+<row>
+ <entry>65536</entry> 
+ <entry>B-Net</entry>
+ <entry>255.255.0.0</entry> 
+ <entry>16</entry> 
+</row>
+
+<row>
+ <entry>16777216</entry> 
+ <entry>A-Net</entry>
+ <entry>255.0.0.0</entry> 
+ <entry>8</entry> 
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+Bemærk, at nettene mellem A, B og C klasserne er ikke medtaget!
+Det skal også bemærkes, at man normalt ikke har alle adresserne til
+rådighed alligevel. Man mister den laveste og højeste adresse til
+nettet henholdsvis broadcast adresse (bruges til at lede efter
+maskiner). Skal man have kobling til andre netværk, så ryger der også
+adresser til routere osv. 
+</para>
+
+<para>
+I et net skal 2 IP adresser altid bruges til at "definere" nettet,
+derfor skal et net mindst indeholde 4 adresser for at kunne benyttes.
+De 2 adresser som bruges til at definere nettet kan ikke samtidig
+tildeles computere. Nettene benævnes på deres subnet maske, eller
+subnet maskens bit. Tallet i kolonnen "Bit" fortæller hvor mange af
+de 32 bit som er sat, det første net med subnet masken
+255.255.255.255 har 32 bit sat og kaldes derfor et "32 net".
+</para>
+</sect2>
+
+<sect2 id="private-ip">
+<title>Private IP adresser</title>
+<indexterm><primary>Private IP adresser</primary></indexterm>
+
+<para>
+Eftersom alle IP adresser på internettet er unikke og alle
+internet-brugere derfor kan kommunikere med samtlige adresser
+direkte, er det umiddelbart et rent slaraffenland for hackere.
+</para>
+
+<para>
+For at hindre direkte kommunikation mellem internettet og lokalnettet
+benytter man såkaldte private IP adresser på lokalnettet som ikke
+umiddelbart kan nås fra internettet.
+</para>
+
+<para>
+Private IP adresser er specielle adresseområder som man har valgt at
+"frede", netop med det formål at firmaer/institutioner selv kan vælge
+et adresseområde og benytte dette på deres lokalnetværk. Følgende er
+en oversigt over de nuværende private IP-adresser:
+</para>
+
+<table id="private-ip-adresser">
+<title>Private IP-adresser</title>
+<tgroup cols=3 align="char">
+
+<thead><row>
+ <entry>Netklasse:</entry>
+ <entry>Antal klasser:</entry>
+ <entry>IP adresser:</entry>
+</row></thead>
+
+<tbody>
+
+<row>
+ <entry>A</entry>
+ <entry>1</entry> 
+ <entry>10.*.*.*</entry> 
+</row>
+
+<row>
+ <entry>B</entry>
+ <entry>15</entry> 
+ <entry>172.16.*.* op til 172.31.*.*</entry> 
+</row>
+
+<row>
+ <entry>C</entry>
+ <entry>255</entry> 
+ <entry>192.168.*.*</entry> 
+</row>
+
+
+</tbody>
+</tgroup>
+</table>
+
+<para>
+I praksis fungere et netværk med private adresser på den måde at
+computerne individuelt frit kan kommunikere, i og med at de tilhører
+samme IP net, eksempelvis 192.168.1.0/24 (/24 angiver at 24 bit er
+sat i subnetmasken = C-klassenet, den første adresse hedder
+192.168.1.1 den sidste 192.168.1.254)
+</para>
+
+<para>
+Når de enkelte computere skal kommunikere med en IP adresse som er
+udenfor deres eget IP net, og derfor kommunikerer via deres default
+gateway er denne konfigureret til at "oversætte" deres adresse til en
+officiel adresse.
+</para>
+
+<para>
+Basalt set fungerer det på den måde at de beder gatewayen om at
+kommunikere med en given internet-computer på deres vegne.
+Internet-computeren "tror" den udelukkende kommunikerer med gatewayen
+- og kender derfor ikke til computerne bagved gatewayen. Man kan
+derfor også kalde det en slags "envejs-kommunikation", da det kun er
+computeren med den private adresse der kan kontakte en computer på
+internettet og ikke omvendt.
+</para>
+
+<para>
+Denne form for adresseoversættelse kaldes også NAT, Network Address
+Translation. Mange internet routere kan udføre denne funktion, for at
+konfigurere linux til det skal programmet ipchains benyttes.
+</para>
+
+<para>
+I princippet kan man sagtens køre NAT og bare bruge nogle tilfældige
+internet adresser altså IKKE private adresser. Dette har dog den
+uheldige virkning at de computere på internettet med de adresser man
+selv har taget ikke kan kontaktes fra lokalnettet. Det skyldes at de
+individuelle computere er konfigureret til at alle adresserne på det
+givne IP net er lokale, og de behøver derfor ikke benytte gatewayen
+for at kommunikere med det. Eftersom kommunikationen aldrig når ud
+igennem gatewayen og ud på internettet vil det mislykkedes.
+</para>
+
+</sect2>
+
+<sect2 id="om-dns">
+<title>Domain Name Service (DNS)</title>
+<indexterm><primary>Domain Name Service</primary></indexterm>
+<indexterm><primary>DNS</primary></indexterm>
+
+
+<para>
+På internettet ser man ofte adresser, som hedder noget i retning af
+WWW.SMARTNAVN.DK. De 3 W'er står for World Wide Web. Internettet er
+verdensomspændende og nogle betragter det som værende et stort
+spindelvæv.
+</para>
+
+
+<para>
+Men faktisk gemmer der sig en IP-adresse bag hver enkelt af disse web
+adresser. Dette er dog ikke noget den normale bruger lægger mærke
+til. Men faktisk er det således, at der slet ikke eksisterer
+egentlige web adresser. Det er udelukkende IP-adresser.
+</para>
+
+<para>
+Når en bruger skriver en web adresse i sin browser, anmoder hans
+computer en DNS server om IP-adressen på den pågældende web adresse.
+Det er kun IP-adresser, som er brugbare på et TCP/IP netværk.
+</para>
+
+<para>
+En DNS server er en service en server kan køre ved siden af de
+almindelige services. Hvis der er meget belastning, kan man vælge at
+have en DNS server, som udelukkende kører DNS service.
+</para>
+
+<para>
+Hver gang DNS serveren får en anmodning om en web adresse, slår den
+web adressen op i sin database, og finder den tilhørende IP-adresse.
+</para>
+
+<para>
+For at dette kan virke over hele verden er der et vist system i det.
+Det går ud på, at hvert land har et domæne. Ligesom institutioner og
+firmaer i det pågældende land har et "under-domæne/subdomæne". For
+eksempel hedder SSLUG's domæne sslug.dk, hvilket er et subdomæne til
+.dk domænet, dk angiver Danmark.
+</para>
+
+<para>
+Hos SSLUG har man så tilføjet et yderligere subdomæne, www. Den
+komplette adresse hedder således www.sslug.dk. Hvis man skriver denne
+adresse i sin browser vil computeren automatisk spørge sin DNS server
+om IP adressen på domænet og herefter lave en web forespørgsel til IP
+adressen.
+</para>
+
+<para>
+Det vil sige at domæne navne er hierarkisk opbygget. Landet er
+øverst, derefter navnet på firmaet/institutionen (eventuelt i en
+forkortet udgave), og til sidst subdomænet som "peger" på serveren
+for domænet.
+</para>
+
+<para>
+De øverste domæner i hierarkiet kaldes også TLD (Top Level Domains =
+Øverste niveau domæner), disse administreres af de såkaldte
+root-servere. En root server besvarer kun forespørgsler på TLD
+niveau. I dag eksisterer der på verdensplan 13 root-servere, som hver
+besvarer cirka 200 millioner forespørgsler om dagen.
+</para>
+
+<para>
+Almindelige computere kommunikerer ikke direkte med root-serverne, de
+sender i stedet en web-adresse forespørgsel til enten en lokal DNS
+server, eller DNS serveren hos deres internet udbyder.
+</para>
+
+<para>
+Hvis vi forestiller os at DNS serveren ns.sslug.dk som er ansvarlig
+for domænet sslug.dk, modtager en forespørgsel på subdomænet
+www.sslug.dk ser serveren med det samme at det er det domæne som den
+selv er ansvarlig for, og kan derfor besvare denne forespørgsel uden
+at skulle kontakte andre DNS servere.
+</para>
+
+<para>
+Hvis serveren i stedet modtog en forespørgsel på subdomænet
+www.linux.dk ville den straks kunne se at det ikke var et domæne den
+selv var ansvarlig for. Den ville derfor være nødt til at starte med
+det øverste rent hierakisk set. Serveren vil derfor indlede med at
+spørge en root-server om TLD domænet .dk, den vil af root-serveren
+blive bedt om at kontakte DK-Hostmasters server, som er ansvarlig for
+det domæne. DK-Hostmasters server vil henvise til serveren ns.linux.dk
+som er ansvarlig for domænet linux.dk. Serveren vil derfor ende med at
+få besvaret sit spørgsmål når den spørger ns.linux.dk. 
+</para>
+
+<para>
+Man kan betragte en DNS server som en telefonbog, hvor personerne er
+web adresser. Begge steder får man et nummer (telefonnummer/IP
+adresse), som systemet kan bruge til at lokalisere
+informationen/personen.
+</para>
+
+<para>
+For at begrænse DNS trafikken benytter DNS servere sig af DNS cache.
+Her bliver de svar serveren har fået fra øvrige DNS servere gemt.
+Hvis man gentog ovenstående eksempel ville serveren derfor ikke
+starte forfra med at spørge alle serverne, men i stedet blot kigge på
+det foregående svar.
+</para>
+
+<para>
+Eftersom der dagligt bliver lavet ændringer på mange servere er det
+vigtigt at en DNS server ikke tror den bare kan gemme sin cache
+evigt. Hvis eksempelvis www.sslug.dk bliver ændret til at pege på en
+anden web server vil det ikke være meget værd hvis vores DNS server
+stadig fortæller alle og enhver hvad den hed førhen! Derfor har DNS
+servere det man kalder en TTL (Time To Live), hvilket simpelthen
+definerer hvor lang tid et svar må leve. Hvis vores server igen
+modtager forespørgslen på www.sslug.dk, og TTL'en er udløbet vil
+serveren være nødt til at starte forfra med at spørge de forskellige
+DNS servere.
+</para>
+
+<sect3 id="dns-opslag-eksempel">
+<title>Eksempel på DNS-opslag</title>
+<para>
+Når en pc skal finde ud af IP-adressen på www.uni-c.dk, spørger den sin lokale
+navneserver (Følg med på fig 2). Denne navneserver ved, hvilke navneservere der
+bestyrer domænet [+(rod)]. Den spørger så navneserverne for (rod): "Hvad er
+IP-adressen på www.uni-c.dk?". (Rod)-serverne svarer: "Det ved jeg ikke, men
+jeg ved hvem, der bestyrer .dk". Den lokale navneserver spørger nu
+.dk-serverne: "Hvad er IP-adressen på www.uni-c.dk?". .dk-serverne svarer:
+"Det ved jeg ikke, men jeg ved, hvem der bestyrer uni-c.dk". Den lokale
+nameserver spørger nu .uni-c.dk-serverne: "Hvad er IP-adressen på
+www.uni-c.dk?". .uni-c.dk-serverne svarer: "Adressen på www.uni-c.dk er ...". 
+Til slut svarer den lokale navneserver PCen: "Adressen på www.uni-c.dk er ...".
+</para>
+
+<screen>
+Fig. 2
+
+[PC]       --> [Lokal NS]     <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] --> [(rod) NS]     <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] <-- [(rod) NS]     <userinput>NS for .dk er .dk-NS</userinput>
+[Lokal NS] --> [.dk-NS]       <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] <-- [.dk-NS]       <userinput>NS for .uni-c.dk er .uni-c.dk-NS</userinput>
+[Lokal NS] --> [.uni-c.dk-NS] <userinput>www.uni-c.dk?</userinput>
+[Lokal NS] <-- [.uni-c.dk-NS] <userinput>Adressen på www.uni-c.dk er ...</userinput>
+[PC]       <-- [Lokal NS]     <userinput>Adressen på www.uni-c.dk er ...</userinput>
+</screen>
+
+<para>
+Da ovenstående procedure kan tage lang tid, bliver alle resultater cachet af 
+din lokale navneserver. Næste gang, den bliver spurgt om www.uni-c.dk, behøver 
+den altså ikke at kontakte alle de andre navneservere igen, men kan give
+svaret omgående:
+</para>
+
+<screen>
+[PC]       --> [Lokal NS]     <userinput>www.uni-c.dk?</userinput>
+[PC]       <-- [Lokal NS]     <userinput>Adressen på www.uni-c.dk</userinput>
+</screen>
+
+<para>
+Som et konkret eksempel på et DNS opslag kan vi f.eks. bede om SSLUG's
+IP-adresse. Til dette bruger vi kommandoen <command>nslookup</command>.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>nslookup www.sslug.dk</userinput>
+Server:  danpost.uni-c.dk
+Address:  129.142.6.64
+
+Non-authoritative answer:
+Name:    sslug.sslug.dk
+Address:  192.38.71.98
+Aliases:  www.sslug.dk
+</screen>
+
+<para>
+Vi kan i eksemplet se, at vi beder
+<filename>danpost.uni-c.dk</filename> med IP-adresse 129.142.6.64 om
+adressen på SSLUGs webserver. SSLUG har IP-adressen 192.38.71.98, og maskinen
+er åbenbart også kendt som <filename>sslug.sslug.dk</filename>. Svaret er
+"Non-authoritative", idet danpost-DNS serveren ikke er herre over
+sslug-domænet, men har fået informationen fra en anden navneserver.
+</para>
+
+<para>
+DNS indeholder også andre informationer end IP-adresser. I DNS-sprog
+sætter man et punktum bag navnene for at angive, at disse er
+absolutte. Normalt kan man dog ignorere det sidste punktum.
+</para>
+
+</sect3>
+
+<sect3 id="dns-zoner">
+<title>DNS-zoner</title>
+<para>
+DNS er baseret på filer. Disse filer indeholder zone-data. I mange
+tilfælde indeholder hver fil/zone ét domæne, i det følgende kan man
+derfor blot betragte "zone" som et synonym for "domæne".
+</para>
+
+<para>
+Nameserverne for en zone listes ved:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t ns sslug.dk</userinput>
+sslug.dk name server ns-soa.darenet.dk
+sslug.dk name server ns.sslug.dk
+sslug.dk name server ptah.dkuug.dk
+</screen>
+
+<para>
+For at finde mailserverne for et domæne skal man kende en af
+navneserverne for domænet. Derefter spørger man denne navneserver:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t mx domæne.dk navneserver.for.domæne.dk</userinput>
+</screen>
+
+<para>
+Den ansvarlige administrator for en zone findes i zonens SOA-record
+(eng. Start Of Authority). SOA-recorden findes med:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t soa domæne.dk navneserver.for.domæne.dk</userinput>
+</screen>
+
+<para>
+Hvis SOA starter med:
+<filename>sslug.dk.      IN      SOA     ns.sslug.dk. root.sslug.dk.  (</filename>
+så er zonen <filename>sslug.dk</filename>, den primære navneserver <filename>ns.sslug.dk</filename> og den
+ansvarlige administrators email-adresse <filename>root@sslug.dk</filename> (udskift første . med @).
+</para>
+
+<para>
+Nogle navne er blot et alias for et andet navn: de har et kanonisk navn 
+(eng: "canonical name"). Dette kan ses ved at spørge navneserveren for 
+domænet om alt, hvad den ved om et givent navn:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t any dette.navn.domæne.dk nameserver.for.domæne.dk</userinput>
+</screen>
+
+<para>
+Til nogle domæner er knyttet tekstinformation. Denne kan kaldes frem med:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t txt navn.med.info.domæne.dk</userinput>
+</screen>
+
+<para>
+Hvis informationen er til stede, indeholder den ofte information om,
+hvem der bestyrer navn.med.info.domæne.dk
+</para>
+
+<para>
+Da DNS ikke er helt simpelt at sætte op korrekt, kan de ovenstående
+eksempler bruges, hvis du skal afluse din egen DNS. De kan også
+bruges til at finde ud af, hvorfor netværksfejl opstår eller til
+at finde en ansvarlig for et domæne, som man har modtaget
+reklame-emails fra.
+</para>
+
+<para>
+I forbindelse med installationen af Red Hat Linux (eller senere) kan
+du vælge pakken "caching-nameserver". Pakken foretager en simpel
+opsætning af navneserveren <command>bind</command>. Fra starten kender
+den ikke selv svaret på navneopslag, men sender blot spørgsmålet
+videre og husker svaret (som beskrevet ovenfor). Den glemmer desværre
+alt, hvad den har lært, når maskinen lukkes ned, så du får mest glæde af
+en caching navneserver, hvis den kører på en maskine, der er i gang altid -
+f.eks. en server på et lille lokalnetværk. Den kan selvfølgelig
+sagtens bruges som navneserver for Windows pc'er på netværket.
+</para>
+
+<para>
+Hvis du vil bruge Linux på en server i et mindre netværk, kan du have
+glæde af at lade den fungere som navneserver for et lokalt domæne.
+Opsætningen af dette er ikke det første Linux-eksperiment, du skal
+starte med, så eventuelle interesserede henvises til den detaljerede
+beskrivelse i DNS-HOWTO (under Red Hat, se
+<filename>/usr/doc/HOWTO/DNS-HOWTO</filename>) og <ulink
+url="http://www.sslug.dk/artikler/dnsbind.shtml">http://www.sslug.dk/artikler/dnsbind.shtml</ulink>
+er sikkert også af interesse.
+</para>
+</sect3>
+</sect2>
+</sect1>
+
+<sect1 id="dns-opsaetning">
+<title>DNS opsætning</title>
+<indexterm><primary>DNS</primary>
+<secondary>Opsætning af</secondary></indexterm>
+
+<para>
+DNS er interessant, når man har flere end f.eks. 5 maskiner på
+netværket og hvis man ikke længere ønsker at kopiere
+<filename>/etc/hosts</filename> (Se <xref linkend="etc-hosts-filen">)
+filer rundt til alle maskiner. Har du mange maskiner på netværket kan
+du istedet have en fælles navne-server (eng. nameserver) til at kunne
+håndtere navneopslag.
+</para>
+
+<para>
+Som gennemgående eksempel antager vi her at vi har domænet "kongeh.dk"
+med følgende maskiner. IP-adresserne her er private,
+dvs. maskinerne er ikke på Internet. Vi vælger derfor adresser fra
+<xref linkend="private-ip-adresser"> i <xref linkend="private-ip">.
+</para>
+
+<screen>
+192.168.0.1      daisy.kongeh.dk     daisy
+192.168.0.2      henri.kongeh.dk     henri
+192.168.0.3      dykker.kongeh.dk    dykker
+192.168.0.4      landmand.kongeh.dk  landmand
+</screen>
+
+<para>
+Vi vedtager også at maskinen "daisy" skal være DNS-server, og at samme
+maskine også skal være kendt som "ns.kongeh.dk" eller i kort form blot "ns".
+</para>
+
+<sect2 id="Bind">
+<title>Bind</title>
+<indexterm><primary>DNS</primary>
+<secondary>Bind</secondary></indexterm>
+<para>
+Dette afsnit vil gennemgå opsætningen af et registreret domæne på en
+DNS server. Strukturen fra BIND 8.x er benyttet, da dette er den
+version de fleste DNS servere anvender, modsætningen er den noget
+ældre BIND 4.x. De følgende eksempler kører på BIND 8.1.2, men nye
+versioner udvikles hele tiden, opgraderinger kan hentes fra
+<ulink url="http://www.isc.org">http://www.isc.org</ulink>.
+</para>
+
+
+<para>
+Den overordnede konfigurationsfil er
+<filename>/etc/named.conf</filename>. I denne defineres hvilke zoner
+(domæner) DNS serveren administrerer og i hvilke filer de enkelte
+zoner er defineret.
+</para>
+
+<para>
+<indexterm><primary>DNS</primary>
+<secondary>zone</secondary></indexterm>
+Som standard vil man skulle definere 4 zoner for domænet "kongeh.dk"
+med IP-adresser i itervallet 192.168.0.1-192.168.0.254 (ikke 255, da
+dette er broadcast-adressen).
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM>
+<para>
+<filename>.</filename> (punktum) : Først og fremmest root,
+denne zone henviser til root serverne således at DNS serveren kan
+spørge disse om domæner den ikke selv er ansvarlig for. Hvilket vil
+sige at det er denne zone DNS serveren benytter når den modtager
+forespørgsler om IP adresser på et domæne den ikke selv er ansvarlig
+for. Nedenfor er dette angivet i filen <filename>/var/named/root.cache</filename>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<filename>0.0.127.in-addr.arpa</filename> : Reverse lookup betyder, at
+man har en IP adresse og gerne vil vide hvilket domæne denne
+tilhører. For at DNS serveren kan besvare denne slags forespørgsler
+kræves det at reverse zonerne bliver defineret.  Reverse zonen 127.0.0
+referere blot til DNS serveren selv (filen
+<filename>/var/named/127.0.0.rev</filename>), TCP/IP software kræver i
+nogle tilfælde at denne IP adresse henviser til DNS serveren selv,
+derfor skal denne zone altid medtages.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<filename>0.168.192.in-addr.arpa</filename> : Den anden (eller de
+andre) reverse zoner er de 'rigtige' IP adresser.  Hvis man for
+eksempel råder over adresserne 192.168.0.1-192.168.0.254 laver man en
+reverse zone fil til disse IP numre. (De nævnte adresser er kun et
+eksempel, de eksisterer ikke på Internettet da de er nogle af de
+"private" adresser). Denne zone gemmes i <filename>/var/named/192.168.0.rev</filename>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<filename>kongeh.dk</filename> : Du skal også lave en fil, der kan
+"mappe" fra navn til IP-nummer for det domæne, du sætter op. I filen
+<filename>/var/named/kongeh.dk</filename> kan du erklære navne og
+aliases for alle maskiner.
+</para>
+</listitem>
+</itemizedlist>
+
+<sect3 id="DNS-eks-etc-name-conf">
+<title>/etc/named.conf</title>
+
+<para>
+Følgende er et eksempel på en
+<filename>/etc/named.conf</filename> fil som indeholder ovenstående
+grundlæggende opsætning:
+</para>
+
+<screen>   
+options {
+  /* Hvor er filerne med DNS opsætning */
+  directory "/var/named";
+
+  /* Indsaet 1-3 forwarder nameservere */
+  /* Brug dem fra den ISP og indsaet IP adresserne */
+  /* i stedet for NNN.NNN.NNN.NNN og MMM.MMM.MMM.MMM */
+  forwarders {
+          NNN.NNN.NNN.NNN;
+          MMM.MMM.MMM.MMM;
+  };
+
+  /* Lyt på DNS forespørgsler til to IP adresser */
+  listen-on { 192.168.0.1; 127.0.0.1 ; };
+
+  /* Udkommenter følgende linie hvis dit domæne 
+     er kendt på Internet */
+  notify no;
+  
+};
+
+logging {
+  category lame-servers { null; };
+  category cname { null; };
+};
+
+zone "." in {
+  type hint;
+  file "root.cache";
+};
+
+zone "0.0.127.in-addr.arpa" in {
+  type master;
+  file "127.0.0.rev";
+};
+
+zone "0.168.192.in-addr.arpa" in {
+  type master;
+  file "192.168.0.rev";
+};
+
+zone "kongeh.dk" in {
+  type master;
+  file "kongeh.dk";
+};
+</screen>
+
+<para>
+De første linjer definer i hvilket bibliotek de senere omtalte filer
+skal placeres. Standard er: <filename>/var/named</filename>, men du
+kan også anvende f.eks. <filename>/etc/named</filename> eller andre steder.
+</para>
+
+<para>
+Logging linjen forhindrer at man får en masse unødigt i sin syslog.
+(Log funktionen er meget avanceret, en masse forskellige kriterier
+kan defineres).
+</para>
+
+<para>
+Næste linje er en zone definition. Her gælder det root zonen, selve
+filen hentes fra 
+<ulink url="ftp://ftp.internic.net">ftp://ftp.internic.net</ulink>. De
+resterende linjer fortæller først hvilket domæne det handler om, og
+derefter i hvilken fil selve domænet er defineret. Samtidig får
+serveren af vide om den er 'master' eller 'slave' for det pågældende
+domæne. I ovenstående tilfælde er DNS serveren master for alle
+zoner. For at kunne registrere et domæne kræves det at man har 2 DNS
+servere til domænet, master og slave, eller primær og
+sekundær. Følgende er et eksempel på en slave zone:
+</para>
+
+<screen>   
+zone "kongeh.dk" in {
+  type slave;
+  file "kongeh.dk";
+  masters { 192.168.0.1; };
+};
+</screen>
+
+<para>
+Udover at der nu står slave i stedet for master, er en linje tilføjet
+som fortæller hvilken server som er master. Grunden til at slave
+serveren skal kende master serveren er, at slave serveren henter zone
+filerne fra master serveren. Dette betyder at ændringer i et domæne
+på master serveren automatisk vil blive overført til slave serveren.
+</para>
+
+</sect3>
+
+<sect3 id="DNS-eks-root-cache">
+<title>/var/named/root.cache</title>
+<para>
+Vi kan f.eks. bruge følgende udgangspunkt for
+<filename>/var/named/root.cache</filename> - dvs. root-zonen.
+</para>
+
+<screen>
+;       This file holds the information on root name servers needed to
+;       initialize cache of Internet domain name servers
+;       (e.g. reference this file in the "cache  .  &lt;file&gt;"
+;       configuration file of BIND domain name servers).
+;
+;       This file is made available by InterNIC registration services
+;       under anonymous FTP as
+;           file                /domain/named.root
+;           on server           FTP.RS.INTERNIC.NET
+;       -OR- under Gopher at    RS.INTERNIC.NET
+;           under menu          InterNIC Registration Services (NSI)
+;              submenu          InterNIC Registration Archives
+;           file                named.root
+;
+;       last update:    Feb 28, 1997
+;       related version of root zone:   1997022800
+;
+;
+; formerly NS.INTERNIC.NET
+;
+.                        3600000  IN  NS    A.ROOT-SERVERS.NET.
+A.ROOT-SERVERS.NET.      3600000      A     198.41.0.4
+;
+; formerly NS1.ISI.EDU
+;
+.                        3600000      NS    B.ROOT-SERVERS.NET.
+B.ROOT-SERVERS.NET.      3600000      A     128.9.0.107
+;
+; formerly C.PSI.NET
+;
+.                        3600000      NS    C.ROOT-SERVERS.NET.
+C.ROOT-SERVERS.NET.      3600000      A     192.33.4.12
+;
+; formerly TERP.UMD.EDU
+;
+.                        3600000      NS    D.ROOT-SERVERS.NET.
+D.ROOT-SERVERS.NET.      3600000      A     128.8.10.90
+;
+; formerly NS.NASA.GOV
+;
+.                        3600000      NS    E.ROOT-SERVERS.NET.
+E.ROOT-SERVERS.NET.      3600000      A     192.203.230.10
+;
+; formerly NS.ISC.ORG
+;
+.                        3600000      NS    F.ROOT-SERVERS.NET.
+F.ROOT-SERVERS.NET.      3600000      A     192.5.5.241
+;
+; formerly NS.NIC.DDN.MIL
+;
+.                        3600000      NS    G.ROOT-SERVERS.NET.
+G.ROOT-SERVERS.NET.      3600000      A     192.112.36.4
+;
+; formerly AOS.ARL.ARMY.MIL
+;
+.                        3600000      NS    H.ROOT-SERVERS.NET.
+H.ROOT-SERVERS.NET.      3600000      A     128.63.2.53
+;
+; formerly NIC.NORDU.NET
+;
+.                        3600000      NS    I.ROOT-SERVERS.NET.
+I.ROOT-SERVERS.NET.      3600000      A     192.36.148.17
+;
+; temporarily housed at NSI (InterNIC)
+;
+.                        3600000      NS    J.ROOT-SERVERS.NET.
+J.ROOT-SERVERS.NET.      3600000      A     198.41.0.10
+;
+; temporarily housed at NSI (InterNIC)
+;
+.                        3600000      NS    K.ROOT-SERVERS.NET.
+;K.ROOT-SERVERS.NET.      3600000      A     198.41.0.11
+K.ROOT-SERVERS.NET.      3600000      A     193.0.14.129
+;
+; temporarily housed at ISI (IANA)
+;
+.                        3600000      NS    L.ROOT-SERVERS.NET.
+L.ROOT-SERVERS.NET.      3600000      A     198.32.64.12
+;
+; temporarily housed at ISI (IANA)
+;
+.                        3600000      NS    M.ROOT-SERVERS.NET.
+;M.ROOT-SERVERS.NET.      3600000      A     198.32.65.12
+M.ROOT-SERVERS.NET.      3600000      A     202.12.27.33
+; End of File
+</screen>
+</sect3>
+
+
+<sect3 id="DNS-eks-kongeh-dk">
+<title>/var/named/kongeh.dk</title>
+<para>
+Den næste "reverse"-fil er for maskinerne i 192.168.0.* området:
+</para>
+
+<screen>
+$TTL	1D
+@	IN SOA ns.kongeh.dk. hostmaster.kongeh.dk. (
+                                      1999102400 ; serial number
+                                      60000      ; refresh (1 day)
+                                      3600       ; retry (1 hour)
+                                      2600000    ; expire (1 month)
+                                      60000      ; minimum (1 day)
+)
+
+
+;
+; Dette domænes DNS servere:
+;
+		IN	NS	ns.kongeh.dk.
+
+;
+; Mailserveren for dette domæne:
+;
+		IN	MX	0	mail.kongeh.dk.
+
+;
+;  Standard hostnavne mappet til IP adresser:
+;
+localhost	IN	A	127.0.0.1
+daisy		IN	A	192.168.0.1
+
+;
+; Øvrige hostnavne mappet til IP adresser:
+;
+henri		IN	A	192.168.0.2
+dykker		IN	A	192.168.0.3
+landmand	IN	A	192.168.0.4
+
+;
+; Alias adresser:
+;
+ns	IN	CNAME	daisy.kongeh.dk.
+mail	IN	CNAME	daisy.kongeh.dk.
+</screen>
+
+<para>
+Huske den første linie $TTL - "Time to live"
+skal med og der anvendes tabulator til at adskille hvert felt og der
+må ikke anvendes mellemrum. 
+Bemærk specielt at der er punktum efter hvert maskin-navn i CNAME-linierne
+</para>
+
+<para>
+Linie to til syv angiver diverse parametre for selve domænet, det
+er ikke så vigtigt at forstå ordenen i disse linjer, derimod er det
+vigtigt at forstå betydningen. Det første tegn, @, er en variabel for
+selve domænet, her kunne altså istedet stå 'kongeh.dk.'. Grunden til
+at man istedet sætter en variabel er at man på den måde ikke behøver
+ændre dette felt hvis man bruger denne zone fil til at lave en anden
+zone fil.
+</para>
+
+<para>
+'IN' står for 'INTERNET' og angiver den klasse data man benytter, idag
+bliver der meget sjældent benyttet andre klasser, derfor er IN
+default, og man behøver derfor ikke angive dette. SOA står som
+tidligere skrevet for 'Start Of Authority' og fortæller efterfølgende
+hvilken name server som er ansvarlig for denne zone.
+</para>
+
+<para>
+'ns.kongeh.dk.' fortæller hvilket domæne name serveren er ansvarlig
+for, 'hostmaster.kongeh.dk' er email adressen til vedkommende som er
+ansvarlig for domænet. Bemærk at det første . (punktum) skal læses
+som et @.
+</para>
+
+<para>
+'Serial' er seriel nummeret for zonen. Hver gang man laver en ændring
+skal seriel nummeret opdateres, eneste regel er at tallet skal blive
+mindst en højere (inkrementeres). De fleste vælger at bruge dags dato
+sammen med et 2 cifret tal, det gør det muligt at vide hvornår sidste
+opdatering blev foretaget. Grunden til seriel nummeret, er at man kun
+opdaterer sine zone filer på sin master server, slave serveren vil
+derefter selv hente ændringerne, men den ved kun der er foretaget
+ændringer <emphasis>hvis</emphasis> seriel nummeret er blevet inkrementeret.
+</para>
+
+<para>
+'Refresh' fortæller hvor tit slave serveren skal spørge master
+serveren om seriel nummeret på det pågældende domæne og herved
+beslutte om der skal foretages en overførsel.
+</para>
+
+<para>
+Hvis slave serveren ikke er i stand til at skabe kontakt til master
+serveren i første forsøg definere man med 'Retry' hvor lang tid den
+skal vente før den igen prøver.
+</para>
+
+<para>
+I tilfælde af at slave serveren slet ikke kan få kontakt til master
+serveren vil det efter nogle dage kunne være sandsynligt at der er
+foretaget ændringer på master serveren som slave serveren derfor ikke
+har. Hvilket vil sige at den primære og den sekundære server giver
+modstridende oplysninger til deres klienter! For at undgå dette kan
+man define hvor lang tid slave serveren skal tro på at dens
+zone-data er god nok, dette gøres med 'expire' parameteren. Dette
+skal forstås således at når slave serveren ikke kan kontakte master
+serveren og det angivne tidrum er udløbet, vil slave serveren smide
+sine data om den pågældende zone ud, og altså ikke besvare
+forespørgsler omkring denne zone.
+</para>
+
+<para>
+Når en computer ude på nettet har spurgt vores server om noget på
+vores zone vil den have modtaget noget data. Efter et par dage vil
+det være muligt, at disse data er forældet, derfor kan man med 'TTL'
+parameteren angive hvor lang tid en klient må beholde data den har
+fået fra en DNS server.
+</para>
+
+<para>
+Ovenstående parametre som angives i tidsrum kan skrives i S, M, H, D
+(Sekunder, Minutter, Timer, Dage). De fleste vælger at angive dem
+alle i sekunder, det gør dog ingen forskel, og det er rimelig
+besværligt at skulle omregne eksempelvis 86400 sekunder (1 dag).
+</para>
+
+<para>
+Der findes mange meninger om hvorledes ovenstående parametre skal
+sættes. De 4 første handler udelukkende om DNS serverne, derfor, hvis
+man selv administrerer både master og slave er det yderst begrænset
+hvor store fejl, der kan opstå ved at lave nogle af disse 4 parametre
+'forkerte'. Derimod er det mindre hensigtsmæssigt at lave TTL helt
+forkert. Resultatet kan eksempelvis blive at man ikke kan modtage
+post i en uges tid, hvis man er kommet til at angive en forkert IP
+adresse til Mail serveren og TTL er sat til en uge.
+</para>
+
+<para>
+Resten af zone filen er selve 'records'. Den første kolonne fortæller
+hvilket navn man vil omsætte. Eksempelvis kunne der stå
+'mail.kongeh.dk' for at fortælle hvad 'mail.kongeh.dk' skulle
+referere til. Hvis man ikke angiver noget i den første kolonne vil
+selve zonen være default, altså 'kongeh.dk.'
+</para>
+
+<para>
+En vigtig ting som altid gælder når man angiver navne, hvis man ikke
+afslutter med et . (punktum) vil serveren automatisk tilføje det
+pågældende domæne til navnet. 'mail.kongeh.dk' vil derfor blive til
+'mail.kongeh.dk.kongeh.dk'
+</para>
+
+<para>
+Herefter skal angives hvilken klasse man arbejder med, her er 'IN'
+igen default. Derpå skal man fortælle hvilken type record man vil
+angive (de mest brugte vil blive gennemgået i det efterfølgende). Det
+sidste der skal angives er hvilket navn eller hvilken IP adresse DNS
+serveren skal svare tilbage med når den bliver spurgt om denne
+record.
+</para>
+
+<para>
+Den først record er af typen 'NS' (Name Server), her angiver man
+navnet på DNS serveren, først den primære, herefter den sekundære.
+</para>
+
+<para>
+Den næste record er af typen 'MX' (Mail eXchanger), her angives
+navnet på mail serveren.
+</para>
+
+<para>
+Herefter kommer en stribe standard 'A' records (A = Address). Denne
+record angiver hvilket IP nummer den omtalte host har.
+</para>
+
+<para>
+'CNAME' står for Canonical name og betyder alias. Denne record type
+bruges til at have flere navne til at referere til en IP adresse.
+</para>
+</sect3>
+
+
+<sect3 id="DNS-eks-127-0-0-rev">
+<title>/var/named/127.0.0.rev</title>
+<para>
+Den første "reverse"-fil er for "localhost", som vi i
+<filename>/etc/named.conf</filename> valgte at gemme i
+<filename>/var/named/127.0.0.rev</filename>.
+</para>
+
+<screen>
+$TTL    1D
+@	IN	SOA	ns.kongeh.dk. hostmaster.kongeh.dk. (
+                                      1999102400 ; serial number
+                                      60000     ; refresh (1 day)
+                                      3600       ; retry (1 hour)
+                                      2600000    ; expire (1 month)
+                                      60000     ; minimum (1 day)
+)
+
+;
+; DNS serveren for denne zone:
+;
+	IN	NS	ns.kongeh.dk.
+
+;
+; Reverse mappings:
+;
+1	IN	PTR	localhost.
+</screen>
+
+<para>
+Husk den første linie $TTL - "Time to live" skal med og der anvendes
+tabulator til at adskille hvert felt.
+Bemærk specielt at der er punktum efter hvert maskin-navn.
+</para>
+
+<para>
+Igen har vi SOA recorden (fra linie 2 til 7), det er en fordel at
+have en generel SOA record for alle sine zoner, dog kan man
+naturligvis have behov for forskelle nogle steder, men rent
+administrativt er det langt mere overskueligt med samme parametre.
+</para>
+
+<para>
+Grunden til at der kun er angivet en DNS server er at denne zone
+udelukkende er for 127.0.0 som altså kun kan være den lokale server,
+hvilket ikke har noget at gøre med den/de andre DNS servere.
+</para>
+
+<para>
+Reverse records er af typen PTR. Da forespørgsler til reverse zoner
+skal besvares med et navn i stedet for en IP adresse er strukturen i
+disse zoner også anderledes, der er simpelthen byttet om på navnet og
+IP adressen. Derfor står IP adressen først, i det her tilfælde 1 (1 +
+zonenavnet (127.0.0) = 127.0.0.1), herefter klassen (IN), record
+typen (PTR) og til sidst navnet (localhost).
+</para>
+</sect3>
+
+
+<sect3 id="DNS-eks-192-168-0-rev">
+<title>/var/named/192.168.0.rev</title>
+<para>
+Den næste "reverse"-fil er for maskinerne i 192.168.0.* området:
+</para>
+
+<screen>
+$TTL	1D
+@	IN	SOA	ns.kongeh.dk. hostmaster.kongeh.dk. (
+                                      1999102400 ; serial number
+                                      60000      ; refresh (1 day)
+                                      3600       ; retry (1 hour)
+                                      2600000    ; expire (1 month)
+                                      60000      ; minimum (1 day)
+)
+
+;
+; Name Servers for this reverse zone:
+;
+	IN	NS	ns.kongeh.dk.
+
+;
+; Reverse mappings:
+;
+1	IN	PTR	daisy.kongeh.dk.
+2	IN	PTR	henri.kongeh.dk.
+3	IN	PTR	dykker.kongeh.dk.
+4	IN	PTR	landmand.kongeh.dk.
+</screen>
+
+<para>
+Ovenstående er reverse zone filen for zonen 192.168.0.*.  Nok en gang
+- den første linie $TTL - "Time to live" skal med og der anvendes
+tabulator til at adskille hvert felt.  Bemærk igen, at der er punktum
+efter hvert maskin-navn.
+</para>
+
+<para>   
+Her gælder de samme regler som for 127.0.0 zonen. 4 reverse records
+er defineret, fra 1 til 4 svarende til 192.168.0.1-192.168.0.4, dvs. 
+vores fire maskiner. Har du brug for et andet eksempel på opsætning af
+DNS, så kan du se i <ulink url="http://www.sslug.dk/artikler/dnsbind.shtml">http://www.sslug.dk/artikler/dnsbind.shtml</ulink>.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="start-named">
+<title>Start named</title>
+<para>
+Efter at have sat redigeret name-server filerne færdig er du klar til
+at starte <command>named</command>. Kører du Red Hat, er det nemt. Du
+skal installere <command>bind</command>-pakken og køre
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>/sbin/chkconfig --level 345 named on</userinput>
+</screen>
+
+Dette er en smart måde at få startet
+<filename>/etc/rc.d/init.d/named</filename> i run-levels 3, 4 og 5. 
+Du kan nu eksperimentere og se om din opsætning er i orden. 
+Start en xterm og skriv <command>tail -f
+/var/log/messages</command>. I en anden xterm skriver du 
+<command>/etc/rc.d/init.d/named start</command>. Kommer der ikke fejl
+ud er du igennem første syntakscheck. Dernæst kan du starte med at
+spørge din lokale DNS, f.eks.
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup daisy daisy</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup henri daisy</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup 192.168.0.3 daisy</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup localhost localhost</userinput>
+</screen>
+
+Check både på IP-numre og maskin-navne. Går alt glat, skal dine UNIX
+maskiner nu have <filename>/etc/resolv.conf</filename> med indhold:
+<screen>
+search kongeh.dk
+nameserver 192.168.0.1
+</screen>
+for bruge din nye DNS.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="DHCP">
+<title>DHCP server opsætning</title>
+<indexterm><primary>DHCP</primary></indexterm>
+<para>
+Hvis man har mere end et par computere på sit netværk, eller hvis man
+ofte flytter computerne mellem forskellige netværk, så bliver det 
+hurtigt besværligt at skulle give konfigurere deres IP adresse,
+default gateway adresse og DNS server hver gang man flytter dem rundt.
+</para>
+
+<para>
+Løsningen på det problem er at bruge DHCP - "Dynamic Host
+Configuration Protocol". Som navnet antyder, så er det en speciel
+protokol som er beregnet til at en computer kan blive konfigureret
+automatisk, uden at man skal ind og pille i opsætningen på hver enkelt
+maskine.
+</para>
+
+<sect2 id="DHCP-virkemaade">
+<title>Hvordan virker DHCP?</title>
+<para>
+Når man tænder en computer der bruger DHCP, så vil den sende en
+forespørgsel ud på sit lokale netværk for at spørge efter en DHCP
+server. Hvis der er en DHCP server på nettet, så tager serveren en
+ubrugt IP adresse fra den pulje af adresser, den er konfigureret til
+at bruge, og sender et svar tilbage om at den nye computer kan bruge
+den pågældende IP adresse. Sammen med IP adressen sendes også andre
+oplysninger som er nødvendige for at netværket kan fungere - som regel
+er det netmasken, IP adressen for default gateway og DNS servernes IP
+adresse som fås fra DHCP serveren.
+</para>
+
+<para>
+Den IP adresse som den nye computer får tildelt må den bruge i en
+begrænset tidsrum - den får det der kaldes et "lease" på adressen, som
+skal fornyes med jævne mellemrum. Hvis ikke cmputeren beder om at
+forny sit lease, så inddrager DHCP serveren det igen, og kan dele det
+ud til andre maskiner der har brug for en IP adresse.
+</para>
+
+<para>
+Når man bruger DHCP kan man derfor ikke være sikker på, at ens
+computere altid har den samme IP adresse - det afhænger af, hvor længe
+af gangen de er tændt. Så længe de er på nettet, så bliver de ved med
+at have den IP adresse de har fået fra serveren. Men hvis de bliver
+lukket ned eller taget af nettet så længe at deres lease udløber, så
+vil de sandsynligvis få en ny IP adresse næste gang de kontakter
+serveren.
+</para>
+
+<para>
+Derfor er DHCP mest anvendelig på de systemer, som ikke kører nogen
+form for server funktion - d.v.s. almindelige arbejdsstationer. 
+</para>
+
+<para>
+Det er dog muligt at konfigurere sin DHCP server på en måde, så visse
+IP adresser bliver reserveret til bestemte maskiner, og derved kan man
+sikre at den pågældende maskine altid har en bestemt IP
+adresse. Derfor kan man godt bruge DHCP til servere, f.eks. hvis man
+vil styre netværks-konfigurationen centralt.
+</para>
+</sect2>
+
+<sect2 id="DHCP-een-server">
+<title>Kun EEN DHCP server per netværk!</title>
+<para>
+Der følger naturligvis en DHCP server med din Linux distribution - det
+er en server som er udviklet af ISC (Internet Software Consortium);
+det er også dem, der udvikler DNS serveren BIND. I næste afsnit kan du
+se, hvordan man sætter den op.
+</para>
+
+<para>
+Hvis du har en eller anden form for router på dit netværk, så kan det
+imidlertid være at du allerede HAR en DHCP server på nettet. Selv små
+ISDN- eller ADSL-routere har ofte indbygget en DHCP server, og den kan
+man sagtens bruge.
+</para>
+
+<para>
+Uanset om du vælger at køre en DHCP server på din Linux maskine, eller
+du vælger at bruge den der er indbygget i din router, så skal du passe
+på at der kun er EEN DHCP server på dit netværk. Hvis der er flere, så
+vil du opleve at det kun virker en gang imellem - nemlig når klienten
+får svaret fra den server, der er konfigureret rigtigt.
+</para>
+</sect2>
+
+<sect2 id="DHCP-ISC">
+<title>ISC DHCP server</title>
+<indexterm><primary>DHCP</primary><secondary>ISC</secondary></indexterm>
+<para>
+ISC's DHCP server bruger een konfigurations-fil, normalt ligger den i
+<filename>/etc/dhcpd.conf</filename>. 
+Derudover bruger den en midlertidig fil til at holde
+styr på hvilke IP adresser den har uddelt til de forskellige maskiner
+på nettet; den ligger normalt i /etc/dhcpd.leases, og den
+administrerer serveren selv. Du skal blot sørge for at filen
+eksisterer inden du starter serveren - f.eks. ved at give kommandoen
+"touch /etc/dhcpd.leases" inden du starter serveren første gang.
+(Det var i al fald nødvendigt tidligere - den udgave af DHCP serveren
+der følger med Red Hat 6.2 opretter selv filen, hvis den ikke findes).
+</para>
+
+<para>
+For at konfigurere DHCP serveren skal du bestemme dig for, hvilke
+oplysninger den skal uddele til de computere, der spørger den om en IP
+adresse. D.v.s. du skal vælge
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>Hvor længe skal de have lov at bruge den tildelte adresse?</para></listitem>
+<LISTITEM><para>Hvilket IP adresse område skal der tages adresser fra?</para></listitem>
+<LISTITEM><para>Hvilken netmaske har dit netværk?</para></listitem>
+<LISTITEM><para>Hvad er default gateway for nettet?</para></listitem>
+<LISTITEM><para>Hvilken IP adresse bruges til DNS server?</para></listitem>
+</itemizedlist>
+
+
+<para>
+Derudover er der en frygtelig masse oplysninger, som man kan levere
+via DHCP. Det er f.eks. domæne-navnet for maskinerne på dit netværk,
+navn på mail server, time-server, WINS server etc. Det er dog langt
+fra alle disse oplysninger, som rent faktisk bruges til noget af de
+maskiner som kontakter DHCP serveren, så derfor er det ikke altid at
+man får noget ud af at konfigurere dem på DHCP serveren. Du kan se
+hvilke muligheder der er i "dhcp-options" man-siden.
+</para>
+
+<sect3 id="dhcpd-conf">
+<title>dhcpd.conf filen</title>
+<indexterm><primary>DHCP</primary><secondary>dhcpd.conf</secondary></indexterm>
+<para>
+I netværket der bruges som eksempel har man valgt at bruge følgende
+værdier til DHCP:
+</para>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>Et lease skal være fornyet efter 10 timer, og er
+max. gyldigt i 24 timer.</para></listitem>
+<LISTITEM><para>IP adresser tildeles fra puljen 192.168.0.100 - 192.168.0.250</para></listitem>
+<LISTITEM><para>Netmasken er 255.255.255.0</para></listitem>
+<LISTITEM><para>Default gateway er 192.168.0.1</para></listitem>
+<LISTITEM><para>DNS serveren er 192.168.0.1</para></listitem>
+<LISTITEM><para>Domæne-navnet er "kongeh.dk"</para></listitem>
+</itemizedlist>
+
+<para>
+Konfigurationsfilen <filename>/etc/dhcpd.conf</filename> skal så se således ud:
+</para>
+
+<screen>
+subnet 192.168.0.0 netmask 255.255.255.0 {
+        range 192.168.0.100 192.168.0.250;
+        option subnet-mask 255.255.255.0;
+
+        # default gateway
+        option routers 192.168.0.1;
+
+        option domain-name "kongeh.dk";
+        option domain-name-servers 192.168.0.1;
+
+        default-lease-time 36000;
+        max-lease-time 86400;
+}
+</screen>
+
+<para>
+DHCP serveren kan håndtere flere "subnet" - f.eks. hvis serveren også
+fungerer som router, så der er flere netkort installeret i
+maskinen. Så kan man konfigurere een DHCP server, som deler adresser
+ud til forskellige netværk. Almindeligvis har man dog kun eet netværk,
+der får adresser fra sin DHCP server - men derfor skal der være en
+"subnet" erklæring, der fortæller hvad det er for et fysisk netværk,
+denne DHCP pulje handler om.
+</para>
+
+<para>
+"range" fortæller så, hvilke IP adresser serveren kan tildele klienter
+på dette netværk - det er her, vi skriver at adresserne skal være i
+intervallet 192.168.0.100 til 192.168.0.250.
+</para>
+
+<para>
+"option subnet-mask" definerer netmasken.
+</para>
+
+<para>
+"option routers" definerer default gateway.
+</para>
+
+<para>
+"option domain-name" og "option domain-name-servers" definerer DNS
+domæne-navnet og DNS serveren. Hvis du ikke selv har en DNS server på
+dit netværk, så kan du sagtens skrive adressen på din Internet
+udbyders DNS server her.
+</para>
+
+<para>
+"default-lease-time" er det antal sekunder, et lease er
+gyldigt. Herefter skal klienten forny sit lease hos DHCP serveren.
+</para>
+
+<para>
+"max-lease-time" er det antal sekunder en IP adresse må bruges. Når den
+tid er gået SKAL klienten holde op med at bruge IP adressen.
+</para>
+
+<para>
+Forskellen på "default-lease-time" og "max-lease-time".
+Funktionen af de to tider er defineret i RFC 2131, afsnit 4.4.5
+"Reacquisition and expiration". Kort fortalt går det ud på, at når
+default-lease-time ("T1" i RFC'en) udløber, skal klienten begynde at
+forsøge at forny sit lease på IP adressen ved at kontakte den DHCP
+server, den oprindelig fik adressen fra. Det kan klienten så blive ved
+med at forsøge indtil den får svar, eller indtil "max-lease-time"
+("T2" i RFC'en) udløber. Hvis T2 udløber SKAL klienten stoppe med at
+benytte IP adressen, og i stedet begynde at broadcaste efter en ny
+DHCP server.
+</para>
+
+<para>
+Tiden mellem default-lease-time og max-lease-time er altså den frist,
+som en klient har til at forny sit lease på en IP adresse. Da servere
+kan være nede, er det nødvendigt at der er lidt tid til at klare sådan
+en ekspeditions-sag - helst så længe, at klienterne ikke begynder at
+falde af nettet pga et enkelt nedbrud af DHCP serveren.
+</para>
+
+
+<para>
+Hvordan vælger man en fornuftig lease-time ? Det der giver mindst
+belastning af DHCP serveren er, hvis arbejds-stationerne ikke behøver
+forny deres lease hele tiden - en gang om dagen er rimeligt, og derfor
+er default-lease-time sat til lidt længere end en normal arbejdsdag
+(10 timer) og max-tiden til 24 timer (86400 sekunder). Omvendt vil man
+måske godt have, at klienterne hurtigt opdager hvis man skifter DNS
+server - for at det skal ske hurtigt, så skal default-lease-time
+sættes ned, så klienterne får friske oplysninger fra serveren noget
+oftere. Det er en afvejning, man må gøre.
+</para>
+</sect3>
+
+<sect3 id="DHCP-start">
+<title>Start DHCP serveren</title>
+<para>
+Efter at have sat redigeret <filename>/etc/dhcpd.conf</filename>
+færdig er du klar til at starte DHCP serveren. Kører du Red Hat, er
+det nemt. Du skal installere dhcp-pakken og køre
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/sbin/chkconfig --level 2345 dhcpd on</userinput>
+</screen>
+
+<para>
+Så starter DHCP serveren automatisk når maskinen booter. Det virker
+dog først efter en reboot, så hvis du vil have serveren i gang med det
+samme, så kører du
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/etc/rc.d/init.d/dhcpd start</userinput>
+</screen>
+
+<para>
+Du kan nu prøve at konfigurere enten en Linux-maskine eller en
+Windows-PC til at bruge DHCP, og så se om den får oplysningerne fra
+serveren. Hvis det er en Windows PC du bruger til at teste med, så kan
+man bruge "winipcfg" programmet (Win95 og Win98) eller "ipconfig /all"
+(Windows NT) til at se, hvordan maskinen er konfigureret af en DHCP
+server.
+</para>
+
+<para>
+Når serveren kører, logger den forespørgsler til en log-fil,
+almindeligvis <filename>/var/log/messages</filename>. Det kan se således ud:
+</para>
+
+<screen>
+dhcpd: DHCPDISCOVER from 00:00:b4:c7:1e:e6 via eth0
+dhcpd: DHCPOFFER on 192.168.0.101 to 00:00:b4:c7:1e:e6 via eth0
+dhcpd: DHCPREQUEST for 192.168.0.101 from 00:00:b4:c7:1e:e6 via eth0
+dhcpd: DHCPACK on 192.168.0.101 to 00:00:b4:c7:1e:e6 via eth0 
+</screen>
+
+<para>
+Først er det klienten, som leder efter en DHCP server. Så tilbyder
+DHCP serveren at klienten kan bruge adressen "192.168.0.101". Den
+beder klienten så om, og serveren svarer tilbage at det er OK.
+</para>
+
+<para>
+De underlige adresser der står i hver linie er Ethernet adressen på
+det netkort, som spørger DHCP serveren. Dem kan man bruge til at give
+servere en fast IP adresse, selv om de får oplysningerne via DHCP.
+</para>
+</sect3>
+
+<sect3 id="DHCP-en-statisk">
+<title>Konfigurer en server med DHCP</title>
+<para>
+Hvis man vil have at en bestemt maskine altid skal få den samme IP
+adresse fra DHCP serveren, så kan man give den en statisk tildeling i
+DHCP server konfigurationen. Her bruger man den Ethernet adresse, som
+maskinens netkort har - hvis maskinen tidligere har fået en IP adresse
+fra DHCP serveren, så kan man se Ethernet adressen i log-filen. Man
+kan også se den med <command>/sbin/ifconfig</command> kommandoen hvis
+det er en Linux maskine:
+</para>
+
+<screen>
+<prompt>[root@landmand]$</prompt> <userinput>/sbin/ifconfig eth0</userinput>
+          Link encap:Ethernet  HWaddr 00:00:B4:C7:1E:E6  
+          inet addr:192.168.0.104  Bcast:192.168.0.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:55 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:94 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100
+          Interrupt:10 Base address:0x6100
+</screen>
+
+<para>
+"HWaddr" er Ethernet adressen. Hvis nu vi vil have at denne maskine
+altid får IP adressen "192.168.0.4" selv om han får sin IP adresse fra
+DHCP serveren, så tilføjer man nogle linier til /etc/dhcpd.conf,
+indeni den "subnet" blok som vi lavede før - så kommer den til at se
+således ud:
+</para>
+
+<screen>
+subnet 192.168.0.0 netmask 255.255.255.0 {
+        range 192.168.0.100 192.168.0.250;
+        option subnet-mask 255.255.255.0;
+
+        # default gateway
+        option routers 192.168.0.1;
+
+        option domain-name "kongeh.dk";
+        option domain-name-servers 192.168.0.1;
+
+        default-lease-time 36000;
+        max-lease-time 86400;
+
+
+        host landmand {
+                hardware ethernet 00:00:B4:C7:1E:E6;
+                fixed-address 192.168.0.4;
+        }
+}
+</screen>
+
+<para>
+"host landmand" indleder en særlig specifikation af hvordan en enkelt
+host skal konfigureres. For at DHCP serveren kan kende host'en bruger
+vi Ethernet adressen - den tager vi fra ifconfig beskeden. For at
+tildele denne host en fast adresse bruges "fixed-address 192.168.0.4",
+og den adresse vil den pågældende host så altid få.
+</para>
+
+<para>
+Bemærk at man godt kan tildele faste IP adresser, der ligger uden for
+det område af IP adresser, der står i "range" specifikationen.
+</para>
+
+<para>
+Fordelen ved også at konfigurere servere med IP adresser fra en DHCP
+server er, at hvis nogle af de andre oplysninger ændrer sig -
+f.eks. DNS serveren eller default gateway - så skal man kun ændre det
+eet sted, nemlig på DHCP serveren. Alle andre servere og
+arbejdsstationer får oplysningerne fra den.
+</para>
+
+<para>
+Der er dog en enkelt undtagelse - DHCP serveren kan ikke spørge sig
+selv om, hvilken IP adresse den skal have. Den er man nødt til at
+konfigurere manuelt med en statisk IP adresse, default gateway o.s.v.
+</para>
+
+</sect3>
+</sect2>
+
+<sect2 id="DHCP-DNS">
+<title>DHCP og DNS</title>
+<indexterm><primary>DHCP</primary><secondary>DNS</secondary></indexterm>
+
+<para>
+DHCP serveren deler IP adresser ud. IP adresser er normalt knyttet til
+hostnavne, men forbindelsen mellem et hostnavn og en IP adresse
+håndteres af DNS serveren. Hvordan hænger de to servere sammen?
+</para>
+
+<para>
+Svaret er, at lige nu (april 2000) hænger de ikke særlig godt
+sammen. DHCP serveren har endnu ikke nogen måde, hvor den kan fortælle
+DNS serveren at den lige har uddelt IP adresse 192.168.0.4 til en
+host, der gerne ville hedde "landmand.kongeh.dk", og at DNS serveren
+skal sørge for at de to oplysninger bliver matchet.
+</para>
+
+<para>
+Det er noget der arbejdes på, men lige nu og her må man konfigurere
+sin DNS server og DHCP server separat. Kommunikationen mellem DHCP
+serveren og DNS serveren skulle være klar med den næste version af
+DHCP server softwaren, version 3.
+</para>
+
+<para>
+Det er dog være en fordel at konfigurere en zone i DNS serveren, der
+mapper de IP adresser som DHCP serveren uddeler til et hostnavn -
+f.eks. 192.168.0.101 mappet til "dhcp-101.kongeh.dk", 192.168.0.102
+mappet til "dhcp-102.kongeh.dk" o.s.v. En del services laver nemlig
+sådan et "reverse DNS" opslag når man forbinder sig til dem, og hvis
+ikke de kan få et eller andet hostnavn ud af det opslag, så tager det
+som regel længere tid at få forbindelse til den pågældende
+service. Det gælder f.eks. <command>telnet</command> og
+<command>ftp</command>.
+</para>
+
+<para>
+Endelig kan det nævnes, at der også er en artikel om DHCP, der kan
+være af interesse <ulink url="http://linuxfocus.org/English/May2000/article150.shtml">http://linuxfocus.org/English/May2000/article150.shtml</ulink>.
+</para>
+
+</sect2>
+
+</sect1>
+
+
+<SECT1 ID="ftpd">
+<TITLE>FTP-server</TITLE>
+<INDEXTERM><PRIMARY>ftp</PRIMARY><SECONDARY>server</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>wu-ftpd</PRIMARY></INDEXTERM>
+
+<PARA>
+De fleste Linux-distributioner installere automatisk en 
+ftp-server, hvis man har valgt en server installation.
+Har du valgt en skrabet installation til en gammel maskine,
+er det nemt senere at få ftp-serveren installeret efterfølgende.
+</PARA>
+
+<PARA>
+<FILENAME>wu-ftpd</FILENAME> er en god ftp-server der følger
+med næsten alle distributioner. Med den installeret, er det muligt
+for alle brugere af systemet at få adgang til deres filer
+med ftp.
+Installationen er nem.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus RPMS]# </PROMPT><USERINPUT>rpm -ivh wu-ftpd*.i386.rpm</USERINPUT>
+</SCREEN>
+
+<PARA>
+Ftp-serveren er nu startet og klar til brug.
+Af sikkerhedsmæssige årsager kan <COMMAND>root</COMMAND> ikke logge
+ind på ftp-serveren.
+Dette skyldes at <COMMAND>root</COMMAND> er nævnt i filen
+<FILENAME>/etc/ftpusers</FILENAME>. Du kan have dine grunde til at give
+root lov til at logge ind, men tænk dig om.
+</PARA>
+
+<PARA>
+Som før nævnt er det kun brugere af systemet, der kan logge ind.
+Skal ftp-serveren være åben for alle, f.eks. til brug for at installere
+Linux på en anden maskine over nettet, så skal der lige en pakke mere
+ind.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus RPMS]# </PROMPT><USERINPUT>rpm -ivh anonftp*.i386.rpm</USERINPUT>
+</SCREEN>
+
+<PARA>
+Nu er maskinen åben for at alle kan hente filer fra din maskine, hvor
+brugerne logger ind som <COMMAND>anonymous</COMMAND> (eller
+<COMMAND>ftp</COMMAND>) og giver sin egen e-mail-adresse som
+password.  Skal du lægge filer brugerne kan downloade, lægges de i
+<FILENAME>/home/ftp/pub/</FILENAME> og kataloger under dette sted.
+</PARA>
+
+<!--
+
+<PARA>
+Skal brugerne have lov til at uploade filer, gøres dette normalt
+til <FILENAME>/home/ftp/incoming/</FILENAME>.
+Her er det vigtigt at sætte ftp op så man kun kan uploade filer
+og ikke downloade. Gør man ikke det, risikerer man at ens server bliver
+misbrugt til at rundsende pirat-programmer.
+Opsætningen af <FILENAME>/incoming/</FILENAME> gøres ved at ......
+</PARA>
+
+-->
+
+</SECT1> <!-- ftp-server -->
+
+
+<sect1 id="NFS">
+<title>NFS - Deling af filer mellem UNIX maskiner</title>
+<indexterm><primary>NFS</primary></indexterm>
+<para>
+I UNIX-verdenen og dermed også Linux har man i mange år kunnet dele
+filer mellem forskellige maskiner i et netværk. Den mest udbredte
+protokol til dette er NFS (netværksfilsystem - eng. Networked File System). Det er selvfølgelig
+et område, man skal være forsigtig med, hvis man har et alt for åbent netværk.
+Her skal vi kun give et simpelt eksempel på, hvordan NFS virker. Hvis
+vi nu siger, at maskinen alfa skal dele <filename>/home</filename> med
+maskinen beta, så skal alfa-maskinen have installeret RPM-pakken
+<filename>nfs-server</filename>. I
+<filename>/etc/exports</filename> skriver du først, hvilken del af
+filtræet, der skal deles, derefter hvilke klienter der skal bruge det
+(du kan anvende * for alle), og sidst om der deles med 
+læse/skrive (rw) eller kun læse-rettigheder (ro). Brug <command>man
+exports</command> for flere detaljer.
+</para>
+
+<SCREEN>
+# /etc/exports - NFS export of /home
+/home beta.domænenavn.dk(rw)
+</SCREEN>
+
+<para>
+Derefter skal du genstarte nfs-serveren ved at skrive
+<command>/etc/rc.d/init.d/nfs restart</command>, og som root på
+beta-maskinen kan du nu nemt få data fra alfa-maskinen.
+</para>
+
+<screen>
+<prompt>[root@beta /root]# </prompt> <userinput>mount -t nfs alfa:/home /home</userinput>
+</screen>
+
+<para>
+Skal alfa være permanent filserver for beta (og andre), bør du på
+beta-maskinen se mere på programmet <command>autofs</command>, der kan 
+tilkoble en disk over netværket, når der er behov for det. Efter et stykke 
+tid uden aktivitet, vil disken afmonteres fra netværket. Dette er der et 
+kort afsnit om i <xref linkend="autofs">.
+Det giver et mere stabilt netværk.
+</para>
+
+<para>
+Nedenstånde er baseret på Red Hat 6.0 og 6.1.
+RedHat 6.2 har som standard de nævnte programmer med. Dette skrives to
+dage efter RedHat 6.2 officielt er udkommet, og det er ikke afprøvet, men
+RedHat 6.2 som NFS-server bør virke uden yderligere krumspring. 
+</para>
+
+<para>
+Enhver der har prøvet at bruge en Linux NFS-server til lidt mere end en
+fil i ny og næ, ved at der har været performanceproblemer. Yderligere har
+det ikke været muligt, at benytte NFS-drev med programmer der
+bruger fillåsning.
+</para>
+
+<para>
+Der arbejdes hårdt på at forbedre Linux' muligheder på dette område. NFS
+version 3 er undervejs, og det er i dag muligt at benytte Linux som
+filserver for andre UNIX-maskiner med godt resultat. Men der er nogle krav
+der skal opfyldes: <emphasis>Kerne 2.2.14< og nfs-utils</emphasis>.
+</para>
+
+<para>
+Linux-kernen skal oversætttes med følgende options:
+</para>
+
+<screen>
+CONFIG_NFS_FS=m
+CONFIG_NFSD=m
+</screen>
+
+<para>
+Yderligere
+</para>
+
+<screen>
+CONFIG_NFSD_SUN=m  
+</screen>
+
+<para>
+hvis linux-maskinenen skal være NFS-server for SUN's Solaris.
+</para>
+
+<para>
+Hent den seneste udgave af nfs-utils fra sourceforge.net:
+<ulink url="ftp://nfs.sourceforge.net/pub/nfs/nfs-utils-0.1.7.tar.gz">ftp://nfs.sourceforge.net/pub/nfs/nfs-utils-0.1.7.tar.gz</ulink>
+</para>
+
+<para>
+Byg en rpm-pakke fra kildekoden:
+</para>
+
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>rpm -ta nfs-utils-0.1.7.tar.gz</userinput>
+...
+...
+...
+...
+Wrote: /usr/src/redhat/RPMS/alpha/nfs-utils-0.1.7-1.alpha.rpm
+Executing: %clean
++ umask 022
++ cd /usr/src/redhat/BUILD
++ cd nfs-utils-0.1.7
++ rm -rf /var/tmp/nfs-utils-root
++ exit 0
+</screen>
+
+
+<para>
+nfs-utils indeholder nye udgaver af nfs-programmer og daemonerne.
+</para>
+
+<para>
+nfs (dvs. daemonerne <filename>rpc.rquotad</filename>,
+<filename>rpc.mountd</filename> og <filename>rpc.nfsd</filename>) og
+nfslock (dvs daemonerne <filename>rpc.lockd</filename> og
+<filename>rpc.statd</filename>) skal startes når maskinen booter:
+</para>
+
+<screen>
+<prompt>[root@linus /root]# </prompt> <userinput>/sbin/chkconfig nfs on</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>/sbin/chkconfig nfslock on</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>/sbin/chkconfig --list | grep nfs</userinput>
+nfs 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+nfslock 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+</screen>
+
+<para>
+Herefter er maskinen klar som fornuftig NFS-server.
+</para>
+</sect1>
+
+<sect1 id="NIS">
+<title>NIS - deling af "passwd"-filer mellem UNIX maskiner</title>
+<para>
+Er der flere maskiner i lokalnettet, og har brugerne brug for adgang til
+dem alle (eller nogle af dem), er NIS en god løsning.
+</para>
+
+<para>
+NIS, The Network Information System, sørger for at flere maskiner kan dele
+oplysninger om brugere, grupper og endda også maskiner og en del andre
+oplysninger.
+</para>
+
+<para>
+NIS blev tidligere kaldt "Yellow Pages", forkortet "yp", efter
+telefonbøgernes gule sider, men det måtte ændres, da Yellow Pages er et
+registreret varemærke ejet af British Telecom.
+Men de fleste programmer i NIS, starter stadig med yp.
+</para>
+
+<para>
+NIS arbejder, ligesom DNS, med et domænenavn. Men disse to domænenavne har
+intet med hinanden at gøre. 
+I det følgende har vi to Red Hat maskiner i (DNS-)domænet
+strangeparty.dk. De skal dele informationer om kodeord mv. i (NIS-)domænet
+spo.
+</para>
+
+<para>
+Serveren hedder "supernaut". Klienten hedder "omnitec".
+</para>
+
+<para>
+På serveren skal pakken "ypserv" installeres:
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]# </prompt> <userinput>rpm -Uvh /cdrom/RPMS/ypserv-1.3.9-1.alpha.rpm </userinput>
+ypserv                 ##################################################
+</screen>
+
+<para>
+NIS-domænet skal være "spo". Det sættes med kommandoen <command>domainname</command>.
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>domainname spo</userinput>
+</screen>
+
+<para>
+Ypserveren skal nu startes:
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]# </prompt> <userinput>/etc/rc.d/init.d/ypserv start</userinput>
+Starting YP server services:                               [  OK  ]
+</screen>
+
+<para>
+Det kan betale sig at gennemse, og måske tilrette, filen
+<filename>/var/yp/Makefile</filename>.  Du bør nok ændre MINUID og
+MINGID, så disse starter UID og GID ved 300, og ikke ved 500 som er
+standard i RedHat. Du kan også  udkommentere linien "GSHADOW =
+$(YPPWDDIR)/gshadow", og indsætte "MERGE_GROUP=false".
+</para>
+
+<para>
+Herefter initieres NIS-serveren:
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>/usr/lib/yp/ypinit -m</userinput>
+
+At this point, we have to construct a list of the hosts which will run NIS
+servers.  supernaut.strangeparty.dk is in the list of NIS server
+hosts.  Please continue to add
+the names for the other hosts, one per line.  When you are done with the
+list, type a &lt;control D&gt;.
+	next host to add:  supernaut.strangeparty.dk
+	next host to add:  
+The current list of NIS servers looks like this:
+
+supernaut.strangeparty.dk
+
+Is this correct?  [y/n: y]  
+We need some  minutes to build the databases...
+Building /var/yp/spo/ypservers...
+Running /var/yp/Makefile...
+gmake[1]: Entering directory `/var/yp/spo'
+Updating passwd.byname...
+Updating passwd.byuid...
+Updating group.byname...
+Updating group.bygid...
+Updating hosts.byname...
+Updating hosts.byaddr...
+Updating rpc.byname...
+Updating rpc.bynumber...
+Updating services.byname...
+Updating netid.byname...
+Updating protocols.bynumber...
+Updating protocols.byname...
+Updating mail.aliases...
+gmake[1]: Leaving directory `/var/yp/spo'
+[root@supernaut /home/kwv]# 
+</screen>
+
+<para>
+Med ypbind installeret på serveren, kan man nu kontrollere de
+services der stilles til rådighed.
+Ypbind skal startes først:
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>/etc/rc.d/init.d/ypbind start</userinput>
+
+Binding to the NIS domain...                               [  OK  ]
+Listening for an NIS domain server: supernaut.strangeparty.dk
+</screen>
+
+<para>
+Kommandoen <command>ypcat -x</command> viser de services serveren
+stiller til rådighed: 
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>ypcat -x</userinput>
+
+Use "ethers"	for map "ethers.byname"
+Use "aliases"	for map "mail.aliases"
+Use "services"	for map "services.byname"
+Use "protocols"	for map "protocols.bynumber"
+Use "hosts"	for map "hosts.byname"
+Use "networks"	for map "networks.byaddr"
+Use "group"	for map "group.byname"
+Use "passwd"	for map "passwd.byname"
+</screen>
+
+<para>
+Det interessante i vores lille netværk, er <filename>passwd</filename>
+og <filename>group</filename>. Yderligere kan
+<filename>aliases</filename> og <filename>mail.aliases</filename> være
+smart til at styre lokal epost.
+</para>
+
+<para>
+Men hvad indeholder de så?
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>ypcat passwd</userinput>
+hanne:BmXEt39P1By2I:301:300:Hanne:/supernaut/hanne:/bin/bash
+kwv:/g10xcDPwwaA2:405:400:Kristian Vilmann:/home/kwv:/bin/bash
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>ypcat group</userinput>
+hjemme:x:300:
+teknik:x:400:
+</screen>
+
+<para>
+På klienten skal <command>ypbind</command> selvfølgelig være
+installeret. Og den skal startes:
+</para>
+
+<screen>
+<prompt>[root@omnitech /root]#</prompt> <userinput>rpm -q ypbind</userinput>
+ypbind-3.3-24
+<prompt>[root@omnitech /root]#</prompt> <userinput>domainname spo</userinput>
+<prompt>[root@omnitech /root]#</prompt> <userinput>/etc/rc.d/init.d/ypbind start</userinput>
+Binding to the NIS domain...                               [  OK  ]
+Listening for an NIS domain server: .supernaut.strangeparty.dk
+</screen>
+
+<para>
+Hvis klienten har problemer med at finde NIS-serveren, eller der er flere
+NIS-domæner i netværket, kan man sætte sine præferencer i filen
+<filename>/etc/yp.conf</filename>.
+</para>
+
+<para>
+Lad os se om det ser rigtigt ud. <command>ypwhich</command> fortæller hvilken NIS-server
+klienten er bundet til:
+</para>
+
+<screen>
+<prompt>[root@omnitech /root]#</prompt> <userinput>ypwhich</userinput>
+supernaut.strangeparty.dk
+<prompt>[root@omnitech /root]#</prompt> <userinput>ypcat passwd</userinput>
+hanne:$1$d5dYr98N$/k.0aNyvq/BMX0UlMoyGZ1:301:300:Hanne:/home/hanne:/bin/bash
+kwv:$1$I1/h6uyj$Spk11r0bYTyo9r.sc7nQ..:405:400:Kristian Vilmann:/home/kwv:/bin/bash
+</screen>
+<para>
+Det ser fint ud.
+Vi lader nu en bruger prøve telnet fra serveren til klienten.
+For en god ordens skyld kontrolleres at brugeren hanne ikke optræder i
+password-filen:
+</para>
+
+<screen>
+<prompt>[root@omnitech /root]#</prompt> <userinput>grep hanne /etc/passwd</userinput>
+</screen>
+
+<para>
+Her var der intet svar (nul linier).
+</para>
+
+<screen>
+<prompt>[hanne@supernaut ~]#</prompt> <userinput>telnet omnitec</userinput>
+Trying 192.168.10.126...
+Connected to omnitec.strangeparty.dk.
+Escape character is '^]'.
+
+Red Hat Linux release 6.1 (Cartman)
+Kernel 2.2.12-20 on an i586
+login: hanne
+Password: 
+Last login: Wed Mar 29 13:42:12 from supernaut.strangeparty.dk
+<prompt>[hanne@omnitec ~]$</prompt> <userinput>id</userinput>
+uid=301(hanne) gid=300(hjemme) groups=300(hjemme)
+<prompt>[hanne@omnitec ~]$</prompt> <userinput>pwd</userinput>
+/supernaut/hanne
+<prompt>[hanne@omnitec ~]$</prompt> <userinput>whoami</userinput>
+hanne
+<prompt>[hanne@omnitec ~]$</prompt> <userinput>ls -al</userinput>
+total 142
+drwx------   2 hanne    hjemme       1024 Mar 29 13:13 WebDB/
+-rw-r--r--   1 hanne    hjemme      34862 Mar 12 23:24 headbanging.jpg
+-rw-r--r--   1 hanne    hjemme      59995 Oct 18 22:16 insoundout.gif
+drwxr-xr-x   4 hanne    hjemme       1024 Mar 12 00:10 objectsystem1.0/
+-rw-r--r--   1 hanne    hjemme      43971 Mar 21 19:31 sslug.httpd.conf
+</screen>
+
+<para>
+Det ser rigtigt ud. Læg mærke til at Hanne's hjemmekatalog er NFS-mounted
+fra serveren, og at hun derfor har samme hjemmekatalog på begge maskiner. 
+</para>
+
+<para>
+NIS tilbyder en række værktøjer til manipulering af
+brugerinformationerne på NIS-serveren: <command>yppasswd</command>,
+<command>ypchfn</command> og <command>ypchsh</command>.
+</para>
+
+<para>
+De fungerer på samme måde som de tilsvarende kommandoer uden yp-prefixet.
+Hanne vil gerne skifte sit kodeord:
+</para>
+
+<screen>
+<prompt>[hanne@omnitec ~]$</prompt> <userinput>yppasswd</userinput>
+Changing NIS account information for hanne on supernaut.strangeparty.dk.
+Please enter old password: GAMMELKODE
+Changing NIS password for hanne on supernaut.strangeparty.dk.
+Please enter new password: NYKODE
+Please retype new password: NYKODE
+
+The NIS password has been changed on supernaut.strangeparty.dk.
+</screen>
+
+<para>
+Lad os se om det virker:
+</para>
+
+<screen>
+<prompt>[hanne@omnitec ~]$</prompt> <userinput>telnet supernaut</userinput>
+Trying 192.168.10.1...
+Connected to supernaut.strangeparty.dk.
+Escape character is '^]'.
+
+Red Hat Linux release 6.0 (Hedwig)
+Kernel 2.2.14 on an alpha
+login: hanne
+Password: NYKODE
+Last login: Wed Mar 29 13:02:19 from omnitec.strangeparty.dk
+</screen>
+
+<para>
+Fint. Kodeordet er ændret på serveren.
+Man hvad med klienten?
+</para>
+
+<screen>
+<prompt>[hanne@supernaut ~]$</prompt> <userinput>telnet omnitec</userinput>
+Trying 192.168.10.126...
+Connected to omnitec.strangeparty.dk.
+Escape character is '^]'.
+
+Red Hat Linux release 6.1 (Cartman)
+Kernel 2.2.12-20 on an i586
+login: hanne
+Password: NYKODE
+Last login: Wed Mar 29 13:46:21 from supernaut.strangeparty.dk
+</screen>
+
+<para>
+Hvis man som administrator ændrer i passwordfilen, opretter eller
+sletter en bruger, eller ændrer andet der påvirker NIS, skal man sørge for
+at NIS-databaserne er konsistente efter ændringerne:
+</para>
+
+<screen>
+<prompt>[root@omnitech /root]#</prompt> <userinput>cd /var/yp</userinput>
+<prompt>[root@omnitech /root]#</prompt> <userinput>make</userinput>
+</screen>
+
+<para>
+Og så skal vi lige sørge for at det starter næste gang maskinerne
+bootes: På serveren skal <command>ypserv</command>,
+<command>yppasswdd</command> og <command>ypbind</command> startes i
+runlevel 3, 4 og 5.
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>/sbin/chkconfig --list | grep yp</userinput>
+ypbind 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+yppasswdd 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+ypserv 0:off 1:off 2:off 3:off 4:off 5:off 6:off
+</screen>
+
+<para>
+ypserv starter ikke automatisk. Det får vi den til:
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>/sbin/chkconfig ypserv on</userinput>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>/sbin/chkconfig --list | grep yp</userinput>
+ypbind 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+yppasswdd 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+ypserv 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+</screen>
+
+<para>
+NIS-domænet skal sættes, både på server og klient. Det gøres i
+<filename>/etc/sysconfig/network</filename>:
+</para>
+
+<para>
+NISDOMAIN=spo
+</para>
+
+
+<para>
+På klienten skal ypbind også startes ved boot:
+</para>
+
+<screen>
+<prompt>[root@supernaut /home/kwv]#</prompt> <userinput>/sbin/chkconfig --list ypbind</userinput>
+ypbind 0:off 1:off 2:off 3:on 4:on 5:on 6:off
+</screen>
+
+<para>
+NIS kan en del mere end beskrevet her. Men dette er normalt det, der er
+størst behov for.
+</para>
+
+<para>
+For mere information:
+Linux Network Administrators Guide,
+NIS-HOWTO,
+Managing NFS & NIS, O'Reilly & Associates,
+Manualsiderne fra ypserv og  ypbind pakkerne. Find dem således: 
+</para>
+
+<screen>
+<prompt>[hanne@supernaut ~]$</prompt> <userinput>rpm -ql `rpm -qa | grep ^yp` |grep man</userinput>
+</screen>
+
+
+</sect1>
+
+
+<sect1 id="SAMBA">
+<title>Linux som server i Windows-netværk (SAMBA)</title>
+<indexterm><primary>SAMBA</primary></indexterm>
+<indexterm><primary>Filserver for Windows maskiner</primary></indexterm>
+<indexterm><primary>Windows</primary><secondary>fil-deling</secondary></indexterm>
+
+
+<para>
+Selv om denne bog handler om Linux, skal man ikke glemme, at
+der findes andre styresystemer. Et af de mere udbredte er Windows -
+herunder wfw/95/98/NT/2000, som alle har indbygget muligheden for at
+fungere i netværk. Hvis man allerede har et lokalnet med både Linux og
+Windows computere, kan man med fordel kigge nærmere på SAMBA.
+</para>
+
+<para>
+SAMBA er Open Source Software og kan dermed erhverves og bruges helt gratis. I
+Danmark kan SAMBA bedst downloades fra <ulink
+url="http://sunsite.auc.dk/samba/samba.html">http://sunsite.auc.dk/samba/samba.html</ulink>,
+ellers fra <ulink
+url="http://www.samba.org">http://www.samba.org</ulink>.
+</para>
+
+<para> 
+Med SAMBA installeret får man stort set samme muligheder, som
+hvis man investerer i en langt dyrere og meget mere hardwarekrævende
+NT/2000 licens eller en OS/2 Lan Manager. Det, SAMBA først og fremmest kan
+tilbyde, er at fungere som fil- og printerserver. Derudover kan SAMBA
+også fungere som Primary Domain Controller for Windows 95/98 klienter. Fuld
+domain control for Windows NT domæner findes i version 2.0 eller senere.
+</para>
+
+<para>
+Med SAMBA installeret (og ikke mindst konfigureret) vil
+serveren kunne ses, hvis man klikker på "network neighbourhood" (på
+dansk: "andre computere") eller på samme netværk i Windows 95/98/NT.
+</para>
+
+<para>
+Den letteste måde at installere/opgradere SAMBA på er ved at
+bruge en forkompileret pakke. Sådanne pakker kan hentes på
+<ulink url="http://sunsite.auc.dk/samba/ftp/Binary_Packages/">http://sunsite.auc.dk/samba/ftp/Binary_Packages/</ulink>,
+og de findes til flere
+forskellige Linux-distributioner, bl.a. Red Hat, Caldera, Debian,
+Slackware og SuSE. Hvis man holder af at oversætte sin kildetekst
+selv, kan den hentes her:
+<ulink url="ftp://sunsite.auc.dk/pub/UNIX/networking/samba">ftp://sunsite.auc.dk/pub/UNIX/networking/samba</ulink>.
+Vi vil dog meget anbefale at bruge en foroversat pakke, og vi
+vil i eksemplet gå ud fra, at du har Red Hat installeret. Når du har
+hentet rpm-pakken, skriver du bare:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh samba-2.0.6-19991110.i386.rpm</USERINPUT>
+</screen>
+
+
+<para>
+Når du har fået installeret SAMBA serveren, skal du have den
+konfigureret.Dette kan gøre på flere måder. I sædvanlig UNIX stil kan
+man rette direkte i filen <filename>/etc/smb.conf</filename>. Denne
+fil kan virke meget skræmmende, da der er op mod 300 parametre, man
+kan sætte. Det skal du dog af to grunde ikke lade dig gå på af: For
+det første har de fleste parametre udmærkede forvalgte værdier, så dem
+behøver man slet ikke at bekymre sig om. For det andet bliver der
+installeret en udmærket standard <filename>/etc/smb.conf</filename>,
+som virker uden de store ændringer. Denne standards
+<filename>smb.conf</filename> er desuden meget velkommenteret, hvilket
+yderligere letter tilpasning. Her er et eksempel på en lille
+<filename>/etc/smb.conf</filename> fil, der ud over at sætte SAMBA op
+som fil- og printerserver også konfigurerer SAMBA som domænekontroller.
+</para>
+
+<screen>
+[global]
+   workgroup = hjemme
+
+   printing = bsd
+   printcap name = /etc/printcap
+   load printers = yes
+
+   log file = /var/log/samba-log.%m
+
+   short preserve case = yes
+   preserve case = yes
+
+   lock directory = /var/lock/samba
+   locking = yes
+   strict locking = yes
+
+   security = user
+
+   socket options = TCP_NODELAY
+
+   domain master = yes
+   domain logons = yes
+
+[homes]
+   comment = Home Directories
+   read only = no
+   create mode = 0750
+
+[deskjet870cxi]
+   comment = All Printers
+   path = /var/spool/samba
+   browseable = yes
+   printable = yes
+; Set public = yes to allow user 'guest account' to print
+   public = no
+   writable = no
+   create mode = 0700
+
+</screen>
+
+<para>
+Som noget nyt i version 2.x.x har man nu mulighed for at sætte op som
+primær domænekontroller for et windows-netværk. Det vil dog føre for vidt at 
+komme ind på det her. Hvis man har mod på at prøve kan finde mere information her:
+<ulink url="http://sunsite.auc.dk/samba/docs/ntdom_faq/samba_ntdom_faq.html">,
+http://sunsite.auc.dk/samba/docs/ntdom_faq/samba_ntdom_faq.html</ulink>,
+
+<ulink url="http://www.kneschke.de/projekte/samba_tng/index.php3">Samba TNG</ulink> og
+
+<ulink url="http://www.linuxworld.com/linuxworld/lw-1998-10/lw-10-samba.html">Doing the NIS/NT Samba</ulink>
+</para>
+
+<para>
+Sammen med SAMBA kommer der også et grafisk konfigurationsværktøj, der
+hedder <command>swat</command> (Samba Web Administration tool). 
+Med dette værktøj er det muligt at klikke sig gennem
+opsætningen af SAMBA.
+</para>
+
+<FIGURE ID="swat-fig" FLOAT="1">
+<TITLE>Swat
+</TITLE>
+<GRAPHIC FILEREF="../images/swat.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+
+<para> Her ses et eksempel hvordan <command>swat</command> ser ud, jeg
+har defineret et "share" (en delt mappe), der hedder spil. I
+<filename>smb.conf</filename> ser det således ud:
+</para>
+
+<screen>
+[spil]
+  create mask =  0775
+  read only = no
+  path = /mnt/hdd/spil/
+</screen>
+
+<para>
+Hvis man bruger swat ser det således ud: 
+</para>
+
+<FIGURE ID="swatspil-fig" FLOAT="1">
+<TITLE>Swat spil
+</TITLE>
+<GRAPHIC FILEREF="../images/swat_spil.&magic;"  SCALE="40"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Her er det kun den øverste del af siden, der er taget med. Det skal
+bemærket at der findes en del
+andre indstillinger, der også kan sættes med swat. Den største fordel ved at
+benytte swat er man har adgang til hjælp.
+</para>
+
+<para>
+Der findes efterhånden en del andre grafiske
+konfigurationsværktøjer. 
+<ulink url="http://sunsite.auc.dk/samba/GUI/">http://sunsite.auc.dk/samba/GUI/</ulink>
+indeholder en liste over disse.
+</para>
+
+<sect2 id="kryptpass">
+<title>Krypterede adgangskoder</title>
+
+<para>
+SMB bruger en krypteringsteknik, der ligner standard UNIX-kryptering. 
+Det er dog kun tilsyneladende, at de to teknikker er ens,
+UNIX variationen sender nemlig typisk kodeordet i klar tekst over
+netværket, når man skal logge ind. SMB sender i modsætning hertil en
+kodet version af adgangskoden.
+</para>
+
+<para>
+Hvorvidt man vælger at bruge krypterede adgangskoder eller ej, er op til
+den enkelte at afgøre, da der er både fordele og ulemper, som listet
+nedenfor. Bruger man nyere versioner af MS Windows og NT vil vi dog
+anbefale at bruge kryptering, idet man slipper for at skulle
+konfigure alle sine klienter. Som det vil fremgå lidt senere er det uhyre
+enkelt at få SAMBA til at benytte krypterede adgangskoder.
+</para>
+
+<para>
+Fordele ved krypterede passwords:
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM>
+<PARA>Sikkerhed. Adgangskoder bliver ikke sendt over netværket i klar tekst.</PARA>
+</LISTITEM>
+
+
+<LISTITEM>
+<PARA>Windows 95 med osr2, Windows 98 og NT4.0SP4 vil som standard kun
+tale med en server, der anvender krypterede adgangskoder.</PARA>
+</LISTITEM>
+</ITEMIZEDLIST>
+
+Ulemper ved krypterede passwords:
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM>
+<PARA>Der skal vedligeholdes endnu en passwd-fil.</PARA>
+</LISTITEM>
+
+<LISTITEM>
+<PARA>Hvis du allerede bruger services, der sender adgangskoder i klar
+tekst (F.eks telnet og ftp), gør det ikke den store forskel, om
+SMB også gør det.</PARA>
+</LISTITEM>
+
+</ITEMIZEDLIST>
+</PARA>
+
+<para>
+Windows 98 og Windows NT 4 (sp3 og senere) kræver som standard brug af 
+krypterede adgangskoder. Det betyder, at du har to valg:
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM>
+<PARA>Du konfigurerer SAMBA til at bruge krypterede adgangskoder.
+</PARA>
+</LISTITEM>
+<LISTITEM>
+<PARA>Du ændrer Windows 98/95/NT registry, så de ikke kræver krypterede adgangskoder.
+</PARA>
+</LISTITEM>
+</ITEMIZEDLIST>
+</para>
+
+<sect3 id="SAMBAconfig">
+<title>Konfigurering af SAMBA</title>
+<para>
+I modsætning til tidligere er SAMBA i dag født til kunne håndtere
+krypterede adgangskoder. Det eneste man skal gøre er at tilføje følgende
+linje til [global] sektionen i <filename>/etc/smb.conf</filename>
+</para>
+
+<screen>encrypt password = yes</screen>
+
+<para>
+Hvis man gerne vil have flyttet sine UNIX-adgangskoder over til SAMBA
+skal du lave en ny passwd-fil til brug for SAMBA alene. Der findes
+et program, der kan generere en SAMBA passwd-fil ud fra den
+eksisterende UNIX passwd-fil:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT> mksmbpasswd.sh &lt; /etc/passwd &gt; /etc/smbpasswd</USERINPUT>
+</SCREEN>
+
+<para>
+I SuSE 6.3 er <filename>smbpasswd.sh</filename> placeret i kataloget
+<filename>/usr/sbin</filename>, og katalogplaceringen skal med i
+kommandoen. Desuden har filen i den distribution ikke rettigheder til
+at kunne eksekveres, hvilken du således skal tildeles, før kommandoen udføres.
+</para>
+
+<para>
+Kommandoen opretter filen til de krypterede adgangskoder, men den opretter ikke
+selve de krypterede adgangskoder. Uanset om du vælger, at brugerne skal have
+samme SAMBA-adgangskode, som de er tildelt som brugere i dit Linux-system, skal
+du alligevel bagefter tildele dem krypterede SAMBA-adgangskoder ved hjælp af
+kommandoen smbpasswd.
+</para>
+
+<para>
+Selv hvis du med linjen <filename>null passwords = yes</filename> i
+<filename>/etc/smb.conf</filename> under global-sektion har tilladt, at
+SAMBA-password'et er blankt, skal du alligevel oprette et "blankt"
+password med <command>smbpasswd</command>-kommandoen.
+</para>
+
+<para>
+Du bør bruge samba-1.9.18p10 eller senere(2.0.6 er pt. den seneste),
+da kryptering er slået til som standard - dette gælder i hvert fald for
+Red Hat. Bruger du andre distributioner, bør du tjekke, hvordan SAMBA
+er konfigureret. Hvis du gerne vil oversætte dit eget programmel, skal
+du anvende linkerflaget <filename>-lcrypt</filename> til LIBSM. 
+</para>
+</sect3>
+
+<sect3 id="SAMBAconfigWin">
+<title>Konfigurering af Windows 98/NT</title>
+<para>
+På Windows 95/98 maskiner konfigurerer du krypteret password ved at
+ændre i en indgang i registry-databasen, så den ser således ud:
+</para>
+
+<screen>
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\VxD\VNETSUP]
+"EnablePlainTextPassword"=dword:00000001
+</screen>
+
+<para>
+Tilsvarende for Windows NT:
+</para>
+
+<screen>
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Rdr\Parameters]
+"EnablePlainTextPassword"=dword:00000001
+</screen>
+
+<para>
+En meget udførlig beskrivelse af brugen findes i filen 
+<filename>ENCRYPTION.txt</filename>, der følger med SAMBA-distributionen.
+</para>
+
+<para>
+Ud over man-siderne og dokumentationen, der installeres i
+<filename>/usr/doc</filename>, findes der en bog om SAMBA. Den er ikke
+blændende godt redigeret hele vejen igennem, men er ualmindelig rar at
+have stående som opslagsværk, hvis du administrerer en server med SAMBA.
+Sidst i bogen er der et rigtig godt kapitel om fejlfinding.
+</para>
+
+<para>
+John D. Blair: <emphasis>SAMBA: Integrating UNIX and
+Windows</emphasis>, Specialized Systems Consultants, Inc., ISBN:
+1-57831-006-7, 290 sider + CDROM
+</para>
+<para>
+Der findes også en glimrende online bog fra O'Reilly, der 
+hedder <ulink url="http://sunsite.auc.dk/samba/oreilly/using_samba/">"Using Samba"</ulink> skrevet af Robert Eckstein, David Collier-Brown, Peter Kelly
+</para>
+
+<para>
+En anden virkelig god bog om Samba er efter sigende 
+Gerald Carter & Richard Sharpe, <emphasis>Sams Teach Yourself Samba in
+24hrs</emphasis>, 
+Sams Publishing 1999. ISBN 0-672-31609-9.
+</para>
+
+</sect3>
+</sect2>
+</sect1>
+
+
+<sect1 id="postfix">
+<title>Postfix</title>
+
+<indexterm><primary>Postfix</primary></indexterm>
+<indexterm><primary>E-post</primary><secondary>Postfix</secondary></indexterm>
+<indexterm><primary>MTA (Mail Transfer Agent)</primary><secondary>Postfix</secondary></indexterm>
+<indexterm><primary>Sendmail</primary><secondary>Postfix</secondary></indexterm>
+
+<para>
+<application>Postfix</application> er en moderne MTA (mail transfer agent), dvs. et program til at 
+flytte e-post fra en postserver til en anden. I mange år var 
+<application>Sendmail</application> den MTA, alle brugte, men i de sidste 
+par år har det vist sig, at <application>Sendmail</application> ikke kan
+leve op til de sikkerhedskrav, man typisk stiller.
+</para>
+
+<para>
+<application>Postfix</application> har umiddelbart tre fordele:
+  <itemizedlist mark="bullet" spacing="compact">
+    <listitem>
+      <para>
+      Skrevet af Wietse Venema, som er kendt for sin store viden og 
+      kunnen indenfor edb-sikkerhed.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+      Systemet er brudt ned i mange små delprogrammer. Hver komponent er 
+      lettere at overskue og det mindsker risikoen for fejl.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+      Langt de fleste komponenter behøver ikke at blive eksekveret som root,
+      hvilket betyder at evt. programmerings- eller konfigureringsfejl ikke
+      bliver nær så alvorlige.
+      </para>
+    </listitem>
+  </itemizedlist>
+</para>
+
+<para>
+Mandrake Linux version 7.1 kommer med <application>Postfix</application> og
+<application>Sendmail</application> og du kan under installationen 
+vælge hvilken MTA, du vil bruge. Dette valg har du endnu ikke under Red Hat
+eller SuSE, og i det følgende vil vi antage at du har Red Hat kørende.
+</para>
+
+<para>
+Først skal du stoppe og afinstallere <application>sendmail</application> 
+inden du går i gang med <application>Postfix</application>. 
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>cd /etc/rc.d/init.d</userinput>
+<prompt>[root@linus init.d]#</prompt> <userinput>./sendmail stop</userinput>
+Shutting down sendmail:                [ OK ]
+<prompt>[root@linus init.d]#</prompt> <userinput>rpm -e sendmail</userinput>
+</screen>
+
+<para>
+Du er nu klar til at downloade og installere <application>Postfix</application>.
+Idet <application>Postfix</application> endnu ikke er et færdigt produkt,
+frigives der jævnligt nye versioner. Du kan finde programmet på 
+<ulink url="ftp://sunsite.auc.dk">sunsite.auc.dk</ulink> i kataloget
+<filename>/mirrors/ftp.redhat.com/pub/contrib/libc6/i386/</filename>. I skrivende
+stund findes en udgave fra 31. december 1999 under navnet 
+<filename>postfix-19991231_pl07-1.i386.rpm</filename>.
+
+</para>
+
+<para>
+Efter du har downloaded filen, skal du installere den.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>rpm -i postfix-19991231_pl07-1.i386.rpm</userinput>
+postfix-script: Warning: Creating missing Postfix pid directory
+postfix-script: Warning: Creating missing incoming directory
+postfix-script: Warning: Creating missing bounce directory
+postfix-script: Warning: Creating missing defer directory
+postfix-script: Warning: Creating missing deferred directory
+postfix-script: Warning: Creating missing saved directory
+postfix-script: Warning: Creating missing corrupt directory
+postfix-script: Warning: Creating missing public directory
+postfix-script: Warning: Creating missing private pid directory
+<prompt>[root@linus /root]#</prompt> <userinput>mkdir /var/log/mail</userinput>
+<prompt>[root@linus /root]#</prompt> <userinput>cd /etc/rc.d/init.d</userinput>
+<prompt>[root@linus init.d]#</prompt> <userinput>./postfix start</userinput>
+Starting postfix: postfix-script: starting the Postfix mail system
+<prompt>[root@linus init.d]#</prompt> <userinput>chkconfig --level 3 postfix on</userinput>
+</screen>
+
+<para>
+Nu har du fået udskiftet <application>Sendmail</application> med 
+<application>Postfix</application>, og den nye MTA vil altid blive startet
+op, når du kører i runlevel 3 (den sidste kommandolinje).
+</para>
+
+<para>
+Konfigurationen af <application>Postfix</application> sker i filen 
+<filename>/etc/postfix/main.cf</filename>. Som et minimum skal du
+ændre <emphasis>myhostname</emphasis> og <emphasis>mydomain</emphasis> til 
+noget fornuftigt, men ofte er det ikke nødvendigt idet Postfix tager denne
+information fra sendmail.cf.
+Du kan få <application>Postfix</application>
+til at genindlæse en konfiguration med at udføre kommandoen 
+<command>postfix reload</command> som root.
+</para>
+
+<para>
+Postfix har hjemmesiden <ulink url="http://www.postfix.org/">www.postfix.org</ulink>,
+hvor der også er en god FAQ.
+</para>
+
+</sect1><!-- postfix -->
+
+
+
+<sect1 id="firewall">
+<title>Firewall</title>
+<indexterm><primary>Firewall</primary></indexterm>
+
+<sect2>
+<title>Hvad er en firewall</title>
+<para>
+
+En firewall er et stykke hardware eller software hvor sikkerheden
+håndhæves og som adskiller et eller flere sikre netværk fra et
+ikke-sikret netværk som f.eks. Internettet. Firewallen afskærer alt
+forbindelse mellem to netværk, og bestemmer hvilken trafik, der må
+komme hvorhen, og hvilken trafik der ikke må komme igennem. Det er så
+op til administratoren for netværket at lave sikkerhedsregler for hvad
+der må komme igennem og hvad der ikke må. Firewalls benyttes som regel
+mod angreb via Internettet, men kan også bruges mod angreb fra
+personer i ens private netværk. Lad os se på et par forskellige
+firewall-typer.
+</para>
+
+<sect3 id="filtering-gateway">
+<title>Filtrering Gateways</title>
+<indexterm><primary>Firewall</primary>
+<secondary>Filtering gateway</secondary></indexterm>
+<indexterm><primary>Screening router</primary></indexterm>
+
+<para>
+Filtrerings-firewalls benytter routere og pakke-filtreringsregler til
+at give eller nægte adgang fra en source-adresse (host) og port
+(service) til en anden destinationsadresse og port. Det kaldes også en
+screening router og er defineret som en router, der er konfigureret
+til at tillade eller nægte trafik baseret på et sæt adgangsregler, der
+er installeret af administratoren.
+</para>
+
+<para>
+Administratoren kan f.eks. benytte router regler til at tillade, at en
+bestemt computer på det eksterne netværk via FTP kan få forbindelse
+til en specifik computer på det interne netværk, men samtidigt nægte
+den samme computer mulighed for ved hjælp af TELNET at sende til den
+interne computer.
+</para>
+
+<para>
+Fordele ved en pakke filtrerings-firewall er, at de er hurtige,
+sædvanligvis billige, meget fleksible og transparente. En ulempe ved
+filtrerings-firewalls er at de ikke kan beskytte mod fejl i softwaren
+hos de hosts som der er adgang til udefra. Det vil sige at hvis man
+først har fået adgang til en host, kan en hacker prøve at se om der er
+nogle fejl i softwaren hos hosten for at få mere adgang.
+</para>
+
+</sect3
+
+<sect3 id="circuit-gateway">
+<title>Circuit Gateway</title>
+<indexterm><primary>Firewall</primary><secondary>Circuit gateway</secondary></indexterm>
+
+<para>
+En firewall på circuit niveau er en måde at videregive en udgående
+anmodning fra en klient på det interne netværk til en enkelt computer,
+der fungere som firewall, så det fra et andet sted fra ser ud som om
+anmodningen om forbindelsen faktisk kom fra firewallen. Den
+væsentligste fordel ved en firewall på circuit niveau er, at den
+forhindrer en direkte forbindelse mellem interne og eksterne
+computere. Alle indkommende anmodninger blokeres. En ulempe ved
+circuit niveau gateway er, at det kan være nødvendigt at ændre klient
+software på det interne netværk, så der kan udveksles de nødvendig
+"håndtryk" med circuit niveau gateway'en (f.eks. via SOCKS).
+</para>
+
+</sect3>
+
+
+<sect3 id="program-gateway">
+<title>Program Gateway</title>
+
+<para>
+En program gateway er et firewallsystem, hvor services er beskyttet af
+processer, der opretholder komplet TCP-forbindelses tilstand og
+sekvensering. Program firewalls omadressere ofte trafik, så udgående
+trafik ser ud, som den kommer fra firewallen og ikke fra den interne
+host.
+
+En program gateway betragtes som den mest sikre firewall man kan
+lave. En ulempe ved denne type firewall er at den kræver en "service"
+eller en slags proxy for hver enkelt program (service) man har kørende
+på ens interne net for at der kan komme trafik til host'en. Et
+eksempel: Hvis du udefra på Internettet ønsker at komme i kontakt med
+en Web-server kræver dette at der er en HTTP proxy på firewall'en, for
+at det vil virke. En fordel ved denne type firewall er at hvis der
+eksempelvis er en person som sætter sin FTP server til at svare på
+port 80, vil Program Gateway'en kunne finde ud af at det ikke er Web
+trafik og derved afbryde forbindelsen. Dette skyldes at en Program
+Gateway kører igennem alle OSI modellens 7 lag, hvorimod en
+filtrerings firewall kører på OSI modellens fire nederste lag.
+</para>
+</sect3>
+
+<sect3 id="sikker-firewall">
+<title>Med en firewall er man så sikret?</title>
+
+<para>
+NEJ, det er man ikke, men man har sikret sig mere end hvis man ikke
+havde en firewall sat op. Der vil altid være smuthuller i software,
+fejl i software eller diverse sikkerhedsting der kan skyldes
+menneskelige fejl.
+</para>
+
+<para>
+Nu vil det bare næsten være umuligt at ødelægge/stjæle noget som man
+ikke vil have at man skal kunne se udefra. Desuden skal der også
+ændres på sikkerheden på selve netværket, så at det bliver endnu
+vanskeligere at stjæle eller ødelægge data hvis man er nået ind i
+systemet. Men uden en firewall, er et system som har fast forbindelse
+til Internettet fuld af huller som enhver hacker med rimelig forstand
+på diverse smuthuller og systemer, kan komme ind i og gøre hvad de
+vil.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="firewall-ipchains">
+<title>Firewall med IPCHAINS:</title>
+<indexterm><primary>Firewall</primary><secondary>ipchains</secondary></indexterm>
+<indexterm><primary>ipchains</primary></indexterm> 
+<para>
+Fra Linux Kernen 2.2.X hedder det nye firewall program i linux
+ipchains, hvor det i ældre versioner hed ipfwadm.
+</para>
+
+<para>
+Ipchains er en filtrerings firewall, hvor man kan lave regler for
+destination/source porte, adresser og protokol (tcp, udp og icmp).
+</para>
+
+<para>
+Når man skal opbygge en firewall, skal man først vide hvilke services
+man kører på eller bag firewallen, hvad folk fra Internettet skal
+kunne på og bag firewallen og sidst men ikke mindst hvad folk bag
+firewallen må have lov til at gøre på Internettet.
+</para>
+
+<para>
+For at lave en firewall mod Internettet kræver det at du har, mindst
+en statisk (fast) IP adresse, at du benytter en LAN router eller at du
+ringer op via et modem og derved får en dynamisk IP adresse fra din
+udbyder.
+</para>
+
+<para>
+Hvis du har en fast IP adresse eller LAN router kan du sætte to
+netkort i din linux maskine. Det ene skal være synligt fra Internettet
+af (din router) og det andet skal kunne ses fra dit lokale net.
+</para>
+
+
+<para>
+Af lokale adresser man kan benytte til dit private net:
+</para>
+
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>klasse A: 10.0.0.0 - 10.255.255.255</para></listitem> 
+<listitem><para>klasse B: 172.16.0.0 - 172.31.255.255</para></listitem>
+<listitem><para>klasse C: 192.168.0.0 - 192.168.255.255</para></listitem>
+</itemizedlist>
+
+<sect3 id="firewall-ipchains-syntaks">
+<title>De vigtigste IPCHAINS syntakser</title>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+
+<listitem><para><command>-N</command> Opret en ny kæde foruden de
+indbyggede som er INPUT,FORWARD og OUTPUT.
+</para>
+<para>
+<command>ipchains -N NAVN</command>
+</para>
+</listitem>
+
+<listitem><para><command>-X</command> Slet en tom kæde man har lavet
+De indbyggede kæder INPUT,FORWARD og OUTPUT kan ikke slettes. Hvis -X
+kun er angivet og de kæder man selv har oprettet er tomme slettes alle
+kæder undtagen standard kæderne INPUT,FORWARD og OUTPUT.
+</para>
+<para>
+<command>ipchains -X NAVN</command>
+</para>
+<para>
+<command>ipchains -X</command>
+</para>
+</listitem>
+
+<listitem><para> 
+<command>-P</command> Ændre hvad IPCHAINS skal gøre
+hvis der ikke er en regel for den pakke, der kigges på. Mulighederne
+er REJECT,ACCEPT og DENY.
+</para>
+
+<para>
+ipchains -P INPUT DENY
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>-L</command> Få en liste over de regler der er i
+firewall'en. Hvis man benytter -L -n sammen vil man få listen af alle
+regler og der vil ikke blive lavet et reverse lookup af alle IP
+adresserne. Man kan bruge -L -M -n for at se alle masquerading
+forbindelser. Ud over disse kan man også bruge -v som viser detaljeret
+hvor mange bytes der er gået igennem en kæde, hvor mange gange en
+given regel er blevet ramt af en pakke m.m. Med -L kædenavn ses kun de
+regler der er i den givne kæde.
+</para>
+
+<para>
+<command>ipchains -L -n</command>
+</para>
+
+<para>
+<command>ipchains -L -n -v</command>
+</para>
+
+<para>
+<command>ipchains -L -n -M -v</command>
+</para>
+
+<para>
+<command>ipchains -L NAVN</command>
+</para>
+
+<para>
+--line-numbers betyder at når man sammen med -L kommer der nummer på
+de forskellige firewall regler ude i venstre side.
+</para>
+
+<para>
+<command>ipchains -L --line-numbers</command>
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>-F</command> Hvis -F gives uden nogen kæde, vil ALLE regler
+blive slettet i alle kæder. Hvis man eksempelvis angiver -F input vil
+alle regler i input kæden blive slettet.
+</para>
+
+<para>
+<command>ipchains -F INPUT</command>
+</para>
+
+<para>
+<command>ipchains -F</command>
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>-Z</command> alene betyder at man nulstiller tællerne i alle
+kæder, -Z kædenavn betyder at denne kæde bliver nulstillet.
+</para>
+
+<para>
+<command>ipchains -Z</command>
+</para>
+
+<para>
+<command>ipchains -Z NAVN</command>
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>-j ACCEPT,DENY,REJECT,MASQ,KÆDE,RETURN</command> eller
+<command>REDIRECT</command>. ACCEPT betyder at man acceptere pakken ud
+fra den regel man har lavet. DENY betyder at man nægter pakken og
+maskinen der sender pakker til en får ikke noget af vide fra dig om at
+du har nægtet pakken adgang. REJECT betyder næsten det samme som DENY,
+men du sender en ICMP pakke til maskinen ,der sender pakker til dig om
+at du har afvist pakkerne.
+</para>
+
+<para>
+MASQ betyder at sende adressen for nogen maskiner blev omskrevet til
+firewallens IP adresse, MASQ kan kun benyttes med FORWARD reglen. Et
+eksempel:
+</para>
+
+<para>
+<command>ipchains -A forward -s 192.168.0.1/255.255.255.255 \
+-d 0.0.0.0/0.0.0.0 -i eth0 -j MASQ</command>
+</para>
+
+<para>
+Dette betyder at adressen 192.168.0.1 som skal til eth0 får eth0's IP adresse.
+</para>
+
+<para>
+Der er ikke noget der hedder KÆDE med -j, men i dette sammenhæng
+betyder det at du for eksempelvis en input regel kan sige at den skal
+arbejde videre med pakken i en anden kæde du har oprettet. Du kan ikke
+lade pakken blive "sent" til en af standard kæderne. Et eksempel:
+</para>
+
+<para>
+Først oprettes kæden web, ipchains -N web, herefter vil du gerne have
+at alt trafik ind i input kæden, der skal til din web server bliver
+testet via web kæden.
+</para>
+
+<para>
+<command>ipchains -A input -s 0.0.0.0/0.0.0.0 1024:65535 \
+-d WEBSERVER 80 -p tcp -i ethX -j WEB</command> 
+</para>
+
+<para>
+I din WEB kæde kan du så lave regler for denne trafik. Man kan bruge
+dette til at gøre tingene mere overskueligt.
+</para>
+
+<para>
+RETURN kan kun benyttes på en firewall-kæde man selv har
+oprettet. RETURN betyder at pakken ryger til enden af kæden og bliver
+testet videre derfra hvor den hoppede til en firewall-kæde man
+selv har oprettet. Et eksempel:
+</para>
+
+<SCREEN>
+ipchains -N WEB
+ipchains -A input en eller anden firewall regel
+ipchains -A input -s 0.0.0.0/0.0.0.0  -d WEBSERVER 80 -j WEB
+ipchains -A input en eller anden firewall regel
+ipchains -A input en eller anden firewall regel
+ipchains -A input en eller anden firewall regel
+
+ipchains -A WEB -s en eller anden firewall regel
+ipchains -A WEB -s BADUSER -j RETURN
+ipchains -A WEB -s en eller anden firewall regel
+ipchains -A WEB -s en eller anden firewall regel
+</SCREEN>
+
+
+<para>
+Først oprettes en firewall-kæde som hedder WEB, herefter laver jeg en
+input regel som hopper til WEB kæden. I WEB kæden laver jeg en
+RETURN. Der er nu i pakke på vej ind til vores maskine WEBSERVER til
+port 80 fra source adressen BADUSER. I regel 2 i input kæden bliver
+pakken testet videre i WEB kæden. I regel 2 i WEB kæden er der en
+regel der passer på pakken, den har regel RETURN. Dette betyder at
+resten af reglerne i WEB kæden ikke bliver testet på pakken, men at
+pakken bliver testet videre fra regel 3 i input kæden.
+</para>
+
+
+<para>
+REDIRECT betyder at ud fra en given regel kan du sende pakkerne videre til en lokal port på maskinen, REDIRECT kan kun benyttes med INPUT reglen. Et eksempel:
+</para>
+
+<SCREEN>
+ipchains -A input -p tcp -s 192.168.0.0/255.255.255.0 1024:65535 \
+-d 0.0.0.0/0.0.0.0 80 -j REDIRECT 8080
+</SCREEN>
+
+
+<para>
+Dette betyder at alle web trafik anmodninger fra IP adresserne
+192.168.0.0-255 vil blive sendt til port 8080 på firewallen. Dette kan
+være nyttigt til at lave en transparent proxy.
+</para>
+</listitem>
+
+<listitem><para> 
+<command>-A</command> Tilføj en regel i din
+firewall-kæde. Med -A bliver reglen du laver tilføjet i bunden af en
+firewall-kæde.
+</para>
+
+<screen>
+ipchains -A input -s 192.168.0.1/255.255.255.255 -i eth0 -j ACCEPT
+</screen>
+</listitem>
+
+
+<listitem><para><command>-I</command> Indsæt en regel i din
+firewall-kæde. Hvis -I angives uden noget andet vil reglen blive
+indsat øverst i kæden.
+</para>
+
+<screen>
+ipchains -I input 2 -s 0.0.0.0/0.0.0.0 1024:65535 -d 192.192.192.192/255.255.255.255 113 -j ACCEPT
+</screen>
+
+<para>
+Input 2 vil indsætte en regel i position 2 i kæden input.
+</para>
+</listitem>
+
+<listitem><para> <command>-R</command> Er ligesom -I man overskriver
+en regel på en bestemt position.</para>
+
+<screen>
+ipchains -R input 2 -s 0.0.0.0/0.0.0.0 1024:65535 \
+  -d 192.192.192.192/255.255.255.255 113 -j ACCEPT
+</screen>
+
+<para>
+Dette vil overskrive det der stod i firewall-kæden input position 2.
+</para>
+</listitem>
+
+<listitem><para> <command>-D</command> Bruges på samme måde som -I og
+-R men sletter en regel i en kæde på en bestemt position, eller hvis
+man angiver hele reglen vil denne regel slettes i firewallen.
+</para>
+
+<screen>
+ipchains -D input -s 0.0.0.0/0.0.0.0 1024:65535 \
+  -d 192.192.192.192/255.255.255.255 113 -j ACCEPT
+
+ipchains -D input 2
+</screen>
+</listitem>
+
+<listitem><para> <command>-C</command> Test en regel i firewallen og
+få af vide om pakken vil blive accepteret, nægtet, masq, sendt videre
+til en lokal port (redirect) eller om den bliver afvist.
+</para>
+
+<screen>
+ipchains -C input -s 10.0.0.1/255.255.255.255 1054 \
+ -d 192.192.192.192/255.255.255.255 113 -i eth0 -p tcp
+</screen>
+</listitem>
+
+<listitem><para>
+<command>-M -S</command> sæt hvornår en forbindelsen i MASQ tabellen skal fjernes. Dette gøres for tcp tcpfin og udp.
+</para>
+
+<para>
+<command>ipchains -M -L 7200 60 160</command> - det første tal betyder
+at efter 7200 sek. (2 timer) vil en ikke aktiv TCP forbindelse blive
+fjernet. Det andet tal betyder at efter 60 sek. timeout efter en "FIN"
+pakke er modtaget vil forbindelsen i MASQ tabellen blive fjernet. Det
+sidste tal betyder at UDP trafik som ikke har været aktivt skal
+timeout efter 160 sek. Det er vigtigst at sætte den til de 160
+sek. Eller højere hvis man kører med ICQ !!.
+</para>
+</listitem>
+
+<listitem><para> <command>-y</command> pakker hvor syn bitten er
+sat. Det vil sige en forbindelse til et service. -y kan kun benyttes
+med -p tcp.
+</para>
+
+<screen>
+ipchains -A input -s 0.0.0.0/0.0.0.0 1024:65535 \
+  -d 192.192.192.192/255.255.255.255 113 -y -j ACCEPT
+</screen>
+</listitem>
+
+<listitem><para>
+<command>-x</command> betyder hvis man bruger den sammen med -v at den
+viser antal bytes, megabytes eller gigabytes præcis i stedet for
+normalt at afrunde.
+</para>
+
+<screen>
+ipchains -L -x -v
+</screen>
+
+</listitem>
+
+<listitem><para><command>-b</command> betyder at der bliver lavet en
+regel for det du skrive og en regel hvor source og destination er
+vendt om. 
+</para>
+
+<screen>
+ipchains -A input -b -s 192.168.0.1/255.255.255.255 \
+  -d 0.0.0.0/0.0.0.0 -j ACCEPT 
+</screen>
+
+<para>
+Dette vil lave to regler i input kæden.  En hvor source adressen er
+192.168.0.1 og destinations adressen er 0.0.0.0/0.0.0.0 og en anden
+regel hvor source adressen er 0.0.0.0/0.0.0.0 og destinations adressen
+er 192.168.0.1
+</para>
+
+</listitem>
+
+<listitem><para> <command>-i</command> betyder interface. Hvis -i
+benyttes på en INPUT kæde betyder det, det interface hvor pakken
+kommer ind, for OUTPUT kæden betyder det interfaceet hvor pakken
+ryger ud og for FORWARD kæden betyder det interfaceet hvor pakken
+skal hen til. Altså hvis du har 2 netkort eth0 og eth1 og du skal lave
+en FORWARD regel for trafik der går fra eth0 til eth1 skal man skrive
+-i eth1. Hvis man skrive -i eth+ betyder det at reglen gælder for alle
+interface der starter med eth.
+</para>
+</listitem>
+
+<listitem><para> <command>!</command> betyder hvor dette ikke er
+sat. Eksempelvis ! -y betyder pakken hvor syn bitten ikke er sat. !
+kan sættes på porte, source adresse, destination adresse, interface og
+på protokollerne TCP,UDP og ICMP.
+</para>
+
+<screen>
+ipchains -A input -s 0.0.0.0/0.0.0.0 \
+  -d 111.111.111.111/255.255.255.255 1024:65535 -p tcp ! -y -j ACCEPT
+ipchains -A input -s ! 192.168.0.1/255.255.255.255 -j ACCEPT
+ipchains -A input -d ! 192.168.0.1/255.255.255.255 -j ACCEPT
+ipchains -A input -s 192.168.0.1/255.255.255.255 -p ! icmp -j ACCEPT
+ipchains -A input -s 192.168.0.1/255.255.255.255 ! 80 -j ACCEPT
+ipchains -A input ! -i eth0 -s 192.168.0.1/255.255.255.255 -j ACCEPT
+</screen>
+
+</listitem>
+
+<listitem><para> <command>-p</command> betyder hvilken protokol en
+given regel skal gælde for. Man kan vælge TCP,UDP og ICMP.
+</para>
+
+<screen>
+ipchains -A input -s 192.168.0.1/255.255.255.255 \
+  -d 0.0.0.0/0.0.0.0 -p TCP -j MASQ
+</screen>
+</listitem>
+
+<listitem><para>
+<command>-s</command> betyder source adresse. 
+Hvis -s ikke er sat i en regel vil -s være sat til 0.0.0.0/0.0.0.0 som betyder alle adresser.
+</para>
+</listitem>
+
+<listitem><para> <command>-d</command> betyder destination
+adresse. Hvis -d ikke er sat i en regel vil -d være sat til
+0.0.0.0/0.0.0.0 som betyder alle adresser.
+</para>
+
+<para>
+Port benyttes efter en source adresse eller destinations adresse. Med TCP og UDP kan man skrive et navn på et service fra service filen i /etc eller et port nummer. 1024:65535 betyder alle portene fra 1024 til 65535 med både 1024 og 65535 inklusiv. Man kan også skrive ssh:smtp som betyder det samme, altså port 22 til port 25, denne måde er dog lidt mere uoverskuelig. Hvis man skal vælge port med ICMP man skrive ipchains --help icmp for at få en oversigt over de muligheder man har for ICMP trafik.
+</para>
+</listitem>
+
+<listitem><para> <command>-t</command> betyder at man kan ændre de
+såkaldte Type Of Service bits i pakken. Af muligheder er:
+</para>
+
+<screen>
+-t 0x01 0x10 = Minimum Delay
+-t 0x01 0x08 = Maximum Throughput
+-t 0x01 0x04 = Maximum Reliability
+-t 0x01 0x02 = Minimum Cost
+</screen>
+
+<para>
+For eksempelvis at får minimum delay på SSH trafik ud kan man skrive:
+</para>
+
+<screen>
+ipchains -A output -p tcp -d 0.0.0.0/0.0.0.0 22  -t 0x01 0x10
+</screen>
+
+</listitem>
+
+<listitem><para> <command>-l</command> bruges når man vil logge en
+bestemt pakke. Alle log beskeder kommer som standard til at ligge i
+<filename>/var/log/messages</filename>. En logning i
+<filename>/var/log/messages</filename> kunne se sådan ud:
+</para>
+
+<screen>
+Jun 4 14:29:26 lxhome kernel: Packet log: input DENY eth0 PROTO=6
+111.111.111.111:1033 100.100.100.100:80 L=84 S=0x00 I=3121 F=0x0000
+T=64
+</screen>
+
+<para>
+1.Jun 4 14:29:26 betyder at logningen blev taget den 4 Juni kl. 14:29:26
+</para>
+
+<para>2.lxhome er maskinens host navn.
+</para>
+
+<para>3.kernel: Packet log betyder at der er lavet en log for pakken.
+</para>
+
+<para>4.input betyder hvilken kæde logningen er lavet på. Dette kunne også være FORWARD,OUTPUT eller en kæde man selv har lavet.
+</para>
+
+<para>5.DENY betyder at det er hvad pakken har fået ud fra enten den standard policy som der er på en given kæde eller at man i en firewall regel har givet pakken en DENY. Af andre muligheder her er, ACCEPT,REJECT,DENY,MASQ,REDIRECT og RETURN
+</para>
+
+<para>6.eth0 betyder at logningen blev taget på interfacet eth0.
+</para>
+
+<para>7.PROTO=6 betyder at det er en TCP pakke, af andre muligheder er PROTO=1 (ICMP) og PROTO=17 (UDP). Se også <filename>/etc/protocols</filename>.
+</para>
+
+<para>8.111.111.111.111:1033 er source adressen og source porten.
+</para>
+
+<para>9.100.100.100.100:80 er destinations adressen og destinations porten.
+</para>
+
+<para>10.L=84 er længden på pakken.
+</para>
+
+<para>11.S=0x00 er type of service feltet.
+</para>
+
+<para>12.I=3121 er pakkens datagram ID.
+</para>
+
+<para>13.F=0x0000 er pakken fragments ID. En pakke der starter med 0x2
+eller 0x3 betyder flere fragmenter, så denne er kun en af flere pakker
+som skal samles til en. En værdi som starter med 0x4 eller 0x5 betyder
+at bitten Do not Fragment er sat.
+</para>
+
+<para>14.T=64 er pakkens Time To Live felt. 
+Eksempel på en logning:
+</para>
+
+<screen>
+ipchains -A input -s BAD GUY -l vil logge alt trafik fra BAD GUY til syslog.
+</screen>
+</listitem>
+</itemizedlist>
+</sect3>
+
+
+<sect3 id="firewall-eksempel">
+<title>Firewall sammen med LAN Router eller modemopkobling</title>
+<para>
+Det du behøver for at lave en firewall med en LAN router er en Linux
+maskine med to netkort, et som kan snakke med din LAN router og et til
+at snakke med dit lokale net. Tilsvarende kan det være at du laver
+internet-opkobling med et modem fra tid til anden. I begge tilfælde
+skal du have firewall-regler på din maskine for at sikre dit netværk
+mod andre. Lad os se på hvordan man kan lave firewall reglerne.
+Følgende eksempel kan downloades fra <ulink url="http://www.sslug.dk/linuxbog/firewall">http://www.sslug.dk/linuxbog/firewall</ulink>.
+</para>
+
+<screen>
+#!/bin/sh
+export PATH=/sbin:/usr/bin:/bin
+clear
+# Ens eksterne netkort ud mod Internettet.
+# Eksempel EXTIF="ppp0", ippp0 eller "eth0"
+EXTIF="ppp0"
+
+# Det interne netkort.
+# Eksempel INTIF="eth0"
+INTIF="eth0"
+
+# Hvis man via sit netkort eller ppp adapter får en dynamisk IP addresse fra
+# sin Internet udbyder skal DHCP stå til yes.
+DHCP="yes"
+
+# Hvis denne sættes til yes vil ALT udp trafik ind til portene 55000 til 65535
+# blive tilladt ind til EXTIF på firewallen.
+UDPINOK=""
+
+# Ens IP adresse på ens eksterne netkort eller ppp adapter.
+EXTIP=`ifconfig | grep -A 4 $EXTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`
+
+if [ "$EXTIP" = '' ]; then
+   echo "Kan ikke finde IP adressen på $EXTIF "
+   exit 1
+fi
+
+# Alle IP adresser.
+ANYIP="0.0.0.0/0.0.0.0"
+
+# IP adresse på det interne netværk.
+INTLAN=`ifconfig | grep -A 4 $INTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`"/"`ifconfig | grep -A 4 $INTIF | awk '/Mask/ { print $4 } ' | sed -e s/Mask://`
+
+if [ "$INTLAN" = '' ]; then
+   echo "Kan ikke finde IP adressen på $INTLAN ..."
+   echo
+   exit 1
+fi
+
+DNS1=`awk -vnum=1 'BEGIN{i=1}/nameserver/{ns[i]=$2;i++}END{print ns[num]}' /etc/resolv.conf`
+DNS2=`awk -vnum=2 'BEGIN{i=1}/nameserver/{ns[i]=$2;i++}END{print ns[num]}' /etc/resolv.conf`
+DNS3=`awk -vnum=3 'BEGIN{i=1}/nameserver/{ns[i]=$2;i++}END{print ns[num]}' /etc/resolv.conf`
+
+if [ "$DNS1" = '' ]; then
+   echo "Kan ikke finde nogen DNS server i resolv.conf."
+   exit 1
+fi
+
+# Slår IP forwarding til
+echo "1" > /proc/sys/net/ipv4/ip_forward
+
+# Slår IP Spoofing attacks fra.
+for file in /proc/sys/net/ipv4/conf/*/rp_filter
+do
+  echo "2" > $file
+done
+
+# Slår syn-cookies til (syn-flooding attacks) hvis support er kompileret i kernen.
+if [ -f /proc/sys/net/ipv4/tcp_syncookies ]; then
+  echo "1" >/proc/sys/net/ipv4/tcp_syncookies
+fi
+
+# Sætter ip_dynaddr til 1 hvis DHCP = yes.
+if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+  echo "1" > /proc/sys/net/ipv4/ip_dynaddr
+ else
+  echo "0" > /proc/sys/net/ipv4/ip_dynaddr
+fi
+
+# Slår source routing fra
+for file in /proc/sys/net/ipv4/conf/*/accept_source_route
+do
+ echo "0" > $file
+done
+
+# Slår ICMP redirect fra
+for file in /proc/sys/net/ipv4/conf/*/accept_redirects
+do
+ echo "0" > $file
+done
+
+# Slår IP Always Defrag til.
+echo "1" > /proc/sys/net/ipv4/ip_always_defrag
+
+# Liste over porte der åbnes lokalt på firewallen, når der laves en forbindelse ud.
+echo "55000 60999" >/proc/sys/net/ipv4/ip_local_port_range
+
+# Slet alle regler i kæderne
+ipchains -F
+ipchains -X
+
+# Ændre INPUT til DENY og OUTPUT og FORWARD kæden til REJECT
+ipchains -P input DENY
+ipchains -P forward REJECT
+ipchains -P output REJECT
+
+# Ændre IP masquerading timeouts.
+ipchains -M -S 7200 10 160
+
+# Load disse moduler til IP MASQ
+
+# Bruges til noget video konference.
+#if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_cuseeme.o ]; then
+#   CUSEEME="yes"
+#  if ! [ "`cat /proc/modules | awk '/ip_masq_cuseeme/ { print $1 }'`" = ip_masq_cuseeme ]; then 
+#   insmod /lib/modules/`uname -r`/ipv4/ip_masq_cuseeme.o
+#  fi
+#fi
+
+# Bruges så aktiv FTP virker.
+if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_ftp.o ]; then
+   FTP="yes"
+  if ! [ "`cat /proc/modules | awk '/ip_masq_ftp/ { print $1 }'`" = ip_masq_ftp ]; then 
+   insmod /lib/modules/`uname -r`/ipv4/ip_masq_ftp.o
+  fi
+fi
+
+# Bruges til IRC så fil overførelse virker.
+if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_irc.o ]; then
+   IRC="yes"
+  if ! [ "`cat /proc/modules | awk '/ip_masq_irc/ { print $1 }'`" = ip_masq_irc ]; then 
+   insmod /lib/modules/`uname -r`/ipv4/ip_masq_irc.o
+  fi
+fi
+
+# Bruges til Quake over Internettet
+if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_quake.o ]; then
+   QUAKE="yes"
+  if ! [ "`cat /proc/modules | awk '/ip_masq_quake/ { print $1 }'`" = ip_masq_quake ]; then 
+   insmod /lib/modules/`uname -r`/ipv4/ip_masq_quake.o
+  fi
+fi
+
+# Bruges så UDP virker med Real Audio
+if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_raudio.o ]; then
+   RAUDIO="yes"
+  if ! [ "`cat /proc/modules | awk '/ip_masq_raudio/ { print $1 }'`" = ip_masq_raudio ]; then 
+   insmod /lib/modules/`uname -r`/ipv4/ip_masq_raudio.o
+  fi
+fi
+
+# Bruges til live video over Internettet
+#if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_vdolive.o ]; then
+#   VDOLIVE="yes"
+#  if ! [ "`cat /proc/modules | awk '/ip_masq_vdolive/ { print $1 }'`" = ip_masq_vdolive ]; then 
+#   insmod /lib/modules/`uname -r`/ipv4/ip_masq_vdolive.o
+#  fi
+#fi
+
+# Bruges til ICQ
+if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_icq.o ]; then
+   ICQ="yes"
+  if ! [ "`cat /proc/modules | awk '/ip_masq_icq/ { print $1 }'`" = ip_masq_icq ]; then 
+   insmod /lib/modules/`uname -r`/ipv4/ip_masq_icq.o
+  fi
+fi
+
+# IP adresse som siger den har local loopback's IP adresse skal nægtes og logges
+ipchains -A input -s 127.0.0.1/32 -i $EXTIF -l -j DENY
+
+# IP adresse som siger den har EXTIP IP adresse skal nægtes og logges
+ipchains -A input -s $EXTIP -i $EXTIF -l -j DENY
+
+# IP adresse som siger den har en IP adresse i det "private" og multicast områdeskal nægtes og logges.
+ipchains -A input -s 10.0.0.0/8 -i $EXTIF -l -j DENY
+ipchains -A input -s 172.16.0.0/12 -i $EXTIF -l -j DENY
+ipchains -A input -s 192.168.0.0/16 -i $EXTIF -l -j DENY
+ipchains -A input -s 224.0.0.0/4 -i $EXTIF -l -j DENY
+ipchains -A input -s 240.0.0.0/5 -i $EXTIF -l -j DENY
+
+# Acceptere DHCP retur trafik ind hvis man ikke har fast IP adresse
+if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+  ipchains -A input -i $EXTIF -p udp -s $ANYIP 67 -d 255.255.255.255/0 68 -j ACCEPT
+fi 
+
+# Acceptere DHCP retur trafik ud hvis man ikke har fast IP adresse
+if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+  ipchains -A output -i $EXTIF -p udp -s 255.255.255.255/0 68 -d $ANYIP 67 -j ACCEPT
+fi 
+
+# Acceptere DHCP trafik ind og ud af $INTIF hvis man kører en DHCP server
+# på firewall maskinen.
+if [ "`ps -C dhcpd | grep dhcpd | awk ' { print $4 }'`" = dhcpd ]; then
+  ipchains -A input -i $INTIF -p udp -s 255.255.255.255/0 68 -d $ANYIP 67 -j ACCEPT
+  ipchains -A output -i $INTIF -p udp -s $ANYIP 67 -d 255.255.255.255/0 68 -j ACCEPT
+fi
+
+# Internt LAN ind til firewall er tilladt
+ipchains -A input -s $INTLAN -i $INTIF -j ACCEPT
+
+# Alt retur trafik ud af firewallen til internt LAN er tilladt 
+ipchains -A output -d $INTLAN -i $INTIF -j ACCEPT
+
+# Alt trafik som bliver forwarded videre til det eksterne netkort skal MASQ
+ipchains -A forward -s $INTLAN -i $EXTIF -j MASQ
+
+# Tillad kun TCP retur trafik.
+ipchains -A input -i $EXTIF ! -y -p tcp -s $ANYIP -d $EXTIP 55000:65535 -j ACCEPT
+
+# Tillad ALT UDP trafik til portene 55000 til 65535, der er INGEN garanti for
+# at dette er retur trafik til ens firewall eller en forbindelse til et service
+if [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+   ipchains -A input -i $EXTIF -s $ANYIP -d $EXTIP 55000:65535 -p udp -j ACCEPT
+fi
+
+# Tillad kun trafik ud fra EXTIF fra EXTIP IP adresse.
+ipchains -A output -i $EXTIF -p tcp -s $EXTIP 55000:65535 -d 0/0 -j ACCEPT
+ipchains -A output -i $EXTIF -p udp -s $EXTIP 55000:65535 -d 0/0 -j ACCEPT
+
+# Afvis Auth trafik ind.
+ipchains -A input -i $EXTIF -p tcp -s $ANYIP 1024:65535 -d $EXTIP 113 -j REJECT
+
+# Tillad kun DNS retur trafik fra DNS servere der står i /etc/resolv.conf
+if ! [ "$DNS1" = "" ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $DNS1 53 -d $EXTIP 55000:65535 -j ACCEPT
+   fi
+fi    
+
+if ! [ "$DNS2" = "" ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $DNS3 53 -d $EXTIP 55000:65535 -j ACCEPT
+   fi
+fi    
+
+if ! [ "$DNS3" = "" ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $DNS3 53 -d $EXTIP 55000:65535 -j ACCEPT
+   fi
+fi    
+
+# Acceptere aktivt FTP-data fra Internet til firewall hvis FTP modul er loadet
+if [ "`cat /proc/modules | awk '/ip_masq_ftp/ { print $1 }'`" = ip_masq_ftp ]; then
+    ipchains -A input -i $EXTIF -p tcp -s $ANYIP 20 -d $EXTIP 55000:65535 -y -j ACCEPT
+fi
+
+# Acceptere ICQ trafik fra Internet til firewall hvis ICQ modul er loadet
+if [ "`cat /proc/modules | awk '/ip_masq_icq/ { print $1 }'`" = ip_masq_icq ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $ANYIP 4000 -d $EXTIP 55000:65535 -j ACCEPT
+   fi
+fi
+
+# Acceptere Real Audio trafik fra Internet til firewall hvis RAUDIO modul er loadet
+if [ "`cat /proc/modules | awk '/ip_masq_raudio/ { print $1 }'`" = ip_masq_raudio ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $ANYIP 6970:7170 -d $EXTIP 55000:65535 -j ACCEPT
+   fi
+fi
+
+# Acceptere CUSEEME trafik fra Internet til firewall hvis CUSEEME modul er loadet
+if [ "`cat /proc/modules | awk '/ip_masq_cuseeme/ { print $1 }'`" = ip_masq_cuseeme ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $ANYIP 7648:7649 -d $EXTIP 55000:65535 -j ACCEPT
+    ipchains -A input -i $EXTIF -p udp -s $ANYIP 24032 -d $EXTIP 55000:65535 -j ACCEPT    
+   fi
+fi
+
+# Acceptere QUAKE trafik fra Internet til firewall hvis QUAKE modul er loadet
+if [ "`cat /proc/modules | awk '/ip_masq_quake/ { print $1 }'`" = ip_masq_quake ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    ipchains -A input -i $EXTIF -p udp -s $ANYIP 26000 -d $EXTIP 55000:65535 -j ACCEPT
+    ipchains -A input -i $EXTIF -p udp -s $ANYIP 1025:1200 -d $EXTIP 55000:65535 -j ACCEPT    
+   fi
+fi
+
+# Tillad source-quench, echo-request, fragmentation-neeeded, parameter-problem 
+# port-unreachable og time-exceeded ICMP trafik ud.
+ipchains -A output -i $EXTIF -s $EXTIP echo-request -p icmp -j ACCEPT
+ipchains -A output -i $EXTIF -s $EXTIP source-quench -p icmp -j ACCEPT
+ipchains -A output -i $EXTIF -s $EXTIP time-exceeded -p icmp -j ACCEPT
+ipchains -A output -i $EXTIF -s $EXTIP parameter-problem -p icmp -j ACCEPT
+ipchains -A output -i $EXTIF -s $EXTIP fragmentation-needed -p icmp -j ACCEPT
+ipchains -A output -i $EXTIF -s $EXTIP port-unreachable -p icmp -j ACCEPT
+
+# Tillad source-quench, echo-reply, destination-unreachable, parameter-problem 
+# og time-exceeded ICMP trafik ind.
+ipchains -A input -i $EXTIF -s $ANYIP echo-reply -p icmp -j ACCEPT
+ipchains -A input -i $EXTIF -s $ANYIP source-quench -p icmp -j ACCEPT
+ipchains -A input -i $EXTIF -s $ANYIP time-exceeded -p icmp -j ACCEPT
+ipchains -A input -i $EXTIF -s $ANYIP parameter-problem -p icmp -j ACCEPT
+ipchains -A input -i $EXTIF -s $ANYIP destination-unreachable -p icmp -j ACCEPT
+
+
+# Tillad ALT UDP trafik til portene 55000 til 65535, der er INGEN garanti for
+# at dette er retur trafik til ens firewall eller en forbindelse til en service
+ipchains -A input -i $EXTIF -s $ANYIP -d $EXTIP 55000:65535 -p udp -j ACCEPT
+
+
+# Hvis /etc/firewall.debug findes, så logges alle INPUT og OUTPUT pakker som ikke
+# accepteres, derved kan man via /var/log/messages se hvad der eventuelt skal
+# åbnes for.
+if [ -f /etc/firewall.debug ]; then
+  ipchains -A input -l
+  ipchains -A output -l
+fi
+
+# Hvis /etc/firewall.debug findes, så vises de variabler og de ting som script'et
+# selv finder ud af.
+if [ -f /etc/firewall.debug ]; then
+ if [ "`echo $DHCP | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+  echo "Du får dynamisk IP tildelt fra din ISP til dit interface $EXTIF"
+ fi
+  echo "Dit interface ud mod Internet er: $EXTIF"
+  echo "IP adressen på dit interface $EXTIF ud mod Internet er: $EXTIP"
+  echo "Dit interface ud mod dit LAN er: $INTIF"
+  echo "IP adressen og netmasken på dit LAN interface er: $INTLAN"
+ if ! [ "$DNS1" = "" ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    echo "Din 1. DNS server i resolv.conf er: $DNS1"
+   fi
+ fi
+ if ! [ "$DNS2" = "" ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    echo "Din 2. DNS server i resolv.conf er: $DNS2"
+   fi
+ fi
+ if ! [ "$DNS3" = "" ]; then
+   if ! [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+    echo "Din 3. DNS server i resolv.conf er: $DNS3"
+   fi
+ fi
+ if [ "`echo $UDPINOK | tr '[A-Z]' '[a-z]'`" = "yes" ]; then
+  echo "ALT UDP trafik til portene 55000:65535 er tilladt !!"
+ fi
+ if [ "`ps -C dhcpd | grep dhcpd | awk ' { print $4 }'`" = dhcpd ]; then
+  echo "Du kører en DHCP server og der er lavet INPUT og OUTPUT regler for dette."
+ fi
+  echo "IP MASQ modulerne bliver loadet i kataloget:" /lib/modules/`uname -r`/ipv4/
+ if [ "$FTP" = "yes" ]; then
+  echo "IP MASQ: FTP modul er installeret."
+ else
+  echo "IP MASQ: FTP modul er ikke installeret."
+ fi
+ if [ "$CUSEEME" = "yes" ]; then
+  echo "IP MASQ: CUSEEME modul er installeret."
+ else
+  echo "IP MASQ: CUSEEME modul er ikke installeret."
+ fi
+ if [ "$ICQ" = "yes" ]; then
+  echo "IP MASQ: ICQ modul er installeret."
+ else
+  echo "IP MASQ: ICQ modul er ikke installeret."
+ fi
+ if [ "$IRC" = "yes" ]; then
+  echo "IP MASQ: IRC modul er installeret."
+ else
+  echo "IP MASQ: IRC modul er ikke installeret."
+ fi
+ if [ "$QUAKE" = "yes" ]; then
+  echo "IP MASQ: QUAKE modul er installeret."
+ else
+  echo "IP MASQ: QUAKE modul er ikke installeret."
+ fi
+ if [ "$RAUDIO" = "yes" ]; then
+  echo "IP MASQ: RAUDIO modul er installeret."
+ else
+  echo "IP MASQ: RAUDIO modul er ikke installeret."
+ fi
+ if [ "$VDOLIVE" = "yes" ]; then
+  echo "IP MASQ: VDOLIVE modul er installeret."
+ else
+  echo "IP MASQ: VDOLIVE modul er ikke installeret."
+ fi
+  echo "Hvis nogen af disse omlysninger er forkerte skal du rette dem i scriptet."
+fi
+</screen>
+
+<para>
+De eneste variable man som regel skal ændre er, EXTIF som er ens
+interface ud mod Internettet, denne variabel vil hvis man har analogt
+modem normalt være ppp0, hvis man har ISDN modem ippp0 og hvis man har
+LAN router være eth0 eller eth1. INTIF er det interface som er ud mod
+ens lokale LAN, denne variabel vil som regel være eth0 eller
+eth1. Variablen DHCP, skal ændres hvis man har modem og man ikke har
+en statisk IP adresse skal denne variabel sættes til yes. Hvis man har
+en LAN router skal denne variabel ikke sættes. Den sidste variabel er
+UDPINOK som tillader ALT UDP trafik ind til firewallen på portene
+55000 til 65535. Denne variabel er ikke sat som standard og skal kun
+sættes hvis man har et program der benytter UDP som ikke virker med
+scriptet og man ikke selv kan finde ud af at lave en firewall regel
+til det. Hvis UDPINOK sættes til yes, vil det betyde at der er et
+hul i firewallen.  Som standard er EXTIF sat til ppp0, INTLAN
+sat til eth0, DHCP sat til yes og UDPINOK ikke sat.
+</para>
+
+<para>
+Man skal være opmærksom på at ting som kører via UDP protokollen som
+standard ikke tillades ind som retur trafik og man skal derfor selv
+lave en regel for det. De moduler der startes som benytter UDP som
+transport protokol, eksempelvis ICQ, vil der i scriptet automatisk
+blive lavet en firewall regel, så ICQ retur trafik ind er tilladt.  Da
+alt trafik ud bliver afvist og alt trafik ind bliver nægtet skal man
+selv sætte regler op, hvis man eksempelvis har en web server stående,
+så folk udefra kan få forbindelse med den.  Hvis jeg nu ønsker at lave
+en forbindelse til et service som benytter UDP som transport protokol,
+skal man indføre en af disse linjer i script'et der kunne hedde:
+</para>
+
+<screen>
+ipchains -A input -i $EXTIF -p udp -s host/255.255.255.255 port \
+   -d $EXTIP 55000:65535 -j ACCEPT
+</screen>
+ 
+<para>
+eller
+</para>
+
+<screen>
+ipchains -A input -i $EXTIF -p udp -s 0.0.0.0/0.0.0.0 port \
+  -d $EXTIP 55000:65535 -j ACCEPT
+</screen>
+
+<para>
+Parameteren "host" i første linje er lig med en IP adresse og port er
+lig med den port som service'et kører på. Første linje betyder at du
+acceptere trafik fra IP adressen "host" og som har porten
+"port". Anden linje betyder at du acceptere trafik fra hvilken som
+helst IP adresse som har porten "port".
+</para>
+
+<para>
+Hvis jeg nu gerne vil give folk lov til at få forbindelse med min web
+server skal man skrive dette:
+</para>
+
+<screen>
+ipchains -A input -i $EXTIF -p tcp -s 0.0.0.0/0.0.0.0 1024:65535 \
+  -d $EXTIP 80 -j ACCEPT
+ipchains -A output -i $EXTIF -p tcp -s $EXTIP 80 \
+  -d 0.0.0.0/0.0.0.0 1024:65535 -j ACCEPT
+</screen>
+
+<para>
+Firewall scriptet skal gemmes i <filename>/etc/firewall</filename>
+under linux og der skal man skrive <command>chmod 700
+/etc/firewall</command>, som gør at root som den eneste kan læse,
+skrive og kører scriptet.
+</para>
+</sect3>
+
+<sect3 id="firewall-initscript">
+<title>INIT script til firewall script</title>
+
+<para>
+Med dette script kan man blandt andet starte, stoppe, få en status om
+de regler der er i firewallen og mere.  For at få scriptet startet op
+hver gang man genstarter sin linux maskine skal scriptet lægges under
+<filename>/etc/rc.d/init.d/</filename> og der skal man skrive
+<command>chmod 700 /etc/rc.d/init.d/firewall</command>. Herefter
+skrives <command>chkconfig --add firewall</command> (med dobbelt
+minus), og til sidst <command>chkconfig --level 3 firewall
+on</command> (med dobbelt minus), dette betyder at firewall scriptet
+bliver kørt hver gang linux startes i runlevel 3.  Dette skal dog kun
+gøres hvis man har en LAN router eller har statisk IP adresse, da man
+ikke på dette tidspunkt i opstarten af linux ikke har lavet et opkald
+til sin Internet udbyder, kan scriptet derfor ikke finde IP adressen
+på ens interface. Hvis man benytter et modem skal man i stedet, hvis
+man kører med Red Hat indsætte <command>/etc/rc.d/init.t/firewall
+start</command> nederst i filen
+<filename>/etc/ppp/ip-up.local</filename> og så stadig benytte INIT
+scriptet. Hvis man ønsker at se hvilke variabler og ting som scriptet
+selv har fundet ud af kan man skrive
+<filename>/etc/rc.d/init.d/firewall</filename> debug. For at se de
+muligheder man har skriver man
+<filename>/etc/rc.d/init.d/firewall</filename>.
+</para>
+
+<screen>
+#!/bin/sh
+# chkconfig: 35 20 80
+# description: Firewall init script til at starte 
+#	       og stoppe firewall script fra linux bog
+# Lavet af:    Peter Enoch
+export PATH=/sbin:/bin:/usr/bin
+
+FW=`cat /proc/net/ip_fwchains`
+
+. /etc/rc.d/init.d/functions
+
+if ! [ -f /etc/firewall ]; then
+     echo "Kan ikke finde firewall script i /etc !!"
+     exit 0
+fi
+
+case "$1" in
+ start)
+            action "Firewall startes: " /etc/firewall
+    ;;
+
+ stop)
+         if ! [ "$FW" = "" ]; then
+    	    action "Firewall stoppes: " \
+	      ipchains -F; \
+	      ipchains -P input ACCEPT; \
+	      ipchains -P forward ACCEPT; \
+	      ipchains -P output ACCEPT; \
+	      ipchains -X; \
+	      rmmod ip_masq_ftp 2>/dev/null; \
+	      rmmod ip_masq_icq 2>/dev/null; \
+	      rmmod ip_masq_raudio 2>/dev/null; \
+	      rmmod ip_masq_vdolive 2>/dev/null; \
+	      rmmod ip_masq_quake 2>/dev/null; \
+	      rmmod ip_masq_irc 2>/dev/null; \
+	      rmmod ip_masq_cuseeme 2>/dev/null
+	else
+	    echo -n "Firewall script er ikke startet !!"
+	    failure "Firewall script er ikke startet !!"
+	    echo
+    fi
+    ;;
+
+ restart)
+        if ! [ "$FW" = "" ]; then
+	    $0 stop
+	    $0 start
+	else
+	    echo -n "Firewall stoppes: "
+	    failure "Firewall stoppes: "
+	    echo
+	    $0 start
+    fi
+    ;;
+
+ gem)
+	 rm -f /etc/firewall.bak        
+	 echo -n "Firewall gemmes i /etc/firewall.bak"
+	 ipchains-save > /etc/firewall.bak 2>/dev/null && \
+	   success "Firewall gemmes i /etc/firewall.bak" || \
+	   failure "Firewall gemmes i /etc/firewall.bak"
+	   echo
+    ;;
+        
+ status)
+	ipchains -L -n --line-numbers | less
+    ;;
+
+ masq)
+	ipchains -L -M -n --line-numbers | less
+    ;;
+
+ panic)
+	 action "INPUT,FORWARD og OUTPUT kæden sættes til DENY: " \
+	   ipchains -F; \
+	   ipchains -P input DENY; \
+	   ipchains -P forward DENY; \
+	   ipchains -P output DENY
+    ;;
+
+ debug)
+            echo > /etc/firewall.debug
+            /etc/firewall
+	    rm -f /etc/firewall.debug
+    ;;
+
+ *)
+	 clear
+         echo "Start:   med firewall start, startes firewall scriptet" \
+	   "i /etc."
+	 echo "Stop:    med firewall stop, stoppes firewall scriptet" \
+	   "i /etc."
+	 echo "Restart: med firewall restart, stoppes firewall scriptet" \
+	   "først, derefter bliver"
+	 echo "         det startet igen."
+	 echo "Gem:     med firewall gem, gemmes alle regler i firewall'en" \
+	   "i /etc/firewall.bak."
+	 echo "         Bemærk at /etc/firewall.bak bliver" \
+	   "slettet hver gang denne køres."
+	 echo "Status:  med firewall status, vises alle firewall regler der" \
+	   "er på maskinen."
+	 echo "Masq:    med firewall masq, vises alle masquerading forbindelser." \
+	   "Dvs. man kan "
+	 echo "         se hvor ens lokale maskiner har oprettet en forbindelse til."
+	 echo "Panic:   med firewall panic, sættes alle standard kæderne," \
+	   "dvs. input, forward"
+	 echo "	 og output til deny og alle nuværende regler bliver slettet."
+	 echo "Debug:   med firewall debug, startes firewall scriptet og man får" \
+	   "status"
+	 echo "         over hvad de forskellige variabler er sat til og hvad scriptet"
+	 echo "         har fundet af informationer."
+
+	 echo "/etc/rc.d/init.d/firewall { start|stop|restart|gem|status|masq|panic|debug }"
+	exit 1
+esac
+
+exit 0
+</screen>
+
+<para>
+Dette script kan downloades fra <ulink url="http://www.sslug.dk/linuxbog/firewall">http://www.sslug.dk/linuxbog/firewall</ulink>.
+</para>
+</sect3>
+
+
+<sect3 id="firewall-IPMASQADM">
+<title>Adgang til interne maskiner med IPMASQADM</title>
+<para>
+Hvis man skal have adgang til ens maskiner bag en firewall der kører
+med private adresser kan man benytte ipmasqadm og have modulet
+portfw. Ipmasqadm er ikke med som standard i gængse Linux distributioner.
+</para>
+
+<para>
+IPMASQADM portfw syntakser: <command>ipmasqadm portfw -a -P PROTO -L LADDR LPORT -R RADDR RPORT -p PREF</command>
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para><command>-a</command> Indsæt ny regel for ipmasqadm.</para></listitem>
+<listitem><para><command>-f</command> Slet alle regler i listen.</para></listitem>
+<listitem><para><command>-l</command> Vis alle regler i listen.</para></listitem>
+<listitem><para><command>-l -n</command> Vis alle regler i listen, men laver ikke et reverse lookup.</para></listitem>
+<listitem><para><command>-p PREF</command> Prioritet, er som standard 10.</para></listitem>
+<listitem><para><command>-P PROTO</command> PROTO kan være tcp eller udp.</para></listitem>
+<listitem><para><command>LADDR</command> Den IP adresse som modtager de pakker som skal sendes videre til intern maskine.</para></listitem>
+<listitem><para><command>LPORT</command> Den port der lyttes på.</para></listitem>
+<listitem><para><command>RADDR</command> Den interne IP adresse som skal modtage pakkerne.</para></listitem>
+<listitem><para><command>RPORT</command> Den port som den interne maskine lytter på.</para></listitem>
+</itemizedlist>
+
+<para>
+Hvis man eksempelvis vil sende alt web trafik på port 80 til den interne maskine, der hedder 10.10.10.10:
+</para>
+
+<screen>
+ipmasqadm portfw -a -P tcp -L 192.192.192.192 80 -R 10.10.10.10 80
+</screen>
+</sect3>
+</sect2>
+</sect1>
+
+
+
+<sect1 id="linux-x">
+<title>Linux som X-server og terminal</title>
+<para>
+En Linux maskine kan være en glimrende X-server for andre mindre
+grafiske terminaler. Tilsvarende kan en Linux maskine snildt virke som
+en X-terminal. 
+</para>
+
+<sect2 id="linux-xserver">
+<title>Linux som X-server</title>
+<para>
+For at en Linux maskine kan virke som grafisk login server, så skal
+der køre en X-server på maskinen. Normalt kræver dette, at man kører i
+runlevel 5, dvs. en ændrer linie i <filename>/etc/inittab</filename>
+(eksemplet er fra Red Hat).
+</para>
+
+<screen>
+id:3:initdefault:
+</screen>
+
+<para>
+til 
+</para>
+
+<screen>
+id:5:initdefault:
+</screen>
+
+<para>
+og tilsvarende længere nede i samme fil
+</para>
+
+<screen>
+# Run xdm in runlevel 5
+# xdm is now a separate service
+x:5:respawn:/etc/X11/prefdm -nodaemon
+</screen>
+
+<para>
+ændres til
+</para>
+
+<screen>
+# Run xdm in runlevel 5
+# xdm is now a separate service
+x:5:respawn:/etc/X11/prefdm
+</screen>
+
+<para>
+Anvender du GNOMEs login system, så skal du endvidere rette i
+<filename>/etc/X11/gdm/gdm.conf</filename>.
+</para>
+
+<screen>
+[xdmcp]
+Enable=0
+</screen>
+
+<para>
+rettes til 
+</para>
+
+<screen>
+[xdmcp]
+Enable=1
+</screen>
+
+
+<para>
+og root skal så genstarte i runlevel 5 ved at køre <command>init 5</command>.
+Den option <filename>-nodaemon</filename> der blev fjernet gør at
+andre maskiner kan koble sig ind på serveren. Der er således noget med
+sikkerhed, man måske skal tænke på. På et mindre lukket netværk
+spiller det ingen rolle. Nu har du en X-server, og lad os nu se på en
+Linux klient.
+</para>
+</sect2>
+
+<sect2 id="linux-xklient">
+<title>Linux som X-klient</title>
+<para>
+Du skal logge ind på din Linux maskine i runlevel 3 og som root skrive 
+<command>/usr/X11R6/bin/X -query SERVER</command>, hvor
+<filename>SERVER</filename>  er navnet på din X-server. Denne kommando
+kan du evt. så senere indsætte som en del af 
+<filename>/etc/inittab</filename>.
+</para>
+
+<screen>
+x:3:respawn:/usr/X11R6/bin/X 2>/var/log/Xlog -dpi 100 -query SERVER
+</screen>
+
+<para>
+hvor SERVER byttes ud med navnet på den maskine, der er X-server.
+</para>
+</sect2>
+
+</sect1>
+</chapter>

@@ -1,0 +1,1005 @@
+<chapter id="Net">
+<title>Net</title>
+
+<sect1 id="netprog">
+<title>Netværksprogrammer</title>
+
+<sect2 id="ping">
+<title>Ping</title>
+<indexterm><primary>ping</primary></indexterm>
+<para>
+<command>ping</command> er et meget simpelt, men utroligt nyttigt
+stykke værktøj, der bruges til at finde ud af, om der kan opnås
+forbindelse til en ip-adresse. Sagt på en anden måde er
+<command>ping</command> det program, du kan bruge til at finde ud af, om
+der er "hul igennem".
+</para>
+
+<para>
+<command>ping</command> bør altid være det første program, du bruger
+til at diagnosticere et netværksproblem. Hvis det lykkes at pinge til
+en adresse, ved du, at den fysiske forbindelse er i orden, og de basale
+dele af netværket fungerer.
+</para>
+
+<para>
+<command>ping</command> køres sådan her:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>ping -c 4 www.linux.org</userinput>
+</screen>
+
+<para>
+Ved at skrive "-c 4" beder vi <command>ping</command> om at nøjes med
+at sende fire pakker, ellers bliver den ved, indtil vi stopper den med Ctrl-c.
+</para>
+
+<para>
+<command>ping</command> svarer tilbage:
+</para>
+
+<screen>
+PING www.linux.org (198.182.196.51): 56 data bytes
+64 bytes from 198.182.196.51: icmp_seq=0 ttl=42 time=479.3 ms
+64 bytes from 198.182.196.51: icmp_seq=1 ttl=42 time=710.0 ms
+64 bytes from 198.182.196.51: icmp_seq=1 ttl=41 time=730.0 ms
+64 bytes from 198.182.196.51: icmp_seq=2 ttl=42 time=600.0 ms
+64 bytes from 198.182.196.51: icmp_seq=3 ttl=42 time=370.0 ms
+
+--- www.linux.org ping statistics ---
+4 packets transmitted, 4 packets received, +1 duplicates, 0% packet loss
+round-trip min/avg/max = 370.0/577.8/730.0 ms
+</screen>
+
+<para>
+Vi kan først og fremmest se, at vi kan komme igennem til
+<ulink url="http://www.linux.org">www.linux.org</ulink>, som har adressen 
+198.182.196.51, og at alt, hvad vi sendte, kom tilbage igen, ja faktisk kom 
+en af de fire pakker tilbage to gange! Hele turen frem og tilbage tog i 
+gennemsnit 577,8 millisekunder - altså lidt over et halvt sekund.
+</para>
+</sect2>
+
+<sect2 id="telnet">
+<title>telnet</title>
+<indexterm><primary>telnet</primary></indexterm>
+<indexterm><primary>ftp</primary><secondary>spærring</secondary></indexterm>
+<para>
+Med <command>telnet</command> er det muligt at logge ind på andre
+computere på netværket og arbejde tekstbaseret, som om du sad ved
+computeren. Dette kan også foregå på tværs af platforme, f.eks. kan du
+køre <command>telnet</command> på en Windows 95-pc og derfra logge ind
+på en Linuxmaskine.
+</para>
+
+<para>
+Ved normal brug startes <command>telnet</command> simpelthen med
+navnet på den computer, du ønsker en forbindelse til - i nedenstående eksempel
+<filename>gonzo</filename>. Når forbindelsen er oprettet, vil du blive
+præsenteret for en <filename>login:</filename> prompt, og du kan nu arbejde
+videre, som om du sad ved den anden maskine.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$  </prompt><userinput>telnet gonzo</userinput>
+Trying 192.168.100.5...
+Connected to gonzo.codehell.lokal.
+Escape character is '^]'.
+
+Red Hat Linux release 6.0 (Hedwig)
+Kernel 2.2.5 on an i586
+login:
+</screen>
+
+<para>
+Når du ikke længere har brug for telnet-forbindelsen, afbryder du
+den med <command>exit</command>, og du er så tilbage på din egen maskine.
+</para>
+
+<para>
+Hvis du angiver en port, der er bundet til en anden protokol, kan du også
+have glæde af <command>telnet</command> til fejlfinding og testbrug. I
+en snæver vending kan du bruge <command>telnet</command> til at hente
+post hos din internetudbyder!
+</para>
+
+<para>
+For at beskytte din installation er standardinstallationen lavet,
+så "root" ikke kan logge ind remote med <command>telnet</command> og
+<command>ftp</command>. Det er gjort for, at man ikke helt så nemt kan få
+adgang til root's password. Hvis du har maskinen på et usikkert net -
+f.eks. Internettet bør du ikke ændre på dette. I stedet kan du bruge
+krypteret netkommunikation - f.eks. med "Secure Shell" (sikker skal).
+Har du et lukket net og mener, at du ikke gider at gå ind som almindelig
+bruger og derefter lave <command>su - root</command>, kan du godt få lov
+til at bruge <command>telnet</command> og
+<command>ftp</command> som root udefra. Filerne
+<filename>/etc/securetty</filename> og <filename>/etc/ftpusers</filename>
+kan rettes eller direkte slettes, så kan root
+logge ind udefra.
+</para>
+
+</sect2>
+
+<sect2 id="ftp">
+<title>ftp</title>
+<indexterm><primary>ftp</primary><secondary>bruger, client</secondary></indexterm>
+<para>
+Til at hente og sende filer over TCP/IP bruges programmet
+<command>ftp</command>.
+</para>
+
+<para>
+Hvis du skal bruge en fil fra <filename>sunsite.auc.dk</filename>,
+skriver du sådan her: 
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>ftp sunsite.auc.dk</userinput>
+</screen>
+
+<para>
+Når forbindelsen er klar, spørger computeren om brugernavn og
+adgangskode. Du kan logge på som 'anonymous' (anonym) og give din
+e-postadresse som adgangskode. Bemærk, at e-postadressen ikke er synlig,
+når den tastes ind.
+</para>
+
+<screen>
+Connected to sunsite.auc.dk.
+220 sunsite.auc.dk FTP server (NcFTPd 2.2.2) ready.
+Name (sunsite.auc.dk:daisy): <userinput>anonymous</userinput>
+331 Guest login ok, send your complete e-mail address as password.
+Password:
+230-You are user #57 of 300 simultaneous users allowed.
+230-
+230-                 Welcome to SunSITE Denmark
+230-                 ==========================
+230-
+230-SunSITE Denmark is located at Aalborg University, Institute of
+230-Electronic Systems, Denmark, and is running on a SPARCserver 1000 with
+230-4 CPUs, 416 MB Memory and approximately 110 GB storage.
+230-
+
+[lang velkomsthilsen klippet ud]
+
+230-
+230 Logged in anonymously.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+</screen>
+
+<para>
+Så står du ved en <prompt>ftp></prompt> prompt, hvor du kan bevæge dig
+rundt i katalogerne med <command>cd</command> og se indholdet med
+<command>ls</command> - ganske som med en almindelig kommandolinje.
+</para>
+
+<screen>
+<prompt>ftp></prompt> <userinput>ls</userinput>
+200 PORT command successful.
+150 Opening ASCII mode data connection for /bin/ls.
+d--x--x--x   2 ftpuser  ftpusers      1024 Oct 31  1997 bin
+dr-xr-xr-x   2 ftpuser  ftpusers      1024 Jul  1  1997 dev
+drwxrwxr-x  60 ftpuser  ftpusers      8192 Oct 10 16:23 disk1
+drwxrwxr-x   9 ftpuser  ftpusers      2048 Oct 10 15:45 disk2
+drwxr-xr-x   3 ftpuser  ftpusers        96 Jun  2 17:02 disk3
+drwxr-xr-x   4 ftpuser  ftpusers        96 Sep  1 09:15 disk4
+dr-xr-xr-x   2 ftpuser  ftpusers      1024 Oct 31  1997 etc
+drwxrwx-wx   2 ftpuser  ftpusers      1024 Oct 14 08:28 incoming
+drwxr-xr-x  13 ftpuser  ftpusers      1024 Jun  3 12:58 local
+-rw-r--r--   1 ftpuser  ftpusers   5748797 Oct 14 00:04 ls-lR.gz
+drwxrwxr-x   2 ftpuser  ftpusers      2048 Oct 10 18:12 mirrors
+drwxr-xr-x   2 ftpuser  ftpusers        96 Jul  1  1997 packages
+dr-xr-xr-x  18 ftpuser  ftpusers      1024 Jul 16 12:03 pub
+d--x--x--x   4 ftpuser  ftpusers        96 Jul  1  1997 usr
+-rw-r--r--   1 ftpuser  ftpusers       931 Jul  3 08:33 welcome.msg
+226 Listing completed.
+</screen>
+
+<para>
+Hvis du nu ved hjælp af <command>cd</command> navigerer ned i
+<filename>/pub/os/linux/Red Hat</filename> og kører <command>ls</command>,
+vil du se, at der ligger en fil ved navn <filename>README</filename>, som du
+gerne vil hente hjem på din egen maskine.
+</para>
+
+<para>
+Nu er filen ikke særlig stor, så den er hentet ned på et øjeblik.
+Hvis du henter større ting, er det som regel rart at kunne se, om der er
+"flow" i overførslen. Med kommandoen <command>hash</command> kan du få
+skrevet et #-tegn ("hash mark"), hver gang en blok er blevet overført.
+</para>
+
+<screen>
+<prompt>ftp></prompt> <userinput>hash</userinput>
+Hash mark printing on (1024 bytes/hash mark).
+</screen>
+
+<para>
+Så henter du filen:
+</para>
+
+<screen>
+<prompt>ftp></prompt> <userinput>get README</userinput>
+local: README remote: README
+200 PORT command successful.
+150 Opening BINARY mode data connection for README (1155 bytes).
+#
+226 Transfer completed.
+1155 bytes received in 0.227 secs (5 Kbytes/sec)
+</screen>
+
+<para>
+<filename>README</filename> er en ganske lille fil, så det vil
+kun blive til et enkelt #-tegn. Læg i øvrigt mærke til, at den er
+overført som binær fil (BINARY) i modsætning til ren tekst (ASCII). Hvis du
+bruger ASCII til overførslen, vil <command>ftp</command> konvertere
+linjeskift i tekstfiler til det korrekte format for den maskine, der
+modtager filen. Det er udmærket til tekstfiler, men kan smadre f.eks.
+grafik og komprimerede filer fuldstændigt. Til at skifte mellem binær
+og ascii bruges ftp-kommandoerne <command>bin</command> og
+<command>ascii</command>.
+</para>
+
+<para>
+Nu er du færdig med at hente, hvad du skal bruge, og du logger ud igen
+med kommandoen <command>quit</command>. Så er du tilbage på kommandolinjen
+på din egen maskine.
+</para>
+
+<para>
+Hvis du har brug for at tilbyde anonymt-ftp på din Linuxmaskine, kan du i
+Red Hat Linux installere pakken "anonftp". Pakken foretager hele
+opsætningen for dig. Filer, der skal kunne hentes via anonym ftp, lægges
+så blot i <filename>/home/ftp/pub</filename>.
+</para>
+
+<para>
+Alt det ovenstående handler om anonymt ftp. Hvis du er oprettet som bruger
+på den maskine, du skal i kontakt med, kan du logge på med dit rigtige
+brugernavn og adgangskode. På den måde får du så rettigheder til at
+hente og sende filer i forhold til, hvad du er blevet tildelt af
+administratoren.
+</para>
+</sect2>
+
+<sect2 id="webbrowsere">
+<title>Webbrowsere</title>
+<indexterm><primary>lynx</primary></indexterm>
+<indexterm><primary>Netscape</primary></indexterm>
+
+<para>
+Kan du undvære grafik, bør du kende <command>lynx</command>, som er en
+tekstbaseret webbrowser, som faktisk er ret anvendelig - pånær ved
+klikbare billeder. Grafik hentes kun (til disk), hvis dette
+vælges. Lynx er smart, hvis du har en langsom netforbindelse, eller
+hvis du vil lave applikationer, som automatisk skal kunne hente HTML
+eller billeder.
+</para>
+
+<para>
+Et specielt godt program er Netscape Communicator, som er kendt af de
+fleste. Programmet har været kommercielt, men stærkt inspireret af
+Linux-verdenen er det nu blevet et "Open Source"-udviklingsprojekt ved
+navn Mozilla.
+</para>
+
+<para>
+Netscape er programmet til at hente HTML-sider, billeder, lyd, film og
+tekst via Internettet. Netscape er forholdvist nem at gå til.
+</para>
+
+<FIGURE ID="netscape-fig" FLOAT="1">
+<TITLE>Netscape Communicator
+</TITLE>
+<GRAPHIC FILEREF="../images/netscape.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Et alternativ til Netscape er det filhåndteringsprogram der følger med
+KDE. Det kan både lave filoversigter på din harddisk (med flytte og
+kopiere-muligheder), men <command>kfm</command> kan meget mere - den
+kan også vise hjemmesider. 
+</para>
+
+<para>
+En andet web-browser, som er på vej frem er Opera - se mere på <ulink
+url="http://www.opera.com/linux/">http://www.opera.com/linux/</ulink>.
+Fortiden er Opera stadig i en beta-udgave, men det er klart, at Opera
+bliver en hurtig browser, som kræver meget mindre hukommelse end
+Netscape. Du kan se hvordan Opera ser ud på <xref linkend="opera-fig">.
+</para>
+
+<FIGURE ID="opera-fig" FLOAT="1">
+<TITLE>Opera</TITLE>
+<GRAPHIC FILEREF="../images/Opera.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<sect3 id="truetype">
+<title>True Type fonte og Netscape</title>
+<para>
+Normalt er true type-skrifttyper ikke anvendt under X-vinduessystemet, men du kan få
+f.eks. din Netscape til at bruge de skrifter. Du skal have installeret
+<filename>freetype-1.2-6.i386.rpm</filename> eller lignende
+version. Man skal blot "finde" programmet <command>ttmkfdir</command>,
+der kan generere en "fonts.scale" fil til sine TrueType-skrifter.
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem> <para>
+  Lav et katalog til dine TrueType (ttf) filer, f.eks.
+  <filename>/usr/share/fonts/default/TrueType</filename>.
+</para></listitem>
+
+<listitem> <para>
+  Kopier ttf-skrifttyperne derned fra en Windows-installation, eller
+  hent de gratis ttf-filer fra Microsofts webside (de har en
+  gratis samling af de mest almindelige TrueType-skrifttyper).
+</para></listitem>
+
+<listitem> <para>
+  <screen>
+  <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>cd /usr/share/fonts/default/TrueType</USERINPUT>
+  <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ttmkfdir > fonts.scale</USERINPUT>
+  <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>mkfontdir</USERINPUT>
+  </screen>
+  Dette genererer en "fonts.dir" fil som X bruger til at finde ud
+  af hvilke skrifter, der ligger i hvilke filer.
+</para></listitem>
+
+<listitem> 
+
+<para>
+ Ret din X11 config så den indeholder TrueType-kataloget.
+ FontPath entries i <filename>/etc/X11/fs/config</filename> (Kan evt. være i
+ <filename>/etc/X11/XF86Config</filename>) kan se således ud:
+</para>
+
+  <screen>
+    FontPath    "/usr/X11R6/lib/X11/fonts/misc/"
+    FontPath    "/usr/share/fonts/default/TrueType/"
+    FontPath    "/usr/X11R6/lib/X11/fonts/75dpi/"
+    FontPath    "/usr/share/fonts/default/Type1/"
+    FontPath    "/usr/X11R6/lib/X11/fonts/Type1/"
+    FontPath    "/usr/X11R6/lib/X11/fonts/Speedo/"
+    FontPath    "/usr/X11R6/lib/X11/fonts/100dpi/"
+  </screen>
+</listitem>
+</itemizedlist>
+
+<para>
+Start X, og se om ikke "xlsfonts" lister de forskellige TrueType
+skrift-typer - prøv f.eks. "xlsfonts|grep microsoft"
+</para>
+
+<para>
+I din Netscape "Preferences" opsætning kan du vælge
+</para>
+<screen>
+  Variable width font:  Arial (Monotype)              Size: 0
+      Allow scaling: disabled
+  Fixed width font: Courier New (Monotype)            Size: 0
+      Allow scaling: disabled
+</screen>
+
+<para>
+Endvidere kan du klikke på "Use document-specified fonts, but
+disable Dynamic fonts" (den midterste af de tre muligheder).
+</para>
+</sect3>
+
+<sect3 id="mime-types">
+<title>mime-types</title>
+<para>
+På Internet er der en måde at koble overførsel af data med en
+datatype, således at modtager af data har mulighed for at starte det
+rette program til at vise data. Dette kaldes "mime.types" og for
+Netscape kan vi f.eks. vise, hvordan man får StarOffice startet op for
+at automatisk at vise et Word-dokument. Der er trods alt nogle, der
+finder dette af interesse :-)
+</para>
+
+<para>
+I Netscape skal du åbne "Edit->Preferences", derefter vælge
+"Navigator->Applications". Vælg "Microsoft Word Document" og tryk
+"Edit". Vælg "Application" og sæt denne til
+<filename>/home/daisy/Office51/soffice "%s"</filename>
+</para>
+
+<para>
+Efter genstart af Netscape, bør du både i webbrowseren og i
+epost-delen af Netscape kunne trykke direkte på Word-filer og se dem i 
+StarOffice. Se i øvrigt <xref linkend="staroffice">.
+</para>
+</sect3>
+
+
+</sect2>
+
+<sect2 id="wget">
+<title>wget</title>
+<indexterm><primary>wget</primary></indexterm>
+
+<para>
+Fra tid til anden har du brug for at kunne hente en stribe
+hjemmesider, som du sidenhen vil kunne læse -
+f.eks. programvejledninger. Med Netscape er det besværligt, idet du
+skal trykke "gem" for hver enkel side. Meget smartere er programmet
+<command>wget</command>, der kan hente rekursivt fra en http eller ftp-side,
+såsom SSLUG's adresse
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>wget -r http://www.sslug.dk</userinput></screen>
+
+<PARA>
+Ovenstående kommando henter hele SSLUG's hjemmeside.
+Er det kun de underliggende subdir der skal hentes, tilføjes <COMMAND>-np</COMMAND>
+(no parents). Dette kan bruges til at hente denne bog fra www.sslug.dk.
+I nogle HTML-sider er der angivet direkte link. Dette kan fjernes med <COMMAND>-k</COMMAND>.
+</PARA>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>wget -r -k -np http://www.sslug.dk/linuxbog/bog/</userinput></screen>
+
+<para>
+Et lille trick er at bruge <command>wget -c
+ftp://ftpsted/storfil.tgz</command>, hvor -c står for continue og hvis
+man husker den ved alle store download, så kan programmet finde ud af at
+fortsætte afbrudte downloads. Fed feature hvis man vil downloade noget
+stort over en ustabil forbindelse.
+</para>
+
+<PARA>
+Se også <XREF LINKEND="ncftp">.
+</PARA>
+
+</sect2>
+
+<SECT2 ID="ncftp">
+<TITLE>ncftp</TITLE>
+<INDEXTERM><PRIMARY>ncftp</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>ftp</PRIMARY><SECONDARY>klient</SECONDARY></INDEXTERM>
+
+<PARA>
+Programmet <COMMAND>ncftp</COMMAND> er ftp-lignende klient,
+som er nemt at bruge til <COMMAND>anonymous</COMMAND>
+download. Man skal ikke angive brugernavn og password.
+Prøv f.eks:
+</PARA>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>ncftp sunsite.auc.dk</USERINPUT>
+</SCREEN>
+
+<PARA>
+<COMMAND>ncftp</COMMAND> kan en masse ting der
+gør det væsentlig nemmere at bruge end det basale ftp-program.
+</PARA>
+
+<SECT3 ID="ncftpget">
+<TITLE>ncftpget</TITLE>
+<INDEXTERM><PRIMARY>ncftp</PRIMARY><SECONDARY>ncftpget</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>wget</PRIMARY><SECONDARY>ncftpget</SECONDARY></INDEXTERM>
+
+<PARA>
+<COMMAND>ncftpget</COMMAND> er videreudvikling
+af <COMMAND>ncftp</COMMAND> som er specielt 
+velegnet til at hente mange filer fra en anden server,
+ved blot at angive hvad man vil hente på kommandolinien.
+Skal du hente filer i <EMPHASIS>/home/mig/public_html</EMPHASIS>
+fra <EMPHASIS>ftp.serv.dk</EMPHASIS>
+hvor du har en brugerkonto <EMPHASIS>mig</EMPHASIS>
+kan det gøres med følgende kommando:
+</PARA>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>cd temp</USERINPUT>
+<PROMPT>[daisy@linus temp]$ </PROMPT><USERINPUT>ncftpget -R -u mig ftp.serv.dk . public_html</USERINPUT>
+</SCREEN>
+
+<PARA>
+<OPTION>-R</OPTION> gør at alle filer i underkataloger også
+bliver hentet. <OPTION>-u mig</OPTION> angiver brugernavn og
+da man ikke bør angive password på kommandolinien, bliver
+man spurgt om password. Punktum angiver det katalog du
+står i, hvilket giver et godt overblik over hvor filerne havner.
+<COMMAND>ncftpget</COMMAND> har mange flere muligheder
+der er velegnede til automatiserede formål.
+</PARA>
+</SECT3><!-- ncftpget -->
+
+<SECT3 ID="ncftpput">
+<TITLE>ncftpput</TITLE>
+<INDEXTERM><PRIMARY>ncftp</PRIMARY><SECONDARY>ncftpput</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Upload filer fra kommandolinien</PRIMARY></INDEXTERM>
+
+<PARA>
+<COMMAND>ncftpput</COMMAND>
+er beregnet for upload af mange filer fra kommandolinien.
+Skal du uploade filer fra <EMPHASIS>/home/linus/public_html</EMPHASIS>
+til <EMPHASIS>ftp.serv.dk</EMPHASIS> i kataloget
+<EMPHASIS>/home/mig/html</EMPHASIS>
+hvor du har en brugerkonto <EMPHASIS>mig</EMPHASIS>
+kan det gøres med følgende kommando:
+</PARA>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>ncftpput -R -u mig ftp.serv.dk public_html html</USERINPUT>
+</SCREEN>
+
+<PARA>
+Se også <XREF LINKEND="ncftpget">.
+</PARA>
+</SECT3><!-- ncftpput -->
+
+</SECT2><!-- ncftp -->
+
+
+</sect1>
+
+<sect1 id="Epost">
+<title>Epost</title>
+<sect2 id="fetchmail">
+<title>Fetchmail</title>
+<indexterm><primary>Fetchmail</primary></indexterm>
+<para>
+<command>fetchmail</command> bruges til at hente e-breve fra en
+postserver hos din internetudbyder. Programmet styres gennem filen
+<filename>.fetchmailrc</filename> i dit hjemmebibliotek. Den kan f.eks. se
+sådan her ud:
+
+<screen>
+poll mail.fiktiv.dk
+proto POP3
+user daisy
+pass McMombo
+</screen>
+
+Når du kører <command>fetchmail</command>, vil den i dette eksempel
+forsøge at hente post fra serveren <filename>post.fiktiv.dk</filename>
+med protokollen POP3 (som er den mest almindelige)
+og logge på serveren med brugernavnet daisy og adgangskoden McMombo. Hvis
+der er post til daisy, leverer fetchmail den videre til det lokale
+postsystem, der så lægger brevene i daisys postkasse.
+</para>
+
+<para>
+De første gange, du kører <command>fetchmail</command>, vil du
+som regel gerne se, om tingene går, som de skal, når posten hentes. Hvis
+<command>fetchmail</command> køres med parameteren
+<filename>-v</filename>, skriver den, hvad der foregår undervejs.
+</para>
+
+<para>
+Hvis du er til grafisk baserede konfigurationsværktøjer, kan du redigere din
+<filename>.fetchmailrc </filename>
+ved hjælp af programmet <command>fetchmailconf</command>.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis>Nogle post-servere vil ikke tillade at du
+bruge POP3 fra andre maskiner og tillader kun Secure shell som login
+metode. Her er et mere avanceret trick til at hente epost via en
+POP3-server sat op til at køre alene på localhost. Først skal du lave
+en <filename>.fetchmailrc</filename> med følgende indhold.
+</para>
+
+<screen>
+poll localhost with proto pop3 port 1234
+    user "daisy" there with password "hemmeligt" is daisy here options \
+pass8bits mimedecode limit 100000 fetchall
+</screen>
+
+<para>Opsætningen er til at daisy på klient og server med adgangskode
+"hemmeligt" på serveren kan hente epost op til maksimalt 100000
+oktetter (ca. 80 kb per epost-besked).
+</para>
+
+<para>
+Du skal du lave en kommando eller alias <command>ssh -L
+1234:mailserver:110 -v mailserver</command>, som du starter i et
+terminalvindue. Du kan se at du faktisk logger ind på mailserver
+maskinen ved dette. 
+</para>
+<para>
+I et andet vindue på lokalmaskinen (klienten) skriver du nu
+<command>fetchmail</command>, hvorefter din epost hentes via POP-3 med
+<command>ssh</command> som krypteret tunnel mellem de to maskiner.
+</para>
+
+</sect2>
+
+<sect2 id="postserver">
+<title>Linux som postserver</title>
+
+<para>
+Hvis du installerer rpm-pakken <filename>imap</filename>, kan din
+Linuxmaskine bruges som server for indgående e-breve i et netværk. Ved
+installationen af pakken skulle hele opsætningen faktisk være på plads,
+så brugerne på de enkelte maskiner blot skal angive Linuxmaskinen som
+postserver i deres e-postprogrammer - og så naturligvis være oprettet
+som brugere på Linux-maskinen!
+</para>
+
+<para>
+Hvis du kun har en modemforbindelse til Internet, kan du lade
+Linuxserveren sende og hente post for alle brugere på et lokalt netværk.
+<command>fetchmail</command> (se ovenfor) er ret nemt at sætte op til
+at hente post til flere forskellige brugere på samme tid hos
+internetudbydere.
+</para>
+
+<para>
+Udgående post håndteres af programmet <command>sendmail</command>. Hvis
+<command>sendmail</command> skal acceptere at videresende udgående email
+fra andre maskiner på et lokalnet, er det nødvendigt at angive dette i filen
+<filename>/etc/mail/ip_allow</filename>, ellers vil forsøg på at bruge
+Linux-maskinen som SMTP-server blive afvist med beskeden "We do not
+relay".
+</para>
+
+<para>
+I <filename>/etc/mail/ip_allow</filename> skriver du adresser på
+enkelte maskiner eller netværk, som må bruge Linuxmaskinen som
+udgående postserver. Hvis for eksempel alle maskiner på netværket
+<filename>192.168.100.0</filename> skal accepteres, skal indholdet af
+<filename>/etc/mail/ip_allow</filename> være dette:
+</para>
+
+<screen>
+192.168.100
+</screen>
+
+<para>
+Hvis post kun skal accepteres fra nogle af maskinerne på netværket,
+skrives adresserne på de enkelte godkendte maskiner. Alternativt kan
+man tillade alle maskiner i eget domæne at være "relay"-maskine ved at
+tilføje <filename>FEATURE(`relay_entire_domain`)</filename> i
+<filename>/etc/sendmail.mc</filename> og derefter køre <command>m4
+/etc/sendmail.mc /etc/sendmail.cf</command> bemærk at man skal have
+sendmail-cf pakken installeret.
+</para>
+
+<para>
+At tilpasse <command>sendmail</command>'s opsætning er i øvrigt
+et emne, der kan fremkalde nervøse trækninger og koldsved hos store voksne
+systemadministratorer. Red Hat Linux sætter <command>sendmail</command>
+ganske fornuftigt op fra starten, så med mindre du er meget videbegærlig
+eller masochistisk anlagt, vil vi foreslå dig at glemme alt om opsætning af
+<command>sendmail</command>, indtil det er absolut nødvendigt.
+Du kan med fordel erstatte Sendmail med Postfix,
+se i <XREF LINKEND="postfix">.
+</para>
+</sect2>
+
+<sect2 id="procmail">
+<title>Sortering af e-breve med procmail</title>
+<indexterm><primary>procmail</primary></indexterm>
+<para>
+Hvis du får mange e-breve ind per dag, så vil du nok hurtigt lave
+forskellige foldere til forskellige emner. F.eks. kan du lave en
+folder til hver af SSLUG diskussionslisterne, som du deltager på. 
+Et program, som du kan have meget glæde af er procmail, som
+kan sortere e-breve automatisk ned til de e-postfoldere, du har
+lavet. Henter du breve med fetchmail, så kan procmail lave sorteringen
+ud fra konfigurationsfilen <filename>~/.procmailrc</filename>.
+I eksemplet har vi mail liggende i <filename>~/mail</filename>
+kataloget, og herunder har vi forskellige filer som er brevfoldere.
+</para>
+
+<screen>
+PATH=$HOME/bin:/usr/bin:/bin:/usr/local/bin:.
+MAILDIR=$HOME/mail      # Her _skal_ procmail kunne aflevere din mail.
+DEFAULT=$MAILDIR/mbox   # Forvalgt folder til af aflevere e-breve i
+LOGFILE=$MAILDIR/.from   # Her gemmer vi en log over hvilke e-breve der kom
+LOCKFILE=$HOME/.lockmail  # Fil til at lave lås med.
+
+# REJECT: sikkert spam e-post
+# Filen ~/.procmailrc.spam indeholder da regexps der 
+# matches på brevets headere.
+# I ~/.procmailrc.spam kan således indsættes linier
+# ^Subject: .*(\$\$|sex|adult|offer)
+# som matcher det du vil slippe for. E-post, der
+# fanges af reglen gemmes i spam post-mappen
+:0
+* ? egrep -q -f $HOME/.procmailrc.spam
+spam
+
+# Første liste er mgp-listen for Magic Point programmet
+# Vi tjekker efter To eller Cc feltet er til listen mgp-users@mew.org
+# og gemmer i ~/mail/mgp
+:0
+*^(To:|Cc:).*mgp-users@mew.org
+mgp 
+
+# Dernæst har vi sslug-teknik som altid sætter "Reply-To" feltet
+:0
+*^Reply-To:.sslug-teknik@sslug.dk
+sslug-teknik
+
+# Alle breve fra brugere @imm.dtu.dk gemmer vi i IMM-folderen
+:0
+*^From:.*@imm.dtu.dk
+IMM
+
+# Vi kan også gemme en ekstra kopi af breve - dvs. brevet bliver 
+# også processeret af de efterfølgende regler.
+# Kommer der et e-brev fra statsministeren stm@stm.dk så gemmer vi lige
+# en ekstra kopi i stats-folderen
+:0c
+*^From:.*stm@stm.dk
+stats
+
+# Endelig kan vi faktisk også udføre kommandoer via mail
+# Her lader vi e-breve med emnet EJECT udføre kommandoen eject
+# og da det kun er en kopi vi udtager, så vil brevet også gå til 
+# det forvalgte brevfolder.
+
+:0c
+*^Subject:.eject
+|/usr/bin/eject      
+
+# Alle andre mails ender i default mail folderen. 
+</screen>
+
+<para>
+En lang mere restriktiv <filename>.procmailrc</filename> fil kan være 
+</para>
+
+<screen>
+PATH=$HOME/bin:/usr/bin:/bin:/usr/local/bin:.
+MAILDIR=$HOME/mail      # Her _skal_ procmail kunne aflevere din mail.
+DEFAULT=$MAILDIR/mbox   # Default folder til af aflevere mail i
+LOGFILE=$MAILDIR/.from   # Her gemmer vi en log over hvilke mail der kom
+LOCKFILE=$HOME/.lockmail  # Fil til at lave lås med.
+
+:0
+* ? egrep -q -f $HOME/.procmailrc.allow
+$DEFAULT
+
+:0
+spam
+</screen>
+
+<para>
+Alt gemmes i spam-folderen med mindre at det er tilladt ved tjek i
+forhold til filen <filename>~/.procmailrc.allow</filename>. Denne fil 
+indholder f.eks.
+</para>
+
+<screen>
+^((Resent-)?(To|Cc|Bcc|From)): .*(daisy|root|.*master)@kongeh\.dk
+^From: freshmeat daemon &lt;freshd@freshmeat\.net&gt;$
+^Sender: Security Portal Mailing List
+^Mailing-List: contact sslug-.*@sslug.dk
+^To: apacheweek@apacheweek\.com$
+^Delivered-To: mailing list announce@apache\.org
+</screen>
+
+<para>
+I dette tilfælde er det kun e-post til daisy@kongeh.dk (tilsvarende
+også root og postmaster), og de e-post lister, som daisy kender, der
+ender i <filename>$MAILDIR/mbox</filename> - alt andet ender i
+spam-folderen. Det kan anbefales at checke sin spam-folder fra tid til
+anden for at være sikker på at e-post ikke er gået galt i
+procmail-reglerne. Er du helt sikker på dine spam-regler, så kan du
+sende mail direkte til <filename>/dev/null</filename> istedet for
+spam-folderen.
+</para>
+
+<para>
+Procmail er guld værd, og <command>man procmail</command>, 
+<command>man procmailex</command> og
+<command>man procmailrc</command> er værd at
+læse. Du kan også være glad for at lave et alias <command>alias ms
+"mailstat ~/mail/.from"</command>, idet du så kan skrive
+<command>ms</command> efter at have kørt fetchmail, og du vil så få
+vist hvor mange mails og størrelsen af disse som er blevet fordelt til
+de forskellige foldere. 
+</para>
+
+</sect2>
+
+<sect2 id="kryptopost">
+<title>Kryptering af post</title>
+<indexterm><primary>Kryptering</primary></indexterm>
+<indexterm><primary>PGP</primary></indexterm>
+<indexterm><primary>GnuPG</primary></indexterm>
+<para>
+I takt med Internettets udbredelse er der kommet flere og flere mindre 
+venligsindede mennesker på nettet. Elektronisk post er desværre meget
+let at aflytte, og ønsker du brevhemmelighed må du kryptere din
+post. Kryptering er en proces hvor dine data bliver skrevet i
+kode. Krypterede breve kan kun læses af den person, de er stilet til.
+</para>
+
+<para>
+I Linux-verdenen finder der flere programmer til kryptering af
+post. Heldigvis findes der en standard for hvordan post bør krypteres, 
+og det er derfor ligegyldigt hvilket krypteringsprogram, du
+benytter. Vi har valgt at introducere GNU Privacy Guard (GPG), idet
+GPG kommer under en ægte fri licens (GNU General Public
+License). Samtidig kan GPG arbejde sammen med det anerkendte Pretty
+Good Privacy (PGP).
+</para>
+
+<para>
+GPG kan også bruges til at signere breve. En digital signatur er mere
+end en underskrift. Den digitale signatur fortæller, ud over hvem der
+er afsender, også hvornår brevet blev signeret. Endvidere bruges den
+digitale signatur til at tjekke om brevet er blevet ændret under dets
+rejse fra afsender til modtager. I skrivende stund kender forfatterne
+ikke det officielle Danmarks holdning til GPG.
+</para>
+
+<para>
+Ideen bag GPG er, at du har en offentlig og en privat nøgle. Den
+offentlige nøgle gør det muligt for alle at tjekke din signatur, som
+du fremstiller vha. din private nøgle. Når du skal kryptere post, skal 
+du først udveksle nøglepar med den person, som du ønsker at
+kommunikere med. Udvekslingen sker ofte i forbindelse med møder i
+Linux-brugerforninger.
+</para>
+
+<para>
+Du kan hente GPG fra GPG's ftp-server 
+<ulink url="ftp://ftp.gnupg.org">ftp://ftp.gnupg.org</ulink>. Selve
+installationen er lige til at gå til - nedenfor ser du hvordan.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>wget ftp://ftp.gnupg.org/pub/gcrypt/gnupg/gnupg-1.0.1.tar.gz</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput> tar xzf gnupg-1.0.1.tar.gz</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput> cd gnupg-1.0.1</userinput>
+<prompt>[daisy@linus gnupg-1.0.1]$ </prompt> <userinput> ./configure</userinput>
+[en masse klippet væk]
+<prompt>[daisy@linus gnupg-1.0.1]$ </prompt> <userinput> make</userinput>
+[en masse klippet væk]
+<prompt>[daisy@linus gnupg-1.0.1]$ </prompt> <userinput> su</userinput>
+Password: <userinput>hemlig</userinput>
+<prompt>[root@linus gnupg-1.0.1]$ </prompt> <userinput> make install</userinput>
+<prompt>[root@linus gnupg-1.0.1]$ </prompt> <userinput> exit</userinput>
+<prompt>[daisy@linus gnupg-1.0.1]$ </prompt> <userinput> cd ..</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>rm -rf gnupg-1.0.1</userinput>
+</screen>
+
+<para>
+Efter installationen er du klar til at bruge GPG. Det første, du skal
+gøre, er at generere et nøglepar.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>gpg</userinput>
+gpg: Warning: using insecure memory!
+gpg: /home/kneth/.gnupg: directory created
+gpg: /home/kneth/.gnupg/options: new options file created
+gpg: you have to start GnuPG again, so it can read the new options file
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>gpg --gen-key</userinput>
+gpg (GnuPG) 1.0.1; Copyright (C) 1999 Free Software Foundation, Inc.
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions. See the file COPYING for details.
+
+gpg: Warning: using insecure memory!
+gpg: /home/kneth/.gnupg/secring.gpg: keyring created
+gpg: /home/kneth/.gnupg/pubring.gpg: keyring created
+Please select what kind of key you want:
+   (1) DSA and ElGamal (default)
+   (2) DSA (sign only)
+   (4) ElGamal (sign and encrypt)
+Your selection? <userinput>1</userinput>
+DSA keypair will have 1024 bits.
+About to generate a new ELG-E keypair.
+              minimum keysize is  768 bits
+              default keysize is 1024 bits
+    highest suggested keysize is 2048 bits
+What keysize do you want? (1024) <userinput>1024</userinput>
+Requested keysize is 1024 bits       
+Please specify how long the key should be valid.
+         0 = key does not expire
+      &lt;n&gt;  = key expires in n days
+      &lt;n&gt;w = key expires in n weeks
+      &lt;n&gt;m = key expires in n months
+      &lt;n&gt;y = key expires in n years
+Key is valid for? (0) <userinput>0</userinput>
+Key does not expire at all
+Is this correct (y/n)? <userinput>y</userinput>
+You need a User-ID to identify your key; the software constructs the user id
+from Real Name, Comment and Email Address in this form:
+    "Heinrich Heine (Der Dichter) &lt;heinrichh@duesseldorf.de&gt;"
+
+Real name: <userinput>Daisy</userinput>
+Email address: <userinput>daisy@linus.kongeh.dk</userinput>
+Comment: 
+You selected this USER-ID:
+    "Daisy &lt;daisy@linus.kongeh.dk&gt;"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? <userinput>O</userinput>
+You need a Passphrase to protect your secret key.
+
+Enter passphrase: <userinput>DetteErHemlig!</userinput>
+Repeat passphrase: <userinput>DetteErHemlig!</userinput>
+
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
++++++++++++++++..+++++++++++++++.+++++++++++++++++++++++++++++++++++++++++
++++++++++..++++++++++.++++++++++++++++++++++++++++++++++++++++>++++++++++>
++++++....................................+++++
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+++++++++++.+++++++++++++++.++++++++++....++++++++++.+++++++++++++++.+++++++
++++.+++++++++++++++++++++++++++++++++++++++++++++.+++++++++++++++>+++++....
+..........+++++^^^
+public and secret key created and signed
+</screen>
+
+<para>
+Du bør med det samme fremstille en nøgle, som kan bruges til at
+tilbagekalde den, du netop har fremstillet. Det er vigtig, idet det kan
+ske at en eller anden finder ud af din private nøgle. En
+tilbagekaldelsesnøgle genereres vha. kommandoen <command>gpg
+--gen-revoke daisy@linus.kongeh.dk</command>. Tilbagekaldelsesnøglen
+bør opbevares et andet sted end dit hjemmekatalog, f.eks. kan du have
+den liggende på en diskette i dit pengeskab.
+</para>
+
+<para>
+Når du nu har fået genereret nøgler, er du klar til at signere
+breve. Til at begynde med vil vi antage, at du skriver brevet først,
+signerer det og til sidst indlæser det signerede brev i dit
+postprogram. Nedenstående kommandosekvens viser dig hvordan.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>cat brev</userinput>
+Kære Pingo,
+
+Du kan tror at vi har det sjovt ned GNU!
+
+Daisy
+<prompt>[daisy@linus daisy]$</prompt> <userinput>gpg --clearsign brev</userinput>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>cat brev.asc</userinput>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Kære Pingo,
+
+Du kan tror at vi har det sjovt ned GNU!
+
+Daisy
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.1 (GNU/Linux)
+Comment: For info see http://www.gnupg.org
+
+iD8DBQE4elQW60LvO+QONowRAntQAKCIvUMIsyf1US2JoHC/VKgD73Ps1gCfRvRM
+H9uEQNpfPp+AFNkP86snOVo=
+=6+k8
+-----END PGP SIGNATURE---
+</screen>
+
+<para>
+Den opmærksomme læser bemærker at det signerede brev ligger i filen
+<filename>brev.asc</filename>, dvs. der er blevet tilføjet
+<filename>.asc</filename> til det oprindelige navn.
+</para>
+
+<para>
+For at få det største udbytte af GPG bør du læse den glimrende
+brugervejledning. Den finder du på 
+<ulink url="http://www.gnupg.org/docs.html">http://www.gnupg.org/docs.html</ulink>.
+</para>
+</sect2>
+
+
+</sect1>
+</chapter>

@@ -1,0 +1,701 @@
+<CHAPTER id="databaser">
+<!--
+Databaser
+	SQL
+	PostgreSQL
+		Shell-script
+		PHP
+		Perl
+		Python
+	(Andre databaser)
+
+CHANGELOG
+2000-04-09
+ Shell-script rettet småting, flere stikord til shell
+ Symbion ændret til DKUUG
+
+2000-04-05:
+ Shell-script tilføjet
+ Startet på Python
+
+2000-04-01:
+ Første release af databaser.sgml
+-->
+
+<TITLE>Databaser</TITLE>
+<INDEXTERM><PRIMARY>Databaser</PRIMARY></INDEXTERM>
+<PARA>
+Linux er på grund af sin stabilitet, et godt valg som databaseserver.
+Inden for databaser er
+de facto standarden sproget SQL, hvor data kan tilgås fra tekst-,
+grafisk-, og web-baserede løsninger samtidigt.
+</PARA>
+
+<PARA>
+De to absolut mest brugte SQL-databaser på Linux er PostgreSQL og MySQL.
+Til kommercielt brug koster MySQL en smule, men til privat brug er
+både PostgreSQL og MySQL gratis. For begge databaser gælder at du frit
+kan vælge de programmeringssprog og omgivelser du kender fra Linux.
+Perl, PHP, Python, C, Tcl/Tk, Java og foretrækker du shell-scripts, er
+det også en mulighed.
+</PARA>
+
+<PARA>
+Da MySQL kun fås i Open Source i en ældre version, har vi valgt at
+bruge PostgreSQL i de senere eksempler. Til læsning og skrivning af
+data er MySQL en lille smule hurtigere end PostgreSQL, men 'prisen'
+er så at MySQL mangler transactions (roll-back).
+</PARA>
+
+<PARA>
+De helt store kommercielle SQL-database producenter, Oracle, Sybase, 
+Informix, IBM med DB2 og Inprise med InterBase er også kommet med en
+Linux-version af deres SQL-databaser. Programmeringsmulighederne er de
+samme, så det er nemt
+at flytte sin applikation den ene eller den anden vej, eller have et
+blandet miljø. Disse databaser på Linux anvendes i høj grad i
+produktionsmiljø, og i særdeleshed i udviklingsmiljø.
+</PARA>
+
+<SECT1 id="db-sql">
+<TITLE>SQL</TITLE>
+<INDEXTERM><PRIMARY>SQL</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Databaser</PRIMARY><SECONDARY>SQL</SECONDARY></INDEXTERM>
+
+<PARA>
+<ACRONYM>SQL</ACRONYM> er en forkortelse for Structured Query Language og er et generelt
+sprog til at tilgå data i en SQL-database.  De basale kommandoer i SQL
+er nemme at lære, så man kommer hurtigt igang med sin opgave.  Har man
+kun een tabel at arbejde med, er SQL lige så nemt at bruge som andre
+konventionelle databaser, men når man ønsker at hente data fra flere tabeller
+samtidigt, så er der rigtigt mange fordele ved SQL.  Har du prøvet at
+arbejde med <ACRONYM>ASCII</ACRONYM> filer der opdateres af flere personer
+samtidigt, så kender du til problemer som SQL-databaser løser for dig.
+</PARA>
+
+<PARA>
+Et nemt forståeligt eksempel med to tabeller, eller 'relationelle
+tabeller' som det retteligt hedder, er en tabel med firmaer og en
+tabel med postnumre.  For at sikre os at alle bynavne er stavet på
+samme måde, er postnummer og bynavn i en tabel for sig.  I tabellen
+med firmaer er til gengæld kun angivet postnummeret og ikke bynavnet.
+</PARA>
+
+<PARA>
+Skematisk kunne tabellerne se således ud
+</PARA>
+
+<TABLE ID="db-firma">
+<TITLE>Firma-tabel</TITLE>
+<TGROUP cols=3 align="char">
+<THEAD><ROW>
+ <ENTRY>FirmaNavn</ENTRY>
+ <ENTRY>Vej</ENTRY>
+ <ENTRY>PostNr</ENTRY>
+</ROW></THEAD>
+<TBODY>
+<ROW>
+ <ENTRY>Vagabondos</ENTRY>
+ <ENTRY>Tagensvej 100</ENTRY>
+ <ENTRY>2200</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>DKUUG</ENTRY>
+ <ENTRY>Fruebjergvej 3</ENTRY>
+ <ENTRY>2100</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>Niels Bohr Institutet</ENTRY>
+ <ENTRY>Blegdamsvej 17-21</ENTRY>
+ <ENTRY>2100</ENTRY>
+</ROW>
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<TABLE ID="db-postnumre">
+<TITLE>Postnumre-tabel</TITLE>
+<TGROUP cols=2 align="char">
+<THEAD><ROW>
+ <ENTRY>PostNr</ENTRY>
+ <ENTRY>ByNavn</ENTRY>
+</ROW></THEAD>
+<TBODY>
+<ROW>
+ <ENTRY>2100</ENTRY>
+ <ENTRY>København Ø</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>2200</ENTRY>
+ <ENTRY>København N</ENTRY>
+</ROW>
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<PARA>
+Opgaven er nu at få en liste af alle firmaer med fuld adresse.
+Der er en relation i mellem de to tabeller ved feltet
+<DATABASE>PostNr</DATABASE> og SQL-kommandoen er så:
+<COMMAND>SELECT FirmaNavn,Vej,PostNr,Bynavn FROM Firma,Postnumre WHERE Firma.PostNr=Postnumre.PostNr</COMMAND>
+Resultatet af ovenstående ser således ud:
+</PARA>
+
+<TABLE ID="db-resultat">
+<TITLE>Søgeresultat: Firma+Postnumre</TITLE>
+<TGROUP cols=4 align="char">
+<THEAD><ROW>
+ <ENTRY>FirmaNavn</ENTRY>
+ <ENTRY>Vej</ENTRY>
+ <ENTRY>PostNr</ENTRY>
+ <ENTRY>ByNavn</ENTRY>
+</ROW></THEAD>
+<TBODY>
+<ROW>
+ <ENTRY>Vagabondos</ENTRY> 
+ <ENTRY>Tagensvej 100</ENTRY>
+ <ENTRY>2200</ENTRY> 
+ <ENTRY>København N</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>DKUUG</ENTRY> 
+ <ENTRY>Fruebjergvej 3</ENTRY>
+ <ENTRY>2100</ENTRY> 
+ <ENTRY>København Ø</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>Niels Bohr Institutet</ENTRY> 
+ <ENTRY>Blegdamsvej 17-21</ENTRY>
+ <ENTRY>2100</ENTRY> 
+ <ENTRY>København Ø</ENTRY>
+</ROW>
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<PARA>
+Det der skete med SQL-kommandoen, var at der blev udført en 'join'
+imellem de to tabeller, således at postnumrene blev parret fra hver
+tabel.
+</PARA>
+
+<PARA>
+Dette eksempel er selvfølgelig nemt at lave med
+<ACRONYM>ASCII</ACRONYM> tekst-filer,
+men prøv at forestil dig at der var tre eller flere tabeller.
+</PARA>
+
+<PARA>
+Det vil være for vidt at komme ind på alle de SQL-kommandoer man kan
+lave i denne bog, da der findes mange gode bøger om emnet på dansk, og
+ikke mindst på engelsk. Er bøger uden for rækkevidde, er der god hjælp
+at hente på nettet.  Se MySQL og PostgreSQL's hjælpesider.
+</PARA>
+
+<PARA>
+Læsning af data er nok den mest brugte SQL-kommando, så den bliver
+lige beskrevet i korte træk.  I sin simpleste form kan man skrive
+<COMMAND>SELECT * FROM Firma</COMMAND>, der giver alle felter fra
+tabellen 'Firma' i tilfældig rækkefølge.  Er det kun 'FirmaNavn' og
+'PostNr' man ønsker udskrevet, skrives <COMMAND>SELECT
+FirmaNavn,PostNr FROM Firma</COMMAND>.  Data kommer i tilfældig
+rækkefølge, så der må lige sortering på <COMMAND>SELECT
+FirmaNavn,PostNr FROM Firma ORDER BY PostNr</COMMAND>.
+</PARA>
+
+<PARA>
+Senere i bogen er nogle eksempler på hvordan man praktisk bruger SQL
+til noget der har med rigtige brugere at gøre.  Til disse eksempler
+anvendes følgende liste af SQL-kommandoer som basis, og listen giver
+samtidigt de mest brugte SQL-kommandoer.  Kommandoerne gør følgende:
+</PARA>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>Opretter en tabel med to felter</PARA></LISTITEM>
+<LISTITEM><PARA>Tilføjer en post til tabellen</PARA></LISTITEM>
+<LISTITEM><PARA>Retter en post i tabellen</PARA></LISTITEM>
+<LISTITEM><PARA>Udskriver alle poster</PARA></LISTITEM>
+<LISTITEM><PARA>Sletter en post</PARA></LISTITEM>
+<LISTITEM><PARA>Sletter tabellen</PARA></LISTITEM>
+</ITEMIZEDLIST>
+
+<SCREEN>
+CREATE TABLE linuxbog(kapitel INT, titel VARCHAR(40));
+INSERT INTO linuxbog(kapitel, titel) VALUES(0, 'Indledning');
+UPDATE linuxbog SET kapitel=1 WHERE kapitel=0;
+SELECT * FROM linuxbog ORDER BY kapitel;
+DELETE FROM linuxbog WHERE kapitel=1;
+DROP TABLE linuxbog;
+</SCREEN>
+
+<PARA>
+De viste SQL-kommandoer er helt basale og virker med alle SQL-databaser.
+</PARA>
+
+<PARA>
+Læs mere om SQL-kommandoer på
+<ULINK URL="http://w3.one.net/~jhoffman/sqltut.htm">http://w3.one.net/~jhoffman/sqltut.htm</ULINK>.
+</PARA>
+
+</SECT1><!-- db-sql -->
+
+<SECT1 id="db-pgsql">
+<TITLE>PostgreSQL</TITLE>
+<INDEXTERM><PRIMARY>PostgreSQL</PRIMARY></INDEXTERM>
+
+<PARA>
+PostgreSQL er den mest avancerede Open Source SQL-database der findes
+til Linux.  PostgreSQL startede som et studieprojekt, og har udviklet
+sig til fuldt professionel database med alle de avancerede teknologier
+som kræves idag: views, triggers, stored-procedures, transactions
+sub-select etc.
+</PARA>
+
+<PARA>
+Installation af PostgreSQL fra en RPM-fil er den nemmeste måde at installere på.
+Efter installationen startes PostgreSQL.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh postgresql-7.*.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh postgresql-server*.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/postgresql start</USERINPUT> 
+</SCREEN>
+
+<PARA>
+En nem måde at bruge PostgreSQL fra en web-server er ved at
+oprette en bruger med navnet <FILENAME>nobody</FILENAME>.
+Apache starter webserverne som brugeren <FILENAME>nobody</FILENAME>
+og så behøver
+man ikke angive password i sine web-scripts, idet PostgreSQL
+ser at man er <FILENAME>nobody</FILENAME> når man åbner en database.
+</PARA>
+
+<PARA>
+Før <FILENAME>nobody</FILENAME> kan få adgang skal <FILENAME>nobody</FILENAME>
+oprettes som PostgreSQL bruger.
+Login som brugeren <FILENAME>postgres</FILENAME> og opret brugeren
+<FILENAME>nobody</FILENAME>.
+Kender du ikke <FILENAME>postgres</FILENAME> passwordet, kan det gøres således:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>su - postgres</USERINPUT>
+<PROMPT>[postgres@linus /pgsql]$ </PROMPT><USERINPUT>createuser nobody</USERINPUT>
+</SCREEN>
+
+<PARA>
+<FILENAME>nobody</FILENAME> skal også have en database.
+Login som <FILENAME>nobody</FILENAME>.
+Ved ikke at angive databasenavnet <DATABASE>nobody</DATABASE> er det
+default navn når <COMMAND>createdb</COMMAND> køres.
+Kender du ikke <FILENAME>nobody</FILENAME> passwordet, kan det gøres således:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>su - nobody</USERINPUT>
+<PROMPT>[nobody@linus /]$ </PROMPT><USERINPUT>createdb</USERINPUT>
+</SCREEN>
+
+<PARA>
+Databasen kan nu anvendes med de ganske få kommandoer SQL har.  Der er
+få forskelle i de forskellige SQL-databaser der findes, men du lærer
+hurtigt de få forskelle der er, hvis du skifter over til en anden
+database.  Her er brugt SQL-kommandoer som virker med alle de
+SQL-databaser som du vil komme i nærheden af.  Følgende liste af
+kommandoer opretter en tabel, indsætter en post, retter den samme post,
+udlæser indholdet af tabellen, sletter en post og sletter tabellen.
+</PARA>
+
+<SCREEN>
+-- fil: create.sql
+-- PostgreSQL/LinuxBog
+-- Kør dette script:
+--  psql nobody &lt; create.sql
+CREATE TABLE linuxbog(kapitel INT, titel VARCHAR(40));
+INSERT INTO linuxbog(kapitel, titel) VALUES(0, 'Indledning');
+UPDATE linuxbog SET kapitel=1 WHERE kapitel=0;
+SELECT * FROM linuxbog ORDER BY kapitel;
+DELETE FROM linuxbog WHERE kapitel=1;
+DROP TABLE linuxbog;
+</SCREEN>
+
+<PARA>
+SQL-kommandoerne kan nemt indlæses fra en fil med kommandoen
+</PARA>
+
+<SCREEN>
+<PROMPT>[nobody@linus /]$ </PROMPT><USERINPUT>psql nobody &lt; create.sql</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvis du lige undlader at slette posterne (DELETE) og tabellen (DROP), 
+kan eksemplet bruges sammen med de efterfølgende scripts i Shell, PHP, Perl og Python.
+Bemærk at hver linie er afsluttet med semi-kolon ';'.
+Semi-kolon bruges kun med programmet <FILENAME>psql</FILENAME> og ikke i script og programmeringssprogene.
+</PARA>
+
+<PARA>
+Kommandolinie programmet <COMMAND>psql</COMMAND> kan anvendes til meget,
+men skal man
+have en rigtig applikation, skal man bruge et script-sprog eller
+programmeringssprog.  Linux har et bredt udvalg af forskellige sprog
+der kan anvende de SQL-databaser der findes til Linux.  Næsten alle
+sprog kan bruges sammen med alle databaserne.  Vi har her valgt at
+bruge PostgreSQL som basis, og vise eksempler på hvordan man anvender
+disse sammen med:
+</PARA>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>Shell-programmering <XREF LINKEND="db-pgsql-shell"></PARA></LISTITEM>
+<LISTITEM><PARA><APPLICATION><ACRONYM>PHP</ACRONYM></APPLICATION> <XREF LINKEND="db-pgsql-php"></PARA></LISTITEM>
+<LISTITEM><PARA><APPLICATION><ACRONYM>Perl</ACRONYM></APPLICATION> <XREF LINKEND="db-pgsql-perl"></PARA></LISTITEM>
+<LISTITEM><PARA><APPLICATION>Python</APPLICATION> <XREF LINKEND="db-pgsql-python"></PARA></LISTITEM>
+</ITEMIZEDLIST>
+
+<PARA>
+I <FILENAME>/usr/doc/</FILENAME> har du hele PostgreSQL-manualen
+<ULINK URL="file:/usr/doc/postgresql-6.5.2/postgres/">file:/usr/doc/postgresql-6.5.2/postgres/</ULINK>.
+Har du en anden version af PostgreSQL, så start her 
+<ULINK URL="file:/usr/doc/">file:/usr/doc/</ULINK>.
+Ellers ligger manualen også på nettet 
+<ULINK URL="http://www.postgresql.org/docs/user/index.html">http://www.postgresql.org/docs/user/index.html</ULINK>.
+</PARA>
+
+<PARA>
+PostgreSQL har sin hjemmeside på
+<ULINK URL="http://www.postgresql.org/">http://www.postgresql.org/</ULINK>.
+</PARA>
+
+<SECT2 id="db-pgsql-shell">
+<TITLE>Shell programmering</TITLE>
+<INDEXTERM>
+ <PRIMARY>Shell programmering</PRIMARY>
+ <SECONDARY>PostgreSQL</SECONDARY>
+</INDEXTERM>
+<INDEXTERM>
+ <PRIMARY>CGI-script</PRIMARY>
+ <SECONDARY>PostgreSQL</SECONDARY>
+</INDEXTERM>
+<INDEXTERM> 
+ <PRIMARY>PostgreSQL</PRIMARY>
+ <SECONDARY>Shell programmering</SECONDARY>
+</INDEXTERM>
+<INDEXTERM> 
+ <PRIMARY>Apache</PRIMARY>
+ <SECONDARY>CGI-script</SECONDARY>
+</INDEXTERM>
+
+<PARA>
+Shell-programmer er ikke det mest avancerede script-sprog, men man kan hurtigt
+få lavet lidt database alligevel.
+Læs også <XREF LINKEND="shell"> om Shell-programmering.
+For at køre de følgende eksempler, kræves kun at PostgreSQL er installeret.
+<COMMAND>psql</COMMAND> har en option så man kan skrive
+<ACRONYM>SQL</ACRONYM>-kommandoer som parameter direkte fra kommandolinien.
+</PARA>
+
+<SCREEN>
+<PROMPT>[nobody@linus /]# </PROMPT><USERINPUT>psql nobody -c "SELECT * FROM linuxbog"</USERINPUT>
+</SCREEN>
+
+<PARA>
+En anden option giver output som HTML.
+Har du Apache installeret kan der nu laves et simpelt udtræk til web, ved at
+lægge et lille shell-script i <FILENAME>cgi-bin</FILENAME>.
+Apache kan have dette sub-dir forskellige steder, så den nemmeste måde at
+finde det er med kommandoen <COMMAND>locate cgi-bin</COMMAND>.
+Placer scriptet <FILENAME>pgsql.sh</FILENAME> i <FILENAME>cgi-bin</FILENAME>
+og gør det eksekverbart med kommandoen <COMMAND>chmod +x pgsql.sh</COMMAND>.
+</PARA>
+
+<SCREEN>
+#!/bin/sh
+echo Content-type: text/html
+echo
+echo "&lt;HTML&gt;&lt;TITLE&gt;PostgreSQL CGI&lt;/TITLE&gt;"
+echo "&lt;H1&gt;PostgreSQL CGI&lt;/H1&gt;"
+psql nobody -H -c "SELECT * FROM linuxbog"
+echo "&lt;/HTML&gt;"
+</SCREEN>
+
+<PARA>
+CGI-scriptet kan nu startes fra din browser med URL'en
+<ULINK URL="http://localhost/cgi-bin/pgsql.sh">http://localhost/cgi-bin/pgsql.sh</ULINK>.
+Til test kan scriptet også køres fra kommandolinien:
+<COMMAND>./pgsql.sh</COMMAND> hvorved output kommer ud på skærmen.
+</PARA>
+
+<PARA>
+Ovenstående SQL-kommando er nok ikke lige det du vil,
+men nok mere noget i retning af:
+</PARA>
+
+<SCREEN>
+psql nobody -H -T "cellspacing='0'" -c "SELECT kapitel AS \"Bog kapitel\", titel FROM linuxbog ORDER BY kapitel DESC LIMIT 10 OFFSET 0"
+</SCREEN>
+
+<PARA>
+I ovenstående kommer der en pænere ramme uden om med option 
+<OPTION>-T "cellspacing='0'"</OPTION>.
+Så er hver kolonne angivet, f.eks. <OPTION>kapitel</OPTION>.
+Typisk har hver kolonne et forkortet navn, hvilket ikke ser godt ud i en tabel.
+Ved at skrive <OPTION>AS \"Bog kapitel\"</OPTION> får kolonnen et andet navn.
+<OPTION>ORDER BY kapitel DESC</OPTION> sortere på 'kapitel' og DESC gør det i modsat orden.
+<OPTION>LIMIT 10</OPTION> gør at der kun kommer 10 rækker,
+og <OPTION>OFFSET 0</OPTION> fortæller at der skal startes med række 0.
+</PARA>
+
+<PARA>
+Shell-scripts er gode til små simple test, men man skal nok holde sig fra at
+lave større programmer.
+Muligheden er der, og det virker!
+I de næste afsnit vises det samme eksempel i PHP, Perl og Python, som er bedre til
+at håndtere de større programmer.
+</PARA>
+</SECT2><!-- db-pgsql-shell -->
+
+<SECT2 id="db-pgsql-php">
+<TITLE>PHP</TITLE>
+<INDEXTERM><PRIMARY>PHP</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>PostgreSQL</PRIMARY><SECONDARY>PHP</SECONDARY></INDEXTERM>
+
+<PARA>
+PHP er rigtigt godt sprog til fremstilling af web-applikationer.
+Har du lidt erfaring med programmering i andre sprog, kommer du hurtigt igang med PHP og PostgreSQL.
+</PARA>
+
+<PARA>
+<APPLICATION>PHP</APPLICATION> med <APPLICATION>PostgreSQL</APPLICATION> interface installeres nemmest fra RPM-filer.
+Mandrake 7.0 har modulerne færdigpakket, som kan hentes på
+<ULINK URL="http://rpmfind.net/linux/RPM/mandrake/7.0/Mandrake/RPMS/System_Environment_Daemons.html">http://rpmfind.net/linux/RPM/mandrake/7.0/Mandrake/RPMS/System_Environment_Daemons.html</ULINK>.
+PHP i en nyere version kan oftest findes hos Troels Arvin
+<ULINK URL="http://www.fsr.ku.dk/people/troels/rpms/php/">http://www.fsr.ku.dk/people/troels/rpms/php/</ULINK>.
+<APPLICATION>PostgreSQL</APPLICATION> har du installeret, så du skal kun hente følgende:
+</PARA>
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>apache-1.3.9-17mdk.rpm 2.6MB</PARA></LISTITEM>
+<LISTITEM><PARA>mod_php3-3.0.13-6mdk.rpm 850KB</PARA></LISTITEM>
+<LISTITEM><PARA>mod_php3-pgsql-3.0.13-6mdk.rpm 30KB</PARA></LISTITEM>
+</ITEMIZEDLIST>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh apache-1.3.9-17mdk.i586.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh mod_php3-3.0.13-6mdk.i586.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh mod_php3-pgsql-3.0.13-6mdk.i586.rpm</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvis ikke <APPLICATION>Apache</APPLICATION> er startet nu, så gør det.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/etc/rc.d/init.d/httpd start</USERINPUT>
+</SCREEN>
+
+<PARA>
+Eksemplet <FILENAME>pgsql.php3</FILENAME> bruger den tabel der blev beskrevet i <XREF LINKEND="db-sql"> om SQL.
+</PARA>
+
+<SCREEN>
+&lt;html&gt;&lt;head&gt;&lt;TITLE&gt;LinuxBog PostgreSQL PHP&lt;/TITLE&gt;&lt;/head&gt;
+&lt;?  // Her skiftes der fra HTML til PHP-kode med tegnet '&lt;?'
+  // Åben en forbindelse til PostgreSQL
+  // Ved ikke at angive brugernavn, er det 'nobody' der er brugeren
+  $conn = pg_connect("");
+  // Udfør en læsning fra tabellen 'linuxbog'
+  $res = pg_exec($conn, "SELECT * FROM linuxbog ORDER BY kapitel");
+  // For alle poster (linier), udskriv indholdet
+  for ($n = 0; $n &lt; pg_numrows($res); $n++ ) {
+    $post = pg_fetch_array($res, $n);
+    print( $post["kapitel"]." ".$post["titel"]."&lt;br&gt;\n" );
+  }
+  // Frigiv hukommelse
+  pg_freeresult($res);
+  // Luk forbindelsen
+  pg_close($conn);
+?&gt;&lt;/html&gt;
+</SCREEN>
+
+<PARA>
+Resultatet af ovenstående ser således ud i en browser
+</PARA>
+
+<SCREEN>
+1 Indledning
+</SCREEN>
+
+<PARA>
+PHP er Open Source og kan hentes på
+<ULINK URL="http://dk.php.net/">http://dk.php.net/</ULINK>.
+</PARA>
+</SECT2><!-- db-pgsql-php -->
+
+<SECT2 id="db-pgsql-perl">
+<TITLE>Perl</TITLE>
+<INDEXTERM><PRIMARY>Perl</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>PostgreSQL</PRIMARY><SECONDARY>Perl</SECONDARY></INDEXTERM>
+<PARA>
+Perl er effektivt programmeringssprog til mange ting.  Perl anvendtes
+i starten ofte til behandling af ASCII tekst-filer, men efter de mange
+år Perl har været fremme, kan man arbejde direkte med databaser.  Om
+det drejer sig om et kommandolinie-program eller en web-applikation,
+så kan Perl klare den opgave.  
+Læs også <XREF LINKEND="perl-SECT1"> om Perl.
+</PARA>
+
+<PARA>
+Ved en normal Linux-installation får du automatisk installeret Perl.
+Der findes mange moduler til Perl, så du får ikke dem alle installeret.
+For at bruge PostgreSQL fra Perl, kræves at du installere <ACRONYM>DBI</ACRONYM> og <ACRONYM>DBD-Pg</ACRONYM>.
+Det forudsættes at PostgreSQL er installeret.
+Modulerne kan hentes fra 
+<ULINK URL="http://sunsite.auc.dk/CPAN/modules/by-category/07_Database_Interfaces">http://sunsite.auc.dk/CPAN/modules/by-category/07_Database_Interfaces</ULINK>. Dernæst finder du de to pakker her:
+<INDEXTERM><PRIMARY>Perl</PRIMARY><SECONDARY>DBI</SECONDARY></INDEXTERM>
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><PARA>/DBI/DBI-1.13.tar.gz 160KB</PARA></LISTITEM>
+<LISTITEM><PARA>/DBD/DBD-Pg-0.93.tar.gz 40KB</PARA></LISTITEM>
+</ITEMIZEDLIST>
+
+Installationen er meget nem og står beskrevet i begge pakker, men lad
+os lige tage den med her for en sikkerheds skyld.
+</PARA>
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>tar xzvf DBI-1.13.tar.gz</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cd DBI-1.13</USERINPUT>
+<PROMPT>[root@linus DBI-1.13]# </PROMPT><USERINPUT>perl Makefile.PL</USERINPUT>
+<PROMPT>[root@linus DBI-1.13]# </PROMPT><USERINPUT>make</USERINPUT>
+<PROMPT>[root@linus DBI-1.13]# </PROMPT><USERINPUT>make test</USERINPUT>
+<PROMPT>[root@linus DBI-1.13]# </PROMPT><USERINPUT>make install</USERINPUT>
+</SCREEN>
+
+<PARA>
+Fremgangsmåden er næsten den samme for DBD-Pg-0.93.tar.gz.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>tar xzvf DBD-Pg-0.93.tar.gz</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cd DBD-Pg-0.93</USERINPUT>
+<PROMPT>[root@linus DBD-Pg-0.93]# </PROMPT><USERINPUT>export POSTGRES_INCLUDE=/usr/include/pgsql</USERINPUT>
+<PROMPT>[root@linus DBD-Pg-0.93]# </PROMPT><USERINPUT>export POSTGRES_LIB=/usr/lib/pgsql</USERINPUT>
+<PROMPT>[root@linus DBD-Pg-0.93]# </PROMPT><USERINPUT>perl Makefile.PL</USERINPUT>
+<PROMPT>[root@linus DBD-Pg-0.93]# </PROMPT><USERINPUT>make</USERINPUT>
+<PROMPT>[root@linus DBD-Pg-0.93]# </PROMPT><USERINPUT>make test</USERINPUT>
+<PROMPT>[root@linus DBD-Pg-0.93]# </PROMPT><USERINPUT>make install</USERINPUT>
+</SCREEN>
+
+<PARA>
+Her er et lille eksempel i Perl der læser fra PostgreSQL.  Eksemplet
+bruger den tabel der blev oprettet i 
+<XREF LINKEND="db-pgsql"> om PostgreSQL.
+Tabellen <DATABASE>linuxbog</DATABASE> åbnes og alle poster udskrives.
+</PARA>
+<SCREEN>
+#!/usr/bin/perl
+# Inkluder DBI-modulet
+use DBI;
+# Åben en DatabaseHandle til PostgreSQL
+$dbh = DBI-&gt;connect("DBI:Pg:dbname=nobody");
+# Forbered en en SQL-kommando for læsning af een tabel
+$sth = $dbh-&gt;prepare("SELECT * FROM linuxbog ORDER BY kapitel");
+# Udfør SQL-kommandoen
+$sth-&gt;execute;
+# For alle poster (linier), udskriv indholdet
+while (($kapitel,$titel) = $sth-&gt;fetchrow) {
+  print "$kapitel $titel\n";
+}
+# Nedlæg StatementHandle
+$sth-&gt;finish;
+# Luk forbindelsen til PostgreSQL
+$dbh-&gt;disconnect;
+</SCREEN>
+
+<PARA>
+DBI og DBD har mange flere kommandoer som kan findes i online-manualen
+</PARA>
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>perldoc DBI</USERINPUT>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>perldoc DBI::FAQ</USERINPUT>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>perldoc DBD::Pg</USERINPUT>
+</SCREEN>
+
+<PARA>
+Perl har hjemmesiden
+<ULINK URL="http://www.perl.com/">http://www.perl.com/</ULINK>
+og
+<ULINK URL="http://www.perl.org/">http://www.perl.org/</ULINK>
+</PARA>
+
+</SECT2><!-- db-pgsql-perl -->
+
+<SECT2 ID="db-pgsql-python">
+<TITLE>Python</TITLE>
+<INDEXTERM><PRIMARY>Python</PRIMARY><SECONDARY>PostgreSQL</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>PostgreSQL</PRIMARY><SECONDARY>Python</SECONDARY></INDEXTERM>
+
+<PARA>
+Python er et af de nyere fortolkede sprog der vinder kraftigt frem.
+I <XREF LINKEND="python-sect1"> står mere om Python, så dette
+afsnit vil kun berøre Python's forbindelse til PostgreSQL.
+</PARA>
+
+<PARA>
+For at bruge Python sammen med PostgreSQL skal du først have
+installeret selve Python, og dernæst et PostgreSQL-modul
+til Python.
+Python kommer med de fleste distributioner og måske allerede
+installeret på din maskine. PostgreSQL-modulet findes sammen
+med PostgreSQL, f.eks. her: 
+<ULINK URL="ftp://ftp.sunsite.auc.dk/disk1/www.postgresql.org/pub/binary/v7.0/redhat-RPM/RPMS/redhat-6.x/">ftp://ftp.sunsite.auc.dk/disk1/www.postgresql.org/pub/binary/v7.0/redhat-RPM/RPMS/redhat-6.x/</ULINK>.
+Installationen er følgende:
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh python-1.5.1*.rpm</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>rpm -ivh postgresql-python-7*.rpm</USERINPUT>
+</SCREEN>
+
+<PARA>
+Her er et lille eksempel i Python der læser fra PostgreSQL.  Eksemplet
+bruger den tabel der blev oprettet i
+<XREF LINKEND="db-pgsql"> om PostgreSQL.
+Tabellen <DATABASE>linuxbog</DATABASE> åbnes og alle poster udskrives.
+</PARA>
+
+<SCREEN>
+#!/usr/bin/python
+# Inkluder fra postgresql (pg) modulet
+from pg import DB
+# Åbne en forbindelse til databasen "nobody"
+dbc = DB("nobody")
+# Udfør SQL kommando
+dbqo = dbc.query("SELECT * FROM linuxbog ORDER BY kapitel")
+# For alle poster (linier), udskriv kapitel og titel
+for data in dbqo.dictresult():
+    print str(data["kapitel"]) + " : " + data["titel"]
+# Luk forbindelsen til databasen
+dbc.close()
+</SCREEN>
+
+<PARA>
+Gem filen som <FILENAME>pgsql.py</FILENAME> og gør den eksekverbar
+med kommandoen <COMMAND>chmod + pgsql.py</COMMAND>.
+Og prøv så programmet.
+</PARA>
+
+<SCREEN>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>./pgsql.py</USERINPUT>
+</SCREEN>
+
+<PARA>
+Læs mere om Python i <XREF LINKEND="python-sect1"> og på hjemmesiden
+<ULINK URL="http://www.python.org/">http://www.python.org/</ULINK>.
+</PARA>
+
+</SECT2><!-- db-pgsql-python -->
+</SECT1><!-- db-pgsql -->
+<!-- <SECT1 id="db-mysql"></SECT1> -->
+<!-- <SECT1 id="db-andre"> <TITLE>Andre databaser</TITLE> <INDEXTERM><PRIMARY>DBM</PRIMARY></INDEXTERM> </SECT1> -->
+</CHAPTER><!-- databaser -->
+
