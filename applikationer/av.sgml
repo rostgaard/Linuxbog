@@ -2017,7 +2017,7 @@ session hvor disse drivere anvendes f.eks. kan se ud.</para>
 som skal være oprettet som major 171, minor 0, og med passende ejer og
 rettigheder:</para>
 <screen>
-[root@ripley madsdyd]# ls -l /dev/raw1394
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>ls -l /dev/raw1394</userinput>
 crw-r--r--    1 madsdyd  madsdyd  171,   0 mar 29 21:34 /dev/raw1394
 </screen>
 
@@ -2026,9 +2026,9 @@ kan f.eks. se sådan ud, når man gør det manuelt (som sædvanligt kan
 moduler autoloades - se andetsteds for information om dette):</para>
 
 <screen>
-[root@ripley madsdyd]# modprobe raw1394
-[root@ripley madsdyd]# modprobe ohci1394
-[root@ripley madsdyd]# tail /var/log/messages
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>modprobe raw1394</userinput>
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>modprobe ohci1394</userinput>
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>tail /var/log/messages</userinput>
 May  1 15:43:53 ripley kernel: raw1394: /dev/raw1394 device initialized
 May  1 15:43:59 ripley kernel: ohci1394: $Revision$ Ben Collins ...
 May  1 15:43:59 ripley kernel: PCI: Found IRQ 10 for device 02:0f.2
@@ -2042,7 +2042,7 @@ May  1 15:43:59 ripley kernel: ohci1394_0: OHCI-1394 1.0 (PCI): IRQ=[10] ...
 om den ikke blev loaded eksplicit:</para>
 
 <screen>
-[root@ripley madsdyd]# lsmod | head
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>lsmod | head</userinput>
 Module                  Size  Used by    Tainted: P
 ohci1394               15904   0  (unused)
 raw1394                 6832   0  (unused)
@@ -2074,7 +2074,7 @@ Kørsel af <command>romtest</command> kan f.eks. se sådan her ud (når
 der ikke er nogen enheder tilsluttet Firewire bussen):</para>
 
 <screen>
-[root@ripley madsdyd]# romtest
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>romtest</userinput>
 Librom1394 Test Report
 =================================================
 
@@ -2154,7 +2154,7 @@ nogen pakketab. Jeg har dog aldrig selv oplevet dette, men har set det
 beskrevet. For nogen er løsningen at starte en seperat process der
 løbende syncer disken. Det kan man f.eks. gøre ved at skrive</para>
 <screen>
-[madsdyd@ripley madsdyd 61%]$ while : ; do sleep 1 && sync ; done
+<prompt>[madsdyd@ripley madsdyd 61%]$</prompt> <userinput>while : ; do sleep 1 && sync ; done</userinput>
 </screen>
 <para>i en xterm eller lignende (hvis man bruger en anden shell end
 bash er syntaxen lidt anderledes). Dette vil synce disken omtrent
@@ -2321,8 +2321,8 @@ installere programmet manualt, men det er et lille program, og hurtigt
 oversat og installeret.</para>
 
 <para>mjpegtools pakken indeholder endvidere et værktøj kaldet
-"lav2divx", der angiveligt skulle kunne bruges til at konvertere til
-aiv/divx format. Jeg har dog ikke testet det.</para>
+<command>lav2divx</command>, der angiveligt skulle kunne bruges til at
+konvertere til aiv/divx format. Jeg har dog ikke testet det.</para>
 
 </sect3>
 
@@ -2393,9 +2393,12 @@ rettigheder til nogen af de teknikker programmet anvender. Han
 forsætter dog tilsyneladende udviklingen på programmet, nu under et
 nyt navn, nemlig Cinelerra (se <xref linkend="cinelerra">). Under
 Mandrake 8.2 kan man installere pakken "bcast" for at få adgang til
-Broadcast 2000 - jeg er faktisk ikke sikker på hvor kildekoden til
-Broadcast 2000 er henne, men hvis man vil igang med kildekoden til
-Broadcast 2000 kan man lige så godt kigge på Cinelerra.</para>
+Broadcast 2000. På <ulink
+url="http://gajda.dk/">http://gajda.dk/</ulink> kan man downloade
+kildekoden til Broadcast 2000, sammen med et patch der blandt andet
+giver understøttelse af OpenDivx og Vorbis. Der er også instruktioner
+i at oversætte det. Hvis man vil igang med kildekoden til
+Broadcast 2000 kan nok også godt kigge på Cinelerra.</para>
 
 <para>Hvis man kan finde ud af grænsefladen har Broadcast 2000 mange
 styrker. Eksempelvis kan det bruge plugins fra Gimp til at lave
@@ -2575,7 +2578,30 @@ strømme til Video CD'er.</para>
 <indexterm><primary>VideoCD</primary></indexterm>
 <indexterm><primary>mjpegtools</primary></indexterm>
 
-<para>Se <command>lav2mpeg</command> i <xref linkend="videoreg-konvertering-mjpegtools">.</para>
+<para>Se <command>lav2mpeg</command> i <xref
+linkend="videoreg-konvertering-mjpegtools">. Det er ret nemt at
+konvertere sine strømme til forskellige VideoCD formater, såfremt man
+har dem i et format mjpegtools kan håndtere. For de bedre opløsninger,
+er kvaliteten væsentlig bedre end VHS. Et eksempel på hvordan man kan
+lave en Super VideoCD strøm gives her:</para>
+
+<screen>
+<prompt>[madsdyd@ripley Avi 94%]$</prompt> <userinput>lav2mpeg -m svcd video.avi</userinput>
+20:57:37 -  mode=svcd -
+20:57:37 - using mode=svcd, stereo=2 audio bpr=224
+20:57:38 - beginning conversion of video.avi to video.mpg
+20:57:38 - had 37 to encode
+20:57:38 - beginning video encoding
+20:58:20 - finished video encoding ( took 0:00:42 - .880 fps)
+20:58:20 - beginning audio encoding
+20:58:21 - finished audio encoding ( took 0:00:01 - 37.000 fps)
+20:58:21 - beginning multiplexing
+20:58:21 - finished multiplexing ( took 0:00:00 )
+20:58:21 - finished encoding (took 0:00:43 - .860 fps)
+<prompt>[madsdyd@ripley Avi 94%]$</prompt> <userinput>ls -l video.*</userinput>
+-rw-r--r--    1 madsdyd  madsdyd   5519548 maj 28 20:52 video.avi
+-rw-rw-r--    1 madsdyd  madsdyd    501984 maj 28 20:58 video.mpg
+</screen>
 
 </sect3> <!-- Indkodning til VideoCD MPEG film -->
 
@@ -2585,11 +2611,11 @@ strømme til Video CD'er.</para>
 <title>Overføre video til slutmedie</title>
 <indexterm><primary>Overføre video</primary></indexterm>
 
-<para>Dette afsnit hænger selvfølgelig utroligt meget sammen med det
+<para>Dette afsnit hænger selvfølgelig meget sammen med det
 foregående, idet slutdestinationen for ens film naturligvis har stor
 indflydelse på hvilke formater man vælger at lægge den endelige film
 i. I dette afsnit vil der blive fokuseret på overførsel til DV bånd,
-VideoCD og almindeligt video signal.</para>
+VideoCD og almindeligt video signal/bånd.</para>
 
 <sect3 id="videoreg-lagre-dv">
 <title>Lagring af endelig film på DV</title>
@@ -2636,7 +2662,7 @@ have loadet modulet "video1394" og have et device med de rigtige
 rettigheder. Det kan f.eks. se sådan ud:</para>
 
 <screen>
-[root@ripley madsdyd]# ls -l /dev/video1394
+<prompt>[root@ripley madsdyd]#</prompt> <userinput>ls -l /dev/video1394</userinput>
 crw-r--r--    1 madsdyd  madsdyd  172,   0 maj  4 13:39 /dev/video1394
 </screen>
 
@@ -2646,9 +2672,60 @@ crw-r--r--    1 madsdyd  madsdyd  172,   0 maj  4 13:39 /dev/video1394
 <title>Lagring af endelig film på VideoCD</title>
 <indexterm><primary>VideoCD</primary></indexterm>
 <indexterm><primary>VCD</primary></indexterm>
+<indexterm><primary>VCDImager</primary></indexterm>
+<indexterm><primary>CDRDAO</primary></indexterm>
 
-<para>TODO:Her skal indsættes en beskrivelse af GNU VCDImager, som kan
-fås på <ulink url="http://www.vcdimager.org/">http://www.vcdimager.org/</ulink>.</para>
+<para>Når man har konverteret sine formater til VideoCD kompatible
+strømme, kan programmet <command>vcdimager</command> anbefales til at
+lave en VideoCD fil (eng: image) med, som man derefter kan brænde til
+en CDROM med programmet <command>cdrdao</command>.</para>
+
+<para>VCDImagers hjemmeside er på <ulink
+url="http://www.vcdimager.org/">http://www.vcdimager.org/</ulink> og
+<command>cdrdao</command> holder til på <ulink
+url="http://cdrdao.sourceforge.net">http://cdrdao.sourceforge.net</ulink>.</para>
+
+<para>En VideoCD kan være mange ting. Hvis man vil have
+f.eks. avancerede menuer, mv, kan VDCimager faktisk sagtens klare
+det. Det er dog lidt indviklet. Det kan anbefales at læse de guider
+der er på VCDImagers hjemmeside, men man kan også starte meget
+simpelt. Her er f.eks. et udpluk af en skabning af en videocd
+fil:</para>
+
+<screen>
+<prompt>[madsdyd@ripley Avi 95%]$</prompt> <userinput>vcdimager -t svcd -c video.cue -b video.bin -l TEST -v video.mpg</userinput>
+   INFO: scanning mpeg sequence item #0 for scanpoints...
+   INFO: writing track 1 (ISO9660)...
+   INFO: writing track 2, MPEG2, PAL 2/3 D-1 (480x576/25fps), audio[0]: l2/44.1kHz/224kbps/stereo ...
+finished ok, image created with 816 sectors [00:10.66] (1919232 bytes)
+<prompt>[madsdyd@ripley Avi 95%]$</prompt> <userinput>ls -l video.*</userinput>
+-rw-r--r--    1 madsdyd  madsdyd   5519548 maj 28 20:52 video.avi
+-rw-rw-r--    1 madsdyd  madsdyd   1919232 maj 28 21:01 video.bin
+-rw-rw-r--    1 madsdyd  madsdyd       170 maj 28 21:01 video.cue
+-rw-rw-r--    1 madsdyd  madsdyd    501984 maj 28 20:58 video.mpg
+</screen>
+
+<para>Man kan så brænde til CD med f.eks. følgende:</para>
+
+<screen>
+<prompt>[madsdyd@ripley Avi 95%]$</prompt> <userinput>cdrdao write --device 0,0,0 --driver generic-mmc video.cue</userinput>
+...
+Starting write at speed 8...
+Pausing 10 seconds - hit CTRL-C to abort.
+Process can be aborted with QUIT signal (usually CTRL-\).
+Executing power calibration...
+Power calibration successful.
+Writing track 01 (mode MODE2_RAW/MODE2_RAW)...
+Writing track 02 (mode MODE2_RAW/MODE2_RAW)...
+...
+Writing finished successfully.
+</screen>
+
+<para>Man kan så smide sin Video CD i sin DVD afspiller og se sin
+video på fjernsynet. I den højeste kvalitet (3000kbps i 480x576, 25
+fps) kan man have omkring 40 minutter på en 80 minutter lyd CD og
+kvaliteten er en del bedre end standard videobånd. Og, mediet er jo
+faktisk billigere.</para>
 
 </sect3><!-- Lagring af endelig film på VideoCD -->
 
