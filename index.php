@@ -4,7 +4,7 @@
 <HTML>
 <HEAD>
 <!-- Husk titel. Skal begynde med "SSLUG - " -->
-   <TITLE>SSLUG - Friheden til at vælge</TITLE>
+   <TITLE>SSLUG - Friheden til at skrive bøger</TITLE>
 <LINK REL="STYLESHEET" HREF="/style/sslug.css" TYPE="text/css">
 </HEAD>
 <BODY>
@@ -12,7 +12,7 @@
   include($DOCUMENT_ROOT."includes/top.phtml");
 ?>
 
-<h1 align="center">SSLUG - Friheden til at vælge</h1>
+<h1 align="center">SSLUG - Friheden til at skrive bøger</h1>
 <!--
 $Id$
 -->
