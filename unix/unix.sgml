@@ -4561,13 +4561,13 @@ Her er det så '##' der skal bruges.
 <programlisting>
 #! /bin/sh
 echo "Fuldt hostname: ${HOSTNAME}"
-echo "Uden maskinnavn: ${HOSTNAME##*.}"
+echo "Uden maskinnavn og domæne: ${HOSTNAME##*.}"
 </programlisting>
 
 <screen>
 <prompt>[anne@linus ~]$ ./hello</prompt>
 Fuldt hostname: hven.sslug.dk
-Uden maskinnavn: dk
+Uden maskinnavn og domæne: dk
 </screen>
 
 <para>
@@ -4614,8 +4614,7 @@ kan en lille løkke klare det.
 
 <programlisting>
 #! /bin/sh
-for FIL in *.gif
-do
+for FIL in *.gif; do
 	echo "Konverterer ${FIL} til ${FIL%.*}.jpg"
 	convert ${FIL} ${FIL%.*}.jpg
 done
@@ -4623,8 +4622,8 @@ done
 
 <screen>
 <prompt>[anne@linus ~]$ ./hello</prompt>
-Konverterer hven.gif til hven.jpg
 Konverterer otto.gif til otto.jpg
+Konverterer axel.gif til axel.jpg
 </screen>
 
 <para>
@@ -4827,8 +4826,6 @@ Prøv kommandoen <command>ls -l /usr/bin/[</command> .
 En meget brugt kommando med [,
 er at undersøge om en fil eksisterer.
 Dette gøres med parametren '-e'.
-Den afsluttende ] er kun med for at få det til at se pænt ud,
-da den ingen praktisk betydning har.
 </para>
 
 <programlisting>
@@ -4870,11 +4867,15 @@ For yderligere information om [ kaldes <command>man test</command> .
 <programlisting>
 #! /bin/sh
 if [ -z "$1" ]; then
-	echo "Fejl! Første parameter er en blank tekst."
+	echo "Fejl! Første parameter findes ikke (zero)."
 fi
 
 if [ ! -z "$1" ]; then
 	echo "Første parameter findes, og er: $1"
+fi
+
+if [ -n "$1" ]; then
+	echo "Første parameter findes (non-zero), og er: $1"
 fi
 
 if [ -x foo ]; then
@@ -4932,8 +4933,81 @@ under "CONDITIONAL EXPRESSIONS".
 <title>Case</title>
 <indexterm><primary>Shell script</primary><secondary>case</secondary></indexterm>
 <para>
-Mumle case $1; hej*); echo dav; ;; esac
+Skal man undersøge mange forskellige tekst-strenge,
+kan det nemt blive uoverskueligt med <command>if</command>-kommandoer.
+Med <command>case</command> kan man nemt undersøge en hel række
+og gøre noget forskelligt ved hver situation.
+Herunder et simpelt eksempel der undersøger hvilket
+HOSTNAME der er på systemet.
 </para>
+
+<programlisting>
+#! /bin/sh
+case $HOSTNAME in
+	(hven.sslug.dk)
+		echo "Vi er på Hven"
+		;;
+	(saltholm.sslug.dk)
+		echo "Vi er på Saltholm"
+		;;
+	(*)
+		echo "Vi er et andet sted: $HOSTNAME"
+		;;
+esac
+</programlisting>
+
+<para>
+Ved kørsel på dit system får du nok et andet svar, fx:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Vi er et andet sted: peberholm.sslug.dk
+</screen>
+
+<para>
+I stedet for at matche teksten helt præcist, kan man
+bruge <emphasis>globbing</emphasis> som med filnavne:
+</para>
+
+<programlisting>
+#! /bin/sh
+case $1 in
+	(ventilatore)
+		echo "Match på 'ventilatore'"
+		;;
+	(ventil*)
+		echo "Match på 'ventil*': $1"
+		;;
+	(ven*)
+		echo "Match på 'ven*': $1"
+		;;
+	(*)
+		echo "Ingen match: $1"
+		;;
+esac
+</programlisting>
+
+<para>
+Herefter kan forskellige ord så prøves af:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Ingen match:
+<prompt>[anne@linus ~]$ ./hello ventilator</prompt>
+Match på 'ventil*': ventilator
+<prompt>[anne@linus ~]$ ./hello vender</prompt>
+Match på 'ven*': vender
+<prompt>[anne@linus ~]$ ./hello world</prompt>
+Ingen match: world
+</screen>
+
+<para>
+Der er et mere avanceret eksempel med <command>case</command>
+i <xref linkend="shell-while"/> der er kombineret med <command>while</command>.
+</para>
+
 </sect2><!-- shell-case -->
 
 <sect2 id="shell-psubst">
@@ -4969,7 +5043,7 @@ fra which, og bruges som parameter til ls.
 
 <para>
 Og sidder du ved et fremmed tastatur hvor det ikke lige
-er til at finde tegnet `, så brug $().
+er til at finde tegnet <command>`</command>, så brug <command>$()</command>.
 </para>
 
 <screen>
@@ -5103,14 +5177,56 @@ Filnavn er: tyge.html
 Filnavn er: otto.html
 </screen>
 
+<para>
+En for-løkke kan selvfølgelig også være en simpel talrække.
+Herunder udskrives blot tallene 1 til 4.
+</para>
+
+<programlisting>
+#! /bin/sh
+for ((N=1; N&lt;5; N++)); do
+	echo "Tal $N"
+done
+</programlisting>
+
 </sect2><!-- shell-for -->
 
 <sect2 id="shell-while">
 <title>Løkke, while</title>
 <indexterm><primary>Shell script</primary><secondary>while</secondary></indexterm>
+<indexterm><primary>Shell script</primary><secondary>parametere</secondary></indexterm>
 <para>
 Mumle while .. do done
 </para>
+
+<programlisting>
+#! /bin/sh
+while [ $# -gt 0 ]; do
+	case $1 in
+		--help)
+			echo "Her er hjælpen"
+			exit 0
+			;;
+		-f)
+			# Næste parameter er filnavn
+			# Det hentes frem med 'shift'
+			shift
+			FIL=$1
+			;;
+		*)
+			echo "Ukendt parameter: $1"
+			exit 1
+			;;
+	esac
+	shift
+done
+</programlisting>
+
+<para>
+Ovenstående eksempel er inspireret af shell-scriptet
+<filename>/sbin/mkbootdisk</filename>.
+</para>
+
 </sect2><!-- shell-while -->
 
 <sect2 id="shell-read">
