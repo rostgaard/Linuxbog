@@ -1,7 +1,7 @@
 
 Url:		http://www.sslug.dk/linuxbog/
 Group:		Books/Computer books
-Copyright:	GNU GPL version 2
+Copyright:	OpenContent License
 Source:		%{name}-%{version}.html.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 Prefix:		%{_prefix}
