@@ -50,7 +50,7 @@ FreeBSD findes også til andre platforme end i386, f.eks. alpha og sparc.
 <para>
 I øjeblikket hedder den stabile gren af FreeBSD 4.x - i skrivende stund
 er 4.9-RELEASE den nyeste. Skal man køre en produktionsserver og vil
-drage forde l af FreeBSD's store driftsstabilitet, er det denne version
+drage fordel af FreeBSD's store driftsstabilitet, er det denne version
 man bør vælge.
 </para>
 
@@ -67,10 +67,12 @@ nyeste.
 <title>Installation via netværk</title>
 
 <para>
-Download de to floppy images kern.flp og mfsroot.flp fra
-<ulink url="ftp://ftp.freebsd.org/pub/FreeBSD/releases/i386/4.9-RELEASE/floppies/">"ftp://ftp.freebsd.org/pub/FreeBSD/releases/i386/4.9-RELEASE/floppies/</ulink> og læg dem på disketter.
-Der bootes fra kern.flp. Disketten med mfsroot.flp sættes i, når
-systemet spørger efter den. 
+Download de to images kern.flp og mfsroot.flp fra
+<ulink
+url="ftp://ftp.freebsd.org/pub/FreeBSD/releases/i386/4.9-RELEASE/floppies/">"ftp://ftp.freebsd.org/pub/FreeBSD/releases/i386/4.9-RELEASE/floppies/</ulink>
+og læg dem på disketter (<command>dd if=kern.flp of=/dev/fd0</command>
+på en Linux box). Der bootes fra kern.flp. Disketten med mfsroot.flp
+sættes i, når systemet spørger efter den. 
 </para>
 
 <para>
@@ -91,10 +93,10 @@ forvirring kaldes de "almindelige" partitioner for "slices" på FreeBSD. Se
 <para>
 Når man skal partitionere under installationen, skal man først vælge
 om man vil bruge hele disken eller kun en del af den. Så vælges
-bootloader, og derefter laves "FreeBSD partitioner" inde i den partition
-(disk slice) man lavede før. Følg instruktionerne på skærmen. Det
-nemmeste er at bede FreeBSD om automatisk at lave passende partitioner
-(følg instruktionerne på skærmen).
+bootloader, og derefter laves "FreeBSD partitioner" enten på hele disken
+eller inde i den partition (disk slice) man lavede før. Det nemmeste er
+at bede FreeBSD om automatisk at lave passende partitioner (følg
+instruktionerne på skærmen).  
 </para>
 
 <para>
@@ -104,6 +106,11 @@ forskellige udgaver af Developer og User, samt All, Minimal og Custom.
 
 Derefter vælges installationsmetode (f.eks. passive ftp), mirror mv. Der
 er to danske mirrors, bare bladr nedad i listen til du finder dem.
+</para>
+
+<para>
+Efter selv installationen bliver man spurgt om hvilke server-funktioner
+maskinen skal have, hvilket sikkerhedsniveau man ønsker mv.
 </para>
 
 <para>
@@ -134,7 +141,8 @@ en time på at bladre igennem alle pakkerne og vælge de helt rigtige -
 sommetider fejler installationen før den når at installlere dem, og
 så er det surt. Vælg hellere nogle få vigtige pakker, så går
 installationen også meget hurtigere. Pakker kan let installeres
-bagefter med pgk_add programmet.
+bagefter med pgk_add programmet, eller ved at starte sysinstall
+programmet igen (se afsnit distro-freebsd-brug).
 </para>
 </sect2>
 
@@ -199,32 +207,44 @@ under /etc/rc.conf og, hvad softwarepakker angår, under /usr/local/etc.
 FreeBSD er meget konservative med hvad de lægger ind i systemet. Der er
 ikke ret mange programmer med som udgangspunkt, det meste skal man selv
 vælge fra ports-collection. Som mail-server program bruger de sendmail.
-Ftp serveren er XXX. Det er naturligvis muligt at installere
-alternativer fra ports-collection.
+FreeBSD komemr med en indbygget ftp-server. Det er naturligvis muligt at
+installere alternativer fra ports-collection, f.eks. vsftp eller proftp.
 </para>
 
 <para>
-Jeg har ikke opdaget ret mange FreeBSD konfigurationsværktøjer. Det kan
-godt være at de er der. Som nævnt tidligere er der et fint grafisk
-x-konfigurationsprogram, og det er også muligt at gen-aktivere
-ports-collection installationsværktøjet der blev kørt under
-installationen (det hedder XXXX). Ellers retter man bare selv i sine
-konfigurationsfiler.
-</para>
+Jeg har ikke opdaget ret mange FreeBSD konfigurationsværktøjer. Som
+nævnt tidligere er der et fint grafisk x-konfigurationsprogram, og det
+er også muligt at gen-aktivere post-install konfigurationsværktøjet der
+blev kørt efter installation. Der kan man lave user management, stille
+på time zone, netværksindstilligner, installere pakker fra
+ports-collection mv. Programmet startes med: <command>/stand/sysinstall
+-> Configure</command>. Ellers retter man vist bare selv i sine
+konfigurationsfiler.  </para>
 
 <sect2 id="distro-freebsd-forskel">
-<title>Andre forskelle på Linux og FreeBSD</title>
+<title>Andre eksempler på forskelle på Linux og FreeBSD</title>
 <para>
-FreeBSD benytter ikke ext2/ext3. Filsystemet på FreeBSD hedder [UFS????] 
-FreeBSD 5 benytter noget, de kalder snapshots til hurtigt at få systemet
-op igen efter uregelementeret nedlukning. Under boot tages et snapshot
-af filsystemet, som derefter får lov at starte normalt op. Så køres fsck
-på snapshottet, mens systemet kører.
-</para>
+FreeBSD benytter ikke ext2/ext3. Filsystemet på FreeBSD hedder UFS/FFS. 
+I stedet for et journaling filesystem bruger FreeBSD 5 noget, de kalder
+snapshots til hurtigt at få systemet op igen efter uregelementeret
+nedlukning. Under boot tages et snapshot af filsystemet, som derefter
+får lov at starte normalt op. Så køres fsck på snapshottet, mens
+systemet kører. Dette findes ikke i stable endnu.  </para>
 
 <para>
 FreeBSD bruger ikke /proc filsystemet som Linux gør. Direkte adgang
 til kernen opnår i stedet med sysctl kald.
+</para>
+
+<para>
+På FreeBSD kan man kun få lov at køre "su" kommandoen, hvis man er
+medlem af gruppen "wheel".
+</para>
+
+<para>
+De filer man på Linux finder i /etc/cron.daily, /etc/cron.weekly mv.,
+kan man under FreeBSD finde i /etc/periodic/daily, /etc/periodic/weekly
+osv.
 </para>
 </sect2>
 
@@ -301,7 +321,7 @@ i stedet for. Instruktioner kan findes i FreeBSD Handbook:
 <title>Killer-feature</title>
 <para>
 FreeBSD's killer feature er nok driftsstabilitet. Filosofien er
-"principle of least astonishment", dvs. "princippet om mindst mulig
+"principle of least astonishment", "princippet om mindst mulig
 overraskelse". Dvs. at tingene skal virke som folk forventer, der skal
 ikke laves om medmindre der er en grund til det. Systemet er optimeret
 til driftsstabilitet også under pres, frem for at være hurtigt ude med
@@ -342,6 +362,10 @@ system at sætte sig ind i. Det er beregnet til at kunne køre længe uden
 at skulle rebootes og passes, og tolerere høj load uden at vælte.
 </para>
 
+<para>
+[Der er en del gentagelser i målgruppe, killer feature og samlet
+vurdering]
+</para>
 </sect1>
 
 
