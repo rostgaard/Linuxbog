@@ -14,7 +14,8 @@ værktøjer som telnet og ftp ikke bør anvendes, hvis maskinen er koblet til
 Internet eller et andet usikkert netværk. Vi skal se på, hvordan 
 netværkstrafik kan aflyttes. Derefter skal vi se nærmere på alternativer 
 til telnet og ftp, hvor datastrømmen bliver krypteret. Specielt 
-fokuserer vi på ssh (secure shell) og viser installation og anvendelse.
+fokuserer vi på OpenSsh (den frie version af secure shell) og 
+viser installation og anvendelse.
 Meget af det, der beskrives i artiklen, gælder ikke blot for Linux, men
 også for andre UNIX'er.
 </para>
@@ -39,7 +40,7 @@ kunne det være tre maskiner på Internet, hvor netværkstrafik mellem
 </para>
 
 <para>
-Resten af artiklen vil handle om programmer til remote login, som telnet, 
+Resten af kapitlet vil handle om programmer til remote login, som telnet, 
 rlogin og ssh, samt programmer til filoverførsel (ftp og scp). Men hvad
 bruges det til? Med remote login kan man udføre tekstkommandoer på den
 maskine, man er logget ind på, men man kan også køre X-programmer over
@@ -512,7 +513,7 @@ ind</emphasis>, er begge dele nok lige dårligt.
 
 <para>
 Vi vil anbefale, at man i stedet for rlogin bruger et program, der 
-krypterer login såvel som selve dataoverførslen, som f.eks. ssh giver
+krypterer login såvel som selve dataoverførslen, som f.eks. SSH giver
 mulighed for.
 </para>
 
@@ -599,11 +600,11 @@ i orden.
 
 <para>
 Der findes flere sikre alternativer til de gamle, ukrypterede protokoller.
-Vi vil mest beskæftige os med ssh, men der findes også andre muligheder.
+Vi vil mest beskæftige os med SSH, men der findes også andre muligheder.
 Et alternativ til telnet er stelnet, som står for secure telnet. Programmet 
 baserer sig på SSL (Secure Sockets Layer), som er en måde at lave 
 krypterering af datatrafikken. Kombinationen af stelnet og SSL er ikke så 
-udbredt som ssh, og det er ikke så nemt at sætte op som ssh. 
+udbredt som SSH, og det er ikke så nemt at sætte op som SSH. 
 Programmet stelnet kan findes på <ulink url="http://www.quick.com.au/ftp/pub/sjg">http://www.quick.com.au/ftp/pub/sjg</ulink>,
 og selve krypteringslaget SSL til Linux kan findes på <ulink
 url="http://www.psy.uq.oz.au/~ftp/Crypto/">http://www.psy.uq.oz.au/~ftp/Crypto/</ulink>. Denne sidste URL har også en hel del dokumentation.
@@ -615,7 +616,7 @@ om SRP på <ulink url="http://srp.stanford.edu/srp">http://srp.stanford.edu/srp</
 
 <para>
 Det, der umiddelbart i dag er det bedste valg som erstatning for
-telnet og rlogin, er ssh (Secure SHell). Programmet er oprindeligt
+telnet og rlogin, er SSH (Secure SHell). Programmet er oprindeligt
 lavet af et finsk firma med navn SSH Communications Security med
 hjemmesiden <ulink url="http://www.ssh.fi">http://www.ssh.fi</ulink>.
 SSH har bl.a. den store fordel fremfor stelnet, at grafiske vinduer
@@ -623,7 +624,7 @@ SSH har bl.a. den store fordel fremfor stelnet, at grafiske vinduer
 </para>
 
 <para>
-Det er et reelt problem, at den tilsvarende kommecielle ssh ikke er
+Det er et reelt problem, at den tilsvarende kommecielle SSH ikke er
 <ulink url="http://www.opensource.org/">Open Source</ulink>, og derfor er
 der startet et GNU-projekt under navnet PSST for at genskrive koden.
 Du kan finde mere information om dette på <ulink
@@ -635,10 +636,10 @@ ikke ændret meget det sidste års tid...
 </para>
 
 <para>
-En anden, forholdsvis ny implementation af ssh-protokollen er OpenSSH,
+En anden implementation af SSH-protokollen er OpenSSH,
 som er fri og er lavet af OpenBSD-folkene.  Den er allerede er
 lagt ind i OpenBSD-distributionen, der har ry for at være særdeles
-sikker. OpenSSH er ligeledes på vej ind i Debian-distributionen.
+sikker. OpenSSH er ligeledes at finde i de fleste nyere Linux-distributioner.
 Hjemmesiden for OpenSSH er 
 <ulink url="http://www.openssh.com/">http://www.openssh.com/</ulink>.
 OpenSSH er baseret på OpenSSL, som kan hentes under "support" samme
@@ -671,7 +672,7 @@ bør være højere end 2.3.0. Der kan henter tar-filer, som du selv kan
 oversætte, eller du kan få OpenSSH som RPM-filer. Som RPM-filer, skal
 du bruge openssh-*.i386.rpm, openssh-clients-*.i386.rpm og
 openssh-server-*.i386.rpm, hvor * betyder et versionsnummer, såsom
-2.3.0. Du skal også bruge Zlib, som sikkert allerede er installeret på
+2.9.0. Du skal også bruge Zlib, som sikkert allerede er installeret på
 din Linux-maskine. Er dette ikke tilfældet (se om du får fejl), så kan dette bibliotek hentes fra 
 <ulink url="http://www.freesoftware.com/pub/infozip/zlib/">http://www.freesoftware.com/pub/infozip/zlib/</ulink>. Igen kan du vælge mellem tar-filer og RPM.
 </para>
@@ -859,7 +860,8 @@ ea:20:20:ae:b3:39:6f:d9:1b:a2:ef:02:0c:05:c5:fb robin@sherwood
 </screen>
 
 
-<para> Anvender man ikke option "-d" fås en RSA-nøgle, som anvendes
+<para> 
+Anvender man ikke option "-d" fås en RSA-nøgle, som anvendes
 til SSH version 1 servere, mens option "-d" danner en DSA nøgle
 svarende til SSH2 servere (begge generationer af servere anvendes i
 dag - spørg evt. systemadministratoren om hvad der skal bruges. Kan du
@@ -900,6 +902,7 @@ Tilsvarende kan du forbyde tomme passwords ved at ændre
 med at lave disse ændringer til du har fået ssh til at virke.
 </para>
 
+
 <para>
 Vi skal også lige nævne, at ssh forbindelser normalt ikke styres via
 initd-systemet, som du i øvrigt kan finde beskrevet tidligere i 
@@ -918,7 +921,7 @@ også over usikre netværk. Start med at skrive
 </para>
 
 <SCREEN>
-<prompt>[robin@sherwood robin]$</prompt> <userinput>ssh locksley</userinput>s
+<prompt>[robin@sherwood robin]$</prompt> <userinput>ssh locksley</userinput>
 Host key not found from the list of known hosts.
 Are you sure you want to continue connecting (yes/no)?          
 </SCREEN>
@@ -935,6 +938,23 @@ gemme din offentlige nøgle på fjernmaskinen. Har du denne nøgle gemt,
 kan man ikke logge ind med dit password men kun med din lange og 
 kryptiske passphrase.
 </para>
+
+<para>
+Hvis du ikke fik adgang til maskinen, så kan der være flere grunde.
+Enten kan det skyldes, at du bruger den forkerte protokol. Nyere versioner
+af OpenSSH kan både køre SSH version 1 og 2. Version 2 og DSA-nøglen hænger
+sammen ovenfor. 
+</para>
+
+<SCREEN>
+<prompt>[robin@sherwood robin]$</prompt> <userinput>ssh -2 tuck@locksley</userinput>
+</SCREEN>
+
+<para>
+I dette eksempel tvinges OpenSSH til at anvende SSH version 2, og 
+brugeren robin prøver at logge ind på maskinen locksley med brugernavn tuck.
+</para>
+
 
 <para>
 Log ud ved at skrive exit (eller trykke Ctrl-D) for at komme tilbage
