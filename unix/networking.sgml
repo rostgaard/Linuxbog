@@ -1293,6 +1293,41 @@ kan indeholde en virus.
 }
 </programlisting>
 
+
+<para>
+Et andet smart trick er følgende spam-filter, som checker om en 
+afsender er black-listet i filen <filename>/home/dig/black.lst</filename>.
+Hvis dette er tilfældet så sendes automatisk en email til afsenderen
+om at man mener det er spam. Samme trick kan bruges til mere
+venlige svar til ens venner om at man lige er væk, og at man kan 
+prøve at ringe i stedet eller lign. 
+</para>
+
+<programlisting>
+# Test om afsender er blacklistet. Hvis ja, send et autosvar...
+:0
+* ?
+formail -x"From" -x"From:" -x"Sender:" -x"Reply-To:" -x"Return-Path:" -x"To:
+" | egrep -is -f /home/dig/black.lst
+| ( \
+    echo "To: $FROM";\
+    echo 'From: "Spam Filter" &lt;no-spam@ditdomain.dk&gt;';\
+    echo "Subject: Spam Detected: $SUBJ"\n;\
+    echo 'Dette er en automatisk advarsel !\n';\
+    echo 'Hold op med at sende spam!\n';\
+  ) | $SENDMAIL -U $FROM
+</programlisting>
+
+<para>
+Filen <filename>/home/dig/black.lst</filename> udfyldes med en email-adresse per linie, ala.
+</para>
+
+<programlisting>
+spam@spam.com
+unwanted@mostwanted.dk
+reklame@jatak.dk
+</programlisting>
+
 <para>
 Der er under bogens eksempler på <ulink url="http://www.sslug.dk/linuxbog/unix/eksempler/procmail">http://www.sslug.dk/linuxbog/unix/eksempler/procmail</ulink> et meget stort eksempel på hvordan en <filename>.procmailrc</filename>-fil kan
 se ud hvis den skal filtrere en masse spam fra og samtidig sortere
