@@ -26,7 +26,7 @@ html: stikord dato udgave
 	mkdir -p bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	cp -p images/*.png bog/
-	xmlto -o bog html bog.sgml
+	xmlto -o bog html bog.xml
 	tidy -mq bog/*.html || tidy -mq bog/*.html || true
 
 pdf: stikord dato udgave
@@ -35,7 +35,7 @@ pdf: stikord dato udgave
 	mkdir -p pdf
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	find images/*.png | sed 's=.png==' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:pdf/%.eps
-	xmlto -o pdf pdf bog.sgml
+	xmlto -o pdf pdf bog.xml
 
 postscript: stikord dato udgave
 	@echo "Jeg kan ikke finde ud af at bygge postscript-udgaven."
@@ -43,7 +43,7 @@ postscript: stikord dato udgave
 	mkdir -p postscript
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:postscript/%.eps
-	xmlto -o postscript ps bog.sgml
+	xmlto -o postscript ps bog.xml
 
 pakket_html: html
 	mkdir -p $(targetname)-$(version)-html
