@@ -326,15 +326,7 @@ function vistype($type) {
        "Henrik Christian Grove" => "grove@sslug.dk",
        "Hans Schou" => "chlor@sslug.dk"
      )
-    ),
-   "alle" => array(
-     title => "Linux - Friheden til at skrive bøger",
-     comment => "Alle bøgerne samlet til én stor bog",
-     auth => array(
-       "Peter Toft" => "pto@linuxbog.dk",
-       "Hans Schou" => "chlor@sslug.dk"
-     )
-   )
+    )
   );
 
   $ext_files = array(
@@ -352,7 +344,7 @@ function vistype($type) {
       if (file_exists($bookname.$fname)) {
         $num = file($bookname.$fname);
         $books[$bookname][$ftype] = trim($num[0]);
-        if ($ftype == "sideantal" && $bookname != "alle")
+        if ($ftype == "sideantal")
           $totalsideantal += trim($num[0]);
       }
     }
@@ -523,14 +515,11 @@ if (count($notexists))
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
 [<a href="search.php">Søg</a>]
-<?php if (file_exists("alle/bog/idx.html") || file_exists("alle/bog/idx.html.php")) { ?>
-	[<a href="alle/bog/idx.html">Stikord</a>]
-<?php } ?>
 </font>
 
 <?php
 	if (file_exists("idx-a.html")) {
-		echo "<p>Stikord:\n";
+		echo "<p><a name=\"stikord\">Stikord</a>:\n";
 		for ($c=65; $c < 91; $c++) {
 			if (file_exists($f = "idx-".chr($c+32).".html")) {
 				echo "<a href=\"$f\">&nbsp;".chr($c)."&nbsp;</a>\n";
@@ -612,11 +601,9 @@ Vil du følge med i hvad der sker med vores kilde-kode (SGML/dist-filerne),
 <a href="http://cvs.linuxbog.dk/">så se her</a>.
 </p>
 
-
 <p>
-Hvis du har noget du søger efter, så skal du nok <a
-href="alle/bog/stikord.html">starte i vores samlede
-indeks-register.</a>
+Hvis du har noget du søger efter, så skal du nok starte i
+<a href="#stikord">stikordregisteret øverst på siden</a>.
 </p>
 
 <p>

@@ -4,13 +4,11 @@
 # FTAV toplevel Makefile.in.
 
 # Af Mads Bondo Dydensborg, <madsdyd@challenge.dk>. 
-# Dele af Peter Toft, mfl.
+# Dele af Peter Toft, Henrik Christian Grove, mfl.
 
 # bootstrap forventer at følgende linier er til stede:
 # Bøger der er konfigureret
 SUBDIRS=@SUBDIRS@
-# Om alle bogen skal bygges
-ALLE=@ALLE@
 # Om "samling"-bogen skal bygges
 SAMLING=@SAMLING@
 
@@ -18,11 +16,8 @@ SAMLING=@SAMLING@
 #
 # Default target er "Usage" :-)
 default:
-	@if test "x$(ALLE)" != "xalle" ; then \
-		echo "Mulige mål: all html pdf pakhtml palmpilot dist clean distclean reallyclean" ; \
-	else \
-		echo "Mulige mål: all html pdf pakhtml palmpilot dist alle clean distclean reallyclean" ; \
-	fi
+	echo "Mulige mål: all html pdf pakhtml palmpilot dist clean distclean reallyclean" ; \
+
 ################################################################################
 #
 # Makefile target
@@ -49,7 +44,7 @@ Makefile:	$(FALLES_FILER) $(BYGGE_FILER)
 configure:
 	echo "Hvad dælen, jeg troede jeg var forældet"
 	exit 1	
-	@for dir in $(SUBDIRS) $(ALLE) $(SAMLING); do \
+	@for dir in $(SUBDIRS) $(SAMLING); do \
 		echo "*** Kører ./configure i $$dir" && \
 		cd $$dir && ./configure && cd .. || exit ;\
 	done ;
@@ -59,7 +54,7 @@ configure:
 #
 # subdir configure targets
 # Bruges primært af dist target
-$(addsuffix /configure,$(SUBDIRS) $(ALLE) $(SAMLING)):	$(BYGGE_FILER)
+$(addsuffix /configure,$(SUBDIRS) $(SAMLING)):	$(BYGGE_FILER)
 	./configure @CONFIGUREARGS@
 
 ################################################################################
@@ -67,7 +62,7 @@ $(addsuffix /configure,$(SUBDIRS) $(ALLE) $(SAMLING)):	$(BYGGE_FILER)
 # subdir Makefile targets
 # Disse er f.eks. nødvendige når man skal lave noget der kalder make i et
 # underbibliotek.
-$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING)):	$(BYGGE_FILER)
+$(addsuffix /Makefile,$(SUBDIRS) $(SAMLING)):	$(BYGGE_FILER)
 	./configure @CONFIGUREARGS@
 
 ################################################################################
@@ -75,7 +70,7 @@ $(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING)):	$(BYGGE_FILER)
 # distclean
 # Cleaner i alle subdirs, så det passer til en dist
 distclean:	$(addsuffix /Makefile,$(SUBDIRS))
-	@for dir in $(SUBDIRS) $(ALLE) $(SAMLING) ; do \
+	@for dir in $(SUBDIRS) $(SAMLING) ; do \
 		echo "*** Kører make distclean i $$dir" && \
 		cd $$dir && $(MAKE) distclean && cd .. || exit ;\
 	done ;
@@ -84,9 +79,9 @@ distclean:	$(addsuffix /Makefile,$(SUBDIRS))
 #
 # clean
 # cleaner i alle subdirs == tilbage til før bootstrap, stort set.
-clean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
+clean:	$(addsuffix /Makefile,$(SUBDIRS) $(SAMLING))
 	rm -f *.tar.gz *~
-	@for dir in $(SUBDIRS) $(ALLE) $(SAMLING) ; do \
+	@for dir in $(SUBDIRS) $(SAMLING) ; do \
 		echo "*** Kører make $@ i $$dir" && \
 		cd $$dir && $(MAKE) $@ ; cd .. ;\
 	done ;
@@ -97,7 +92,7 @@ clean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
 # reallycleaner i alle subdirs == tilbage til før bootstrap
 reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
 	rm -f *.tar.gz *~
-	@for dir in $(SUBDIRS) $(ALLE) $(SAMLING) ; do \
+	@for dir in $(SUBDIRS) $(SAMLING) ; do \
 		echo "*** Kører make $@ i $$dir" && \
 		cd $$dir && $(MAKE) $@ ; cd .. ;\
 	done ;
@@ -108,17 +103,18 @@ reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
 # Makefilen her skal være uptodate, samt alle underbibliotekers Makefile skal 
 # være i orden.
 .PHONY : all html pdf pakhtml palmpilot eksempelbackup
-all html pdf pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
-	@for dir in $(SUBDIRS) $(ALLE); do \
+all html pdf pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(SAMLING))
+	touch stikordsfiler;
+	@for dir in $(SUBDIRS) $(SAMLING); do \
 		echo "*** Kører make $@ i $$dir" && \
-		cd $$dir && $(MAKE) eksempler-sgml-HTML eksempler-sgml-PDF $@ ; cd .. ;\
-	done ;
-	@if test "x$(SAMLING)" = "xsamling"; then \
-		echo "*** Kører make $@ i samling" && \
-		cd samling && touch toplevel-kald && \
+		cd $$dir && touch toplevel-kald && \
 		$(MAKE) eksempler-sgml-HTML eksempler-sgml-PDF $@ ; \
 		rm -f toplevel-kald ; cd .. ; \
-	fi ;
+	done ;
+	@if [ -s stikordsfiler ]; then \
+		faelles-filer/splitstikord.pl `cat stikordsfiler`; \
+	fi
+	rm -f stikordsfiler
 
 
 ################################################################################

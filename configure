@@ -9,7 +9,6 @@
 # Standard bøger at medtage
 #SUBDIRS="admin applikationer c dokumentation forsker friheden itplatform java kontorbruger program signatur sikkerhed unix web wm"
 SUBDIRS="distro itplatform friheden unix kontorbruger applikationer wm signatur admin sikkerhed program web python c java dokumentation forsker"
-ALLE=
 SAMLING=
 URL=cvs.linuxbog.dk
 
@@ -24,7 +23,6 @@ brug() {
     echo "  -m, --med \"BØGER\"      Bestemmer hvilke bøger der medtages, hvor BØGER"
     echo "                         er en liste af bøger. Kombiner:"
     echo "                         \"$SUBDIRS\""
-    echo "  -a, --med-alle         Medtag alle (een stor bog) bogen"
     echo "  -s, --med-samling      Medtag samling-bogen (samlingen af de byggede bøger)"
     echo "  -u, --bogurl URL       Hvilken url bøgerne skal bruge. [cvs.linuxbog.dk]"
     echo "  --splitstikord         Splitter HTML stikord til en fil med hvert forbogstav"
@@ -58,7 +56,7 @@ for arg ; do ORG_ARGS="$ORG_ARGS \"$arg\"" ; done
 # Note that we use `"$@"' to let each command-line parameter expand to a
 # separate word. The quotes around `$@' are essential!
 # We need TEMP as the `eval set --' would nuke the return value of getopt.
-TEMP=`getopt -o ahmsu: --long med-alle,help,med:,med-samling,splitstikord,bogurl: -n "$0" -- "$@"`
+TEMP=`getopt -o hmsu: --long help,med:,med-samling,splitstikord,bogurl: -n "$0" -- "$@"`
 
 if [ $? != 0 ] ; then brug ; exit 1 ; fi
 
@@ -67,7 +65,6 @@ eval set -- "$TEMP"
 
 while true ; do
     case "$1" in
-	-a|--med-alle) ALLE=alle ; shift ;;
 	-s|--med-samling) SAMLING=samling ; shift ;;
 	-h|--help) hjaelp; shift ;;
 	-m|--med) SUBDIRS=$2 ; shift 2 ;;
@@ -98,13 +95,6 @@ fi
 # Rent faktisk gøre noget.
 
 # Status til bruger
-echo "*** Opsætter følgende bøger: $SUBDIRS"
-if test "x$ALLE" != "x" ; then
-  echo "*** Opsætter alle bogen"
-else
-  echo "*** Opsætter ikke alle bogen"
-fi
-
 if test "x$SAMLING" != "x" ; then
   echo "*** Opsætter samling bogen"
 else
@@ -113,7 +103,6 @@ fi
 
 # Lav Makefile
 sed -e "s/@SUBDIRS@/$SUBDIRS/" \
-    -e "s/@ALLE@/$ALLE/" \
     -e "s/@SAMLING@/$SAMLING/" \
     -e "s/@CONFIGUREARGS@/$ORG_ARGS/" \
     -e "s/@Makefile.in@/RET IKKE I DENNE FIL - AUTOGENERERET FRA Makefile.in/" \
@@ -130,14 +119,6 @@ for dir in $SUBDIRS ; do
     mkdir -p $dir/palm-faelles
     cp --update misc/*.prc misc/*.pdb misc/gpl.txt misc/plucker.txt $dir/palm-faelles
 done
-if test "x$ALLE" != "x" ; then
-    echo "*** Installerer fælles filer i $ALLE"
-    cp --update faelles-filer/*.css $ALLE
-    cp --update faelles-filer/*.sgml $ALLE
-    echo "<!ENTITY linuxbogurl \"$URL\">" > $ALLE/linuxbogurl.sgml || exit;
-    mkdir -p $ALLE/palm-faelles
-    cp --update misc/*.prc misc/*.pdb misc/gpl.txt misc/plucker.txt $ALLE/palm-faelles
-fi
 if test "x$SAMLING" != "x" ; then
     echo "*** Installerer fælles filer i $SAMLING"
 #    cp --update faelles-filer/*.sgml $SAMLING
@@ -160,19 +141,6 @@ for dir in $SUBDIRS; do
     cp --update misc/insertimagesize $dir/misc/
     cd $dir && ./bootstrap && cd .. || exit ;
 done
-if test "x$ALLE" != "x" ; then
-    echo "*** Kører bootstrap i $ALLE"
-    cp --update bootstrap.subdir $ALLE/bootstrap
-    sed "s/@SUBDIRSALLE@/$SUBDIRS/" < Makefile.alle > $ALLE/Makefile.am
-    cp --update configure.ac.subdir $ALLE/configure.ac
-    cp --update linuxbog.spec $ALLE/linuxbog.spec
-    cp --update faelles-filer/addsubmitbox $ALLE/
-    mkdir -p $ALLE/misc
-    cp --update misc/insertimagesize $ALLE/misc/
-    cd $ALLE && ./bootstrap && cd .. || exit ;
-    cd $ALLE &&	./make.bog.sgml.pl $SUBDIRS > bog.sgml && cd .. || exit ;
-    cd $ALLE &&	./make.bog.2pdf.pl $SUBDIRS > bog.2pdf.sgml && cd .. || exit ;
-fi
 # grove: Gad vide hvor meget af dette der er nødvendigt?
 if test "x$SAMLING" != "x" ; then
     echo "*** Kører bootstrap i $SAMLING"
@@ -192,10 +160,6 @@ for dir in $SUBDIRS; do
     echo "*** Kører configure i $dir"
     cd $dir && ./configure $EXTRA_ARG && cd .. || exit ;
 done
-if test "x$ALLE" != "x" ; then
-    echo "*** Kører configure i $ALLE"
-    cd $ALLE && ./configure $EXTRA_ARG && cd .. || exit ;
-fi
 if test "x$SAMLING" != "x" ; then
     echo "*** Kører configure i $SAMLING"
     cd $SAMLING && ./configure $EXTRA_ARG && cd .. || exit ;
