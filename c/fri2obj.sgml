@@ -1,6 +1,10 @@
 <chapter id="object-orienteret-tankegang">
 <title>Tankegang bag objektorienteret programmering</title>
 <sect1 id="datatyper"><title>Konkrete og abstrakte datatyper</title>
+
+<indexterm><primary>abstrakte datatyper</primary></indexterm>
+<indexterm><primary>brugerdefinerede datatyper</primary></indexterm>
+
 <para>
 Er C et objektorienteret sprog? Hvorfor er det ikke
 objektorienteret, når et C program er en række definitioner af
@@ -43,44 +47,147 @@ samme som 0.6667.
 </para>
 
 <para>
-I C++ bliver det muligt at erklære en variabel af typen
-broek (eller reference til broek) som fx. nedenstående eksempel
+Det er standard C sprogets struct, som er grundlaget for C++
+klasse kontruktionen. C++ tillader, at der knyttes operationer
+til en struct, og disse "medlemsfunktioner" kan erklæres inde i
+klassen (på samme måde som data-medlemmer). I standard C kan man
+benytte funktionspointere til at opnå samme funktionalitet, men
+man skal jo selv udføre alt det grundlæggende arbejde (og huske
+at gøre det!)
+</para>
+
+<para>
+I C++ er det muligt at erklære en variabel af typen broek
+som fx. nedenstående eksempel, og derefter benytte de tilhørende
+operationer udtrykt ved de i forvejen kendte operatorer:
 </para>
 
 <programlisting role="C">
-broek andel(2,3);
-int bogpris = 350;
+broek andel(1,3);
+int bogpris = 360;
 afgift = bogpris * andel;
 </programlisting>
 
 <para>
-Forudsat, selvfølgelig, at man har defineret typen broek og
-tilhørende operationer på en passende måde!
+Det forudsætter selvfølgelig, at man har defineret typen broek og
+tilhørende funktioner for operatorerne på en passende måde! 
+</para>
+
+<indexterm><primary>konkrete datatyper</primary></indexterm>
+
+<para>
+En sådan brugerdefineret datatype kaldes somme tider en konkret
+datatype, i modsætning til en abstrakt datatype. Den konkrete
+datatype har ingen "virtuelle funktioner" sådan som den abstrakte
+har det. Læs videre:
+</para>
+
+<para>
+Betegnelsen abstrakt datatype (ADT) bruges somme tider om alt,
+hvad der kan indkapsles, men den mest rimelige anvendelse er nu
+den, som Stroustrup angiver i sine forskellige bøger om C++. Hvis
+vi skal skrive en hardware driver til en grafisk device (en som
+er i stand til at tegne prikker på en angivet position) så kan vi
+definere en klasse "shape" - men funktionen for, hvordan den skal
+tegnes varierer for cirkel og rektangel. C++ supporterer den
+slags konstruktioner: En generel klasse, "shape" og aktuelle
+subklasser (eller arvende klasser, specialiserede) som så skal
+definere en brugbar funktion til at udføre handlingen
+"tegn_shape".
+</para>
+
+<para>
+En funktion i klassen "shape", som erklæres for at være virtuel,
+kan ikke kaldes (den eksisterer jo i virkeligheden kun, mens
+programmet kompileres!) og det vil give compiler fejl, hvis de 
+nedarvende klasser ikke definerer en (rigtig) funktion.
+</para>
+
+<para>
+I de efterfølgende afsnit vil vi bruge betegnelsen "abstrakte
+datatyper" mere løseligt om alt, hvad der kan indkapsles. Vi
+stiller os tilfreds med, at implementering af funktionaliteten
+kan udskiftes uden at brugere af datatypen skal ændre deres
+kode.
 </para>
 
 </sect1>
 
 <sect1 id="sect-abstract-datatypes">
-<title>Abstrakte data typer</title>
+<title>Abstrakte datatyper</title>
+
+<indexterm><primary>abstrakte datatyper</primary></indexterm>
+
 <para>
-For at programmere på højt niveau i C sproget benyttes
-sammensatte datatyper. For at bevare overblikket indkapsles
-operationerne på data som regel ved hjælp af modularisering,
-således at al tilgang til data sker gennem funktionskald. Et
-kendt eksempel er fil tilgang, som klares ved hjælp af datatypen
-FILE, som man ikke skal "dissekere", men blot benytter som et
-håndtag til den datastrøm, hvorpå man ønsker at udføre
+For at programmere på højt niveau i C sproget skabes
+abstraktioner, som er funktionelle og nyttige. Fx. er en fil
+en abstraktion, som operativsystemet leverer. Grundlaget for
+abstraktionerne er som regel structures, de sammensatte
+datatyper, som deklareres med nøgleordet <emphasis> struct
+</emphasis>. For at bevare overblikket, for ikke at blande
+detaillerne ind i den abstraktion, som vi ønsker at skabe, 
+indkapsles sådanne data ofte, således at al tilgang sker gennem
+funktionskald. Derved bliver det lettere at anvende den
+pågældende abstraktion, man skal blot udstede en "kommando": Læs,
+skriv, luk, gem o.s.v.
+</para>
+
+<para>
+Et kendt eksempel er fil tilgang, funktionerne
+fopen(), fread(), fprintf() etc., som klares ved hjælp af
+datatypen FILE. Den skal man ikke "dissekere", den benyttes blot
+som et håndtag til den datastrøm, hvorpå man ønsker at udføre
 IO-operationer.
+</para>
+
+<indexterm><primary>FILE typen</primary></indexterm>
+<example id="ex-fopen">
+<title>FILE typen</title>
+<programlisting role="C">
+/* fileopen.c - demonstrerer fopen(). */
+#include &lt;stdio.h>
+
+main()
+{
+	FILE *fp;
+	fp = fopen("fileopen.c","r");
+	if (!fp) {
+		perror("Kan ikke aabne filen \"fileopen.c\"");
+		exit(2);
+	}
+	printf("Har aabnet filen \"fileopen.c\" \n");
+	return 0;
+}
+
+</programlisting>
+</example>
+
+<para>
+FILE er en abstrakt datatype. Hvis vi yderligere forestiller os,
+at vi benytter vores program til at læse en "special-fil", fx. en
+driver-entry via /dev/ kataloget eller en fil i /proc/ kataloget,
+så har vi samme funktionalitet, som en C++ abstrakt datatype kan
+give os.
+</para>
+
+<para>
+FILE "håndtaget" benyttes til at tilgå filer, og de indre dele af
+FILE (pointere, interface til kernen etc.) er ukendt for os, vi
+behøver ikke at vide noget om buffere og pointere, men må
+selvfølgelig gerne vide det<footnote><para>Hvis vi ved noget om
+IO-buffere etc. ville vi ikke drømme om at bruge det i en
+end-user applikation!</para></footnote>.
 </para>
 
 <para>
 Det kan ikke understreges nok, at nøglen til succes er kendskab
 til funktions interfacet og de andre teknikker til at indkapsle
-de data, der naturligt hører sammen.
+de data, der naturligt hører sammen. 
 </para>
 
 <sect2 id="sect-sammensatte-datatyper">
 <title>Sammensatte datatyper</title>
+
 <para>
 Sammensatte datatyper er nyttige, når vi i et program har brug
 for at samle informationer om et "objekt i den virkelige verden".
@@ -199,8 +306,9 @@ struct tomat_ty {
 
 <para>
 I eksempel <xref LinkEnd="ex-declaration-and-definition"> er der
-både erklæret en type, nemlig <emphasis>tomat_type</emphasis>, og
-en variabel, <emphasis>sungold</emphasis>. 
+både erklæret en type, nemlig <emphasis>tomat_ty</emphasis>, og
+en variabel, <emphasis>sungold</emphasis>. Bør kun anvendes i
+ultrakorte programmer (stenografi-orienterede;-).
 </para>
 </sect2>
 
@@ -283,8 +391,38 @@ af et objekt af denne type vil give en oversætter-fejl.
 Stik mod god skik er her et eksempel, som ikke kan oversættes:
 </para>
 
-
 <example id="ex-ukendt-objekt">
+<title>Pointer til ukendt objekt.</title>
+<programlisting role="C">
+/* memhog.c, program som allokerer 20MB RAM og venter */
+#include &lt;stdio.h>
+#include &lt;dirent.h>
+
+main()
+{
+	DIR dirobjekt;
+	printf("Programmet kører ... \n");
+	return 0;
+}
+
+</programlisting>
+</example>
+
+<para>
+Vi har (forsøgt) at erklære et objekt af typen DIR - men det kan
+man ikke, for selv om typen DIR er defineret i &lt;dirent.h>, er
+det <emphasis> kun sket som en typedef erklæring af en pointer
+til et ukendt objekt.</emphasis>
+</para>
+
+<para>
+Nedenfor følger så et eksempel på, at man GERNE må erklære et
+objekt, som er en pointer til en ukendt genstand (jævnfør en void
+pointer).
+</para>
+
+
+<example id="ex-typeloes-pointer">
 <title>Pointer til ukendt objekt.</title>
 <programlisting role="C">
 /* memhog.c, program som allokerer 20MB RAM og venter */
@@ -344,7 +482,7 @@ med en NULL pointer.
 </para>
 
 <para>
-Readdir(3) har sin egen private buffer, og det er derfor
+Readdir(3) har sin egen private (static) buffer, og det er derfor
 nødvendigt at gemme de oplysninger, som vi ønsker at gemme, i en
 buffer. I første version undlader vi at gemme, fordi vi blot
 ønsker at kontrollere, at opendir, readdir og closedir fungerer,
@@ -406,11 +544,11 @@ beherskelse af emacs, som kan bruges til at fjerne alle de
 
 <para>
 struct dirent findes i /usr/include/dirent.h. Det er den
-ultimative sandhed her. man readdir(3) kunne være forældet eller
-fejlagtig, men header-filen må være korrekt for at glibc kan
-kompileres. Men selvfølgelig kan der også være opstået fejl her,
-en anden header fil kan have sneget sig ind (somme tider er det
-godt at være paranoid!)
+ultimative sandhed her. <command> man readdir(3) </command> kunne
+være forældet eller fejlagtig, men header-filen må være korrekt
+for at glibc kan kompileres. Men selvfølgelig kan der også være
+opstået fejl her, en anden header fil kan have sneget sig ind
+(somme tider er det godt at være paranoid!)
 </para>
 
 <para>
@@ -565,9 +703,153 @@ Eksemplet her egner sig godt til at arbejde videre med.
 
 <sect1 id="declaration-parser">
 <title>En declaration parser</title>
+
 <para>
-Erklæringer, declarations.
+Erklæringer kan være vanskelige at læse, især når der indgår
+pointere til funktioner. Installation af en signal handler med
+funktionen signal(2) er kendt for sin vanskelige prototype.
 </para>
+
+<para>
+Det ville være en god øvelse at skrive en komplet declaration
+parser (og en sådan er på ønskesedlen til en udvidet version af
+denne bog). Imidlertid findes der allerede en meget instruktiv
+parser til interaktiv / didaktiv anvendelse, cdecl.
+</para>
+
+<para>
+Cdecl manual-page går ud fra, at man er bekendt med de
+væsentligste problemstillinger, men den forklarer ikke, hvordan
+man løser læselighedsproblemet, hvis man ikke lige har cdecl ved
+hånden!
+</para>
+
+<para>
+For at gøre tingene vanskeligere, er Linux/Gnu signal.h fuld af
+defines og særlige syntaktiske konstruktioner, som skal lette
+læsningen for den erfarne multiplatform programmør - men som gør
+det fuldstændigt umuligt for den almindelige begynder at finde
+hoved og hale. I dette tilfælde er manual page for signal(2) en
+lettelse. Der er oven i købet en forklaring på, hvordan man kan
+opbygge deklarationen ved hjælp af "typedef"ning. Manual siderne
+for glibc er med i RedHat og andre distributioner, men er ikke
+en del af glibc systemet, der kun anvender info-pages.
+</para>
+
+<para>
+Men i header filerne - kast et blik på /usr/include/signal.h - er
+der så mange hensyn til diverse platforme at det bliver næsten
+ulæseligt. Leder vi på "signal(" finder vi:
+</para>
+
+<para>
+<literal>
+#define signal(sig, handler) __sysv_signal ((sig), (handler))
+</literal>
+</para>
+
+<para>
+Ovenstående define kan man ikke fodre cdecl med. Heldigvis er
+den ikke så svær at forstå. Signal er en funktion som skal
+erstattes af __sysv_signal. De to parametre skal gives videre som
+de er. Det ene skal være et signal, (fx. INTR, svarende
+til control-C) og det andet skal være den funktion, som vi vil
+have kørt, når vores program modtager signalet. Men så må vi jo
+kigge efter, hvordan headerfilen definerer __sysv_signal().
+</para>
+
+<para>
+<literal>
+extern __sighandler_t __sysv_signal __P ((int __sig, __sighandler_t __handler));
+</literal>
+</para>
+
+<para>
+Heri indgår der - desværre - også en #define macro, nemlig
+__sighandler_t. Så det er en større sag at finde rundt i.
+</para>
+
+<para>
+Det, som cdecl er glimrende til, er at fodre den med en vanskelig
+prototype og så se, hvordan den vil forklare det.
+</para>
+
+<para>
+Vi finder med <command> man signal </command> følgende prototype:
+</para>
+
+<para>
+<literal>
+void (*signal(int signum, void (*handler)(int)))(int);
+</literal>
+</para>
+
+<para>
+Er det en void funktion? Jeg spørger bare ... Nej, det er ikke en
+void funktion, det er en funktion, som returnerer en pointer til
+en anden funktion, som er void. Nemlig den tidligere signal
+handler. Så kan man jo geninstallere den, hvis man på et
+tidspunkt skal tilbage til forrige niveau af signal handling.
+</para>
+
+<indexterm><primary>cdecl, eksempel på anvendelse</primary></indexterm>
+<screen id="cdecl">
+<PROMPT>ax@pluto:/udvik/$</PROMPT><USERINPUT>cdecl</USERINPUT>
+<prompt>cdecl></prompt><userinput>void (*signal(int signum, void (*handler)(int)))(int)</userinput>
+syntax error
+</screen>
+
+<para>
+Ja, desværre kan denne udmærkede lille applikation heller ikke
+klare denne iøvrigt korrekte prototype, så der er virkelig et
+problem her.
+</para>
+
+<para>
+Løsningen er, uden de store anstrengelser, at lære sig
+"højre-venstre" teknikken. Vi kan også implementere en lille kopi
+af cdecl programmet, som om ikke andet så kan håndtere de
+simpleste deklarationer med funktions-pointere.
+</para>
+
+<para>
+Højre venstre - teknikken består i at læse indefra den
+identifier, som man ønsker at forstå. I ovenstående erklæring
+"signal".
+</para>
+
+<para>
+Til HØJRE for signal er der en parentes start. Det betyder:
+"Signal er en funktion ..."
+</para>
+
+<para>
+Efter parameter parentesen er der "lukket" ved hjælp af en
+slut-parentes ekstra. Derfor må vi gå til VENSTRE. Vi er nu nået
+til, at vi forventer angivelse af retur-type.
+</para>
+
+<para>
+Til venstre står der '*' hvilket vi læser som "returnerer en
+pointer til ..." - til hvad?
+</para>
+
+<para>
+Parentes start spærrer for yderligere adgang til venstre, så vi
+går mod højre, udenfor den matchende parentes og ser efter denne
+endnu en parentes, aha, en pointer TIL EN FUNKTION, der står jo
+igen parenteser, og i øvrigt med en int som parameter. Det mest
+vanskelige er, at den VOID, som står forrest på linien, er retur
+type angivelse til denne funktionspointer.
+</para>
+
+<para>
+Det er ikke nemt. Læs man - siden for signal, den forklarer (som
+nævnt ovenfor), at meningen med signal er, at den returnerer den
+tidligere handler, så man kan reinstallere den senere.
+</para>
+
+
 </sect1>
 
 <sect1 id="expression-parser">
@@ -910,6 +1192,17 @@ double stdfunc()
 Tilstandsmaskiner er betegnelse for 2 ting. Alle programmer
 er tilstands-maskiner. En speciel teknik, som anvendes i parsere,
 indeholder en tilstandstabel.
+</para>
+
+<para>
+Hvis man vil se en "rigtig" tilstandsmaskine, så kan man studere
+output fra yacc eller bison parser-generatorer.
+</para>
+
+<para>
+Næste udgave af denne bog vil bringe nogle overskuelige eksempler
+på tilstandstabeller, genererede med bison og "håndlavede". Følg
+med på www.sslug.dk i de nye udgaver af "Friheden" bøgerne!
 </para>
 
 </sect1>

@@ -971,6 +971,8 @@ Der skelnes i C sproget mellem en definition og en deklaration.
 På dansk ser man ofte ordet erklæring i stedet for deklaration.
 </para>
 
+<indexterm><primary>extern (nøgleord)</primary></indexterm>
+
 <para>
 Hvis vi ønsker at anvende en variabel, som allerede er defineret
 i et andet modul, så bruger vi en deklaration. Det er en
@@ -1048,7 +1050,7 @@ at få lov til at være i fred.
   <row>
     <entry>Operativ system kode</entry>
   </row><row>
-    <entry>Stak for bruger applikationer</entry>
+    <entry>Stak for bruger-applikationen</entry>
   </row><row>
     <entry>Mellemrum mellem stak og heap</entry>
   </row><row>
@@ -1076,9 +1078,13 @@ initialiseres, anbringes variablen i den sektion, som kaldes BSS
 </para>
 
 <para>
-Navnet <emphasis>bss</emphasis> er et navn, som har rødder i IBM
-- assembler sproget, og som egentlig står for block started by
-symbol. Lad os i stedet huske det som <emphasis> base static
+Navnet <emphasis>bss</emphasis> har rødder i IBM mainframe
+assembler sproget, d.v.s. system 370, 390, 3900 og MVS.
+Det står for <emphasis> Block Started by Symbol</emphasis>.
+</para>
+
+<para>
+Lad os i stedet huske det som <emphasis> base static
 storage</emphasis>. Det er garanteret, at variable, som erklæres
 uden for en funktionsblok men som ikke er explicit initialiserede
 ved en "initializer", er nulstillede ved programmets start. Det
@@ -1088,7 +1094,7 @@ c0.c
 
 <para>
 Læg især mærke til, at lokale variable anbringes på "stak for
-applikationer". Det er de højest tilgængelige adresser for vores
+applikationen". Det er de højest tilgængelige adresser for vores
 program. Herfra kan stakken vokse (hov - den vokser nedad!)
 indtil den møder heap. På en Linux maskine kan den vokse mere end
 to gigabyte, før der sker sammenstød. MS NT har "kun" afsat 2 GB
@@ -1099,6 +1105,8 @@ til applikationer.
 
 <sect2 id="sect-storage-spec">
 <title>Storage specifications</title>
+<indexterm><primary>Storage specifications</primary></indexterm>
+<indexterm><primary>lagring, specifikation af</primary></indexterm>
 
 <para>
 Det reserverede ord <emphasis> static </emphasis> betyder
@@ -1109,6 +1117,7 @@ overlever funktionen, så at sige, husker fra gang til gang, hvad
 værdi, den havde sidste gang. For eksempel en sidetæller i en
 udskriftsfunktion.
 </para>
+<indexterm><primary>static</primary></indexterm>
 
 <programlisting>
 void topmargin_udskrift(char *section_navn)
@@ -1118,11 +1127,15 @@ void topmargin_udskrift(char *section_navn)
 }
 
 </programlisting>
+
+<indexterm><primary>stak</primary></indexterm>
+<indexterm><primary>heap</primary></indexterm>
+
 <para>
 Stakken gør det muligt at have lokale variable i funktioner, og
 for at have et sæt variable HVER gang funktionen kaldes, det er
 betingelsen for, at man kan benytte rekursion.  Tilsvarende er
-heapen det område, som benyttes til dynamiske lager-strukturer
+heap'en det område, som benyttes til dynamiske lager-strukturer
 som fx. en "liste" og et "træ". (se kap. 3,
 <xref LinkEnd="sect-abstract-datatypes">).
 </para>
@@ -1194,18 +1207,33 @@ Programmets anbringelse i lageret ser normalt ud sådan her:
 
 </programlisting>
 
+<indexterm><primary>bss</primary></indexterm>
+
 <para>
-Hvis vi ønsker at anbringe en variabel i .bss sektionen, skal vi
-blot erklære den uden for en funktion. Hvis en variabel erklæret
-inde i en funktion skal kunne huske sin værdi fra gang til gang,
-når funktionen kaldes, skal den defineres som static, hvilket vil
-bevirke, at den bliver anbragt i .bss sektionen.
+Hvis vi ønsker at anbringe en variabel i .bss sektionen kan vi
+enten erklære den uden for en funktion eller benytte
+lagrings-specifikationen <emphasis>static</emphasis>. Sidstnævnte
+metode vil være praktisk, hvis vi ønsker at erklære variabelen
+inde i en funktion. Hvis vi benytter "static" på eksternt niveau,
+d.v.s. uden for en funktionsdefinition, har specifikationen den
+virkning, at variabelen ikke får ekstern synlighed (external
+linkage).
+</para>
+
+<para>
+Hvis en variabel erklæret inde i en funktion skal kunne huske sin
+værdi fra gang til gang, når funktionen kaldes, skal den
+defineres som static, hvilket vil bevirke, at den bliver anbragt
+i .bss sektionen.
 </para>
 
 </sect2>
 
 <sect2>
 <title>Konstanter og memory protection</title>
+<indexterm><primary>konstanter</primary></indexterm>
+<indexterm><primary>read-only memory</primary></indexterm>
+<indexterm><primary>skrivebeskyttet lager</primary></indexterm>
 
 <para>
 Der er forskellige måder at organisere kørselen af et program,
@@ -1268,11 +1296,15 @@ int main()
 <sect2 id="sect-scope">
 <title>Storage specifikation og scope</title>
 
+<indexterm><primary>scope</primary></indexterm>
+<indexterm><primary>synsvidde, synlighed</primary></indexterm>
+
 <para>
-Scope betyder synlighed. En af de rigtig gode ting ved C sproget
-er, at man kan skrive programmerne således, at variable kun er
-tilgængelige i en funktion eller et modul. Derved kan man uden
-stort besvær anvende objektorienterede programmeringsprincipper.
+Scope betyder synlighed (within scope = "inden for synsvidde").
+En af de rigtig gode ting ved C sproget er, at man kan skrive
+programmerne således, at variable kun er tilgængelige i en
+funktion eller et modul. Derved kan man uden stort besvær anvende
+objektorienterede programmeringsprincipper.
 </para>
 
 <example id="ex-scope-rules">
@@ -1321,8 +1353,9 @@ bundlinie(){
 </programlisting>
 </example>
 
+<indexterm><primary>extern (nøgleord)</primary></indexterm>
 <para>
-Hov! Hvad er nu det - kan man deklarere en ekstern <emphasis>
+Hov! Hvad er nu det - kan man deklarere en "extern" <emphasis>
 inde </emphasis> i en funktion? Jada, og så er det meningen, at
 oversætteren skal redde os, hvis vi kommer til at bruge den
 <emphasis> uden </emphasis> for funktionen. Men deklarationen af
@@ -1361,6 +1394,10 @@ int main()
 
 </programlisting>
 
+<indexterm><primary>static, anvendelse af</primary></indexterm>
+<indexterm><primary>lint</primary></indexterm>
+<indexterm><primary>lclint</primary></indexterm>
+
 <para>
 Det er jo godt nok kedeligt, hvis man tror, at man har to
 forskellige variable, og oversætteren tror, at der kun er en.
@@ -1375,7 +1412,7 @@ fra, men det er der heldigvis også altid anvisninger på.
 </para>
 
 <para>
-<programlisting>
+<screen>
 
 <prompt>fri2c: </prompt><userinput>lclint globviol.c</userinput>
 pluto:/qf3/attic/don/fri ::lclint globviol.c
@@ -1394,7 +1431,7 @@ globviol.c:12:5: Variable exported but not used outside globviol:
 
 Finished LCLint checking --- 4 code errors found
 
-</programlisting>
+</screen>
 </para>
 
 <para>
@@ -1446,6 +1483,9 @@ betyde, at en variabel er "privat" for det modul, hvori den er
 erklæret!
 </para>
 
+<indexterm><primary>static, betydning privat</primary></indexterm>
+<indexterm><primary>privat</primary></indexterm>
+
 <para>
 Den oprindelige betydning af specifikationen "static" er
 selvfølgelig, at variablen skal være statisk. Den skal anbringes
@@ -1460,6 +1500,12 @@ synligheden af statiske variable på denne måde begrænses.
 <para>
 Static variabel erklæres inde i en funktion - scope i funktionen,
 static inde i et modul = scope i modulet.
+</para>
+
+<para>
+Et modul kaldes i syntax beskrivelser en oversættelses-enhed
+(translation unit) og består af en eller flere filer (include
+filer) som oversættes til et objekt-modul.
 </para>
 
 <para>
@@ -1484,7 +1530,7 @@ anvende "privat" (uden 'e' til sidst!) eller, bedre, et ord som
 "hidden" eller ... "local"? SÅ ville der rigtig være rod i
 semantikken! Problemet er nævnt i forbindelse med revision af C
 som basis for C++, men som sagt finder private anvendelse i C++ ,
-og det er altså på en lidt anden måde.
+og det er på en lidt anden måde.
 </para>
 
 <para>
@@ -1495,7 +1541,7 @@ enten funktioner eller variable.
 </sect2>
 
 <sect2>
-<title>kontrolvariable for løkker eller loops</title>
+<title>Kontrolvariable for løkker eller loops</title>
 
 <para>
 Det fremhæves somme tider, at C++ er særlig smart fordi man kan
