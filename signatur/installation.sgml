@@ -1,0 +1,171 @@
+<chapter id="signatur-installation">
+<title>Installation af certifikater</title>
+
+<para>Dette kapitel handler om, hvad man rent faktisk skal foretage
+sig på sin egen computer for at kunne bruge certifikatet til noget fornuftigt.
+</para>
+<para>For at du kan bruge det certifikat, du køber ved KMD, til noget fornuftigt,
+skal det installeres i din browser, og i dit mailprogram.</para>
+<para>For at kunne se, at de signaturer, du modtager fra andre nu også er korrekte,
+skal du installere rod-certifikater fra deres udstedere.</para>
+<para>De du sender signerede eller krypterede mails til, skal have installeret
+rod-certifikatet fra din udbyder, så de kan få bekræftet din signatur.</para>
+
+<!-- =================================================================== -->
+<!-- Anskaffe sig et rodcertifikat -->
+<!-- =================================================================== -->
+
+<sect1 id="rodcertifikat">
+<title>Anskaffelse af KMD-CA rodcertifikat</title>
+
+<para>På KMD-CA's hjemmeside <ulink url="http://www.kmd-ca.dk">
+http://www.kmd-ca.dk</ulink> kan man surfe sig frem til
+rodcertifikatet. Sitet er egentligt beregnet på at man bruger Windows
+og kan installere direkte i browseren, men hvis man leder længe nok,
+kan man også bare hente filen. Jeg fandt den på <ulink
+url="http://www.kmd-ca.dk/KMD-CA-Server.crt">
+http://www.kmd-ca.dk/KMD-CA-Server.crt</ulink>.</para>
+
+<para>Når du har hentet og installeret (se nedenfor) dette certifikat,
+kan du oprette sikre forbindelser til KMD-CA. Dette er en forudsætning
+for at hente dit nye certifikat, efter bekræftelsen på posthuset. Jeg fandt dette
+cerfikat på <ulink url="https://www.kmd-ca.dk/rodcert/KMD-CA-KPerson.crt">
+https://www.kmd-ca.dk/rodcert/KMD-CA-KPerson.crt</ulink>. Du kan også
+teste din sikkerhed på KMD-CA's hjemmeside.</para>
+</sect1>
+
+<!-- =================================================================== -->
+<!-- Konvertering af certifikat -->
+<!-- =================================================================== -->
+<sect1 id="openssl">
+<title>Konvertering af certifikat</title>
+
+<para><emphasis>(TODO: Jeg har ingen ide om det _er_ nødvendigt at
+konvertere certifikatet, men pt. beskriver jeg bare hvad der virker
+for mig).</emphasis></para>
+
+<para>Certifikatet fra KMD er i binær form, nemlig i DER format. Det
+er noget nemmere at håndtere, hvis det er en i tekstbaseret
+form. Derfor vil det ofte være relevant at konvertere det til PEM
+format. Det kan gøres med <command>openssl</command>. Kommandoen er:</para>
+
+<screen>
+$ openssl x509 -inform DER -outform PEM -in KMD-CA-Server.crt \
+-out KMD-CA-Server.crt.pem
+</screen>
+
+<para>Filen <filename>KMD-CA-Server.crt.pem</filename> er nu i PEM
+format. Tilsvarende kan gøres for filen
+<filename>KMD-CA-KPerson.crt</filename>.</para>
+
+<para><emphasis>(TODO: Der er nogen programmer til håndtering af CA i
+openssl, men jeg tror man bliver nødt til at installere certifikaterne
+i hvert enkelt program der benytter openssl - der er ikke en generel
+mekanisme til at installere certifikaterne til brug for alle
+programmer der benytter openssl.)</emphasis></para>
+
+</sect1>
+
+
+<!-- =================================================================== -->
+<!-- Installation af certifikater -->
+<!-- =================================================================== -->
+<sect1 id="certinst">
+<title>Installation af certifikater i programmer og miljøer</title>
+
+<para>Dette afsnit beskriver installation af certifikater i
+forskellige programmer.</para>
+
+
+<!-- =================================================================== -->
+<!-- KDE -->
+<!-- =================================================================== -->
+<sect2 id="kde">
+<title>KDE</title>
+
+<para>Dette afsnit burde beskrive hvordan det hele fungerer i KDE, men
+foreløbig er det mest en række noter.</para>
+
+<para>Beskrivelsen er baseret på KDE version 2.2.1. Det er meget
+muligt at mulighederne er blevet forbedret i KDE version 3.0.</para>
+
+<para>KDE har et Krypto modul du kan finde i KDE's Kontrolcenter under
+personliggørelse. Antageligvis burde man kunne installere certifikater
+via dette modul. Imidlertid er det foreløbigt ikke lykkedes for mig at
+gøre dette. Muligvis kan man kun tilføje egne
+certifikater. Tilføjelsen af rodcertifikatet må du foreløbigt klare
+manuelt.</para>
+
+<para>KDE bruger sit eget ssl modul, <emphasis>kssl</emphasis>. KDE
+programmer (som <command>konqueror</command> og
+<command>kmail</command>) burde således alle virke, såfremt de
+relevante certifikater er installeret. Der findes en fil,
+<filename>ca-bundle.crt</filename>, der indeholder en lang række
+certifikater som KDE accepterer som rodcertifikater som
+udgangspunkt. For at tilføje KMD-CA's certifikat, kan du kopiere denne
+fil til dit hjemmekatalog, og tilføje filen til enden af den. I det
+følgende er disse skridt beskrevet. (Bemærk at det kan skifte en smule
+hvor <filename>ca-bundle.crt</filename> ligger).</para>
+
+<screen>
+$ mkdir -p $HOME/.kde/share/apps/kssl/caroot
+$ cat /usr/share/apps/kssl/caroot/ca-bundle.crt KMD-CA-Server.crt.pem \
+> $HOME/.kde/share/apps/kssl/caroot/ca-bundle.crt
+</screen>
+
+<para>Bemærk at det er filen
+<filename>KMD-CA-Server.crt.pem</filename> der bruges, ikke
+<filename>KMD-CA-Server.crt</filename>. Der er selvfølgelig andre
+måder at tilføje og rette i <filename>$HOME/.kde/share/apps/kssl/caroot/ca-bundle.crt</filename> fil på.</para>
+
+<para>Når du har tilføjet rodcertifikatet, kan du checke din sikkerhed
+på KMD-CA's hjemmeside, ved at besøge siden og følge "check sikkerheds"
+pilene. Når den sikre forbindelse er oprettet kan du klikke på
+vis|sikkerhed i <command>konqueror</command>'s menu - det skulle gerne
+frembringe et billede som <xref
+linkend="kmd-ca-ssl-information-fig">.</para>
+
+<FIGURE ID="kmd-ca-ssl-information-fig" FLOAT="1">
+<TITLE>KDE sikkerheds dialog</TITLE>
+<GRAPHIC FILEREF="kmd-ca-ssl-information.&magic;"  SCALE="45"></GRAPHIC>
+</FIGURE>
+
+<para>Peer certifikater på SSL forbindelser ryger iøvrigt i
+<filename>$HOME/.kde/share/config/ksslpolicies</filename>.</para>
+
+</sect2>
+<!-- =================================================================== -->
+<!-- NETSCAPE -->
+<!-- =================================================================== -->
+
+<sect2>
+<title>Netscape</title>
+
+
+<para>Hvis jeg prøver at åbne KMD's certifikat offline i Netscape
+4.7x, viser den bare garbage.</para>
+
+</sect2>
+<!-- =================================================================== -->
+<!-- MOZILLA -->
+<!-- =================================================================== -->
+
+<sect2>
+<title>Mozilla</title>
+
+<para>Mozilla (default mandrake 8.1) crasher... :-(</para>
+
+</sect2>
+<!-- =================================================================== -->
+<!-- GALEON -->
+<!-- =================================================================== -->
+
+<sect2>
+<title>Galeon</title>
+
+<para>Jeg kan ikke finde noget om sikkerhed i Galeon, sådan lige
+umiddelbart...</para>
+</sect2>
+
+</sect1>
+</chapter>

@@ -1,0 +1,246 @@
+<chapter id="signatur-program">
+<title>Information til programmører</title>
+
+<para><emphasis>Bemærk, informationerne heri er ikke kontrolleret med
+KMD-CA's proces endnu</emphasis></para>
+
+<para>Dette kapitel indeholder information til de der ønsker
+at udvikle programmer, der automatiserer de processer, der er
+beskrevet i de foregående afsnit. Det antages at man vil gøre det som
+en frontend til <command>openssl</command> programmet og derfor
+beskrives hvorledes dette kan gøres.</para>
+
+<sect1>
+<title>Dannelse af certifikat forespørgslen</title>
+
+<para>Man bør sætte sig ind i hvordan <command>req</command>
+programmet kan kaldes. Det er en del af <command>openssl</command>
+programmet. Basalt set kan <command>req</command> lave en x.509
+request som den der eftersøges, hvis det gives en række informationer.  Den
+nemmeste måde at få disse informationer videregivet til
+<command>req</command> er ved at indkode de enkelte parametre i en fil
+som man giver som config fil til <command>req</command> programmet.
+Dette er også at foretrække sikkerhedsmæssigt, idet f.eks. password
+overført via kommandolinien ikke er hensigtsmæssigt, da de kan ses af
+andre processer på systemet.</para>
+
+<para><emphasis>Bemærk, at der pt. er begrænsninger på brugen af
+æøå ÆØÅ (og andre specialtegn) i forhold til KMD-CA. Kun a-z, A-Z og 0-9 er tilladt.</emphasis></para>
+
+<sect2>
+<title>Eksempel på request dannelses fil</title>
+
+<para>Nedenfor gives et eksempel på hvordan en request config fil til programmet
+<command>openssl</command> kan se ud. Linier der starter med tegnet # er kommentarer.</para>
+
+<screen>
+# Eksempel på request config fil.
+# Anvendes eksempelvis således:
+# openssl req -newkey rsa:1024 -config req.config -out \
+# kmd-ca-cert.req -outform DER
+# Bemærk at der sættes to password i denne fil, dels et for den
+# private nøgle (output_password), dels et challengePassword, som jeg ikke
+# rigtigt ved hvad skal bruges til.
+# Måske vil man give brugeren adgang til at undlade at sætte
+# et password for den private nøgle (vil man???).
+
+# Formatet for denne fil er defineret dels i req(1) og dels i config(1)
+
+# reg sectionen definerer hvordan filen hænger sammen - hvilke øvrige
+# sektioner der skal inkluderes mv.
+[ req ]
+prompt                 = no
+default_bits           = 1024
+default_md             = sha1
+
+default_keyfile        = keyfile.pem
+output_password        = private_key_password
+
+distinguished_name     = req_distinguished_name
+attributes             = req_attributes
+
+# Oplysninger om "distinguished name", se f.eks.
+# http://docs.iplanet.com/docs/manuals/cms/42/adm_gide/app_dn.htm
+# Bemærk, kun felter der medtages i KMD-CA's program er medtaget her
+# I KMD's udgave har brugeren kun adgang til at angive givenName,
+# surname, email og keyUsage
+[ req_distinguished_name ]
+C                      = DK
+O                      = Ingen organisatorisk tilknytning
+CN                     = Joern Guldberg // PID:xxxxxxxxx
+emailAddress           = jgu@kmd.dk
+givenName              = Joern
+surname                = Guldberg
+keyUsage               = Digital Signature, Data Encipherment, Key Agreement, Non Repudiation, Key Encipherment
+serialNumber           = 9208-2001-1-xxxxxxxxx
+
+# Strengt taget ved jeg ikke om denne sektion er nødvendig
+# Faktisk ved jeg ikke hvad den gør. Man siden lægger op til at den
+# muligvis ikke er nødvendig overhovedet - afhænger vist lidt
+# af vores CA (KMD-CA).
+[ req_attributes ]
+challengePassword              = tester
+</screen>
+
+<para>Antag at ovenstående er indholdet af filen
+<filename>req.config</filename>. Herefter kan man danne en request fil
+kaldet
+<filename>kmd-ca-cert.req</filename> således:</para>
+<screen>
+[madsdyd@ripley TestIgen]$ openssl req -newkey rsa:1024 \
+-config req.config -out kmd-ca-cert.req -outform DER
+Using configuration from req.config
+Generating a 1024 bit RSA private key
+...............................................................++++++
+............................................++++++
+writing new private key to 'keyfile.pem'
+-----
+[madsdyd@ripley TestIgen]$ ls -l
+totalt 20
+-rw-rw-r--    1 madsdyd  madsdyd       951 mar 22 08:16 keyfile.pem
+-rw-rw-r--    1 madsdyd  madsdyd      1052 mar 22 07:45 req.config
+-rw-rw-r--    1 madsdyd  madsdyd       539 mar 22 08:16 kmd-ca-cert.req
+</screen>
+
+<para>Det er filen <filename>kmd-ca-cert.req</filename> der er
+forespørgslen, som skal videresendes til KMD-CA.</para>
+</sect2>
+
+
+<sect2>
+<title>Beskrivelse af de enkelte felter</title>
+<para>I realiteten er det relativt få felter der skal ændres i en
+request config fil. I det følgende forsøges de relevante felter beskrevet.</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  givenName - personens fornavn indsættes her
+ </para>
+</listitem>
+<listitem>
+ <para>
+  surname - personens efternavn (mellemnavne?) indsættes her
+ </para>
+</listitem>
+<listitem>
+ <para>
+  emailAddress - personens email adresse indsættes her
+ </para>
+</listitem>
+<listitem>
+ <para>
+  keyUsage - Se nedenfor i afsnit <xref linkend="keyusage">
+ </para>
+</listitem>
+<listitem>
+ <para>
+  CN - værdien af givenName surname appended med strengen "// PID:xxxxxxxxx"
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  serialNumber - dette felt skal ikke ændres når man bruger KMD-CA som
+  CA. Det er beskrevet på en side hos Ministeriet for Videnskab,
+  Teknologi og Udvikling om
+<ulink
+  url="http://www.fsk.dk/cgi-bin/doc-show.cgi?theme_id=7471&amp;doc_id=35087&amp;doc_type=29&amp;leftmenu=3">
+  Personspecifikke Identifikationsnumre
+  </ulink>.
+ </para>
+</listitem>
+
+</itemizedlist>
+
+<sect3 id="keyusage">
+<title>keyUsage</title>
+<para>Dette felt sættes efter brugerens valg for hvordan nøglen skal
+bruges; "Kryptering og digital signatur", "Kun kryptering" eller "Kun
+signatur". Se <xref linkend="kmd-ca-windows-fig"> for de valg Windows
+programmet giver.</para>
+
+<para>Følgende er baseret på oplysninger fra Jørn Guldberg, projektleder i KMD.</para>
+
+<para>keyUsage sættes til en kommasepareret liste af strenge. For
+signering sættes "Digital Signatur". For kryptering sættes "Data
+Encipherment". For begge dele, sættes begge dele. Man skal altid
+tilføje følgende liste: "Key Agreement, Non Repudiation, Key Encipherment".</para>
+</sect3>
+
+</sect2>
+
+
+</sect1>
+
+
+<sect1>
+<title>Eksempel program til generering af forespørgsel</title>
+
+<para>I eksemplet nedenfor kan du se et interaktivt
+perl
+program der laver en forespørgsel baseret på de informationer brugeren
+taster ind. Bemærk, at det er et eksempel og ikke velegnet til
+slutbrugerbrug. Scriptet kan <ulink
+url="req-kmd-ca.pl">downloades</ulink>.</para>
+
+<programlisting id="req-kmd-ca">
+&signatur-req-kmd-ca;
+</programlisting>
+</sect1>
+
+
+<sect1>
+<title>Videresendelse af forespørgsel til KMD-CA</title>
+
+<para>Proceduren er beskrevet på
+<ulink
+url="https://www.kmd-ca.dk/bestilling/bestilling_avancpers_start.asp">
+https://www.kmd-ca.dk/bestilling/bestilling_avancpers_start.asp</ulink>.
+Bemærk at KMD-CA's rodcertifikat skal være installeret, inden
+man kan besøge disse sider.</para>
+
+<para>Nedenfor er vist en række skærmbilleder fra
+registreringsprocessen. KMD-CA kræver at forespørgselsfilen
+ender i <filename>.req</filename>.<emphasis>(TODO: Som det fremgår er
+der fejl i proceduren for mine værdier - min email accepteres
+ikke. Jeg forstår ikke hvorfor.</emphasis></para>
+
+<figure id="kmd-ca-upload-1-fig" float="1">
+<title>KMD-CA upload, skridt 1</title>
+<graphic fileref="kmd-ca-upload-1.&magic;" scale="50"></graphic>
+</figure>
+
+<figure id="kmd-ca-upload-2-fig" float="1">
+<title>KMD-CA upload, skridt 2</title>
+<graphic fileref="kmd-ca-upload-2.&magic;" scale="50"></graphic>
+</figure>
+
+<figure id="kmd-ca-upload-3-fig" float="1">
+<title>KMD-CA upload, skridt 3</title>
+<graphic fileref="kmd-ca-upload-3.&magic;" scale="50"></graphic>
+</figure>
+
+<figure id="kmd-ca-upload-4-fig" float="1">
+<title>KMD-CA upload, skridt 4</title>
+<graphic fileref="kmd-ca-upload-4.&magic;" scale="50"></graphic>
+</figure>
+
+<figure id="kmd-ca-upload-5-fig" float="1">
+<title>KMD-CA upload, skridt 5</title>
+<graphic fileref="kmd-ca-upload-5.&magic;" scale="50"></graphic>
+</figure>
+
+<figure id="kmd-ca-upload-6-fig" float="1">
+<title>KMD-CA upload, skridt 6</title>
+<graphic fileref="kmd-ca-upload-6.&magic;" scale="50"></graphic>
+</figure>
+
+<figure id="kmd-ca-upload-7-fig" float="1">
+<title>KMD-CA upload, skridt 7</title>
+<graphic fileref="kmd-ca-upload-7.&magic;" scale="50"></graphic>
+</figure>
+
+</sect1>
+
+
+</chapter>

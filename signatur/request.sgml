@@ -1,0 +1,55 @@
+<chapter id="signatur-request">
+<title>Eksempel på dannelse af certifikat forespørgsel</title>
+
+
+<para>Nedenfor gives et eksempel på hvordan man kan danne en
+certifikat forespørgselsfil med programmet <command>openssl</command>.
+</para>
+
+<para>Der dannes to filer
+vha. programmet. <filename>key.pem</filename> er den private nøgle,
+mens <filename>req.der</filename> er certifikat forespørgslen.</para>
+
+<para><emphasis>Bemærk, nedenstående procedure giver ikke en
+certifikat forespørgsel der kan anvendes af KMD-CA, da der mangler
+nogen specielle felter. Ligeledes stiller KMD-CA nogen specielle krav
+til navngivningen af filer. Se <xref
+linkend="signatur-program"> for mere information om dannelse af en forespørgsel
+der kan anvendes i forhold til KMD-CA.</emphasis></para>
+
+<screen>
+[madsdyd@ripley TestOpenSSL]$ openssl req -newkey rsa:1024 \
+-keyout key.pem -out req.der -outform DER
+Using configuration from /usr/lib/ssl/openssl.cnf
+Generating a 1024 bit RSA private key
+....++++++
+..................++++++
+writing new private key to 'key.pem'
+Enter PEM pass phrase:
+Verifying password - Enter PEM pass phrase:
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:DK
+State or Province Name (full name) [Some-State]:Denmark
+Locality Name (eg, city) []:Copenhagen
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:.
+Organizational Unit Name (eg, section) []:
+Common Name (eg, YOUR name) []:Mads Bondo Dydensborg
+Email Address []:mads@dydensborg.dk
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:tester
+An optional company name []:
+[madsdyd@ripley TestOpenSSL]$ ls -l
+totalt 8
+-rw-rw-r--    1 madsdyd  madsdyd       963 mar  4 08:55 key.pem
+-rw-rw-r--    1 madsdyd  madsdyd       482 mar  4 08:55 req.der
+</screen>
+</chapter>

@@ -246,6 +246,13 @@ function vistype($type) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
+    "signatur" => array(
+      title => "Linux - Friheden til at vælge digital signatur",
+      comment => "Digital signatur på Linux",
+      auth => array(
+        "Mads Bondo Dydensborg" => "madsdyd@challenge.dk"
+      )
+    ),
    "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
