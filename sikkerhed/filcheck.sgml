@@ -93,13 +93,13 @@ og meget andet.
 Lad os se på fire eksempler som alle er brudstykker fra
 <FILENAME>/var/log/messages</FILENAME>. Vi ser, at det kræver lidt
 øvelse at overskue alt i messages-filen, men modsat er der mange
-nyttige informationer om systemets drift. Lad os først se på eksempel
-1 nedenfor, som viser de linier, der kommer i messages-filen, når
-systemet startes.
+nyttige informationer om systemets drift. Lad os først se på <xref
+linkend="var-log-messages-systemstart"> nedenfor, som viser de linier,
+der kommer i messages-filen, når systemet startes.
 </para>
 
-<para>
-<emphasis>Eksempel 1 - <FILENAME>/var/log/messages</FILENAME> ved systemstart</emphasis>
+<example id="var-log-messages-systemstart">
+<title><FILENAME>/var/log/messages</FILENAME> ved systemstart</title>
 <SCREEN>
 Jun 30 20:17:45 sherwood syslogd 1.3-3: restart.
 Jun 30 20:17:45 sherwood syslog: syslogd startup succeeded
@@ -129,7 +129,7 @@ Jun 30 20:17:47 sherwood kernel: CPU: Intel Pentium 75 - 200 stepping 06
 Jun 30 20:17:47 sherwood kernel: Checking 386/387 coupling... OK, FPU using exception 16 error reporting. 
 Jun 30 20:17:47 sherwood kernel: Checking 'hlt' instruction... OK. 
 </SCREEN>
-</para>
+</example>
 
 <para>
 Ud fra den ottende linie kan vi se, at harddisk partitionen
@@ -149,16 +149,17 @@ systemopstart. Tilsvarende information findes i <FILENAME>/var/log/dmesg</FILENA
 </para>
 
 <para>
-Eksempel 2 viser hvordan telnet, ftp og SSH logins gemmes i messages-filen. 
-Den 3. juli kl. 10.06 kommer brugeren robin ind fra IP nummer 192.168.0.10 
-via secure shell (SSH). To minutter efter logges der ud igen. 
-Dagen efter er det en telnet login, som går igennem PAM-password check 
-(PAM_pwdb).  Kun et minut er robin inde. Endelig er brugeren tuck kommet
-ind via ftp (ftpd) den 4. juli og kun blevet fire sekunder.
+<xref linkend="var-log-messages-remote-logins"> viser hvordan telnet,
+ftp og SSH logins gemmes i messages-filen.  Den 3. juli kl. 10.06
+kommer brugeren robin ind fra IP nummer 192.168.0.10 via secure shell
+(SSH). To minutter efter logges der ud igen.  Dagen efter er det en
+telnet login, som går igennem PAM-password check (PAM_pwdb).  Kun et
+minut er robin inde. Endelig er brugeren tuck kommet ind via ftp
+(ftpd) den 4. juli og kun blevet fire sekunder.
 </para>
 
-<para>
-<emphasis>Eksempel 2 - <FILENAME>/var/log/messages</FILENAME> ved remote logins</emphasis>
+<example id="var-log-messages-remote-logins">
+<title><FILENAME>/var/log/messages</FILENAME> ved remote logins</title>
 <SCREEN>
 Jul  3 10:06:51 sherwood sshd[763]: log: Connection from 192.168.0.10 port 1023
 Jul  3 10:06:57 sherwood sshd[763]: log: RSA authentication for robin accepted.
@@ -169,7 +170,7 @@ Jul  4 23:08:10 sherwood PAM_pwdb[24298]: (login) session closed for user robin
 Jul  4 23:10:28 sherwood ftpd[24757]: FTP LOGIN FROM tuck @ vinglad.sherwood.dk [192.168.0.199], 
 Jul  4 23:10:32 sherwood ftpd[24757]: FTP session closed
 </SCREEN>
-</para>
+</example>
 
 <para>
 Lad os dernæst se på en Internet opkobling via modem (ppp). Vi kan i de
@@ -180,8 +181,8 @@ De sidste linier viser, at der er sendt 55395 bytes til maskinen
 og 80884 bytes fra maskinen under opkoblingen.
 </para>
 
-<para>
-<emphasis>Eksempel 3 - <FILENAME>/var/log/messages</FILENAME> ved Internet opkobling</emphasis>
+<example id="var-log-messages-internet-optkobling">
+<title><FILENAME>/var/log/messages</FILENAME> ved Internet opkobling</title>
 <SCREEN>
 Aug 18 21:28:35 sherwood ifup-ppp: pppd started for ppp0 on /dev/modem at 115200
 Aug 18 21:28:36 sherwood pppd[10800]: pppd 2.3.7 started by root, uid 0
@@ -199,7 +200,7 @@ Aug 18 21:35:14 sherwood pppd[10800]: Connect time 6.2 minutes.
 Aug 18 21:35:14 sherwood pppd[10800]: Sent 80884 bytes, received 55395 bytes.
 Aug 18 21:35:14 sherwood pppd[10800]: Exit.
 </SCREEN>
-</para>
+</example>
 
 <para>
 Det sidste eksempel fra messages-filen er et sted, hvor man kan se, at
@@ -207,19 +208,20 @@ bruger nummer 500 (robin) skifter bruger-ID over til root for at kunne
 stoppe sendmail. Derefter logges det at su-root sessionen afsluttes.
 </para>
 
-<para>
-<emphasis>Eksempel 4 - <FILENAME>/var/log/messages</FILENAME> ved su og nedlukning af sendmail</emphasis>
+<example id="var-log-message-su">
+<title><FILENAME>/var/log/messages</FILENAME> ved su og nedlukning af 
+sendmail</title>
 <SCREEN>
 jul 26 22:15:04 sherwood PAM_pwdb[4220]: (su) session opened for user root by (uid=500)
 jul 26 22:15:25 sherwood sendmail: sendmail shutdown succeeded
 jul 26 22:15:41 sherwood PAM_pwdb[4220]: (su) session closed for user root
 </SCREEN>
-</para>
+</example>
 
 <para>
-<FILENAME>/var/log/messages</FILENAME> kan blive meget stor. Da alle systemhændelser
-bliver logget i mellem hinanden, kan det således være svært 
-umiddelbart at skelne de interessante beskeder i mængden. 
+<FILENAME>/var/log/messages</FILENAME> kan blive meget stor. Da alle
+systemhændelser bliver logget i mellem hinanden, kan det således være
+svært umiddelbart at skelne de interessante beskeder i mængden.
 </para>
 
 </sect2>
@@ -230,14 +232,17 @@ umiddelbart at skelne de interessante beskeder i mængden.
 <indexterm><primary>logfiler</primary><secondary>rotering af</secondary></indexterm>
 
 <para>
-Du kan opleve at finde filer i <FILENAME>/var/log</FILENAME>, der f.eks. hedder
-<FILENAME>messages.1</FILENAME> og <FILENAME>messages.2</FILENAME>, eller
-<FILENAME>messages.1.gz</FILENAME>.  Dette skyldes, at man på Linux-systemer ofte
-har et cron-job sat op til at rotere logfilerne, herunder
-messages-filen. Dette sker f.eks. en gang i døgnet eller en gang om
-ugen. I så fald indeholder <FILENAME>/var/log/messages</FILENAME> kun det nyeste
-log-information, som er sket siden sidste rotation.  
+Du kan opleve at finde filer i <FILENAME>/var/log</FILENAME>, der
+f.eks. hedder <FILENAME>messages.1</FILENAME> og
+<FILENAME>messages.2</FILENAME>, eller
+<FILENAME>messages.1.gz</FILENAME>.  Dette skyldes, at man på
+Linux-systemer ofte har et cron-job sat op til at rotere logfilerne,
+herunder messages-filen. Dette sker f.eks. en gang i døgnet eller en
+gang om ugen. I så fald indeholder
+<FILENAME>/var/log/messages</FILENAME> kun det nyeste log-information,
+som er sket siden sidste rotation.
 </para>
+
 <para>
 Under Red Hat styres rotering med af logfiler med logrotate-pakken,
 som konfigureres i filen <FILENAME>/etc/logrotate.conf</FILENAME>
@@ -250,16 +255,17 @@ som konfigureres i filen <FILENAME>/etc/logrotate.conf</FILENAME>
 <indexterm><primary>logfiler</primary><secondary>/var/log/secure</secondary></indexterm>
 <para>
 Fordi vigtig information så nemt kan drukne i anden information i
-messages-filen, findes filen <FILENAME>/var/log/secure</FILENAME>, som kun 
-indeholder sikkerhedsrelateret information. Eksempel 5 viser 
-<FILENAME>/var/log/secure</FILENAME> filen. Brugerne robin og john logget
-ind via terminal tty1 nogle gange, og en telnet og en ftp login findes
-i bunden af filen. <FILENAME>/var/log/secure</FILENAME> kan være en meget vigtig
+messages-filen, findes filen <FILENAME>/var/log/secure</FILENAME>, som
+kun indeholder sikkerhedsrelateret information. <xref
+linkend="var-log-secure"> viser <FILENAME>/var/log/secure</FILENAME>
+filen. Brugerne robin og john logget ind via terminal tty1 nogle
+gange, og en telnet og en ftp login findes i bunden af
+filen. <FILENAME>/var/log/secure</FILENAME> kan være en meget vigtig
 fil at se igennem jævnligt.
 </para>
 
-<para>
-<emphasis>Eksempel 5 - <FILENAME>/var/log/secure</FILENAME></emphasis>
+<example id="var-log-secure">
+<title><FILENAME>/var/log/secure</FILENAME></title>
 <SCREEN>
 Aug 15 14:45:16 sherwood login: LOGIN ON tty1 BY robin
 Aug 16 15:13:53 sherwood login: LOGIN ON tty1 BY john
@@ -273,7 +279,7 @@ Aug 18 23:07:03 sherwood in.telnetd[24297]: connect from 192.168.0.1
 Aug 18 23:07:07 sherwood login: LOGIN ON 3 BY robin FROM sherwood
 Aug 18 23:10:24 sherwood in.ftpd[24757]: connect from 192.168.0.1
 </SCREEN>
-</para>
+</example>
 </sect2>
 
 <sect2 id="maillog">
@@ -282,20 +288,21 @@ Aug 18 23:10:24 sherwood in.ftpd[24757]: connect from 192.168.0.1
 <indexterm><primary>/var/log/maillog</primary></indexterm>
 <indexterm><primary>logfiler</primary><secondary>/var/log/maillog</secondary></indexterm>
 
- <para>
-  En anden vigtig fil er <FILENAME>/var/log/maillog</FILENAME>, hvor
-  information om post til og fra maskinen gemmes. Vi kan i eksempel 6 se,
-  at robin sender en besked fra sherwood.galaxy.dk til sslug-teknik@sslug.dk.
-  Postloggen kan nemt blive ekstremt stor og svær at overskue.
- </para>
-
 <para>
-<emphasis>Eksempel 6 - <FILENAME>/var/log/maillog</FILENAME></emphasis>
+En anden vigtig fil er <FILENAME>/var/log/maillog</FILENAME>, hvor
+information om post til og fra maskinen gemmes. Vi kan i 
+<xref linkend="var-log-secure"> se, at robin sender en besked fra
+sherwood.galaxy.dk til &lt;sslug-teknik@sslug.dk&gt;.  Postloggen kan nemt
+blive ekstremt stor og svær at overskue.
+</para>
+
+<example id="var-log-maillog">
+<title><FILENAME>/var/log/maillog</FILENAME></title>
 <SCREEN>
 Jun 18 23:00:42 robin sendmail[1966]: XAA01966: from=&lt;robin@sherwood.dk&gt;, size=496, class=0, pri=30496, nrcpts=1, msgid=&lt;Pine.LNX.4.10.9906182300010.662-100000@sherwood.dk&gt;, proto=ESMTP, relay=robin@localhost
 Jun 18 23:00:44 sherwood sendmail[1968]: XAA01966: to=&lt;sslug-teknik@sslug.dk&gt;, delay=00:00:02, xdelay=00:00:02, mailer=esmtp, relay=mail.sslug.dk. [192.38.71.98], stat=Sent (ok 929739581 qp 27375)
 </SCREEN>
-</para>
+</example>
 </sect2>
 
 <sect2 id="rapportering-log">
@@ -333,10 +340,8 @@ haft igennem dagen. Let og overskueligt at se igennem. Har man pludselig
 logins fra uventede domæner, er det noget, der skal kigges nærmere på.
 </para>
 
-<para>
-<emphasis>Eksempel 7 - logwatch</emphasis>
-</para>
-
+<example id="logwatch">
+<title>logwatch</title>
 <SCREEN>
  --------------------- ftpd-messages Begin ------------------------ 
 
@@ -422,8 +427,8 @@ Commands Run:
    bad referral (US !< SF.CA.US): 6 Time(s)
 
  ---------------------- Named End ------------------------- 
-
 </SCREEN>
+</example>
 
 <indexterm><primary>logcheck</primary></indexterm>
 
@@ -580,7 +585,7 @@ kode ud fra en fil. På de fleste Linux-systemer findes programmet
 </para>
 
 <SCREEN>
-[robin@sherwood robin]$ md5sum /bin/ls
+<prompt>[robin@sherwood robin]$</prompt> <userinput>md5sum /bin/ls</userinput>
 dc2ac9d1c1658d5b4381ca2c280425ee  /bin/ls
 </SCREEN>
 
@@ -591,20 +596,18 @@ indholdet ændret, men hvor man kan ikke se udefra, at den er ændret.
 </para>
 
 <SCREEN>
-[robin@sherwood robin]$ echo "robin og tuck" > testfil 
-[robin@sherwood robin]$ touch -d 19990719 testfil
-[robin@sherwood robin]$ ls -al testfil
+<prompt>[robin@sherwood robin]$</prompt> <userinput>echo "robin og tuck" > testfil</userinput> 
+<prompt>[robin@sherwood robin]$</prompt> <userinput>touch -d 19990719 testfil</userinput>
+<prompt>[robin@sherwood robin]$</prompt> <userinput>ls -al testfil</userinput>
 -rw-r--r--   1 robin      robin            14 Jul 19 00:00 testfil  
-
-[robin@sherwood robin]$ md5sum testfil 
+<prompt>[robin@sherwood robin]$</prompt> <userinput>md5sum testfil</userinput>
 e829f144f6e43d55daa442baf1462544  testfil   
 
-[robin@sherwood robin]$ echo "tuck og robin" > testfil 
-[robin@sherwood robin]$ touch -d 19990719 testfil
-[robin@sherwood robin]$ ls -al testfil
+<prompt>[robin@sherwood robin]$</prompt> <userinput>echo "tuck og robin" &gt; testfil</userinput> 
+<prompt>[robin@sherwood robin]$</prompt> <userinput>touch -d 19990719 testfil</userinput>
+<prompt>[robin@sherwood robin]$</prompt> <userinput>ls -al testfil</userinput>
 -rw-r--r--   1 robin      robin            14 Jul 19 00:00 testfil  
-
-[robin@sherwood robin]$ md5sum testfil 
+<prompt>[robin@sherwood robin]$</prompt> <userinput>md5sum testfil</userinput> 
 18b8426e71e781dc68f8f4ee415963cc  testfil   
 </SCREEN>
 
@@ -671,10 +674,8 @@ vises det bogstav for testen, der gik galt. Et typisk output kan være
 (i forkortet form)
 </para>
 
-<para>
-<emphasis>Eksempel 8 - rpm -Va</emphasis>
-</para>
-
+<example>
+<title>rpm -Va</title>
 <SCREEN>
 ..?..... c /etc/securetty
 S.5....T c /etc/services
@@ -695,6 +696,7 @@ S.5....T c /etc/sendmail.cw
 ..5....T c /etc/sysconfig/sendmail
 S.5....T   /var/log/sendmail.st
 </SCREEN>
+</example>
 
 <para>
 Nu er det op til dig, som systemadministrator, at vurdere hvilke
@@ -712,12 +714,10 @@ kommandoen, ikke har rettigheder til at læse
 at dette faktisk er tilfældet
 </para>
 
-<para>
 <SCREEN>
-[robin@sherwood robin]$ ls -al /etc/securetty
+<prompt>[robin@sherwood robin]$</prompt> <userinput>ls -al /etc/securetty</userinput>
 -rw-------  1 root  root  40 Sep 4  1995 /etc/securetty
 </SCREEN>
-</para>
 
 <para>
 Om filerne faktisk er ændrede, kan vi således først se, hvis vi kører
@@ -780,19 +780,20 @@ og det er nemt at checke og tilsvarende opdatere for ændringer, siden
 databasen er genereret.
 </para>
 
-<para>Tripwire kan findes på 
+<para>
+Tripwire kan findes på 
 <ulink url="http://www.tripwire.com/downloads/">http://www.tripwire.com/downloads/</ulink>.
 </para>
 
 <para>
- Tripwire er et godt produkt, men det er ikke frit programmel (Open Source).
- Det kan hentes gratis hvis man udfylder en formular med navn, adresse
- etc. etc. Selv ens telefonnummer forlanger de...
+Tripwire er et godt produkt, men det er ikke frit programmel (Open Source).
+Det kan hentes gratis hvis man udfylder en formular med navn, adresse
+etc. etc. Selv ens telefonnummer forlanger de...
 </para>
 
 <para>
 P.t. hedder det version 2.2.1 for Linux på intel, og skulle virke med de
-fleste Linux'er - se på Tripwires webside. Det er en tar.gz fil man
+fleste Linux-distributioner - se på Tripwires webside. Det er en tar.gz fil man
 downloader.
 </para>
 </sect1>
@@ -802,33 +803,35 @@ downloader.
 <indexterm><primary>L5</primary></indexterm>
 
 <para>
-Programmet L5 er skrevet et par år tilbage som en
-neddroslet udgave af Tripwire, og det kan findes på 
-<ulink url="ftp://avian.org/src/hacks">ftp://avian.org/src/hacks</ulink>.  L5
-giver for hver fil en linie med modes, ejer/gruppe og MD5
-checksum. Et eksempel er 
+Programmet L5 er skrevet et par år tilbage som en neddroslet udgave af
+Tripwire, og det kan findes på <ulink
+url="ftp://avian.org/src/hacks">ftp://avian.org/src/hacks</ulink>.  L5
+giver for hver fil en linie med modes, ejer/gruppe og MD5 checksum. Et
+eksempel er
 </para>
 
 <SCREEN>
-[robin@sherwood robin]$ l5 l5 /bin/login
+<prompt>[robin@sherwood robin]$</prompt> <userinput>l5 l5 /bin/login</userinput>
 /bin/login//F 28765 104755 1 0/0 20164 3718bd8a 3a098UjgB8I2B5rzvRJp1N
 </SCREEN>
 
 <para>
-Giver man et katalog som argument, får man L5 kørt for selve kataloget 
-samt alle filer i dette katalog. Den store svaghed ved
-L5 er styringen af programmet. Der er ikke hjælp med til at styre 
-hvilke filer, der gerne må ændre sig i de kataloger, man vil holde 
-øje med. Eksempelvis må filer i <FILENAME>/etc</FILENAME> generelt ikke ændre sig 
-ofte, men filen <FILENAME>/etc/mtab</FILENAME> vil for hver reboot
-have ændret tidsstempel. Derfor skal <FILENAME>/etc/mtab</FILENAME> og en mere statisk fil
-<FILENAME>/etc/resolv.conf</FILENAME> behandles forskelligt.
-Programmet L5 er simpelt og hurtigt - men skal du bruge det på din maskine, 
-skal du være forberedt på, at du selv skal skrive script-filer til styring
-af programmet. Script-filerne skal så holde øje med system filer, der
-oftest findes i følgende kataloger:
-<FILENAME>/dev</FILENAME>, <FILENAME>/etc</FILENAME>, <FILENAME>/usr/bin</FILENAME>, <FILENAME>/sbin</FILENAME>,
-<FILENAME>/bin</FILENAME>, <FILENAME>/lib</FILENAME>, <FILENAME>/usr/lib</FILENAME> og <FILENAME>/usr/src</FILENAME>.
+Giver man et katalog som argument, får man L5 kørt for selve kataloget
+samt alle filer i dette katalog. Den store svaghed ved L5 er styringen
+af programmet. Der er ikke hjælp med til at styre hvilke filer, der
+gerne må ændre sig i de kataloger, man vil holde øje med. Eksempelvis
+må filer i <FILENAME>/etc</FILENAME> generelt ikke ændre sig ofte, men
+filen <FILENAME>/etc/mtab</FILENAME> vil for hver reboot have ændret
+tidsstempel. Derfor skal <FILENAME>/etc/mtab</FILENAME> og en mere
+statisk fil <FILENAME>/etc/resolv.conf</FILENAME> behandles
+forskelligt.  Programmet L5 er simpelt og hurtigt - men skal du bruge
+det på din maskine, skal du være forberedt på, at du selv skal skrive
+script-filer til styring af programmet. Script-filerne skal så holde
+øje med system filer, der oftest findes i følgende kataloger:
+<FILENAME>/dev</FILENAME>, <FILENAME>/etc</FILENAME>,
+<FILENAME>/usr/bin</FILENAME>, <FILENAME>/sbin</FILENAME>,
+<FILENAME>/bin</FILENAME>, <FILENAME>/lib</FILENAME>,
+<FILENAME>/usr/lib</FILENAME> og <FILENAME>/usr/src</FILENAME>.
 </para>
 </sect1>
 
@@ -854,25 +857,25 @@ og finde ændringer i filer. Det er tydeligt, at man har set på, hvad
 Tripwire kan, og lavet helt tilsvarende funktionalitet.
 </para>
 
- <para>
-  Aide er Open Source (udgivet under GPL), det vil sige, at det kommer med
-  komplet kildetekst. Aide oversættes med <COMMAND>./configure</COMMAND> og
-  <COMMAND>make</COMMAND>, og installeres som systemadministrator (root) med
-  <COMMAND>make install</COMMAND>.
- </para>
+<para>
+Aide er Open Source (udgivet under GPL), det vil sige, at det kommer med
+komplet kildetekst. Aide oversættes med <COMMAND>./configure</COMMAND> og
+<COMMAND>make</COMMAND>, og installeres som systemadministrator (root) med
+<COMMAND>make install</COMMAND>.
+</para>
 
- <para>
-  Efter oversættelsen og installationen ligger der en
-  test-opsætningsfil i doc-kataloget under det katalog, hvor du
-  oversatte aide. Du kan med <COMMAND>man aide.conf</COMMAND> se lidt om
-  syntaksen i opsætningsfilen. Selv aide-programmet er installeret
+<para>
+Efter oversættelsen og installationen ligger der en
+test-opsætningsfil i doc-kataloget under det katalog, hvor du
+oversatte aide. Du kan med <COMMAND>man aide.conf</COMMAND> se lidt om
+syntaksen i opsætningsfilen. Selv aide-programmet er installeret
 under <FILENAME>/usr/local/bin</FILENAME> (medmindre du har ændret i
 opsætningen).  For at generere en database over dine filer, skrives
 </para>
 
 
 <SCREEN>
-[root@sherwood /root]# aide --init
+<prompt>[root@sherwood /root]#</prompt> <userinput>aide --init</userinput>
 </SCREEN>
 
 <para>
@@ -884,7 +887,7 @@ du står, når du kører programmet. Opdatering af databasen sker med
 </para>
 
 <SCREEN>
-[root@sherwood /root]# aide --update
+<prompt>[root@sherwood /root]#</prompt> <userinput>aide --update</userinput>
 </SCREEN>
 
 <para>
@@ -892,7 +895,7 @@ og check af ændringer med
 </para>
 
 <SCREEN>
-[root@sherwood /root]# aide --check
+<prompt>[root@sherwood /root]#</prompt> <userinput>aide --check</userinput>
 </SCREEN>
 
 <para>
@@ -927,6 +930,8 @@ eller i selve Linux-kernen.
 
 <sect2 id="epilog3">
 <title>Epilog</title>
+<indexterm><primary>Gog &amp; Magog</primary></indexterm>
+
 <para>
 Som afslutning kan vi nævne at der er mange spændende ting på Internet
 omkring emnet "Intrusion Detection", som dette kapitel omhandler. 
