@@ -418,9 +418,9 @@ Filtyper:
     echo "<li><b>$short:</b> ";
     $raw = rawurlencode($short);
     echo href("?b=$raw","<b>$desc[title]</b>");
-    echo "<br> $desc[comment]";
     if ($desc[sideantal])
-      echo ", $desc[sideantal] sider.";
+      echo ", $desc[sideantal] sider";
+    echo "<br> $desc[comment]";
     echo "</li>\n";
   }
 ?>
