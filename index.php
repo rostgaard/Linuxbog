@@ -166,8 +166,8 @@ function vistype($type) {
       )
     ),
     "kontorbruger" => array(
-      title => "Linux - Friheden til at vælge kontorprogrammer",
-      comment => "Basal anvendelse af Linux-programmer",
+      title => "Linux - Friheden til at bruge kontorprogrammer",
+      comment => "Basal anvendelse af Linux kontorprogrammer",
       auth => array(
         "Peter Toft" => "pto@sslug.dk"
       )
@@ -413,6 +413,7 @@ if ($matrix) { ?>
 [<a href="?all=t">Alle filtyper</a>]<br>
 [<a href="http://cvs.sslug.dk/linuxbog/search">Søg i sgml-filer</a>]
 [<a href="hjaelpe.html">Om at hjælpe</a>]
+[<a href="alle/bog/stikord.html">Stikord</a>]
 [<a href="http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html">Følg ændringer</a>]
 </font>
 
