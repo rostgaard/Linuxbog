@@ -1134,4 +1134,43 @@ Et par referencer angående skriftyper og Linux kan findes på:
 </listitem>
 </itemizedlist>
 </sect1>
+
+<sect1 id="USB-modem">
+<title>USB modem</title>
+<indexterm><primary>modem</primary><secondary>USB</secondary></indexterm>
+<indexterm><primary>USB</primary><secondary>modem</secondary></indexterm>
+<para>
+USB modem (til alm. telefonlinjer, ISDN eller kabel) bør overholde
+CSC (Communication Device Class) specifikationen, og til underklassen
+ACM (Abstract Control Model) - eller vil du ikke kunne få det til at virke 
+med Linux
+</para>
+
+<para>
+Du skal have fat i et kerne-modul "USB Modem (CDC ACM)".
+Det skal kunne findes om "acm.o" under dine kerne-moduler
+<filename>/lib/modules/KERNEVERSION</filename>. Med nyere
+kerne 2.4-distributioner, bør den være med.
+</para>
+
+<para>
+Hvis det ikke er gjort for dig, så skal du sætte devices op til dit USB-modem.
+Der kan sættes 32 modemer op til samme driver, men vi tager kun de fire 
+første her:
+</para>
+
+<screen>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM0 c 166 0</userinput>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM1 c 166 1</userinput>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM2 c 166 2</userinput>
+<prompt>[root@hven root]# </prompt><userinput>mknod /dev/usb/ttyACM3 c 166 3</userinput>
+</screen>
+
+<para>
+Dernæst bør man kunne anvende <filename>/dev/usb/ttyACM0</filename>
+som det første modem. Anvend <command>ln -sf /dev/usb/ttyACM0 /dev/modem</command> for at <filename>/dev/modem</filename> peger på det første USB-modem.
+</para>
+</sect1>
+
+
 </chapter>
