@@ -362,19 +362,12 @@ function vistype($type) {
       last => "apprevhist.html".$USE_SUBMIT_INC,
       online => 2  // "Ændringer" har bognavn med to gange
     ),
-    // Eks: frihed/linuxbog-friheden-html-4.0.tgz
+    // Eks: frihed/linuxbog-friheden-html-4.0.tar.gz
     "HTML" => array(
       first => "linuxbog-",
       form => "-html-",
       last => ".tar.gz"
     ),
-    /* zipzip - lad os få slettet dem
-    "HTML zip" => array(
-      first => "linuxbog-",
-      form => "-html-",
-      last => ".zip"
-    ),
-    */
     "PNG billeder" => array(
       first => "linuxbog-",
       form => "-png-",
@@ -385,48 +378,20 @@ function vistype($type) {
       form => "-htmlub-",
       last => ".tar.gz"
     ),
-    // Eks: linuxbog-frihed-pdf.zip
-    /* zipzip - lad os få slettet dem
-    "PDF" => array(
-      first => "linuxbog-",
-      form => "-",
-      last => ".pdf"
-    ),
-    */
+    // Eks: linuxbog-samling-pdf-5.7.tar.gz
+    /* Grove siger nedenstående er rigtigt til "samling" */
     "PDFa" => array(
-      first => "linuxbog-",
-      form => "-",
-      last => ".pdf.tar.gz"
-    ),
-    /* Grove mener nedenstående er rigtig til "samling" */
-    "PDFb" => array(
       first => "linuxbog-",
       form => "-pdf-",
       last => ".tar.gz"
     ),
-    "PDFc" => array(
-      first => "linuxbog-",
-      form => "-",
-      last => ".pdf.gz"
-    ),
-    "PDFd" => array(
-      first => "linuxbog-",
-      form => "-",
-      last => ".pdf"
-    ),
-    /* Grove mener nedenstående er rigtig til fx "friheden" */
-    "PDFe" => array(
+    // Eks: linuxbog-frihed-pdf-5.7.pdf.gz
+    /* Grove siger nedenstående er rigtig til fx "friheden" */
+    "PDFb" => array(
       first => "linuxbog-",
       form => "-pdf-",
       last => ".pdf.gz"
     ),
-    /* zipzip - lad os få slettet dem
-    "PalmPilot" => array(
-      first => "linuxbog-",
-      form => "-palm-",
-      last => ".zip"
-    ),
-    */
     "Palm Pilot" => array(
       first => "linuxbog-",
       form => "-palm-",
