@@ -105,20 +105,12 @@ function form_filename( $bookname, $format ) {
     ),
     "web" => array(
       title => "Linux - Friheden til egen webserver",
-      comment => "Web og datadaser",
+      comment => "Web og databaser",
       auth => array(
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
-    )/*,
-    "kerne" => array(
-      title => "Linux - Friheden til kernen",
-      comment => "Forstå Linux-kernen til bunds",
-      auth => array(
-        "Jacob Laursen" => "lau@sslug.dk",
-        "Peter Toft" => "pto@sslug.dk"
-      )
-    )*/
+    )
   );
 
   // Bogpakker pakket på forskellige måder
@@ -148,12 +140,6 @@ function form_filename( $bookname, $format ) {
       first => "linux-",
       last => ".pdf.gz"
     ),
-/*
-    "Tekst" => array(
-      first => "linux-",
-      last => ".txt.gz"
-    ),
-*/
     "PalmPilot" => array(
       first => "linux-",
       last => ".palm.tgz"
@@ -164,11 +150,11 @@ function form_filename( $bookname, $format ) {
     )
   );
 
-  $bgcolor = array("#F0F0F0","#E8E8E8");
+  $bgcolor = array("#FFFFFF","#E8E8E8");
 
 ?>
 <h2>Vi har følgende bøger</h2>
-<a href="#matrix">Matrix med alle bøger</a>
+<a href="#matrix">Samlet bogoversigt</a>
 <p>
 Filtyper: 
 <?php
@@ -208,8 +194,68 @@ Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
 hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
 <p>
 
-Hvis der lige nu mangler hyperlinks til bøgerne, skyldes det at der ved at blive fremstillet en ny version.
-Den nye version er ca. klar om en time.
+Bøgerne kan også fås i
+<a href="http://www.plomus.dk/diverse/index.html#Linuxbog2Word">Microsoft Word format</a>.
+<p>
+
+<FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
+Vil du modtage E-post om nye versioner af bogen?
+<BR>Skriv din E-post adresse her
+<BR><INPUT TYPE=TEXT SIZE=40 NAME="required-email">
+<BR><INPUT TYPE=HIDDEN VALUE="http://www.sslug.dk/linuxbog" NAME="url">
+<INPUT TYPE=SUBMIT VALUE="Indsend form"></FORM>
+<p>
+
+Bøgerne redigeres af Peter Toft og Hans Schou
+&lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
+<br>
+Indholdet af bøgerne diskuteres på
+&lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
+<p>
+
+<hr>
+<a name="matrix"></a>
+<h2>Samlet bogoversigt</h2>
+<table border="1" cellspacing="0" cellpadding="3">
+<tr bgcolor="#F0F0FF"><th>Bøger/filtype</th>
+<?php
+
+  // Stor tabel med alle bøger og filtyper samlet.
+  reset($packs);
+  list($type) = current($packs);
+  while (list($type) = each($packs)) {
+    echo " <th>$type</th>\n";
+  }
+  echo "</tr>\n";
+  
+  $c = 0;
+  reset($books);
+  while (list($short,$desc) = each($books)) {
+    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n <td valign=\"top\">";
+    echo "<b>$desc[title]</b><font size=\"-1\"><br>$desc[comment]</font></td>\n";
+    reset($packs);
+    while (list($type,$attr) = each($packs)) {
+      echo " <td valign=\"top\"><font size=\"-1\">";
+      $filename = form_filename( $short, $attr );
+      $filetext = "$short $type";
+      if (!file_exists($filename)) {
+        echo "$filetext";
+        $date = " - ";
+      } else {
+        $filesize = fsize_text($filename);
+        $date = date("Y-m-d",filemtime($filename));
+        //echo "<br>$date<br>$filesize";
+				$linktext = "$date<br>$filesize";
+        echo href($filename,$linktext);
+      }
+      echo "</font></td>\n";
+    }
+    echo "</tr>\n";
+  }
+?>
+</table>
+<p>
+
 <?php
 
   echo "<hr><h2>Bøger</h2>\n";
@@ -219,7 +265,7 @@ Den nye version er ca. klar om en time.
   while (list($short,$desc) = each($books)) {
     echo "<a name=\"$short\"></a><h3>$desc->title</h3>\n";
     echo "$desc->comment";
-    echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n<tr>\n";
+    echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#F8F8E0\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
     echo "<th>Link</th>\n";
     echo "<th>Dato</th>\n";
@@ -256,7 +302,7 @@ Den nye version er ca. klar om en time.
   reset($packs);
   while (list($type,$attr) = each($packs)) {
     echo "<a name=\"".rawurlencode($type)."\"></a><h3>$type</h3>\n";
-    echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n<tr>\n";
+    echo "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" bgcolor=\"#E0F8F8\">\n<tr>\n";
     echo "<th>Bøger</th>\n";
     echo "<th>Link</th>\n";
     echo "<th>Dato</th>\n";
@@ -287,47 +333,6 @@ Den nye version er ca. klar om en time.
   }
 
 ?>
-<hr>
-<p>
-<a name="matrix"></a>
-<table border="1" cellspacing="0" cellpadding="3">
-<tr bgcolor="#F0F0FF"><th>Bøger/filtype</th>
-<?php
-
-  // Stor tabel med alle bøger og filtyper samlet.
-  reset($packs);
-  list($type) = current($packs);
-  while (list($type) = each($packs)) {
-    echo " <th>$type</th>\n";
-  }
-  echo "</tr>\n";
-  
-  $c = 0;
-  reset($books);
-  while (list($short,$desc) = each($books)) {
-    echo "<tr bgcolor=\"".$bgcolor[++$c & 1]."\">\n <td valign=\"top\">";
-    echo "<b>$desc[title]</b></td>\n";
-    reset($packs);
-    while (list($type,$attr) = each($packs)) {
-      echo " <td valign=\"top\"><font size=\"-1\">";
-      $filename = form_filename( $short, $attr );
-      $filetext = "$short $type";
-      if (!file_exists($filename)) {
-        echo "$filetext";
-        $date = " - ";
-      } else {
-        $filesize = fsize_text($filename);
-        echo href($filename,$filetext);
-        $date = date("Y-m-d",filemtime($filename));
-        echo "<br>$date<br>$filesize";
-      }
-      echo "</font></td>\n";
-    }
-    echo "</tr>\n";
-  }
-?>
-</table>
-
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
