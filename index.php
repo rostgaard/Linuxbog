@@ -106,8 +106,7 @@ function form_filename( $bookname, $format ) {
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
-    )
-  ),
+    ),
   "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
@@ -115,7 +114,8 @@ function form_filename( $bookname, $format ) {
        "Peter Toft" => "pto@sslug.dk",
        "Hans Schou" => "chlor@sslug.dk"
      )
-   );
+   )
+  );
 
 
   // Bogpakker pakket på forskellige måder
