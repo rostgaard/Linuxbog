@@ -411,7 +411,7 @@ if ($matrix) { ?>
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]<br>
-[<a href="http://cvs.sslug.dk/search">Søg i sgml-filer</a>]
+[<a href="http://cvs.sslug.dk/linuxbog/search">Søg i sgml-filer</a>]
 [<a href="hjaelpe.html">Om at hjælpe</a>]
 [<a href="http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html">Følg ændringer</a>]
 </font>
