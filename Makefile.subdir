@@ -121,6 +121,7 @@ pakhtml:
 html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
 	@echo "Target er HTML i" $(targetshortname)/bog
+	touch test.inc
 	rm -rf $(targetname)*
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -128,6 +129,7 @@ bog/index.html: $(sgmlfiler)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
 	cp *.inc tempdir
+	rm -f test.inc
 	(cd tempdir; jade -t sgml -E 1 -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	rm -rf tempdir
