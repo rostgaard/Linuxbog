@@ -519,13 +519,16 @@ if (count($notexists))
 [<a href="alle/bog/idx.html">Stikord</a>]
 </font>
 
-<p>Stikord:
-<a href="alle/bog/idx-symboler.html">Symbol</a>
+<p>
+Stikord:
 <?php
-	$c = 65;
-	while ($c < 91) {
-		echo "<a href=\"alle/bog/idx-".chr($c+32).".html\">&nbsp;".chr($c)."&nbsp;</a> \n";
-		$c++;
+	for ($c=65; $c < 91; $c++) {
+		if (file_exists($f = "idx-".chr($c+32).".html")) {
+			echo "<a href=\"$f\">&nbsp;".chr($c)."&nbsp;</a>\n";
+		}
+	}
+	if (file_exists($f = "idx-symboler.html")) {
+		echo "<a href=\"$f\">Symboler</a>\n";
 	}
 ?>
 </p>
