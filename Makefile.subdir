@@ -1,4 +1,14 @@
+#
+# Vi kræver SGML DocBook 3.1
+# ImageMagick skal installeres
+# tidy og Perl modulet Image::Size er ønskelige
+##
+#
+# Peter Toft <pto@sslug.dk> 
+# $Id$
+
 # Lokalt katalog (fuld sti)
+
 locdirname=$(shell pwd)
 
 # Kort navn
@@ -30,6 +40,14 @@ imagesize=$(wildcard /usr/lib/perl5/site_perl/5.005/Image/Size.pm)
 
 # Har vi tidy installeret?
 tidy=$(wildcard /usr/bin/tidy)
+
+# Cygnus path
+cygnusf=$(wildcard /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl )
+cygnus = $(firstword $(cygnusf))
+
+# Image Magick convert
+ImageMagickconvertf=$(wildcard /usr/bin/convert /usr/X11R6/bin/convert)
+ImageMagickconvert = $(firstword $(ImageMagickconvertf))
 
 # her er det der skal laves
 all:	html pspdf palmpilot sgml eksempelbackup exit
@@ -67,7 +85,7 @@ htmlfiler:
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V html-index bog.sgml)
+	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	rm -rf tempdir
 	db2html bog.sgml
@@ -78,10 +96,14 @@ htmlfiler:
 
 reparerhtml:
 ifneq   ("$(imagesize)","")
-	(cd bog;perl ../../misc/insertimagesize)	
+	(cd bog;perl ../../misc/insertimagesize)
+else
+	echo "Du bør installere Perl-modulet Image:Size"
 endif
 ifneq   ("$(tidy)","")
 	(cd bog;tidy -f err.txt -imu *html;rm -f err.txt)
+else
+	echo "Du bør installere tidy"
 endif
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
 
@@ -116,10 +138,10 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	perl ./collateindex.pl  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print -V html-index -V nochunks bog.sgml > ged.html)
+	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	mkdir bogps
-	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% /usr/X11R6/bin/convert -antialias images/%.png eps2:bogps/%.eps
+	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% $(ImageMagickconvert) -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	cp *.sgml bogps
 	(cd bogps; perl ../../httpsplit.pl *.sgml)
