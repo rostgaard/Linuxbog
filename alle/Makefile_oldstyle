@@ -40,7 +40,8 @@ all:	html palmpilot pspdf sgml exit
 sgml: $(targetname)-$(version).sgml.tar.gz
 
 $(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
-	tar cvzf $(targetname)-$(version).sgml.tar.gz *.sgml Makefile collateindex.pl
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
+        (cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
 palmpilot: $(targetname)-$(version).palm.zip
 
