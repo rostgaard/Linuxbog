@@ -1,4 +1,4 @@
-all: clean statusfiler html pspdf cvs2html mail
+all: clean statusfiler html palmpilot pspdf cvs2html mail
 
 statusfiler:
 	make -C friheden statusfiler
@@ -13,6 +13,13 @@ html:
 	make -C program html
 	make -C web html 
 	make -C sikkerhed html 
+
+palmpilot:
+	make -C friheden palmpilot
+	make -C admin palmpilot 
+	make -C program palmpilot
+	make -C web palmpilot 
+	make -C sikkerhed palmpilot 
 	       
 	       
 pspdf:	       
