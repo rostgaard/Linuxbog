@@ -1,11 +1,11 @@
-10 REM hello.bas - BASIC
-20 REM af Hans Schou <chlor@sslug.dk>
-30 REM $Id$
+#!/usr/bin/scriba
+rem af Peter Stubbe <stubbe@bitnisse.dk>
+rem $Id$
 
-40 REM Anvendt compiler: Chipmunk Basic http://www.nicholson.com/rhn/basic/
+rem Programmet er skrevet til ScriptBasic
+rem http://www.scriptbasic.com
+rem
+rem Afvikling:
+rem  ./hello.bas
 
-50 REM Afvikling:
-60 REM  ./basic hello.bas
-
-100 PRINT "Hello, world!"
-110 QUIT
+print "Hello, world!\n"

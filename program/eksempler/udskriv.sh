@@ -1,26 +1,25 @@
 #!/bin/sh
-
-# udskriv.sh
-# af David Axmark <david@mysql.com>
+# af Peter Stubbe <stubbe@bitnisse.dk>
 # $Id$
+# Afvikling:
+#  ./udskriv.sh fil+
 
-# afvikling:
-#  1. chmod +x udskriv.sh
-#  2. ./udskriv.sh filnavn
-
-LINIENR=1
-
-cat $1 | while IFS='' read LINIE
+while [ $1"x" != "x" ]
 do
-  echo "$LINIENR $LINIE"
-  LINIENR=`expr $LINIENR + 1`
+    read -t 1 key
+    if [ $key"x" == "Qx" ]
+    then
+	break
+    fi
+    if [ ! -e $1 ]
+    then
+	echo "filen $1 findes ikke!"
+	exit
+    fi
+# For eksemplets skyld er listningen udført med shell-kommandoer
+# selvom det ville være lettere (og hurtigere) at lave fx:
+#   awk '{lnr++; print lnr, $0}' $1
+    lnr=1
+    ( while read lin; res=$?; [ $res == "0" ] ; do echo -e $lnr"\t"$lin; lnr=`expr $lnr + 1`; done ) <$1
+    shift
 done
-
-while read SVAR
-do
-  if test "$SVAR" = "Q"
-  then
-    exit 0
-  fi
-done
-

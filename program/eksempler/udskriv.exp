@@ -1,0 +1,27 @@
+#!/usr/bin/expect -f
+# af Peter Stubbe <stubbe@bitnisse.dk>
+# $Id$
+
+# Afvikling:
+#  ./udskriv.exp fil+
+
+foreach fil $argv {
+    if {[ file exists $fil ] == 0} {
+	puts stderr "Kan ikke finde inputfil!"
+	continue
+    }
+    set fh [open $fil r]
+    set lnr 0
+    while {[gets $fh linie] >= 0} {
+	incr lnr
+	puts -nonewline $lnr
+	puts -nonewline "\t"
+	puts $linie
+	expect_user {
+	    q exit
+	    Q exit
+	    -timeout 0
+	}
+    }
+    close $fh
+}

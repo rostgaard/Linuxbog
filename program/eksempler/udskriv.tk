@@ -1,0 +1,30 @@
+#!/usr/bin/wish
+# af Peter Stubbe <stubbe@bitnisse.dk>
+# $Id$
+# Afvikling:
+#  ./udskriv.tk fil+
+frame .f
+pack .f -side top -fill both
+text .f.list -height 25 -width 80 -yscrollcommand ".f.yrul set"
+scrollbar .f.yrul -orient vert -command ".f.list yview"
+pack .f.yrul -side right -fill y
+pack .f.list -side left
+button .quit -text "Quit" -command exit
+pack .quit -side bottom
+foreach fil $argv {
+    if {[ file exists $fil ] == 0} {
+	.f.list insert end "Kan ikke finde inputfil!\n"
+	continue
+    }
+    set fh [open $fil r]
+    set lnr 0
+    while {[gets $fh linie] >= 0} {
+	incr lnr
+	.f.list insert end $lnr
+	.f.list insert end "\t"
+	.f.list insert end $linie
+	.f.list insert end "\n"
+    }
+    close $fh
+}
+

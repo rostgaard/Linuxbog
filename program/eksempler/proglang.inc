@@ -9,7 +9,7 @@ $proglang = array(
     navn => "Algol60",
     link => "algol.html"
   ),
-  "ada" => array(
+  "adb" => array(
     navn => "Ada",
     link => "ada.html"
   ),
@@ -53,17 +53,25 @@ $proglang = array(
     navn => "Comal?",
     link => "comal.html"
   ),
+  "erl" => array(
+    navn => "Erlang",
+    link => "erlang.html"
+  ),
   "exp" => array(
-    navn => "Expect(goto?)",
+    navn => "Expect",
     link => "expect.html"
   ),
   "f" => array(
     navn => "Fortran",
     link => "fortran.html"
   ),
-  "fth" => array(
-    navn => "Forth?",
+  "fs" => array(
+    navn => "Forth",
     link => "forth.html"
+  ),
+  "scm" => array(
+    navn => "Guile",
+    link => "guile.html"
   ),
   "java" => array(
     navn => "Java",
@@ -73,12 +81,16 @@ $proglang = array(
     navn => "JavaScript",
     link => "javascript.html"
   ),
-  "lsp" => array(
+  "occ" => array(
+    navn => "KRoC",
+    link => "kroc.html"
+  ),
+  "lisp" => array(
     navn => "Lisp",
     link => "lisp.html"
   ),
   "logo" => array(
-    navn => "Logo?",
+    navn => "Logo",
     link => "logo.html"
   ),
   "mdl" => array(
@@ -129,9 +141,13 @@ $proglang = array(
     navn => "Python",
     link => "python.html"
   ),
-  "rex" => array(
-    navn => "REXX?",
-    link => "rex.html"
+  "rexx" => array(
+    navn => "REXX",
+    link => "rexx.html"
+  ),
+  "p" => array(
+    navn => "RPilot",
+    link => "rpilot.html"
   ),
   "she" => array(
     navn => "Scheme?",
@@ -153,13 +169,17 @@ $proglang = array(
     navn => "Sendmail",
     link => "sendmail.html"
   ),
-  "smt" => array(
-    navn => "Smalltalk?",
+  "st" => array(
+    navn => "Smalltalk",
     link => "smalltalk.html"
   ),
   "tcl" => array(
     navn => "TCL",
     link => "tcl.html"
+  ),
+  "tk" => array(
+    navn => "TK",
+    link => "tk.html"
   ),
   "trn" => array(
     navn => "Trine",

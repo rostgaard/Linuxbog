@@ -1,0 +1,27 @@
+#!/bin/sh
+# af Peter Stubbe <stubbe@bitnisse.dk>
+# $Id$
+# Afvikling:
+#  http://localhost/cgi-bin/udskriv.sh-cgi?fil[&fil]*
+arg2=$1"\&"
+echo "Content-type: text/html"
+echo
+echo "<html><head><title>Fillistning</title></head><body>"
+echo "<pre>"
+while [ $1"x" != "x" ]
+do
+    arg1=`echo $arg2|sed "s/[\].*//"`
+    arg2=`echo $arg2|sed "s/$arg1[\]&//"`
+    if [ ! -e $arg1 ]
+    then
+	echo "filen $arg1 findes ikke!"
+	exit
+    fi
+# For eksemplets skyld er listningen udført med shell-kommandoer
+# selvom det ville være lettere (og hurtigere) at lave fx:
+#   awk '{lnr++; print lnr, $0}' $arg1
+    lnr=1
+    ( while read lin; res=$?; [ $res == "0" ] ; do echo -e $lnr"\t"$lin|sed "s/</\&lt;/g"; lnr=`expr $lnr + 1`; done ) <$arg1
+done
+echo "</pre>"
+echo "</body></html>"

@@ -1,0 +1,38 @@
+; af Peter Stubbe <stubbe@bitnisse.dk>
+; $Id$
+
+; Programmet er udviklet til ucblogo
+; |http://www.cs.berkeley.edu/~bh|
+;
+; Afvikling:
+;  logo udskriv.logo
+
+local "fil
+local "lnr
+local "lin
+local "ch
+print [Hvilken fil skal listes?]
+make "fil readword
+ifelse not file? thing "fil [
+  openread thing "fil
+  setread thing "fil
+  make "lnr 0
+  while [ not eof? ] [
+    make "ch readchar
+    make "lin "
+    while [ not equal? "10 ascii thing "ch ] [
+      make "lin word thing "lin thing "ch
+      ifelse not eof? [
+        make "ch readchar
+      ] [
+        make "ch char 10
+      ]
+    ]
+    make "lnr 1 + thing "lnr
+    print sentence thing "lnr thing "lin
+  ]
+  close thing "fil
+] [
+  print sentence thing "fil [kan ikke åbnes!] 
+]
+bye

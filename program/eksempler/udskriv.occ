@@ -1,0 +1,88 @@
+-- af Peter Stubbe <stubbe@bitnisse.dk>
+-- $Id$
+--
+-- Programmet er skrevet til KRoC
+-- Fås fx hos
+-- http://www.ee.surrey.ac.uk/Personal/R.Peel/occam
+--
+-- Oversættelse:
+--  kroc udskriv.occ -lfile -lhostio -lstring -lconvert
+--
+-- Afvikling:
+--  ./udskriv [fil]+
+
+#INCLUDE "filelib.inc"
+#USE "file.lib"
+#INCLUDE "hostio.inc"
+#USE "hostio.lib"
+#USE "string.lib"
+#USE "convert.lib"
+
+PROC skriv (CHAN OF BYTE out, VAL []BYTE txt)
+  SEQ i = 0 FOR SIZE txt
+    out ! txt[i]
+:
+
+
+PROC udskriv (CHAN OF BYTE stdin, stdout, stderr)
+  [2000]BYTE fnavn :
+  INT fd :
+  [5]BYTE tal :
+  [1]BYTE b :
+  INT res :
+  INT lnr :
+  [50]BYTE kom :
+  INT klen :
+  INT idx :
+  BOOL ok :
+  BYTE Q :
+  PAR
+    SEQ
+      Q:=' '
+      WHILE Q <> 'Q'
+        stdin ? Q
+    SEQ
+      OC.comdline(res, 0, klen, kom)
+      idx:=0
+      ok:=TRUE
+      next.word.from.line(kom, idx, res, fnavn, ok)
+      WHILE ok
+        SEQ
+          IF
+            NOT file.check.access(fnavn, F.OK)
+              SEQ
+                skriv(stderr, "Filen ")
+                skriv(stderr, fnavn)
+                skriv(stderr, " findes ikke!*n")
+            TRUE
+              SEQ
+                lnr:=1
+                file.open(fnavn, O.RDONLY, fd)
+                file.read(fd, b, res)
+                res:=1
+                SEQ i=0 FOR SIZE tal
+                  tal[i]:=0
+                INTTOSTRING(res, tal, lnr)
+                skriv(stdout, tal)
+                skriv(stdout, "*t")
+                WHILE res <> 0
+                  SEQ
+                    IF
+                      b[0] = '*n'
+                        SEQ
+                          skriv(stdout, "*n")
+                          lnr:=lnr+1
+                          SEQ i=0 FOR SIZE tal
+                            tal[i]:=0
+                          INTTOSTRING(res, tal, lnr)
+                          skriv(stdout, tal)
+                          skriv(stdout, "*t")
+                      TRUE
+                        skriv(stdout, b)
+                    file.read(fd, b, res)
+                file.close(fd)
+                skriv(stdout, "*n")
+          SEQ i=0 FOR SIZE fnavn
+            fnavn[i]:=0
+          next.word.from.line(kom, idx, res, fnavn, ok)
+:
