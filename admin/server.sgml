@@ -734,7 +734,7 @@ igennem gatewayen og ud på internettet vil det mislykkedes.
 
 </sect2>
 
-<sect2 id="om-dns">
+<sect2 id="dns">
 <title>Domain Name Service (DNS)</title>
 <indexterm><primary>Domain Name Service</primary></indexterm>
 <indexterm><primary>DNS</primary></indexterm>
@@ -1107,7 +1107,7 @@ for. Nedenfor er dette angivet i filen <filename>/var/named/root.cache</filename
 
 <listitem>
 <para>
-<filename>0.0.127.in-addr.arpa</filename> : Reverse lookup betyder, at
+<filename>0.0.127.in-addr.arpa</filename>: Reverse lookup betyder, at
 man har en IP adresse og gerne vil vide hvilket domæne denne
 tilhører. For at DNS serveren kan besvare denne slags forespørgsler
 kræves det at reverse zonerne bliver defineret.  Reverse zonen 127.0.0
@@ -1120,7 +1120,7 @@ derfor skal denne zone altid medtages.
 
 <listitem>
 <para>
-<filename>0.168.192.in-addr.arpa</filename> : Den anden (eller de
+<filename>0.168.192.in-addr.arpa</filename>: Den anden (eller de
 andre) reverse zoner er de 'rigtige' IP adresser.  Hvis man for
 eksempel råder over adresserne 192.168.0.1-192.168.0.254 laver man en
 reverse zone fil til disse IP numre. (De nævnte adresser er kun et
@@ -1131,7 +1131,7 @@ eksempel, de eksisterer ikke på Internettet da de er nogle af de
 
 <listitem>
 <para>
-<filename>kongeh.dk</filename> : Du skal også lave en fil, der kan
+<filename>kongeh.dk</filename>: Du skal også lave en fil, der kan
 "mappe" fra navn til IP-nummer for det domæne, du sætter op. I filen
 <filename>/var/named/kongeh.dk</filename> kan du erklære navne og
 aliases for alle maskiner.
@@ -2669,7 +2669,8 @@ Manualsiderne fra ypserv og  ypbind pakkerne. Find dem således:
 </sect1>
 
 
-<sect1 id="SAMBA">
+<sect1 id="SAMBA"> 
+<!-- Michael Rasmussem <mir@miras.org> og Lars Madsen <m@dsen.net> -->
 <title>Linux som server i Windows-netværk (SAMBA)</title>
 <indexterm><primary>SAMBA</primary></indexterm>
 <indexterm><primary>Filserver for Windows maskiner</primary></indexterm>
@@ -2685,7 +2686,7 @@ Windows computere, kan man med fordel kigge nærmere på SAMBA.
 </para>
 
 <para>
-SAMBA er Open Source Software og kan dermed erhverves og bruges helt gratis. I
+SAMBA er Open Source Software, og kan dermed erhverves og bruges helt gratis. I
 Danmark kan SAMBA bedst downloades fra <ulink
 url="http://sunsite.auc.dk/samba/samba.html">http://sunsite.auc.dk/samba/samba.html</ulink>,
 ellers fra <ulink
@@ -2725,6 +2726,8 @@ hentet rpm-pakken, skriver du bare:
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rpm -ivh samba-2.0.6-19991110.i386.rpm</USERINPUT>
 </screen>
 
+<sect2 id="SAMBA-UNIX">
+<title>Konfigurering af Sambaserveren i Linux</title>
 
 <para>
 Når du har fået installeret SAMBA serveren, skal du have den
@@ -2784,6 +2787,62 @@ som fil- og printerserver også konfigurerer SAMBA som domænekontroller.
 </screen>
 
 <para>
+For at dine windowsklienter skal få lov til at logge sig på
+sambaserveren, skal SAMBA kende til dem - ikke brugerne, men de
+enkelte maskiner. For at SAMBA vil vedkende sig en maskine, skal den
+have en Machine Trust Account (MTA), og til dette formål skal man
+benytte kommandoen <command>smbpasswd</command>. Samba skelner mellem
+de enkelte maskiner vha. et Machine ID, som den henter fra den enkelte
+maskine, når den logger på første gang.
+</para>
+
+<para>
+Sådan tildeles vores windowsklient en MTA:
+Først skal vi i filen <filename>/etc/passwd</filename> tilføje vores
+Windowsklient med det navn, som vi har givet den. Se hvordan
+senere. Dette gøres på følgende måde:
+</para>
+
+<para>
+Åbn <filename>/etc/passwd</filename> i en teksteditor, f.eks
+<command>pico</command>, og skriv følgende
+</para>
+
+<screen>
+WS1$:*:801:800:Arbejdsstation 1:/dev/null:/bin/false
+WS2$:*:802:800:Arbejdsstation 2:/dev/null:/bin/false
+			.
+			.
+			Osv.	
+</screen>
+
+
+<para>
+Bemærk: Der SKAL oprettes en tilsvarende MTA for hver Windowsklient,
+og hvis man f.eks opgraderer sit operativsystem, eller ændrer
+computernavn, skal denne procedure gentages.
+</para>
+
+<para>
+Når vi har tilføjet vores Windowsklient i
+<filename>/etc/passwd</filename>, skal vi få SAMBA til at generere
+vores MTA. Dette gøres med kommandoen
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>smbpasswd -a -m WS1</USERINPUT>
+</screen>
+
+<para>
+Efter vi har afviklet <command>smbpasswd</command>, vil man kunne se
+følgende linie i filen <filename>/etc/smbpasswd</filename>:
+</para>
+
+<screen>
+WS1$:801:996FE3676928F4D8F500944B53168930:85363C212E7D5363159422805AA1BE70:[W    ]:LCT-397A3E6E
+</screen>
+
+<para>
 Som noget nyt i version 2.x.x har man nu mulighed for at sætte SAMBA op som
 primær domænekontroller for et windows-netværk. Det vil dog føre for vidt at 
 komme ind på det her. Hvis man har mod på at prøve kan finde mere information her:
@@ -2808,7 +2867,7 @@ opsætningen af SAMBA.
 </FIGURE>
 
 
-<para> Her ses et eksempel hvordan <command>swat</command> ser ud, jeg
+<para> Her ses et eksempel på, hvordan <command>swat</command> ser ud, jeg
 har defineret et "share" (en delt mappe), der hedder spil. I
 <filename>smb.conf</filename> ser det således ud:
 </para>
@@ -2821,7 +2880,7 @@ har defineret et "share" (en delt mappe), der hedder spil. I
 </screen>
 
 <para>
-Hvis man bruger swat ser det således ud: 
+Hvis man bruger swat, ser det således ud: 
 </para>
 
 <FIGURE ID="swatspil-fig" FLOAT="1">
@@ -2832,10 +2891,9 @@ Hvis man bruger swat ser det således ud:
 
 
 <para>
-Her er det kun den øverste del af siden, der er taget med. Det skal
-bemærket at der findes en del
-andre indstillinger, der også kan sættes med swat. Den største fordel ved at
-benytte swat er man har adgang til hjælp.
+Her er det kun den øverste del af siden, der er taget med. Det skal bemærkes,
+at der findes en del andre indstillinger, der også kan sættes med swat. Den
+største fordel ved at benytte swat er, at man har adgang til hjælp.
 </para>
 
 <para>
@@ -2845,7 +2903,24 @@ konfigurationsværktøjer.
 indeholder en liste over disse.
 </para>
 
-<sect2 id="kryptpass">
+<para>
+Inden man kan gå videre til at konfigurere klienterne i ens netværk,
+er der yderligere to andre ting, der skal tages stilling til. Den
+første beslutning der skal tages, er, hvorvidt man ønsker at benytte
+krypterede password eller ej. Konfigurering af dette og en diskussion
+af fordele og ulemper følger i næste afsnit. Den anden beslutning
+angår, om man vil benytte TCP/IP eller Lanmanager (Netbios) til
+navneopslag. Hvis man vælger Lanmanager løsningen, er konfigureringen
+af Samba overstået på Linuxserveren, mens TCP/IP løsningen kræver, at
+der installeres DNS på Linuxserveren.
+</para>
+
+<para>
+Hvordan man installerer DNS på Linux, kan du læse mere om her. Se
+<xref linkend="DNS">.
+</para>
+
+<sect3 id="kryptpass">
 <title>Krypterede adgangskoder</title>
 
 <para>
@@ -2861,7 +2936,7 @@ Hvorvidt man vælger at bruge krypterede adgangskoder eller ej, er op til
 den enkelte at afgøre, da der er både fordele og ulemper, som listet
 nedenfor. Bruger man nyere versioner af MS Windows og NT vil vi dog
 anbefale at bruge kryptering, idet man slipper for at skulle
-konfigure alle sine klienter. Som det vil fremgå lidt senere er det uhyre
+konfigurere alle sine klienter. Som det vil fremgå lidt senere, er det uhyre
 enkelt at få SAMBA til at benytte krypterede adgangskoder.
 </para>
 
@@ -2909,19 +2984,20 @@ krypterede adgangskoder. Det betyder, at du har to valg:
 </LISTITEM>
 </ITEMIZEDLIST>
 </para>
+</sect3>
 
 <sect3 id="SAMBAconfig">
 <title>Konfigurering af SAMBA</title>
 <para>
-I modsætning til tidligere er SAMBA i dag født til kunne håndtere
-krypterede adgangskoder. Det eneste man skal gøre er at tilføje følgende
+I modsætning til tidligere er SAMBA i dag født til, at kunne håndtere
+krypterede adgangskoder. Det eneste man skal gøre, er at tilføje følgende
 linje til [global] sektionen i <filename>/etc/smb.conf</filename>
 </para>
 
 <screen>encrypt password = yes</screen>
 
 <para>
-Hvis man gerne vil have flyttet sine UNIX-adgangskoder over til SAMBA
+Hvis man gerne vil have flyttet sine UNIX-adgangskoder over til SAMBA,
 skal du lave en ny passwd-fil til brug for SAMBA alene. Der findes
 et program, der kan generere en SAMBA passwd-fil ud fra den
 eksisterende UNIX passwd-fil:
@@ -2935,7 +3011,7 @@ eksisterende UNIX passwd-fil:
 I SuSE 6.3 er <filename>smbpasswd.sh</filename> placeret i kataloget
 <filename>/usr/sbin</filename>, og katalogplaceringen skal med i
 kommandoen. Desuden har filen i den distribution ikke rettigheder til
-at kunne eksekveres, hvilken du således skal tildeles, før kommandoen udføres.
+at kunne eksekveres, hvilken den således skal tildeles, før kommandoen udføres.
 </para>
 
 <para>
@@ -2961,12 +3037,22 @@ er konfigureret. Hvis du gerne vil oversætte dit eget programmel, skal
 du anvende linkerflaget <filename>-lcrypt</filename> til LIBSM. 
 </para>
 </sect3>
+</sect2>
 
-<sect3 id="SAMBAconfigWin">
+<sect2 id="SAMBAconfigWin">
 <title>Konfigurering af Windows 98/NT</title>
+
 <para>
-På Windows 95/98 maskiner konfigurerer du krypteret password ved at
-ændre i en indgang i registry-databasen, så den ser således ud:
+Som udgangspunkt er Windows konfigureret til at sende krypterede
+password, så hvis man ikke ønsker kryptering skal dette fortælles til
+Windows, da man ellers ikke vil kunne logge sig på. Hvordan dette
+foregår, kan du læse om i det følgende afsnit.
+</para>
+
+<para>
+På Windows 95/98 maskiner skal følgende skrives i
+registreringsdatabasen, for at få Windows til at undlade at sende
+krypterede password:
 </para>
 
 <screen>
@@ -2984,9 +3070,286 @@ Tilsvarende for Windows NT:
 </screen>
 
 <para>
+Hvis man ikke har mod på at ændre i registreringsdatabasen selv, kan man kopiere
+en af følgende filer til sin Windowsmaskine af afvikle dem fra stifinder:
+
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para><filename>Win95_PlainPassword.reg</filename></para></LISTITEM>
+<LISTITEM><para><filename>Win98_PlainPassword.reg</filename></para></LISTITEM>
+<LISTITEM><para><filename>NT4_PlainPassword.reg</filename></para></LISTITEM>
+<LISTITEM><para><filename>Win2000_PlainPassword.reg</filename></para></LISTITEM>
+</ITEMIZEDLIST>
+
+Hvis man afvikler dem, vil ovenstående ændringer automatisk blive tilføjet i
+registreringsdatabasen. 
+</para>
+
+<para>
 En meget udførlig beskrivelse af brugen findes i filen 
 <filename>ENCRYPTION.txt</filename>, der følger med SAMBA-distributionen.
 </para>
+
+<sect3 id="configWinClient">
+<title>Konfigurering af klienterne</title>
+
+<para>
+Du har du konfigureret Samba på Linuxserveren samt besluttet dig for, om du vil
+benytte krypterede password eller ej, så det eneste du mangler er at få windows-
+klienterne til at tilslutte sig domænet. I den følgende afsnit vil vi anvise en
+løsning på dette. Der knytter sig følgende forudsætninger til det efterfølgende
+eksempel:
+</para>
+
+<para>
+Maskiner i vores netværk:
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>test.domain.net; Linuxserveren</para></LISTITEM>
+<LISTITEM><para>router.domain.net; Router til internet</para></LISTITEM>
+<LISTITEM><para>WS1.domain.net; Windows klient</para></LISTITEM>
+</ITEMIZEDLIST>
+</para>
+
+<para>
+Indhold af filen <filename>/etc/hosts</filename>
+<screen>
+127.0.0.1	localhost.localdomain	localhost
+192.168.1.1	test.domain.net		test
+172.10.10.1	router.domain.net	router
+</screen>
+</para>
+
+<para>
+Indhold af filen <filename>/etc/smb.conf</filename>
+<screen>
+[global]
+   workgroup = testdomain
+
+   printing = bsd
+   printcap name = /etc/printcap
+   load printers = yes
+
+   log file = /var/log/samba-log.%m
+
+   short preserve case = yes
+   preserve case = yes
+
+   lock directory = /var/lock/samba
+   locking = yes
+   strict locking = yes
+
+   security = user
+
+   socket options = TCP_NODELAY
+
+   domain master = yes
+   domain logons = yes
+
+[homes]
+   comment = Home Directories
+   read only = no
+   create mode = 0750
+
+[deskjet870cxi]
+   comment = All Printers
+   path = /var/spool/samba
+   browseable = yes
+   printable = yes
+; Set public = yes to allow user 'guest account' to print
+   public = no
+   writable = no
+   create mode = 0700
+</screen>
+</para>
+
+<para>
+for at kunne få forbindelse til samba-serveren, kræves der en fungerende
+løsning på navneopslag. Dette kan løses på 2 måder:
+</para>
+
+<para>
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM>
+<para>
+Hosts og Lmhosts - netbios way (har i øvrigt suffixet
+.sam): I disse filer skal samba-serveren være nævnt. Se eksempel på
+disse filer senere.
+</para> 
+</listitem>
+
+<LISTITEM>
+<para>
+Sæt linuxserveren til af
+køre named - tcp/ip way, og fortæl windows at den skal bruge
+linuxserveren som dns. Åbn indstillinger-&gt;kontrolpanel-&gt;netwærk.  Åbn
+egenskaber for TCP/IP. Under fanebladet Gateway tilføjes
+192.168.1.1.Under fanebladet DNS-konfiguration aktiveres DNS, i Vært
+skrives maskinens navn WS1 (det skal være det samme navn som blev
+angivet som Computernavn i fanebladet identifikation:
+Indstillinger-&gt;kontrolpanel-&gt;netværk), Domæne sættes til domain.net, i
+feltet Rækkefølge til søgning efter DNS-server tilføjes 192.168.1.1
+(hvis den står som den første, går det hurtigere).</para></LISTITEM>
+</ITEMIZEDLIST>
+</para>
+
+<para>
+DOMÆNENAVN: Workgroup/domainnavn må ikke være sammenfaldende med
+hostnavnet. Hvis samba, som i vores eksempel, kører på hosten
+test.domain.net, og har følgende stående i filen
+<filename>/etc/hosts</filename>:
+</para>
+
+<para>
+<screen>
+127.0.0.1 localhost.localdomain localhost
+192.168.1.1 test.domain.net test
+172.10.10.1 router.domain.net router
+</screen>
+</para>
+
+<para>
+er følgende navne ikke tilladt for workgroup/domain:
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>localhost.localdomain</para></LISTITEM>
+<LISTITEM><para>test.domain.net</para></LISTITEM>
+<LISTITEM><para>router.domain.net</para></LISTITEM>
+</ITEMIZEDLIST>
+</para>
+
+<para>
+ps. disse vil formentlig være ulovlige i sig selv, da de indeholder et
+forbudt tegn.
+</para>
+
+<para>
+<ITEMIZEDLIST MARK="bullet" SPACING="compact">
+<LISTITEM><para>localhost</para></LISTITEM>
+<LISTITEM><para>test</para></LISTITEM>
+<LISTITEM><para>router</para></LISTITEM>
+</ITEMIZEDLIST>
+</para>
+
+<para>
+I dette afsnit kommer så vores eksempel på, hvordan filerne
+<filename>Hosts</filename> og <filename>Lmhosts</filename> skal se ud.
+</para>
+
+<para>
+<filename>c:\windows\Hosts</filename>; Windows 95/98.
+<filename>c:\winnt\system32\drivers\etc\Hosts</filename>; Windows NT.
+</para>
+
+<screen>
+# Copyright (c) 1998 Microsoft Corp.
+#
+# This is a sample HOSTS file used by Microsoft TCP/IP stack for Windows98
+#
+# This file contains the mappings of IP addresses to host names. Each
+# entry should be kept on an individual line. The IP address should
+# be placed in the first column followed by the corresponding host name.
+# The IP address and the host name should be separated by at least one
+# space.
+#
+# Additionally, comments (such as these) may be inserted on individual
+# lines or following the machine name denoted by a '#' symbol.
+#
+# For example:
+#
+# 102.54.94.97 rhino.acme.com # source server
+# 38.25.63.10 x.acme.com # x client host
+
+127.0.0.1 localhost
+192.168.1.1 test
+172.10.10.1 router
+</screen>
+
+
+<para>
+<filename>c:\windows\Lmhosts</filename>; Windows 95/98.
+<filename>c:\winnt\system32\drivers\etc\Lmhosts</filename>; Windows
+NT.
+</para>
+
+<screen>
+# Copyright (c) 1998 Microsoft Corp.
+#
+# This is a sample LMHOSTS file used by the Microsoft Wins Client (NetBios
+# over TCP/IP) stack for Windows98
+#
+# This file contains the mappings of IP addresses to NT computernames
+# (NetBIOS) names. Each entry should be kept on an individual line.
+# The IP address should be placed in the first column followed by the
+# corresponding computername. The address and the comptername
+# should be separated by at least one space or tab. The "#" character
+# is generally used to denote the start of a comment (see the exceptions
+# below).
+#
+# This file is compatible with Microsoft LAN Manager 2.x TCP/IP lmhosts
+# files and offers the following extensions:
+#
+# #PRE
+# #DOM:&lt;domain&gt;
+# #INCLUDE &lt;filename&gt;
+# #BEGIN_ALTERNATE
+# #END_ALTERNATE
+# \0xnn (non-printing character support)
+#
+# Following any entry in the file with the characters "#PRE" will cause
+# the entry to be preloaded into the name cache. By default, entries are
+# not preloaded, but are parsed only after dynamic name resolution fails.
+#
+# Following an entry with the "#DOM:&lt;domain&gt;" tag will associate the
+# entry with the domain specified by &lt;domain&gt;. This affects how the
+# browser and logon services behave in TCP/IP environments. To preload
+# the host name associated with #DOM entry, it is necessary to also add a
+# #PRE to the line. The &lt;domain&gt; is always preloaded although it will not
+# be shown when the name cache is viewed.
+#
+# Specifying "#INCLUDE &lt;filename&gt;" will force the RFC NetBIOS (NBT)
+# software to seek the specified &lt;filename&gt; and parse it as if it were
+# local. &lt;filename&gt; is generally a UNC-based name, allowing a
+# centralized lmhosts file to be maintained on a server.
+# It is ALWAYS necessary to provide a mapping for the IP address of the
+# server prior to the #INCLUDE. This mapping must use the #PRE directive.
+# In addtion the share "public" in the example below must be in the
+# LanManServer list of "NullSessionShares" in order for client machines to
+# be able to read the lmhosts file successfully. This key is under
+#\machine\system\currentcontrolset\services\lanmanserver\parameters\nullsessionshares
+# in the registry. Simply add "public" to the list found there.
+#
+# The #BEGIN_ and #END_ALTERNATE keywords allow multiple #INCLUDE
+# statements to be grouped together. Any single successful include
+# will cause the group to succeed.
+#
+# Finally, non-printing characters can be embedded in mappings by
+# first surrounding the NetBIOS name in quotations, then using the
+# \0xnn notation to specify a hex value for a non-printing character.
+#
+# The following example illustrates all of these extensions:
+#
+# 102.54.94.97 rhino #PRE #DOM:networking #net group's DC
+# 102.54.94.102 "appname \0x14" #special app server
+# 102.54.94.123 popular #PRE #source server
+# 102.54.94.117 localsrv #PRE #needed for theinclude
+#
+# #BEGIN_ALTERNATE
+# #INCLUDE \\localsrv\public\lmhosts &lt;file://\\localsrv\public\lmhosts&gt;
+# #INCLUDE \\rhino\public\lmhosts &lt;file://\\rhino\public\lmhosts&gt;
+# #END_ALTERNATE
+#
+# In the above example, the "appname" server contains a special
+# character in its name, the "popular" and "localsrv" server names are
+# preloaded, and the "rhino" server name is specified so it can be used
+# to later #INCLUDE a centrally maintained lmhosts file if the "localsrv"
+# system is unavailable.
+#
+# Note that the whole file is parsed including comments on each lookup,
+# so keeping the number of comments to a minimum will improve performance.
+# Therefore it is not advisable to simply add lmhosts file entries onto the
+# end of this file.
+
+192.168.1.1 test #PRE #DOM:testdomain #net group's DC
+</screen>
+
 
 <para>
 Ud over man-siderne og dokumentationen, der installeres i
