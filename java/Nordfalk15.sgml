@@ -1,69 +1,45 @@
-<chapter>
-  <title>Undtagelser og køretidsfejl</title>
+<chapter id="java-exception">
+<title>Undtagelser og køretidsfejl</title>
 
-<para>  
-Indhold:
-</para>
+<para>Indhold:</para>
 
 <itemizedlist mark="bullet">
-  <listitem>
-
-<para>
-
-Forstå stakspor
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Fange undtagelser og udskrive stakspor
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Sende undtagelser videre og håndtere dem det rigtige
-  sted
-</para>
-
-</listitem>
+  <listitem><para>Forstå stakspor</para></listitem>
+  <listitem><para>Fange undtagelser og udskrive stakspor</para></listitem>
+  <listitem><para>Sende undtagelser videre og håndtere dem det rigtige sted</para></listitem>
 </itemizedlist>
 
 <para>
-Kapitlet forudsættes i resten af bogen, og evnen til at
-kunne læse et stakspor er vigtigt, når man skal finde
-fejl i sit program.
+  Kapitlet forudsættes i resten af bogen, og evnen til at
+  kunne læse et stakspor er vigtigt, når man skal finde
+  fejl i sit program.
 </para>
 
 <para>
-Forudsætter kapitel 4, Definition af klasser (kapitel 5, Nedarvning
-er en fordel).
+  Forudsætter kapitel 4, Definition af klasser (kapitel 5, Nedarvning
+  er en fordel).
 </para>
 
 <para>
-Som programmør skal man tage højde for
-fejlsituationer, som kan opstå, når programmet udføres.
-Det gælder f.eks. inddata fra brugeren, der kan være
-anderledes, end man forventede (brugeren indtaster f.eks.
-bogstaver et sted, hvor programmet forventer tal), og adgang til ydre
-enheder, som kan være utilgængelige, f.eks. filer,
-printere og netværket.
+  Som programmør skal man tage højde for
+  fejlsituationer, som kan opstå, når programmet udføres.
+  Det gælder f.eks. inddata fra brugeren, der kan være
+  anderledes, end man forventede (brugeren indtaster f.eks.
+  bogstaver et sted, hvor programmet forventer tal), og adgang til ydre
+  enheder, som kan være utilgængelige, f.eks. filer,
+  printere og netværket.
 </para>
 
 <para>
-Hvis programmet prøver at udføre en ulovlig
-handling, vil der opstå en <emphasis>undtagelse</emphasis> (eng.: Exception),
-og programudførelsen vil blive afbrudt på det sted, hvor
-undtagelsen opstod.
+  Hvis programmet prøver at udføre en ulovlig
+  handling, vil der opstå en <emphasis>undtagelse</emphasis> (eng.: Exception),
+  og programudførelsen vil blive afbrudt på det sted, hvor
+  undtagelsen opstod.
 </para>
 
 <para>
-Lad os undersøge nærmere, hvad der sker. Herunder
-prøver vi at indeksere ud over en vektors grænser:
+  Lad os undersøge nærmere, hvad der sker. Herunder
+  prøver vi at indeksere ud over en vektors grænser:
 </para>
 
 <screen>
@@ -82,6 +58,7 @@ public class SimpelUndtagelse
 }
 </screen>
 
+<para>og</para>
 
 <screen>
 Punkt A
@@ -92,65 +69,64 @@ java.lang.ArrayIndexOutOfBoundsException: 5 &gt;= 0
 Exception in thread &quot;main&quot;
 </screen>
 
-
 <para>
-Når vi kører programmet, kan vi se, at det stopper
-mellem punkt B og C med en fejl:
+  Når vi kører programmet, kan vi se, at det stopper mellem punkt B og C med en fejl:
 </para>
 
 <screen>
 java.lang.ArrayIndexOutOfBoundsException: 5 &gt;= 0
 </screen>
 
-
 <para>
-Den efterfølgende kode udføres ikke, og vi når
-aldrig punkt C.
+  Den efterfølgende kode udføres ikke, og vi når aldrig punkt C.
 </para>
 
-<blockquote><para>Programudførelsen afbrydes, når
-der opstår en undtagelse</para></blockquote>
+<blockquote>
+  <para>
+    Programudførelsen afbrydes, når der opstår en undtagelse
+  </para>
+</blockquote>
 
 <para>
-I dette kapitel vil vi illustrere, hvordan undtagelser opstår,
-og hvordan de håndteres. Af plads- og overskuelighedshensyn er
-eksemplerne ret små, og undtagelseshåndtering derfor
-ikke specielt nødvendig. Man skal forestille sig større
-situationer, hvor der opstår fejl, der ikke lige er til at
-gennemskue (i dette eksempel kunne der være meget mere kode ved
-punkt B).
-</para>
-
-<para>
-Man kan tænke på undtagelser som en slags protester.
-Indtil nu har vi regnet med, at objekterne pænt &quot;parerede
-ordre&quot;, når vi gav dem kommandoer eller spørgsmål
-(kaldte metoder). Fra nu af kan metoderne &quot;spænde
-ben&quot; og afbryde programudførelsen, hvis situationen
-er uacceptabel.
+  I dette kapitel vil vi illustrere, hvordan undtagelser opstår,
+  og hvordan de håndteres. Af plads- og overskuelighedshensyn er
+  eksemplerne ret små, og undtagelseshåndtering derfor
+  ikke specielt nødvendig. Man skal forestille sig større
+  situationer, hvor der opstår fejl, der ikke lige er til at
+  gennemskue (i dette eksempel kunne der være meget mere kode ved
+  punkt B).
 </para>
 
 <para>
-Det er det, som elementAt(5) på den tomme Vector gør:
-Som svar på &quot;giv mig element nummer 5&quot; kaster den
-ArrayIndexOutOfBoundsException og siger &quot;5 &gt;= 0&quot;, dvs.
-&quot;det kan jeg ikke, for 5 er større end antallet af
-elementer i vektoren, som er 0!&quot;.
-</para>
-
-<sect1>
-  <title>Almindelige undtagelser</title>
-
-<para>
-Ud over ArrayIndexOutOfBoundsException som beskrevet ovenfor kan
-der opstå en række andre fejlsituationer. De mest
-almindelige er kort beskrevet nedenfor.
+  Man kan tænke på undtagelser som en slags protester.
+  Indtil nu har vi regnet med, at objekterne pænt &quot;parerede
+  ordre&quot;, når vi gav dem kommandoer eller spørgsmål
+  (kaldte metoder). Fra nu af kan metoderne &quot;spænde
+  ben&quot; og afbryde programudførelsen, hvis situationen
+  er uacceptabel.
 </para>
 
 <para>
-Der opstår en undtagelse af typen NullPointerException, hvis
-man kalder metoder på en variabel, der ingen steder refererer
-hen (en objektreference, der er null):
+  Det er det, som elementAt(5) på den tomme Vector gør:
+  Som svar på &quot;giv mig element nummer 5&quot; kaster den
+  ArrayIndexOutOfBoundsException og siger &quot;5 &gt;= 0&quot;, dvs.
+  &quot;det kan jeg ikke, for 5 er større end antallet af
+  elementer i vektoren, som er 0!&quot;.
+</para>
+
+<sect1 id="java-exception-almindelige">
+<title>Almindelige undtagelser</title>
+
+<para>
+  Ud over ArrayIndexOutOfBoundsException som beskrevet ovenfor kan
+  der opstå en række andre fejlsituationer. De mest
+  almindelige er kort beskrevet nedenfor.
+</para>
+
+<para>
+  Der opstår en undtagelse af typen NullPointerException, hvis
+  man kalder metoder på en variabel, der ingen steder refererer
+  hen (en objektreference, der er null):
 </para>
 
 <screen>
@@ -158,16 +134,16 @@ hen (en objektreference, der er null):
     v.addElement(&quot;x&quot;);
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Exception in thread &quot;main&quot; java.lang.<emphasis>NullPointerException</emphasis>
         at SimpelUndtagelse.main(SimpelUndtagelse.java:6)
 </screen>
 
-
 <para>
-Hvis man laver aritmetiske udregninger, kan der opstå
-undtagelsen ArithmeticException, f.eks. ved division med nul:
+  Hvis man laver aritmetiske udregninger, kan der opstå
+  undtagelsen ArithmeticException, f.eks. ved division med nul:
 </para>
 
 <screen>
@@ -176,17 +152,17 @@ undtagelsen ArithmeticException, f.eks. ved division med nul:
     System.out.print(a/b);
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Exception in thread &quot;main&quot; java.lang.<emphasis>ArithmeticException: / by zero</emphasis>
         at SimpelUndtagelse.main(SimpelUndtagelse.java:7)
 </screen>
 
-
 <para>
-ClassCastException opstår, hvis man prøver at
-typekonvertere en objektreference til en type som objektet ikke er,
-f.eks. en Gade til et Rederi:
+  ClassCastException opstår, hvis man prøver at
+  typekonvertere en objektreference til en type som objektet ikke er,
+  f.eks. en Gade til et Rederi:
 </para>
 
 <screen>
@@ -194,6 +170,7 @@ f.eks. en Gade til et Rederi:
     Rederi r = (Rederi) f;
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Exception in thread &quot;main&quot; java.lang.<emphasis>ClassCastException: Gade</emphasis>
@@ -201,13 +178,13 @@ Exception in thread &quot;main&quot; java.lang.<emphasis>ClassCastException: Gad
 </screen>
 </sect1>
 
-<sect1>
-  <title>At fange og håndtere undtagelser</title>
+<sect1 id="java-exception-fangst">
+<title>At fange og håndtere undtagelser</title>
 
 <para>
-Undtagelser kan fanges og håndteres. Det gøres ved at
-indkapsle den kritiske kode i en try-blok og behandle eventuelle
-undtagelser i en catch-blok:
+  Undtagelser kan fanges og håndteres. Det gøres ved at
+  indkapsle den kritiske kode i en try-blok og behandle eventuelle
+  undtagelser i en catch-blok:
 </para>
 
 <screen>
@@ -225,26 +202,25 @@ undtagelser i en catch-blok:
 <emphasis>  ...                     // og hvis der opstod fejl af typen </emphasis>Undtagelsestype
 </screen>
 
-
 <para>
-Når programmet kører normalt, springes catch-blokken
-over. Hvis der opstår undtagelser i try-blokken, hoppes ned i
-catch-blokken, der håndterer fejlen, og derefter udføres
-koden efter catch.
+  Når programmet kører normalt, springes catch-blokken
+  over. Hvis der opstår undtagelser i try-blokken, hoppes ned i
+  catch-blokken, der håndterer fejlen, og derefter udføres
+  koden efter catch.
 </para>
 
 <para>
-Undtagelsestypen bestemmer, hvilke slags undtagelser der fanges.
+  Undtagelsestypen bestemmer, hvilke slags undtagelser der fanges.
 </para>
 
 <para>
-Man kan fange alle slags ved at angive Exception eller en bestemt
-slags undtagelser, f.eks. ArrayIndexOutOfBoundsException.
+  Man kan fange alle slags ved at angive Exception eller en bestemt
+  slags undtagelser, f.eks. ArrayIndexOutOfBoundsException.
 </para>
 
 <para>
-Ser vi på vores Vector-eksempel igen, kunne det med
-undtagelseshåndtering se sådan ud:
+  Ser vi på vores Vector-eksempel igen, kunne det med
+  undtagelseshåndtering se sådan ud:
 </para>
 
 <screen>
@@ -270,6 +246,7 @@ public class SimpelUndtagelse2
 }
 </screen>
 
+<para>Resultatet bliver</para>
 
 <screen>
 Punkt A
@@ -278,27 +255,26 @@ Der opstod en undtagelse!
 Punkt D
 </screen>
 
-
 <para>
-Læg mærke til, at punkt C (der ligger i try-blokken
-efter, at undtagelsen opstod) ikke bliver udført. Punkt D
-(efter catch-blokken) bliver udført under alle omstændigheder.
+  Læg mærke til, at punkt C (der ligger i try-blokken
+  efter, at undtagelsen opstod) ikke bliver udført. Punkt D
+  (efter catch-blokken) bliver udført under alle omstændigheder.
 </para>
 
-<sect2>
-  <title>Undtagelsesobjekter og deres stakspor</title>
+<sect2 id="java-exception-fangst-stakspor">
+<title>Undtagelsesobjekter og deres stakspor</title>
 
 <para>
-En undtagelse er ligesom alt andet i Java repræsenteret ved
-et objekt, og en reference til dette overføres som parameter
-til catch-blokken.
+  En undtagelse er ligesom alt andet i Java repræsenteret ved
+  et objekt, og en reference til dette overføres som parameter
+  til catch-blokken.
 </para>
 
 <para>
-Objektet har nyttige informationer om fejlen. Metoden
-printStackTrace() udskriver et stakspor
-(eng.: stack trace), der beskriver de metodekald, der førte
-til, at undtagelsen opstod:
+  Objektet har nyttige informationer om fejlen. Metoden
+  printStackTrace() udskriver et stakspor
+  (eng.: stack trace), der beskriver de metodekald, der førte
+  til, at undtagelsen opstod:
 </para>
 
 <screen>
@@ -311,6 +287,7 @@ til, at undtagelsen opstod:
     ...
 </screen>
 
+<para>Resultatet bliver</para>
 
 <screen>
 Punkt A
@@ -322,79 +299,48 @@ java.lang.ArrayIndexOutOfBoundsException: 5 &gt;= 0
 Punkt D
 </screen>
 
-
 <para>
-Staksporet er nyttigt, når man skal finde ud af, hvordan
-fejlen opstod. Det viser præcist, at undtagelsen opstod i
-elementAt() i Vector, som blev kaldt fra SimpelUndtagelse2.java i
-main()-metoden linie 11.
+  Staksporet er nyttigt, når man skal finde ud af, hvordan
+  fejlen opstod. Det viser præcist, at undtagelsen opstod i
+  elementAt() i Vector, som blev kaldt fra SimpelUndtagelse2.java i
+  main()-metoden linie 11.
 </para>
 </sect2>
 </sect1>
 
-<sect1>
-  <title>Undtagelser med tvungen håndtering</title>
+<sect1 id="java-exception-tvungen">
+<title>Undtagelser med tvungen håndtering</title>
 
 <para>
-Indtil nu har oversætteren accepteret vores programmer, hvad
-enten vi håndterede eventuelle undtagelser eller ej, dvs.
-det var helt frivilligt, om vi ville tage højde for de mulige
-fejlsituationer.
+  Indtil nu har oversætteren accepteret vores programmer, hvad
+  enten vi håndterede eventuelle undtagelser eller ej, dvs.
+  det var helt frivilligt, om vi ville tage højde for de mulige
+  fejlsituationer.
 </para>
 
 <para>
-Imidlertid er der nogle handlinger, der kræver håndtering,
-bl.a.:
+  Imidlertid er der nogle handlinger, der kræver håndtering,
+  bl.a.:
 </para>
 
 <itemizedlist mark="bullet">
-  <listitem>
-
-<para>
-
-læsning og skrivning af filer (kaster bl.a.:
-  FileNotFoundException, IOException)
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-netværkskommunikation (UnknownHostException,
-  SocketException, IOException)
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-databaseforespørgsler (SQLException)
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-indlæsning af klasser (ClassNotFoundException)
-</para>
-
-</listitem>
+  <listitem><para>læsning og skrivning af filer (kaster bl.a.: FileNotFoundException, IOException)</para></listitem>
+  <listitem><para>netværkskommunikation (UnknownHostException, SocketException, IOException)</para></listitem>
+  <listitem><para>databaseforespørgsler (SQLException)</para></listitem>
+  <listitem><para>indlæsning af klasser (ClassNotFoundException)</para></listitem>
 </itemizedlist>
 
 <para>
-Når programmøren kalder metoder, der kaster disse
-undtagelser, <emphasis>skal</emphasis> han fange dem.
+  Når programmøren kalder metoder, der kaster disse
+  undtagelser, <emphasis>skal</emphasis> han fange dem.
 </para>
 
-<sect2>
-  <title>Fange undtagelser eller sende dem videre</title>
+<sect2 id="java-exception-tvungen-kast">
+<title>Fange undtagelser eller sende dem videre</title>
 
 <para>
-Som eksempel vil vi indlæse en linie fra tastaturet og
-udskrive den på skærmen:
+  Som eksempel vil vi indlæse en linie fra tastaturet og
+  udskrive den på skærmen:
 </para>
 
 <screen>
@@ -411,13 +357,12 @@ public class TastaturbrugerFejl
 }
 </screen>
 
-
 <para>
-Metoden readLine() læser en linie fra datastrømmen
-(tastaturet), men når den udføres, kan der opstå
-en IOException-undtagelse.
-Oversætteren tvinger os til at tage højde for den mulige
-undtagelse:
+  Metoden readLine() læser en linie fra datastrømmen
+  (tastaturet), men når den udføres, kan der opstå
+  en IOException-undtagelse.
+  Oversætteren tvinger os til at tage højde for den mulige
+  undtagelse:
 </para>
 
 <screen>
@@ -425,18 +370,17 @@ TastaturbrugerFejl.java:8: unreported exception java.io.IOException; must be cau
               linie = ind.readLine();
 </screen>
 
-
 <para>
-Fejlmeddelelsen ville på dansk lyde: &quot;<emphasis>I
-TastaturbrugerFejl.java linie 8 er der en uhåndteret undtagelse
-IOException; den skal fanges, eller det skal erklæres, at den
-bliver kastet</emphasis>&quot;:
+  Fejlmeddelelsen ville på dansk lyde: &quot;<emphasis>I
+  TastaturbrugerFejl.java linie 8 er der en uhåndteret undtagelse
+  IOException; den skal fanges, eller det skal erklæres, at den
+  bliver kastet</emphasis>&quot;:
 </para>
 
 <para>
-Vi er tvunget til enten
-at <emphasis>fange undtagelsen</emphasis> ved at indkapsle koden i en
-try-catch-blok, f.eks.:
+  Vi er tvunget til enten
+  at <emphasis>fange undtagelsen</emphasis> ved at indkapsle koden i en
+  try-catch-blok, f.eks.:
 </para>
 
 <screen>
@@ -448,45 +392,45 @@ try-catch-blok, f.eks.:
 <emphasis>    }</emphasis>
 </screen>
 
-
 <para>
-eller
-<emphasis>erklære, at den bliver kastet</emphasis>, dvs. at den kan opstå
-i main(). Det gør man med ordet <emphasis>throws</emphasis>:
+  eller <emphasis>erklære, at den bliver kastet</emphasis>, dvs. at den kan opstå
+  i main(). Det gør man med ordet <emphasis>throws</emphasis>:
 </para>
 
 <screen>
   public static void main(String arg[]) <emphasis>throws IOException</emphasis>
 </screen>
 
-
 <para>
-Det sidste signalerer, at hvis undtagelsen opstår, skal
-metoden afbrydes helt, og kalderen må håndtere fejlen (i
-dette tilfælde er det systemet, der har kaldt main(), men
-oftest vil det være os selv).
+  Det sidste signalerer, at hvis undtagelsen opstår, skal
+  metoden afbrydes helt, og kalderen må håndtere fejlen (i
+  dette tilfælde er det systemet, der har kaldt main(), men
+  oftest vil det være os selv).
 </para>
 
-<blockquote><para>Undtagelser med tvungen håndtering
-skal enten fanges (med try-catch i metodekroppen) eller sendes videre
-til kalderen (med throws i metodehovedet)</para></blockquote>
+<blockquote>
+  <para>
+    Undtagelser med tvungen håndtering
+    skal enten fanges (med try-catch i metodekroppen) eller sendes videre
+    til kalderen (med throws i metodehovedet)
+  </para>
+</blockquote>
 </sect2>
 
-<sect2>
-  <title>Konsekvenser af at sende undtagelser videre</title>
+<sect2 id="java-exception-tvungen-konsekvens">
+<title>Konsekvenser af at sende undtagelser videre</title>
 
-<figure>
-<title>Java</title>
-
-<graphic fileref="Nordfalk1515447.&magic;" scale="60"></graphic>
+<figure id="java-exception-tvungen-konsekvens-fig">
+  <title>Java</title>
+  <graphic fileref="Nordfalk1515447.&magic;" scale="60"></graphic>
 </figure>
+
 <para>
-Det
-har konsekvenser at sende undtagelser videre, for da skal kalderen
-håndtere dem. Her er et eksempel: Lad os sige, at vi har
-uddelegeret læsningen fra tastaturet til en separat klasse, der
-kan læse en linie fra tastaturet med læsLinie() og evt.
-omsætte den til et tal med læsTal():
+  Det har konsekvenser at sende undtagelser videre, for da skal kalderen
+  håndtere dem. Her er et eksempel: Lad os sige, at vi har
+  uddelegeret læsningen fra tastaturet til en separat klasse, der
+  kan læse en linie fra tastaturet med læsLinie() og evt.
+  omsætte den til et tal med læsTal():
 </para>
 
 <screen>
@@ -521,15 +465,12 @@ public class Tastatur
 }
 </screen>
 
-
 <para>
-Herover fanger vi undtagelsen IOException ved dens &quot;rod&quot;
-i læsLinie().
+  Herover fanger vi undtagelsen IOException ved dens &quot;rod&quot; i læsLinie().
 </para>
 
 <para>
-Den kunne gøres simplere ved at fjerne håndteringen
-og erklære IOException kastet:
+  Den kunne gøres simplere ved at fjerne håndteringen og erklære IOException kastet:
 </para>
 
 <screen>
@@ -540,15 +481,12 @@ og erklære IOException kastet:
   }
 </screen>
 
-
 <para>
-Nu sender læsLinie() undtagelserne videre, så nu er
-det kalderens problem at håndtere den.
+  Nu sender læsLinie() undtagelserne videre, så nu er det kalderens problem at håndtere den.
 </para>
 
 <para>
-Vi kalder selv metoden fra læsTal(), så her er vi nu
-enten nødt til at fange eventuelle undtagelser:
+  Vi kalder selv metoden fra læsTal(), så her er vi nu enten nødt til at fange eventuelle undtagelser:
 </para>
 
 <screen>
@@ -565,10 +503,9 @@ enten nødt til at fange eventuelle undtagelser:
   }
 </screen>
 
-
 <para>
-... eller igen sende dem videre. Herunder er Tastatur igen, men
-IOException kastes nu videre fra begge metoder.
+  ... eller igen sende dem videre. Herunder er Tastatur igen, men
+  IOException kastes nu videre fra begge metoder.
 </para>
 
 <screen>
@@ -597,48 +534,47 @@ public class TastaturKasterUndtagelser
 }
 </screen>
 
-
 <para>
-Om man skal fange undtagelser eller lade dem &quot;ryge videre&quot;
-afhænger af, om man selv kan håndtere dem fornuftigt,
-eller kalderen har brug for at få at vide, at noget gik galt.
+  Om man skal fange undtagelser eller lade dem &quot;ryge videre&quot;
+  afhænger af, om man selv kan håndtere dem fornuftigt,
+  eller kalderen har brug for at få at vide, at noget gik galt.
 </para>
 
 <para>
-Hvad sker der f.eks. i Tastatur, hvis der opstår en
-undtagelse i læsLinie() kaldt fra læsTal()?
+  Hvad sker der f.eks. i Tastatur, hvis der opstår en
+  undtagelse i læsLinie() kaldt fra læsTal()?
 </para>
 
 <para>
-Jo, læsLinie() returnerer en null-reference til læsTal(),
-der sender denne reference til parseDouble(), der sandsynligvis
-&quot;protesterer&quot; med en NullPointerException, for man kan
-ikke konvertere null til et tal. Der opstår altså en
-følgefejl, fordi vi fortsætter, som om intet var hændt.
+  Jo, læsLinie() returnerer en null-reference til læsTal(),
+  der sender denne reference til parseDouble(), der sandsynligvis
+  &quot;protesterer&quot; med en NullPointerException, for man kan
+  ikke konvertere null til et tal. Der opstår altså en
+  følgefejl, fordi vi fortsætter, som om intet var hændt.
 </para>
 
 <para>
-I dette tilfælde må TastaturKasterUndtagelser altså
-siges at være bedst, selvom den altså giver kalderen mere
-arbejde.
+  I dette tilfælde må TastaturKasterUndtagelser altså
+  siges at være bedst, selvom den altså giver kalderen mere
+  arbejde.
 </para>
 </sect2>
 </sect1>
 
-<sect1>
-  <title>Præcis håndtering af undtagelser</title>
+<sect1 id="java-exception-praesis-haandtering">
+<title>Præcis håndtering af undtagelser</title>
 
 <para>
-Det kan have væsentlige konsekvenser, på hvilket
-niveau undtagelserne fanges, selv inden for samme metode.
+  Det kan have væsentlige konsekvenser, på hvilket
+  niveau undtagelserne fanges, selv inden for samme metode.
 </para>
 
 <para>
-Lad os bruge Tastatur til at lave et lille regneprogram, der
-lægger tal sammen. Vi spørger først brugeren,
-hvor mange tal det skal være (med læsTal()), og derefter
-kan han taste tallene ind. Til sidst spørger vi, om han
-vil prøve igen.
+  Lad os bruge Tastatur til at lave et lille regneprogram, der
+  lægger tal sammen. Vi spørger først brugeren,
+  hvor mange tal det skal være (med læsTal()), og derefter
+  kan han taste tallene ind. Til sidst spørger vi, om han
+  vil prøve igen.
 </para>
 
 <screen>
@@ -673,6 +609,7 @@ public class SumMedTastatur
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Hvor mange tal vil du lægge sammen? 2
@@ -688,10 +625,9 @@ Summen er: 9.0
 Vil du prøve igen? n
 </screen>
 
-
 <para>
-Brugeren taster og taster ... men hvad sker der, hvis han taster
-forkert?
+  Brugeren taster og taster ... men hvad sker der, hvis han taster
+  forkert?
 </para>
 
 <screen>
@@ -706,24 +642,22 @@ java.lang.NumberFormatException: 17xxøføf
         at SumMedTastatur.main(<emphasis>SumMedTastatur.java:18</emphasis>)
 </screen>
 
-
 <para>
-Her opstod en anden undtagelse: 17xxøføf kunne ikke
-konverteres til et tal. Igen er staksporet nyttigt til at finde
-fejlen (læst nedefra og op viser det, at main() i linie 18
-kaldte læsTal(), der i linie 27 kaldte parseDouble(), der er en
-del af standardbiblioteket.
+  Her opstod en anden undtagelse: 17xxøføf kunne ikke
+  konverteres til et tal. Igen er staksporet nyttigt til at finde
+  fejlen (læst nedefra og op viser det, at main() i linie 18
+  kaldte læsTal(), der i linie 27 kaldte parseDouble(), der er en
+  del af standardbiblioteket.
 </para>
 
 <para>
-Programmet afslutter, da try-catch-blokken er yderst. En smartere
-opførsel ville være, at den igangværende sum blev
-afbrudt, og brugeren blev bedt om at starte forfra.
+  Programmet afslutter, da try-catch-blokken er yderst. En smartere
+  opførsel ville være, at den igangværende sum blev
+  afbrudt, og brugeren blev bedt om at starte forfra.
 </para>
 
 <para>
-Det kan vi opnå ved at have try-catch <emphasis>inde</emphasis> i
-while-løkken:
+  Det kan vi opnå ved at have try-catch <emphasis>inde</emphasis> i while-løkken:
 </para>
 
 <screen>
@@ -758,6 +692,7 @@ public class SumMedTastatur2
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Hvor mange tal vil du lægge sammen? 5
@@ -773,39 +708,41 @@ Summen er: 1202.9
 Vil du prøve igen? n
 </screen>
 
-
 <para>
-Hvis en undtagelse opstår, smides den aktuelle sum væk,
-og programmet spørger brugeren om han vil prøve
-igen med en ny sum (efter catch-blokken). Svarer han ja, starter
-programmet forfra i while-løkken.
+  Hvis en undtagelse opstår, smides den aktuelle sum væk,
+  og programmet spørger brugeren om han vil prøve
+  igen med en ny sum (efter catch-blokken). Svarer han ja, starter
+  programmet forfra i while-løkken.
 </para>
 
 <para>
-Med omhyggelig placering af try-catch-blokke kan man altså
-kontrollere præcis hvordan programmet skal opføre sig i
-fejlsituationer:
+  Med omhyggelig placering af try-catch-blokke kan man altså
+  kontrollere præcis hvordan programmet skal opføre sig i
+  fejlsituationer:
 </para>
 
-<blockquote><para>Kode, hvori der kan opstå en
-undtagelse og efterfølgende afhængig kode, bør
-være i samme try-catch-blok</para></blockquote>
+<blockquote>
+  <para>
+    Kode, hvori der kan opstå en undtagelse og efterfølgende afhængig 
+    kode, bør være i samme try-catch-blok
+  </para>
+</blockquote>
 
 <para>
-I eksemplet ovenfor finder vi først antallet af tal med
-læsTal(). Hvis det går galt, giver det heller ikke mening
-at gå i gang med at udregne en sum, da vi ikke ved, hvor mange
-tal den skal bestå af.
+  I eksemplet ovenfor finder vi først antallet af tal med
+  læsTal(). Hvis det går galt, giver det heller ikke mening
+  at gå i gang med at udregne en sum, da vi ikke ved, hvor mange
+  tal den skal bestå af.
 </para>
 </sect1>
 
-<sect1>
-  <title>At fange flere slags undtagelser</title>
+<sect1 id="java-exception-flere-slags-undtagelser">
+<title>At fange flere slags undtagelser</title>
 
 <para>
-Ovenfor har vi behandlet alle undtagelser ens. Det er muligt at
-hægte flere catch-sætninger med hver sin type
-undtagelse på samme try-blok.
+  Ovenfor har vi behandlet alle undtagelser ens. Det er muligt at
+  hægte flere catch-sætninger med hver sin type
+  undtagelse på samme try-blok.
 </para>
 
 <screen>
@@ -830,16 +767,15 @@ undtagelse på samme try-blok.
     }
 </screen>
 
-
 <para>
-Alle undtagelses-klasser arver fra Exception, og man kan også
-fange <emphasis>enhver</emphasis> undtagelse, ved at fange deres fælles
-superklasse.
+  Alle undtagelses-klasser arver fra Exception, og man kan også
+  fange <emphasis>enhver</emphasis> undtagelse, ved at fange deres fælles
+  superklasse.
 </para>
 
 <para>
-Fejlhåndteringen bliver så generel, ligegyldigt
-hvilken type undtagelse der opstod
+  Fejlhåndteringen bliver så generel, ligegyldigt
+  hvilken type undtagelse der opstod
 </para>
 
 <screen>
@@ -856,51 +792,15 @@ hvilken type undtagelse der opstod
 </screen>
 </sect1>
 
-<sect1>
-  <title>Opgaver</title>
+<sect1 id="java-exception-opgaver">
+<title>Opgaver</title>
+
 <orderedlist>
-  <listitem>
-
-<para>
-
-Flyt try og catch i SumMedTastatur2 sådan, at
-  programmet smider den aktuelle sum væk og prøver igen,
-  men uden at spørge brugeren.
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Ret programmet, så det tæller antallet af gange,
-  en sum blev påbegyndt. Det er klart, at man skal tælle
-  en variabel op, men hvor skal optællingen placeres?
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Ret programmet, så det også tæller antallet
-  af gange, en sum blev korrekt afsluttet.
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Flyt try og catch sådan, at programmet smider den
-  aktuelle indtastning væk, men lader brugeren fortsætte
-  med at regne på den samme sum.
-</para>
-
-</listitem>
+  <listitem><para>Flyt try og catch i SumMedTastatur2 sådan, at  programmet smider den aktuelle sum væk og prøver igen, men uden at spørge brugeren.</para></listitem>
+  <listitem><para>Ret programmet, så det tæller antallet af gange, en sum blev påbegyndt. Det er klart, at man skal tælle en variabel op, men hvor skal optællingen placeres?</para></listitem>
+  <listitem><para>Ret programmet, så det også tæller antallet af gange, en sum blev korrekt afsluttet.</para></listitem>
+  <listitem><para>Flyt try og catch sådan, at programmet smider den  aktuelle indtastning væk, men lader brugeren fortsætte med at regne på den samme sum.</para></listitem>
 </orderedlist>
 
 </sect1>
 </chapter>
-
-
