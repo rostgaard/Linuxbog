@@ -59,14 +59,6 @@ function form_filename( $bookname, $format ) {
   // Bøger
   $books = array(
     // Bognavn, forkortet
-    "alle" => array(
-      title => "Linux - Friheden til at skrive bøger",
-      comment => "Samling af alle bøgerne",
-      auth => array(
-        "Peter Toft" => "pto@sslug.dk",
-        "Hans Schou" => "chlor@sslug.dk"
-      )
-    ),
     "friheden" => array(
       title => "Linux - Friheden til at vælge",
       comment => "En god begynderbog",
@@ -115,7 +107,16 @@ function form_filename( $bookname, $format ) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     )
-  );
+  ),
+  "alle" => array(
+     title => "Linux - Friheden til at skrive bøger",
+     comment => "Samling af alle bøgerne",
+     auth => array(
+       "Peter Toft" => "pto@sslug.dk",
+       "Hans Schou" => "chlor@sslug.dk"
+     )
+   );
+
 
   // Bogpakker pakket på forskellige måder
   // <first><$books><last>
