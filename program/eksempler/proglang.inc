@@ -1,5 +1,5 @@
 <?php
-
+/* $Id$ */
 /* HTML reference til selve bogen */
 $boghref = "/linuxbog/program/";
 
@@ -24,6 +24,10 @@ $proglang = array(
   "bet" => array(
     navn => "Beta?",
     link => "beta.html"
+  ),
+  "bf" => array(
+    navn => "Brainfuck",
+    link => "brainfuck.html"
   ),
   "c" => array(
     navn => "C",
