@@ -1,6 +1,7 @@
 <chapter id="kerne">
 <title>Linux-kernen</title>
 
+<!-- Lavet af Hanne Munkholm et al i "The Linux way" -->
 <sect1 id="Hovedkarakteristika">
 <title>Hovedkarakteristika ved Linux-kernen</title>
 
@@ -16,22 +17,22 @@ sørge for processor-tid til andre processer.
 
 <listitem> 
  <para>  
-  <emphasis>Multi-user access</emphasis>
+  <emphasis>Multi-bruger tilgang</emphasis>
 Linux tillader flere brugere at benytte systemet samtidigt.
  </para>
 </listitem>
 
 <listitem> 
  <para>
-  <emphasis>Demand load executables</emphasis>
-Kun de dele af et program, som faktisk er påkrævet for eksekveringen
-er load'et ind i hukommelsen. Når en ny proces er skabt ved hjælp af
-fork(), afsættes der ikke straks hukommelse, men i stedet bruges
-hukommelsen fra "parent" processen af begge processer. Hvis den nye
-proces så på et tidspunkt søger adgang til en del af hukommelsen i
-"write mode", kopieres denne sektion før den ændres. Dette koncept
-kendes som "copy-on-write"; det er med til at øge hastigheden og sænke
-hukommelsesforbruget.
+  <emphasis>Demand load executables</emphasis> Kun de dele af et
+program, som faktisk er påkrævet for eksekveringen bliver hentet ind i
+hukommelsen. Når en ny proces er skabt ved hjælp af
+<command>fork()</command>, afsættes der ikke straks hukommelse, men i
+stedet bruges hukommelsen fra "parent" processen af begge
+processer. Hvis den nye proces så på et tidspunkt søger adgang til en
+del af hukommelsen i "write mode", kopieres denne sektion før den
+ændres. Dette koncept kendes som "copy-on-write"; det er med til at
+øge hastigheden og sænke hukommelsesforbruget.
  </para>
 </listitem>
 
@@ -52,13 +53,13 @@ harddisken, hvilket er betydeligt mindre effektivt.
 
 <listitem> 
  <para>
- <emphasis>Dynamisk cache for harddisken</emphasis>
-Brugere af MS-DOS er kendt med behovet for at reservere hukommelse af
-en bestemt størrelse til harddisk cache programmer som SMARTDRIVE.
-Linux justerer dynamisk størrelsen af cache hukommelse som bruges, for
-at tilpasse sig den nuværende hukommelsessituation. Hvis der ikke er
-mere hukommelse tilbage på et givent tidspunkt, reduceres størrelsen
-af cachen for at frigive hukommelse. Når først hukommelse er frigivet,
+ <emphasis>Dynamisk cache for harddisken</emphasis> Brugere af MS-DOS
+og Windows er kendt med behovet for at reservere hukommelse af en
+bestemt størrelse til harddisk cache programmer som SMARTDRIVE.  Linux
+justerer dynamisk størrelsen af cache hukommelse som bruges, for at
+tilpasse sig den nuværende hukommelsessituation. Hvis der ikke er mere
+hukommelse tilbage på et givent tidspunkt, reduceres størrelsen af
+cachen for at frigive hukommelse. Når først hukommelse er frigivet,
 øges cache området igen.
  </para>
 </listitem>
@@ -66,13 +67,13 @@ af cachen for at frigive hukommelse. Når først hukommelse er frigivet,
 
 <listitem> 
  <para>
- <emphasis>Shared libraries</emphasis>  
-Libraries er samlinger af rutiner, som er nødvendige for
+ <emphasis>Shared libraries</emphasis> Libraries (på dansk;
+biblioteker) er samlinger af rutiner, som er nødvendige for
 data-processing for et program. Linux har et antal standard libraries,
 der bruges af flere processer ad gangen. Det er derfor fornuftigt at
-load'e programkoden for disse libraries ind i hukommelsen én gang for
+indlæse programkoden for disse libraries ind i hukommelsen én gang for
 alle. Dette muliggøres ved hjælp af shared libraries. Da disse kun
-loades til programkoden når processen eksekveres, kendes de også som
+indlæses til programkoden når processen eksekveres, kendes de også som
 dynamisk linked libraries (dll).
  </para>
 </listitem>
@@ -83,7 +84,7 @@ Understøttelse for POSIX 1003.1 standard og delvis System V og BSD
 POSIX 1003.1 definerer et minimum interface for et UNIX type
 operativsystem. Dette interface er beskrevet i C-funktion
 deklarationer. Denne standard understøttes nu af alle nyere og
-relativt sofistikerede UNIX-systemer. Linux i dag  understøtter
+relativt sofistikerede UNIX-systemer. I dag understøtter Linux
 tilnærmelsesvis POSIX 1003.1. Yderligere system-grænseflader for UNIX
 udviklingsliner System V og BSD er også implementeret. 
  </para>
@@ -93,25 +94,14 @@ udviklingsliner System V og BSD er også implementeret.
 <listitem> 
  <para>
  <emphasis>Forskellige formater for eksekverbare filer</emphasis>
-Da det meste software i dag er skrevet til MS-DOS eller MS-Windows, er
+Da det meste software i dag er skrevet til MS-Windows, er
 det ønskværdigt at kunne køre programmer til disse systemmiljøer under
 Linux. Derfor er emulatorer for MS-DOS og MS-Windows under udvikling.
 Linux kan også eksekvere programmer fra andre INTEL-baserede
 UNIX-systemer, som går under iBCS2 standard. Dette inkluderer f.eks.
 mange kommercielle programmer brugt under SCO UNIX. iBCS2 emulering er
-endnu ikke del af standard kernen, men den kan download'es fra
+endnu ikke del af standard kernen, men den kan hentes fra
 Internettet.
- </para>
-</listitem>
-
-<listitem> 
- <para>
- <emphasis>Emulering af matematisk co-processorer i kernen</emphasis>
-Linux kan emulere den matematiske co-processor i387, hvis den ikke
-findes i systemet. Det vil sige, at programmer ikke behøver at checke,
-om der er co-processor til stede. Hvis der ikke er, udføres de
-relevante kommandoer i exception handle rutiner. Fra programmørens
-side er tilstedeværelsen af en co-processor altså transparent.
  </para>
 </listitem>
 
@@ -119,7 +109,7 @@ side er tilstedeværelsen af en co-processor altså transparent.
  <para>
  <emphasis>Understøttelse for nationale keyboards og fonte</emphasis>
 Under Linux kan mange nationale keyboards og fonte anvendes.
-ISO-standarden definerer Latin1 sættet, som bl.a. også inkluderer
+ISO-standarden definerer Latin1 tegnsættet, som bl.a. også inkluderer
 europæiske specialtegn.
  </para>
 </listitem>
@@ -130,22 +120,19 @@ europæiske specialtegn.
 Linux understøtter forskellige filsystemer. Det mest almindeligt
 brugte filsystem er Second Extended (Ext2) File System. Dette
 understøtter filnavne op til 255 tegn, og har et antal træk der gør
-det mere sikkert end almindelige UNIX filsystemer. Et andet filsystem,
-som også er implementeret, er MS-DOS filsystemet FAT. Det betyder, at
-man kan få adgang til data i en MS-DOS-partition på samme måde som i
-en Linux-partition, men i MS-DOS systemet understøttes ejerskab kun
-for hele filsystemet. Desuden understøtter Linux UMSDOS filsystemet,
-som også tillader pseudofiler og UNIX access autorisationer inden for
-et MS-DOS filsystem. Ved hjælp af ISO 9660 filsystemet kan brugeren få
-adgang til data på CD-rom. I netværk kan man få adgang til filsystemet
-på andre systemer transparent ved hjælp af NFS (Network File System).
-Linux understøtter desuden VFAT systemet, som bruges af Windows 95 til
-lange filnavne. Andre filsystemer, der understøttes er OS/2's HPFS
-(read only) og System V filesystem. Grunden til at HPFS er read-only
-er at dokumentationen for det ikke er tilgængelig. Ingen har turdet
-tage ansvaret for at lave en implementering der måske kunne ødelægge
-nogens filsystem. Linux kernel 2.0 understøtter ikke NTFS og FAT32,
-men det er på vej i kernel 2.2.
+det mere sikkert end almindelige UNIX filsystemer. Det er dog ikke et
+<emphasis>Journaling filesystem</emphasis>, som giver endnu større
+sikkerhed imod datatab. I kerne 2.4.1 kan man med ReiserFS få et 
+Journaling filesystem.
+</para>
+
+<para>
+Oftest anvendes ext2-diskformat, men Linux kan læse og skrive et hav
+af andre disk-formater, FAT, vfat, NTFS (kun læse), UDF (DVD-format),
+ISO 9600 (cdrom-format) og mange andre.
+I netværk kan
+man få adgang til filsystemet på andre systemer transparent ved hjælp
+af NFS (Network File System) eller SMB (Windows filshare).
  </para>
 </listitem>
 
@@ -189,10 +176,11 @@ Linux understøtter virtuelle konsoller. Tastekombinationen &lt;ALT&gt; +
 
 <listitem> 
  <para>
- <emphasis>Multiprocessing</emphasis>
-Fra kernel 2.0 understøtter Linux symmetrisk multiprocessing -
-samtidig kørsel af processer på et antal processorer - op til 16
-processorer.
+ <emphasis>Multiprocessing</emphasis> Fra kernel 2.0 understøtter
+Linux symmetrisk multiprocessing - samtidig kørsel af processer på et
+antal processorer - op til 16 processorer. I kerne 2.2-serien var man
+i praksis begrænset til 4 processorer, mens man med kerne 2.4-serien
+kan opnå skalerbar performance på 16 og 32 processorer.
  </para>
 </listitem>
 </itemizedlist>
@@ -201,35 +189,50 @@ processorer.
 
 <sect1 id="Linux-er-ikke">
 <title>Linux er ikke</title>
+<indexterm><primary>Realtids Linux</primary></indexterm>
 <para>
 Linux er ikke et real-time system. Bl.a. virtual memory gør det
 umuligt for Linux at overholde kravene til et "hard" real-time system,
 men det kan laves mere real-time end det er i dag, bl.a. ved at
-arbejde med scheduling'en og optimere interruptene. PTO
+arbejde med scheduling'en og optimere interruptene. Det er bl.a. et
+projekt RTLinux, som har lavet en overbygning på kernen til realtidsbrug.
 </para>
 
 <para>
-Linux er ikke en microkernel (minimal kerne med veldefinerede
-grænseflader, så ydre dele nemt kan skiftes ud), men er opbygget som
-en monolitisk kerne. PTO
+Linux var tidligere (før kerne 2.0) en monolitisk kerne, mens man med
+kerne 2.0 fik adgang til at lave kerne-moduler. Dette var en nødvendig
+måde at kunne understøtte meget forskellig hardware på. To brugere med
+forskelligt lydkort anvender hvert sit kernemodul, og derfor har de to
+brugere ikke unødvendig meget program-kode læst ind i hukommelsen.
 </para>
 
+<indexterm><primary>PVM</primary></indexterm>
+<indexterm><primary>MPI</primary></indexterm>
+<indexterm><primary>Parallel udførelse af
+programmer</primary></indexterm>
+<indexterm><primary>cluster</primary></indexterm>
 <para>
 Linux er ikke et distribueret operativsystem - alting foregår på én
-maskine. MOSIX
+maskine. Ovenpå Linux kan man så køre systemer såsom PVM og MPI til at
+afvikle programmer på mange maskiner. Både PVM og MPI starter
+processer på på flere maskiner, udveksler data mellem maskinerne og
+udnytter den store fælles datakapacitet til at køre programmerne i
+parallel. Dette kræver dog at programmerne er skræddersyet til det.
+Linux kan også snildt bruges til at lave et cluster af maskiner. Med
+MOSIX <ulink url="http://www.mosix.org">http://www.mosix.org</ulink>
+kan man binde en række maskiner sammen, så de udefra ser ud om en stor
+maskine. MOSIX-clusteret fordeler selv programmerne efter laveste
+belastning af de enkelte maskiner og man kan transparent flytte
+programmer fra en maskine til den næste. Det er særdeles elegang.
 </para>
+
 
 <para>
 Linux er ikke sikret efter de strengeste sikkerhedsprincipper, men der
 er indbygget en vis beskyttelse mod uforvarende at komme til at
-ødelægge systemet.
+ødelægge systemet. Brugeren har ikke adgang til alle system-filer, og
+kan ikke slette andet end egne filer.
 </para>
-
-<para>
-Linux kan ikke køre på en '286 eller ældre maskine, da den udnytter
-'386's virtual memory faciliteter.
-</para>
-
 </sect1>
 
 <sect1 id="proces-management">
@@ -241,7 +244,7 @@ betyder at flere programmer kan kører på én computer samtidig, og
 dermed også at flere personer kan bruge én computer som server
 samtidig. For brugeren ser det ud som om programmerne kører parallelt
 og at flere processer dermed har CPU'en samtidig. Dette fungerer i
-praksis ved at hver proces har CPU'en i et bestemt tidsrum, hvorefter
+praksis ved, at hver proces har CPU'en i et bestemt tidsrum, hvorefter
 den ryger bag i en kø og næste proces hentes ind (multi-tasking).
 </para>
 
@@ -249,26 +252,7 @@ den ryger bag i en kø og næste proces hentes ind (multi-tasking).
 Linux understøtter, ligesom UNIX, ægte multi-tasking. Alle processer
 kører helt uafhængigt af hinanden, så ingen processer behøver at tage
 højde for at give processor-tid til andre processer. Hver proces har
-et memory-område, som er beskyttet mod ændringer fra andre processer.
-</para>
-
-<para>
-Linux i kerne version 2.0 eller senere understøtter multi-processing for
-op til 16 processorer. Multiprocessing er samtidig kørsel af processer
-på flere processorer. PTO
-</para>
-
-<para>
-Der er gjort forsøg på at understøtte multi-threading. Threads er dele
-af en proces, som i multi-threading systemer kan køre parallelt, som
-regel i samarbejde om en fælles opgave. Multi-threading er nyttigt
-fordi 2 threads har mere til fælles end 2 tilfældige processer, så det
-tager ikke så langt tid at skifte mellem 2 threads som imellem 2
-processer. Der er gjort forsøg på at implementere en slags threads i
-Linux med systemkaldet clone. Dette er dog stadig på et niveau, hvor
-det kan betragtes som et udokumenteret systemkald. Man kan således
-endnu ikke sige, at Linux understøtter multi-threading, men måske
-kommer det til det.
+et hukommelses-område, som er beskyttet mod ændringer fra andre processer.
 </para>
 
 <sect2 id="Processtruktur">
@@ -276,12 +260,12 @@ kommer det til det.
   
 <para>
 Det vigtigste og mest specielle ved et multi-tasking system er
-processerne og processtrukturen. En proces er et program, som er under
+processerne og proces-strukturen. En proces er et program, som er under
 udførelse.
 </para>
 
 <para>
-x86 arkitekturen understøtter 4 privelege modes (eller levels), hvor
+x86 arkitekturen understøtter 4 "priviledge" modes (eller levels), hvor
 mode 0 er den mest privilegerede og 3 den mindst privilegerede. Et
 kørende program vil altid være i en af disse modes.
 </para>
@@ -292,6 +276,7 @@ skelne mellem user mode og kernel mode kan man forhindre, at brugeren
 har direkte adgang til de forskellige I/O devices.
 </para>
 
+<indexterm><primary>Kernel mode</primary></indexterm>
 <para>
 Der er kun adgang til disse fra kernel mode, og alle brugerprogrammer
 kører i user mode. Brugerprogrammer har derved kun adgang til I/O
@@ -327,7 +312,7 @@ eller et systemkald.
 <listitem> 
  <para>
  <emphasis>Interrupt-rutine</emphasis>
-Interrupt-rutinen bliver aktiv når der kommer et hardware signal,
+Interrupt-rutinen bliver aktiv, når der kommer et hardware signal,
 f.eks. nye input fra keyboard.
  </para>
 </listitem>
@@ -377,9 +362,9 @@ proces bliver child-proces til den proces, der udførte
 <para>
 Den nye proces bliver oprettet ved at lave en næsten identisk kopi af
 den proces der kaldte <command>fork()</command>. Ofte er det første,
-en ny proces gør, at udføre et execve kald, som overskriver den
-nedarvede kode, stak, registre mv., så den ikke længere er en kopi af
-parentprocessen, men en ny proces.
+en ny proces gør, at udføre et <command>execve</command>-kald, som
+overskriver den nedarvede kode, stak, registre mv., så den ikke
+længere er en kopi af parentprocessen, men en ny proces.
 </para>
 
 <para>
@@ -423,10 +408,11 @@ undtagen for set-UID programmer. I disse programmer bliver euid og
 egid sat til user ID og gruppe ID for ejeren af den eksekver-bare fil.
 På denne måde er det muligt for superuseren at give almindelige
 brugere adgang til programmer, der bruger superuser power, på en
-kontrolleret måde. Et set-UID program er et program hvor
+kontrolleret måde. Et set-UID program er et program, hvor
 set-UID-bitten er sat. Af sikkerhedsårsager understøtter Linux kun
 set-UID på binære filer, ikke på shell scripts.
 </para>
+
 </sect2>
 </sect1>
 
@@ -652,8 +638,14 @@ medarbejdere.
 
 <para>
 Med hardware kan man nu samtidigt understøtte 16 Ethernet kort, 10 IDE
-controllere, UDMA, og meget andet. Alt i alt har Linux taget et stort spring
+controllere, og meget andet. Alt i alt har Linux taget et stort spring
 fremad med hensyn til high-end Linux området.
+</para>
+
+<para>
+Ultra-DMA 66 eller 100 er nu med i kerne 2.4. Det er noget som har
+været meget efterspurgt, da mange nye harddisk-controllere har været
+af den type.
 </para>
 
 <para>
@@ -674,8 +666,8 @@ Linux-kernen på linie med USB.
 
 <para>
 USB understøttelse er ny i Linux-kernen. USB tastatur og mus skulle
-virke fint, men der kan sikkert være specielle USB kameraer som ikke
-virker. 
+virke fint, men der kan godt være at din USB skanner eller kamera ikke
+virker, da USB standarden stadig er under udvikling.
 </para>
 
 <para>
@@ -713,11 +705,12 @@ som eksperimentel. Man kan således ikke forvente, at dette er 100% ok.
 <para>
 Under <filename>/dev</filename> har man tidligere haft devices,
 dvs. indgange til hardware, såsom harddisk
-<filename>/dev/hda</filename>. Med kerne 2.4 kan man anvende DevFS,
-som er en total restrukturering af <filename>/dev</filename>, så man
-ikke længere har ekstremt mange filer i <filename>/dev</filename>, men
-i stedet får man en hierakisk opbygning med mange underkataloger. Som
-eksempel vil man ikke længere kunne finde
+<filename>/dev/hda</filename>. Med kerne 2.4 <emphasis>kan
+man</emphasis> anvende DevFS, som er en total restrukturering af
+<filename>/dev</filename>, så man ikke længere har ekstremt mange
+filer i <filename>/dev</filename>, men i stedet får man en hierakisk
+opbygning med mange underkataloger. Som eksempel vil man ikke længere
+kunne finde
 <filename>/dev/hda1</filename>-<filename>/dev/hda16</filename>, men i
 stedet have tilsvarende filer under <filename>/dev/ide0/</filename> -
 altså en niveau længere nede.
