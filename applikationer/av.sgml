@@ -379,4 +379,620 @@ som ligner noget for forrige århundrede - se selv på
 </sect1>
 
 
+<sect1 id="spille-film">
+<title>DVD Afspilning</title>
+<indexterm><primary>DVD afspilning</primary></indexterm>
+<indexterm><primary>DVD</primary></indexterm>
+
+<para>
+Hvis du har en DVD-afspiller (DVD ROM) i din computer, har du
+mulighed for at afspille DVD-film.
+I dette afsnit skal vi se nærmere på mulighederne for at afspille
+DVD-film i Linux.
+</para>
+
+<sect2 id="dvdbaggrundsinfo">
+<title>Lidt baggrundsinformation</title>
+
+<para>
+I forbindelse med afspilning af DVD-film er der nogle konkrete
+fakta, som er gode at have kendskab til, specielt hvis der bliver
+brug for fejlfinding. Disse fakta er beskrevet i det følgende.
+</para>
+<para>
+Du kan vælge at springe denne del over og gå direkte til
+afsnittene om de forskellige software DVD-afspillere. Hvis du
+ikke umiddelbart kan få DVD-afspilleren til at virke, kan
+du søge hjælp i dette afsnit.
+</para>
+
+<sect3 id="dvdregionskoder">
+<title>DVD regionskoder</title>
+<indexterm><primary>DVD, regionskoder</primary></indexterm>
+<indexterm><primary>Regionskoder, DVD</primary></indexterm>
+
+<para>
+En DVD kan være regions-beskyttet. Da man udviklede DVD konceptet,
+valgte man at dele verden ind i 6 regioner, sådan at en DVD-film
+udgivet i en region kun kan afspilles af en DVD-afspiller fra
+samme region.
+</para>
+<para>
+Danmark tilhører region 2, hvilket vil sige, at en DVD-afspiller
+købt i Danmark har regionskode 2, og kan derfor kun afspille
+DVD-film med regions nummer 2.
+</para>
+<para>
+Dog findes der et syvende regions nummer (kode 0), som dækker
+over alle regioner. En DVD-film med regions nummer 0, kan afspilles
+af alle DVD-afspillere; og en kodefri DVD-afspiller
+(med regionskode 0) kan afspille alle DVD-film uanset regionsnummer.
+</para>
+<para>
+Når du vil afspille en DVD, skal du sikre dig at der er overensstemmelse
+mellem regionskoden på DVD-filmen og regionskoden i DVD-afspilleren.
+For mere information om regionskoder se eventuelt
+<ulink url="http://www.epinions.com/elec-review-665C-105932C-39077F49-prod6">
+DVD Regions Explained
+</ulink>.
+</para>
+</sect3>
+
+<sect3 id="dvdkryptering">
+<title>DVD kopibeskyttelse</title>
+<indexterm><primary>DVD, kopibeskyttelse</primary></indexterm>
+<indexterm><primary>OpenDVD</primary></indexterm>
+<indexterm><primary>Content Scrambling System</primary></indexterm>
+<indexterm><primary>CSS</primary></indexterm>
+
+<para>
+Nogle DVD-film er krypteret med et kopi-beskyttelses system ved
+navnet <emphasis>CSS (Content Scrambling System)</emphasis>, som er
+udviklet af
+<ulink url="http://www.dvdcca.org/dvdcca/">DVD Copy Control
+Association</ulink> <emphasis>(DVD CCA)</emphasis>.
+For at afspille en CSS krypteret DVD-film kræves det, at software
+DVD-afspilleren understøtter <emphasis>DeCSS</emphasis>,
+som er opskriften på, hvordan en CSS-krypteret DVD kan dekrypteres.
+</para>
+<para>
+DeCSS systemet har voldt en del problemer for uafhængige Open Source
+software DVD-afspillere, da der er tvivl om rettighederne til at
+bruge det.
+</para>
+<para>
+Organisationen DVD CCA mener, at CSS systemet kun må anvendes i en
+software DVD-afspiller, hvis man har en licens til det.
+Modsat er organisationen
+<ulink url="http://www.opendvd.org/">OpenDVD Group</ulink>
+forkæmper for retten til at udvikle uafhængige software
+DVD-afspillere samt fri anvendelse af DeCSS systemet.
+De er aktiv deltager i de retsager, som på nuværende tidpunkt er i gang.
+</para>
+<para>
+Overordnet er konsekvensen af denne tvivl, at nogle Open Source software
+DVD-afspillere ikke "officielt" understøtter DeCSS, mens andre afspillere gør.
+</para>
+</sect3>
+
+<sect3>
+<title>Video i X Windows Systemet</title>
+<para>
+Når software DVD-afspilleren (eller andre video/mpeg afspillere)
+skal vise levende billeder i Linux, er der forskellige video-output
+metoder, som kan anvendes. De to mest anvendte metoder er MIT-SHM og
+XVideo. (Andre video-output metoder, som kan nævnes er SDL og GGI).
+</para>
+<itemizedlist mark="bullet">
+<listitem><para>
+<command>MIT-SHM (MIT Shared Memory Extension)</command>:
+MIT-SHM et udviddelses-modul til X Windows Systemet som gør det
+muligt for programmer (for eksempel en DVD-afspiller) at sende
+store billeder hurtigt til skærmen.
+MIT-SHM er understøttet i XFree86 version 3.3.x og frem.
+</para></listitem>
+<listitem><para>
+<command>XVideo (Xv/XVideo Extension)</command>:
+XVideo er et udvidelses-modul til X Windows Systemet, som er
+lavet specielt til at vise video. Det er mere effektiv
+end ved brug af MIT-SHM metoden.
+XVideo er understøttet i Xfree86 version 4.x og frem.
+Dog er der kun nogle 4.x drivere som på nuværende tidspunkt
+understøtter XVideo.
+</para></listitem>
+</itemizedlist>
+<para>
+Du kan checke, om du har den ene eller begge udviddelses-moduler
+ved at skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>xdpyinfo -ext all</userinput>
+</screen>
+<para>
+Under punktet <command>number of extensions</command> er
+der en liste over alle udvidelses-moduler i dit X Windows System.
+Her er MIT-SHM og XVideo listet, hvis de er understøttet.
+</para>
+<para>
+Hvis XVideo er understøttet af X Windows Systemet, kan du se
+om din grafikkort driver også understøtter XVideo ved at skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>xvinfo</userinput>
+</screen>
+<para>
+Her skulle du gerne se en lang liste med information relateret til XVideo.
+Hvis derimod får beskeden <command>no adaptors present</command>,
+er det et tegn på at XVideo ikke er understøttet i din grafikkort driver.
+Hvis du ikke kan få en DVD-afspiller til at virke med MIT-SHM, er det
+derfor værd at undersøge om der er en driver til dit grafikkort, som
+understøtter XVideo.
+</para>
+<para>
+Har du for eksempel et NVidia grafikkort, vil den driver som følger
+med XFree86 ikke understøtte XVideo.
+Men installeres den driver, som kan downloades på NVidia's
+<ulink url="http://www.nvidia.com/Products/Drivers.nsf/Linux.html">
+Linux Driver Download</ulink> side, så er XVideo understøttet.
+</para>
+I <ulink url="http://www.srcf.ucam.org/~rjw57/xine/howto/howto.html">
+The Xine Video Player HOWTO</ulink> er der i kapitlet "Increasing
+Performance" en liste over drivere som understøtter XVideo.
+</sect3>
+
+<sect3 id="finddindvdafspiller">
+<title>Find dit DVD-drev</title>
+<para>
+For at en software DVD-afspiller kan finde din DVD-ROM, skal den vide
+hvilket device den skal bruge. De fleste DVD-afspillere bruger som
+default <command>/dev/dvd</command>. Normalt er <command>/dev/dvd</command>
+et symbolsk link til det rigtige device, som typisk er en af følgende:
+</para>
+<itemizedlist mark="bullet">
+<listitem><command>/dev/hda</command> (IDE primary master)</listitem>
+<listitem><command>/dev/hdb</command> (IDE primary slave)</listitem>
+<listitem><command>/dev/hdc</command> (IDE secondary master)</listitem>
+<listitem><command>/dev/hdd</command> (IDE secondary slave)</listitem>
+<listitem><command>/dev/scd0</command> (SCSI device 0)</listitem>
+<listitem><command>/dev/scd1</command> (SCSI device 1)</listitem>
+<listitem><command>osv...</command></listitem>
+</itemizedlist>
+<para>
+Du kan se om du allerede har et dvd-link ved at skrive
+<command>ls -all /dev/dvd</command>. Hvis du får at vide at filen
+ikke eksisterer, bør du oprette et dvd-link til dit dvd-drev.
+</para>
+<para>
+Hvis du eksempelvis allerede bruger dit DVD-drev som almindeligt
+cdrom-drev, har du højst sandsynligt allerede et cdrom-link.
+Prøv eventuelt at skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>ls -all /dev/cdrom</userinput>
+lrwxrwxrwx    1 root     root            8 apr 21 08:10 /dev/cdrom -> /dev/hdc
+</screen>
+<para>
+I dette tilfælde er cdrom-drevet <command>/dev/hdc</command>.
+For at oprette et dvd-link til dette device, skal du skifte over til
+superbruger og oprette linket:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+Password:
+<prompt>[root@linus ~]#</prompt> <userinput>ln -s /dev/hdc /dev/dvd</userinput>
+</screen>
+<para>
+Og vupti, så har du et dvd-link :-).
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="videolan">
+<title>VideoLAN</title>
+<indexterm><primary>VideoLAN, DVD-afspiller</primary></indexterm>
+<para>
+I dette afsnit skal vi se på
+<ulink url="http://www.videolan.org/">VideoLAN</ulink>,
+som er en Open Source DVD-afspiller.
+VideoLAN understøtter DeCSS til afspilning af krypterede DVD'er.
+</para>
+<para>
+Som video-output understøtter VideoLAN metoderne MIT-SHM, XVideo,
+SDL, GGI og andre. Se eventuelt hjemmesiden for mere information.
+</para>
+<para>
+</para>
+
+<sect3 id="videolaninstallation">
+<title>Installation</title>
+<para>
+Du kan downloade VideoLAN på
+<ulink url="http://www.videolan.org/vlc/download.html">
+VideoLAN Client Download</ulink> siden. Du kan selv vælge i
+hvilket format du ønsker at downloade softwaren. Her ser
+vi på kompilering og installering af tar-bolden.
+</para>
+<para>
+Download filen <command>vlc-xxx.tar.gz</command>, hvor
+<command>xxx</command> er seneste versions nummer.
+</para>
+<para>
+Pak filen ud med <command>tar</command> og gå ind i
+source-kataloget:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xfz vlc-xxx.tar.gz</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd vlc-xxx/</userinput>
+</screen>
+<para>
+Konfigurér source-koden ved at skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>./configure</userinput>
+</screen>
+<para>
+Der vil blive listet en masse information om hvad dit system
+understøtter og ikke understøtter. Læg specielt mærke til
+punktet <command>vlc configuration</command>, som bliver listet
+til sidst. Her står blandt andet hvilke plugin moduler, som bliver
+understøttet (for eksempel x11, sdl, xvideo, som er video output
+metoder). Du kompilerer koden ved at skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>make</userinput>
+</screen>
+<para>
+For at installere VideoLAN skal du skifte over til superbruger
+og skrive <command>make install</command>:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+Password:
+<prompt>[root@linus ~]#</prompt> <userinput>make install</userinput>
+</screen>
+</sect3>
+
+<sect3 id="videolananvendelse">
+<title>Anvendelse</title>
+<para>
+Du starter VideoLAN ved at skrive <command>vlc</command>.
+Du vil få følgende kontrolpanel frem.
+</para>
+
+<FIGURE ID="VideoLAN-fig" FLOAT="1">
+<TITLE>VideoLAN's kontrol panel</TITLE>
+<GRAPHIC FILEREF="VideoLAN.gif"></GRAPHIC>
+</FIGURE>
+
+<para>
+I VideoLAN har du mulighed for både at afspille video-filer
+(MPEG filer), DVD og netstreams. For at afspille en DVD skal
+du klikke på <command>Disc</command> knappen.
+</para>
+
+<FIGURE ID="VideoLANdvd-fig" FLOAT="1">
+<TITLE>VideoLAN's open disc box</TITLE>
+<GRAPHIC FILEREF="VideoLANdvd.gif"></GRAPHIC>
+</FIGURE>
+<para>
+Du kan vælge om du vil afspille en DVD eller en VCD.
+Klik på OK for at starte afspilningen.
+</para>
+</sect3>
+
+<sect3 id="videolanfejlfinding">
+<title>Tips og tricks</title>
+<para>
+Her er listet et par tips og tricks til fejlfinding i VideoLAN.
+</para>
+<para>
+<emphasis>DET VIRKER IKKE, MIT DVD-DREV REAGERER SLET IKKE!</emphasis>
+</para>
+<para>
+Måske har du valgt et forkert DVD device.
+I VideoLAN's open disc box
+har du mulighed for at angive andre devices. Prøv eventuelt med
+<command>/dev/hda</command>, <command>/dev/hdb</command>,
+<command>/dev/hdc</command> og <command>/dev/hdd</command> på
+skift, og se om en af dem virker. Du kan også prøve med
+<command>/dev/scdx</command>, hvor <command>x</command> erstattes
+med at tal fra 0 og opefter.
+</para>
+<para>
+<emphasis>JEG FÅR LYD, MEN DER ER IKKE NOGET BILLEDE!</emphasis>
+</para>
+<para>
+Måske virker den valgte video output metode ikke. Du kan, når du
+starter VideoLAN, vælge video output metode ved at skrive
+<command>vlc --out</command> efterfulgt af navnet på et
+video output modul. For eksempel vil <command>vlc --vout x11</command>
+svare til MIT-SHM metoden, <command>vlc --vout xvideo</command> vil svare til
+XVideo metoden, <command>vlc --vout sdl</command> vil svare til SDL
+video output, og så videre. Bemærk, at du kan altid se den aktuelle
+video output metode i video-vinduets titel-bar.
+</para>
+<para>
+Du kan også prøve at starte VideoLAN med
+<command>vlc --yuv yuv</command>
+og se om det hjælper. Dette skulle ifølge tips på VideoLAN's
+hjemmeside bl.a. afhjælpe et problem, der er med RedHat's
+<emphasis>gcc 2.96</emphasis> (som resulterer i manglende billede).
+</para>
+<para>
+<emphasis>HVOR FINDER JEG MERE HJÆLP?</emphasis>
+</para>
+<para>
+På VideoLAN's hjemmeside er der svar til typisk stillede spørgsmål
+samt løsning på kendte problemer. Det findes under
+<ulink url="http://www.videolan.org/doc.html">
+User documentation</ulink>.
+Her er der også et link til en
+<ulink url="http://www.videolan.org/doc/">VLC HOWTO</ulink>,
+som bestemt er værd at læse.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="xine">
+<title>Xine</title>
+<indexterm><primary>Xine, DVD-afspiller</primary></indexterm>
+<para>
+I dette afsnit skal vi se på
+<ulink url="http://xine.sourceforge.net/">Xine</ulink>,
+som også er en Open Source DVD-afspiller. Xine understøtter
+officielt ikke DeCSS, hvilket vil sige at nogle DVD'er ikke
+kan afspilles. Dog vil vi her se på, hvordan man installerer et
+plugin, der gør det muligt for Xine at afspille krypterede
+DVD'er.
+</para>
+<para>
+Som video output metoder understøttes MIT-SHM og XVideo.
+</para>
+
+<sect3 id="xineinstallation">
+<title>Installation</title>
+<para>
+Du kan downloade Xine på
+<ulink url="http://xine.sourceforge.net/xine_frame.php?page=download.html">
+Xine Download</ulink> siden. Du kan selv vælge, i hvilket format
+du vil downloade softwaren. Her ser vi på tar-bolden.
+</para>
+<para>
+Download filen <command>xine-xxx.tar.gz</command>, hvor
+<command>xxx</command> er seneste versions nummer.
+</para>
+<para>
+Pak filen ud med <command>tar</command> og gå ind i source kataloget:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xfz xine-xxx.tar.gz</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd xine-xxx/</userinput>
+</screen>
+<para>
+Konfigurér source-koden ved at skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>./configure</userinput>
+</screen>
+<para>
+Der vil blive listet en masse information om hvad dit system
+understøtter og ikke understøtter. Du kompilerer koden ved at
+skrive:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>make</userinput>
+</screen>
+<para>
+For at installere Xine skal du skifte over til superbruger
+og skrive <command>make install</command>:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+Password:
+<prompt>[root@linus ~]#</prompt> <userinput>make install</userinput>
+</screen>
+<para>
+Du skulle nu kunne gå i gang med at anvende Xine. Dog understøttes
+ikke DeCSS. Ønsker du at Xine også skal understøtte afspilning
+af krypterede DVD'er skal du installere et DeCSS plugin til
+Xine.
+</para>
+<para>
+På Xine hjemmeside er der et link til
+<ulink url="http://members.nbci.com/captain_css/">Captain CSS</ulink>,
+som er et plugin til Xine, der giver support for DeCSS. På denne side
+downloades filen <command>xine_dvd_static-xxx.tar.gz</command>
+(xine dvd plugin xxx), hvor <command>xxx</command> er seneste versions
+nummer. Installationen foregår på samme måde som installationen af
+xine tar-bolden. Du skal altså skrive følgende:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xfz xine_dvd_static-xxx.tar.gz</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd xine_dvd_static-xxx</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>./configure</userinput>
+...
+<prompt>[anne@linus ~]$</prompt> <userinput>make</userinput>
+...
+</screen>
+<para>
+Plugin'et installeres ved at skifte over til superbruger
+og skrive <command>make install</command>:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+Password:
+<prompt>[root@linus ~]#</prompt> <userinput>make install</userinput>
+</screen>
+
+</sect3>
+
+<sect3 id="xineanvendelse">
+<title>Anvendelse</title>
+<para>
+Du starter Xine ved at skrive <command>xine</command>. Følgende figur
+viser Xine's kontrol panel. Hvis kontrol panelet ikke kommer
+frem automatisk, så klik en gang med modsatte musknap i video vinduet,
+som er kommet frem.
+</para>
+
+<FIGURE ID="xine-fig" FLOAT="1">
+<TITLE>Xine's kontrol panel</TITLE>
+<GRAPHIC FILEREF="Xine.gif"></GRAPHIC>
+</FIGURE>
+<para>
+Klik på knappen <command>DVD</command> for at starte afspilningen af en DVD.
+</para>
+<para>
+Brug knapperne i bunden til at kontrollere afspilningen.
+De to sæt op/ned pile i højre side bruges til at vælge henholdsvis
+undertekstning-sprog (off=ingen undertekstning) og lydspor.
+Den lille firkant yderst til højre (under x'et i titellinien) skifter
+mellem video i fuld skærm og video i et vindue.
+</para>
+</sect3>
+<sect3 id="videolanfejlfinding">
+<title>Tips og tricks</title>
+<para>
+Her er listet et par tips og tricks til afspilleren Xine.
+</para>
+<para>
+<emphasis>DER ER LYD, MEN INTET BILLEDE!</emphasis>
+</para>
+<para>
+Xine bruger XVideo video output metode som default. Hvis XVideo
+ikke virker, kan du prøve med MIT-SHM metoden ved at starte xine med
+kommandoen <command>xine -s</command>.
+</para>
+<para>
+<emphasis>HVOR FINDER JEG MERE HJÆLP?</emphasis>
+</para>
+<para>
+På Xine's hjemmeside findes der en
+<ulink url="http://xine.sourceforge.net/xine_frame.php?page=FAQ">
+FAQ</ulink>, hvor der er svar på typisk stillede spørgsmål.
+Der er også link til en
+<ulink url="http://www.srcf.ucam.org/~rjw57/xine/">Xine HOWTO</ulink>
+som giver god information.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="livid">
+<title>LiViD</title>
+<indexterm><primary>LiViD, DVD-afspiller</primary></indexterm>
+<para>
+Her skal vi se på
+<ulink url="http://www.linuxvideo.org/">LiViD</ulink>,
+som også er en Open Source DVD-afspiller.
+</para>
+
+<sect3 id="lividinstallation">
+<title>Installation</title>
+<para>
+På LiViD's <ulink url="http://www.linuxvideo.org/user/dl.html">
+Download</ulink> side, kan du downloade forskellige software
+pakker. Det er dog ikke dem alle du skal bruge.
+</para>
+<para>
+Download filerne <command>libcss-xxx.tar.gz</command>,
+<command>oms-xxx.tar.gz</command> og <command>omi-xxx.tar.gz</command>,
+hvor <command>xxx</command> står for de seneste versions numre for
+de tre pakker.
+</para>
+<para>
+Du skal først installere <command>libcss</command>. Dette gøres ved
+først at pakke tar-bolden ud, konfigurere og kompilere softwaren:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xfz libcss-xxx.tar.gz</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd libcss-xxx/</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>./configure</userinput>
+...
+<prompt>[anne@linus ~]$</prompt> <userinput>make</userinput>
+...
+</screen>
+<para>
+Dernæst skal du som super-bruger installere softwaren:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+<prompt>[root@linus ~]#</prompt> <userinput>make install</userinput>
+<prompt>[root@linus ~]#</prompt> <userinput>/sbin/ldconfig</userinput>
+</screen>
+
+<para>
+Den næste pakke, som skal installeres er <command>oms</command>.
+Du skal følge samme fremgangsmåde som før:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xfz oms-xxx.tar.gz</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd oms-xxx/</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>./configure</userinput>
+...
+<prompt>[anne@linus ~]$</prompt> <userinput>make</userinput>
+...
+</screen>
+<para>
+Dernæst skal du som super-bruger installere softwaren:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+<prompt>[root@linus ~]#</prompt> <userinput>make install</userinput>
+<prompt>[root@linus ~]#</prompt> <userinput>/sbin/ldconfig</userinput>
+</screen>
+
+<para>
+Til sidst skal du installere <command>omi</command>.
+Dette følger igen samme fremgangsmåde:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xfz omi-xxx.tar.gz</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd omi-xxx/</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>./configure</userinput>
+...
+<prompt>[anne@linus ~]$</prompt> <userinput>make</userinput>
+...
+</screen>
+<para>
+Dernæst skal du som super-bruger installeres softwaren:
+</para>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>su</userinput>
+<prompt>[root@linus ~]#</prompt> <userinput>make install</userinput>
+<prompt>[root@linus ~]#</prompt> <userinput>/sbin/ldconfig</userinput>
+</screen>
+</sect3>
+
+<sect3 id="lividanvendelse">
+<title>Anvendelse</title>
+<para>
+Du starter LiViD ved at skrive <command>omi_gtk</command>.
+I følgende figur er LiViD's kontrol panel vist.
+</para>
+<FIGURE ID="livid-fig" FLOAT="1">
+<TITLE>LiViD's kontrol panel</TITLE>
+<GRAPHIC FILEREF="LiViD.gif"></GRAPHIC>
+</FIGURE>
+Brug knapperne i bunden for at kontrollere afspilningen.
+</sect3>
+<sect3 id="lividfejlfinding">
+<title>Tips og tricks</title>
+<para>
+Her er listet et par tips og tricks til afspilleren LiViD.
+</para>
+<para>
+<emphasis>HVOR FINDER JEG MERE INFORMATION?</emphasis>
+</para>
+<para>
+På LiViD's hjemmeside kan du finde
+<ulink url="http://www.linuxvideo.org/docs/">
+LiViD Documentation</ulink>, som er en side med links til HOWTO's,
+FAQ's og mere.
+</para>
+</sect3>
+</sect2>
+
+</sect1>
+
+
 </chapter>
