@@ -331,6 +331,9 @@ men indtil endelig release, kan der være graverende fejl i den.
       } else {
         $filesize = fsize_text($filename);
         $date = date("Y-m-d",filemtime($filename));
+        echo "version "; 
+        include($short."/version.sgml");
+
         //echo "<br>$date<br>$filesize";
 				$linktext = "$date<br>$filesize";
         echo href($filename,$linktext);
