@@ -33,6 +33,17 @@ Hvad er en service? Det er et program, der kører på din computer, som
 er beregnet til at andre kan koble sig til din computer og udveksle data. 
 Det kan f.eks. være ftp, telnet, finger, pop-2, pop-3, rpc (herunder NFS), 
 nntp og talk. Det kan også være http, smtp eller linuxconf.
+<indexterm><primary>Service</primary></indexterm>
+<indexterm><primary>ftp</primary></indexterm>
+<indexterm><primary>telnet</primary></indexterm>
+<indexterm><primary>finger</primary></indexterm>
+<indexterm><primary>pop</primary></indexterm>
+<indexterm><primary>rpc</primary></indexterm>
+<indexterm><primary>NFS</primary></indexterm>
+<indexterm><primary>nntp</primary></indexterm>
+<indexterm><primary>talk</primary></indexterm>
+<indexterm><primary>hhtp</primary></indexterm>
+<indexterm><primary>smtp</primary></indexterm>
 </para>
 
 </sect1>
@@ -47,6 +58,8 @@ systemet er bygget op.
 </para>
 
 <para>
+<indexterm><primary>Porte</primary></indexterm>
+
 En Linux-maskine vil normalt foretage en masse ting samtidig, f.eks. 
 håndtere emails, login-brugere som kører programmer, samt have en 
 web-server kørende. Derfor har man ikke bare kunnet nøjes med at 
@@ -60,23 +73,22 @@ smtp og port 80 til http. De mest kendte
 I TCP/IP protokollen er det i TCP-datapakkerne, man finder information 
 om afsender port og modtager port, imens IP-adressen på afsender og 
 modtager er indeholdt i IP-transportlaget. 
+<indexterm><primary>Portnumre</primary></indexterm>
+
 </para>
 
 <para>
-Porte er ikke fysiske men logiske konstruktioner, som anvendes i den måde,
-man sender data over netværket. Man skelner imellem TCP- og UDP-porte, som 
-bruges til to forskellige typer dataoverførsler. TCP er 
-forbindelsesorienteret. Den sender hele tiden kvitteringer frem og 
-tilbage (handshakes), og når det 
-går godt, behøver den ikke at få kvittering
-for sine data så tit. Hvis en datapakke går tabt, vil den blive 
-gentransmitteret af protokollen. Der findes også en anden 
-type IP-pakker med betegnelsen UDP. 
-UDP anvendes oftest til hurtig letvægtsinformation, som kan accepteres at 
-gå tabt i netværket såsom f.eks. NFS-forespørgsler.
-UDP-pakker, der går tabt 
-vil kun blive retransmitteret, hvis applikationen sørger for det
-(typisk NFS).
+Porte er ikke fysiske men logiske konstruktioner, som anvendes i den
+måde, man sender data over netværket. Man skelner imellem TCP- og
+UDP-porte, som bruges til to forskellige typer dataoverførsler. TCP er
+forbindelsesorienteret. Den sender hele tiden kvitteringer frem og
+tilbage (handshakes), og når det går godt, behøver den ikke at få
+kvittering for sine data så tit. Hvis en datapakke går tabt, vil den
+blive gentransmitteret af protokollen. Der findes også en anden type
+IP-pakker med betegnelsen UDP.  UDP anvendes oftest til hurtig
+letvægtsinformation, som kan accepteres at gå tabt i netværket såsom
+f.eks. NFS-forespørgsler.  UDP-pakker, der går tabt vil kun blive
+retransmitteret, hvis applikationen sørger for det (typisk NFS).
 </para>
 
 <para>
@@ -94,6 +106,8 @@ User Friendly <ulink url="http://www.userfriendly.org/static">http://www.userfri
 
 
 <para>
+<indexterm><primary>/etc/services</primary></indexterm>
+
 Porte vælges ikke tilfældigt, men mange er standardiserede, så
 maskiner kan koble sig til en given port og dermed vide hvilken
 service, der kan findes. Hvis du læser filen
@@ -121,6 +135,8 @@ at kunne lytte på dem. Dette er lavet, så en klient, der kontakter en
 fremmed maskine på en port under 1024, kan regne med at få fat i en standard 
 service og ikke et eller andet tilfældigt bruger-program. Se 
 <COMMAND>man services</COMMAND>.
+<indexterm><primary>Priviligerede porte</primary></indexterm>
+
 </para>
 
 <para>
@@ -136,6 +152,7 @@ af disse andre protokoller.
 <sect2 id="daemons">
 <title>Daemons</title>
 <para>
+<indexterm><primary>Daemons</primary></indexterm>
 En service kan enten køres som en selvstændig daemon, eller den kan 
 styres af inetd. En daemon er en proces, som kører i baggrunden hele 
 tiden, og venter på forespørgsler. Nogle services skal køre hele 
@@ -147,6 +164,8 @@ Vi kigger nærmere på sendmail i et senere afsnit.
 En anden daemon, som vi skal se på om lidt, er inetd, der bruges til at
 starte andre services efter behov.
 Prøv at køre kommandoen
+<indexterm><primary>ps aux</primary></indexterm>
+
 </para>
 
 <SCREEN>
@@ -162,6 +181,8 @@ kunne genkende processer som lpd, syslogd og inetd.
 
 <sect2 id="inetd">
 <title>Inetd</title>
+<indexterm><primary>Inetd</primary></indexterm>
+
 <para>
 En del services har kun brug for at køre relativt sjældent. Disse 
 services er i Linux styret af inetd-programmet. I stedet for at have
@@ -210,6 +231,8 @@ vil din maskine ikke længere stille ftp-servicen til rådighed for
 andre maskiner på nettet.  Når du alligevel retter i
 <FILENAME>/etc/inetd.conf</FILENAME>, så udkommenter også linien med
 gopher, som er en ældre service, der i dag er helt erstattet af http.
+<indexterm><primary>/etc/inetd.conf</primary></indexterm>
+
 </para>
 
 <para>
@@ -268,10 +291,19 @@ ikke, så slå det fra.  En gylden regel er, at du hellere må køre for
 få end for mange services.  Vi kommer senere til en gennemgang af de
 services, der findes i <FILENAME>/etc/inetd.conf</FILENAME>.
 </para>
+
+<para>
+Husk slutteligt, at hvis du ender med at du slet ikke vil køre
+services via <FILENAME>/etc/inetd.conf</FILENAME>, så kan du 
+lige så godt lukke selve inetd programmet ned.
+</para>
+
 </sect2>
 
 <sect2 id="TCP-wrappers">
-<title>TCP-wrappere</title> 
+<title>TCP-wrappere</title>
+<indexterm><primary>TCP-wrappers</primary></indexterm>
+ 
 <para>
 Adgangen til de services, der styres af inetd, kan på en nem
 måde konfigureres, så der er kontrol over hvem, der har adgang til
@@ -306,6 +338,10 @@ fra <FILENAME>/etc/inetd.conf</FILENAME> ovenfor er tcpd allerede sat ind.
 <para>
 Adgangskontrol sker via filerne <FILENAME>/etc/hosts.allow</FILENAME> og 
 <FILENAME>/etc/hosts.deny</FILENAME>.
+<indexterm><primary>netadgang til maskine</primary></indexterm>
+<indexterm><primary>/etc/hosts.allow</primary></indexterm>
+<indexterm><primary>/etc/hosts.deny</primary></indexterm>
+
 </para>
 
 <para>
@@ -411,7 +447,10 @@ usikre, og hvad de evt. kan erstattes af.
 
 <sect2 id="telnet-service">
 <title>Telnet</title>
+
 <para>
+<indexterm><primary>telnet</primary></indexterm>
+
 Telnet (telnetd) er en service der gør, at folk kan logge ind på maskinen
 ved hjælp af en telnet-klient. For at det er muligt at logge ind,
 skal man have et brugernavn og tilhørende password, som findes på
@@ -464,6 +503,7 @@ så skaden ved indbrud trods alt begrænses.
 <sect2 id="ftp-service">
 <title>Ftp</title>
 <para>
+<indexterm><primary>ftp</primary></indexterm>
 FTP (File Transfer Protocol) bruges, når man vil kopiere filer fra
 en maskine til en anden.
 FTP er ligesom telnet en af de gamle services, som er meget
@@ -538,6 +578,7 @@ nogle filer skal kopieres til <FILENAME>/home/ftp/lib</FILENAME>,
 <FILENAME>/home/ftp/bin</FILENAME> og
 <FILENAME>/home/ftp/etc</FILENAME> filer. Dette er gjort for dig i
 alle de store Linuxdistributioner.
+<indexterm><primary>chroot af ftp</primary></indexterm>
 </para>
 
 <para>
@@ -596,6 +637,7 @@ Husk at "reloade" inetd.
 <title>Finger</title>
 
 <para>
+<indexterm><primary>finger</primary></indexterm>
 Finger er et program, som viser hvem, der er logget på maskinen lige nu,
 hvornår de sidst var logget ind og hvor længe:
 </para>
@@ -641,6 +683,7 @@ andre maskiner skal være spærret f.eks. med tcp-wrappers.
 <title>POP</title>
 
 <para>
+<indexterm><primary>POP</primary></indexterm>
 Hvis din maskine ikke skal være mailserver, så udkommenter pop-2,
 pop-3 og imap i <FILENAME>/etc/inetd.conf</FILENAME>.
 </para>
@@ -713,6 +756,7 @@ bliver til
 
 <sect2 id="linuxconf-program">
 <title>Linuxconf</title>
+<indexterm><primary>linuxconf</primary></indexterm>
 
 <para>
 Anvender du en nyere Linux distribution, kan det være, at du har 
@@ -741,6 +785,10 @@ SSL eller bedre kryptering indbygges i server og klient.
 
 <sect1 id="rpc-og-portmap">
 <title>RPC og portmap</title>
+
+<indexterm><primary>RPC</primary></indexterm>
+<indexterm><primary>portmap</primary></indexterm>
+
 <para>
 Ud over services, som konfigureres via
 <FILENAME>/etc/inetd.conf</FILENAME>, er der en klasse af services,
@@ -902,6 +950,11 @@ services, der benytter RPC.
 
 <sect2 id="nis-og-nis-plus">
 <title>NIS og NIS+</title>
+
+<indexterm><primary>NIS</primary></indexterm>
+<indexterm><primary>NIS+</primary></indexterm>
+
+
 <para>
 NIS (Network Information Service) er en måde, hvorpå man kan nøjes med
 at have sin <FILENAME>/etc/passwd</FILENAME> fil og andre konfigurationsfiler
@@ -927,6 +980,9 @@ levn fra dengang NIS hed yellow pages).  Se i øvrigt
 
 <sect2 id="nfs-service">
 <title>NFS</title>
+<indexterm><primary>NFS</primary></indexterm>
+
+
 <para>
 NFS (Network File System) er et netværksfilsystem, som muliggør
 af flere maskiner kan dele den samme disk via netværket. Med NFS 
@@ -999,6 +1055,10 @@ runlevels.
 <sect1 id="apache-server">
 <title>Apache webserveren</title>
 
+<indexterm><primary>Apache</primary></indexterm>
+<indexterm><primary>webserver</primary></indexterm>
+
+
 <para>
 Apache er verdens mest anvendte webserver. Den følger standard med
 Linux, og findes desuden til alle andre UNIX systemer. Ofte sker det 
@@ -1023,6 +1083,11 @@ tænk over, om du behøver den.
 
 <sect1 id="sendmail">
 <title>Sendmail</title> 
+
+<indexterm><primary>Mail</primary></indexterm>
+<indexterm><primary>Sendmail</primary></indexterm>
+
+
 <para>
 Sendmail er en MTA (Mail Transfer Agent). Den bruges til at dirigere 
 email rundt på systemet og lytter normalt også på smtp porten.
@@ -1295,6 +1360,10 @@ Udenfor de forrige kategorier falder XDM og DNS:
 
 <sect2 id="xdm">
 <title>Xdm-lignende login</title>
+
+<indexterm><primary>XDM</primary></indexterm>
+
+
 <para>
 En service man ikke må overse, er XDM, som er en X-login daemon, der
 normalt kører på UDP port 177. Det er muligt at forbinde sig til en kørende
@@ -1347,6 +1416,9 @@ klart at foretrække, hvis man ser på netværks-sikkerheden.
 <sect2 id="dns">
 <title>DNS</title>
 
+<indexterm><primary>DNS</primary></indexterm>
+
+
 <para>
 DNS (Domain Name System) er navne service, som anvendes til at få
 oversat et hostnavn f.eks. sunsite.auc.dk til dets IP-nummer.
@@ -1377,6 +1449,8 @@ som nameserver.
 <title>Epilog</title>
 
 <para>
+<indexterm><primary>/etc/inetd.conf</primary></indexterm>
+
 Selvom vi har været inde på mange services her, har vi ikke været inde
 på alle. Programmer som <COMMAND>nmap</COMMAND> og kommandoer som
 <COMMAND>rpcinfo</COMMAND> og <COMMAND>netstat</COMMAND> kan vise dig
