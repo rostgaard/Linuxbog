@@ -179,6 +179,10 @@ function form_filename( $bookname, $format ) {
       first => "linux-",
       last => ".palm.tgz"
     ),
+    "eksempler" => array(
+      first => "linux-",
+      last => "_eksempler.tgz"
+    ),
     "SGML" => array(
       first => "linux-",
       last => ".sgml.tgz"
