@@ -138,13 +138,10 @@ alias godmorgen='echo "echo 'Du skal hjem nu' | elm -s Fyraften mig >& /dev/null
 
 alias gm='gnatmake -j2 -m'
 
-alias gm-flags-default='-cargs -gnatv -gnati1 -gnatf -gnato -fstack-check'
-alias  gm-flags-static='-cargs -gnatv -gnati1 -gnatf -gnato -fstack-check \
-                        -bargs -static'
-alias gm-flags-testing='-cargs -gnatv -gnati1 -gnatf -gnato -fstack-check \
-                        -g -gnata -gnatO -gnatwa -gnatq -gnatU'
-alias    gm-flags-fast='-O3 -funroll-loops -funwind-tables -gnatn \
-                        -cargs -gnatv -gnati1 -gnatf -gnato -fstack-check'
+alias gm-flags-default='echo "-cargs -gnatv -gnati1 -gnatf -gnato -fstack-check"'
+alias  gm-flags-static='echo "-cargs -gnatv -gnati1 -gnatf -gnato -fstack-check -bargs -static"'
+alias gm-flags-testing='echo "-cargs -gnatv -gnati1 -gnatf -gnato -fstack-check -g -gnata -gnatO -gnatwa -gnatq -gnatU"'
+alias    gm-flags-fast='echo "-O3 -funroll-loops -funwind-tables -gnatn -cargs -gnatv -gnati1 -gnatf -gnato -fstack-check"'
 
 #-----------------------------------------------------------------------------
 #--  Fjern overforbrug af nutids-r'er:
