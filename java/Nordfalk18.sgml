@@ -1,53 +1,49 @@
-<chapter>
-  <title>Flertrådet programmering</title>
+<chapter id="java-traade">
+<title>Flertrådet programmering</title>
 
 <para>
-Indhold:
+  Indhold:
 </para>
 
 <itemizedlist mark="bullet">
-<listitem><para>
-Forstå tråde
-</para></listitem>
-<listitem><para>
-Eksempel på en flertrådet webserver
-</para></listitem>
+  <listitem><para>Forstå tråde</para></listitem>
+  <listitem><para>Eksempel på en flertrådet webserver</para></listitem>
 </itemizedlist>
 
 <para>
-Kapitlet forudsættes ikke i resten af bogen.
+  Kapitlet forudsættes ikke i resten af bogen.
 </para>
 
 <para>
-Forudsætter kapitel 11, Interfaces (kapitel 15, Netværkskommunikation
-og kapitel 9, Appletter og grafik bruges i nogle eksempler).
+  Forudsætter kapitel 11, Interfaces (kapitel 15, Netværkskommunikation
+  og kapitel 9, Appletter og grafik bruges i nogle eksempler).
 </para>
 
 <para>
-Når man kommer ud over den grundlæggende programmering, ønsker man tit
-at lave programmer, som udfører flere opgaver løbende. Det kan
-f.eks. være et tekstbehandlingsprogram, hvor man ønsker at gemme eller
-sende en udskrift til printeren, mens man redigerer videre, eller man
-ønsker løbende stavekontrol samtidig med, at man skriver. Skrivningen
-må ikke blive forsinket af, at programmet sideløbende forbereder en
-udskrift eller kontrollerer stavningen. Disse delprocesser (også
-kaldet tråde) har lav prioritet i forhold til at håndtere brugerens
-input og vise det på skærmen, og selvom de midlertidigt skulle gå i
-stå, skal de andre dele af programmet køre videre.
+  Når man kommer ud over den grundlæggende programmering, ønsker man tit
+  at lave programmer, som udfører flere opgaver løbende. Det kan
+  f.eks. være et tekstbehandlingsprogram, hvor man ønsker at gemme eller
+  sende en udskrift til printeren, mens man redigerer videre, eller man
+  ønsker løbende stavekontrol samtidig med, at man skriver. Skrivningen
+  må ikke blive forsinket af, at programmet sideløbende forbereder en
+  udskrift eller kontrollerer stavningen. Disse delprocesser (også
+  kaldet tråde) har lav prioritet i forhold til at håndtere brugerens
+  input og vise det på skærmen, og selvom de midlertidigt skulle gå i
+  stå, skal de andre dele af programmet køre videre.
 </para>
 
 <para>
-Et flertrådet program er et program med flere tilsyneladende samtidige
-programudførelsespunkter (i virkeligheden vil CPU'en skifte meget
-hurtigt rundt mellem punkterne og udføre lidt af hver).
+  Et flertrådet program er et program med flere tilsyneladende samtidige
+  programudførelsespunkter (i virkeligheden vil CPU'en skifte meget
+  hurtigt rundt mellem punkterne og udføre lidt af hver).
 </para>
 
-<sect1>
-  <title>Princip</title>
+<sect1 id="java-traade-princip">
+<title>Princip</title>
 
 <para>
-Det er ret let at programmere flertrådet i Java. Man opretter en ny
-tråd med et objekt i konstruktøren:
+  Det er ret let at programmere flertrådet i Java. Man opretter en ny
+  tråd med et objekt i konstruktøren:
 </para>
 
 <screen>
@@ -56,7 +52,7 @@ tråd med et objekt i konstruktøren:
 </screen>
 
 <para>
-Objektet obj skal implementere Runnable-interfacet, f.eks.:
+  Objektet obj skal implementere Runnable-interfacet, f.eks.:
 </para>
 
 <screen>
@@ -70,11 +66,10 @@ public class UdførbartObjekt <emphasis>implements Runnable</emphasis>
 }
 </screen>
 
-
 <para>
-Tråden er nu klar til at udføre run()-metoden på objektet, men den er
-ikke startet endnu. Man starter tråden ved at kalde start()-metoden på
-tråd-objektet:
+  Tråden er nu klar til at udføre run()-metoden på objektet, men den er
+  ikke startet endnu. Man starter tråden ved at kalde start()-metoden på
+  tråd-objektet:
 </para>
 
 <screen>
@@ -84,24 +79,25 @@ tråd-objektet:
 </screen>
 
 <para>
-Derefter vil der være to programudførelsespunkter: Et vil være i koden
-efter kaldet til start(), og den anden vil være ved begyndelsen af
-run()-metoden.
+  Derefter vil der være to programudførelsespunkter: Et vil være i koden
+  efter kaldet til start(), og den anden vil være ved begyndelsen af
+  run()-metoden.
 </para>
 
-<figure float="1">
-<title>Java</title>
-<graphic fileref="Nordfalk1815464.&magic;" scale="60"></graphic>
+<figure float="1" id="java-traade-princip-fig">
+  <title>Java</title>
+  <graphic fileref="Nordfalk1815464.&magic;" scale="60"></graphic>
 </figure>
 
 <para>
-<emphasis>En tråd oprettes med et objekt, der implementerer
-Runnable-interfacet. Når start() kaldes på tråden, vil den begynde at
-udføre run() på objektet.</emphasis>
+  <emphasis>En tråd oprettes med et objekt, der implementerer
+  Runnable-interfacet. Når start() kaldes på tråden, vil den begynde at
+  udføre run() på objektet.</emphasis>
 </para>
 
-<sect2>
-  <title>Eksempel</title>
+<sect2 id="java-traade-princip-eksempel">
+<title>Eksempel</title>
+
 <screen>
 public class SnakkesagligPerson <emphasis>implements Runnable</emphasis>
 {
@@ -125,30 +121,29 @@ public class SnakkesagligPerson <emphasis>implements Runnable</emphasis>
 }
 </screen>
 
-
 <para>
-Objekter af typen SnakkesaligPerson kan køre i en tråd (implements
-Runnable).
+  Objekter af typen SnakkesaligPerson kan køre i en tråd (implements
+  Runnable).
 </para>
 
 <para>
-I konstruktøren angives navnet på personen og hvor lang tid, der går,
-mellem hver gang personen taler.
+  I konstruktøren angives navnet på personen og hvor lang tid, der går,
+  mellem hver gang personen taler.
 </para>
 
 <para>
-Når run() udføres, skriver den personens navn + bla bla bla ud så ofte
-som angivet.
+  Når run() udføres, skriver den personens navn + bla bla bla ud så ofte
+  som angivet.
 </para>
 
 <para>
-Da Thread.sleep() kan kaste undtagelser af typen InterruptedException,
-er vi nødt til at indkapsle koden i en try-catch-blok (disse
-undtagelser forekommer aldrig i praksis).
+  Da Thread.sleep() kan kaste undtagelser af typen InterruptedException,
+  er vi nødt til at indkapsle koden i en try-catch-blok (disse
+  undtagelser forekommer aldrig i praksis).
 </para>
 
 <para>
-Vi kan nu oprette en snakkesalig person, der siger noget hvert sekund:
+  Vi kan nu oprette en snakkesalig person, der siger noget hvert sekund:
 </para>
 
 <screen>
@@ -157,8 +152,8 @@ Vi kan nu oprette en snakkesalig person, der siger noget hvert sekund:
 
 
 <para>
-... og en tråd, der er klar til at udføre p.run() og lade personen
-snakke:
+  ... og en tråd, der er klar til at udføre p.run() og lade personen
+  snakke:
 </para>
 
 <screen>
@@ -166,7 +161,7 @@ snakke:
 </screen>
 
 <para>
-... og til sidst startes tråden, så personen snakker:
+  ... og til sidst startes tråden, så personen snakker:
 </para>
 
 <screen>
@@ -174,9 +169,9 @@ snakke:
 </screen>
 
 <para>
-Her ses et samlet eksempel, der opretter 3 snakkesalige personer,
-Jacob, Troels og Henrik, og lader dem snakke i munden på hinanden (i
-hver sin tråd).
+  Her ses et samlet eksempel, der opretter 3 snakkesalige personer,
+  Jacob, Troels og Henrik, og lader dem snakke i munden på hinanden (i
+  hver sin tråd).
 </para>
 
 <screen>
@@ -198,6 +193,7 @@ public class BenytSnakkesagligePersoner
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Jacob: bla bla bla 0
@@ -218,26 +214,27 @@ Troels: bla bla bla 4
 </screen>
 
 <para>
-Bemærk, at udførelsen af main(), der faktisk sker i en fjerde tråd,
-afsluttes med det samme, men at programmet kører videre, indtil de tre
-tråde er færdige med deres opgaver; Java fortsætter med at udføre et
-program, så længe der er tråde, der stadig er aktive, dvs.  ikke har
-returneret fra run().
+  Bemærk, at udførelsen af main(), der faktisk sker i en fjerde tråd,
+  afsluttes med det samme, men at programmet kører videre, indtil de tre
+  tråde er færdige med deres opgaver; Java fortsætter med at udføre et
+  program, så længe der er tråde, der stadig er aktive, dvs.  ikke har
+  returneret fra run().
 </para>
 
 </sect2>    <!--   Eksempel -->
 </sect1>    <!--   Princip -->
 
-<sect1>
-  <title>Ekstra eksempler</title>
-<sect2>
-  <title>En flertrådet webserver</title>
+<sect1 id="java-traade-ekstra-eksempler">
+<title>Ekstra eksempler</title>
+
+<sect2 id="java-traade-ekstra-eksempler-webserver">
+<title>En flertrådet webserver</title>
 
 <para>
-Herunder har vi lavet en flertrådet webserver (sammenlign med
-webserveren i kapitel 15). For at gøre det nemmere at se, hvad der
-foregår, lader vi hver anmodning vente i 10 sekunder, før den
-afslutter.
+  Herunder har vi lavet en flertrådet webserver (sammenlign med
+  webserveren i kapitel 15). For at gøre det nemmere at se, hvad der
+  foregår, lader vi hver anmodning vente i 10 sekunder, før den
+  afslutter.
 </para>
 
 <screen>
@@ -286,11 +283,10 @@ public class Anmodning <emphasis>implements Runnable</emphasis>
 }
 </screen>
 
-
 <para>
-Når der kommer en anmodning, oprettes et Anmodning-objekt, der snakker
-med klienten og behandler forespørgslen, og en ny tråd knyttes til
-anmodningen.
+  Når der kommer en anmodning, oprettes et Anmodning-objekt, der snakker
+  med klienten og behandler forespørgslen, og en ny tråd knyttes til
+  anmodningen.
 </para>
 
 <screen>
@@ -316,6 +312,8 @@ public class FlertraadetHjemmesidevaert
 }
 </screen>
 
+<para>Resultatet bliver</para>
+
 <screen>
 <emphasis>start</emphasis> Tue Nov 28 15:37:31 GMT+01:00 2000 GET /xxx.html HTTP/1.0
 <emphasis>start</emphasis> Tue Nov 28 15:37:38 GMT+01:00 2000 GET /yyy.html HTTP/1.0
@@ -327,22 +325,21 @@ public class FlertraadetHjemmesidevaert
 <emphasis>slut</emphasis>  Tue Nov 28 15:38:01 GMT+01:00 2000 GET /qqq.html HTTP/1.0
 </screen>
 
-
 <para>
-Programmet er afprøvet ved i Netscape at åbne adressen
-http://localhost:8001/xxx.html hhv. yyy zzz og qqq.html. Man ser, at
-anmodningerne xxx, yyy og zzz bliver behandlet samtidigt.
+  Programmet er afprøvet ved i Netscape at åbne adressen
+  http://localhost:8001/xxx.html hhv. yyy zzz og qqq.html. Man ser, at
+  anmodningerne xxx, yyy og zzz bliver behandlet samtidigt.
 </para>
 </sect2>    <!--   En flertrådet webserver -->
 
-<sect2>
-  <title>En flertrådet applet med bolde</title>
+<sect2 id="java-traade-ekstra-eksempler-applet">
+<title>En flertrådet applet med bolde</title>
 
 <para>
-Lad os lave en applet med nogle bolde, der hopper rundt. Hver bold
-kører i sin egen tråd. Når en bold oprettes, får den i konstruktøren
-overført start-koordinater og et Graphics-objekt, som den husker. Den
-opretter og starter en tråd, som kører boldens run()-metode.
+  Lad os lave en applet med nogle bolde, der hopper rundt. Hver bold
+  kører i sin egen tråd. Når en bold oprettes, får den i konstruktøren
+  overført start-koordinater og et Graphics-objekt, som den husker. Den
+  opretter og starter en tråd, som kører boldens run()-metode.
 </para>
 
 <screen>
@@ -397,9 +394,8 @@ public class Bold implements Runnable
 }
 </screen>
 
-
 <para>
-Lad os nu lave en applet med nogle bolde:
+  Lad os nu lave en applet med nogle bolde:
 </para>
 
 <screen>
@@ -420,28 +416,20 @@ public class FlertraadetApplet extends Applet
 }
 </screen>
 
-
-<figure>
-<title>Java</title>
-
-<graphic fileref="Nordfalk1815465.&magic;" scale="60"></graphic>
+<figure id="java-traade-ekstra-eksempler-applet-fig">
+  <title>Java</title>
+  <graphic fileref="Nordfalk1815465.&magic;" scale="60"></graphic>
 </figure>
+
 </sect2>    <!--   En flertrådet applet med bolde -->
 </sect1>    <!--   Ekstra eksempler -->
 
-<sect1>
-  <title>Opgaver</title>
+<sect1 id="java-traade-opgaver">
+<title>Opgaver</title>
 
 <orderedlist>
-<listitem><para>
-Udvid FlertraadetApplet med andre figurer end bolde.
-</para></listitem>
-<listitem><para>
-Skriv et program, der udregner primtal (se kapitel 2 for
-inspiration). Samtidig med, at programmet regner, skal det kunne
-kommunikere med brugeren og give ham mulighed for at afslutte
-programmet og udskrive de primtal, der er fundet indtil nu.
-</para></listitem>
+  <listitem><para>Udvid FlertraadetApplet med andre figurer end bolde.</para></listitem>
+  <listitem><para>Skriv et program, der udregner primtal (se kapitel 2 for inspiration). Samtidig med, at programmet regner, skal det kunne kommunikere med brugeren og give ham mulighed for at afslutte programmet og udskrive de primtal, der er fundet indtil nu.</para></listitem>
 </orderedlist>
 
 </sect1>    <!--   Opgaver -->
