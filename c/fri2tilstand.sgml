@@ -152,8 +152,68 @@ tidligere handler, så man kan reinstallere den senere.
 <sect1 id="expression-parser">
 <title>En expression parser</title>
 <para>
-Et program, som kan fodres med beregningsudtryk og levere
-resultatet. Eksempel på input:
+En kalkulator er et program, som kan fodres med beregningsudtryk
+og som derefter beregner resultatet. Som regel skrives resultatet
+på en computerskærm, men det kan jo lige så godt være på en
+papirstrimmel eller i et felt i et regneark. Et udtryk kaldes på
+engelsk et expression.
+</para>
+
+<para>
+Hvis man vil forstå, hvordan en oversætter/compiler virker,
+så er en kalkulator et godt sted at begynde. En kalkulator består
+af analysator, som kaldes en expression parser, og en
+beregningsdel. Expression parseren har til opgave at analysere
+input og se, hvad der skal gøres.
+</para>
+
+<para>
+En sådan expression parser findes også i en oversætter. I stedet
+for at foretage beregning, så udskriver oversætteren assembler
+kode, der vil kunne foretage beregningen.
+</para>
+
+<para>
+En væsentlig del af kunsten at skrive en oversætter består i at
+skille tingene ad. Det kræver stor forståelse for opgaven, en
+stor abstraktionsevne, for kode-generator delen er jo flettet
+ind, så at sige, i analysen. Hver gang man kommer til et
+delresultat, skal det omsættes til kode. Endvidere kræves der
+også en forståelse for assembler koden. Derfor er det meget
+godt at begynde med en kalkulator. Den er simplere at skrive,
+nemmere at forstå, men rummer de samme problemstillinger.
+</para>
+
+<para>
+I en compiler har man brug for en expression parser, hver gang
+der er et statement. Et statement eller en (programsprog-)sætning
+kan i simple tilfælde blot være et beregningsudtryk efterfulgt af
+et semikolon. I mere komplicerede tilfælde er det fx. keywordet
+<emphasis> if </emphasis> efterfulgt af en betingelse og så et
+eller andet stykke kode, som styres af <emphasis> if'et
+</emphasis>. Betingelsen er, i C sproget, et expression (altså et
+udtryk). Den efterfølgende sætning vil i mange tilfælde være et
+funktionskald (også et udtryk, strengt taget) eller en tildeling
+som i C sproget også er et udtryk.
+</para>
+
+<para>
+Så en expression parser er en vigtig del af computer-software.
+Her kommer et eksempel på en kalkulator, som beregner ganske
+almindelige regnestykker som 2+3 eller mere komplicerede, hvori
+der indgår aritmetiske funktioner og en enkelt variabel, X, som
+er resultatet af foregående beregning. Ideen her er hentet fra
+gode gamle Compas Pascal, men det er altså C-kode, dette her.
+</para>
+
+<para>
+En lignende kalkulator i C++ er en god opgave for viderekomne.
+(Jeg vil senere prøve at komme med nogle sammenligninger med
+Stroustrups eksempel, Stroustrup[1997] p. 108.)
+</para>
+
+<para>
+Eksempel på input:
 </para>
 <programlisting>
 calcu '200 * sin(0.444)'
@@ -174,9 +234,9 @@ Calc: 32/square(2)
 </programlisting>
 
 <para>
-Programmet benytter en særlig slem variant af printf format
-specification, som skriver et antal spaces ud styret af en
-variabel:
+Programmet benytter til den viste fejlmeddelelse en særlig slem
+variant af printf format specification, som skriver et antal
+spaces ud styret af en variabel:
 <literal>
 printf("En padded string: %*s\n",lengde,string);
 </literal>
