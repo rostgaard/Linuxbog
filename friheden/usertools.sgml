@@ -62,7 +62,7 @@ Der eksisterer to varianter af UNIX: System V (udtales "system fem")
 og BSD (Berkeley Software Distribution). For en almindelig bruger er der
 ikke den store forskel; den ligger hovedsagelig i, hvor de
 forskellige opsætningsfiler er placeret i filsystemet, og hvordan
-opstartssekvensen (boot) foregår. Red Hat (og de fleste
+opstartssekvensen (engelsk: "boot") foregår. Red Hat (og de fleste
 Linux-distributioner) har valgt side og hører til
 System V familien, men låner lidt fra BSD.
 </PARA>
@@ -72,18 +72,18 @@ System V familien, men låner lidt fra BSD.
 <indexterm><primary>mount</primary></indexterm>
 
 <sect2 id="mounte-filsystemer">
-<title>Mount af filsystemer</title>
+<title>Montering af filsystemer</title>
 
 <para>
 For at kunne tilgå et filsystem under Linux skal det monteres
-(eng. mountes) til et defineret katalog i det filtræ, som er blevet
+(eng. "mount") som et katalog i det filtræ, som er blevet
 genereret af init-processen under opstarten.
 </para>
 
 <para>
 <indexterm><primary>/etc/fstab</primary></indexterm>
-Root-filsystemet monteres direkte under opstarten (boot) af
-kernen. Herefter vil systemet automatisk montere de filsystemer, der
+rodfilsystemet monteres direkte mens kernen starter.
+Herefter vil systemet automatisk montere de filsystemer, der
 er angivet i filen <filename>/etc/fstab</filename>, og som har en
 parameter, der fortæller at filsystemet skal monteres under opstarten.
 <indexterm><primary>mount</primary></indexterm>
@@ -95,11 +95,11 @@ parameter, der fortæller at filsystemet skal monteres under opstarten.
 
 <para> 
 vil montere de relevante filsystemer i
-<filename>/etc/fstab</filename>, og denne kommando udføres under
-opstarten (boot) af et af de scripts, der findes i filen
-<filename>/etc/rc.d/</filename> , hvorfor disse filsystemer vil være
+<filename>/etc/fstab</filename>. Denne kommando udføres under
+starten af et af de programmer, der findes i kataloget
+<filename>/etc/rc.d/</filename>. Derfor vil disse filsystemer være
 tilgængelige fra starten. Senere kan man så manuelt montere de ekstra
-filsystemer, der skal være tilgængelige.
+filsystemer, der måtte være behov for.
 </para>
 
 <para>
@@ -123,29 +123,29 @@ Parameterforklaring:
 <itemizedlist mark="bullet">
 <listitem>
  <para>
-  -defaults(rw, suid, dev, exec, auto, nouser, asunc)
+  defaults (rw, suid, dev, exec, auto, nouser, asunc)
  </para>
 </listitem>
 <listitem> 
  <para>
-  -rw (read-write)
+  rw (read-write)
  </para>
 </listitem>
 <listitem> 
  <para>
-  -ro (read-only)
+  ro (read-only)
  </para>
 </listitem>
 <listitem> 
  <para>
-  -user (tillader en alm. bruger at montere filsystemet -forudsætter 
+  user (tillader en alm. bruger at montere filsystemet - forudsætter 
    noexec, nosuid, nodev)
  </para>
 </listitem>
 <listitem> 
  <para>
-  -noauto (kan kun monteres eksplicit, d.v.s. 
-  <command>mount -a</command> vil ikke mounte filsystemet).
+  noauto (kan kun monteres eksplicit, dvs. 
+  <command>mount -a</command> vil ikke montere filsystemet).
  </para>
 </listitem>
 </itemizedlist>
@@ -153,31 +153,31 @@ Parameterforklaring:
 <para>
 <indexterm><primary>fsck</primary></indexterm>
 <indexterm><primary>dump</primary></indexterm>
-De to sidste tal på linien henviser dels til dumpkommandoen, der
+De to sidste tal på linien henviser dels til dump-kommandoen, der
 benytter tallet til at sammenligne med antallet af dage, siden der
 sidst blev taget backup af filsystemet, således at systemadministrator
-kan informeres. Se iøvrigt on-line manualen for kommandoen
+kan informeres. Se iøvrigt online-manualen for kommandoen
 <command>dump</command>. Den sidste parameter på linien benyttes af
 kommandoen <command>fsck</command> til at afgøre, om filsystemer kan
 checkes parallelt under opstarten (boot). Root filsystemet (
 dvs. <filename>/</filename> ) checkes altid først. De andre
 filsystemer kan checkes parallelt (multitasking er jo understøttet i
-Linux), men der er ingen fordel i at checke filsystemer på samme
-harddrive samtidigt, fordi det vil resultere i overflødig flytning af
-disk hoved og dermed spild af tid. En parameter på nul (0) eller ingen
-parameter (eks. floppy og cdrom) betyder, at filsystem ikke checkes. 
+Linux), men der er ingen fordel i at checke flere filsystemer på samme
+fysiske disk samtidigt, da det vil resultere i overflødig flytning af
+læsehovedet og dermed slid og spild af tid. En parameter på nul (0) eller ingen
+parameter (f.eks. floppy og cdrom) betyder, at filsystem ikke checkes. 
 </para>
 
 <para>
-Se i øvrigt online manualen for kommandoerne <command>fsck</command>,
+Se i øvrigt online-manualen for kommandoerne <command>fsck</command>,
 <command>dump</command> og <command>mount</command> (brug
 <command>man fsck</command> osv.)
 </para>
 
 <para>
-Mount-kommandoen generelt er beregnet for systemadministratoren root,
-med mindre der står "user" som parameter i filen
-<filename>/etc/fstab</filename> i device-feltet.
+Mount-kommandoen er generelt kun beregnet for systemadministratoren,
+med mindre der står "user" i device-feltet i filen
+<filename>/etc/fstab</filename>.
 </para>
 
 <para>
@@ -195,30 +195,31 @@ Eksempler:
 <itemizedlist mark="bullet">
 <listitem>
  <para>
-  1) Mount af harddisk
+  1) Montering af harddisk:
  </para>
 
 <SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/hda2  /mnt </USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/hda2 /mnt/disk</USERINPUT>
 </SCREEN>
 
-<para>
-monterer partitionen <filename>/dev/hda2</filename> på kataloget <filename>/mnt</filename>.
-</para>
+ <para>
+ monterer diskafsnittet <filename>/dev/hda2</filename> som kataloget
+ <filename>/mnt/disk</filename>.
+ </para>
 </listitem>
 
 <listitem> 
  <para>
-2) Mount af floppy til linux-filer (ext2)
-</para>
+ 2) Montering af diskette til Linux-filer (med ext2-filsystem)
+ </para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t ext2 /dev/fd0 /mnt/floppy</USERINPUT>
 </SCREEN>
 
-<para>
-alternativt 1:
-</para>
+ <para>
+ Alternativ 1:
+ </para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/fd0</USERINPUT>
@@ -228,22 +229,22 @@ alternativt 1:
 henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
 </para>
 
-<para>
-alternativ 2:
-</para>
+ <para>
+ Alternativ 2:
+ </para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /mnt/floppy</USERINPUT>
 </SCREEN>
 
-<para>
-henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
-</para>
+ <para>
+ henter ligeledes resten af oplysningerne fra <filename>/etc/fstab</filename>.
+ </para>
 </listitem>
 
 <listitem> 
  <para>
-3) Mount af floppy til DOS-filer (msdos)
+ 3) Montering af diskette til DOS-filer (msdos)
  </para>
 
 <SCREEN>
@@ -253,7 +254,7 @@ henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
 
 <listitem> 
  <para>
-4) Mount af floppy til Windows-filer (vfat)
+ 4) Montering af diskette til Windows-filer (vfat)
  </para>
 
 <SCREEN>
@@ -264,16 +265,16 @@ henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
 
 <listitem> 
  <para>
-5) Mount af CD-rom
+ 5) Montering af cd-rom (i ISO-9660-format)
 </para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount -t iso9660 /dev/cdrom /mnt/cdrom</USERINPUT>
 </SCREEN>
 
-<para>
-alternativt 1: 
-</para>
+ <para>
+ Alternativ 1: 
+ </para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom</USERINPUT>
@@ -283,30 +284,41 @@ alternativt 1:
 henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
 </para>
 
-<para>
-altemativ 2: 
-</para>
+ <para>
+ Altemativ 2: 
+ </para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /mnt/cdrom</USERINPUT>
 </SCREEN>
 
-<para>
-henter resten af oplysningerne fra <filename>/etc/fstab</filename>.
+ <para>
+ henter ligeledes resten af oplysningerne fra <filename>/etc/fstab</filename>.
  </para>
 </listitem>
 </itemizedlist>
 <para>
-Det omvendte af at montere et filsystem, er at afmontere
-(eng. unmounte) filsystemet igen. At afmontere et filsystem har to
-virkninger: a) Det skriver alle data til den fysiske disk, 
-og derefter b) at filsystemet ikke længere er til rådighed 
-fra dets <emphasis>mount point</emphasis>.
+ Det omvendte af at montere et filsystem, er at afmontere
+ (eng. "unmount") filsystemet. At afmontere et filsystem har to
+ virkninger:
+ <itemizedlist mark="letter">
+  <listitem>
+  <para>  
+   Det skriver alle data til den fysiske disk.
+  </para>  
+  </listitem>
+  <listitem>
+  <para>  
+   Derefter er filsystemet ikke længere til rådighed.
+   fra dets <emphasis>mount point</emphasis>.
+  </para>  
+  </listitem>
+ </itemizedlist>
 </para>
 
 <para>
-"Unmounting" af et filsystem gøres med kommandoen "umount" (bemærk
-uden bogstavet "n").
+ Afmontering af et filsystem sker med kommandoen "umount"
+ (bemærk: kun med et "n").
 </para>
 
 <para>
@@ -324,18 +336,17 @@ Eksempel:
 <indexterm><primary>sync</primary></indexterm>
 <emphasis>Vigtigt!</emphasis> Det er vigtigt at bemærke, at man ikke
 kan/skal fjerne diskette eller andre ydre medier, der er monteret, før
-der er foretaget en <command>umount</command>, idet der så ikke vil
-være synkronisering mellem mediets indhold, og det kan medføre store
+<command>umount</command> er kørt, i det der så kan mangle dele af de data,
+der er skrevet til mediets filsystem, og det kan medføre store
 problemer. Man kan tvinge systemet til at foretage en synkronisering
 v.h.a. kommandoen <command>sync</command>, idet alle filsystembuffere
-så skrives tilbage på disketten. Kommandoen <command>umount</command>
-vil gøre det samme.
+så skrives til mediet. Kommandoen <command>umount</command> gør det samme.
 </para>
 
 <para>
 Kommandoen <command>umount</command> kræver, at der ikke er
 nogen, der arbejder på filsystemet man vil afmontere,
-d.v.s. hvis du står i <filename>/mnt/cdrom</filename> hvor din cdrom
+dvs. hvis du står i <filename>/mnt/cdrom</filename> hvor din cdrom
 er monteret, så kan du ikke afmontere den. Se også 
 </para>
 
@@ -346,13 +357,17 @@ afmontere et filsystem, når der forsøges med et nyt filsystem.
 </para>
 
 <para>
-En meget vigtig pointe er at root-brugeren kan montere alt, men den
-almindeligte bruger ikke kan montere disketter eller cdrom.  Den
-almindelige bruger kan endda højst montere enheder, der er nævnt i
-<filename>/etc/fstab</filename>.  Det er meget forskelligt fra
-Windows, men er tænkt ud fra et sikkerhedshensyn. Vil du give brugeren
-lov til at montere f.eks. diskette eller cdrom, så tilføj "user" i
-<filename>/etc/fstab</filename> ud for de relevante enheder.
+ En meget vigtig pointe er at root-brugeren kan montere alt, mens den
+ almindelige bruger kun kan montere de enheder, der specifikt er nævnt med
+ et "user"-flag i <filename>/etc/fstab</filename>. Typisk vil man kun
+ give brugere adgang til at montere løse enheder som diskette og cd-rom.
+ Og hvis man er forsigtig, giver man kun de brugere, der har fysisk adgang
+ til maskinen lov til at læse og skrive disketter og cd-rom'er. Det gøres
+ ved at lade disse enheder høre til en brugergruppe, der kun består af
+ de lokale brugere, og så slå skrive- og læserettigheder fra for alle andre
+ end enhedernes ejer og gruppe. Se <filename>/etc/group</filename>,
+ <command>chgrp</command> og <command>chmod</command> for information om
+ hvordan det gøres.
 </para>
 
 </sect2>
@@ -361,10 +376,9 @@ lov til at montere f.eks. diskette eller cdrom, så tilføj "user" i
 <TITLE>cdrom</TITLE>
 <indexterm><primary>cdrom</primary></indexterm>
 <para>
-Først en gang Linux-gymnastik, som kun skal gøres en gang på din
-maskine. Skift til root ved at skrive <command>su -
-root</command>. Kontrollér, at dit cdrom-drev er fundet korrekt, og tillad
-alle at læse dit cdrom-drev:
+ Først en gang Linux-gymnastik, som kun skal gøres en gang på din maskine.
+ Skift til systemoperatørrettigheder ved at skrive <command>su -</command>.
+ Kontrollér, at dit cd-rom-drev er fundet og tillad alle at læse fra det:
 </para>
 
 <SCREEN>
@@ -374,11 +388,30 @@ lrwxrwxrwx   1 root  root  3 Sep  4 14:31 /dev/cdrom -> hdd
 </SCREEN>
 
 <para>
-I eksemplet er <filename>/dev/cdrom</filename> et symbolsk link til
-<filename>/dev/hdd</filename>, dvs. at cdrom-drevet sidder på den
+Lad os tage en anden måde at opnå det samme for brugeren "anne".
+Kontrollér, at dit cd-rom-drev er fundet, tillad alle i gruppen floppy
+at læse fra det og føj derefter "anne" til gruppen floppy:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ls -al /dev/cdrom</USERINPUT>
+lrwxrwxrwx   1 root  root  3 Sep  4 14:31 /dev/cdrom -> hdd
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chgrp floppy /dev/hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chmod g+r /dev/hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>chmod o-rwx /dev/hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>usermod -G floppy anne</USERINPUT>
+</SCREEN>
+
+
+<para>
+I eksemplet er <filename>/dev/cdrom</filename> en henvisning til
+<filename>/dev/hdd</filename>, dvs. cdrom-drevet sidder på den
 sekundære IDE-bus som slave (typisk situation). Se også <xref
-linkend="redhatpartitioner">. Du skal ændre chmod-kommandoen alt
-efter, hvor dit cd-rom-drev sidder.
+linkend="redhatpartitioner">. Du skal ændre
+<command>chgrp</command>- og <command>chmod</command>-kommandoerne, så
+de svarer til den enhed dit cd-rom-drev sidder på, og
+<command>usermod</command>-kommandoen skal ændres, så det er dit brugernavn
+der bruges.
 </para>
 
 <para>
@@ -397,7 +430,7 @@ Hvis du <EMPHASIS>ikke</EMPHASIS> finder en linje, som ligner ovenstående,
 kan det være fordi supermount er installeret, så du automatisk får 
 adgang til dit cdrom- og diskettedrev, hvilket Mandrake bl.a. 
 benytter. I så fald skal du ikke ændre noget i 
-<filename>/etc/fstab</filename> og hop videre til næste afsnit.
+<filename>/etc/fstab</filename> og gå videre til næste afsnit.
 </para>
 
 <para>
@@ -412,14 +445,14 @@ Tredje kolonne beskriver filformatet, her er det iso9960 til en cdrom.
 Fjerde kolonne indeholder
 nøgleord, der beskriver egenskaber ved cdrom-drevet. 'noauto' betyder,
 at cdrom-drevet ikke automatisk monteres, når maskinen startes op. 'ro'
-betyder read-only. 'user' gør det muligt at montere cdrom'er som
+betyder at man kun kan læse fra drevet (engelsk: "read-only"). 'user' gør det muligt at montere cdrom'er som
 almindelig bruger. 'exec' gør det muligt at køre Linux-programmer fra
 cdrom. Betydningen af de to nuller kan du finde frem til ved at udføre
 kommandoen <command>man mount</command>.
 </para>
 
 <para>
-Nu er du klar til at teste det. Stop som root ved at trykke Ctrl-D i
+Nu er du klar til at afprøve det. Stop som root ved at trykke Ctrl-D i
 den terminal, du arbejder i. Læg f.eks. din Red Hat-cdrom i dit 
 cdrom-drev, og skriv
 </para>
