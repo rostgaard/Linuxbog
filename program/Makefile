@@ -3,8 +3,12 @@ targetname=linux-$(notdir $(locdirname))
 version=$(shell cat version.sgml)
 dato=$(shell cat dato.sgml)
 
-all:	statusfiler html pspdf
+all:	statusfiler html pspdf palmpilot
 
+palmpilot:
+	rm -f palm/*.prc palm/*.pdb
+	(cd palm; python /usr/lib/python1.5/site-packages/PyPlucker/Spider.py -v -p . -f $(targetname);cp ../../misc/*.prc .)
+	tar cvzf $(targetname)-$(version).palm.tgz palm/*.prc palm/*.pdb
 
 statusfiler:
 	@$(shell date +%d/%m-%Y> dato.sgml)
@@ -61,6 +65,6 @@ pspdf:
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz $(targetname)-*.palm.tgz
 
 
