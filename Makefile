@@ -46,9 +46,6 @@ clean: Makefiler
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
 
-eksempler:
-	sh program/eksempler/TAR
-
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
 	rm -rf cvs2html

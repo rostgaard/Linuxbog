@@ -23,7 +23,7 @@ allesgmlfiles=$(wildcard *.sgml)
 sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
 
 # her er det der skal laves
-all:	html pspdf palmpilot sgml exit
+all:	html pspdf palmpilot sgml eksempelbackup exit
 
 sgml: $(targetname)-$(version).sgml.tgz
 
@@ -109,7 +109,7 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% /usr/X11R6/bin/convert -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	cp *.sgml bogps
-	(cd bogps; db2ps bog.sgml)
+	(cd bogps; db2ps bog.sgml > /dev/null)
 	mv bogps/bog.ps $(targetname)-$(version).ps
 	rm -f $(targetname)-*.ps.gz
 	@echo "Done PS (pspdf)"
@@ -121,18 +121,28 @@ $(targetname)-$(version).pdf: $(sgmlfiler)
 	cp *.sgml bogpdf
 	rm -f $(targetname)-*.pdf
 	cp images/*.png bogpdf
-	(cd bogpdf; db2pdf bog.sgml)
+	(cd bogpdf; db2pdf bog.sgml > /dev/null)
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
+	rm -f $(targetname)-$(version).pdf
 	@echo "Done PDF (pspdf)"
 	@echo ""
 
 test:
 	echo $(sgmlfiler)
 
+eksempelbackup:
+	rm -f $(targetname)-$(version)_eksempler.tar.gz  
+	touch $(targetname)-$(version)_eksempler.tar
+	cat dato.sgml > eksempler/BACKUPDATO
+	tar cvf  $(targetname)-$(version)_eksempler.tar eksempler/BACKUPDATO
+	rm -f eksempler/BACKUPDATO
+	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-$(version)_eksempler.tar =
+	gzip -9 $(targetname)-$(version)_eksempler.tar
+	mv $(targetname)-$(version)_eksempler.tar.gz $(targetname)-$(version)_eksempler.tgz
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf* $(targetname)*.ps.gz $(targetname)*.zip $(targetname)-*.palm.tgz $(targetname)-*.png.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz palm/*.prc palm/*.pdb sideantal.txt
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf* $(targetname)*.ps.gz $(targetname)*.zip $(targetname)-*.palm.tgz $(targetname)-*.png.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz palm/*.prc palm/*.pdb sideantal.txt $(targetname)-*_eksempler.tgz
 
 
