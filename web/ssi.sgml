@@ -7,13 +7,18 @@
 <!-- Skrevet af Carsten Svaneborg -->
 
 <para>
-Apache har en parser indbygget, når en webside afsendes kan
+Apache har en parser indbygget, så når en webside afsendes kan
 Apache indsætte stumper af HTML-kode for eksempel hvis alle sider skal have et
-fælles hoved eller fod. Apache kan også indsætte den datoen hvor HTML-filen sidst blev rettet, samt inkludere eller ekskludere html stumper
-alt efter for eksempel hvilken browser ønsker siden. Alle disse features kaldes
+fælles hoved eller fod. Apache kan også indsætte den datoen hvor HTML-filen 
+sidst blev rettet, samt inkludere eller ekskludere html-stumper
+alt efter for eksempel, hvilken browser der benyttes. 
+</para>
+
+<para>
+Alle disse features kaldes
 under et for Server-Side Includes, og forkortes SSI. SSI gør mange
 trivielle ting lettere, men det betyder også at sider skal fortolkes
-før de afsendes, hvilket betyder at det tager længrer tid at sende en
+før de afsendes, hvilket betyder at det tager længere tid at sende en
 webside.
 </para>
 
@@ -22,10 +27,11 @@ webside.
 
 
 <para>
-For at Apache skal udføre SSI skal følgende linjer udkommenteres i
-<filename>/etc/httpd/conf/srm.conf</filename>
+For at Apache skal udføre SSI, skal følgende linjer indsættes eller 
+udkommenteres i
+<filename>/etc/httpd/conf/httpd.conf</filename> eller en af de 
+filer den inkludere f.eks. <filename>/etc/httpd/conf/srm.conf</filename> 
 </para>
-
 
 <programlisting>
 AddType text/html .shtml
@@ -33,21 +39,23 @@ AddHandler server-parsed .shtml
 </programlisting>
 
 <para>
-Aller filer med typen <filename>.shtml</filename> bliver fortolket af Apaches
-SSI modul (mod_include), og resultatet udskrives med media type text/html,
+Alle filer med typen <filename>.shtml</filename> bliver så fortolket af Apaches
+SSI-modul (mod_include), og resultatet udskrives med mediatypen text/html,
 dvs. som en HTML-fil.
 </para>
 
 
 <para>
-For at slå SSI til for et bestemt katalog <filename>/www</filename>
-skal <command>"Options Includes"</command> includes i katalogets
-adgangskonfiguration disse befinder sig i
-<filename>/etc/httpd/conf/access.conf</filename> filen, f.eks.:
+For at slå SSI til for et bestemt katalog f.eks. 
+<filename>/var/www/html</filename>
+skal <command>"Options Includes"</command> inkluderes i katalogets
+konfiguration, hvor disse befinder sig i enten filen 
+<filename>/etc/httpd/conf/httpd.conf<filename> eller filen
+<filename>/etc/httpd/conf/access.conf</filename>, f.eks.:
 </para>
 
 <programlisting>
-&lt;directory /www &gt;
+&lt;directory /var/www/html &gt;
 Options Includes
 &lt;/directory&gt;
 </programlisting>
@@ -60,16 +68,16 @@ anvender CGI-programmer eller udfører kommandofortolker negligeres.
 
 
 <para>
-Filer af typen <filename>.html</filename> eller
-<filename>.htm</filename> vil blive ikke blive fortolket, kun filer
-med typen <filename>.shml</filename>. Det kan dog være praktisk også
+Filer som ender på <filename>.html</filename> eller
+<filename>.htm</filename> vil ikke blive fortolket. Kun filer
+som slutter på <filename>.shtml</filename>. Det kan dog være praktisk også
 at fortolke visse <filename>.html</filename> og
 <filename>.htm</filename> filer. Dette kan vha. XBitHack kommandoen
 som følger
 </para>
 
 <programlisting>
-&lt;directory /www &gt;
+&lt;directory /var/www/html &gt;
 
 # "*.shtml"-filer fortolkes
 Options Includes
@@ -82,30 +90,34 @@ XBitHack on
 <para>
 Alle filer hvor brugeren har rettigheder til at udføre dem vil nu
 blive fortolket (<command>chmod u+x fil.html</command>). Normalt
-bliver SSI svar ikke cachet fordi deres indhold kan variere fra gang
-til gang, for eksempel ved at dags dato indsættes et sted. Men hvis de HTML-stumper der indsættes er statiske, dvs. at man f.eks. indsætter den samme
+bliver SSI-svar ikke cachet, fordi deres indhold kan variere fra gang
+til gang, for eksempel ved at dags dato indsættes et sted. 
+Men hvis de HTML-stumper der indsættes er statiske, dvs. at man f.eks. indsætter den samme
 HTML-kode som hoved og fod hver gang, så kan siden jo sagtens
-caches uden problem. Man kan gøre dette muligt med "XBitHack full".
+caches uden problem. 
+</para>
+
+<para>
+Man kan gøre dette muligt med "XBitHack full".
 Alle filer hvor både brugeren og gruppen har rettighed til at udføre
-filen vil nu blive afsendt med et "Last-Modified"-felt i HTTP-hovedet, der
-fortæller browseren hvornår filen sidst blev ændret (<command>chmod ug+x
+filen, vil nu blive afsendt med et "Last-Modified"-felt i HTTP-hovedet, som
+fortæller browseren, hvornår filen sidst blev ændret (<command>chmod ug+x
 fil.html</command>).
 </para>
 
 
 <para>
 Bruger man "XBitHack full" og ændrer i de HTML-stumper der indsættes
-som hoved og fod, vil det derfor være hensigtsmæssig at `touch`e
+som hoved og fod, vil det derfor være hensigtsmæssig at 'touch'e
 alle filer der får hoved og fod indsat, således at den dato der
-returneres altid er nyere end HTML-stumpernes, således browseren er
-istand til at cache svaret. Følgende kommandoer finder alle filer i og
-under det <filename>/www</filename> kataloget, der kan udføres af
-brugeren og gruppen (ug+x), og updatere tiden på de filer:
+returneres altid er nyere end HTML-stumpernes, og browseren er
+i stand til at cache svaret. Følgende kommandoer finder alle filer i og
+under kataloget <filename>/var/www/html</filename>, der kan udføres af
+brugeren og gruppen (ug+x), og updaterer tiden på alle filerne:
 </para>
 
 <screen>
-<prompt>[tyge@hven tyge]$ </prompt><userinput>cd /www</userinput>
-<prompt>[tyge@hven www]$ </prompt><userinput>find * -perm 110 | xargs touch</userinput>
+<prompt>[tyge@hven tyge]$ </prompt><userinput>find /var/www/html -perm 110 | xargs touch</userinput>
 </screen>
 
 </sect1>
@@ -115,24 +127,20 @@ brugeren og gruppen (ug+x), og updatere tiden på de filer:
 <indexterm><primary>Apache</primary><secondary>Inkludere tekst</secondary></indexterm>
 
 <para>
-Typisk bruges SSI til at inkludere et fælles hoved i alle .shtml
-filer.  Dette kan gøres med <command>#include</command> kommandoen der
+Typisk bruges SSI til at inkludere et fælles hoved i alle .shtml-filer.  
+Dette kan gøres med kommandoen <command>#include</command>, der
 har følgende syntaks:
 </para>
 
-<programlisting>&lt;!--#include virtual="URL" --></programlisting>
+<programlisting>&lt;!--#include virtual="URL" --&gt;</programlisting>
 
 <para>
-
-</para>
-
-
-<para>
-Dette er en SSI kommando, og alt mellem <command>&lt;..&gt;</command>
-vil blive erstattet af indholdet i URL'en. I alle SSI udtryk er det
-meget vigtig at der er styr på mellemrum, der må ikke være mellemrum
+Dette er en SSI-kommando, og alt mellem <command>&lt;..&gt;</command>
+vil blive erstattet af indholdet i af den fil, som URL'en peger på. 
+I alle SSI-udtryk er det
+meget vigtig, at der er styr på mellemrum. Der må ikke være mellemrum
 mellem <command>&lt;!--#kommando</command> og der SKAL være et
-mellemrum før den afsluttende <command>--></command>. Følgende er et
+mellemrum før den afsluttende <command>--&gt;</command>. Følgende er et
 eksempel på hvordan et hoved og en fod kan inkluderes i et HTML-dokument:
 </para>
 
@@ -146,12 +154,16 @@ eksempel på hvordan et hoved og en fod kan inkluderes i et HTML-dokument:
 </programlisting>
 
 <para>
-Her ligger både "hoved.html" og "fod.html" i WebRoot
-<filename>/</filename>. Men inkluderede filer kan ligge hvor som helst
-inden for WebRoot, hvis URL ikke starter med / så findes filerne med
-html stumperne relativt til den fil de skal indsættes i.  En vigtig
-detalje er at URL'en til den html stump, der skal inkluderes, ikke må
-indeholde http://server/, den må kun være et absolut eller relativ sti
+Her ligger både "hoved.html" og "fod.html" i hjemmesidens rod
+<filename>/</filename>. Inkluderede filer kan dog ligge hvor som helst
+inden for hjemmesidens rod.
+</para>
+
+<para>
+Hvis URL'en ikke starter med <filenam>/</filename>, så findes filerne med
+html-stumperne relativt til den fil de skal indsættes i.  En vigtig
+detalje er at URL'en til den html-stump, der skal inkluderes, ikke må
+starte med en protokol f.eks. http://. Den må kun være en absolut eller relativ sti
 til en fil.
 </para>
 
@@ -171,7 +183,8 @@ Uddata fra et CGI-program kan også inkluderes f.eks.
 
 <para>
 Alt imellem <command>&lt;..&gt;</command> vil blive erstattet af de
-data som <filename>hoved.cgi</filename> programmet udskriver. Hvis CGI-programmet udskriver en omdirigering af formen 
+data som programmet <filename>hoved.cgi</filename> udskriver. 
+Hvis CGI-programmet udskriver en omdirigering af formen 
 <programlisting>
 Location: <literal>URL</literal>\r\n\r\n
 </programlisting>
@@ -270,8 +283,8 @@ tid at udføre.
 
 <para>
 Der er nogle sikkerhedaspekter i at give alle og enhver bruger på
-serveren lov til at bruge apache processen til at udføre arbitrære
-kommandoer med arbitrære input. Med <command>Options
+serveren lov til at bruge webserver-processerne til at udføre arbitrære
+kommandoer med arbitrære inddata. Med <command>Options
 IncludesNOEXEC</command> vil ovenstående #exec kommandoer ikke kunne
 udføres.
 </para>
@@ -295,15 +308,15 @@ man anvende SSI til at automatisk indsætte fil datoen som følger:
 </programlisting>
 
 <para>
-Dette vil udskrive "Friday, 04-Aug-2000 21:00:41 CEST". Det er datoen, men
-ikke i et særligt anvendeligt format!
+Dette vil udskrive datoen som "Friday, 04-Aug-2000 21:00:41 CEST", 
+hvilket ikke i et særligt anvendeligt format på dansk!
 </para>
 
 
 <para>
 Formattet for hvordan tider udskrives kan ændres med <command>&lt;!--#config
-timefmt="%d/%m %Y" --&gt;</command>,  indsættes denne før at fil datoen vil den
-istedet udskrives datoen som som "04/08 2000". %d bliver substitueret med
+timefmt="%d/%m %Y" --&gt;</command> og indsættes før fil-datoen vil, så den
+udskrives som "04/08 2000". %d bliver substitueret med
 numret på dagen i måneden. En fuldstændig liste af alle koderne kan findes med
 <command>man strftime</command>.
 </para>
@@ -375,8 +388,7 @@ til skudsekunder. Man kan også inkludere dagens dato ved at bruge
 <command>&lt;!--#echo var="DATE_LOCAL" --&gt;</command>, 
 hvilket udskriver lokal tiden,
 mens <command>&lt;!--#echo var="DATE_GMT" --&gt;</command> 
-udskriver datoen i Greenwich
-Mean Time (GMT).
+udskriver datoen i Greenwich Mean Time (GMT).
 </para>
 </sect1>
 
@@ -384,24 +396,24 @@ Mean Time (GMT).
 <title>Inkludere information om filer</title>
 
 <para>
-Når man kan downloade store billeder eller filer så er det praktisk hvis
+Når man kan downloade store billeder eller filer, er det praktisk hvis
 størrelsen på filen står et eller andet sted, så man ikke ender med at
-downloade 20Mb via en langsomt modem forbindelse. Istedet for at skrive dette
+downloade 20Mb via en langsomt modemforbindelse. I stedet for at skrive dette
 i HTML-koden kan man med SSI automatisk indsætte størrelsen af filen:
 </para>
 
 <programlisting>
-&lt;!--#fsize virtual="storfil.mp3" --&gt;
+&lt;!--#fsize virtual="storfil.tgz" --&gt;
 </programlisting>
 
 <para>
-Størrelsen af <filename>storfil.mp3</filename> bliver så indsat for eksempel 11k eller
+Størrelsen af <filename>storfil.tgz</filename> bliver så indsat for eksempel 11k eller
 8.2M.
 </para>
 
 
 <para>
-Hvis man istedet vil have antallet af bytes kan man bruge 
+Hvis man istedet vil have antallet af bytes, kan man bruge 
 </para>
 
 <programlisting>
@@ -419,16 +431,16 @@ kommando:
 </programlisting>
 
 <para>
-På samme måde kan man indsætte tiden for hvornår fil sidst blev ændret
+På samme måde kan man indsætte tiden for, hvornår filen sidst blev ændret
 med
 </para>
 
 <programlisting>
-&lt;!--#flastmod virtual="storfil.mp3" --&gt;
+&lt;!--#flastmod virtual="storfil.tgz" --&gt;
 </programlisting>
 
 <para>
-Formatet på output fra denne kommando kan konfigueres ligesom i sidste
+Formatet for uddata fra denne kommando kan konfigueres ligesom i sidste
 afsnit.
 </para>
 </sect1>
@@ -439,8 +451,8 @@ afsnit.
   <secondary>Fejlmeddelelser</secondary></indexterm>
 
 <para>
-Hvis der opstår en fejl mens en SSI kommando vil der udskrives den voldsomt
-informative fejlmeddelelse:
+Hvis der opstår en fejl under afvikling af en SSI-kommando, vil den voldsomt
+informative fejlmeddelelse udskrives:
 </para>
 
 <programlisting>
@@ -457,9 +469,9 @@ Hvis man ønsker at tilrette denne fejlmeddelelse kan det gøres med
 
 <para>
 Enhver tekststreng kan bruges som fejlmeddelelse. Fejlmeddelelser vil for eksempel
-blive udskrevet hvis man forsøger at indsætte kodestumper der ikke findes,
+blive udskrevet, hvis man forsøger at indsætte kodestumper der ikke findes,
 hvis man forsøger at indsætte uddata fra et CGI-program med #include og ikke #exec,
-eller hvis man forsøger at indsætte en fil i sig selv.
+eller at indsætte en fil i sig selv.
 </para>
 </sect1>
 
@@ -499,15 +511,15 @@ DOCUMENT_uri=/cgibog/test.shtml
 
 
 <para>
-Mange er disse variable er de samme som et CGI-program modtager,
-normalt modtager man ikke DNS navnet på den server der ønsker data
+Mange af disse variable er de samme, som et CGI-program modtager.
+Normalt modtager man ikke DNS-navnet på den server der ønsker data
 (REMOTE_HOST), men kun dens IP-adresse, slå <command>HostNameLookups
 On</command> for et katalog definition i
 <command><filename>/etc/httpd/conf/access.conf</filename></command> så
-vil REMOTE_HOST indeholde server navnet. Environment variable oprettes
-når Apache begynder med at fortolker den shtml-fil som browseren beder
-om, og indsættes en shtml-fil i en anden, vil den shtml-fil der
-indsættes have de samme environment variable til rådighed.
+vil REMOTE_HOST indeholde server navnet. Miljø-variable oprettes,
+når Apache begynder at fortolke den .shtml-fil, som browseren beder
+om, og indsættes en .shtml-fil i en anden, vil den .shtml-fil der
+indsættes have de samme miljø-variable til rådighed.
 </para>
 
 
@@ -594,9 +606,9 @@ Det er muligt at anvende logiske udtryk i SSI. Dette minder lidt om
 </table>
 
 <para>
-Strenge må ikke indeholde whitespace, dvs. mellemrum tab oa. Skal strenge
+Strenge må ikke indeholde whitespace, dvs. mellemrum, tabulartor oa. Skal strenge
 matches der inderholder whitespace må de skrives med aprostroffer som
-'string1' = 'streng2'. Apache SSI bruger den samme regular dialekt som egrep.
+'string1' = 'streng2'. Apaches SSI bruger den samme dialekt til regulære udtryk som egrep.
 For mere information om regulære udtryk se <command>man
 egrep</command>. 
 </para>
@@ -627,7 +639,7 @@ Et eksempel:
 
 <para>
 I dette eksempel bruges SSI til at genkende hvilken browser der bruges, og
-sende specielle HTML-koder til de forskellige browsere. HTTP_USER_AGENT linjen
+sende specielle HTML-koder til de forskellige browsere. HTTP_USER_AGENT-linjen
 fortæller hviken browser brugeren anvender.
 </para>
 
@@ -665,7 +677,7 @@ fortæller hviken browser brugeren anvender.
 
 <para>
 Slår man <command>HostnameLookups</command> til så modtager man DNS
-navnet på den server der ønsker data så giver det en række
+navnet på den server der ønsker data. Det giver en række
 interessante muligheder f.eks.:
 </para>
 
@@ -673,13 +685,11 @@ interessante muligheder f.eks.:
 &lt;body&gt;
 &lt;!--#if expr="${REMOTE_HOST} = /microsoft.com/" --&gt;
 
-Sorry this site is off limit for Microsoft employees!
+Desværre - denne side er ikke tilgængelig for Microsoft-ansatte!
 
 &lt;!--#else --&gt;
 
-This is Tux - the most powerfull Penguin in the world!
-It could shoot windows right off the desktop.
-Now did you reboot windows 5 or 6 times?
+Dette er Tux - den mest magtfulde pingvin i verden!
 
 &lt;!--#endif --&gt;
 &lt;/body&gt;
@@ -687,15 +697,15 @@ Now did you reboot windows 5 or 6 times?
 
 <para>
 Programmet vil returnere én side til alle folk der surfer fra maskiner
-på Microsofts net og én anden side til resten af verden.
+på Microsofts netværk og én anden side til resten af verden.
 </para>
 </sect1>
 
 <sect1 id="ssi-Mere-information"><title>Mere information</title>
 
 <para>
-Reference information kan findes i Apache dokumentationen der typisk ligger
-i <filename>/home/httpd/html/manual/mod/mod_include.htm</filename>.
+Reference-information kan findes i Apache-dokumentationen, der typisk ligger
+i <filename>/var/www/html/manual/mod/mod_include.htm</filename>.
 </para>
 
 </sect1>
