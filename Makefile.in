@@ -17,9 +17,9 @@ ALLE=@ALLE@
 # Default target er "Usage" :-)
 default:
 	@if test "x$(ALLE)" != "xalle" ; then \
-		echo "Mulige mål: all html pdf pakhtml palmpilot clean dist" ; \
+		echo "Mulige mål: all html pdf pakhtml palmpilot dist clean distclean reallyclean" ; \
 	else \
-		echo "Mulige mål: all html pdf pakhtml palmpilot clean dist alle" ; \
+		echo "Mulige mål: all html pdf pakhtml palmpilot dist alle clean distclean reallyclean" ; \
 	fi
 ################################################################################
 #
@@ -92,14 +92,25 @@ clean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE))
 		cd $$dir && $(MAKE) $@ ; cd .. ;\
 	done ;
 
+################################################################################
+#
+# reallyclean
+# reallycleaner i alle subdirs == tilbage til før bootstrap
+reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE))
+	rm -f *.tar.gz *~
+	@for dir in $(SUBDIRS) $(ALLE) ; do \
+		echo "*** Kører make $@ i $$dir" && \
+		cd $$dir && $(MAKE) $@ ; cd .. ;\
+	done ;
+
 
 ################################################################################
 #
 # all, html, pdf, palmpilot, pakhtml
 # Makefilen her skal være uptodate, samt alle underbibliotekers Makefile skal 
 # være i orden.
-.PHONY : all html pdf sgml pakhtml palmpilot eksempelbackup
-all html pdf sgml pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(ALLE))
+.PHONY : all html pdf pakhtml palmpilot eksempelbackup
+all html pdf pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(ALLE))
 	@for dir in $(SUBDIRS) $(ALLE) ; do \
 		echo "*** Kører make $@ i $$dir" && \
 		cd $$dir && $(MAKE) $@ ; cd .. ;\
