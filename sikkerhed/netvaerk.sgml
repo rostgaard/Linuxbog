@@ -448,8 +448,7 @@ password, kan man ikke bryde ind på den udefra ved at gætte eller
 knække passwordet. Men kan kun logge ind som denne bruger, hvis man
 kan overbevise maskinen om, at man logger ind fra en betroet
 maskine. Der kan i øvrigt læses mere om passwords beskyttelse og
-håndtering i <ulink url="rootaccess.html">Artikel 3 - Root access -
-hvem, hvordan og hvorfor ikke?</ulink>.
+håndtering i <xref linkend="root-access">.
 </para>
 
 <para>
@@ -561,101 +560,276 @@ Et andet alternativ til telnet og ftp, som er på vej, er SRP. Se mere
 om SRP på <ulink url="http://srp.stanford.edu/srp">http://srp.stanford.edu/srp</ulink>.</para>
 
 <para>
-Det, der umiddelbart i dag er det bedste valg som erstatning for telnet
-og rlogin, er ssh (Secure SHell). Programmet er lavet af et finsk firma
-med navn SSH Communications Security med hjemmesiden 
-<ulink url="http://www.ssh.fi">http://www.ssh.fi</ulink>.
-Ssh har bl.a. den store fordel fremfor stelnet, at grafiske vinduer (XWindow) 
-kan sendes over kryptererede linier. 
+Det, der umiddelbart i dag er det bedste valg som erstatning for
+telnet og rlogin, er ssh (Secure SHell). Programmet er oprindeligt
+lavet af et finsk firma med navn SSH Communications Security med
+hjemmesiden <ulink url="http://www.ssh.fi">http://www.ssh.fi</ulink>.
+SSH har bl.a. den store fordel fremfor stelnet, at grafiske vinduer
+(XWindow) kan sendes over kryptererede linier.
+</para>
+
+
+<para>
+Det er et reelt problem, at den tilsvarende kommecielle ssh ikke er
+<ulink url="http://www.opensource.org">Open Source</ulink>, og derfor
+er der et frit GNU program igang med at reimplementere koden under
+navnet PSST. Du kan finde mere information om dette på <ulink
+url="http://www.net.lut.ac.uk/psst">http://www.net.lut.ac.uk/psst</ulink>.
+Hjemmesiden for PSST bør følges fra tid til anden, men status i
+øjeblikket (december 2000) er, at man er stadig igang med at implementere,
+og derfor ikke kan garantere for at koden virker, eller at den er
+sikker. Status er ikke ændret meget det sidste år...
 </para>
 
 <para>
-Programmet ssh er komplet, gennemprøvet og veldokumenteret, og der er
-kildekode til det. Programmet må anvendes gratis til 
-ikke-kommercielle formål, ellers skal der købes en licens. 
-</para>
-
-<para>
-Det er et reelt problem, at ssh ikke er 
-<ulink url="http://www.opensource.org">Open Source</ulink>, og derfor er der et
-frit GNU program igang med at reimplementere koden under navnet
-PSST. Du kan finde mere information om dette på 
-<ulink url="http://www.net.lut.ac.uk/psst">http://www.net.lut.ac.uk/psst</ulink>. 
-Hjemmesiden
-for PSST bør følges fra tid til anden, men status i øjeblikket
-(september 1999) er, at man er igang med at implementere, og derfor
-ikke kan garantere for at koden virker, eller at den er sikker. 
-</para>
-
-<para>
-En anden, forholdsvis ny implementering af ssh-protokollen er
-OpenSSH, som er Open Source og er lavet af OpenBSD folkene.
-implementering af SSH. Den er allerede er lagt ind i OpenBSD 
-distributionen, der har ry for at være
-særdeles sikker. OpenSSH er ligeledes på vej ind i Debian
-distributionen. 
+En anden, forholdsvis ny implementering af ssh-protokollen er OpenSSH,
+som er Open Source og er lavet af OpenBSD folkene.  Den er allerede er
+lagt ind i OpenBSD distributionen, der har ry for at være særdeles
+sikker. OpenSSH er ligeledes på vej ind i Debian distributionen.
 Hjemmesiden for OpenSSH er 
 <ulink url="http://www.openssh.com/">http://www.openssh.com/</ulink>.
 OpenSSH er baseret på OpenSSL, som kan downloades under support samme
-sted, som OpenSSH findes. Man kan enten compile programmerne selv eller
-installere de RPM-pakker, som findes præ-compilerede. 
+sted, som OpenSSH findes. Man kan enten compile programmerne selv
+eller installere de RPM-pakker, som findes præ-compilerede.
 </para>
 
 <para>
-Vi vælger i det følgende at koncentere os om ssh, men OpenSSH virker
-helt på samme måde som ssh, så reelt er det op til dig, hvad du vælger
-at prøve. OpenSSH i den nyeste version har dog en stor fordel: Den
-implementerer også ssh2 protokollen, så man kan snakke med både
-ssh1 og ssh2 klienter,
+OpenSSH er en godt projekt, som har lavet en fri implementering af SSH
+og SSH2. Der er glimrende support fra OpenBSD teamet og det virker.
+Der er versioner af OpenSSH til alle Unix varianter også Linux, så i
+praksis er der ingen grund til at vælge den kommercielle SSH længere i
+forhold til OpenSSH.
 </para>
 
 
 <sect2 id="installation-af-ssh">
 <title>Installation af ssh</title>
 
+
 <para>
-Start med at downloade 
-<ulink url="ftp://sunsite.auc.dk/pub/security/ssh/ssh-1.2.27.tar.gz">ftp://sunsite.auc.dk/pub/security/ssh/ssh-1.2.27.tar.gz</ulink>,
-eller en evt. nyere 1.2 version, hvis dette findes. Tag dog ikke en
-ældre version, idet der er konstateret sikkerhedsbrister i disse.
+OpenSSH kan hentes fra <ulink
+url="http://www.openssh.com">http://www.openssh.com</ulink>. Version
+bør være højere end 2.3.0. Der kan henter tar-filer, som du selv kan
+oversætte, eller du kan få OpenSSH som RPM-filer. Som RPM-filer, skal
+du bruge openssh-*.i386.rpm, openssh-clients-*.i386.rpm og
+openssh-server-*.i386.rpm, hvor * betyder et versionsnummer, såsom
+2.3.0. Du skal også bruge Zlib, som sikkert allerede er installeret på
+din Linux maskine. Er dette ikke tilfældet (se om du får fejl), så kan dette bibliotek hentes fra 
+<ulink url="http://www.freesoftware.com/pub/infozip/zlib/">http://www.freesoftware.com/pub/infozip/zlib/</ulink>. Igen kan du vælge mellem tar-filer og RPM.
 </para>
 
+<para> 
+OpenSSH anvender OpenSSL - et værktøj der implementerer Secure
+Socket Layer (SSL) til at lave stærk kryptering af transportlaget. Du
+skal fra også bruge dette - det kan hentes samme sted som OpenSSH
+RPM-filerne findes, eller fra <ulink
+url="http://www.openssl.org">http://www.openssl.org</ulink>.  
+</para>
+
+<para>
+Skal du installere SSH via RPM så er det fra og med Red Hat 7.0
+rigtig nemt, idet alle filerne følger med distibutionen.
+</para>
+
+<screen>
+<PROMPT>[robin@sherwood ~]#</PROMPT> <userinput>su</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>rpm ivh zlib-1.1.3-i386.rpm</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>rpm ivh openssl-0.9.5a-i386.rpm</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>rpm ivh openssh-2.3.0p1-1.i386.rpm</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>rpm ivh openssh-clients-2.3.0p1-1.i386.rpm</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>rpm ivh openssh-server-2.3.0p1-1.i386.rpm</userinput>
+</screen>
+
+<para>
+Installerede du på denne måde, kan du springe det næste over, og gå
+direkte frem til at generere bruger-nøgler med <command>ssh-keygen</command>.
+Vil du installere via tar-filer, så er det ret nemt, men der er et par
+skridt du skal igennem.
+</para>
+
+<para>
+Først Zlib, hvis dette ikke er installeret (check om
+<filename>/usr/lib/libz.so</filename> findes).
+</para>
+
+<screen>
+<PROMPT>[robin@sherwood ~]#</PROMPT> <userinput>su</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>tar zxvf zlib-1.1.3.tar.gz</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>cd zlib-1.1.3</userinput>
+<PROMPT>[root@sherwood zlib-1.3]#</PROMPT> <userinput>./configure</userinput>
+<PROMPT>[root@sherwood zlib-1.3]#</PROMPT> <userinput>make</userinput>
+<PROMPT>[root@sherwood zlib-1.3]#</PROMPT> <userinput>make install</userinput>
+</screen>
+
+<para>
+Dernæst skal OpenSSL installeres
+</para>
+
+
+<screen>
+<PROMPT>[robin@sherwood ~]#</PROMPT> <userinput>su</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>tar zxvf openssl-0.9.5a.tar.gz</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>cd openssl-0.9.5a</userinput>
+<PROMPT>[root@sherwood openssl-0.9.5a]#</PROMPT> <userinput>./configure</userinput>
+<PROMPT>[root@sherwood openssl-0.9.5a]#</PROMPT> <userinput>make</userinput>
+<PROMPT>[root@sherwood openssl-0.9.5a]#</PROMPT> <userinput>make install</userinput>
+</screen>
+
+<para>
+Og slutteligt skal OpenSSH oversættes og installeres
+</para>
+
+<screen>
+<PROMPT>[robin@sherwood ~]#</PROMPT> <userinput>su</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>tar zxvf openssh-2.3.0p1.tar.gz</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>cd openssh-2.3.0p1</userinput>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>./configure --sysconfdir=/etc/ssh</userinput>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>make</userinput>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>make install</userinput>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>make host-key</userinput>
+</screen>
+
+<para>
+Det er normalt at OpenSSH vil installere konfiguration i
+<filename>/usr/local/etc</filename>, men Linux-folk vil oftest gemme
+konfiguration til SSH i <filename>/etc/ssh</filename> - dette gøres
+med option <command>sysconfdir</command> (og to minusser foran).
+</para>
+
+<para>
+Kommandoen <command>make host-key</command> installerer RSA og DSA
+nøgler for din maskine. RSA anvendes af SSH version 1, mens DSA er en
+nyere version, der anvendes i SSH2 protokollen. 
+</para>
+
+<para>
+Vi mangler stadig få ting, hvis du har oversat SSH selv (ikke ved
+RPM). Mange Linux systemer anvender PAM til at styre login på
+maskinen. For Red Hat og SuSE skal du kopiere den generelle PAM-ssh fil til
+/etc/pam.d under navnet sshd. Samme ide anvendes nok af de andre store
+Linux distributioner.
+</para>
+
+<screen>
+<PROMPT>[robin@sherwood ~]#</PROMPT> <userinput>su</userinput>
+<PROMPT>[root@sherwood /home/robin]#</PROMPT> <userinput>cp contrib/sshd.pam.generic /etc/pam.d/sshd</userinput>
+</screen>
+
+<para>
+Har du oversat OpenSSH selv, mangler du stadig at få OpenSSH startet
+op på maskinen efter system-genstart. Du kan for SuSE kopiere
+</para>
+
+
+<screen>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>cp contrib/rc.config.sshd /etc/rc.config.d/sshd.rc.config</userinput>
+</screen>
+
+
+<para>
+og for Red Hat
+</para>
+
+<screen>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>cp contrib/rc.config.sshd /etc/rc.d/init.d/sshd.rc.config</userinput>
+</screen>
+
+
+<para>
+For SuSE skal du nok rette i filen en sti fra
+<filename>/usr/sbin</filename> over til
+<filename>/usr/local/sbin</filename>.
+</para>
+
+<para>
+Nu skal vi prøve at start SSH dæmonen "sshd", så man kan logge ind på
+maskinen udefra. For Red Hat køres 
+</para>
+
+<screen>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>/etc/rc.d/init.d/sshd start</userinput>
+</screen>
+
+<para>
+og tilsvarende for SuSE køres
+</para>
+
+<screen>
+<PROMPT>[root@sherwood openssh-2.3.0p1]#</PROMPT> <userinput>/sbin/init.d/sshd start</userinput>
+</screen>
+
+<para>
+Check at SSH dæmonen (dvs. serveren) kører ved at skrive
+<command>telnet localhost 22</command>
+</para>
+
+<screen>
+Trying 127.0.0.1... 
+Connected to localhost. 
+Escape character is '^]'.
+SSH-1.99-OpenSSH_2.3.0p1
+</screen>
+</sect2>
+
+<sect2 id="Opsaetning-af-ssh">
+<title>Opsætning af ssh</title>
+
+<para>
+Hver bruger skal have sit eget sæt af privat/offentlig nøgle. Den
+private skal aldrig sendes via netværk, idet den kan dekryptere
+datatrafik. Den offentlige nøgle anvendes til at kryptere data med, og
+den kan man så distribuere til andre maskiner, man skal kunne logge
+ind på.  Brugeren skal selv generere sine nøgler og selv vælge en
+"pass-phrase" - svarende til et password, dog kan det være meget langt.
+Lav det tilpas kryptisk, men du skal kunne huske det.
+</para>
+
+<screen>
+<PROMPT>[robin@sherwood robin]$</PROMPT> <USERINPUT>ssh-keygen -d</USERINPUT> 
+Generating DSA parameter and key.
+Enter file in which to save the key (/home/robin/.ssh/id_dsa):
+Enter passphrase (empty for no passphrase): <USERINPUT>V1 hANDLER me spaghett1</USERINPUT>
+Enter same passphrase again: <USERINPUT>V1 hANDLER me spaghett1</USERINPUT>
+Your identification has been saved in /home/robin/.ssh/id_dsa.
+Your public key has been saved in /home/robin/.ssh/id_dsa.pub.
+The key fingerprint is:
+ea:20:20:ae:b3:39:6f:d9:1b:a2:ef:02:0c:05:c5:fb robin@sherwood
+</screen>
+
+
+<para> Anvender man ikke option "-d" fås en RSA-nøgle, som anvendes
+til SSH version 1 servere, mens option "-d" danner en DSA nøgle
+svarende til SSH2 servere (begge generationer af servere anvendes i
+dag - spørg evt. systemadministratoren om hvad der skal bruges. Kan du
+selv vælge så brug SSH2 server). Når du kører
+<command>ssh-keygen</command> spørges du om du vil gemme i default
+stedet <filename>/home/robin/.ssh/id_dsa</filename>. Dette giver dig
+mulighed for at have mere end et sæt nøgler. Din private nøgle gemmes
+i <filename>$HOME/.ssh/identity</filename> (for RSA nøglen) or
+<filename>$HOME/.ssh/id_dsa</filename> (for DSA nøglen). Tilsvarende
+er den offentlige nøgle gemt med samme filnavn med et ".pub" tilføjet.
+</para>
+
+<para>
+Lad os først se på et par af de filer, der blev installeret. Der er
+kommet filer tre steder, som vi nu vil se nærmere på.
+</para>
+
+
+
 <SCREEN>
-[root@sherwood root]# tar xvzf ssh-1.2.27.tar.gz
-[root@sherwood root]# cd ssh-1.2.27
-[root@sherwood ssh-1.2.27]# ./configure
-[root@sherwood ssh-1.2.27]# make
-[root@sherwood ssh-1.2.27]# make install
+[robin@sherwood robin]$ ls -al /etc/ssh/*
+-rw-r--r-- 1 root root  932 okt  6 00:09 ssh_config
+-rw------- 1 root root  668 okt 11 01:33 ssh_host_dsa_key
+-rw-r--r-- 1 root root  604 okt 11 01:33 ssh_host_dsa_key.pub
+-rw------- 1 root root  529 okt 11 01:33 ssh_host_key
+-rw-r--r-- 1 root root  333 okt 11 01:33 ssh_host_key.pub
+-rw------- 1 root root 1194 okt  6 00:09 sshd_config      
 </SCREEN>
 
 <para>
-Det er kun nødvendigt at være root under "make install".
-Under installationen (make install) genereres nøgler til at
-identificere maskinen, derefter skal du selv til at lave dine
-hemmelige nøgler. Dine personlige nøgler bruges til at kryptere
-login-proceduren. Den efterfølgende datatrafik krypteres ud fra de to
-maskiners nøgler. Alle disse nøgler 
-er reelt filer på harddisken, men terminologien "nøgler"
-skyldes, at nøgle-filerne skal bruges til at låse og låse op for den
-krypterede datatrafik.
-</para>
-
-<para>
-Lad os først se på, hvad der blev installeret. Der er kommet filer
-tre steder, som vi nu vil se nærmere på. 
-</para>
-
-<SCREEN>
-[robin@sherwood robin]$ ls -al /etc/ssh*
--rw-r--r--   1 root     root          880 jul 11 10:05 /etc/ssh_config
--rw-------   1 root     root          526 jul 11 10:05 /etc/ssh_host_key
--rw-r--r--   1 root     root          330 jul 11 10:05 /etc/ssh_host_key.pub
--rw-r--r--   1 root     root          683 jul 11 10:05 /etc/sshd_config
-</SCREEN>
-
-<para>
-Filerne "/etc/ssh*" er konfigurationsfiler, der styrer
-ssh opsætningen. Det er kun "/etc/sshd_config",
+Filerne <filename>/etc/ssh/*</filename> er konfigurationsfiler, der styrer
+ssh opsætningen. Det er kun <filename>/etc/ssh/sshd_config</filename>,
 du evt. skal rette i. F.eks. kan du ændre "PermitRootLogin yes"
 til "PermitRootLogin no", hvis du mener, at root ikke må logge ind via
 ssh. Det kan være en god ide at forbyde root remote login i det hele taget.
@@ -665,129 +839,16 @@ med at lave disse ændringer til du har fået ssh til at virke.
 </para>
 
 <para>
-I "/usr/local/sbin/" er der installeret et vigtigt program.
-Programmet sshd er ssh-daemonen, som skal være startet op af root, for
-at du kan anvende ssh til login på maskinen. Dette gøres ved at sætte
-programmet ind i maskinens startup scripts.
-</para>
-
-<SCREEN>
-[robin@sherwood robin]$ ls -al /usr/local/sbin/ssh*
-lrwxrwxrwx   1 root     root            5 jul 11 10:05 /usr/local/sbin/sshd -> sshd1
--rwxr-xr-x   1 root     root       623527 jul 11 10:05 /usr/local/sbin/sshd1
-</SCREEN>
-
-
-<para>
-I Red Hat er det nemmeste, at server-daemonen programmet startes fra
-"/etc/rc.d/rc.local" filen, som køres under system-opstart. Dette
-gøres som root én gang for alle. 
-</para>
-
-<SCREEN>
-[root@sherwood root]# echo "/usr/local/sbin/sshd" >> /etc/rc.d/rc.local
-</SCREEN>
-
-<para>
-I SuSE Linux skal man i stedet tilføje til filen  "/sbin/init.d/boot.local"
-</para>
-
-<SCREEN>
-[root@sherwood root]# echo "/usr/local/sbin/sshd" >> /sbin/init.d/boot.local
-</SCREEN>
-
-<para>
-Hvis du ønsker mere kontrol med at kunne starte, stoppe, og checke
-status på ssh-daemonen, bør du i stedet lave en rigtig start-fil
-svarende til dem du i SuSE finder i "/etc/rc.d/" og for Red Hat i
-"/etc/rc.d/init.d".  Vi kan nævne, at hvis du installerer OpenSSH som
-RPM-pakke, så er alt dette lavet ordentligt med start script-filer,
-som du finder i "/etc/rc.d/init.d/sshd".
-</para>
-
-<para>
 Vi skal også lige nævne, at ssh forbindelser normalt ikke styres via
-initd-systemet, som du i øvrigt kan finde beskrevet i
-<ulink url="services.html">Artikel 2 - Services - at slå services fra og
-begrænse adgang</ulink>. Grunden er, at det ville være for langsomt, idet
+initd-systemet, som du i øvrigt kan finde beskrevet tidligere i 
+<xref linkend="services">. Grunden er, at det ville være for langsomt, idet
 der ved opstart af sshd skal genereres en server-nøgle. Dette kan
 tage flere sekunder for hver opstart.
 </para>
-
-<para>
-Lad os nu gå videre op se på de programmer, som brugeren kommer til at
-anvende. I "/usr/local/bin/" er der installeret en stribe brugerprogrammer:
-</para>
-
-<SCREEN>
-[robin@sherwood robin]$ ls -al /usr/local/bin/ssh*
-lrwxrwxrwx   1 root     root            4 jul 11 10:05 /usr/local/bin/ssh -> ssh1
-lrwxrwxrwx   1 root     root            8 jul 11 10:05 /usr/local/bin/ssh-add -> ssh-add1
--rwxr-xr-x   1 root     root       321326 jul 11 10:05 /usr/local/bin/ssh-add1
-lrwxrwxrwx   1 root     root           10 jul 11 10:05 /usr/local/bin/ssh-agent -> ssh-agent1
--rwxr-xr-x   1 root     root       328445 jul 11 10:05 /usr/local/bin/ssh-agent1
-lrwxrwxrwx   1 root     root           12 jul 11 10:05 /usr/local/bin/ssh-askpass -> ssh-askpass1
--rwxr-xr-x   1 root     root        87725 jul 11 10:05 /usr/local/bin/ssh-askpass1
-lrwxrwxrwx   1 root     root           11 jul 11 10:05 /usr/local/bin/ssh-keygen -> ssh-keygen1
--rwxr-xr-x   1 root     root       311029 jul 11 10:05 /usr/local/bin/ssh-keygen1
--rws--x--x   1 root     root       589457 jul 11 10:05 /usr/local/bin/ssh1
-</SCREEN>
-
-<para>
-Der er links til version-1 programmer (f.eks. /usr/local/bin/ssh
--> ssh1), da der er lavet en version 2 af ssh, kaldet ssh2. Den
-frigives under en mere restriktiv licens, men den må stadig anvendes
-gratis til ikke-kommercielle formål. Indtil videre er ssh1, dvs. version 
-1.2.27, dog den mest gennemprøvede. Version 1.2.28 er nu på vej pga. 
-en identificeret svaghed i den nuværende version.
-</para>
 </sect2>
 
-<sect2 id="Opsaetning-af-ssh">
-<title>Opsætning af ssh</title>
-
-<para>
-For at kunne tilgå de nye programmer skal du sørge for at have
-"/usr/local/bin/" med i din PATH, som du sikkert sætter
-i din "~/.profile" eller din "~/.bashrc". Derefter skal du til at lave 
-din hemmelige nøgle, hvilket du kun skal gøre den første gang.
-</para> 
-
-<para>
-Kør programmet "ssh-keygen" - ikke som root men under din
-almindelige brugerkonto. 
-Først vælges nogle kæmpe primtal automatisk, som
-anvendes til at generere dine nøgler (keys). Programmet spørger dig, 
-om der skal gemmes nøgler i "~/.ssh/identity",
-hvilket du bare skal acceptere. Dernæst skal du skrive en
-"passphrase", som er et udvidet password. Skriv her en lang
-sætning, som du skal anvende hver gang du logger ind via ssh. Din
-passphrase skal naturligvis ikke komme fra en kendt remse, eller andet sted,
-som andre har en chance for at kende. 
-Erstat eller tilføj også et par specialtegn og
-numre nogle steder, du vil kunne huske. Programmet gemmer en lang
-offentlig nøgle (public key), der er over 300 tegn lang. Vi har
-dog kortet denne linie ned i det næste eksempel. Kører du selv
-programmet, vil din passphrase ikke vises på skærmen.
-</para>
-
-<SCREEN>
-[robin@sherwood robin]$ ssh-keygen
-Initializing random number generator...
-Generating p:  .................................++ (distance 514)
-Generating q:  ............++ (distance 234)
-Computing the keys...
-Testing the keys...
-Key generation complete.
-Enter file in which to save the key (/home/robin/.ssh/identity): 
-Enter passphrase: V1 hANDLER me spaghett1
-Enter the same passphrase again: V1 hANDLER me spaghett1
-Your identification has been saved in /home/robin/.ssh/identity.
-Your public key is:
-1024 33 122323...923 robin@sherwood
-Your public key has been saved in /home/robin/.ssh/identity.pub             
-</SCREEN>
-
+<sect2 id="brug-af-ssh">
+<title>Brug af SSH</title>
 <para>
 Hvis sshd er startet op, er alt klar til at kommunikere sikkert, 
 også over usikre netværk. Start med at skrive
@@ -813,26 +874,30 @@ kryptiske passphrase.
 </para>
 
 <para>
-Log ud ved at skrive exit (eller trykke Ctrl-D) for at komme tilbage 
-til din egen maskine. Kopier nu din public key fra
-din egen maskine (sherwood) til fjern maskinen og gem
-den under "~/.ssh/authorized_keys", som ingen andre end
-dig skal kunne læse. Denne kopiering laver vi med en ny kommando
-"scp" (secure copy).
+Log ud ved at skrive exit (eller trykke Ctrl-D) for at komme tilbage
+til din egen maskine. Kopier nu din public key fra din egen maskine
+(sherwood) til fjern maskinen og gem den under
+<filename>~/.ssh/authorized_keys</filename> (for SSH1, dvs. RSA
+nøglen) og <filename>~/.ssh/authorized_keys2</filename> (for SSH2,
+dvs. DSA nøglen). Ingen andre end dig skal kunne læse den fil du
+laver. Denne kopiering laver vi med en ny kommando "scp" (secure
+copy) eller beder systemadministratoren at lægge filen ind hvis du
+ikke kan få adgang.
 </para>
+
 <SCREEN>
 [robin@sherwood robin]$ cd ~/.ssh
-[robin@sherwood .ssh]$ scp identity.pub locksley:authorized_keys
+[robin@sherwood .ssh]$ scp id_dsa.pub locksley:authorized_keys2
 </SCREEN>
 
 <para>
 Nu skal du lave den sidste opsætning på locksley. Du laver kataloget
-"~/.ssh", hvor du gemmer din offentlige nøgle, og sikrer, at andre ikke
-kan læse denne. Dit hjemmekatalog skal andre heller ikke have lov til
-at skrive i - denne foranstantning er altid klog, men det er også
-nødvendig for at din offentlige nøgle "identity.pub" virker efter, at
-den er kopieret til fjernmaskinens "authorized_keys". Det er en
-egenskab ved ssh.
+<filename>~/.ssh</filename>, hvor du gemmer din offentlige nøgle, og
+sikrer, at andre ikke kan læse denne. Dit hjemmekatalog skal andre
+heller ikke have lov til at skrive i - denne foranstantning er altid
+klog, men det er også nødvendig for at din offentlige nøgle
+"id_dsa2.pub" virker efter, at den er kopieret til fjernmaskinens
+"authorized_keys2". Det er en egenskab ved ssh.
 </para>
 
 
