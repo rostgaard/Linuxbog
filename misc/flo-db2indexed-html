@@ -1,0 +1,51 @@
+#! /bin/sh
+
+# Make sure we have an absolute path to the backend and stylesheet, as
+# jw doesn't like relative paths...
+
+STUFFPATH=`dirname $0`
+if [ -n "${STUFFPATH##/*}" ]
+then
+    STUFFPATH=$PWD/$STUFFPATH
+fi
+
+# Figure out what our output directory should be called.  Note that we
+# also check to see if the user explicitly specified an output directory,
+# in which case we'll use their choice...
+
+O_OPTION=0
+for i in "$@"
+do
+    if [ $O_OPTION = "1" ]
+        then
+            OUTPUTDIR=$i
+            O_OPTION=0
+        fi
+    if [ $i = "-o" ]
+        then
+            O_OPTION=1
+        fi
+done
+
+# See if the user specified an output directory...
+
+if [ -z $OUTPUTDIR ]
+    then
+# Nope -- default to the name of the SGML file...
+        OUTPUTDIR="`echo $i | sed 's,\.sgml$,,;s,\.sgm$,,'`"
+    fi
+
+# Nuke the output directory (if it exists); jw will create it for us...
+
+if [ -d $OUTPUTDIR ]
+    then
+	echo -n "Cleaning out $OUTPUTDIR..."
+	rm -rf $OUTPUTDIR
+	echo "Done!"
+    fi
+
+jw -f docbook \
+    -b $STUFFPATH/flo-indexed-html \
+    -d $STUFFPATH/stylesheets/flo-redhat-html.dsl \
+    -o $OUTPUTDIR \
+    $*

@@ -1,0 +1,70 @@
+# Based on original from Eric Bischoff <eric@caldera.de>
+
+# Create an HTML document with index and figures in place.
+# This is done by:
+
+# 1. Converting from SGML to HTML
+# 2. Generating an SGML index based on the HTML
+# 3. Converting from SGML to HTML (taking into account the index this time)
+# 4. Copying figures from original source tree into the output directory
+
+# The end result is a directory tree ready for publishing/packaging/whatever...
+
+# Magic variables.  I feel uncomfortable about the version number in these
+# paths, but feel even more uncomfortable wildcarding it... :-(
+
+HTML_STYLESHEET=/usr/share/sgml/docbook/dsssl-stylesheets-1.59/test/docbook.css
+ADMON_GRAPHICS=/usr/share/sgml/docbook/dsssl-stylesheets-1.59/images/*.gif
+
+FINAL_INDEX=generated-index.sgml
+INDEXFILE=INDEX$$
+
+# Convert to HTML, generating the HTML.index file that we'll use to
+# create an SGML index...
+
+echo Running $SGML_JADE...
+
+$SGML_JADE -t sgml -V html-index $SGML_ARGUMENTS
+
+# Generate the index, fixing up the problem of bogus empty closing tags (</>)...
+
+echo Indexing...
+perl /usr/bin/collateindex.pl -g -o ../$FINAL_INDEX HTML.index
+
+# Not sure if these are still needed; when we first tried collateindex;
+# it threw "</>" in the generated index in certain cases...
+
+cat ../$FINAL_INDEX | sed 's,^[        ]*</>[  ]*$,,' > ../$INDEXFILE
+mv -f ../$INDEXFILE ../$FINAL_INDEX
+
+# Nuke the HTML.index file; we don't need it anymore...
+
+rm -f HTML.index
+
+echo Rerunning $SGML_JADE...
+
+$SGML_JADE -t sgml $SGML_ARGUMENTS
+
+echo -n "Copying cascading stylesheet and admon graphics..."
+cp ${HTML_STYLESHEET} ./
+mkdir ./stylesheet-images
+cp ${ADMON_GRAPHICS} ./stylesheet-images/
+echo "Done!"
+
+if [ -d ../figs/ ]
+    then
+        echo -n "Moving figures..."
+        (cd ../ ; tar cf - figs/) | (tar xf -)
+        echo "Done!"
+        echo -n "Cleaning CVS..."
+        find ./figs/ -type d -name "CVS"|xargs rm -rf
+        echo -n "EPS..."
+        find ./figs/ -type f -name "*eps"|xargs rm -f
+        echo -n " .xvpics..."
+        find ./figs/ -type d -name ".xvpics"|xargs rm -rf
+        echo -n "directories..."
+        find ./figs/ -type d -empty|xargs rm -rf
+        echo "Done!"
+    fi
+# 
+exit 0
