@@ -24,7 +24,8 @@ filer:  Makefiler
 	make -C program
 	make -C web
 	make -C sikkerhed
-	(cd misc;plucker-build -v -P . -f Friheden;tar cvzf ../Friheden_palm.tgz viewer_en.prc Friheden.pdb SysZLib.prc; rm Friheden.pdb)
+	make -C alle html
+	make -C alle palmpilot
 
 clean: Makefiler
 	make -C friheden clean
