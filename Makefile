@@ -10,6 +10,7 @@ Makefiler:
 	@for dir in $(SUBDIRS); do \
 		cp -f Makefile.subdir $$dir/Makefile; \
 	done;
+	echo "Installerer Makefiler til alle bøger"
 
 filer:  Makefiler
 	@for dir in $(SUBDIRS); do \
@@ -41,6 +42,7 @@ clean: Makefiler
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz
 	rm -f dato.sgml version.sgml
+	rm -f *~*~
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
