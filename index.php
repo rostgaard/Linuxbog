@@ -50,7 +50,7 @@ function fsize_text( $filename ) {
       )
     ),
     "admin" => array(
-      title => "Linux - Friheden til at administrere",
+      title => "Linux - Friheden til systemadministration",
       comment => "Administrer din egen Linux-server",
       audt => array(
         "Peter Toft" => "pto@sslug.dk"
@@ -65,7 +65,7 @@ function fsize_text( $filename ) {
       )
     ),
     "sikkerhed" => array(
-      title => "Linux - Friheden til sikkerhed",
+      title => "Linux - Friheden til at have sin server i fred",
       comment => "Sikkerhed omkring din Linux-boks",
       audt => array(
         "Peter Toft" => "pto@sslug.dk",
@@ -73,7 +73,7 @@ function fsize_text( $filename ) {
       )
     ),
     "web" => array(
-      title => "Linux - Friheden til Web",
+      title => "Linux - Friheden til egen webserver",
       comment => "Web og datadaser",
       audt => array(
         "Peter Toft" => "pto@sslug.dk",
