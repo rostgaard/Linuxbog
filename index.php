@@ -322,13 +322,13 @@ function vistype($type) {
   $bgcolor = array("#FFFFFF","#E8E8E8");
 
   // Vis en bog med alle dens typer
-  if (is_array($books[$b])) {
+  if (strlen($b) && is_array($books[$b])) {
     visbog($b);
     echo "<p>\n";
   }
 
   // Vis en type med alle dens bøger
-  if (is_array($packs[$t])) {
+  if (strlen($t) && is_array($packs[$t])) {
     vistype($t);
     echo "<p>\n";
   }
