@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation kontorbruger itplatform java signatur alle
+SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation kontorbruger itplatform java signatur
 
 all: filer
 
@@ -21,7 +21,7 @@ filer:  start
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done;
-#	$(MAKE) -C alle -f Makefile
+	$(MAKE) -C alle -f Makefile
 
 pspdf:	start
 	@for dir in $(SUBDIRS); do \
