@@ -1,5 +1,5 @@
 
-Url:		http://www.sslug.dk/linuxbog/
+Url:		http://www.linuxbog.dk/
 Group:		Books/Computer books
 Copyright:	OpenContent License
 Source:		%{name}-%{version}.html.tar.gz
@@ -7,7 +7,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 Prefix:		%{_prefix}
 
 %description -l da
-Bogen er en del af en serie der kan findes samlet på http://www.sslug.dk/linuxbog/.
+Bogen er en del af en serie der kan findes samlet på http://www.linuxbog.dk/.
 * Linux - Friheden til at vælge - En god bog til at komme i gang med Linux.
 * Linux - Friheden til at vælge programmer - Om de programmer du kan få til Linux.
 * Linux - Friheden til systemadministration - Om at administre sin egen Linux-server
