@@ -4385,6 +4385,38 @@ VERSION="0.1.2"
 echo "Dette er version ${VERSION}beta af programmet."
 </programlisting>
 
+<para>
+Variable kan splittes og manipuleres på forskellige
+måder med de indbyggede kommandoer.
+Nogle foretrækker de eksterne programmer såsom
+<command>cut</command> og <command>sed</command>,
+men de indbyggede kommandoer kan ofte klare opgaven.
+Skal man have fat i en del af en tekststreng,
+kan dette gøres med:
+</para>
+
+<programlisting>
+#! /bin/sh
+TEKST=abcdef
+echo "Skriv kun 'bcd': ${TEKST:1:3}"
+</programlisting>
+
+<para>
+Skal en del af en variabel udskiftes med noget andet,
+bruges en substituering:
+</para>
+
+<programlisting>
+#! /bin/sh
+TEKST=abcdef
+echo "Udskift 'bcd' med 'X': ${TEKST/bcd/X}"
+</programlisting>
+
+<para>
+Læs mere om streng-manipulering med
+<command>man bash</command> under "Parameter Expansion".
+</para>
+
 </sect2>
 
 <sect2 id="shell-parametre">
@@ -4426,13 +4458,85 @@ echo "Første parameter: $1"
 echo "Anden parameter: $2"
 </programlisting>
 
+<para>
+Alle parametre til et script kan skrives ud på flere forskellige måder.
+Med <command>$*</command> skrives alle parametre ud, 
+adskilt af indholdet af den specielle variabel <emphasis>IFS</emphasis>.
+Med <command>$@</command> skrives alle parametre ud som enkeltstående
+strenge.
+For at prøve de følgende eksempler, skal der to parametre på når du kalder
+scriptet, hvoraf det ene skal være en tekst med to ord og " omkring.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Alle parametre: $*"
+IFS=","
+echo "Alle parametre, nu adskilt af komma: $*"
+echo "Alle parametre er adskilt af mellemrum: $@"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello Hej "Linus Torvalds"</prompt>
+Alle parametre: Hej Linus Torvalds
+Alle parametre, nu adskilt af komma: Hej,Linus Torvalds
+Alle parametre er adskilt af mellemrum: Hej Linus Torvalds
+</screen>
+
+<para>
+Et program der kører under Linux har tildelt et
+<emphasis>process id</emphasis> - et nummer.
+Det er de numre som ses med fx <command>ps</command>
+og <command>pstree -p</command>.
+Skal man stoppe et program der kører, kan det
+gøres ved brug af dette process id.
+Process id på det script der kører,
+findes i variablen <emphasis>$$</command>.
+Denne værdi kan gives videre til et andet program
+eller script, men i dette eksempel vil vi blot stoppe
+scriptet selv.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Dette script har process id: $$"
+echo "Det kan også ses med 'ps' kommandoen:"
+ps | grep $$
+kill $$
+</programlisting>
+
+<para>
+Starter man et program i baggrunden, så man har
+to programmer kørende samtidigt, kan det være
+interessant pludseligt at stoppe programmet
+i baggrunden.
+Process id for baggrundsprogrammer findes i
+<emphasis>$!</emphasis> variablen.
+</para>
+
+<programlisting>
+#! /bin/sh
+# Start et program i baggrunden der tager tid
+sleep 10 &amp;
+echo "'sleep' har process id: $!"
+echo "Det kan også ses med 'ps' kommandoen:"
+ps | grep $!
+kill $!
+</programlisting>
+
+<para>
+For mere information om de specielle variable,
+se da <command>man bash</command> og søg efter
+"<emphasis>Special Parameters</emphasis>" .
+</para>
+
 </sect2>
 
 <sect2 id="shell-shift">
 <title>Parametre, tricks</title>
 <indexterm><primary>Shell script</primary><secondary>parametre, tricks</secondary></indexterm>
 <para>
-Mumle shift
+Mumle shift -- skal efter noget med while
 </para>
 </sect2>
 
@@ -4450,6 +4554,7 @@ skal udføres er rykket ind for at gøre det mere læseligt:
 #! /bin/sh
 if true; then
 	echo "Værdien er sand"
+	echo "Man kan skrive flere linjer her"
 fi
 </programlisting>
 
@@ -4476,13 +4581,21 @@ Som det ses herover, er der sat et ; ind foran <command>then</command>,
 hvilket lige så godt kunne stå på næste linje.
 De fleste der skriver shell-scripts foretrækker dog at skrive det
 på ovenstående måde, selvom det ved første øjekast ser lidt
-underligt ud.
+underligt ud med en ; efter ].
 </para>
 
 <para>
 Parametren til <command>if</command> er altså et program der kaldes,
 og så udføres enten kommandoerne efter <command>then</command>
 eller efter <command>else</command>.
+</para>
+
+<para>
+<command>if</command> bruges altid sammen med et andet program
+der enten returnerer sand eller falsk. 
+Ofte er det kommandoen <command>[</command> eller <command>test</command>
+<command>if</command> bruges sammen med,
+hvilket er beskrevet i <xref linkend="shell-test"/>.
 </para>
 
 </sect2>
@@ -4550,11 +4663,11 @@ For yderligere information om [ kaldes <command>man test</command> .
 <programlisting>
 #! /bin/sh
 if [ -z "$1" ]; then
-	echo "Fejl! Første parameter er blank."
+	echo "Fejl! Første parameter er en blank tekst."
 fi
 
 if [ ! -z "$1" ]; then
-	echo "Første parameter er: $1"
+	echo "Første parameter findes, og er: $1"
 fi
 
 if [ -x foo ]; then
@@ -4585,6 +4698,26 @@ if [ $# -le 2 ]; then
 	echo "Der er 2 eller færre parametre på kommando-linjen"
 fi
 </programlisting>
+
+<para>
+[ kan også bruges i en mere kort form,
+hvis det kun er en enkelt kommando der efterfølgende
+skal udføres.
+Ved at sætte &amp;&amp; ind, køres den anden kommando,
+hvis første kommando var sand.
+Læs mere om &amp;&amp; i <xref linkend="shell-flere-kom"/>.
+</para>
+
+<programlisting>
+#! /bin/sh
+[ -e foo ] &amp;&amp; echo "Filen 'foo' findes"
+</programlisting>
+
+<para>
+Læs mere om ovenstående parametre til [ i
+<command>man test</command>, eller <command>man bash</command>
+under "CONDITIONAL EXPRESSIONS".
+</para>
 
 </sect2>
 
