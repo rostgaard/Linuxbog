@@ -3,69 +3,51 @@
 <indexterm><primary>installation</primary></indexterm>
 
 
-
 <para>
 For at bruge DocBook skal der installeres en del pakker,
-og de skal installeres i den rigtige rækkefølge.
-Herunder er et script, der installerer alle de nødvendige pakker.
-Det skal lige nævnes at de tilsammen fylder 114MB.
-Installerer du Red Hat 6.2, kan du nemt installere alle værktøjer
-til at skrive i DocBook:
+og de skal installeres i den rigtige rækkefølge. Vi vil anbefale dig at installere 
+de pakker, der hører med til RedHat 6.2, uanset om du bruger 6.2, 7.0 eller 7.1. 
+6.2-pakkerne giver nemlig erfaringsmæssigt færrest problemer. RedHat 6.2-rpm'er 
+kan hentes fra <ulink url="ftp://ftp.dkuug.dk/thot4/redhat/linux/6.2/en/os/i386/RedHat/RPMS">
+ftp://ftp.dkuug.dk/thot4/redhat/linux/6.2/en/os/i386/RedHat/RPMS</ulink>.
+Du skal bruge pakkerne sgml-common*, dialog*, docbook*, stylesheets*, jade-*, sgml-tools*, 
+tetex* og jadetex* (det skal her nævnes, at pakkerne ialt fylder 114 MB...). Hent desuden 
+opdateringer til sgml-common, docbook og stylesheets på 
+<ulink url="ftp://ftp.redhat.com/linux/updates/6.2/en/os/noarch">ftp://ftp.redhat.com/linux/updates/6.2/en/os/noarch
+</ulink>.
 </para>
 
-<SCREEN>
-<prompt>[root@MinMaskine /root]# </prompt> <userinput>cd /mnt/cdrom/RedHat/RPMS</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh sgml-common-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh dialog-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh docbook-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh stylesheets-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh jade-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh sgml-tools-*</userinput>
-</SCREEN>
-
 <para>
-Skal du kunne oversætte SGML til Postscript eller PDF skal du også
-installere LaTeX værktøjerne:
+Inden du går igang med installationen, er det (i RedHat 7.0 og 7.1) vigtigt, at alle pakker,
+der har med SGML/Docbook at gøre, bliver afinstalleret <emphasis>inden</emphasis> du går i gang 
+med at installere pakkerne fra RedHat 6.2. Alle pakker med navne, der starter med jadetex, 
+tetex, dialog, docbook, stylesheets, openjade og sgml skal afinstalleres. 
 </para>
 
-<SCREEN>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh dialog-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-fonts*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-[1-9]*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-xdvi-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-latex*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-dvips-*</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh jadetex-*</userinput>
-</SCREEN>
-
 <para>
-Dog skal du vide at der er kommet tre nye RPM-pakker i forhold til den
-originale Red Hat 6.2. Disse pakker skal du opgradere til.
+For at sikre, at alle spor er fjernet, skal du efter afinstallationen af de nævnte pakker checke,
+at mapperne <filename>/usr/lib/sgml</filename> og <filename>/usr/share/texmf</filename> er slettet. 
+Hvis ikke gøres det med kommandoen
 </para>
 
 <screen>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh ftp://ftp.redhat.com/6.2/noarch/docbook-3.1-4.noarch.rpm</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh ftp://ftp.redhat.com/6.2/noarch/sgml-common-0.1-8.noarch.rpm</userinput>
-<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh ftp://ftp.redhat.com/6.2/noarch/stylesheets-1.54.13rh-1.noarch.rpm</userinput>
+<prompt>[root@MinMaskine /root]#</prompt><userinput>rm -r /usr/lib/sgml /usr/share/texmf</userinput>
 </screen>
 
 <para>
-Til Red Hat 7.1 kan det anbefales at installere Red Hat 7.0 pakkerne
-(eller 6.2) ud over tetex-pakkerne.
+Nu er vi ved at være klar til at få installeret de hentede pakker. Stil dig i den mappe, hvor 
+pakkerne ligger og kør:
 </para>
 
+
 <SCREEN>
-<prompt>[root@MinMaskine /root]# </prompt> <userinput>cd /mnt/cdrom/RedHat/RPMS</userinput>
 <prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh sgml* jadetex* docbook* stylesheets-* openjade* tetex*</userinput>
 </SCREEN>
 
-
 <para>
-Til Red Hat 7.0 er der en fejl i TeTex-pakken. Du skal hente en 9 MB
-RPM-pakke <filename>tetex-*.i386.rpm</filename> fra <ulink
-url="ftp://sunsite.dk/pub/os/linux/redhat/rawhide/i386/RedHat/RPMS/">ftp://sunsite.dk/pub/os/linux/redhat/rawhide/i386/RedHat/RPMS/</ulink>,
-installer denne så kører det hele.
+Så er pakkerne installeret. Der skal dog et par små tilretninger til, før tingene kører helt godt. Se disse i <xref linkend="docbook-texconfig">.
 </para>
+
 </chapter>
 
 
