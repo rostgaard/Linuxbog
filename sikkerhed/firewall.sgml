@@ -858,19 +858,28 @@ PAS PÅ - næste er gammel ipchains text!
 </para>
 
 <screen>
-<prompt>[root@sherwood /root]#</prompt> <userinput>ls /proc/net/ip_fwchains</userinput>
+<prompt>[root@sherwood /root]#</prompt> <userinput>ls /proc/net/ip_conntrack</userinput>
 </screen>
 
 <para>
-Hvis filen eksisterer, er ipchains understøttet i den kerne, der er
+Hvis filen eksisterer, er netfilter understøttet i den kerne, der er
 installeret. Hvis den ikke gør, skal der oversættes
-en ny kerne. Vi vil ikke her komme ind på, hvordan man
-oversætter en ny kerne. Der findes en del beskrivelser på internettet om
-dette, f.eks. <ulink url="http://&linuxbogurl;/admin/bog/kerne.html">&linuxbogurl;/admin/bog/kerne.html</ulink>. Man skal
+en ny kerne. Se f.eks. 
+<ulink url="http://&linuxbogurl;/admin/bog/kerne.html">
+&linuxbogurl;/admin/bog/kerne.html</ulink>. Man skal
 under konfiguration af den nye kerne vælge "Network Firewalls" og "IP 
 firewalling" under "network options". Hvis maskinen også skal bruge IP
 masquerading, så vælg dette med ind i kernen med det samme - se
 <xref linkend="Masquerading-med-ipchains"/>.
+</para>
+
+<para>
+For at komme igang med netfilter skal man bruge en 2.4 kerne
+oversat med netfilter aktiveret, CONFIG_NETFILTER, samt user
+space-værktøjet iptables. Begge dele er med i alle nyere Linux
+distributioner efter RedHat 7.  Den nyeste version kan hentes
+fra Netfilter hjemmesiden: <ulink
+url="http://netfilter.samba.org/">http://netfilter.samba.org/</ulink>
 </para>
 </sect4>
 
@@ -879,6 +888,7 @@ masquerading, så vælg dette med ind i kernen med det samme - se
 <title>Opsætning af regler</title>
 
 <indexterm><primary>rules</primary></indexterm>
+<indexterm><primary>netfilter regler</primary></indexterm>
 
 
 <para>
@@ -893,14 +903,20 @@ En regel kan f.eks. være:
 </para>
 
 <screen>
-<prompt>[root@sherwood /root]#</prompt> <userinput>ipchains -A input -s 127.0.0.1 -p icmp -j DENY</userinput>
+<prompt>[root@sherwood /root]#</prompt> <userinput>iptables -A INPUT -s 127.0.0.1 -p icmp -j DENY</userinput>
 </screen>
 
 <para>
 som betyder, at ICMP pakker, der kommer fra 127.0.0.1 (loopback
-interfacet) skal afvises. Dette er nok ikke en god regel at køre med
+interfacet) skal afvises. Dette er ikke en god regel at køre med
 til daglig, da det betyder, at man ikke kan pinge sin localhost, men
 den er glimrende som eksempel.
+</para>
+
+<para>
+Og så kan det endda være en nyttig teknik, hvis man vil forhindre
+at nogen oversvømmer et lokalnet med ping-pakker. I så fald skal
+man ikke bruge -s 127.0.0.1 - betingelsen.
 </para>
 
 <para>
