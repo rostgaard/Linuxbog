@@ -407,6 +407,78 @@ end enhedernes ejer og gruppe. Se
 hvordan det gøres.
 </para>
 
+<sect3 id="usb-mount">
+<indexterm><primary>USB</primary><secondary>kamera</secondary></indexterm>
+<indexterm><primary>USB</primary><secondary>memory-stick</secondary></indexterm>
+<indexterm><primary>memory-stick</primary><secondary>USB</secondary></indexterm>
+<indexterm><primary>kamera</primary><secondary>USB</secondary></indexterm>
+
+<title>Montering af USB-enheder</title>
+<para>
+USB er ved at blive en populær måde at koble eksterne enheder på 
+computeren, såsom printere, kameraer og memory-sticks (16/32/64 MB nøgleringe).
+</para>
+
+<para>
+Vi skal her se på hvordan man får adgang til en USB memory-stick, og
+samme fremgangsmåde kan anvendes til kameraer såsom Olympus UZ2100 og
+HP Photosmart 610.
+</para>
+
+<para>
+Jeg har på min laptop fat i min USB-nøglering
+ved at have følgende linie i min <filename>/etc/fstab</filename>
+</para>
+
+<screen>
+/dev/sda1 /mnt/usb auto noauto,owner,user,rw 0 0
+</screen>
+
+<para>
+Derefter vil kommandoerne
+<command>mount /mnt/usb</command> og
+<command>umount /mnt/usb</command> virke fint - og brugeren har nu
+læse <emphasis>og</emphasis> skriverettigheder til drevet.
+</para>
+
+<para>
+Det kræver nok at din Linuxkerne kan se nøgleringen. Dette kan du se
+ved at skrive <command>cat /proc/scsi/usb-storage-0/0</command>. Dette
+skulle gerne vise at det er en "IBM USB memory key" (eller hvad der nu
+er det rigtige). Bemærk at det åbenbart kræver SCSI 
+emulering - og det skal være en ret ny kerne. Det virker f.eks. ikke direkte 
+i Red Hat 7.2, mens det virker fint med Red Hat 7.3.
+</para>
+
+<para>
+Det sidste spørgsmål er naturligt hvordan jeg så fandt ud af at det er
+<filename>/dev/sda1</filename> som kan monteres. Til dette kan
+programmet <command>hwbrowser</command> anvendes (kræver at
+<filename>hwbrowser.*rpm er installeret)</filename>. Start
+<command>hwbrowser</command> i et terminal-vindue og angiv
+root-adgangskoden for at detektere hardware i maskinen.
+</para>
+
+<indexterm><primary>hwbrowser</primary></indexterm>
+<indexterm><primary>hardware</primary><secondary>dektektion af hardware</secondary></indexterm>
+
+
+<FIGURE ID="hwbrowser-fig" FLOAT="1">
+<TITLE>hwbrowser anvendes til at detektere hardware</TITLE>
+<GRAPHIC FILEREF="hwbrowser.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Under "Hard Drives" bør man nu kunne se at
+<filename>/dev/sda1</filename> er en harddisk på 32 MB, hvis man har
+memory sticken inde.
+</para>
+
+<FIGURE ID="hwbrowser2-fig" FLOAT="1">
+<TITLE>hwbrowser anvendes til at detektere hardware</TITLE>
+<GRAPHIC FILEREF="hwbrowser2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+</sect3>
 </sect2>
 
 <sect2 id="mount-cd-rom">
