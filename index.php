@@ -270,28 +270,28 @@ function vistype($type) {
         "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
-//    "forsker" => array(
-//      title => "Linux - Friheden til at studere og forske",
-//      comment => "En begynderbog for samfundsfagfolk og humanister",
-//      auth => array(
-//        "Janus Sandsgaard" => "janus@janus.dk"
-//      )
-//    ),
-//    "signatur" => array(
-//      title => "Linux - Friheden til at vælge digital signatur",
-//      comment => "Digital signatur på Linux",
-//      auth => array(
-//        "Mads Bondo Dydensborg" => "madsdyd@challenge.dk"
-//      )
-//    ),
-//    "itplatform" => array(
-//      title => "Linux - Friheden til at vælge IT-løsning",
-//      comment => "Valg af Linux-baseret IT-løsning",
-//      auth => array(
-//        "Michael Rasmussen" => "mir@miras.org",
-//        "Peter Toft" => "pto@linuxbog.dk"
-//     )
-//    ),
+    "forsker" => array(
+      title => "Linux - Friheden til at studere og forske",
+      comment => "En begynderbog for samfundsfagfolk og humanister",
+      auth => array(
+        "Janus Sandsgaard" => "janus@janus.dk"
+      )
+    ),
+    "signatur" => array(
+      title => "Linux - Friheden til at vælge digital signatur",
+      comment => "Digital signatur på Linux",
+      auth => array(
+        "Mads Bondo Dydensborg" => "madsdyd@challenge.dk"
+      )
+    ),
+    "itplatform" => array(
+      title => "Linux - Friheden til at vælge IT-løsning",
+      comment => "Valg af Linux-baseret IT-løsning",
+      auth => array(
+        "Michael Rasmussen" => "mir@miras.org",
+        "Peter Toft" => "pto@linuxbog.dk"
+     )
+    ),
    "samling" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "En pakke med alle bøgerne i",
@@ -612,10 +612,10 @@ Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
 <p>
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
-<?php
+<!--<?php
 	if (file_exists($DOCUMENT_ROOT."includes/bottom.phtml")) {
 		include($DOCUMENT_ROOT."includes/bottom.phtml");
 	} else if (file_exists($f="bot.php")) {
 		include($f);
 	}
-?>
+?>-->
