@@ -29,6 +29,7 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
                $(wildcard ../c/*.sgml) \
                $(wildcard ../docbook/*.sgml) \
                $(wildcard ../kontorbruger/*.sgml) \
+               $(wildcard ../itplatform/*.sgml) \
                $(wildcard ../program/*.sgml)
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
@@ -72,11 +73,12 @@ billeder:
 	cp ../c/images/*.png images
 	cp ../docbook/images/*.png images
 	cp ../kontorbruger/images/*.png images
+	cp ../itplatform/images/*.png images
 	cp ../applikationer/images/*.png images
 	cp ../sikkerhed/images/*.png images
 
 
-htmlfiler: 
+htmlfiler: billeder
 	@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
@@ -91,15 +93,6 @@ htmlfiler:
 	mkdir bog
 	cp tempdir/*.html bog
 	cp linuxbog.css bog
-	cp ../friheden/images/*.png bog
-	cp ../admin/images/*.png bog
-	cp ../web/images/*.png bog
-	cp ../program/images/*.png bog
-	cp ../applikationer/images/*.png bog
-	cp ../c/images/*.png bog
-	cp ../docbook/images/*.png bog
-	cp ../kontorbruger/images/*.png bog
-	cp ../sikkerhed/images/*.png bog
 	rm -rf tempdir
 	@echo "Done HTML (html)"
 	@echo ""
