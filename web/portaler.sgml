@@ -333,14 +333,165 @@ og tilmeld dig denne liste. Så er du i hvert fald godt på vej !
 
 </sect1>
 
-<!--
 <sect1 id="phpnuke">
-<title>phpNuke</title>
+<title>PHP-Nuke - start en portal på få timer</title>
 
 <para>
-Se <ulink
-url="http://www.phpnuke.org">http://www.phpnuke.org</ulink>. More to follow.
+Hvis man vil have en portal startet på få timer og ikke regner med en
+ektrem belastning på maskinen, så et PHP-Nuke en glimrende måde at
+komme i gang på. Langt det meste vil konfigureres fra en web-browser,
+og man får typisk en fin site med en beskeden indsats. Ideen med
+PHP-Nuke er at der anvendes en SQL-database til at gemme indhold mens
+integrationen mellem Apache-webserveren sker med en række PHP-scripts,
+der ikke ændres. Systemet er lavet så man ikke skal rette i filer for
+at håndtere den daglige drift. Eneste negative ting der er at sige om
+PHP-Nuke angår sikkerheden for filerne hvis man har en masse brugere
+på samme maskine, idet alle kan læse og skrive de filer der danner
+PHP-Nuke. Er det kun system-administratoren som anvender maskinen kan
+man se bort fra dette.
 </para>
+
+
+<para>
+Start med at hente PHP-Nuke fra <ulink
+url="http://www.phpnuke.org">http://www.phpnuke.org</ulink>. Vælg
+"Downloads" i øverste menu og "PHP-Nuke". Dette burde lede til 
+<ulink url="http://phpnuke.org/modules.php?name=Downloads&d_op=getit&lid=225">http://phpnuke.org/modules.php?name=Downloads&amp;d_op=getit&amp;lid=225</ulink>.
+</para>
+
+<para>
+Start med at installere en apache-webserver og en MySQL-database.
+På en Red Hat 7.2 skal man indsætte Red Hat cdrom nummer 1 og skrive
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>su</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mount /mnt/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>rpm -ivh /mnt/cdrom/RedHat/RPMS/apache-1.3.20-16.i386.rpm </USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>rpm -ivh /mnt/cdrom/RedHat/RPMS/php-4.0.6-7.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>rpm -ivh /mnt/cdrom/RedHat/RPMS/php-mysql-4.0.6-7.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>umount /mnt/cdrom</USERINPUT> 
+</SCREEN>
+
+<para>
+Indsæt derefter cdrom nummer to (stadig som brugeren root)
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mount /mnt/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>rpm -ivh mysql-3.23.41-1.i386.rpm mysql-server-3.23.41-1.i386.rpm</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>umount /mnt/cdrom</USERINPUT> 
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>exit</USERINPUT> 
+</screen>
+
+<para>
+Nu skal Apache-opsætningen sættes klar til en web-server. I det
+følgende antages at du vil have web-serveren
+http://www.linux-portal.dk i luften på IP-adresse 192.168.1.3 (denne
+IP-adresse virker kun på private netværk). Sørg for at dit servernavn
+www.linux-portal.dk er kendt i DNS (navneserveren) eller i det mindste
+nævnt i <filename>/etc/hosts</filename> hvis serveren kun skal servicere 
+din hjemmenetværk.
+</para>
+
+<para>
+Ret med en editor filen 
+<filename>/etc/httpd/conf/httpd.conf</filename> og find afsnittet
+"Section 3: Virtual Hosts" omkring linie 1173. I linien
+"NameVirtualHost" ændres IP-adressen og nedenfor indsættes en virtuel
+maskine som vist nedenfor - vi har her valgt at PHP-Nuke skal installeres i 
+<filename>/usr/local/PHPNuke</filename>. Erstat gerne root@localhost med din
+egen email-adresse (anvendes til at rapportere fejl).
+</para>
+
+<screen>
+NameVirtualHost 192.168.1.3
+
+&lt;VirtualHost 192.168.1.3&gt;
+    ServerAdmin root@localhost
+   DocumentRoot /usr/local/PHPNuke/html
+  &lt;Directory "/usr/local/PHPNuke/html"&gt;
+    Options Indexes FollowSymLinks Includes
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+    XBitHack full
+  &lt;/Directory&gt;
+    ServerName www.linux-portal.dk
+    ErrorLog logs/Nuke-error_log
+    CustomLog logs/Nuke-access_log common
+&lt;/VirtualHost&gt;
+</screen>
+
+<para>
+Vi skal også huske at starte både Apache webserveren og MySQL serveren op. 
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/etc/init.d/httpd restart</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/etc/init.d/mysqld restart</USERINPUT>
+</screen>
+
+
+<para>
+Pak nu PHP-Nuke ud
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mkdir /usr/local/PHPNuke</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mv PHP-Nuke-5.5.tar.gz /usr/local/PHPNuke </USERINPUT>
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>tar xvzf PHP-Nuke-5.5.tar.gz</USERINPUT> 
+</screen>
+
+<para>
+Læs gerne filen <filename>INSTALL</filename> som indeholder
+installations-noter. I store træk skal man køre følgende
+kommandoer. Først oprette en nuke-bruger i SQL-databasen, køre en
+opsætning ind. Rette alle filer og kataloger så alle kan læse og
+skrive alt. Flytte <filename>config.php</filename> ud fra
+web-serverens søgesti og endeligt få Apache til at læse 
+<filename>config.php</filename> fra den nye sti.
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>mysqladmin create nuke</USERINPUT> 
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>mysql nuke < sql/nuke.sql</USERINPUT> 
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>find . -type f -exec chmod 666 {} \;</USERINPUT> 
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>find . -type d -exec chmod 777 {} \;</USERINPUT> 
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>mv html/config.php .</USERINPUT> 
+<PROMPT>[root@linus /usr/local/PHPNuke]#</PROMPT> <USERINPUT>echo '&lt;?php include("../config.php"); ?&gt;' > html/config.php</USERINPUT> 
+</screen>
+
+<para>
+Vi skal nu sætte et par vigtige ting op manuelt - resten skal vi via
+en web-browser. Først skal vi vælge et administrator-password i 
+<filename>/usr/local/PHPNuke/config.php</filename>
+</para>
+
+<FIGURE ID="phpnuke-admin-fig" FLOAT="1">
+<TITLE>PHP-Nuke admin.php</TITLE>
+<GRAPHIC FILEREF="phpnuke-admin.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="phpnuke-admin2-fig" FLOAT="1">
+<TITLE>PHP-Nuke admin.php</TITLE>
+<GRAPHIC FILEREF="phpnuke-admin2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="phpnuke-admin3-fig" FLOAT="1">
+<TITLE>PHP-Nuke admin.php</TITLE>
+<GRAPHIC FILEREF="phpnuke-admin3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="phpnuke-index-fig" FLOAT="1">
+<TITLE>PHP-Nuke admin.php</TITLE>
+<GRAPHIC FILEREF="phpnuke-index.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="phpnuke-preferences-fig" FLOAT="1">
+<TITLE>PHP-Nuke preferences</TITLE>
+<GRAPHIC FILEREF="phpnuke-preferences.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
 </sect1>
--->
 </chapter>
