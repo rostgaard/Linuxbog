@@ -58,19 +58,19 @@ statusfiles:
 sgml: $(sgmlfiler) $(targetname)-$(version).sgml.tar.gz $(targetname)-$(version).sgml.zip
 
 
-$(targetname)-$(version).sgml.tar.gz:
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
+$(targetname)-sgml-$(version).tar.gz:
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
 
-$(targetname)-$(version).sgml.zip:
-	(cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
+$(targetname)-sgml-$(version).zip:
+	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
-palmpilot: $(targetname)-$(version).palm.zip
+palmpilot: $(targetname)-palm-$(version).zip
 
-$(targetname)-$(version).palm.zip: alle/index.html
+$(targetname)-palm-$(version).zip: alle/index.html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
-	zip $(targetname)-$(version).palm.zip palm/*.prc palm/*.pdb
+	zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb
 	rm -f  palm/*.prc palm/*.pdb
 
 html: statusfiles versionfil $(targetshortname)
@@ -115,55 +115,20 @@ else
 endif
 
 
-pakhtml: $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip
+pakhtml: $(targetname)-html-$(version).tar.gz $(targetname)-htmlub-$(version).tar.gz $(targetname)-png-$(version).tar.gz $(targetname)-html-$(version).zip
 
-$(targetname)-$(version).html.tar.gz: alle/index.html 
-	tar czf $(targetname)-$(version).html.tar.gz $(targetshortname)
+$(targetname)-html-$(version).tar.gz: alle/index.html 
+	tar czf $(targetname)-html-$(version).tar.gz $(targetshortname)
 
-$(targetname)-$(version).html-ub.tar.gz: alle/index.html 
-	tar czf $(targetname)-$(version).html-ub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
+$(targetname)-htmlub-$(version).tar.gz: alle/index.html 
+	tar czf $(targetname)-htmlub-$(version).tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
 
-$(targetname)-$(version).png.tar.gz: alle/index.html 
-	tar czf $(targetname)-$(version).png.tar.gz $(targetshortname)/*.png
+$(targetname)-png-$(version).tar.gz: alle/index.html 
+	tar czf $(targetname)-png-$(version).tar.gz $(targetshortname)/*.png
 
-$(targetname)-$(version)_html.zip: alle/index.html 
-	zip $(targetname)-$(version)_html.zip $(targetshortname)/*
+$(targetname)-html-$(version).zip: alle/index.html 
+	zip $(targetname)-html-$(version).zip $(targetshortname)/*
 
-
-pspdf:	$(targetname)-$(version)_pdf.zip
-$(targetname)-$(version)_pdf.zip: statusfiles
-	@echo "Target is" $(targetname).ps.gz
-	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
-	mkdir tempdir
-	echo '<!ENTITY magic "eps">' > magic.sgml
-	perl ./collateindex.pl  -t Stikordsregister -x -g -i stikord -N -o stikord.sgml
-	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print -V html-index -V nochunks bog.sgml > ged.html)
-	perl ./collateindex.pl -s Symboler -x -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-#	mkdir bogps
-#	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% /usr/X11R6/bin/convert -antialias images/%.png eps2:bogps/%.eps
-#	echo '<!ENTITY magic "eps">' > magic.sgml
-#	cp *.sgml bogps
-#	(cd bogps; db2ps bog.sgml > /dev/null)
-#	mv bogps/bog.ps $(targetname)-$(version).ps
-#	rm -f $(targetname)-*.ps.gz
-#	@echo "Done PS (pspdf)"
-#	@echo ""
-#	gzip -9 $(targetname)-$(version).ps
-	@echo "Target er" $(targetname).pdf
-	echo '<!ENTITY magic "png">' > magic.sgml
-	mkdir bogpdf
-	cp *.sgml bogpdf
-	rm -f $(targetname)-*.pdf
-	for dir in $(SUBDIRS); do \
-		cp ../$$dir/images/*.png bogpdf; \
-	done;
-	(cd bogpdf; db2pdf bog.sgml )
-	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
-	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
-	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
-	@echo "Done PDF (pspdf)"
-	@echo ""
 
 test:
 	echo $(sgmlfiler)
