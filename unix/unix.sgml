@@ -4284,7 +4284,7 @@ Nu kan programmet gøres eksekverbart med <command>chmod</command>.
 </screen>
 
 <para>
-Hvis dit system er sat fornuftigt op, kan ikke bare køre
+Hvis dit system er sat fornuftigt op, kan du ikke bare køre
 programmer fra det subdir du står i.
 Derfor skal der angives en <emphasis>./</emphasis> foran
 filnavnet når scriptet skal køres.
@@ -4301,16 +4301,131 @@ Hello, world!
 <title>Flere kommandoer</title>
 <indexterm><primary>Shell script</primary><secondary>flere kommandoer</secondary></indexterm>
 <para>
-Mumle -- flere linjer eller brug ;
+Et af formålene med scripts er at køre flere kommandoer.
+Har man kun to kommandoer der skal køres, og det kun er dig selv der skal
+køre dem, kan man blot køre dem efter hinanden på kommando-linjen
+ved at angive et ; imellem kommandoerne.
 </para>
+
+<screen>
+<prompt>[anne@linus ~]$ echo "Hello, world!" ; echo "Hej, verden!"</prompt>
+Hello, world!
+Hej, verden!
+</screen>
+
+<para>
+I et shell-script kan dette så enten skrives som:
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Hello, world!" ; echo "Hej, verden!"
+</programlisting>
+
+<para>
+eller med en ny linje imellem hver kommando:
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Hello, world!"
+echo "Hej, verden!"
+</programlisting>
+
+<para>
+Bemærk at <emphasis>;</emphasis> blot betyder det samme som en ny linje
+med en ny kommando.
+I de følgende eksempler vil ; blive brugt flittigt, men det er egentlig
+kun for at få scriptet til at se pænere ud ud og blive mere læseligt.
+</para>
+
+<para>
+Hvor ; kan bruges til at skrive flere kommandoer på den samme linje,
+kan det lige nævnes at \ kan bruges til at dele en meget lang linje op i flere
+linjer, så den bliver mere læselig.
+Dette kræver at \ står til sidst på linjen, og der må ikke være et mellemrum
+eller andet tegn efterfølgende.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Hello, " \
+ "world!"
+</programlisting>
+
+</sect2>
+
+<sect2 id="shell-var">
+<title>Variabler</title>
+<indexterm><primary>Shell script</primary><secondary>variabler</secondary></indexterm>
+<para>
+I shell script kommer man tit ud for at skulle bruge den samme værdi eller
+tekst flere gange. Her kan man med fordel bruge en variabel til at gemme værdien i.
+</para>
+
+<programlisting>
+#! /bin/sh
+VERSION="0.1.2"
+echo "Dette er version $VERSION af programmet."
+echo $VERSION
+</programlisting>
+
+<para>
+Skal der være bogstaver eller tal lige efter variablen,
+er det nemmest at sætte et par {} omkring.
+Hvis ikke der sættes {} omkring variablen, vil fortolkeren
+opfatte den efterfølgende tekst som en del af variablens navn.
+Alternativt kunne man skrive to linjer, men det kan til
+tider ikke lade sig gøre.
+</para>
+
+<programlisting>
+#! /bin/sh
+VERSION="0.1.2"
+echo "Dette er version ${VERSION}beta af programmet."
+</programlisting>
+
 </sect2>
 
 <sect2 id="shell-parametre">
 <title>Parametre til script</title>
 <indexterm><primary>Shell script</primary><secondary>parametre</secondary></indexterm>
 <para>
-Mumle $1 $2
+De fleste kommandoer eller programmer i UNIX kan startes med parametre på
+kommando-linjen, og få programmet til at opfører sig lidt anderledes.
+Parametre nummeres fra 1 og opefter, hvor ${0} er programmet selv.
 </para>
+
+<programlisting>
+#! /bin/sh
+echo "Dette program hedder: ${0}"
+echo "Første parameter: ${1}"
+echo "Anden parameter: ${2}"
+</programlisting>
+
+<para>
+Programmet kan så afprøves:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello Hello world</prompt>
+Dette program hedder: ./hello
+Første parameter: Hello
+Anden parameter: world
+</screen>
+
+<para>
+Skal du vide hvor mange parametere der er på kommando-linjen,
+ligger denne værdi i den specielle variabel $#.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Antal parametre: $#"
+echo "Første parameter: $1"
+echo "Anden parameter: $2"
+</programlisting>
+
 </sect2>
 
 <sect2 id="shell-shift">
@@ -4325,16 +4440,152 @@ Mumle shift
 <title>if</title>
 <indexterm><primary>Shell script</primary><secondary>if</secondary></indexterm>
 <para>
-Mumle noget om if true;then;fi
+Betingelser for et program eller et script er næsten uundgåeligt.
+Den mest brugte kontrol-struktur er <command>if</command>,
+som i den simpleste form ser således ud, hvor kommandoer der
+skal udføres er rykket ind for at gøre det mere læseligt:
 </para>
+
+<programlisting>
+#! /bin/sh
+if true; then
+	echo "Værdien er sand"
+fi
+</programlisting>
+
+<para>
+Først skal det bemærkes at <command>true</command> ikke er en specielt
+indbygget kommando i fortolkeren. <command>true</command> er et program
+der kaldes, og hvis det returnerer 0, er værdien sand.
+<command>if</command> har selvfølgelig også en <command>else</command>.
+</para>
+
+<programlisting>
+#! /bin/sh
+if true; then
+	echo "Værdien er sand"
+else
+	echo "Værdien er falsk"
+fi
+</programlisting>
+
+<para>
+I <xref linkend="shell-flere-kom"/> blev ; nævnt som et tegn der
+bruges til at adskille kommandoer.
+Som det ses herover, er der sat et ; ind foran <command>then</command>,
+hvilket lige så godt kunne stå på næste linje.
+De fleste der skriver shell-scripts foretrækker dog at skrive det
+på ovenstående måde, selvom det ved første øjekast ser lidt
+underligt ud.
+</para>
+
+<para>
+Parametren til <command>if</command> er altså et program der kaldes,
+og så udføres enten kommandoerne efter <command>then</command>
+eller efter <command>else</command>.
+</para>
+
 </sect2>
 
 <sect2 id="shell-test">
 <title>Test [</title>
 <indexterm><primary>Shell script</primary><secondary>test [</secondary></indexterm>
 <para>
-Mumle noget om [
+Til test for om noget er sandt eller falsk,
+bruges slet og ret programmet <command>test</command>.
+I shell-scripts vil man dog ofte ikke skrive <command>test</command>,
+men derimod bruge det symbolske link <command>[</command>.
+Når man bruger [ sammen med if, tror mange til at starte med,
+at [ er en del af kommandoen til if, men det er altså et selvstændigt
+program.
+Når man har valgt at lave et symbolsk link til test,
+skyldes det blot at det er mere læseligt med [.
+Prøv kommandoen <command>ls -l /usr/bin/[</command> .
 </para>
+
+<para>
+En meget brugt kommando med [,
+er at undersøge om en fil eksisterer.
+Dette gøres med parametren '-e'.
+Den afsluttende ] er kun med for at få det til at se pænt ud,
+da den ingen praktisk betydning har.
+</para>
+
+<programlisting>
+#! /bin/sh
+if [ -e foo ]; then
+	echo "Ja, filen 'foo' findes."
+else
+	echo "Nej, filen 'foo' findes ikke."
+fi
+</programlisting>
+
+<para>
+Er det kun hvis filen ikke findes, at der skal gøres noget,
+bruges not-kommandoen <command>!</command>.
+</para>
+
+<programlisting>
+#! /bin/sh
+if [ ! -e foo ]; then
+	echo "Åh-nej, filen 'foo' findes ikke."
+fi
+</programlisting>
+
+<para>
+Bemærk at der i ovenstående eksempel er brugt en hel del
+mellemrum ved <command>if [ ! -e foo ]</command> .
+<emphasis>Alle</emphasis> disse mellemrum skal være der,
+ellers kommer der mange underlige fejl der er svære at få øje på.
+I andre programmeringssprog vil du nok undlade nogle af
+mellemrumene, men ingen kan undværes i dette eksempel.
+</para>
+
+<para>
+<command>test</command> har et væld af muligheder, hvor
+vi kun viser de mest brugte her.
+For yderligere information om [ kaldes <command>man test</command> .
+</para>
+
+<programlisting>
+#! /bin/sh
+if [ -z "$1" ]; then
+	echo "Fejl! Første parameter er blank."
+fi
+
+if [ ! -z "$1" ]; then
+	echo "Første parameter er: $1"
+fi
+
+if [ -x foo ]; then
+	echo "Programmet 'foo' findes, og du kan køre det."
+fi
+
+TEKST="Ja"
+if [ "$TEKST" = "Ja" ]; then
+	echo "Tekstsvaret var 'Ja'."
+fi
+
+NUMMER=3
+if [ $NUMMER -eq 3 ]; then
+	echo "Heltallet i variablen \$NUMMER er 3"
+else
+	echo "\$NUMMER er lig med $NUMMER"
+fi
+
+if [ $NUMMER -lt 4 ]; then
+	echo "\$NUMMER er mindre end 4"
+fi
+
+if [ $NUMMER -gt 0 -a $NUMMER -lt 4 ]; then
+	echo "\$NUMMER er større end 0 og mindre end 4"
+fi
+
+if [ $# -le 2 ]; then
+	echo "Der er 2 eller færre parametre på kommando-linjen"
+fi
+</programlisting>
+
 </sect2>
 
 <sect2 id="shell-case">
@@ -4346,7 +4597,7 @@ Mumle case $1; hej*); echo dav; ;; esac
 </sect2>
 
 <sect2 id="shell-psubst">
-<title></title>
+<title>Process erstatning</title>
 <indexterm><primary>Shell script</primary><secondary>process erstatning</secondary></indexterm>
 <para>
 Mumle noget om `date` el. $(date)
@@ -4393,11 +4644,11 @@ Mumle N=`dc -e "2 $N * p"`
 </para>
 </sect2>
 
-<sect2 id="shell-x">
-<title>x</title>
-<indexterm><primary>Shell script</primary><secondary>x</secondary></indexterm>
+<sect2 id="shell-function">
+<title>Funktioner</title>
+<indexterm><primary>Shell script</primary><secondary>funktioner</secondary></indexterm>
 <para>
-Mumle
+Mumle function x{}
 </para>
 </sect2>
 
