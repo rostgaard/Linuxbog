@@ -246,6 +246,13 @@ function vistype($type) {
         "Christian Damsgaard" => "damsgaard@image.dk"
       )
     ),
+    "python" => array(
+      title => "Linux - Friheden til at programmere i Python",
+      comment => "En begynderbog om Python",
+      auth => array(
+        "Alfred Jensen" => "webmaster@ajbo.dk"
+      )
+    ),
     "sikkerhed" => array(
       title => "Linux - Friheden til sikkerhed på internettet",
       comment => "Sikkerhed omkring din Linux-boks",
