@@ -26,6 +26,12 @@
 <!--
 $Id$
 -->
+
+<p align="center">
+<img src="pingo.png" alt="Friheden til at skrive bøger">
+</p>
+
+
 <?php
 
 // Funktion til at lave hyperlink
