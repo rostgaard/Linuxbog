@@ -81,9 +81,10 @@
    </listitem>
   </itemizedlist>
 
-  Tabel <xref linkend="tabel-unix-adgangsstyringsflag"/> giver en
+  <xref linkend="tabel-unix-adgangsstyringsflag"> giver en
   oversigt over de ni almindelige flag, samt nogle specialflag man
-  også kan sætte eller stryge.
+  også kan sætte eller stryge. Det skal nævnes at flagene kan kombineres
+  til at lave en meget fleksibel adgang til data.
  </para>
 
  <table id="tabel-unix-adgangsstyringsflag">
@@ -245,7 +246,10 @@ drwxr-xr-x    3 tyge     brahe        4096 mar 30 16:09 Artikler
    Husk dog på at adgangsstyringen aldrig hindrer
    systemadministratoren &mdash; eller programmer der kører med
    systemadministratorrettigheder &mdash; i at læse, skrive og ændre i
-   dine filer.
+   dine filer. For netværksdrev er dette dog ikke nødvendigvis sandt.
+   Man kan fra en netværksserver hindre at lokale "root"-brugere får
+   fuld adgang til data (eng: root-squashing).
+<indexterm><primary>root</primary><secondary>squashing</secondary></indexterm>
   </para>
  </example>
 
@@ -274,14 +278,14 @@ drwxr-xr-x    3 tyge     brahe        4096 mar 30 16:09 Artikler
    så kan man tilføje det til sin kommandofortolkers
    opsætningsfil(er).  Argumentet til <command>umask</command> er et
    tal (skrevet med grundtal 8) der definerer hvilke af de
-   grundlæggende ni adgangstilladelser der ikke skal gives til
-   nyoprettede filer.  Tallet dannes ved at lægge talværdierne (fra
-   tabellen <xref linkend="tabel-unix-adgangsstyringsflag"/>) for de
+   grundlæggende ni adgangstilladelser der <emphasis>ikke</emphasis> skal gives til
+   nyoprettede filer.  Tallet dannes ved at lægge talværdierne fra
+   tabellen <xref linkend="tabel-unix-adgangsstyringsflag"> for de
    adgangstilladelser der ikke skal gives sammen.
   </para>
 
   <para>
-   Hvis vi udelukkende vil begrænse angangstilladelserne for
+   Hvis vi udelukkende vil begrænse adgangstilladelserne for
    <emphasis>andre</emphasis> brugere, skal vi således bruge
    talværdierne 0001 (ingen brugstilladelser til andre), 0002 (ingen
    skrivetilladelser til andre) og 0004 (ingen læsetilladelser til
@@ -345,8 +349,8 @@ drwxr-xr-x    3 tyge     brahe        4096 mar 30 16:09 Artikler
    Hvis Apache skal kunne vise din hjemmeside, er det nødvendigt at
    den bruger, hvis rettigheder Apache kører med, har adgang til at
    læse både kataloget hjemmesiden ligger i og selve filen med
-   hjemmesiden.  Men efter at vi i eksemplet <xref
-   linkend="adgangsstyring-ingen-adgang"/> har hindret al adgang til
+   hjemmesiden.  Men efter at vi i <xref
+   linkend="adgangsstyring-ingen-adgang"> har hindret al adgang til
    filerne under <filename>~/</filename> for alle andre end dig selv,
    har Apache ikke længere adgang til det.  Først giver vi alle adgang
    til at læse kataloget <filename>~/websted/</filename> og alt hvad
@@ -424,9 +428,6 @@ drwxr-xr-x    3 tyge     brahe        4096 mar 30 16:09 Artikler
    billeder i kataloget <filename>~/familiebilleder/nye/</filename>.
   </para>
 
-  <para>
-   -- deles op i to eksempler? --
-  </para>
  </example>
 
  <example id="adgangsstyring-eksterne-enheder">
@@ -435,7 +436,7 @@ drwxr-xr-x    3 tyge     brahe        4096 mar 30 16:09 Artikler
   <para>
    Hvis du har koblet et instrument på enheden
    <filename>/dev/astrolabrium</filename> som alle brugerne i gruppen
-   "astronomi" skal kunne styre, bliver du nødt til at give dem adgang
+   "astronomi" skal kunne styre, bliver du som root nødt til at give dem adgang
    til at skrive til enheden (så de kan sende kommandoer til
    instrumentet) og til at læse fra enheden (så de kan modtage data
    fra instrumentet).
