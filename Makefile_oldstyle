@@ -96,7 +96,7 @@ cvs2html:
 	chmod +x /home/pto/utils/cvs2html
 	rm -rf cvs2html
 	mkdir cvs2html
-	/home/pto/utils/cvs2html  -l http://cvs.sslug.dk/linuxbog -f -p -o cvs2html/index.html -v -a -b -n 6 -C cvs_crono.html
+	/home/pto/utils/cvs2html -i ../linux.png  -l http://cvs.sslug.dk/linuxbog -f -p -o cvs2html/index.html -v -a -b -n 6 -C cvs_crono.html
 
 
 mail:
