@@ -10,13 +10,6 @@ Makefiler:
 	cp Makefile.subdir program/Makefile
 	cp Makefile.subdir web/Makefile
 	cp Makefile.subdir sikkerhed/Makefile
-	cp misc/collateindex.pl friheden
-	cp misc/collateindex.pl applikationer
-	cp misc/collateindex.pl admin
-	cp misc/collateindex.pl program
-	cp misc/collateindex.pl web
-	cp misc/collateindex.pl sikkerhed
-	cp misc/collateindex.pl alle
 
 filer:  Makefiler
 	make Makefiler
