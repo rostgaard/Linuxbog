@@ -4,6 +4,7 @@ all:
 	(cd program; make html)
 	(cd web; make html) 
 	(cd sikkerhed; make html) 
+	echo "Bøger done" | mail pto-mobil
 
 clean:
 	(cd friheden; make clean)
