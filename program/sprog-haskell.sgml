@@ -102,4 +102,68 @@ Test.hs
   </para>
  </sect2>
 
+ <sect2 id="sprog-haskell-doven">
+  <title>Doven evaluering</title>
+
+  <para>
+   Haskell er et dovent sprog. Det betyder at den udsætter beregningen af et 
+   udtryk så lang tid som det overhovedet er muligt. Normalt er man vant til
+   at argumenterne i et funktionskald bliver beregnet før funktionen kaldes.
+   Sådan gør haskell ikke.
+  </para>
+
+  <para>
+   Man ville for eksempel forvente at følgende stykke kode gik i
+   uendelig løkke:
+
+<programlisting>
+foo :: Int -> Int
+foo 0 = 1
+foo n = foo(n+1) + foo(n-1)
+
+switch :: Bool -> t -> t -> t
+switch True n m  = n
+switch False n m = m
+
+switch True (foo 0) (foo 5)
+</programlisting>
+
+   Men eftersom værdien af <literal>(foo 5)</literal> bare bliver smidt
+   vil Haskell ikke forsøge at beregne det.
+  </para>
+
+  <para>
+   Dette giver mulighed for at definere strukture der egentligt er uendelige.
+   For eksempel kan Fibonaccis talfølge kan let skrives som:
+
+<programlisting>
+zip :: [a] -> [b] -> [(a,b)]
+zip []     _      = []
+zip _      []     = []
+zip (x:xs) (y:ys) = (x,y) : zip xs ys
+
+add :: (Int,Int) -> Int
+add a b = a + b
+
+fib = 0 : 1 : map add (zip fib, (tail fib))
+</programlisting>
+
+  </para>
+
+  <para>
+   <literal>zip</literal> tager to lister og danner en liste af par og 
+   <literal>add</literal> tager et par af to tal og lægger dem sammn.
+  </para>
+
+  <!-- Og så bliver det sort...
+       Mon det hjælper at vise et par trins håndkøring?
+  -->
+
+  <para>
+   <literal>(zip fib, (tail fib))</literal> laver en uendelig liste af
+   par med to på hinanden følgende tal i Fibonaccis talfølge. <literal>
+   map add (...)</literal> lægger disse par sammen.
+  </para>
+ </sect2>
+ 
 </sect1>
