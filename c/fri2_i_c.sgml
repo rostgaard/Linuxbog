@@ -1,0 +1,1837 @@
+
+<chapter id="c-programming-start"><title>C Programmering</title>
+<sect1 id="tour"><title>Hello-world programmer</title>
+
+<abstract><para>
+Hello-world programmer, beregningsprogrammer, filter-programmer,
+tilstandsprogrammer, netværksprogrammer, client server
+programmer, systemprogrammer, databaseprogrammer,
+værktøjsprogrammer - betegnelser af praktisk art, ikke
+systematiske kategorier.
+</para></abstract>
+
+<sect2 id="brohoved">
+<title>Et brohoved.</title>
+<para>
+Et C program består af en serie definitioner af eksterne
+objekter. Et eksternt objekt kan være en funktion eller en
+datadefinition. For at kunne arbejde frit med opbygning af et
+program, er det vigtigt at have en fornemmelse for, hvordan man
+deler sin opgave op i mindre dele.
+</para>
+
+<para>
+Det er også rart at have prøvet nogle gange at opbygge en
+datarepræsentation af noget, man kender godt, fx. et
+medlemskartotek eller en database over CD-skiver.
+Derefter kan man gå i gang med at opdele sine operationer. Det
+ville jeg kalde aktions-orienteret programmering ;-)
+</para>
+
+<para>
+Altså, gå igang med at repræsentere de data, man ønsker at
+arbejde med, og med at definere operationer på disse data. Det
+lyder måske som objekt-orienteret programmering - og det er det
+også!  Men sådan gør man jo også, når man ikke har C++ til
+rådighed. Der er mange situationer, hvor C er mere effektivt, og
+iøvrigt er C jo grundlaget for C++.
+</para>
+
+<para>
+Forhåbentlig kender du Kernighan & Ritchies bog, the
+C Programming Language. Det første kapitel, den berømte "tour"
+gennem C sproget, starter med et program, der skriver "Hello,
+World!" på en output - device (altså en skærm-enhed eller
+lignende).<footnote><para>
+Hvis du ikke kender bogen "The C Programming Language" af Kernighan &
+Ritchie, og hvis du ikke er en øvet C programmør, så vil jeg anbefale,
+at du køber den og bruger ca. 14 dage til at arbejde kapitel 1 igennem
+- lav så mange af de ekstra øvelser, som du kan nå. Nærværende kapitel
+er en ikke en erstatning for den oprindelige "tour", men et supplement. 
+Man kalder det for learning by doing eller deduktiv
+spiralpædagogik; vi udleder, hvordan C sproget fungerer ved at
+prøve det mange gange og ved at gøre øvelser lidt sværere hver
+gang.
+</para>
+
+<para>
+Hvis Kernighan &amp; Ritchie bogen også forekommer for vanskelig
+- den er nemlig heller ikke for helt grønne begyndere - så er der
+nogle andre introduktionsbøger, som kan guide dig igennem
+grundlæggende øvelser i programmering, fx. "Practical C" fra
+O'Reilly.
+</para>
+
+<para>
+Du kan få en ide om, hvad det handler om, ved at læse
+appendiks A, der giver en oversigt over C sprogets fire
+forskellige bestanddele, datatyper, operatorerne, 
+flow-konstruktionerne - og om opdeling af
+programmer i moduler. Disse fire dele af ethvert
+programmeringssprog bør man jo kende og forstå. 
+</para>
+
+<para>
+K&amp;R bogen giver imidlertid flere eksempler end jeg har med
+i Appendiks A, og forklarer variationer på programmerne,
+variationer, som er rigtig gode til at få én igang med selv at
+forsøge. Det kan du selvfølgelig også gøre med eksemplerne i
+denne bog.
+</para>
+
+<para>
+Det specielle ved Kernighan & Ritchies programeksempler i Kapitel 1 af
+den berømte bog er, at programmerne er nyttige. På en kommandolinie kan
+de bruges med det samme til endda ret fornuftige og realistiske ting.
+Hvis du ikke er fortrolig med kommandolinie syntax, så kan du finde
+eksempler i SSLUG-bogen, Friheden til at bruge sin computer.  Det er en
+god ide at eksperimentere lidt med de simpleste Unix-programmer, inden
+du går videre. Prøv fx. date, cal, uptime, id, who, finger, "echo hej",
+strings /usr/bin/ls, file *, ls, pwd, cd, du, df, man gcc, man ld, man
+ld.so, ldd /usr/bin/ls osv. (klassiske unix kommandoer).
+</para></footnote>
+</para>
+
+<para>
+Det program kunne man jo så udnævne til stamfaderen for en
+hel kategori. "Hello-world" programmer isolerer en feature og 
+afprøver, hvordan den virker. Et "hello-program" skal helst kunne
+køre, selv om vi nogen gange nøjes med at skrive en funktion for
+at se, om compileren accepterer den syntax, vi anvender.
+</para>
+
+<para>
+Et "hello-program" kan være et, som skriver noget på skærmen,
+eller det kan hente dato-information, så kan vi få bekræftet, om
+dato funktionerne opfører sig, som vi forventer, eller ej.
+</para>
+
+<para>
+Det, vi skal i gang med nu, er at undersøge, hvordan funktioner
+afleverer data til hinanden, og hvordan C sproget gør det lettere
+at lave sådan nogle "kasser", ofte kaldet black box, om hvilken
+man ved, at den kan dit og dat, og at den er helt uafhængig af
+resten af vores program.  
+</para>
+
+<para>
+Et helt grundlæggende "Hello-world" program er et, som
+simpelt hen afslutter med det samme! Sådan et kommer her:
+</para>
+
+<example id="ex-hello"><title>HELLO - exitcode</title>
+<programlisting role="C">
+<literal>
+/* frame.c Minimal program til afproevning af exitcode. */
+
+int main()
+{
+    return 0;
+}
+
+/* end of file frame.c */
+</literal>
+</programlisting>
+</example>
+
+<para>
+Program-source, kildeteksten består af 8 linier, hvis man
+tæller kommentarer og tomme linier med. Aller øverst er der en
+kommentar, som fortæller kort hvad meningen med programmet er.
+En kommentar startes med "/*" og slutter med "*/".
+</para>
+
+<para>
+Programmet består af en definition af ét eksternt objekt,
+nemlig en funktion, som har navnet "main". Parenteserne efter main
+fortæller, at main er et objekt af typen funktion. Parenteserne
+kaldes derfor "funktions-operator" <footnote> <para> I K&amp;R(88)
+kan man på side 53 finde en tabel over operator præcedens. Deri
+kan man finde () øverst, fordi bindingen mellem identifier og ()
+er stærkere end bindinger mellem andre operatorer.  </para>
+</footnote> Selve koden i main er indrammet i krøllede
+parenteser, braces. Koden består af kun én sætning, eller
+<emphasis> statement </emphasis>, nemlig 
+</para>
+
+<programlisting>
+return 0;
+</programlisting>
+
+<para>
+<emphasis> return </emphasis> er en specifikation af, at
+funktionen skal aflevere noget til den, som har bedt om at få
+udført funktionen (har <emphasis>kaldt</emphasis> den.)
+</para>
+
+<para>
+return er et <emphasis> reserveret ord </emphasis>, d.v.s.
+et ord, som compileren er født med at kende. C sproget har 32
+reserverede ord.<footnote><para>se appendix A, Crash Course i C.
+</para></footnote>
+</para>
+
+
+<para>
+Nullet er et "udtryk", (aritmetisk udtryk) med en talværdi.
+Vi kunne også have skrevet return 234 eller return 7000143. I
+dette tilfælde vil det dog være klogt at holde talværdien 
+under 256.
+</para>
+
+<para>
+Eksempler på andre expressions: kroner = timer * timeloen;
+hvor det forudsættes at kroner, timer og timeloen er variable,
+som indeholder fornuftige værdier. Et expression, som afluttes
+med semikolon, kaldes et statement.
+</para>
+
+<para>
+Hvis der er flere statements i en funktion, udføres de i
+rækkefølge, oppefra nedefter.
+</para>
+
+<para>
+Et kald til en funktion, som fx. flg.: <literal>
+abs(-5); </literal> er også et expression, i dette tilfælde med
+værdien 5.  Kald til en funktion vil ofte returnere en variabel
+af typen heltal <emphasis> integer </emphasis>, og en integer i
+et expression kan erstattes af et kald til en funktion, som
+returnerer en integer.
+</para>
+
+<para>
+Det er en konvention, at eksekvering af et program, som
+benytter standard library (bibliotek med bl.a. læse og skrive
+funktioner) begynder med funktionen <emphasis> main </emphasis>.
+Når man kommer til slutningen af denne <emphasis>main</emphasis>
+funktion, standser programmet eller "returnerer en
+eksit<footnote><para>Dansk retskrivning ser underlig ud her!
+</para></footnote> kode til operativsystemet". Denne exit code er
+en vigtig meddelelse, eller rettere, det bør den være! Hvis et
+program returnerer fra main uden et "return &lt;expression>;" er
+det sjusk.
+</para>
+
+<para>
+Kernighan &amp; Ritchie dropper return statementet en del
+gange i <emphasis> bogen </emphasis>, men det er faktisk sjusk
+alligevel! De gør det selvfølgelig fordi det er lettere at
+forklare et program, hvori der kun er de nødvendigste linier.
+</para>
+
+<para>
+Exit code bør fortælle, om programmet kunne køre uden fejl,
+(d.v.s. uden fejl, der påført af ydre omstændigheder, som fx. at
+en datafil mangler).  Det er altså programmørens mulighed for at
+signalere til et brugerjob (et script) at "alt er vel" eller
+"her opstod en fatal fejl."
+</para>
+
+<para>
+Hvis programmøren vil fortælle systemet, at der var en fejl,
+skrives simpelthen 
+</para>
+
+<programlisting>
+return 255;
+</programlisting>
+
+<para>
+Tallet kan i Unix-shell-sammenhæng læses i variabelen $?,
+som kan styre flowet i et Unix shell script.<footnote><para>
+I Microsoft
+miljøer som "errorlevel" der kan bruges af if-sætninger i
+batch-filer. </para> </footnote>
+Øvelse: Ret, så programmet returnerer 117 og se, om
+du kan udskrive shell variabelen $? med kommandoen 
+</para>
+<programlisting>
+echo $?
+</programlisting>
+<para>
+Det lille program ovenfor kunne compileres
+<footnote><para>Generer det, hvis jeg staver engelske
+computer-udtryk på engelsk? </para></footnote> med flg. kommando:
+</para>
+
+<programlisting role="C">
+gcc frame.c -o frame
+</programlisting>
+
+<para>
+Derefter kan det køres fra current directory (i det aktuelle
+katalog, eller sagt på en tredie måde, fra det bibliotek, som vi
+står i <footnote> <para> Se "Friheden til at programmere"
+afsnittet om C sproget, hvis du har brug for lidt mere indføring
+i, hvordan man bruger kommandolinien. </para> </footnote> ) med
+en kommando som:
+</para>
+
+<programlisting role="C">
+./frame
+   # eller, hvis din PATH variable ender på ':'
+frame
+</programlisting>
+
+<para>
+Eksemplet lider imidlertid af en alvorlig skavank, vi kan
+jo næsten ikke se, om programmet rent faktisk kører. Det laver jo
+ikke noget! Derfor tilføjer vi en lille output kommando:
+</para>
+
+<example id="ex-stdout"><title>Skriv message på standard output.</title>
+<programlisting role="C">
+<literal>
+/* frame2.c Skriv til stdout og afslut. */
+
+#include &lt;stdio.h>
+
+int main()
+{
+    puts("Hello! Programmet frame2 kører nu...");
+    return 0;
+}
+
+/* end of file frame2.c */
+</literal>
+</programlisting></example>
+
+<para>
+Her er flere ting, som er værd at lægge mærke til. Dels et
+include direktiv, d.v.s. en kommando, som fortæller compileren,
+at den skal læse en fil, der hedder stdio.h. Når filnavnet står i
+<emphasis> vinkler </emphasis>, så betyder det, at compileren
+skal lede der, hvor systemet normalt har sine filer med
+erklæringer, "include filerne". På Unix, Linux og andre systemer
+er det <filename>/usr/include</filename>, der gennemsøges først.
+</para>
+
+<para>
+Compileren finder den pågældende file og læser den. Den
+indeholder <emphasis>kun type erklæringer</emphasis>.
+</para>
+
+<para>
+Den erklæring, som vi skal bruge, ser ud som følger:
+</para>
+
+<programlisting>
+extern int puts (const char *__str);
+</programlisting>
+
+<para>
+Den kunne dog også have set enklere ud:
+</para>
+
+<programlisting>
+int puts (char *message);
+</programlisting>
+
+<para>
+Det kaldes en prototype. Denne gør det muligt for compileren
+at checke, at funktionskald vil fungere efter hensigten.
+</para>
+
+<para>
+Prototypen "int puts(char*)" fortæller, at puts er en
+funktion, som returnerer en integer og forventer at få en
+character pointer som argument.
+</para>
+
+<para>
+En prototype for vores main (som burde findes i en af glibc
+- systemets header filer) ville hjælpe compileren med at 
+kontrollere, om vi overholdt interface mellem vores main og
+library startup rutiner.
+<footnote>
+<para> I glibc2x: se efter
+filerne <filename>./sysdeps/elf/start.S</filename> og 
+<filename>./sysdeps/generic/libc-start.c</filename>
+</para>
+</footnote> 
+Denne prototype ville se sådan ud:
+</para>
+<programlisting>
+int main(int argc, char *argv[], char *env[]);
+</programlisting>
+<para>
+Det er ikke nødvendigt at at angive et navn, en identifier, på 
+argumenterne, kun typen skal angives når vi skriver en prototype.
+</para>
+
+<programlisting>
+int main(int, char *[], char *[]);
+</programlisting>
+
+<para>
+Men det er oplagt at finde navne, som giver læseren en hjælp
+til at forstå meningen med funktionen. Når vi ikke bruger
+parametrene til main, kan vi nøjes med at skrive main(), altså en
+tom funktions-parentes.
+</para>
+
+<example id="ex-char-ptr"><title>En character pointer</title>
+<programlisting role="C">
+<literal>
+/* frame3.c Demonstration af character pointer. */
+
+#include &lt;stdio.h>
+
+char *message = "Hallo! Programmet frame3 kører nu...";
+
+int main()
+{
+    puts(message);
+    return 0;
+}
+
+/* end of file frame3.c */
+</literal>
+</programlisting></example>
+<para>
+char *message er erklæring af en variabel. Variabelen er en
+character pointer, det vil sige en adresse variabel. Den
+initialieseres på samme source linie, som den erklæres. Lad dig
+ikke forlede til at tro, at sådan er det også på maskinniveau,
+det er simpelthen en praktisk skrivemåde. Det svarer til:
+</para>
+
+<programlisting role="C">
+char * message;
+message = "Hallo etc... ";
+</programlisting>
+
+<para>
+En literal string, "Hallo etc... "; er ikke en variabel, men er
+en besked til compileren om at initialisere et dataområde med den
+tekst, som vi nu ønsker os. For at kunne bruge teksten skal vi
+enten gemme adressen på den (altså cptr = "Hallo etc...") eller
+også give adressen på denne string til den funktion, som skal
+bruge den: <literal> puts("Hallo etc.."); </literal>
+</para>
+
+<para>
+En gengivelse af dette system af RAM-adresser og indhold
+kunne tegnes som en reol hvor hver hylde har et indhold, der
+enten kan være 4 bytes eller 4 bogstaver, eller én adresse (32
+bits).
+</para>
+
+<programlisting role="C">
+        Adresse               
+        eller
+        hylde-nr.      Indhold
+
+                    +-------------+
+                    |             |
+                    |  o !   P    |
+           800440   +-------------+
+                    |             |
+                    |  H a l l    |
+           800436   +-------------+
+                    |             |
+                    |             |
+                    +-------------+
+                    |             |
+                    |             |
+                    +-------------+
+                    |             |
+                    :             :
+                    :             :
+                    :             :
+                    |             |
+           120808   +-------------+
+                    |             |  Adressevariabel, indeholder
+                    |  <800436>   |  adresse på string Hallo! Prog...
+           120804   +-------------+
+                    |             |
+                    |             |
+           120800   +-------------+
+                    |             |
+                    |             |
+           120796   +-------------+
+                    :             :
+                    :             :
+                    |             |
+                    :             :
+                    :             :
+                    |             |
+</programlisting>
+
+
+<para>
+Det, der skrives på skærmen, er ren og skær tekst, bogstav
+for bogstav noget, som ligger i programmet. 
+</para>
+
+<para>
+Lad os nu gå over til beregningsprogrammer. Hvis de ikke har
+noget input, er de en slags "hello" programmer, fordi de isolerer
+de aritmetiske muligheder. Selv om vi begynder med simple
+eksempler, kan det sandelig godt være nyttige programmer!
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="s1-datatyper">
+<title>Datatyper</title>
+
+<para>
+De indbyggede datatyper er grundlaget for de brugerdefinerede
+datatyper. Imidlertid er C sproget i stand til at manipulere med
+maskinens mindste enheder, bits, så det er ikke nogen
+begrænsning, at man fx. ikke har datatyper som "ascii kodede
+tal".
+</para>
+
+<sect2 id="sect-beregning">
+<title>Datatyper og beregninger</title>
+
+<para>
+Den grundlæggende datatype i C sproget er int, en forkortelse for
+integer, heltal. Størrelsen af denne datatype er ikke altid den
+samme, på en 8 bit computer er det 16 bit (hmm, fik du den?) og på
+en 64 bit computer er det 64 bit. Hvis man vil foretage
+64-bit beregninger på en 8-bit computer, så kan det godt lade sig
+gøre, det vil blot være væsentligt langsommere end hvis man
+nøjes med at benytte maskinens "medfødte" datatype. Det kan
+implementeres som en compiler - feature, eller det kan være, at
+det er implementeret som maskin-instruktioner, der benytter flere
+registre. Intel 386-arkitekturen benytter to registre til 64-bit
+aritmetik, men har dog ikke ægte 64-bit division. Det må man så
+lave på en anden måde.
+</para>
+
+<para>
+Lad os prøve at foretage nogle beregninger med heltal. Det må
+gerne være nogle simple beregninger, sådan at vi nemt kan
+kontrollere, om programmet regner rigtigt. Sidenhen kan vi ændre
+det til noget mere imponerende.
+</para>
+
+<sect3 id="sect-procent1">
+<title>En procentberegning</title>
+
+<example id="ex-hello-beregning"><title>HELLO - beregning.</title>
+<programlisting role="C">
+<literal>
+/* procent.c beregner en procentdel af et givet tal. */
+
+#include &lt;stdio.h>
+
+int main()
+{
+    int procent = 17;
+    int kroner = 100;
+    int resultat;
+
+    resultat = kroner * procent / 100;
+
+    printf("resultat er: %d\n", resultat);
+
+    return 0;
+}
+
+/* end of file procent.c */
+</literal>
+</programlisting></example>
+
+<para>
+Det er en stor fordel, at resultatet er nemt at kontrollere,
+brug simple tal indtil programmet er stabilt.
+</para>
+
+<para>
+Vi har indført nogle variable - kroner, procent, resultat.
+Det er simpelt hen kasser med tal i. Der er straks fyldt værdier
+i kasserne.
+</para>
+
+<para>
+Navnene er valgt sådan, at man kan regne ud, hvad meningen er med
+variabelen.
+</para>
+
+<programlisting> 
+int kroner = 100;
+</programlisting>
+
+<para>
+betyder, at vi reserverer en plads til en heltalsvariabel og
+straks fylder tallet 100 i.
+</para>
+
+<para>
+Selve beregningen kan skrives i programmet næsten på samme måde,
+som man ville skrive formelen på et stykke papir. Hvis man er
+vant til, at (x y) betyder x gange y, så skal man selvfølgelig
+passe på at man ikke glemmer multiplikations operatoren '*'.
+</para>
+
+<programlisting>
+resultat = kroner * procent / 100;
+</programlisting>
+
+<para>
+<literal> resultat </literal> er navnet på den "kasse", hvor
+resultatet skal gemmes, og den kaldes en "left value",
+venstre-værdi, fordi den kan stå på venstre side af et
+lighedstegn eller assignment (tildelings) operator. Venstre side
+af assignment operatoren skal være et udtryk, der kan evalueres
+som en adresse, ellers kan man jo ikke komme til at gemme
+resultatet af vejen.  Hvad der måtte ligge af interessante
+værdier i sådan en "kasse", forsvinder efter et assignment.
+</para>
+
+<para>
+<literal>printf()</literal> får at vide, at den skal skrive
+variablen "resultat" ud ved hjælp af procent-tegnet efterfulgt af
+'d'. Nu får <literal>printf()</literal> ikke én, men
+<emphasis>to</emphasis> oplysninger, nemlig format string'en
+mellem double quotes, (gåseøjne) og talvariabelen
+<emphasis>resultat</emphasis>.
+</para>
+
+<programlisting>
+"resultat er: %d\n"   <== string-var
+"resultat er: %d\n", resultat <== string-var, tal-var
+</programlisting>
+
+<para>
+Den anden linie kaldes en liste eller en <emphasis>
+parameter liste </emphasis>; de to medlemmer er adskilt af et
+komma, komma er liste-operator.<footnote><para> Parametre er
+oplysninger til en funktion. </para></footnote> 
+</para>
+
+<para>
+Det er nok lidt for besværligt at rette i programmet her,
+hver gang jeg vil udføre en procent beregning! Så i stedet laver
+vi i næste afsnit et program, som prompter for (beder om input
+af) det tal, der skal beregnes procent af.  Dermed forlader vi
+"Hello-world" sfæren og bevæger os ind i fejlmulighedernes
+paradis, interaktive programmer.
+</para>
+</sect3>
+</sect2>
+
+<sect2 id="prompt-og-input">
+<title>Prompt og input</title>
+<para>
+Input fortjener et kapitel for sig. Men lad os alligevel her
+skrive et program, som læser input fra tastaturet, og som godt
+nok forventer, at der bliver tastet tal (cifre) ind, men på den
+anden side ikke tager skade af, at brugeren indtaster noget helt
+andet - eventuelt skubber en bog henover tastaturet, så der kommer
+input i store mængder.
+</para>
+
+<sect3 id="input-og-beregning">
+<title>Input af tal og beregning</title>
+
+<example id="ex-io-ber"><title>Input og beregning.</title>
+<programlisting role="C">
+<literal>
+/* procent2.c prompt for tal og beregn procentdel. */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+
+int main()
+{
+    int procent = 17;
+    int kroner;
+    int resultat;
+    char inputlinie[800];
+
+    printf("BEREGNING AF %d %%\n",procent);
+    while (printf("Input tal:"), fgets(inputlinie,800,stdin)!=NULL) {
+      kroner = atoi(inputlinie);
+      resultat = kroner * procent / 100;
+      printf("resultat er: %d\n", resultat);
+    }
+    return 0;
+}
+
+/* end of file procent2.c */
+</literal>
+</programlisting></example>
+
+<para>
+I nogle C-library implementationer skal man flushe
+printf-output hvis der ikke er en "newline" til sidst:
+</para>
+
+<programlisting role="C">
+... printf("Input tal:"), fflush(stdout),
+</programlisting>
+
+<para>
+Denne måde at kæde expressions sammen med
+et komma er bestemt ikke den mest pædagogiske. Det er faktisk
+grimt! Men når jeg nu har gjort det alligevel, så er det for at
+understrege, at C sprogets liste-operator (komma'et) er
+anvendelig i mange sammenhæng. Men lad nu være med at skrive for
+meget komatøs kode!  
+</para>
+
+<para>
+Det er værdien af det sidste expression, som er afgørende
+for, om expression-listen evaluerer til sand eller falsk.  
+</para>
+
+<para>
+Input læses af fgets(3). Den skal have 3 oplysninger,
+adressen på den buffer, som den må lægge characters i, længden på
+bufferen (den læser maximalt længde - 1 og afslutter string med
+en null-byte) og den fil, som den skal læse input fra. Her
+anvendes "kodeordet" stdin, som er defineret i &lt;stdio.h>.
+</para>
+
+<para>
+fgets(3) returnerer NULL hvis der ikke er mere input. Dette
+kan ske hvis brugeren taster "symbolsk end-of-file", der som
+regel sættes til ^D med stty kommandoen. Men hvis input er
+omdirigeret, så sker det jo som forventet, når man rammer
+slutningen på filen.
+</para>
+
+<para>
+Der er includeret en fil mere, stdlib.h, som indeholder
+prototype til atoi - Ascii TO Integer conversion.<footnote>
+<para> Sørg for, at du virkelig ved, hvad ascii er for noget!
+</para> </footnote>
+</para>
+
+<programlisting>
+#define __P(args)  args
+
+extern int atoi __P ((__const char *__nptr));
+/* __P(args) er en kommando til præprocessoren, det kaldes
+ * en macro, og den har til formål at gøre
+ * library funktionerne brugbare sammen med mange
+ * forskellige C compilere. Nogle varianter C compilere kan
+ * ikke forstå komplicerede prototype erklæringer.
+ */
+/* derfor svarer denne prototype til:
+extern int atoi(const char* string_som_skal_converteres);
+ */
+</programlisting>
+
+<para>
+Det smukke i procent2.c er, at man ikke kan få programmet
+til at gå ned ved ondskabsful indtastning, når der promptes for
+et tal. Man kan godt få det til at regne forkert, hvis man
+indtaster et tal, som er større end 126 mio.  Men dels er fgets()
+en robust funktion, som ikke laver buffer overflow, selv om
+brugeren indtaster 2 GB data, og <literal> atoi(char*) </literal>
+er en robust konverteringsrutine, som ikke brokker sig, hvis
+input ikke er cifre.  Hvis man indtaster bogstaver, ignoreres de,
+og der returneres 0.
+</para>
+
+<para>
+88kr. vil blive konverteret til heltallet 88, hvilket svarer
+til, hvad man forventer. Senere vil vi lave en
+indtastningsrutine, som giver brugeren en warning, hvis han ikke
+indtaster tal. <!-- TODO -->
+</para>
+
+<para>
+Det er programmørens ansvar at sørge for den rigtige
+længdeangivelse til fgets' anden parameter. Det er lettere at
+holde styr på den slags, hvis man benytter preprocessor macro'er
+til at definere symboler for konstant-talværdier.
+</para>
+
+<programlisting role="C">
+#define MAXLINIE 800
+char inputlinie[MAXLINIE];
+
+main()
+{
+    fgets(inputlinie, MAXLINIE, stdin);
+    return 0;
+}
+</programlisting>
+
+<para>
+Ikke semikolon i #define linien, det er <emphasis> ikke
+</emphasis> et statement.
+</para>
+
+<para>
+Øvelser for de lidt mere erfarne: Prøv at ændre programmet,
+så der anvendes double precision floating point variable. Prøv
+også at tilføje en kontrolberegning, som finder ud af, om der har
+været overflow. Hvis der er overflow, så skriv en fejlmeddelelse
+til brugeren i stedet for at skrive resultatet, men stop ikke
+programmet.
+</para>
+
+<para>
+Prøv også at skriv en version, hvor man kan indtaste
+procentsatsen først, eller et, som udskriver værdien af kroner i
+både australske, canadiske og US dollar.
+</para>
+
+<para>
+Lav et program, som udskriver flere valutaer pr. linie i en
+tabel, fx.  svarende til kr. 100, 200, 300, 400, 500 ... ) 
+</para>
+</sect3>
+</sect2>
+</sect1>
+
+<sect1 id="s1-modular-beregning">
+<title>ANSI prototyper og modularisering</title>
+
+<para>
+Opdelingen i funktioner er grundlaget for strukturering af
+opgaverne, som man måtte være ved at løse. 
+</para>
+<para>
+Funktioner er den teknik, som gør det muligt at genbruge kode,
+sådan at man ikke behøver at begynde fra bunden hver gang, men
+kan bygge videre på andres arbejde.
+</para>
+<para>
+Der er ikke noget problem, der er så stort, at det ikke kan deles
+op i mindre :-)
+</para>
+
+<sect2 id="s2-modularisering">
+<title>Kursomregning</title>
+<para>
+For at illustrere, hvordan man trækker en beregning ud af et
+program, kan vi bruge en beregning så simpel som x = a + b.
+</para>
+
+<para>
+For at gøre eksemplet en lille smule realistisk foreslår jeg, at
+vi laver en kursomregningsfunktion. Man kan forestille sig, at
+der er skal så mange beregninger til (fx. en tabel i en udskrift
+eller priser på en faktura) at det er en stor lettelse at få
+udført beregningen i en funktion.
+</para>
+
+<para>
+Men det er nu mest for at arbejde med et eksempel på, hvordan 
+man kan lave en beregningsfunktion, der kan genbruges
+i forskellige sammenhæng. For en "euro-funktion" er det
+forhåbentlig indlysende, at den vil kunne indgå i bankers
+udbetalingsautomater, i faktureringsprogrammer etc.etc.
+</para>
+
+<para>
+Lad os derfor benytte kursomregning til at forske i den
+teknik, som kaldes modularisering. Vi vil gerne ende med at have
+et bibliotek, som indeholder omregningsfunktioner af forskellig
+slags, man kan forestille sig omregning med og uden gebyr og
+afrunding etc, men vi begynder ganske simpelt med en funktion,
+som får vores kroner og "afleverer" dollar (eller
+Euro<!--&eur;-->); vores udgangspunkt er en tilretning af
+<xref LinkEnd="ex-io-ber">.
+</para>
+
+<para>
+Jeg må indrømme, at jeg efter at have skrevet dette her afsnit syntes,
+at det var lidt rigeligt langt! Men grunden til, at jeg lader det stå
+er, at jeg har set så mange programmører, der havde svært ved at forstå
+mekanikken i funktionskald. Når man forstår hvad der sker i computeren
+under et funktionskald, så først kan man udnytte C sprogets fulde
+styrke. For at gøre det mere overskueligt, har jeg valgt at
+sløjfe prompt-input delen; man kan evt. lave en efter mønsteret i
+<xref LinkEnd="ex-io-ber">.
+</para>
+
+<sect3 id="spaghetti">
+<title>Beregning som del af main-koden</title>
+
+<example id="ex-dollar-omregning">
+<title>Dollar omregning, spaghetti 
+<footnote><para>
+Spaghetti er en derogativ betegnelse for en lang, uoverskuelig
+liste med programmeringsinstruktioner. 
+(Eller er det noget andet?  ;-)
+</para>
+</footnote> version.
+</title>
+
+<programlisting role="C">
+/* dollar0.c Input Kroner, beregn Dollar. UDGANGSPUNKT. */
+
+#include &lt;stdio.h>
+
+int main()
+{
+    int kurs = 865;
+    int kroner = 100;
+    int resultat;
+
+    resultat = kroner * 100 / kurs;
+    printf("Kroner %d giver Dollar %d\n", kroner, resultat);
+    return 0;
+}
+/* end of file dollar0.c */
+</programlisting>
+</example>
+
+<para>
+Først trækker vi beregningen ud af programmet og lægger den
+i en funktion, som vi kalder kr2dollar.
+</para>
+
+</sect3>
+<sect3 id="ANSI-prototyper">
+<title>En ANSI prototype</title>
+
+<example id="ex-dollar-funktion">
+<title>Dollar omregning med beregning i funktion.</title>
+<programlisting role="C">
+/* dollar1.c Input kroner, kald int kr2dollar(int) */
+
+#include &lt;stdio.h>
+
+/* vi erklærer nu en prototype for vores funktion. En prototype kan
+ * kendes på, at der efter funktionsparentesen er et semikolon - ikke
+ * nogen braces, som ville signalere starten af en kodeblok.
+ */
+
+int kr2dollar(int);
+int kurs = 865;
+
+int main()
+{
+    int kroner 100;
+    int resultat;
+
+    resultat = kr2dollar(kroner);
+    printf("Kroner %d giver Dollar %d\n", kroner, resultat);
+    return 0;
+}
+
+int kr2dollar(int kr)
+{
+    return kr * 100 / kurs;
+}
+
+/* end of file dollar1.c */
+</programlisting>
+</example>
+
+<para>
+Bemærk, at main står øverst i programmet. C inviterer til top -
+down programmering. Vi kan kalde kr2dollar uden at have nogen
+som helst ide om, hvordan vi vil implementere den. Selvfølgelig
+er programmet ikke færdigt, før end vi har skrevet den sidste
+kode, men i nødsfald kan man somme tider klare sig med en
+forsimplet udgave - eller en stub, en tom funktion - der, hvor
+man ikke har skrevet al koden.
+</para>
+
+<para>
+Men funktionen kr2dollar er <emphasis> erklæret </emphasis>
+inden den anvendes, det er linien lige neden under #include
+direktivet.  Erklæringen er en slags forklaring til compileren
+af, hvad det er for en funktion. Den bevirker, at
+compileren opretter en entry i en symboltabel, så den kan slå
+op, hvad "kr2dollar" er for noget, næste gang den forekommer i
+kildeteksten. 
+</para>
+
+<para>
+Derfor ved compileren, hvad type der kommer ud af
+funktionen. Det kunne være, at det var en flydendetals dims i
+stedet for et heltal. (Ja forresten, det synes du nok, at det
+burde være!  Det ville være rart med flydende tal for at få
+decimaler på, se <xref LinkEnd="ex-dollar-double">. Men strengt
+taget kunne vi få en mere præcis beregning ved at anvende
+64-bits integers til at repræsentere 100-dele øre. For den
+avancerede: Prøv det! Og husk at indsætte et komma på det
+rigtige sted, når du skriver det ud.)
+</para>
+
+<para>
+<literal> kr2dollar() </literal> består af KUN et return
+statement. Godt nok skal der regnes lidt, før end return værdien
+er klar, det er jo selve ideen i funktionen.
+</para>
+
+<para>
+I almindelig stenalder C kunne man nøjes med at kalde
+funktionen uden at forklare compileren, at det var en funktion,
+der returnerede en integer. Det kaldes "implicit integer"
+regelen. <footnote><para>Det hænger sammen med, at der 
+alle funktioner i de aller første C compilere returnerede
+en integer. Funktioner, som returnerer doubles er stadig i
+mindretal.</para></footnote>
+</para>
+</sect3>
+
+<sect3>
+<title>Modulariseret udgave af beregningen</title>
+
+<para>
+Nu skiller vi beregnings funktionen ud, så den ligger i en
+fil for sig selv - den er på vej til at blive en del af vores
+"financial library" (;-).
+</para>
+
+<para>
+Desuden lader vi variabelen "resultat" udgå, for vi kan jo
+bare anbringe funktionskaldet der, hvor resultatet skal skrives.
+</para>
+
+<example id="ex-dollar-int-main">
+<title>Dollar omregning, modul version.</title>
+<programlisting role="C">
+/* dollar2.c ask for Kroner and call int kr2dollar(int) */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+
+int kr2dollar(int);
+
+int main()
+{
+    int kroner = 100;
+
+    printf("Kroner %d giver Dollar %d\n", kroner, kr2dollar(kroner));
+    return 0;
+}
+/* end of file dollar2.c */
+</programlisting></example>
+
+<para>
+Som det kan ses, har vi klippet de nederste 4 linier ud,
+hvor funktionen kr2dollar var defineret. Den står nu i en fil,
+som vi kalder kr2dollar.c:
+</para>
+
+<example id="ex-dollar-funktion-int">
+<title>kr2dollar modul.</title>
+<programlisting role="C">
+/* kr2dollar.c - beregn dollar ud fra kroner */
+
+int kr2dollar(int kr)
+{
+    int kurs = 865;
+    return kr * 100 / kurs;
+}
+/* end of file kr2dollar.c */
+</programlisting></example>
+
+<para>
+Kursen er ikke mere tilgængelig i main, vi har
+isoleret den, så den kun kan ses i funktionen, som omregner. Det
+er en primitiv udgave af et udmærket princip. 
+</para>
+
+<para>
+Det ville være fint, hvis vi skrev en funktion, som hentede
+kursen fra en pålidelig kilde, fx. en eller anden nationalbank
+på internettet.  Når vi så skulle bruge kursen, kunne vi kalde
+denne funktion. 
+</para>
+
+<para>
+De to filer kan kompileres på flere forskellige måder:
+</para>
+
+<para>
+Enten:
+</para>
+
+<programlisting>
+gcc -Wall dollar2.c kr2dollar.c -o omregning
+</programlisting>
+
+<para>
+Eller:
+</para>
+
+<programlisting>
+gcc -Wall -c dollar2.c
+gcc -Wall -c kr2dollar.c
+gcc dollar1.o kr2dollar.o -o omregning
+</programlisting>
+
+<para>
+Eller:
+</para>
+
+<programlisting>
+gcc -Wall -c kr2dollar.c
+ar -rv libfinans.a kr2dollar.o
+gcc -Wall -c dollar2.c
+gcc -Wall dollar1.o -L./ -lfinans
+</programlisting>
+
+<para>
+Læg lige mærke til, at vi har genereret en library file med
+en meget simpel kommando, ar -rv libfinans.a &lt;objectfile> ...
+</para>
+
+<para>
+Hvis vi skulle glemme prototypen for denne simple beregning,
+så vil der ikke opstå fejl i dette eksempel. Det skyldes, 
+at vi stadig har regelen
+om implicit integer, når vi skriver standard C programmer.
+<footnote><para> Reglen kan være meget praktisk for den erfarne
+programmør, som i visse situationer kan gøre et program lidt mere
+læseligt, fordi der er mindre "støj". <!-- COMMENT: Men der er en
+sjov historie om dette religiøse spørgsmål! Bjarne Stroustrup
+overvejede, hvordan man dog skulle kunne klare problemerne med
+implicit integers og ingen parametre, som før var det samme som,
+at alt var tilladt! En dag siger Ritchie til ham, at det skal han
+da ikke spekulere på, man kan da godt indføre et krav om, at
+parametre skal specificeres. - eller lignende emne, hvor Ritchie
+gav ham støtte til at gå videre med sagen. --> </para>
+</footnote>
+</para>
+
+<para>
+Med GNU - C compileren vil man dog få en warning: implicit declaration
+of function `kr2dollar'. Det betyder simpelthen, at compileren har
+opdaget, at vi kalder kr2dollar, men ikke kan finde den i typetabellen.
+Compileren antager at funktionen returnerer en integer. Man får kun
+denne warning, hvis man anvender -Wall (Warning level, give us ALL
+warnings).
+</para>
+</sect3>
+
+
+<sect3>
+<title>Modul med return type double</title>
+
+<para>
+Lad os nu prøve at definere kr2dollar() som en funktion, der
+returnerer en double. Prøv nogle eksperimenter med programmet.
+Der er vist nogle forslag.
+</para>
+
+<example id="ex-dollar-double"><title>Dollar omregning, double version.</title>
+<programlisting role="C">
+/* dollar3.c bed om Kroner og call double kr2dollar(double) */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+
+double kr2dollar(double);  /* prøv at udelade denne her! */
+
+
+int main()
+{
+    double kroner = 100;
+
+    printf("Kroner %10.2f giver Dollar %10.2f\n", kroner, kr2dollar(kroner));
+    return 0;
+}
+/* end of file dollar3.c */
+</programlisting></example>
+
+<para>
+I ovenstående eksempel er det nødvendigt, at der erklæres en
+prototype for kr2dollar. Hvis prototypen udelades, vil gcc, ligesom i
+forrige eksempel, stadig <emphasis>kun</emphasis> give en warning,
+og endda kun under forudsætning af, at -Wall anvendes! 
+</para>
+
+<programlisting id="wrong-type-coersion">
+gcc -Wall -c dollar3x.c # version uden prototype for kr2dollar():
+pluto:/qf3/attic/don/fri ::gcc -Wall -c dollar3x.c
+dollar3x.c: In function `main':
+dollar3x.c:16: warning: implicit declaration of function `kr2dollar'
+dollar3x.c:16: warning: double format, different type arg (arg 3)
+</programlisting>
+
+<para>
+Og her kommer så den anden fil med funktionen, som foretager
+omregning med double precision floating point parameteren kr.
+</para>
+
+<example id="ex-dollar-modul-double">
+<title>kr2dollar, return type double, module.</title>
+<programlisting role="C">
+/* kr2dollar.c - beregn dollar ud fra kroner, double */
+
+
+double kr2dollar(double kr)
+{
+    return kr / 8.65; 
+}
+/* end of file kr2dollar.c */
+</programlisting></example>
+
+
+<para>
+Kompilering uden prototype vil som sagt alligevel resultere i en
+objektfil, som kan linkes med vores nye finans-library uden at man får
+en fejlmeddelelse. Når man kører et sådant program, skriver printf fire
+bytes ud som om det var en integer, selv om det altså er en del af en
+double precision floating point variabel.
+</para>
+
+<para>
+Det, som jeg prøver på at demonstrere, er konsekvensen af, at 
+ANSI-C specifikationen 
+ikke omfatter et krav om typekontrol under link-processen.
+Derfor er det nyttigt at tage notits af alle warnings.
+</para>
+
+<para>
+<literal>strtod(3)</literal> (STRing-TO-Double) er en funktion, som
+konverterer en string til double. Denne funktion er mere avanceret end
+atoi, idet den kan sætte en fejl-variabel, hvis konverteringen ikke
+lykkes, og den kan flytte en pointer hen ad tekst strengen til det
+første bogstav, der ikke kunne konverteres. Her bruger vi den imidlertid
+på en mere simpel måde, vi giver den blot NULL som anden parameter, så
+går det nok alt sammen ...  
+</para>
+
+</sect3>
+<sect3>
+<title>Header filer</title>
+<para>
+For at automatisere processen med prototyper er det skik og brug at man
+laver en header fil til hvert projekt, som man har i gang. I vores
+minimal eksempel her:
+</para>
+<example><title>Header fil for kr2dollar</title>
+
+<programlisting>
+/* File: dollar3.h, prototypes for finans-program ... */
+
+double kr2dollar(double kroner);
+</programlisting>
+</example>
+
+<para>
+Denne fil kan includeres i både der, hvor funktionen skal
+anvendes, og der, hvor den defineres (programmeres). Det giver
+jo kontrol med tingene.
+</para>
+
+<para>
+Man får filen med ved at skrive: <literal> 
+#include "dollar3.h"
+</literal>
+Bemærk, at der er anvendt double quotes om filnavnet fordi denne fil
+ligger i current directory.
+</para>
+
+<para>
+NB! Der er en lignende regel, som tillader, at en (global)
+integer kan
+defineres 2 gange. Det er straks mere farligt - for tænk nu hvis
+det ikke var meningen  -  og det kan ikke tillades i C++.
+</para>
+
+</sect3>
+</sect2>
+</sect1>
+
+
+
+<sect1 id="filter-programmer">
+<title>Filter programmer</title>
+<para>
+Filter programmer er nogen, som læser input og producerer noget
+output, som for samme input altid vil være det samme.
+Filter programmer er som skabt til batchkørsel, d.v.s. som jobs,
+der er automatiserede.
+</para>
+
+<para>
+Her kommer det grundlæggende program:
+</para>
+
+<example id="simpelt-filter">
+<title>Simpelt filter, input til output.</title>
+<programlisting role="C">
+/* filter0.c */
+
+#include &lt;stdio.h>
+
+int main()
+{
+    char c;
+    while ( (c=getchar()) != EOF)
+      putchar(c);
+    }
+    return 0;
+}
+</programlisting>
+</example>
+
+<para>
+Dette program er så dejligt at eksperimentere med. For det første
+skal det nævnes, at getchar slet ikke er så dårlig en løsning,
+den er faktisk ret effektiv. Det er en <emphasis> macro </emphasis>,
+hvilket er inline kode i C udgaven. Det bliver formentlig sådan,
+at ANSI/ISO kommisionen medtager inline direktivet (kendt fra
+C++) i ANSI specifikationen af C sproget næste gang.
+</para>
+
+<para>
+For det andet kan man med omdirigering på kommandolinien bruge
+sådanne simple programmer til at behandle rigtige tekst-  og
+datafiler.
+</para>
+
+<para>
+Lad os først bruge programmet til at tælle characters.
+</para>
+
+<example id="ex-char-count">
+<title>Simpelt filter som character counter.</title>
+<programlisting role="C">
+/* filter1.c simpelt filter tæller chars istf at ouputte. */
+
+#include &lt;stdio.h>
+
+int nc;
+
+int main()
+{
+    char c;
+    while ( (c=getchar()) != EOF)
+      ++nc;
+    }
+    printf("%d\n", nc);
+    return 0;
+}
+</programlisting>
+</example>
+
+
+<para>
+Hvorfor initialiseres nc ikke? Jo, for det er en global variabel,
+og den er garanteret zeroed out. Al global memory, som ikke er
+explicit initialiseret, er garanteret en nulstilling. Man kan
+selv gøre det, i øvrigt, hvis man har en snavset buffer:
+memset(buf,0,lengde);
+</para>
+
+<para>
+Et eksempel på en kørsel af programmet:
+</para>
+
+<programlisting>
+MITPROMPT $ time charcount &lt; /usr/dict/words
+409048
+    0.40s real     0.30s user     0.01s system
+</programlisting>
+
+<para>
+På min gamle maskine, 3/10 sekunder til at læse 400KB! Det er
+hurtigt (i forhold til maskinens formåen).
+</para>
+
+<para>
+Husk at denne charcount ikke tæller bytes. På en MicroSoft
+maskine vil længden af filen ikke svare til antal characters talt
+på denne metode, fordi MS-OS'er (og før dem CP/M, RX11 etc.)
+benytter carriage-return line-feed sekvenser til linieskift.
+Når man kører "normal C" - eller simpel, POSIX-C - på en platform
+som MS-OS'erne, så filtreres alle cr - tegn fra.
+</para>
+
+<para>
+For at se alle ascii koder kan du benytte man kommandoen:
+</para>
+<programlisting>
+PROMPT $ man ascii
+[...]
+PROMPT $ man groff-char
+</programlisting>
+
+<para>
+Et andet filter, som senere skal stå HER, er et character -
+filter, som konverterer CodePage 865 til ISO-8859-1. Det kan
+gøres på forskellige måder.
+</para>
+
+<para>
+Ud over de grundlæggende typer textfiltre, som som vi har
+set på her, ville det være nyttigt at se et par eksempler på
+programmer, som kan filtrere mime-encodede mailfiler, og en 
+slags preprocessor filter, som kan
+forstå &lt;tags> og fx. udtrække ren ascii fra en sgml fil.
+Desuden er det min plan at vise, hvordan et sådant filter
+kan udstrækkes til at checke nesting af tags. Det kan gøres
+v.hj.a recursive descent parsning.
+</para>
+
+<sect2 id="s3-file-adder">
+<title>Summering af tal i en fil.</title>
+<para>
+Et program, som ønsker at behandle linier i st.f. characters, kan
+optimere IO ved at benytte fgets(2). Vi kan benytte denne
+funktion til at skrive et program, som læser en fil med tal og
+lægger dem sammen og skriver resultatet. Det er fascinerende at
+se et program, der kan behandle en megabyte datafil på brøkdele
+af et sekund.
+</para>
+
+<para>
+Allerede nu kan det forudses, at den - hvis vi kan "forstå"
+negative tal, også ville kunne trække fra.
+</para>
+
+<para>
+Der findes situationer fra det virkelige liv, hvor sådan et
+program kunne være nyttigt. Hvis vi fx. har foretaget et udtræk
+fra en stor database med alle telefon taksttelegrammer fra lørdag
+24.00 til søndag 06.00, så kan vi beregne den samlede tid og hvor
+meget det ville koste at give natterabat. Men også datafiler fra
+alle mulige andre situationer ville kunne være input. Normalt vil
+man på Unix klare den slags med awk, men hvis man skulle
+optimere (fx. p.g.a. store datamængder fra en telefoni-data), så
+kunne det blive aktuelt at skrive det rå C program.
+</para>
+
+<para>
+Pseudokode er måden at programmere på, hvis man ikke er
+interesseret i sprogets finurligheder, men blot ønsker at
+forklare mekanikken i et program. Vores fil-additionsmaskine vil
+i pseudokode se ud nogenlunde sådan her:
+</para>
+
+<programlisting>
+Så længe der er linier,
+  læse næste linie,
+  konverter linien til et tal, hvis muligt
+     er det ikke et tal, så vis linienr, linie og exit;
+  læg tallet til totalen.
+Print totalen.
+</programlisting>
+
+<para>
+Programmet er så simpelt, at vi skriver det i et hug.
+</para>
+
+<example id="beregnings-filter">
+<title>Filter som konverterer linier med tal til summen af tallene.</title>
+<programlisting role="C">
+/* summer.c */
+
+#include &lt;stdio.h>
+#define MAXL 80000
+int main()
+{
+    char line[MAXL];/* for input */
+    char *ptr; /* for strtod konverteringspointer */
+    double tal;/* for det laeste tal */
+    double sum;/* for totalen */
+
+    while ( (fgets(line,MAXL,stdin) != NULL)
+     tal = strtod(line,&amp;ptr)
+     sum += tal;
+    }
+    printf("%g\n",sum);
+    return 0;
+}
+/* end of file summer.c */
+</programlisting>
+</example>
+</sect2>
+
+</sect1>
+
+
+<sect1 id="parser-filter-programmer">
+<title>Parsere set som filter programmer</title>
+
+<para>
+Det er lidt for at provokere, at jeg kalder det næste program for
+et filter. Man kunne lige så godt kalde det en parser, eller i
+hvert fald forstadiet til en lexical analyzer. Men strengt taget
+er det også et filter. Der kommer noget input ind fra (kun) én
+kilde, og afhængigt af dette spytter programmet noget andet ud.
+Der er en årsagssammenhæng fra input til output. Det samme input
+vil altid give det samme output.
+</para>
+
+<para>
+Og hvad er det så for et program? Et WORD count filter! Input er
+tekst, og output er blot antallet af ord. Provokation! Er det
+virkelig et filter? Ja, for det opfylder jo alle de ovenstående
+krav. Det sluger input fra en kilde og omformer det til output,
+som, ok, kan være det samme for flere forskellige slags input,
+men samme input -- altid samme output. Vi baserer vores program
+på en lille bemærkning i Kernighan &amp; Ritchies 
+version af word count<xref LinkEnd="ex-hello-wordcount">: Nemlig 
+at begrebet "et ord" kan forfines, så man kan skelne mellem
+rigtige ord og tal, tegnsætning og lignende.
+</para>
+
+<para>
+Hvis du ikke kender det grundlæggende wordcount program, så er if
+sætningerne i dette program næsten uforståelige. Se derfor
+<xref LinkEnd="ex-hello-wordcount"> hvis du ikke kender det.
+</para>
+
+<para>
+Programmet her starter med at være i en tilstand, som vi kalder
+HVID.  Når vi ikke har læst noget, så må vi være på HVIDt papir.
+</para>
+
+<para>
+Vi skal benytte en variabel til at huske denne tilstand, og vi
+kalder den status.
+</para>
+
+<para>
+For at gøre det lettere at læse programmet, lader vi denne
+variabel være af enum - typen. Så kan en god compiler holde styr
+på, om vi tilskriver den andet end symbolske navne som tilhører
+typen. Dog kun med warnings.
+</para>
+
+<example id="ex-word-and-digit-count">
+<title>Ord - tælling</title>
+<programlisting>
+/*file ordtael.c */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;ctype.h>
+
+typedef long long _int64;
+
+/* taellere: char, words, num, andet, lines */
+_int64 nc, nw, nn, na, nl; 
+
+enum status_t { HVID, ALFA, TAL, PUNC };
+
+enum status_t status;
+
+int main()
+{
+    int c;
+    while ( (c=getchar()) != EOF) {
+        ++nc;
+        if (c == '\n')
+            +nl;
+        if (ispunct(c))
+            ++na;
+        if (isspace(c)) {
+            status = HVID;
+        } else {                                      /*(1)*/
+            if (status == HVID || status == PUNC) {
+                if (isalpha(c)) {                     /*(2)*/
+                    status = ALFA;
+                    ++nw;
+                } else if (isdigit(c)) {              /*(3)*/
+                    status = TAL;
+                    ++nn;
+                }
+            } else if (ispunct(c)) {                  /*(4)*/
+                    status = PUNC;
+            }
+        }
+    }
+    printf("Antal: chr %Ld, ord: %Ld, tal %Ld, andet %Ld, lin. %Ld\n",
+            nc, nw, nn, na, nl);
+    return 0;
+}
+
+/* OBS: Der er lidt flere braces i ovenstående eksempel end 
+ * nødvendigt, det er i håb om bedre læselighed.
+ */
+
+/* end of file ordtael.c */
+</programlisting>
+</example>
+
+<para>
+Det er statusvariabelen, som "husker", om vi er inde i et ord
+eller ej. Og det er statusvariablen, som gør det muligt at skrive
+programmet på en <emphasis> forholdsvis </emphasis> læselig måde
+(men tro mig, dette her er svært også for en erfaren programmør!
+Hvis opgaven imidlertid blev forsøgt løst <emphasis> uden
+</emphasis> statusvariabel, så ville der komme endnu flere
+if-sætninger. Inde i dem måtte man så lave nogle loops med
+læsning af input, så længe vi er i et ord. Og så bliver programmet
+fuldstændigt barokt, prøv selv!). 
+</para>
+
+<para>
+(1) Hvis vi lige er har fat i noget, der er "ikke-space" og
+tilstanden stadig siger HVID, så betyder det jo, at vores
+tilstand lige netop nu ændrer sig.  Derfor bør vi tælle antal af
+ord (eller tal, tegnsætning, etc.) op.
+</para>
+
+<para>
+(2) Som ord tæller vi alt, hvad der begynder med bogstaver.
+</para>
+
+<para>
+(3) Som tal tæller vi alt, hvad der begynder med cifre.
+</para>
+
+<para>
+(4) Læg mærke til, at ETHVERT skilletegn udløser en
+tilstandsændring til PUNC, fordi denne sætning er sideordnet med
+den if, der står lige efter den (1) mærkede else.
+</para>
+
+<para>
+Hvis indrykningen i dette program bliver smadret, så er det
+komplet umuligt at forstå meningen med det.
+</para>
+
+<para>
+Programmet er udmærket til at danne sig et skøn over forholdet
+mellem tal og ord i en artikel.
+</para>
+
+<para>
+Ordtael.c er i stand til at taelle et funktionskald
+som fx. qwerty(6000) som et ord, et tal og 2 andre tegn. Til
+gengæld tæller det 123MB som et tal (uden ord).
+</para>
+
+<programlisting role="C">
+MITPROMPT$ ordtael &lt;&lt;STOP
+hej(42);
+STOP
+
+Antal: chr 9, ord: 1, tal 1, andet 3, lin. 1
+</programlisting>
+
+<para>
+Hvis vi skal forfine programmet, så er det klogt at skifte taktik.
+Løsningen ovenfor skalerer ikke godt, når antallet af tilstande
+vokser, og input indeholder mange flere kategorier. En
+tilstandstabel kan bedre håndtere opgaven.
+Se <xref LinkEnd="parser-filter-tilstandsmaskine">.
+</para>
+
+
+</sect1>
+
+<sect1 id="fejl-og-haandtering">
+<title>Fejl og håndteringen af dem.</title>
+
+<sect2 id="fejl-kategorier">
+<title>Hvilke slags fejl er interessante</title>
+<para>
+Det er egentlig ikke så interessant, set fra en programmørs
+synspunkt, om en disk bryder sammen. Det kan man nemlig ikke
+rigtig gøre noget ved, når det er sket. Den, der skriver drivere
+til operativsystemet, ville måske nok kunne lave noget software,
+som forudsagde, at hardwaren trængte til service eller
+udskiftning. Det er indenfor mulighedernes grænser.
+</para>
+
+<para>
+Hvis vi skriver et almindeligt filterings program, fx. et,
+som konverterer fra MIME/html characters til extended ascii eller
+rettere ISO-8859-1, så bør vi altså ikke begynde at lave check af
+CPU temperatur, disk tilstand etc. Det hører hjemme et andet sted
+og er ikke interessant for vores filterprogram.
+</para>
+</sect2>
+</sect1>
+
+
+<sect1 id="outformat1">
+<title>Flere Hello-world - programmer.</title>
+<para>
+For at demonstrere styrken af små 10-24 liniers programmer
+(Hallo-programmer) kommer her en serie sådanne små særlinge.
+</para>
+
+<sect2 id="hello-tal-format">
+<title>Tal formatering ved udskrift med printf.</title>
+<para>
+Her kommer kildeteksten til et program, som kan skrive en
+listing af tallene fra 0 til 7, inverteret og som 2's complement.
+(Som lovet i <xref LinkEnd="ex-numrep1">).
+</para>
+
+<example id="ex-tal-hex">
+<title>Tallene fra 0 til 7 i hexadecimal notation.</title>
+<programlisting role="C">
+/* bitinvert.c viser hexadeximalt tallene fra 0 - 8  */
+/* og desuden invertering, og såkaldt 2-s complement */
+
+#include &lt;stdio.h>
+
+
+char	*thisprg;
+
+int main(int argc, char *argv[])
+{
+   int jj;
+
+   thisprg = argv[0];
+
+   for (jj=0;jj&lt;8;++jj) {
+     printf("Word: %08x, Inverted: %08x, Complement: %08x\n",jj,~jj,~jj+1);
+   }
+   return 0;
+}
+
+/* end bitinvert.c */
+</programlisting>
+</example>
+</sect2>
+
+<sect2 id="cprog-hello-wordcount">
+<title>Word count - med tak til Kernighan &amp; Ritchie</title>
+<para>
+Her er en simpel variant af Kernighan &amp; Ritchie's word count
+program. Det er en ultra simpel tilstandsmaskine. Den har kun to
+tilstande, enten er den i HVID tilstand, eller i SORT.
+</para>
+
+<para>
+Hvis den er i HVID tilstand, har den læst et bogstav, som var
+whitespace, d.v.s. typisk space eller newline eller tab. Hvis den
+er i SORT tilstand, har den læst et tegn, som kræver tryksværte -
+eller rettere, et, som ikke er et whitespace tegn.
+</para>
+<para>
+Programmet skelner altså ikke mellem ord og tal eller
+tegnsætning. Det anser bogstaver mellem to spaces for at være et
+ord! Så simpel en ord-tællingsmekanisme kan såmænd da være meget
+anvendelig i mange sammenhæng, 
+fx. <literal>echo * | ordtael</literal> vil vise, hvor mange filer, 
+der er i det
+aktuelle katalog.  Det er grundlaget for det lidt mere avancerede
+program <xref LinkEnd="ex-word-and-digit-count"> som kan 
+skelne mellem ord og tal og skilletegn.
+</para>
+
+<example id="ex-hello-wordcount">
+<title>Simpel ordtælling</title>
+<programlisting>
+/*file wc.c */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;ctype.h>
+
+int nc, nw, nl;  /* static vars garanteret 0 */
+
+enum status_t { HVID, SORT };
+
+enum status_t status;
+
+int main()
+{
+    int c;
+    while ( (c=getchar()) != EOF) {
+        ++nc;
+        if (c == '\n')
+            ++nl;
+        if (isspace(c))
+            status = HVID;
+        else                           /* <--- SE kommentar!!!*/
+            if (status == HVID) {
+                status = SORT;
+                ++nw;
+            }
+    }
+    printf("%d %d %d\n", nc, nw, nl);
+    /* lav en version, der KUN taeller ord! */
+    return 0;
+}
+
+/* end of file wc.c */
+</programlisting>
+</example>
+
+<para>
+Læg mærke til, at programmet altid tæller characters, når der er
+læst en. Hvis det er en newline, så tæller vi linier. Klart nok.
+Hvis det nu er en slags space (eller newline, tab, backspace,
+vertical tab, formfeed ...) så lader vi den gå i HVID-tilstand.
+</para>
+
+<para>
+Den efterfølgende ELSE er kernepunktet for forståelse. Hvad ved
+vi, hvis vi havner i ELSE-sætningen? Jo, vi ved, at vores nys
+indlæste character IKKE var hvid.
+</para>
+
+<para>
+Hvad ved vi så, hvis STATUS er lig med HVID, og vores nys
+indlæste bogstav var sort?
+</para>
+
+<para>
+Joda, ... giv dig tid!
+</para>
+
+<para>
+Så ved vi, at det foregående bogstav var hvidt (altså space) og
+at det nuværende er sort, altså, det første bogstav i et ord. Så
+derfor skifter vi tilstand til sort og tæller det nye ord med.
+</para>
+
+<para>
+Så vores tilstandsvariabel <literal>status</literal> er meget
+praktisk, fordi den kan huske for os, hvad det foregående bogstav
+var, eller i bredere forstand, hvilken slags bogstav det var, og
+dermed hvilken tilstand vores tællemaskine var i.
+</para>
+
+<para>
+Det er et program, som er sindssygt svært at forstå for en
+begynder, som heller ikke har erfaring med andre sprog. Sådan er
+det forresten altid når if-sætninger gror oven i hinanden. Hvis
+du har arbejdet dig igennem læsning af programmet og - bedre -
+har fået det til at køre, evt. med dine egne tilføjelser, så du
+kan se, hvad der sker undervejs, så har du taget et stort skridt
+fremad indenfor programmering (og logisk tænkning).
+</para>
+</sect2>
+</sect1>
+
+
+
+<sect1 id="cprog-oevelser">
+<title id="OV1">Øvelser</title>
+
+
+<para>
+Skriv frame2 om til frame2a, hvor du selv angiver prototypen
+for puts, og se, om det kompilerer og eksekverer lige så godt som
+frame2.c, der jo bruger headerfilen &lt;stdio.h>
+</para>
+
+<sect2 id="cprog-hello-beregninger">
+<title>Forslag til beregningsøvelser</title>
+<para>
+Skriv procent.c om, så du også udskriver indholdet af
+variablene kroner og procent.
+</para>
+
+<para>
+Skriv procent.c om, sådan at den beregner 99% af 100
+millioner (jo jo, det kan man gøre i hovedet, men det er for at
+gøre det nemt at kontrollere resultatet!) Dette er ikke
+en helt triviel opgave.
+</para>
+
+<para>
+Lav en version af programmet, som selv kan finde ud af, om
+der er overflow på beregningen. Hint: resultat / procent *
+kroner. For den viderekomne kan opgaven løses ved, at man
+benytter en assemblerinstruction, som checker for overflow
+flaget.
+</para>
+</sect2>
+
+</sect1>
+</chapter>
+
+
+

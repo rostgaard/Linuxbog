@@ -49,43 +49,20 @@ C sproget er også et lille sprog, der er kun 32 reserverede ord
 <emphasis> keywords </emphasis>. Det gør det nemt at lære.
 </para>
 
+<sidebar>
 <programlisting>
 Reserverede ord:
 
-auto
-break
-case
-char
-const
-continue
-default
-do
-double
-else
-enum
-extern
-float
-for
-goto
-if
-int
-long
-register
-return
-short
-signed
-sizeof
-static
-struct
-switch
-typedef
-union
-unsigned
-void
-volatile
-while
+auto		  double	    int		      struct
+break		  else		    long	      switch
+case		  enum		    register	      typedef
+char		  extern	    return	      union
+const		  float		    short	      unsigned
+continue	  for		    signed	      void
+default		  goto		    sizeof	      volatile
+do		  if		    static	      while
 </programlisting>
-
+</sidebar>
 <para>
 Anvendt på rette måde bliver koden meget læseligt, og derfor 
 anvendes C sproget til mange forskellige slags opgaver, fra
@@ -572,7 +549,7 @@ Kør loop-body mindst en gang:
 
 Behagelig kontrol med tæller variable:
 
-    for (initialisering; betingelse; optælling - eller hvad du ønsker) {
+    for (initialisering; betingelse; optælling) {
        loop_body ...
     }
 
@@ -723,12 +700,16 @@ dele og indsæt printf statements, så du kan se, hvad der sker undervejs.
 </para>
 
 <programlisting>
-static char *keystring = "Under traeerne var der stille og roligt."
-static int keylen;
-static int first;
-static char *mv = keystring;
+/* file krypter1.c - en brugbar (men forsimplet)
+ * krypteringsalgoritme. Kan ikke håndtere linieskift m.v.
+ */
 
-krypter(int inpchar)
+static char *keystring = "Under traeerne var der stille og roligt.";
+static int inuse;
+static char *mv;
+static int keylen;
+
+int krypter(int inpchar)
 {
    if (!inuse) {
        inuse = 1;
@@ -737,12 +718,16 @@ krypter(int inpchar)
    }
    if (mv - keystring > keylen)
        mv = keystring;
+   if (inpchar &lt; ' ')
+       inpchar = ' ';
+   else if (inpchar > 126)
+       inpchar = '~';
    return (inpchar + *mv++) % 93 + 33;
 }
 </programlisting>
 
 <para>
-Virker kun for ren ASCII tekster.<footnote>
+Virker kun for ren ASCII tekst.<footnote>
 <para>
 I parentes bemærket, hvis du vil gøre krypteringen ovenfor ubrydelig
 skal du forbedre den lidt. Længere keystring (helst længere en
@@ -762,8 +747,10 @@ bruges til afkodning men ikke indkodning.
 </para>
 
 <para>
-Hvis du blev bidt af ovenstående, så lav en dekryptering til den og gå
-derefter videre med fx. <xref LinkEnd="beregnings-filter">.
+Hvis du blev bidt af ovenstående, så lav en dekryptering til den.
+Eller læs eksempel-programmet afkrypt1.c. Desuden er der en
+forbedret version, som håndterer linieskift, krypter2.c og
+afkrypt2.c
 </para>
 
 </sect2>

@@ -1,5 +1,5 @@
 
-/*file ordtael.c */
+/*file ordtael1.c - tom filtermekanisme */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +17,9 @@ int main()
 {
     int c;
     while ( (c=getchar()) != EOF) {
+        /* her kan du skrive statements, som behandler en char
+         * af gangen.
+         */
     }
     printf("Antal char: %ld, antal ord: %ld, tegn: %ld, linier %d\n",
             nc, nw, np, nl);

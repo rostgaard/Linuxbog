@@ -21,23 +21,21 @@ int main()
         ++nc;
         if (c == '\n')
             ++nl;
+        if (ispunct(c))
+            ++na;
         if (isspace(c)) {
             status = HVID;
         } else {
-            if (status == HVID) {
+            if (status == HVID || status == PUNC) {
                 if (isalpha(c)) {
                     status = ALFA;
                     ++nw;
                 } else if (isdigit(c)) {
                     status = TAL;
                     ++nn;
-                } else ++na;
-            } else if (status == ALFA) {
-                if (!isalpha(c) && !isdigit(c))
-                    ++na;
-            } else if (status == TAL) {
-                if (!isdigit(c) && !isalpha(c))
-                    ++na;
+                }
+            } else if (ispunct(c)) {
+                    status = PUNC;
             }
         }
     }
