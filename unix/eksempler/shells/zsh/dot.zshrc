@@ -13,15 +13,15 @@
 # This file: ~/.zshrc (6)
 #
 #-----------------------------------------------------------------------------
-# The following lines were added by compinstall
+# The following lines were added by compinstall (and edited by Jacob Sparre)
 
 autoload -U compinit
 compinit
 
 zstyle ':completion:*' completer _expand _complete _correct _approximate
-zstyle :compinstall filename '/home/cmplx/sparre/.zshrc'
+zstyle :compinstall filename "${HOME}/.zshrc"
 
-# End of lines added by compinstall
+# End of lines added by compinstall (and edited by Jacob Sparre)
 #-----------------------------------------------------------------------------
 #--  Command line prompt:
 
