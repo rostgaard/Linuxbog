@@ -5,7 +5,7 @@
 <!-- Peter og Jacob er ikke altid enige om sprog-brug :-) -->
 
 <chapter id="kommandofortolkere-linux">
- <title>Kommandofortolkere til Linux</title>
+ <title>Linux i tekst-modus</title>
 
  <indexterm><primary>kommandofortolker</primary></indexterm>
  <indexterm><primary>shell</primary></indexterm>
@@ -26,11 +26,12 @@
   og tastede alle kommandoer ind. Denne noget primitive måde at
   arbejde med en computer på, genfinder vi i moderne Unix, og eftersom
   Linux er et unix-lignende styresystem, har du naturligvis også i
-  Linux mulighed for at indtaste kommandoerne på dit
-  tastatur. Begynder du at bruge Linux seriøst, vil du dog nok finde
-  ud af, at tekst-kommandoerne ikke er en primitiv arbejdsform - men
-  på en lang række områder langt mere effektivt og hurtigere end at
-  klikke sig frem.
+  Linux mulighed for at indtaste kommandoerne på dit tastatur.
+  Begynder du at bruge Linux seriøst, vil du dog nok finde ud af, at
+  tekst-kommandoerne ikke er en primitiv arbejdsform - men på en lang
+  række områder langt mere effektivt og hurtigere end at klikke sig
+  frem.  I dette kapitel vil vi gennemgå en del af grundlaget for at
+  bruge Linux i tekst-modus.
  </para>
 
  <para>
@@ -55,24 +56,24 @@
    <primary>find</primary>
   </indexterm>
   <indexterm>
-   <primary>Kommandooversigt</primary>
+   <primary>kommandooversigt</primary>
    <secondary>find</secondary>
   </indexterm>
 
   <indexterm>
-   <primary>Kommandooversigt</primary>
-   <secondary>xargs</secondary>
+   <primary>xargs</primary>
   </indexterm>
   <indexterm>
-   <primary>xargs</primary>
+   <primary>kommandooversigt</primary>
+   <secondary>xargs</secondary>
   </indexterm>
 
   <indexterm>
-   <primary>Kommandooversigt</primary>
-   <secondary>perl</secondary>
+   <primary>perl</primary>
   </indexterm>
   <indexterm>
-   <primary>perl</primary>
+   <primary>kommandooversigt</primary>
+   <secondary>perl</secondary>
   </indexterm>
 
 <screen>
@@ -90,21 +91,93 @@ xargs perl -i -pe 's/www\.andeby\.dk/www.kongeh.org/gi'</userinput>
   kraftfuld en enkel kommandolinie kan være i Unix.
  </para>
 
- <sect1 id="terminalen">
-  <title>Kommandofortolkeren</title>
+ <sect1 id="virtuel-konsol">
+  <title>Virtuelle konsoller</title>
+
+  <indexterm>
+   <primary>virtuelle konsoller</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>konsol</primary>
+   <secondary>virtuel</secondary>
+  </indexterm>
+
+  <indexterm>
+   <primary>tekst-modus</primary>
+  </indexterm>
 
   <para>
-   Du får adgang til en kommandofortolker, hvor du kan skrive
-   kommandoer ved at logge ind på maskinen med brugernavn og
-   adgangskode.  Hvis du logger ind i et tekst-baseret vindue kan
-   kommandoerne skrives direkte.  Er du derimod logget ind i en
-   grafisk brugergrænseflade skal du åbne et terminalvindue (kig efter
-   en ikon med en muslingeskal eller en sort skærm eller et menupunkt
-   der hedder "Konsole", "Terminal" eller "xterm").
+   Når du vil styre Linux ved at skrive kommandoer i stedet for at
+   være afhængig af en grafisk brugergrænseflade er det en mulighed at
+   logge direkte ind med skærmen i ren tekst-modus.  Hvis du sidder
+   ved en linux-maskine der er i grafik-modus, kan du typisk gå over
+   til ren tekst-modus ved at taste Ctrl-Alt-F1.  Det tastetryk
+   bringer dig over til et helt andet skærmbillede, der er uafhængigt
+   af det du så før (et tryk på Ctrl-Alt-F7 eller Ctrl-Alt-F8 burde
+   bringe dig tilbage igen).  Over på ren-tekst-skærmbilledet burde
+   der stå noget i stil med "login:" efterfulgt af en blinkende cursor
+   (prøv ellers at taste Return eller Enter en enkelt gang for at få
+   det frem).  Her kan du ganske som ovre på det grafikbaserede
+   skærmbillede logge ind på maskinen ved at indtaste dit brugernavn
+   og din adgangskode, men når du logger ind på det tekstbaserede
+   skærmbillede er det eneste du får en såkaldt "prompt" eller
+   "kommandolinie".  Afhængig af opsætningen af din konto vil den
+   kunne se lidt forskellig ud, men dette er en mulighed:
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt>
+</screen>
+
+   Her kan du skrive kommandoer til systemet.  I første omgang er den
+   vigtigste kommando nok <command>logout</command>, som du bruger til
+   at logge ud igen, så skærmbilledet er klart til en anden bruger
+   (eller bare til en anden gang).
   </para>
 
   <para>
-   <indexterm><primary>xterm</primary></indexterm>
+   På et typisk linux-system vil Ctrl-Alt-F1, Ctrl-Alt-F2, og så
+   videre indtil til Ctrl-Alt-F6 bringe dig til seks forskellig
+   tekstbaserede skærmbilleder, mens Ctrl-Alt-F7 og nogle gange også
+   Ctrl-Alt-F8 vil bringe dig til grafikbaserede skærmbilleder.  Disse
+   syv eller otte forskellige skærmbilleder kaldes systemets virtuelle
+   konsoller.  En fordel ved at have flere virtuelle konsoller er at
+   forskellige brugere kan bruge den samme skærm uden at de behøver at
+   lukke de programmer de har i gang når de bytter.
+  </para>
+ </sect1>
+
+ <sect1 id="terminalen">
+  <title>Terminalvinduer</title>
+
+  <para>
+   Hvis du ikke er meget for kun at arbejde med tekstbaserede
+   programmer (de er for eksempel ikke praktiske til at vise billeder)
+   har du brug for at kunne få en kommandolinie frem inde i det
+   grafikbaserede system (der hedder "X" eller "X Window System" på et
+   almindeligt linux-system).  Når du er logget ind gør du det ved at
+   starte et terminalemuleringsprogram.  Det mest udbredte er
+   <command>xterm</command> men hvis du bruger KDE eller Gnome kan du
+   med fordel benytte henholdsvis <command>konsole</command> eller
+   <command>gnome-terminal</command> i stedet for, da de er lidt bedre
+   integrerede i de to skrivebordssystemer.
+  </para>
+
+  <para>
+   Man får typisk startet et terminalemuleringsprogram ved at klikke
+   på en ikon med en muslingeskal eller en sort skærm, eller ved at
+   vælge et menupunkt der hedder noget i stil med "Konsole",
+   "Terminal" eller "xterm".
+  </para>
+
+  <para>
+   <indexterm>
+    <primary>xterm</primary>
+   </indexterm>
+   <indexterm>
+    <primary>kommandooversigt</primary>
+    <secondary>xterm</secondary>
+   </indexterm>
 
    Med Linux skal du hyppigt køre programmer med en stribe parametre,
    som skal indtastes. Derfor er <command>xterm</command> vigtig at
@@ -155,6 +228,39 @@ xargs perl -i -pe 's/www\.andeby\.dk/www.kongeh.org/gi'</userinput>
    og udfører de kommandoer, du ønsker.
   </para>
 
+... terminalvinduer
+
+, hvor du kan arbejde med forskellige ting i tekstmodus.
+ i tekst på maskinens konsol.
+
+   Nu skal du til at lære kommandoer til Linux. I starten af dette
+   kapitel har du faktisk benyttet to kommandoer uden at vide det -
+   nemlig <command>touch</command> og <command>rm</command> (mere om
+   dem senere i kapitlet).  Det sted, hvor du i den simple tekstmode
+   skrev disse kommandoer, kalder vi for konsollen. Linux-konsollen er
+   i virkeligheden ikke så primitiv, som den umiddelbart ser ud til.
+  </para>
+
+  <para>
+   <indexterm><primary>Alt-F1</primary></indexterm>
+   <indexterm><primary>Ctrl-Alt-F1</primary></indexterm>
+
+   Der er faktisk mere end én konsol. Konsolsystemet består af en
+   række virtuelle konsoller. Du skifter mellem dem ved at trykke på
+   Alt og en funktionstast mellem F1 og F7, hvor "Alt-F7" dog er
+   tilbage til den grafiske X skærmflade, hvis den er startet op. Hvis
+   du står i X og skal tilbage til de tekstbaserede konsoller, skal du
+   bruge "Ctrl-Alt-F1" op til "Ctrl-Alt-F6". Linux er et ægte
+   multitasking-system, så du kan bare logge ind på flere terminaler
+   og arbejde. I hver konsol kører der en skal, som fortolker dine
+   kommandoer. Linux er - som vi allerede har sagt mange gange - meget
+   fleksibelt, så faktisk kan du have forskellige kommandofortolkere
+   kørende i forskellige konsoller!
+  </para>
+ </sect1>
+
+
+
   <sect2 id="vigtigt-om-terminalen">
    <title>Vigtig viden om terminal-vinduet</title>
 
@@ -176,81 +282,58 @@ xargs perl -i -pe 's/www\.andeby\.dk/www.kongeh.org/gi'</userinput>
     gå til starten og slutningen af en linie.
    </para>
 
-<para>
-<indexterm><primary>Tabulator</primary></indexterm>
-Kommando- og filudvidelsesfunktionerne er utroligt rare, hvis man vil
-slippe for at skrive lange program- og filnavne igen og igen. Når man
-har skrevet starten på et program- eller filnavn kan man ved at trykke
-på tabulatortasten få kommandofortolkeren til at gætte hvad man mener. Hvis der
-kun er én mulighed fylder kommandofortolkeren resten af navnet på. Er der flere
-muligheder, kan du trykke endnu en gang på tabulatortasten for at få
-vist alle mulighederne.
-</para>
+   <para>
+    <indexterm><primary>tabulator</primary></indexterm>
 
-<para>
-Hvis du skriver
+    Kommando- og filudvidelsesfunktionerne er utroligt rare, hvis man
+    vil slippe for at skrive lange program- og filnavne igen og igen.
+    Når man har skrevet starten på et program- eller filnavn kan man
+    ved at trykke på tabulatortasten få kommandofortolkeren til at
+    gætte hvad man mener.  Hvis der kun er én mulighed fylder
+    kommandofortolkeren resten af navnet på. Er der flere muligheder,
+    kan du trykke endnu en gang på tabulatortasten for at få vist alle
+    mulighederne.
+   </para>
 
-<indexterm>
- <primary>touch</primary>
-</indexterm>
+   <para>
+    Hvis du skriver
+
+    <indexterm>
+     <primary>touch</primary>
+    </indexterm>
+    <indexterm>
+     <primary>kommandooversigt</primary>
+     <secondary>touch</secondary>
+    </indexterm>
 
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>tou&lt;TAB&gt; sikke_et_langt_filnavn</userinput>
 </screen>
 
-skulle det gerne blive til
+    skulle det gerne blive til
 
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>touch sikke_et_langt_filnavn</userinput>
 </screen>
 
-<indexterm><primary>Kommando-udfyldning</primary></indexterm>
+    <indexterm><primary>Kommando-udfyldning</primary></indexterm>
 
-idet der ikke er andre kommandoer, der begynder med 'tou'
-</para>
+    idet der ikke er andre kommandoer, der begynder med 'tou'
+   </para>
 
 <screen>
 <prompt>[anne@linus ~]$ </prompt><userinput>rm sik&lt;TAB&gt;</userinput>
 </screen>
 
-<para>
-Det fungerer i øvrigt ved, at kommandofortolkeren i første "ord" leder
-efter en eksekverbar fil i de biblioteker, som er angivet i
-systemvariablen $PATH eller i den sti, som angives foran selve
-kommandoen. Efter kommandoen ledes der efter filnavne i det angivne
-bibliotek.
-</para>
-</sect2>
-</sect1>
-
-<sect1 id="virtuel-konsol">
-<title>Virtuelle konsoller</title>
-<para>
-<indexterm><primary>Virtuelle konsoller</primary></indexterm>
-Nu skal du til at lære kommandoer til Linux. I starten af dette 
-kapitel har du faktisk benyttet to kommandoer uden at vide det - 
-nemlig <command>touch</command> og <command>rm</command>
-(mere om dem senere i kapitlet). 
-Det sted, hvor du i den simple tekstmode skrev disse kommandoer, 
-kalder vi for konsollen. Linux-konsollen
-er i virkeligheden ikke så primitiv, som den umiddelbart ser ud til.
-</para>
-
-<para>
-<indexterm><primary>Alt-F1</primary></indexterm>
-<indexterm><primary>Ctrl-Alt-F1</primary></indexterm>
-Der er faktisk mere end én konsol. Konsolsystemet består
-af en række virtuelle konsoller. Du skifter mellem dem ved at
-trykke på Alt og en funktionstast mellem F1 og F7, hvor "Alt-F7" dog er
-tilbage til den grafiske X skærmflade, hvis den er startet op. Hvis du
-står i X og skal tilbage til de tekstbaserede konsoller, skal du bruge
-"Ctrl-Alt-F1" op til "Ctrl-Alt-F6". Linux er et ægte multitasking-system,
-så du kan bare logge ind på flere terminaler og arbejde. I hver konsol 
-kører der en skal, som fortolker dine kommandoer. Linux er - som vi
-allerede har sagt mange gange - meget fleksibelt, så faktisk kan du
-have forskellige kommandofortolkere kørende i forskellige konsoller!
-</para>
-</sect1>
+   <para>
+    Det fungerer i øvrigt ved, at kommandofortolkeren i første "ord"
+    leder efter en kommando eller et program den kender gennem
+    systemvariablen <literal>PATH</literal> eller i den sti, som
+    angives foran selve kommandoen.  Efter kommandoen ledes der efter
+    filnavne i det angivne bibliotek.
+   </para>
+  </sect2>
+ </sect1>
 
 <sect1 id="shells-under-Linux">
 <title>Kommandofortolkere under Linux</title>
@@ -308,7 +391,7 @@ i din nuværende kommando-fortolker.
  <primary>bash</primary>
 </indexterm>
 <indexterm>
- <primary>Kommandooversigt</primary>
+ <primary>kommandooversigt</primary>
  <secondary>bash</secondary>
 </indexterm>
 
@@ -316,7 +399,7 @@ i din nuværende kommando-fortolker.
  <primary>tcsh</primary>
 </indexterm>
 <indexterm>
- <primary>Kommandooversigt</primary>
+ <primary>kommandooversigt</primary>
  <secondary>tcsh</secondary>
 </indexterm>
 
@@ -324,7 +407,7 @@ i din nuværende kommando-fortolker.
  <primary>zsh</primary>
 </indexterm>
 <indexterm>
- <primary>Kommandooversigt</primary>
+ <primary>kommandooversigt</primary>
  <secondary>zsh</secondary>
 </indexterm>
 
@@ -347,7 +430,7 @@ starter op som forvalgt.
  <primary>chsh</primary>
 </indexterm>
 <indexterm>
- <primary>Kommandooversigt</primary>
+ <primary>kommandooversigt</primary>
  <secondary>chsh</secondary>
 </indexterm>
 
