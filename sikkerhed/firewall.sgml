@@ -178,20 +178,20 @@ kaldes for et censur-program, netværks-barnepige eller spion.
 <para>
 Stateful Multi Layer Inspection er den mest avancerede form for
 firewall. Det er faktisk muligt at lave den slags filtrering
-med Linuxkernen. Linux' indbyggede pakkefilter har mulighed for
+med Linux-kernen. Linux' indbyggede pakkefilter har mulighed for
 at holde styr på det, man kalder en forbindelse (connection), det
 vil sige en session, hvor man indleder en konversation med en
 server, udveksler data og ender med at sige "nu er jeg færdig".
 </para>
 
 <para>
-TCP benytter sådanne connection-meddelelser. Linuxkernen kan
+TCP benytter sådanne connection-meddelelser. Linux-kernen kan
 holde styr på status for en forbindelse. Derfor kaldes Linux
 Netfilter for et State Packet Filter, SPF.
 </para>
 
 <para>
-Linuxkernen kan endvidere sende udvalgte pakker til en
+Linux-kernen kan endvidere sende udvalgte pakker til en
 applikation i user space, som kan gøre med dem, hvad den vil (for
 eksempel sende dem videre efter at have ændret på dem). Derved
 kan man bygge en SMLI firewall baseret på Linux Netfilter. En
@@ -789,43 +789,17 @@ til den) sendes videre til IP-laget, som forsyner den med en
 IP-header, "konvolut", foran. 
 </para>
 
-<programlisting>
-
-+-------------------+-------------+
-|  IP-oplysninger   | IP-pakke    |
-|  IP-modtager      |             |
-|  IP-afsender m.v. | header      |
-+-------------------+-------------+------------+
-|  TCP-header       | IP-data     | TCP-pakke  |
-|  med bl.a. portnr.|             |            |
-|  længde, tjeksum  |             | header     |
-+-------------------+             +------------+---------+
-|  Interne headere  |             |            |         |
-|  hvis der er nogen|             | TCP-data   | appli-  |
-|                   |             |            | kations |
-+-------------------+             |            | pakke   |
-|  Applikationens   |             |            |         |
-|  data             |             |            |         |
- 
-~                   ~
-|                   |             |            |         |
-+-------------------+-------------+------------+---------+
-
-Første forsøg på skematisk forklaring af konvolut-princippet.
-
-</programlisting>
-
 
 <programlisting>
 
-   <-IP-header----|--TCP-header----|----FTP-header-|-FTP-data----|->
+   &lt;-IP-header----|--TCP-header----|----FTP-header-|-FTP-data----|->
    |                                                               |
-   <-----------------------IP-pakke-------------------------------->
+   &lt;-----------------------IP-pakke-------------------------------->
                   |                                                |
-                  <--------------TCP-segment-eller-pakke----------->
+                  &lt;--------------TCP-segment-eller-pakke----------->
                                    |                               |
                                    |                               |
-                                   <-------------FTP-pakke--------->
+                                   &lt;-------------FTP-pakke--------->
 
 
    Skematisk opstilling af IP-pakke som konvolut for en TCP-pakke
@@ -834,7 +808,17 @@ Første forsøg på skematisk forklaring af konvolut-princippet.
 
 
 <para>
-Hver konvolut svarer til et lag i netværksmodellen.
+Hver konvolut svarer til et lag i netværksmodellen. Uden om
+IP-pakken er der på et ethernet en ethernet pakke. Det er en god
+ide at se på den slags pakker med programmet ethereal. Når
+ethernet-headeren er selected i mellemste rude, så er de
+tilsvarende bytes highlighted i hexdump-ruden nederst.  
+</para>
+
+<graphic fileref="ethereal-display1.&magic;"  scale="40"></graphic>
+
+
+<para>
 Lagene fra den simple DoD model med kommentarer ses her:
 </para>
 
@@ -972,7 +956,7 @@ muren. Det er svært, og det sker heldigvis meget sjældent.
 At åbne for alle forbindelser, som startes indefra, kræver, at
 firewallen holder styr på, hvilke forbindelser der er oprettet;
 for at gøre det, skal firewallen have inkluderet et modul, der
-kaldes "connection tracking". Derved kan Linux kernen styre
+kaldes "connection tracking". Derved kan Linux-kernen styre
 hvilke forbindelser, der må oprettes imellem de to adskilte
 netværk. Den kan også logge, hvad der sker på disse forbindelser.
 </para>
@@ -1133,7 +1117,7 @@ der understøtter det.
 <indexterm><primary>dørvogter</primary></indexterm>
 
 <para>
-I dette afsnit ser vi på Linux kernens netfilter modul og hvad 
+I dette afsnit ser vi på Linux-kernens netfilter modul og hvad 
 man kan gøre med det. Det er en forudsætning, at man kender til
 begreberne IP-adresse, netværksadresse, netmaske, routing og DNS.
 Hvis du ikke gør, så se på <ulink
@@ -1560,8 +1544,38 @@ gang, skal have lov at passere. Det er den måde, man åbner for al
 trafik indefra.
 </para>
 </listitem>
-
 </itemizedlist>
+
+<para>
+Alle options har en kort form, for eksempel -s i stedet for
+--source.  Adresser til --source og --destination kan
+specificeres på fire måder.
+</para>
+
+<itemizedlist>
+<listitem><para>
+Som domaine-navn, www.kernel.org, linuxbog.dk, www.netfilter.org
+</para></listitem>
+<listitem><para>
+Som IP-adresse: 127.0.0.1, 193.88.44.22
+</para></listitem>
+<listitem><para>
+Som netværksadresse med skråstreg + antal signifikante bits:
+10.11.128.0/17
+</para></listitem>
+<listitem><para>
+Netværksadresse med skråstreg+bitmaske, 10.11.128.0/255.255.128.0
+</para></listitem>
+</itemizedlist>
+
+<para>
+Man kan selektere alle pakker, som <emphasis>ikke</emphasis>
+kommer fra en adresse ved at negere adresse udtrykket, hertil
+bruges et udråbstegn, som skal have space før og efter: <command>
+-s ! localhost </command> vil matche alle pakker, som ikke kommer
+fra localhost.
+</para>
+
 
 
 <sect3 id="sikkerhed-iptables-handson">
@@ -1644,10 +1658,24 @@ droppes.
 
 <screen>
 <prompt>[root@hven /]#</prompt> <userinput>iptables -A eth1-rules -p tcp --dport 80 -j ACCEPT </userinput>
+</screen>
+
+<para>
+Når man specificerer -p tcp (eller --protocol tcp) så loader
+iptables automatisk tcp extension, og vi kan nu kigge ind i
+tcp-headeren, hvis vi vil - og det vil vi, vi undersøger, om
+pakkerne er bestemt for port 80, den velkendte port, som benyttes
+af http serveren. Alle pakker til serveren accepteres.
+</para>
+
+
+<screen>
 <prompt>[root@hven /]#</prompt> <userinput>iptables -A eth1-rules -j DROP </userinput>
 </screen>
 
 <para>
+Derefter appender vi med <command> -A </command> endnu en regel,
+som siger, at alt andet skal droppes.
 Svarpakker til brugerne inde på lokalnettet vil imidlertid også
 blive stoppet af denne stop-regel, så nu vil vi benytte
 connection tracking og indsætte en regel, som siger, at alle
@@ -1663,9 +1691,15 @@ oprettet, skal accepteres.
 <para>
 Denne regel bliver nu nummer 1, og de andre rykker ned som 2 og
 tre. Hvis vi hellere vil sætte denne regel ind som nummer 2, skal
-kommandoen hedde <command> iptables -I eth1-rules 2 -m state
---state ESTABLISHED,RELATED -j ACCEPT </command> 
+kommandoen bruge <command> -I eth1-rules 2 </command> ; det er en
+meget bedre løsning, for connection tracking koster trods alt
+mere tid, så man bør acceptere så mange pakker som muligt med
+simple regler inden man bruger connection-regler.
 </para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -I eth1-rules 2 -m state --state ESTABLISHED,RELATED -j ACCEPT </userinput>
+</screen>
 
 <para>
 <command> -m state </command> fortæller kernen, at den skal
@@ -1684,7 +1718,7 @@ to tilstande, det må der ikke være.
 <programlisting>
       __________
     _|eth1-rules|--> eth1-rule 1 --> eth1-rule 2 -->rule3
-   ^ |__________|    RELATED?        PORT 80?       DROP!
+   ^ |__________|    PORT 80?        RELATED?       DROP!
    |                 ACCEPT          ACCEPT
   _|_____
  /if eth1\
