@@ -1,0 +1,521 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+
+<chapter id="unix-brugsanvisninger">
+ <title>Brugsanvisninger</title>
+
+ <indexterm>
+  <primary>hjælpefunktioner</primary>
+ </indexterm>
+
+ <para>
+  I Linux og Unix er der nutildags desværre lidt af et rod med flere
+  forskellige formater af brugsanvisninger:
+
+  <itemizedlist>
+   <listitem>
+    <para>
+     <command>man</command>-formatet er det officielle system til
+     brugsanvisninger på Unix.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     <command>info</command>-formatet blev på et tidspunkt lavet af
+     GNU-projektet, da de ikke var tilfredse med mulighederne i
+     <command>man</command>-formatet.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     HTML-formatet bliver også jævnligt brugt til brugsanvisninger.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     Postscript- og PDF-formaterne bliver typisk brugt til
+     brugsanvisninger der skal se pæne ud på tryk.
+    </para>
+   </listitem>
+  </itemizedlist>
+
+  Og endelig sker det også jævnligt at brugsanvisningen bare er en rå
+  tekstfil.  Med nogle programmer kan man være så heldig at man kan
+  finde hele brugsanvisningen i alle de ovenstående formater.  <!--
+  Hvad er den officielle FHS-placering for dokumentation i andre
+  formater end `man`? -->
+ </para>
+
+ <para>
+  Derudover har GNU-projektet <!-- også andre? --> en regel om at man
+  ved at køre et program med kommandolinjetilvalget
+  <option>-h</option> eller <option>--help</option>, kan få en kort
+  vejledning i brugen af programmet.
+ </para>
+
+ <example id="man-help">
+  <title>Kommandolinjetilvalget <option>--help</option></title>
+
+  <para>
+   Vi kan for eksempel prøve at få en kort vejledning i hvordan man
+   bruger programmet <command>man</command>:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man --help</userinput>
+man, version 1.5k
+
+usage: man [-adfhktwW] [section] [-M path] [-P pager] [-S list]
+        [-m system] [-p string] name ...
+
+  a : find all matching entries
+  c : do not use cat file
+  d : print gobs of debugging information
+[...]
+</screen>
+  </para>
+
+  <para>
+   Programmet skriver typisk ikke noget om hvad det er beregnet til,
+   men giver blot en liste med de vigtiste kommandolinje tilvalg, som
+   en påmindelse til den erfarne bruger der ikke lige kan huske om det
+   hedder <command>man <option>-p</option> et-eller-andet</command>
+   eller <command>man <option>-P</option> et-eller-andet</command>.
+  </para>
+ </example>
+
+ <para>
+  I de følgende afsnit vil vi gennemgå, hvordan man får adgang til at
+  læse brugsanvisninger i de ovennævnte formater.
+ </para>
+
+<!--  Noget der ikke rigtig hører til her:
+
+ <para>
+  Bemærk at det ikke kun er programmerne der er frie, så alle kan være
+  med til at videreudvikle dem.  Det samme gælder også
+  brugsanvisningerne til programmerne.
+
+  Det er ikke alle de programmer der kommer med din Linux-distribution
+  der er skrevet brugsanvisninger til.  Og for nogle programmers
+  vedkommende er brugsanvisningerne skrevet uafhængigt af udviklerne
+  af programmet, hvilket kan betyde at brugsanvisningen ikke
+  nødvendigvis er helt komplet eller i øvrigt svarer til den nyeste
+  udgave af programmet.  Hvis man har mistanke om at det er tilfældet
+  kan man med fordel bede sin systemadministrator om at prøve at finde
+  en opdateret brugsanvisning til programmet hos <ulink
+  url="http://www.tldp.org/">The Linux Documentation Project</ulink>.
+  Og hvis du finder fejl eller mangler i brugsanvisningerne er du
+  <emphasis>meget velkommen</emphasis> til at hjælpe med at udbedre
+  dem. &ndash; Dokumentationen er også Open Source.
+ </para>
+      Slut på noget der ikke rigtig hører til her. -->
+
+ <sect1 id="unix-brugsanvisninger-man">
+  <title><command>man</command>-systemet</title>
+
+  <indexterm>
+   <primary><command>man</command>-sider</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>læse <command>man</command>-sider</primary>
+  </indexterm>
+
+  <para>
+   Hvis brugsanvisningen til et program, for eksempel
+   <command>mutt</command>, findes i <command>man</command>-formatet
+   (det er desværre aldrig til at vide før man prøver), så vil
+   kommandoen:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man mutt</userinput>
+</screen>
+   starte brugsanvisningsvisningsprogrammet <command>man</command> med
+   brugsanvisningen til <command>mutt</command> åbnet.  Man kommer ud
+   af <command>man</command> ved at taste <keysym>q</keysym>.
+   Mellemrumstasten bringer én en side længere ned i brugsanvisningen,
+   linjeskift en linje længere ned i brugsanvisningen og
+   <keysym>b</keysym> en side længere op i brugsanvisningen.  Et tryk
+   på <keysym>h</keysym> bringer den interne hjælp i programmet frem.
+  </para>
+
+  <para>
+   Af andre programmer der kan vise brugsanvisninger i
+   <command>man</command>-formatet kan KDE's filhåndtering og browser,
+   Konqueror, nævnes.
+  </para>
+
+  <para>
+   <command>man</command>-systemet er beregnet til at give brugeren en
+   kort men brugbar (ofte er den desværre kun kort) introduktion til
+   kommandoen.  En brugsanvisning i <command>man</command>-systemet
+   består typisk af:
+
+   <itemizedlist spacing="compact">
+    <listitem>
+     <para>
+      et afsnit med kommandoens navn og en beskrivelse på én linje,
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      en samlet liste med alle kommandoens mulige tilvalg,
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      en længere beskrivelse af hvad kommandoen bruges til,
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      en detaljeret beskrivelse af alle kommandolinjetilvalgene,
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      en beskrivelse af hvordan forskellige systemvariable påvirker
+      programmet,
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      henvisninger til andre relevante kommandoer og
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      en liste med kendte fejl i programmet (hvorfor retter folk dem
+      ikke bare?),
+     </para>
+    </listitem>
+   </itemizedlist>
+  </para>
+
+  <para>
+   <command>man</command> bruger typisk programmet
+   <command>less</command> til at vise brugsanvisningerne, så hvis du
+   sætter dig ind i, hvordan man flytter rundt i en tekst, når du
+   bruger <command>less</command>, så ved du samtidig også hvordan man
+   gør det i <command>man</command>.
+  </para>
+
+  <para>
+   Brugsanvisningerne på et unix-system er kategoriseret i forskellige
+   afsnit: <!--  Hvor kan jeg finde den formelle kategorisering?  -->
+
+   <orderedlist numeration="arabic">
+    <listitem override="1">
+     <para>
+      Om at bruge programmer.
+     </para>
+    </listitem>
+
+    <listitem override="2">
+     <para>
+      Om at skrive programmer der snakker med styresystemet.
+     </para>
+    </listitem>
+
+    <listitem override="3">
+     <para>
+      Om at skrive programmer.
+     </para>
+    </listitem>
+
+    <listitem override="4">
+     <para>
+      Om specielle filer på systemet.
+     </para>
+    </listitem>
+
+    <listitem override="5">
+     <para>
+      Om filformater.
+     </para>
+    </listitem>
+
+    <listitem override="6">
+     <para>
+      Om spil.
+     </para>
+    </listitem>
+
+    <listitem override="7">
+     <para>
+      Om konventioner og forskelligt andet.
+     </para>
+    </listitem>
+
+    <listitem override="8">
+     <para>
+      Om systemadministrationskommandoer.
+     </para>
+    </listitem>
+   </orderedlist>
+  </para>
+
+  <para>
+   Hvis du bare skriver:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man info</userinput>
+</screen>
+   så gennemgår <command>man</command> kategorierne i nummerorden
+   indtil det finder en brugsanvisning om »info«.  Det vil typisk være
+   brugsanvisningen til programmet <command>info</command>, der findes
+   i afsnit 1.  Hvis du derimod har brug for beskrivelsen af
+   <emphasis>filformatet</emphasis> »info«, så ved du at det er afsnit
+   5 der er interessant og kan i stedet for skrive:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man 5 info</userinput>
+</screen>
+  </para>
+
+  <para>
+   Henvisninger til brugsanvisninger i <command>man</command>-systemet
+   skrives i tekst typisk »navn(afsnit)«.  Så hvis der står at man bør
+   læse »info(5)« er det beskrivelsen af filformatet »info« (som man
+   kan få frem med kommandoen <command>man 5 info</command>) der
+   menes.  Mens der med »info(1)« menes at man bør læse beskrivelsen
+   af programmet »info« (som man kan få frem med kommandoen
+   <command>man 1 info</command>).
+  </para>
+
+  <para>
+   Der findes en introduktion til hvert afsnit af brugsanvisningerne i
+   <command>man</command>-systemet.  Den hedder »intro«.  Hvis du vil
+   vide hvilke slags oplysninger du kan finde i afsnit 6 skriver du
+   for eksempel:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man 6 intro</userinput>
+</screen>
+  </para>
+
+<!--  ubehandlet (start)  -->
+
+  <sect2 id="unix-brugsanvisninger-man-opbygning">
+   <title>Opbygning</title>
+
+   <para>
+    Unix-programmet <command>man</command> er meget praktisk at kende
+    for at lære at bruge de mange parametre, der ofte findes til
+    programmerne. Som eksempel kan du se dokumentationen for
+    <command>man</command>-programmet ved at skrive <command>man
+    man</command> på en kommandolinje.
+   </para>
+
+<screen>
+NAME
+
+man - format and display the on-line manual pages
+manpath - determine user's search path for man pages
+
+SYNOPSIS
+
+man [-acdfhkKtwW] [-m system] [-p string] [-C config_file]
+[-M path] [-P pager] [-S section_list] [section] name  ...
+
+DESCRIPTION
+man  formats  and displays the on-line manual pages.
+</screen>
+
+   <para>
+    Dette viser, at brugeren kan skrive <command>man
+    PROGRAMNAVN</command> og få yderligere funktionalitet ved at
+    tilføje ekstra flag, såsom <command>man -w PROGRAMNAVN</command>,
+    som viser, hvilken fil der indeholder man-siden.
+   </para>
+
+<!--  Ryger ud - afhænger af X:
+   <para>
+    <emphasis>Tip:</emphasis> Du kan med fordel installere KDE og
+    anvende den browser, der følger med &ndash; Konqueror tilbyder en
+    rigtig god mulighed for at læse både man-sider og info-sider (et
+    tilsvarende dokumentationssystem). Skriv <ulink
+    url="man:ls">man:ls</ulink> i URL-feltet, eller
+    <literal>info:</literal> for at bruge info-siderne. Man kan også
+    kan åbne en man side med <ulink url="#ls">#ls</ulink>.
+   </para>
+
+   <para>
+    Nogle gange findes der manualsider i flere afsnit med samme navn,
+    i så fald henviser man sædvanligvis til den rigtige side, ved at
+    tilføje kapitelnummeret i parentes, f.eks.  <ulink
+    url="#regex(7)">#regex(7)</ulink>.
+   </para>
+-->
+
+   <para>
+    <emphasis>Tip:</emphasis> Med gvim (eller vi improved) kan du
+    stille cursoren på et ord og trykke stort K for at se, om der er
+    en man-page for pågældende ord.
+   </para>
+
+   <para>
+    "Synopsis" viser hvordan programmet bruges. Det, der vises i
+    kantet parentes, er valgfrie parametre.
+   </para>
+
+   <para>
+    "Options"-afsnittet opremser alle de muligheder, programmet
+    har. Du har allerede set, at <command>ls</command> har et tilvalg
+    <command>-l</command>, men programmet har faktisk mange andre. Der
+    findes generelt to typer muligheder: Den korte, startende med en
+    bindestreg <command>-a</command>, og den lange med to bindestreger
+    <command>--all</command>.
+   </para>
+
+   <para>
+    <indexterm>
+     <primary>apropos</primary>
+    </indexterm>
+
+    <indexterm>
+     <primary>søgning i</primary>
+     <secondary><command>man</command>-systemet</secondary>
+    </indexterm>
+
+    Det er ikke altid til at huske, hvad en kommando præcist hedder i
+    Linux. Du sidder f.eks. og kan ikke huske, hvad en bestemt
+    kommando hedder, men du kan huske, at den har noget med »web« at
+    gøre. Til at lede alle <command>man</command>-siderne igennem har
+    du kommandoen <command>apropos</command>:
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>apropos web</userinput>
+Galeon [galeon]      (1)  - gecko-based GNOME web browser
+LWP                  (3pm)  - The World-Wide Web library for Perl
+LWP::RobotUA         (3pm)  - A class for Web Robots
+alevtd               (1)  - webserver for videotext pages
+groff_www            (7)  - groff macros for authoring web pages
+lynx                 (1)  - a general purpose distributed information browser for the World Wide Web
+pooltype             (1)  - display a WEB pool file
+tangle               (1)  - translate WEB to Pascal
+tie                  (1)  - merge or apply WEB change files
+weave                (1)  - translate WEB to TeX
+webcam               (1)  - capture images and upload them to a webserver using ftp
+webcollage           (1)  - decorate the screen with random images from the web
+</screen>
+   </para>
+
+   <para>
+    Der kan være mange steder i <command>man</command>-systemet, hvor
+    et ord indgår. Som du kan se, får du en kort beskrivelse med, som
+    kan få dig til at huske, hvilket program du leder
+    efter. Beskrivelsen er den, som står sammen med programmets navn
+    øverst i brugsanvisningen.
+   </para>
+
+   <para>
+    Desværre leder <command>apropos</command> kun i
+    <command>man</command>-systemet, så hvis et program kun har
+    brugsanvisninger i <command>info</command>- eller HTML-format, så
+    vil <command>apropos</command> ikke finde dem.
+   </para>
+
+<!--  Hører til i admin-bogen:
+   <para>
+    <indexterm>
+     <primary>makewhatis</primary>
+    </indexterm>
+
+    <emphasis>Tip:</emphasis> Før du kan bruge
+    <command>apropos</command>, skal du som superbrugeren
+    <emphasis>root</emphasis> have indekseret alle
+    <command>man</command>-siderne ved at køre kommandoen
+    <command>/usr/sbin/makewhatis</command>, som også bør køres når du
+    har installeret større programmer.
+   </para>
+-->
+
+   <para>
+    <indexterm>
+     <primary>man2html</primary>
+    </indexterm>
+
+    <indexterm>
+     <primary><command>man</command>-sider</primary>
+     <secondary>oversættelse til HTML</secondary>
+    </indexterm>
+
+    Det er også muligt at omdanne brugsanvisninger i
+    <command>man</command>-systemet til HTML-filer med følgende
+    kommando:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man2html /usr/man/man5/procmailrc.5 &gt; procmailrc.html</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>man2html /sti/manpage.[1. .9] &gt; /sti/manpage.html</userinput>
+</screen>
+   </para>
+  </sect2>
+
+<!--  ubehandlet (slut)  -->
+
+ </sect1>
+
+ <sect1 id="unix-brugsanvisninger-info">
+  <title><command>info</command>-systemet</title>
+
+  <indexterm>
+   <primary><command>info</command>-sider</primary>
+  </indexterm>
+
+  <indexterm>
+   <primary>læse <command>info</command>-sider</primary>
+  </indexterm>
+
+  <para>
+   Hvis brugsanvisningen til et program, for eksempel
+   <command>mutt</command>, findes i <command>info</command>-formatet
+   (det er desværre aldrig til at vide før man prøver), så vil
+   kommandoen:
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>info mutt</userinput>
+</screen>
+   starte brugsanvisningsvisningsprogrammet <command>info</command>
+   med brugsanvisningen til <command>mutt</command> åbnet.  Man kommer
+   ud af <command>info</command> ved at taste <keysym>q</keysym>.
+   Mellemrumstasten bringer én en side længere ned i brugsanvisningen
+   og <keysym>b</keysym> en side længere op i brugsanvisningen.  Et
+   tryk på <keysym>h</keysym> bringer den interne hjælp i programmet
+   frem.
+  </para>
+
+  <para>
+   Brugsanvisninger i <command>info</command>-formatet kan være
+   opbygget som hypertekst med oplysningerne om programmet fordelt på
+   forskellige sider.
+  </para>
+
+  <para>
+   Af andre programmer der kan vise brugsanvisninger i
+   <command>info</command>-formatet kan KDE's filhåndtering og
+   browser, Konqueror, nævnes.
+  </para>
+
+  <!--  Resten af afsnittet er ting jeg overvejer om vi skal slette -->
+
+  <para>
+   <command>info</command>-systemet har også ofte et par forklarende
+   ord til den, der slet ikke kender programmets virkemåde, men det er
+   oftest lidt længere vejledninger.
+  </para>
+
+  <!-- Slut på ting jeg overvejer at slette -->
+ </sect1>
+
+<!-- Det behøver vi vel ikke fortælle folk her.  De skal bare vide,
+     _hvordan_ de kan finde brugsanvisningerne.
+<para>
+De nyeste versioner af <command>man-page</command> systemet kan
+udtrække information fra info-siderne, og de nyeste versioner af
+<command>info</command> kan også vise man-pages.
+</para>
+-->
+
+</chapter>
