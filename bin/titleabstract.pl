@@ -27,7 +27,7 @@ $html = q{<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
 <title>Friheden til at vælge</title>
 </head><body>
 <img src="front.png" alt="Friheden til at skrive bøger" align=right width="183" height="213">
-<h1>Friheden til at skrive bøger</h1>
+<h1>Friheden til at vælge</h1>
 <p><a name="stikord">Stikord</a>:
 <a href="idx-a.html">&nbsp;A&nbsp;</a>
 <a href="idx-b.html">&nbsp;B&nbsp;</a>
