@@ -79,6 +79,7 @@ endif
 	rm -rf tempdir 
 	@echo "Done HTML (html)"
 	@echo ""
+	rm -rf images/billeder.tar
 	(cd images;tar cvf billeder.tar .)
 
 pdf: bog.pdf
