@@ -92,6 +92,13 @@ function form_filename( $bookname, $format ) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
+    "C" => array(
+      title => "Linux - Friheden til programmere i C",
+      comment => "Programmering i C",
+      auth => array(
+        "Donald Axel" => "donald_j_axel@get2net.dk"
+      )
+    ),
     "sikkerhed" => array(
       title => "Linux - Friheden til sikkerhed på internettet",
       comment => "Sikkerhed omkring din Linux-boks",
