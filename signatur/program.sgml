@@ -12,6 +12,7 @@ beskrives hvorledes dette kan gøres.</para>
 
 <sect1>
 <title>Dannelse af certifikat forespørgslen</title>
+<indexterm><primary>Certifikat forespørgsel</primary></indexterm>
 
 <para>Man bør sætte sig ind i hvordan <command>req</command>
 programmet kan kaldes. Det er en del af <command>openssl</command>
@@ -23,17 +24,18 @@ som man giver som config fil til <command>req</command> programmet.
 Dette er også at foretrække sikkerhedsmæssigt, idet f.eks. password
 overført via kommandolinien ikke er hensigtsmæssigt, da de kan ses af
 andre processer på systemet.</para>
+<indexterm><primary>openssl</primary><secondary>req</secondary></indexterm>
 
 <para><emphasis>Bemærk, at der pt. er begrænsninger på brugen af
 æøå ÆØÅ (og andre specialtegn) i forhold til KMD-CA. Kun a-z, A-Z og 0-9 er tilladt.</emphasis></para>
 
 <sect2>
-<title>Eksempel på request dannelses fil</title>
+<title>Eksempel på forespørgselsdannelses fil</title>
 
 <para>Nedenfor gives et eksempel på hvordan en request config fil til programmet
 <command>openssl</command> kan se ud. Linier der starter med tegnet # er kommentarer.</para>
 
-<screen>
+<programlisting>
 # Eksempel på request config fil.
 # Anvendes eksempelvis således:
 # openssl req -newkey rsa:1024 -config req.config -out \
@@ -80,15 +82,15 @@ serialNumber           = 9208-2001-1-xxxxxxxxx
 # af vores CA (KMD-CA).
 [ req_attributes ]
 challengePassword              = tester
-</screen>
+</programlisting>
 
 <para>Antag at ovenstående er indholdet af filen
 <filename>req.config</filename>. Herefter kan man danne en request fil
 kaldet
 <filename>kmd-ca-cert.req</filename> således:</para>
 <screen>
-[madsdyd@ripley TestIgen]$ openssl req -newkey rsa:1024 \
--config req.config -out kmd-ca-cert.req -outform DER
+<prompt>$</prompt> <userinput>openssl req -newkey rsa:1024 \
+-config req.config -out kmd-ca-cert.req -outform DER</userinput>
 Using configuration from req.config
 Generating a 1024 bit RSA private key
 ...............................................................++++++
@@ -118,26 +120,31 @@ request config fil. I det følgende forsøges de relevante felter beskrevet.</para
   givenName - personens fornavn indsættes her
  </para>
 </listitem>
+<indexterm><primary>givenName</primary></indexterm>
 <listitem>
  <para>
   surname - personens efternavn (mellemnavne?) indsættes her
  </para>
 </listitem>
+<indexterm><primary>surname</primary></indexterm>
 <listitem>
  <para>
   emailAddress - personens email adresse indsættes her
  </para>
 </listitem>
+<indexterm><primary>emailAddress</primary></indexterm>
 <listitem>
  <para>
   keyUsage - Se nedenfor i afsnit <xref linkend="keyusage">
  </para>
 </listitem>
+<indexterm><primary>keyUsage</primary></indexterm>
 <listitem>
  <para>
   CN - værdien af givenName surname appended med strengen "// PID:xxxxxxxxx"
  </para>
 </listitem>
+<indexterm><primary>CN</primary></indexterm>
 <listitem> 
  <para>
   serialNumber - dette felt skal ikke ændres når man bruger KMD-CA som
@@ -149,17 +156,18 @@ request config fil. I det følgende forsøges de relevante felter beskrevet.</para
   </ulink>.
  </para>
 </listitem>
-
+<indexterm><primary>serialNumber</primary></indexterm>
 </itemizedlist>
 
 <sect3 id="keyusage">
+<indexterm><primary>keyUsage</primary></indexterm>
 <title>keyUsage</title>
 <para>Dette felt sættes efter brugerens valg for hvordan nøglen skal
 bruges; "Kryptering og digital signatur", "Kun kryptering" eller "Kun
 signatur". Se <xref linkend="kmd-ca-windows-fig"> for de valg Windows
 programmet giver.</para>
 
-<para>Følgende er baseret på oplysninger fra Jørn Guldberg, projektleder i KMD.</para>
+<para>Følgende er baseret på oplysninger fra Jørn Guldberg, projektleder i KMD-CA.</para>
 
 <para>keyUsage sættes til en kommasepareret liste af strenge. For
 signering sættes "Digital Signatur". For kryptering sættes "Data
@@ -173,7 +181,7 @@ tilføje følgende liste: "Key Agreement, Non Repudiation, Key Encipherment".</par
 </sect1>
 
 
-<sect1>
+<sect1 id="signatur-request-perl">
 <title>Eksempel program til generering af forespørgsel</title>
 
 <para>I eksemplet nedenfor kan du se et interaktivt
