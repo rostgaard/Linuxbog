@@ -472,6 +472,42 @@ Disk: 1   Cylinders: 4865   Heads: 255   Sectors: 63   MB: 38162
     Fdisk F6 sector                4407   1  1
 </screen>
 
+<para>
+Det skal bemærkes at de værktøjer som er nævnt ovenfor regner start og 
+slut sektorer fra 0, hvor <command>fdisk</command> regner fra 1 og frem. 
+Derfor skal man trække en fra hvis man anfører de grænser i <filename>/etc/fstab</filename>.
+</para>
+
+<para>
+Det kan nævnes at den rigtige partitionstabel var
+</para>
+
+<screen>
+Disk /dev/hda: 40.0 Gb, 40020664320 byte
+255 hoveder, 63 sektorer/spor, 4865 cylindre
+Enheder = cylindre af 16065 * 512 = 8225280 byte
+
+    Enhed Opstart Start       Slut   Blokke   Id  System
+/dev/hda1   *         1       474   3807373+   c  Win95 FAT32 (LBA)
+/dev/hda2           475      4866  35275275    5  Udvidet
+/dev/hda5           475       921   3590496   83  Linux
+/dev/hda6           922       951    240943+  82  Linux swap
+/dev/hda7           952      2740  14370111   83  Linux
+/dev/hda8          2741      4866  17073598+  83  Linux
+</screen>
+
+<para>
+og den tilsvarende <filename>/etc/fstab</filename> var
+</para>
+
+<screen>
+/dev/hda1 /mnt/windows vfat iocharset=iso8859-15,codepage=850,umask=0 0 0
+/dev/hda5 / ext3 defaults 1 1
+/dev/hda6 swap swap defaults 0 0
+/dev/hda7 /home ext3 defaults 1 2
+/dev/hda8 /storage ext3 defaults 1 2
+</screen>
+
 <indexterm><primary>rescue</primary></indexterm>
 <para>
 Endelig skal det nævnes at bl.a. Mandrake har en mulighed for at boote op på første
