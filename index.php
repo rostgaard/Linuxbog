@@ -403,6 +403,8 @@ if ($matrix) { ?>
   }
   echo "</tr>\n";
   
+  $notexists = array();
+  $fcount = 0;
   $c = 0;
   reset($books);
   while (list($short,$desc) = each($books)) {
@@ -410,10 +412,12 @@ if ($matrix) { ?>
     echo "<b>$desc[title]</b><font size=\"-1\"><br>$desc[comment]</font></td>\n";
     reset($packs);
     while (list($type,$attr) = each($packs)) {
+      $fcount++;
       echo " <td valign=\"top\"><font size=\"-1\">";
       $filename = form_filename( $short, $attr );
       $filetext = "$short $type";
       if (!file_exists($filename)) {
+	$notexists[] = $filename;
         echo "<i>$filetext</i>";
         $date = " - ";
       } else {
@@ -422,7 +426,7 @@ if ($matrix) { ?>
         echo "ver $desc[version] ";
 
         //echo "<br>$date<br>$filesize";
-				$linktext = "$date<br>$filesize";
+	$linktext = "$date<br>$filesize";
         echo href($filename,$linktext);
       }
       echo "</font></td>\n";
@@ -432,7 +436,12 @@ if ($matrix) { ?>
 ?>
 </table>
 <p>
-<?php } ?>
+<?php }
+
+if (count($notexists))
+	echo "<p>Ud af $fcount filer, er der ".count($notexists)." der ikke findes online.</p>\n";
+
+?>
 
 <font size="-1">
 [<a href="http://www.sslug.dk/linuxbog">Seneste udgaver</a>]
