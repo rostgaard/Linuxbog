@@ -232,13 +232,17 @@ else !HAVE_PERL_IMAGE_SIZE
 endif !HAVE_PERL_IMAGE_SIZE
 if HAVE_TIDY
 	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
-if ADD_SUBMITBOX
-	(cd bog && ../../addsubmitbox)
-endif ADD_SUBMITBOX
 else !HAVE_TIDY
 	@echo "Du bør installere tidy"
 endif !HAVE_TIDY
+if ADD_SUBMITBOX
+	(cd bog && ../../addsubmitbox)
+#	Nogen der ved hvorfor vi laver dette link?
+	(cd bog;rm -f apprevhist.html.php;ln -sf *apprevhist.html.php apprevhist.html.php)
+else !ADD_SUBMITBOX
+#	Nogen der ved hvorfor vi laver dette link?
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
+endif !ADD_SUBMITBOX
 	touch html.stamp
 	@echo "Done HTML (html)"
 	@echo ""

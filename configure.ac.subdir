@@ -203,11 +203,15 @@ dnl de forskellige typer af bogen.
 AM_CONDITIONAL(USE_SOFTLINKS, test "x$enable_softlink"  = "xja")
 
 # Vi kan kun tilføje submitbox, hvis vi har tidy
-if test "xja" != "x$TIDY" -a "xja" = "x$enable_submitbox" ; then
-  AC_MSG_NOTICE([For at kunne bruge --enable-submitbox, skal tidy være installeret (submitbox ikke enablet)])
-  AM_CONDITIONAL(ADD_SUBMITBOX, false)
+if test "xja" = "x$enable_submitbox" ; then
+  if test "xja" != "x$TIDY" ; then
+    AC_MSG_NOTICE([For at kunne bruge --enable-submitbox, skal tidy være installeret (submitbox ikke enablet)])
+    AM_CONDITIONAL(ADD_SUBMITBOX, false)
+  else 
+    AM_CONDITIONAL(ADD_SUBMITBOX, true)
+  fi
 else
-  AM_CONDITIONAL(ADD_SUBMITBOX, true)
+    AM_CONDITIONAL(ADD_SUBMITBOX, false)
 fi
 
 
