@@ -844,6 +844,48 @@ Vil man begrænse den båndbredde som anvendes på at hente f.eks. en ISO-fil, så t
 Se også <command>ncftp</command> for et ligende program til ftp-servere.
 </para>
 </sect2>
+
+<sect2 id="verificer-indhold-af-cdrom">
+<title>Verificere indhold af cdrom</title>
+
+<indexterm><primary>md5sum</primary></indexterm>
+<indexterm><primary>Checksum med md5sum</primary></indexterm>
+
+<para>
+Det er irriterende ved installationat opdage at er sket en fejl
+da man hentede en cdrom fra Internettet. Derfor er der ofte en 
+fil man kan hente der hedder noget med <emphasis>md5sum</emphasis>, f.eks. 
+<filename>md5sums</filename> eller lign. Programmet <command>md5sum</command> 
+kan udregne en checksum for en fil - og dermed også for et helt iso-cdrom image.
+At to cdrom'er eller to filer skulle have samme md5 checksum er eketremt usandsynligt.
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>md5dum Mandrake91-cd1-inst.i586.iso</userinput>
+6f1581974e12420fef87868ed6caa31f  Mandrake91-cd1-inst.i586.iso
+</screen>
+
+<para>
+Har man en fil med md5 checksummer for alle filer, kan med nemt få checket alle filer
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cat md5sums</userinput>
+6f1581974e12420fef87868ed6caa31f  Mandrake91-cd1-inst.i586.iso
+87afe11ddef6b619866322aa0797e45f  Mandrake91-cd2-ext.i586.iso
+ff187c7a552722f42790b5726fdb62b3  Mandrake91-cd3-i18n.i586.iso
+<prompt>[tyge@hven ~]$ </prompt><userinput>md5sum --check md5sums</userinput>
+Mandrake91-cd1-inst.i586.iso: OK
+Mandrake91-cd2-ext.i586.iso: OK
+Mandrake91-cd3-i18n.i586.iso: OK
+</screen>
+
+<para>
+Hvis man f.eks. retter en smule i filen <filename>Mandrake91-cd1-inst.i586.iso</filename>
+så vil man få en helt anden checksum og anvender man igen <command>md5sum --check md5sums</command>
+vil man få beskeden <command>FAILED</command> som indikation for at det gik galt.
+</para>
+</sect2>
 </sect1>
 
 
