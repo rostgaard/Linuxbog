@@ -1272,6 +1272,65 @@ fra sand til falsk er det <command>#t</command> som ændres til <command>#f</comm
 </para>
 
 <para>
+I forhold til standardopsætningen kan det være interessant at kigge på:
+</para>
+
+<screen>
+(define %section-autolabel%
+</screen>
+
+<para>
+Sættes den til <command>#t</command> bliver afsnit ("sections") automatisk nummereret. 
+Første afsnit ("sect1") i kapitel 7 vil så få nummer 7.1. 
+</para>
+
+<para>
+Hvis man vil undgå at få en indholdsfortegnelse over tabeller og figurer nedenunder den 
+almindelige indholdsfortegnelse, skal $generate-book-lot-list$ sættes til
+</para>
+
+<screen>
+(define ($generate-book-lot-list$)
+  ;; REFENTRY generate-book-lot-list
+  ;; PURP Which Lists of Titles should be produced for Books?
+  ;; DESC
+  ;; This parameter should be a list (possibly empty) of the elements
+  ;; for which Lists of Titles should be produced for each 'Book'.
+  ;;
+  ;; It is meaningless to put elements that do not have titles in this
+  ;; list.  If elements with optional titles are placed in this list, only
+  ;; the instances of those elements that do have titles will appear in
+  ;; the LOT.
+  ;;
+  ;; /DESC
+  ;; AUTHOR N/A
+  ;; /REFENTRY
+  (list ))
+</screen>
+
+<para>
+Hvis du ønsker at styre udseendet af bogen (i HTML-udgaven), kan det gøres ved at 
+vælge at bruge et eksternt Cascading Style Sheet. Filnavnet på dette angives i
+</para>
+
+<screen>
+ (define %stylesheet%
+  ;; REFENTRY stylesheet
+  ;; PURP Name of the stylesheet to use
+  ;; DESC
+  ;; The name of the stylesheet to place in the HTML LINK TAG, or '#f' to
+  ;; suppress the stylesheet LINK.
+  ;; /DESC
+  ;; AUTHOR N/A
+  ;; /REFENTRY
+  "../style/style.css")
+</screen>
+
+<para>
+Du skal selvfølgelig sørge for, at der er et stylesheeet på den angivne placering...
+</para>
+
+<para>
 For PDF og Postscript-generering (kaldes "print" i Docbook) vil du nok
 ændre i
 <filename>/usr/lib/sgml/stylesheets/nwalsh-modular/print/dbparam.dsl</filename>.
@@ -1298,9 +1357,27 @@ En ting du nok skal se på er "%paper-type%" som sættes til
 </screen>
 
 <para>
-Tilsvarende kan man lede efter margin og finde de marginer, som
-anvendes i PDF-dokumentet.
+Tilsvarende kan man lede efter margin og finde de marginer, som anvendes i 
+PDF-dokumentet, ligesom "%section-autolabel%" og "$generate-book-lot-list$" 
+kan ændres på samme vis som i 
+<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/html/dbparam.dsl</filename>.
 </para>
+
+<para>
+For at kunne oversætte til PDF er det nødvendigt at ændre nogle værdier i 
+<filename>/usr/share/texmf/web2c/texmf.cnf</filename>. Sæt nedenstående variabler til 
+de viste værdier for at få PDF-genereringen til at virke.
+</para>
+
+<screen>
+hash_extra = 10000
+
+pool_size.context = 1250000
+pool_size.jadetex = 1250000
+pool_size = 250000
+
+max_strings = 25000
+</screen>
 
 </sect2>
 </sect1>
