@@ -1,112 +1,86 @@
-<chapter>
-  <title>Netværkskommunikation</title>
+<chapter id="java-net">
+<title>Netværkskommunikation</title>
 
-<para>
-Indhold:
-</para>
+<para>Indhold:</para>
 
 <itemizedlist mark="bullet">
-  <listitem>
-
-<para>
-
-At koble til en tjeneste på en fjernmaskine
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-At udbyde tjenester på netværket
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Eksempler: Hente en hjemmeside og en webserver
-</para>
-
-</listitem>
+  <listitem><para>At koble til en tjeneste på en fjernmaskine</para></listitem>
+  <listitem><para>At udbyde tjenester på netværket</para></listitem>
+  <listitem><para>Eksempler: Hente en hjemmeside og en webserver</para></listitem>
 </itemizedlist>
 
 <para>
-Kapitlet forudsættes ikke i resten af bogen.
+  Kapitlet forudsættes ikke i resten af bogen.
 </para>
 
 <para>
-Forudsætter 14, Datastrømme og filhåndtering.
+  Forudsætter 14, Datastrømme og filhåndtering.
 </para>
 
 <para>
-Alle maskiner på et TCP-IP-netværk, f.eks.
-internettet, har et IP-nummer. Det er en talrække på
-fire byte,
-der unikt identificerer en maskine på nettet, f.eks.
-195.215.15.20.
+  Alle maskiner på et TCP-IP-netværk, f.eks.
+  internettet, har et IP-nummer. Det er en talrække på
+  fire byte,
+  der unikt identificerer en maskine på nettet, f.eks.
+  195.215.15.20.
 </para>
 
 <para>
-Normalt bruger man en navnetjeneste (eng.: Domain Name Service -
-DNS), der sammenholder alle numre med navne, der er nemmere at
-huske, f.eks. <ulink url="http://www.cv.ihk.dk/">www.cv.ihk.dk</ulink> eller
-<ulink url="http://www.esperanto.dk/">www.esperanto.dk</ulink>. Adressen
-localhost (IP-nummer 127.0.0.1) er speciel ved altid at pege på
-den maskine, man selv sidder ved.
+  Normalt bruger man en navnetjeneste (eng.: Domain Name Service -
+  DNS), der sammenholder alle numre med navne, der er nemmere at
+  huske, f.eks. <ulink url="http://www.cv.ihk.dk/">www.cv.ihk.dk</ulink> eller
+  <ulink url="http://www.esperanto.dk/">www.esperanto.dk</ulink>. Adressen
+  localhost (IP-nummer 127.0.0.1) er speciel ved altid at pege på
+  den maskine, man selv sidder ved.
 </para>
 
 <para>
-Kommunikation mellem to maskiner sker ved, at værtsmaskinen
-(eng.: host) gør en tjeneste (eng.: service) tilgængelig
-på en bestemt port, hvorefter klienter kan åbne en
-forbindelse til tjenesten.
+  Kommunikation mellem to maskiner sker ved, at værtsmaskinen
+  (eng.: host) gør en tjeneste (eng.: service) tilgængelig
+  på en bestemt port, hvorefter klienter kan åbne en
+  forbindelse til tjenesten.
 </para>
 
-<figure>
-<title>Java</title>
-
-<graphic fileref="Nordfalk1715461.&magic;" scale="60"></graphic>
+<figure id="java-net-fig">
+  <title>Java</title>
+  <graphic fileref="Nordfalk1715461.&magic;" scale="60"></graphic>
 </figure>
 
 <para>
-Hjemmesider (HTTP-tjenesten) er tilgængelige på port
-80. Filoverførsel (FTP-tjenesten) er på port 21, og hvis
-man vil logge ind på maskinen (telnet-tjenesten), er det port
-23.
+  Hjemmesider (HTTP-tjenesten) er tilgængelige på port
+  80. Filoverførsel (FTP-tjenesten) er på port 21, og hvis
+  man vil logge ind på maskinen (telnet-tjenesten), er det port 23.
 </para>
 
 <para>
-I det følgende vil vi vise, hvordan man bruger og udbyder
-HTTP-tjenesten til hjemmesider, men andre former for
-netværkskommunikation foregår på lignende måder.
+  I det følgende vil vi vise, hvordan man bruger og udbyder
+  HTTP-tjenesten til hjemmesider, men andre former for
+  netværkskommunikation foregår på lignende måder.
 </para>
 
-<sect1>
-  <title>At forbinde sig til en port</title>
+<sect1 id="java-net-forbindelse-til-port">
+<title>At forbinde sig til en port</title>
 
 <para>
-Man opretter en forbindelse ved at oprette et Socket-objekt
-og angive værtsmaskinen og porten i konstruktøren. Vil
-man f.eks. kontakte webserveren på <ulink url="http://www.esperanto.dk/">www.esperanto.dk</ulink>,
-skriver man:
+  Man opretter en forbindelse ved at oprette et Socket-objekt
+  og angive værtsmaskinen og porten i konstruktøren. Vil
+  man f.eks. kontakte webserveren på <ulink url="http://www.esperanto.dk/">www.esperanto.dk</ulink>,
+  skriver man:
 </para>
 
 <screen>
   Socket forbindelse = new Socket(&quot;www.esperanto.dk&quot;,80);
 </screen>
 
-
 <para>
-Hvis alt gik godt, har Socket-objektet (forbindelsen eller
-&quot;soklen&quot;) nu kontakt med værtsmaskinen (ellers
-har den kastet en undtagelse).
+  Hvis alt gik godt, har Socket-objektet (forbindelsen eller
+  &quot;soklen&quot;) nu kontakt med værtsmaskinen (ellers
+  har den kastet en undtagelse).
 </para>
 
 <para>
-Nu skal vi have fat i datastrømmene fra os til værten
-og fra værten til os:
+  Nu skal vi have fat i datastrømmene fra os til værten
+  og fra værten til os:
 </para>
 
 <screen>
@@ -114,17 +88,16 @@ og fra værten til os:
   InputStream tilOs = forbindelse.getInputStream();
 </screen>
 
-
 <para>
-Hvis vi vil sende/modtage binære data, kan vi nu bare gå
-i gang: fraOs.write() sender en byte eller en række af byte til
-værten, og med tilOs.read() læser vi en eller flere byte.
+  Hvis vi vil sende/modtage binære data, kan vi nu bare gå
+  i gang: fraOs.write() sender en byte eller en række af byte til
+  værten, og med tilOs.read() læser vi en eller flere byte.
 </para>
 
 <para>
-Hvis det er tekstkommunikation, er PrintWriter og BufferedReader
-(der arbejder med tegn og strenge som beskrevet tidligere) dog
-nemmere at bruge :
+  Hvis det er tekstkommunikation, er PrintWriter og BufferedReader
+  (der arbejder med tegn og strenge som beskrevet tidligere) dog
+  nemmere at bruge :
 </para>
 
 <screen>
@@ -132,13 +105,12 @@ nemmere at bruge :
   BufferedReader ind = new BufferedReader(new InputStreamReader(tilOs));
 </screen>
 
-
 <para>
-Nu kan vi f.eks. bede værten om at give os startsiden
-(svarende til adressen <ulink url="http://www.esperanto.dk/">http://www.esperanto.dk/</ulink>).
-Det gøres ved at sende linien &quot;GET / HTTP/0.9&quot;, 
-derefter &quot;Host: www.esperanto.dk&quot; og til sidst en blank
-linie:
+  Nu kan vi f.eks. bede værten om at give os startsiden
+  (svarende til adressen <ulink url="http://www.esperanto.dk/">http://www.esperanto.dk/</ulink>).
+  Det gøres ved at sende linien &quot;GET / HTTP/0.9&quot;, 
+  derefter &quot;Host: www.esperanto.dk&quot; og til sidst en blank
+  linie:
 </para>
 
 <screen>
@@ -148,16 +120,14 @@ linie:
   ud.flush();
 </screen>
 
-
 <para>
-
-Kaldet til flush() sikrer, at alle data er sendt til værten,
-ved at tømme eventuelle buffere.
+  Kaldet til flush() sikrer, at alle data er sendt til værten,
+  ved at tømme eventuelle buffere.
 </para>
 
 <para>
-Nu sender værten svaret, der kan læses fra
-inddatastrømmen:
+  Nu sender værten svaret, der kan læses fra
+  inddatastrømmen:
 </para>
 
 <screen>
@@ -168,16 +138,15 @@ inddatastrømmen:
 <emphasis>  }</emphasis>
 </screen>
 
-
 <para>
-While-løkken bliver ved med at læse linier. Når
-der ikke er flere data (værten har sendt alle data og lukket
-forbindelsen), returnerer ind.readLine() null, og løkken
-afbrydes.
+  While-løkken bliver ved med at læse linier. Når
+  der ikke er flere data (værten har sendt alle data og lukket
+  forbindelsen), returnerer ind.readLine() null, og løkken
+  afbrydes.
 </para>
 
 <para>
-Her er hele programmet:
+  Her er hele programmet:
 </para>
 
 <screen>
@@ -211,6 +180,7 @@ public class HentHjemmeside
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 svar: HTTP/1.1 200 OK
@@ -241,102 +211,98 @@ svar:
 svar: &lt;/html&gt;
 </screen>
 
-
 <para>
-Det ses, at svaret starter med et hoved med metadata, der
-beskriver indholdet (dato, værtens styresystem, hvornår
-dokumentet sidst blev ændret, længde, type).
+  Det ses, at svaret starter med et hoved med metadata, der
+  beskriver indholdet (dato, værtens styresystem, hvornår
+  dokumentet sidst blev ændret, længde, type).
 </para>
 
 <para>
-Derefter kommer en blank linie og så selve indholdet
-(HTML-kode).
+  Derefter kommer en blank linie og så selve indholdet
+  (HTML-kode).
 </para>
 
 <para>
-Dette er i overensstemmelse med måden, som data skal sendes
-på ifølge HTTP-protokollen. Protokollen er løbende
-blevet udbygget. En af de tidligste (og dermed simpleste) var
-HTTP/0.9, mens de fleste moderne programmer bruger HTTP/1.1.
+  Dette er i overensstemmelse med måden, som data skal sendes
+  på ifølge HTTP-protokollen. Protokollen er løbende
+  blevet udbygget. En af de tidligste (og dermed simpleste) var
+  HTTP/0.9, mens de fleste moderne programmer bruger HTTP/1.1.
 </para>
 </sect1> 
 
-<sect1>
-  <title>At lytte på en port</title>
+<sect1 id="java-net-lytte-paa-port">
+<title>At lytte på en port</title>
 
 <para>
-For at lave et program, der fungerer som vært (dvs. som
-andre maskiner/programmer kan forbinde sig til), opretter man et
-ServerSocket-objekt, der accepterer anmodninger på en bestemt
-port:
+  For at lave et program, der fungerer som vært (dvs. som
+  andre maskiner/programmer kan forbinde sig til), opretter man et
+  ServerSocket-objekt, der accepterer anmodninger på en bestemt
+  port:
 </para>
 
 <screen>
       ServerSocket værtssokkel = new ServerSocket(8001);
 </screen>
 
-
 <para>
-Nu lytter vi på port 8001. Så er det bare at vente på,
-at der kommer en anmodning:
+  Nu lytter vi på port 8001. Så er det bare at vente på,
+  at der kommer en anmodning:
 </para>
 
 <screen>
-        Socket forbindelse = værtssokkel.accept();
+      Socket forbindelse = værtssokkel.accept();
+</screen>
+
+<para>
+  Kaldet af accept() venter på, at en klient forbinder sig, og
+  når det sker, returnerer kaldet med en forbindelse til klienten
+  i et Socket-objekt.
+</para>
+
+<para>
+  Nu kan vi arbejde med forbindelsen ligesom før. Ligesom når
+  to mennesker snakker sammen, har det ikke den store betydning,
+  hvem der startede samtalen, når den først er kommet
+  i gang.
+</para>
+
+<para>
+  I tilfældet med HTTP-protokollen er det defineret, at
+  klienten skal først skal spørge og værten
+  derefter svare, så vi læser først en anmodning
+</para>
+
+<screen>
+      String anmodning = ind.readLine();
+      System.out.println(&quot;Anmodning: &quot;+anmodning);
 </screen>
 
 
 <para>
-Kaldet af accept() venter på, at en klient forbinder sig, og
-når det sker, returnerer kaldet med en forbindelse til klienten
-i et Socket-objekt.
-</para>
-
-<para>
-Nu kan vi arbejde med forbindelsen ligesom før. Ligesom når
-to mennesker snakker sammen, har det ikke den store betydning,
-hvem der startede samtalen, når den først er kommet
-i gang.
-</para>
-
-<para>
-I tilfældet med HTTP-protokollen er det defineret, at
-klienten skal først skal spørge og værten
-derefter svare, så vi læser først en anmodning
+  ... og sender derefter et svar, tømmer databufferen og
+  lukker forbindelsen (afslutter samtalen):
 </para>
 
 <screen>
-        String anmodning = ind.readLine();
-        System.out.println(&quot;Anmodning: &quot;+anmodning);
+      ud.println(&quot;HTTP/0.9 200 OK&quot;);
+      ud.println();
+      ud.println(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Svar&lt;/title&gt;&lt;/head&gt;&quot;);
+      ud.println(&quot;&lt;body&gt;&lt;h1&gt;Kære bruger&lt;/h1&gt;&quot;);
+      ud.println(&quot;Du har spurgt om &quot;+anmodning+&quot;, men der er intet her.&quot;);
+      ud.println(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
+      ud.flush();
+      forbindelse.close();
 </screen>
 
-
 <para>
-... og sender derefter et svar, tømmer databufferen og
-lukker forbindelsen (afslutter samtalen):
-</para>
-
-<screen>
-        ud.println(&quot;HTTP/0.9 200 OK&quot;);
-        ud.println();
-        ud.println(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Svar&lt;/title&gt;&lt;/head&gt;&quot;);
-        ud.println(&quot;&lt;body&gt;&lt;h1&gt;Kære bruger&lt;/h1&gt;&quot;);
-        ud.println(&quot;Du har spurgt om &quot;+anmodning+&quot;, men der er intet her.&quot;);
-        ud.println(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
-        ud.flush();
-        forbindelse.close();
-</screen>
-
-
-<para>
-Bemærk, at ud.flush() skal ske, før vi lukker soklen,
-ellers går svaret helt eller delvist tabt; forbindelse-objektet
-ved ikke, at ud-objektet har nogle data liggende, der ikke er blevet
-sendt endnu.
+  Bemærk, at ud.flush() skal ske, før vi lukker soklen,
+  ellers går svaret helt eller delvist tabt; forbindelse-objektet
+  ved ikke, at ud-objektet har nogle data liggende, der ikke er blevet
+  sendt endnu.
 </para>
 
 <para>
-Herunder ses det fulde program:
+  Herunder ses det fulde program:
 </para>
 
 <screen>
@@ -375,6 +341,7 @@ public class Hjemmesidevaert
 }
 </screen>
 
+<para>Resultatet bliver:</para>
 
 <screen>
 Anmodning: GET / HTTP/0.9
@@ -382,67 +349,22 @@ Anmodning: GET / HTTP/1.1
 Anmodning: GET /xxx.html HTTP/1.1
 </screen>
 
-
 <para>
-Du kan afprøve programmet
-ved at ændre på HentHjemmeside.java til at spørge
-'localhost' på port 8001 eller ved i Netscape at åbne
-adressen http://localhost:8001/xxx.html
+  Du kan afprøve programmet
+  ved at ændre på HentHjemmeside.java til at spørge
+  'localhost' på port 8001 eller ved i Netscape at åbne
+  adressen http://localhost:8001/xxx.html
 </para>
 </sect1>   
 
-<sect1>
-  <title>Opgaver</title>
+<sect1 id="java-net-opgaver">
+<title>Opgaver</title>
+
 <orderedlist>
-  <listitem>
-
-<para>
-Læs Javadokumentationen for klassen URLConnection, og
-  omskriv HentHjemmeside til at bruge denne klasse i stedet for selv
-  af lave Socket-forbindelser.
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Lav din egen proxy. En proxy er en &quot;stråmand&quot;,
-  der modtager en HTTP-forespørgsel og spørger videre
-  for klienten.
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Lav en virtuel opslagstavle. Den skal bestå af
-  klasserne Opslagstavletjeneste, som udbyder tjenesten (brug
-  port 8002), og Opslagstavleklient, som forbinder sig til tjenesten. 
-  Opslagstavletjeneste skal understøtte to former for
-  anmodninger: 1) TILFØJ, der føjer en besked til
-  opslagstavlen og 2) HENTALLE, der sender alle opslag til klienten.
-  Afprøv begge slags anmodninger fra Opslagstavleklient.
-</para>
-
-</listitem>
+  <listitem><para>Læs Javadokumentationen for klassen URLConnection, og omskriv HentHjemmeside til at bruge denne klasse i stedet for selv af lave Socket-forbindelser.</para></listitem>
+  <listitem><para>Lav din egen proxy. En proxy er en &quot;stråmand&quot;, der modtager en HTTP-forespørgsel og spørger videre for klienten.</para></listitem>
+  <listitem><para>Lav en virtuel opslagstavle. Den skal bestå af klasserne Opslagstavletjeneste, som udbyder tjenesten (brug port 8002), og Opslagstavleklient, som forbinder sig til tjenesten. Opslagstavletjeneste skal understøtte to former for anmodninger: 1) TILFØJ, der føjer en besked til opslagstavlen og 2) HENTALLE, der sender alle opslag til klienten.  Afprøv begge slags anmodninger fra Opslagstavleklient.</para></listitem>
 </orderedlist>
 
 </sect1> 
-</chapter>  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</chapter>
