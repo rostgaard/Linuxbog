@@ -8,6 +8,12 @@
 # Mads Bondo Dydensborg <madsdyd@challenge.dk>
 # $Id$
 
+
+################################################################################
+# Includer Makefile.local, hvis den findes
+################################################################################
+-include Makefile.local
+
 ################################################################################
 # Diverse variable sættes
 ################################################################################
@@ -22,6 +28,7 @@ targetshortname:=$(notdir $(locdirname))
 targetname:=linuxbog-$(notdir $(locdirname))
 
 # version
+# TODO: Skal det laves om til make depend?
 version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
 
 # dato
@@ -35,13 +42,13 @@ badsgmlfiles=dato.sgml version.sgml magic.sgml stikord.sgml bogoversigt.sgml oph
 allesgmlfiles:=$(wildcard *.sgml) $(wildcard *.xml)
 
 # Her er en liste af sgml-filer der skal checkes
-sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles)) 
+
+# Og her sætter vi up til at inkludere auto. Bemærk =, ikke :=
+dep_sgml_filer=$(auto_sgml_filer) $(sgmlfiler)
 
 # Her er  en liste af alle eksempler
 alleeksfiles:=$(wildcard eksempler/*)
-
-# Lokal Makefile ?
-#lokmake:=$(wildcard Makefile_local)
 
 # Her er en liste af sgml-filer der skal checkes
 eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
@@ -51,12 +58,20 @@ eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
 ################################################################################
 
 ################################################################################
+.PHONY : test
+test:
+	@echo auto_sgml_filer = $(auto_sgml_filer)
+	@echo sgmlfiler       = $(sgmlfiler)
+	@echo dep_sgml_filer  = $(dep_sgml_filer)
+
+################################################################################
 # her er det der skal laves
 all: start html pdf sgml pakhtml palmpilot eksempelbackup stop
 
 
 ################################################################################
-start:
+.PHONY : start
+start:	
 	@echo "-------------------------------------------"
 	@echo "Starter oversættelser af $(targetshortname)"
 	@echo "-------------------------------------------"
@@ -67,6 +82,7 @@ start:
 
 
 ################################################################################
+.PHONY : stop
 stop:
 	@echo "-------------------------------------------"
 	@echo "Slut på $(targetshortname) $(version)      "
@@ -75,21 +91,16 @@ stop:
 
 
 ################################################################################
+.PHONY : version 
 version:
 	@echo $(targetshortname) $(version)
-
-
-################################################################################
-ekstra:
-	make -f Makefile_local
-
 
 ################################################################################
 # Pak SGML-filerne sammen
 ################################################################################
 if BUILD_SGML
 sgml: $(targetname)-sgml-$(version).tar.gz
-$(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
+$(targetname)-sgml-$(version).tar.gz: $(dep_sgml_filer)
 	@echo ".........................................."
 	@echo "Target $(targetshortname):sgml"
 	@echo ".........................................."
@@ -106,8 +117,9 @@ endif !BUILD_SGML
 ################################################################################
 # Laver en zip fil, kræver html target
 if BUILD_PALM
+.PHONY : palmpilot
 palmpilot: $(targetname)-$(version).palm.zip
-$(targetname)-$(version).palm.zip: $(sgmlfiler) html
+$(targetname)-$(version).palm.zip: html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):palmpilot"
 	@echo ".........................................."
@@ -129,9 +141,10 @@ endif !BUILD_PALM
 # Pak HTML-filer ned
 ################################################################################
 if BUILD_PAKHTML
+.PHONY : pakhtml
 pakhtml: $(targetshortname)/$(targetname)-html-$(version).tar.gz
 
-$(targetshortname)/$(targetname)-html-$(version).tar.gz: bog/index.html
+$(targetshortname)/$(targetname)-html-$(version).tar.gz: html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pakhtml"
 	@echo ".........................................."
@@ -162,8 +175,9 @@ endif !BUILD_PAKHTML
 # Byg HTML-filerne
 ################################################################################
 if BUILD_HTML
+.PHONY : html
 html: bog/index.html 
-bog/index.html: $(sgmlfiler) 
+bog/index.html: $(dep_sgml_filer)
 	@echo ".........................................."
 	@echo "Target $(targetshortname):html"
 	@echo ".........................................."
@@ -194,7 +208,6 @@ else !HAVE_TIDY
 	@echo "Du bør installere tidy"
 endif !HAVE_TIDY
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
-	rm -rf tempdir 
 	@echo "Done HTML (html)"
 	@echo ""
 else !BUILD_HTML
@@ -207,32 +220,32 @@ endif !BUILD_HTML
 ################################################################################
 
 if BUILD_PDF
-pdf: $(targetname)-pdf-$(version).zip
-$(targetname)-pdf-$(version).zip: $(sgmlfiler)
+.PHONY : pdf
+pdf: $(targetname)-$(version).pdf
+$(targetname)-$(version).pdf: $(dep_sgml_filer)
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pdf"
 	@echo ".........................................."
 	@echo '<!ENTITY magic "png">' > magic.sgml
-	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	rm -rf tempdir
-	mkdir tempdir
-	cp *.{sgml,xml} tempdir
-	(cd tempdir && ln -s ../images/*png .)
-	(cd tempdir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
-	(cd tempdir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
-	(cd tempdir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
-	(cd tempdir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
-
-	mv tempdir/bog.pdf $(targetname)-$(version).pdf
+	@echo Opsætter PdfBuildDir
+	rm -rf PdfBuildDir stikord.sgml
+	mkdir PdfBuildDir
+	(cd PdfBuildDir && ln -s ../*sgml .)
+	(cd PdfBuildDir && ln -s ../*xml .)
+	(cd PdfBuildDir && ln -s ../images/*png .)
+	@echo Bygger stikord.sgml
+	(cd PdfBuildDir && collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml)
+	(cd PdfBuildDir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
+	(cd PdfBuildDir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
+	@echo Bygger PDF fil
+	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
+	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
+	mv PdfBuildDir/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
-	rm -rf tempdir
+#	rm -rf PdfBuildDir
 	@echo "Done PDF (pdf)"
 	@echo ""
 endif BUILD_PDF
-
-################################################################################
-test:
-	@echo $(eksfiler)
 
 
 ################################################################################
@@ -258,19 +271,13 @@ $(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 #
 # distclean-local - hook til automake.
 # Cleaner så det passer til en dist
+# TODO: Fixme
 distclean-local:	
-	rm -rf autom4te.cache magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9]
+	rm -rf autom4te.cache magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9]
 
 
 ################################################################################
+# TODO: Fixme
 clean:
 	@echo clean $(targetshortname)
-	rm -rf dato.sgml version.sgml linuxbogurl.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9]
-#ifeq ($(lokmake),Makefile_local)
-#	@echo X $(lokmake) X
-#	@make -f Makefile_local clean
-#else
-#	@echo "Ingen lokal Makefile"
-#endif
-#	@echo "Færdig med clean $(targetshortname)"
-
+	rm -rf dato.sgml version.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9] $(auto_sgml_filer)
