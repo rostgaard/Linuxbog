@@ -14,43 +14,298 @@
   </indexterm>
 
 <para>
-At forbinde sin virksomheds eller sit kollegiums lokale computernetværk til 
-internettet kan være en risikabel ting at gøre. Ofte er man interesseret i at 
-medarbejderene/beboerne får adgang til e-post og til den store mængde 
-information, man kan finde på internettet. 
-Men forbinder man uden videre sit lokale netværk til internettet, kan man 
-blive man udsat for, at andre kan trænge ind på firmaets eller kollegiets 
-interne computere, læse og ændre følsomme data, få servere til at gå i stå osv.
+At forbinde sin virksomheds eller sit kollegiums lokale
+computernetværk direkte til internettet kan være en risikabel
+ting at gøre, for man åbner jo for trafik begge veje, altså også
+for trafik ind på det lokale netværk. Hvis man uden videre
+forbinder sit lokale netværk til internettet, kan man blive man
+udsat for, at andre trænger ind på firmaets eller kollegiets
+interne computere, læser og ændrer følsomme data, får servere til
+at gå i stå osv.  Ønsker man at give adgang for beboere og
+medarbejdere til e-post og den store mængde information, man kan
+finde på internettet uden at åbne for trafik den anden vej,
+kræver det en firewall.
 </para>
 
 <para>
-Der er flere måder at beskytte sig på. Først og fremmest bør man sætte hver
-enkelt computer i netværket op på en sikker måde. Dette er beskrevet
-tidligere i bogen. Men man kan også opnå en slags isolation imellem
-internettet og lokalnetværket ved hjælp af en såkaldt firewall.
+Firewall er det engelske ord for en brandvæg eller en brandmur. I
+bygninger bruges en brandmur til at dele en bygning i sektioner.
+Hvis der opstår en brand i den ene sektion, kan brandmuren
+forhindre at branden breder sig (hurtigt) til andre sektioner.
 </para>
 
 <para>
-En firewall er det engelske ord for brandvæg eller brandmur. I 
-byggebranchen bruges en brandmur til at skille en bygning eller
-et område i forskellige sektioner. Skulle der udbryde brand i en 
-sektion, vil brandmuren forhindre, at branden breder sig til andre sektioner.
+En computer som firewall bruges til på lignende vis at opdele et
+netværk i sektioner, typisk i det, der er udenfor lokalnetværket,
+og det, som er indenfor. Firewallen er først og fremmest et
+pakkefilter, som forhindrer pakker af bestemte typer i at slippe
+igennem fra det ene til det andet netværk. Linux firewallen kan
+imidlertid meget mere end det, og i denne sammenhæng er det
+vigtigt, at den kan lade trafik, som har oprindelse på
+lokalnettet, gå til nettet udenfor, det offentlige net, og vel at
+mærke tillade svarpakkerne at passere på tilbagevejen.
 </para>
 
 <para>
-I computerverdenen bruges en firewall ligeledes til at opdele et
-netværk i sektioner, som er beskyttet imod hinanden.
-En firewall bestemmer hvilke pakker skal slippe igennem mellem to netværk.
-Der er to principper for opsætningen af en firewall. Enten kan den spærre
-for al trafik, bortset fra det der specifikt er tilladt. Eller den kan lade
-al trafik, bortset fra det der specifikt er forbudt, slippe igennem. Begge
-typer opsætninger kan være sikre, hvis det er gjort rigtigt, og
-<emphasis>begge typer opsætninger kan være usikre, hvis det er gjort
-forkert</emphasis>. Man kan sagtens opdele sit lokale netværk med en række
-firewalle imellem de forskellige sektioner, men det mest almindelige er kun
-at bruge en firewall til at holde sit lokale netværk adskilt fra det
-verdensomspændende internet.
+Man kan opnå en fremragende sikkerhed med en Linux box som
+firewall, men det er imidlertid bedst at kombinere firewallen med de
+forholdsregler for sikker opsætning af en computer, som er omtalt
+tidligere i bogen.
 </para>
+
+<para>
+En firewall kan selvfølgelig også bruges til at adskille to
+eller flere lokalnetværk fra hinanden.
+</para>
+
+<para>
+Der findes forskellige måder at opbygge en firewall, næste afsnit
+lister de vigtigste.
+</para>
+
+<sect2><title>Firewall typer</title>
+
+<itemizedlist mark="bullet">
+  <listitem><para>Pakkefiltrering</para></listitem>
+  <listitem><para>Proxy, en applikation som optræder som
+  mellemmand</para></listitem>
+  <listitem><para>Stateful Multi-Layer Inspection, SMLI, en kombination af pakkefilter, tilstands-betingelser og indholds-filtrering</para></listitem>
+</itemizedlist>
+<indexterm><primary>SMLI</primary></indexterm>
+
+<para>
+Et pakkefilter ser på pakkens IP-adresse, den protokol-type, som
+den hører til og eventuelt flere ting.
+</para>
+
+<para>
+En proxy, som egentlig blot betyder en stedfortræder, var
+oprindeligt et program på en gateway, som man inde på lokalnettet
+henvendte sig til, og så kunne dette program sende forespørgsler
+videre, som om de kom fra proxy-maskinen. Det er en meget sikker
+men også ret besværlig måde at skille lokalnet fra offentlige
+net, og det kræver en proxy for hver protokol, man ønsker at åbne
+for, http, ftp, ssh og hvad det nu kunne være.
+</para>
+
+<para>
+En mere moderne proxy kan fungere uden at man henvender sig
+specielt til den. Det kaldes en transparent proxy. Den lytter
+efter al trafik og videresender de pakker, som er tilladte,
+ligesom et pakkefilter, men i modsætning til pakkefilteret kan
+proxyen altså sende dem videre, som om de kom fra den selv, og
+desuden inspicere dem på indholdsniveau eller applikationslag;
+man taler om netværkslag, som fx. den forsimplede Department of
+Defence model, DoD 4-lags modellen her: 
+
+
+<itemizedlist mark="bullet">
+
+<listitem><para>
+Fysisk link-lag, d.v.s. ethernetkort og ledninger (der er
+egentlig også et par abstraktionslag her);
+</para></listitem>
+
+<listitem><para>
+netværkslaget, her finder man IP-numre, ping programmet og ICMP;
+</para></listitem>
+
+<listitem><para>
+transportlaget TCP 
+</para></listitem>
+
+<listitem><para>
+applikationslaget, fx. FTP og HTTP.
+</para></listitem>
+</itemizedlist>
+
+En proxy kan inspicere på applikationslaget. Den kan derfor kan
+kaldes for et censur-program, netværks-barnepige eller spion.
+</para>
+
+<para>
+Stateful Multi Layer Inspection er den mest avancerede form for
+firewall. Det er faktisk muligt at lave den slags filtrering
+med Linux kernen. Linux kernens indbyggede pakkefilter har
+mulighed for at holde styr på det, man kalder en forbindelse
+(connection), d.v.s. en session, hvor man indleder en
+konversation med en server, udveksler data og ender med at sige
+"nu er jeg færdig".
+</para>
+
+<para>
+TCP benytter sådanne connection meddelelser, Linuxkernen kan
+holde styr på status for en forbindelse. Derfor kaldes Linux
+Netfilter for et State Packet Filter, SPF.
+</para>
+
+<para>
+Linuxkernen kan endvidere sende udvalgte pakker til en
+applikation i user space, som kan gøre med dem, hvad den vil (fx.
+sende dem videre efter at have ændret på dem). Derved kan man
+bygge en SMLI firewall baseret på Linux Netfilter. En
+user-applikation kan inkorporeres i kernen (for at effektivisere
+den), så man kan skam bygge tip top professionelle SMLI-firewalls
+på basis af Linux.
+</para>
+</sect2>
+
+<sect2 id="sikkerhed-grundlaeggende-pakkefilter">
+<title>Grundlæggende pakkefiltrering eller politiske
+overvejelser</title>
+<sect3 id="sikkerhed-luk-alt">
+<title>Luk alt</title>
+<para>
+Hvis man lukker for alt, er det selvfølgelig overflødigt med en
+netforbindelse ud af huset. Men det er nu alligevel den bedste
+måde at sikre systemet på (;-) For at få lidt glæde af
+netforbindelsen kan man så åbne for web-protokollen HTTP. En
+TCP/IP pakke har ud over IP nummeret et port-nummer med sig, som
+blot er et tal (16 bit) i TCP-pakkens header. På modtagermaskinen
+ser TCP-softwaren i kernen efter, hvilket portnummer der er, og
+om der er noget program, som har meldt sig som interesseret i
+pakker til dette portnummer. Det kalder man, at et program har
+registreret på den pågældende port. Et program, som lytter efter
+indkommende forbindelser, kaldes en server (eller somme tider et
+serverprogram.)
+</para>
+
+<para>
+HTTP protokollen er karakteristisk ved, at serveren som regel
+lytter på port 80. D.v.s. at vi kunne lave en firewall regel, som
+siger, at al trafik, som er til eller fra port 80 på en computer
+<emphasis>udenfor lokalnetværket</emphasis> skal have lov at
+passere. Det er en løsning, men, som vi senere skal se, en fattig
+løsning, idet man kommer til at mangle name servicen, DNS, og
+endvidere kommer til at lide under, at nogle web-sites forventer,
+at man kan bruge FTP til download, eller ligefrem flytter
+brugerens forespørgsel til en server på et andet portnummer.
+</para>
+</sect3>
+
+<sect3 id="sikkerhed-aaben-alt"><title>Lad alt være åbent -
+undtagen de farlige ting</title>
+
+<para>
+For at undgå problemer kunne man så beslutte, at man lader det
+meste stå åbent og - selvfølgelig - lukker for de farlige
+services som fx. telnet, remote shell og så videre.
+</para>
+
+<para>
+Et eksempel kunne være, at man lokalt gerne må bruge telnet, men
+at det er sket at folk udefra har forsøgt at få forbindelse via
+telnet. Derfor kan det se ud som en løsning at lukke for port 23.
+Den løsning er dog heller ikke særlig god. Intrusion på en
+computer kan sagtens benytte sig af andre portnumre (og andre
+protokoller) og ved snedige, ulovlige datapakker forsøge at sætte
+en kæp i hjulet på de programmer, der lytter. Hvis vi var
+flittige og lappede alle hullerne i serverprogrammerne og i
+øvrigt overvågede maskinen døgnet rundt, så ville denne løsning
+være god nok, men den er dyr i arbejdstimer.
+</para>
+
+<para>
+Forhåbentlig fremgår det af ovenstående, at en firewall egentlig
+er et ret kompliceret stykke software. Man skal nu ikke lade sig
+skræmme væk af den grund. Det er i grunden ret nemt at skrive de
+nødvendige kommandoer og så blot kontrollere en gang i mellem, at
+det kører som det skal.
+</para>
+
+<para>
+Man bruger iptables kommandoen til at opsætte firewall
+reglerne i kernen. Men man behøver ikke at kunne iptables
+kommando syntaksen, idet SuSE, RedHat og andre lavet
+GUI-administration af firewall reglerne. Så hvis man holder sig
+til de gode, kendte distributioner eller på anden måde sørger
+for, at de nødvendige ting er tilstede, så kan man blot krydse
+af, hvilke servere andre udefra skal have lov at bruge, om nogen.
+Er man af gør det selv typen, følger her en opskrift på, hvordan
+man kan lave en lille komplet firewall opsætning.
+</para>
+
+</sect3>
+
+<sect3 id="sikkerhed-really-quick-guide">
+<title>Lynkursus</title>
+
+<para>
+Senere bliver kommandoerne til en firewall beskrevet og forklaret
+grundigt, men for den utålmodige, som bare vil i gang, kan vi
+lige vise "Rusty's Really Quick Guide To Packet Filtering" fra
+packet-filtering-HOWTO:
+</para>
+
+<programlisting>
+
+
+  ## Insert connection-tracking modules (not needed if built into kernel).
+  # insmod ip_conntrack
+  # insmod ip_conntrack_ftp
+
+  ## Create chain which blocks new connections, except if coming from inside.
+  # iptables -N block
+  # iptables -A block -m state --state ESTABLISHED,RELATED -j ACCEPT
+  # iptables -A block -m state --state NEW -i ! ppp0 -j ACCEPT
+  # iptables -A block -j DROP
+
+  ## Jump to that chain from INPUT and FORWARD chains.
+  # iptables -A INPUT -j block
+  # iptables -A FORWARD -j block
+
+</programlisting>
+
+<para>
+De første kommandoer er nødvendige med de fleste
+distributionskerner. Det er ikke spor svært at lave sin egen
+superkerne, hvis man interesserer sig for, hvad en kerne er, og
+man har lært noget om, hvordan et operativsystem fungerer. Har
+man en kerne hvor alt er kompileret ind i kernen, vil systemet
+være en anelse hurtigere<footnote><para>På min gamle 75Mhz maskine kunne jeg
+tydeligt mærke forskel!</para></footnote>.
+</para>
+
+<para>
+<command>iptables -N block</command> laver en kæde (en skuffe
+eller hylde) for et regelsæt. Regelsættene kaldes chains, fordi
+man bruger reglerne i den rækkefølge, de er sat ind i kæden.
+Kæden her hedder "block", blokér.
+</para>
+
+<para>
+<command> iptables -A block -m state --state ESTABLISHED,RELATED
+-j ACCEPT</command>
+</para>
+
+<para>
+<command>-A block</command> indsætter en regel i block-kæden, som
+siger, at man skal bruge tilstands-modulet, -m state og
+undersøge, om pakken tilhører en forbindelse (connection), som
+allerede er startet eller som er i slægt med en connection
+<command>--state ESTABLISHED,RELATED</command>, hvis det er
+tilfældet, skal pakken accepteres, d.v.s. regelfortolkeren jumper
+(-j) hopper til feltet for videresendelse af pakker, "ACCEPT".
+</para>
+
+<para>
+Næste linie siger, at alle pakker, som <emphasis>ikke</emphasis>
+kommer udefra (i dette tilfælde fra et modem som bruger
+Point-to-Point-Protokollen, PPP), skal have lov at passere.
+</para>
+
+<para>
+Alt andet smides simpelt hen væk! DROP!
+</para>
+
+<para>
+En nærmere forklaring af syntaksen og mulighederne med netfilter
+kommer senere i kapitlet.
+</para>
+
+
+<!-- dax 2003-10-19 hertil /-->
+
 
 <para>
 Det er vigtigt at forstå, at en firewall ikke er spor sikker, hvis den
@@ -111,7 +366,9 @@ Man er aldrig helt sikker, selv med en firewall...
 <figure id="uf000784-fig" float="1">
 <title>User Friendly</title>
 <graphic fileref="uf000784.&magic;"  scale="40"></graphic>
-</figure>  
+</figure>
+</sect3>
+</sect2>
 </sect1>
 
 <sect1 id="firewall-links">
@@ -175,45 +432,45 @@ Andet:
 </itemizedlist>
 </sect1>
 
+
+
 <sect1 id="firewall-funktion">
-<title>Hvad gør en firewall</title>
-<para>
-Man kan dele firewalle op i tre typer, der beskytter netværket på hver 
-sit niveau:
-</para>
+<title>Firewallens funktioner</title>
 
-<itemizedlist mark="bullet">
-  <listitem><para>Pakkefiltrering (eng. packet filtering)</para></listitem>
-  <listitem><para>Proxy (kontrol med forbindelser)</para></listitem>
-  <listitem><para>SMLI (Stateful Multi-Layer Inspection)</para></listitem>
-</itemizedlist>
 <para>
-De to første typer, vil vi nu se nærmere på.
-Den tredie type firewall omtales kun kort.
+Linux firewallen vil på et mindre lokalnet som regel have flere
+funktioner. Den skal kontrollere, hvilken trafik, der kan
+tillades, den skal sikre os mod angreb, og endelig kan den
+overvåge trafikmængder og for eksempel fortælle os, om et eller
+andet program begynder at udspy pakker på internettet. Det sker
+somme tider. Og måske er man bare almindeligt nysgerrig og ønsker
+at se, hvad der sker på maskinen.
 </para>
-
 
 <sect2 id="firewall-pakkefiltrering">
-<title>Pakkefiltrering</title>
+<title>Kontrol af trafik-typer.</title>
 <indexterm><primary>pakkefiltering</primary></indexterm>
+<indexterm><primary>kontrol af trafik</primary></indexterm>
+
 <para>
-Data sendes igennem et netværk i form af datapakker. På internettet bruges
-IP-pakker. En IP-pakke består af en header med information om, hvor den 
-skal hen, hvor den kommer fra, hvad den er for en slags samt eventuelt nogle data. 
-Ved pakkefiltrering kigger man på informationen i headeren og bestemmer, 
-hvad der skal ske med pakken: Om den skal afvises eller slippes igennem.
+Data sendes igennem et netværk i form af datapakker. På
+internettet bruges IP-pakker. En IP-pakke består af en header med
+information om, hvor den skal hen, hvor den kommer fra, hvad den
+er for en slags samt eventuelt nogle data.  Ved pakkefiltrering
+kigger man på informationen i headeren og bestemmer, hvad der
+skal ske med pakken: Om den skal afvises eller slippes igennem.
 </para>
 
 <para>
 Ideen er så, at en firewall stopper alle de pakker, som man ikke
-har "inviteret". Kører man fx. en web-server, slipper man
-web-pakker igennem. En privat maskine med internetadgang
-kan godt stoppe alle udefra kommende forespørgseler samtidigt
-med, at alle de netværks-sessions, der startes af brugeren får
-lov til at køre som normalt, d.v.s. at
-<emphasis>svar-pakker</emphasis> fra det externe net får lov at
-komme igennem.
+har "inviteret". Kører man fx. en web-server, slipper man kun
+web-pakker igennem. En privat maskine med internetadgang kan godt
+stoppe alle udefra kommende forespørgseler samtidigt med, at alle
+de netværks-sessions, der startes af brugeren får lov til at køre
+som normalt, d.v.s. at <emphasis>svar-pakker</emphasis> fra det
+externe net får lov at komme igennem.
 </para>
+
 <para>
 Man bør blokere:
 </para>
@@ -255,18 +512,26 @@ igennem for at komme videre. Det er typisk en maskine med to
 netkort. En sådan maskine eller enhed kaldes en router, det
 udtales på engelsk rauter, man danskere har for vane at sige
 ruter, (hvilket er ok). En router forbinder to eller flere
-netværk med hinanden. Det kan være lokalnetværk, eller det kan
-være større netværk - pakkerne skal igennem routeren for at kunne
-komme videre<footnote><para>Der findes bokse med et stik, som
-leverandøren kalder router. Den foretager kun "NATting".
-</para></footnote>
+netværk med hinanden. Det ene netkort går til lokalnettet, det
+andet til det offentlige net eller noget lignende. Det kan være
+lokalnetværk, eller det kan være større netværk - pakkerne skal
+igennem routeren for at kunne komme videre<footnote><para>Der
+findes bokse med et stik, som leverandøren kalder router. Den
+foretager kun "NATting", men er nødvendig for videresendelse af
+pakker fra et såkaldt "privat netværk".</para></footnote>
 </para>
 
 <para>
-Ordet inter-net betyder netop, at man forbinder flere lokale
-netværk og har en måde at gøre det på, denne måde kaldes Internet
-Protokollen.
+Ordet <emphasis>inter-net</emphasis> betyder netop, at man
+forbinder flere lokale netværk og har en måde at gøre det på,
+denne måde kaldes Internet Protokollen (IP).
 </para>
+
+</sect2>
+
+
+<sect2 id="sikkerhed-nat">
+<title>Netværks Adresse Translation, NAT</title>
 
 <para>
 En router for et lokalnetværk har som regel flere opgaver end at
@@ -293,11 +558,11 @@ router. (se nedenfor<!-- TODO xref linkend="si-NATting" /-->)
 </para>
 
 <para>
-Som sagt kan en Linux-PC fungere som router, men en router
-kan også være en dedikeret, flad boks, som egentlig er et
-diskløst system, der kan fjernstyres fra en anden computer. Der
-fås billige routere til mindre virksomheder og private net, og
-der fås også store routere med mange stik, som kan håndtere meget
+Som sagt kan en Linux-PC fungere som router, men en router kan
+også være en dedikeret, flad boks, som egentlig er et diskløst
+system, der kan fjernstyres fra en anden computer.  Der fås
+billige routere til mindre virksomheder og private net, og der
+fås også store routere med mange stik, som kan håndtere meget
 store trafikmængder. Der er en Linux-kerne inde i mange af den
 slags dedikerede routere.
 </para>
@@ -315,17 +580,12 @@ En af de vigtigste ting for en firewall til et privat netværk er,
 at man kan tillade brugerne indenfor at have FTP, web, ssh,
 mail og sågar telnet og så videre udadtil, selv om man lukker for
 alle, der udefra forsøger at komme ind på systemet. Hvis man
-forestiller sig et lokalnet, hvor hver enkelt maskine på denne
-måde var sikret mod uvedkommende, så kan man forstå, hvorfor
-Linux/GNU/BSD anses for at være sikre systemer.
+forestiller at hver enkelt maskine på et lokalnet var sikret på
+denne måde mod uvedkommende, så kan man forstå, hvorfor
+Linux/GNU/BSD af fagfolk anses for at være bedre og sikrere
+systemer.
 </para>
 
-<para>
-Normalt lukker man først for alle former for trafik, og så åbner
-man firewallen for bestemte typer trafik med kommandoer, som vi
-skal se på straks.  Dette kan bruges til at tillade bestemte
-protokoller, som vi ved benytter netop disse porte. 
-</para>
 </sect2>
 
 
@@ -333,170 +593,59 @@ protokoller, som vi ved benytter netop disse porte.
 <title>Kontrol med oprettelse af forbindelser</title>
 
 <para>
-Indtil videre har vi hovedsageligt talt om data på pakkeniveau.
-Hvis man vil hindre den eksterne verden i at lave forbindelser
-til en bestemt maskine på lokalnettet, så taler vi om afspærring
-på pakkeniveau.
+Hvis man lukker for al adgang med den undtagelse, at pakker, som
+skal til port 80 på eksterne computere, skal have lov at passere,
+så taler vi om filtrering på transportlaget eller på pakkeniveau.
 </para>
 
 <para>
-Hvis man laver sådan en afspærring, hvad vil der så ske, hvis en
-intern maskine sender en web request ud og får svar udefra? Hvis
-vi blokerer alt udefra, vil svarpakker også blive blokeret.
+Hvad vil der så ske, hvis en web-side indeholder et link eller et
+billede fra fx.
+<ulink url="http://www.e-bannerx.com:8888/adrevolver/ui">
+"http://www.e-bannerx.com:8888/adrevolver/ui"</ulink>?
+Vi vil ikke få forbindelse, for vi requester port 8888 fra en
+remote host, og vi må kun få fat i port 80!
+</para>
+
+<para>
+Vi vil med andre ord gerne åbne for al trafik indefra, men spærre
+for uvedkommende udefra.
 </para>
 
 <para>
 At åbne for alle forbindelser, som startes indefra, kræver, at
 firewallen holder styr på, hvilke forbindelser, der er oprettet;
 for at gøre det, skal firewallen have inkluderet et modul, der
-kaldes "connection tracking".
+kaldes "connection tracking". Derved kan Linux kernen styre
+hvilke forbindelser, der må oprettes imellem de to adskilte
+netværk. Den kan også logge, hvad der sker på disse forbindelser.
 </para>
 
 <para>
-En Linux kerne kan altså styre hvilke forbindelser, der må
-oprettes imellem de to adskilte netværk. Den kan også logge, hvad
-der sker på disse forbindelser.
+Det kalder man filtrering på session- eller forbindelses - niveau.
 </para>
 
-<sect3 id="proxy">
-<title>Proxy</title>
-<indexterm><primary>Proxy</primary></indexterm>
-
-<para>
-Én måde at håndtere forbindelserne på, er at sætte en proxy-server
-op. Proxy betyder stedfortræder. En proxy er en slags relæ, der
-forwarder connection requests fra det lokale netværk til det eksterne,
-uden at de kommer i direkte kontakt med hinanden. Den lokale maskine
-skal som regel være sat op til at bruge en proxy. Den opretter en
-forbindelse til proxy'en, og det er proxy'en, der opretter den rigtige
-forbindelse ud på internettet. Det betyder, at for det eksterne netværk
-ser det ud som om, alle forbindelser fra dit netværk kommer fra
-proxy'en, ikke fra de lokale maskiner. Det giver en vis sikkerhed, at
-folk udefra ikke får kendskab til de lokale maskiners eksistens, og
-ikke får lov at have direkte forbindelse med dem.
-</para>
-
-<para>
-Med en proxy kan brugerene have "fri adgang" til internettet igennem de 
-tilladte services, typisk http og ftp, uden at det kompromitterer 
-sikkerheden på det lokale netværk.
-</para>
-
-<para>
-At anvende en proxy server har flere fordele. Først og fremmest undgår
-man, at maskiner ude på internettet får direkte kontakt med ens interne
-maskiner på "indersiden" af proxy'en. Man isolerer sit lokale netværk
-fra det udenfor, så der aldrig oprettes en forbindelse igennem
-proxy'en. Det er altid proxy'en, der opretter forbindelsen ud, og derfor
-kun proxy'en, der er kendt udenfor. Et helt andet aspekt er, at man et
-centralt sted får direkte mulighed for at begrænse, hvad der kan
-hentes ned fra internettet, og administratoren får relativ nem adgang til 
-at overvåge, hvad der hentes. Her skal man dog være opmærksom på både etiske
-regler og registerlovene - det er ikke alt, der må overvåges.
-</para>
-
-
-<para>
-Der findes forskellige typer proxy:
-</para>
-
-<itemizedlist mark="bullet">
-
-<listitem>
-<indexterm><primary>Traditionel proxy</primary></indexterm>
-
-<para><emphasis>Traditionel proxy</emphasis> 
-En traditionel proxy virker sådan, at
-den lokale maskine "myhost" henvender i sig til proxy-serveren "myproxy"
-for at få en internet forbindelse. Maskinen "myproxy" opretter
-forbindelsen og afleverer resultatet, f.eks. en webside, til
-"myhost". Maskinen "myhost" opretter kun en forbindelse til "myproxy",
-og den maskine, der kontaktes ude på internettet, bliver reelt
-kontaktet af "myproxy". Den får ikke kendskab til, at "myhost"
-eksisterer. Det besværlige ved en traditionel proxy er, at hvert
-internet-program (netscape, ftp osv.) på "myhost" skal være klar over,
-at der benyttes proxy, og kunne håndtere dette.
-</para></listitem>
-
-<listitem><para><emphasis>Transparent proxy</emphasis>
-<indexterm><primary>Transparent proxy</primary></indexterm>
-Transparent proxy løser problemet, med at programmerne skal være klar over,
-at der er en proxy. "Myhost" skal bruge "myproxy" som default gateway. "Myhost"
-skal så blot forsøge at oprette en forbindelse direkte til internettet. Når
-denne forespørgsel kommer igennem "myproxy", overtager proxy'en opgaven med
-at oprette forbindelsen, og maskinen ude på internettet kan stadig kun se
-"myproxy". Den lokale maskine tror, den har en forbindelse direkte til
-internettet. Når resultatet, f.eks. en webside, kommer til "myproxy", giver den
-det blot videre til den ventende forbindelse fra "myhost".
-</para></listitem>
-
-<listitem><para>
-<indexterm><primary>NAT</primary></indexterm>
-<indexterm><primary>Masquerading</primary></indexterm>
-<emphasis>Masquerading/NAT</emphasis> 
-Masquerading er <emphasis>ikke</emphasis> proxy, og det
-giver ikke den sikkerhed, en proxy kan give. Proxyen kan cache
-og inspicere pakker på http-plan og dermed filtrere på indhold og
-type og website navne. Masquerading er en form for NAT -
-<emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress
-<emphasis>T</emphasis>ranslation - hvor man omskriver pakkerne,
-når de kommer igennem masquerading maskinen.  For nemheds skyld
-kalder vi den stadig "myproxy". Ved masquerading ser det stadig
-ud for internettet, som om alting kommer fra "myproxy". Men
-forbindelsen til internet er faktisk direkte, bortset fra at
-pakkerne bliver omskrevet i "myproxy".  "Myproxy" skal være
-default gateway, d.v.s at al trafik skal igennem myproxy. De
-udgående pakker bliver omskrevet med "myproxy" som
-afsenderadresse i stedet for "myhost". De indgående pakker er
-naturligvis adresseret til "myproxy", men masquerading systemet
-holder styr på, hvem der er den rigtige modtager, og når pakkerne
-kommer forbi på tilbagevejen, bliver de omskrevet med "myhost"
-som modtager. For at det skal fungere for fx. ftp kræves også
-connection tracking.
-</para></listitem>
-</itemizedlist>
-
-<para>
-(Se <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO-3.html">http://sunsite.dk/ldp/HOWTO/IPCHAINS-HOWTO-3.html</ulink>)
-</para>
-
-</sect3>
 </sect2>
 
-<sect2 id="SMLI">
-<title>SMLI</title>
 
-<indexterm><primary>SMLI</primary></indexterm>
-
-
-<para>
-I dag taler man også om en tredie type firewall, kaldet SMLI -
-<emphasis>S</emphasis>tateful
-<emphasis>M</emphasis>ulti-<emphasis>L</emphasis>ayer
-<emphasis>I</emphasis>nspection.  Denne type firewall kommer vi ikke
-nærmere ind på i artiklen, men det går kort fortalt ud på, at en pakke
-inspiceres på flere niveauer, og dermed både implementerer
-pakkefiltrering og kontrol med forbindelser, omend på en anden måde
-end proxy'er gør.
-</para>
-</sect2>
 
 <sect2 id="Ftp-problemet">
 <title>Ftp-problemet</title>
-<indexterm><primary>ftp og sikkerhed</primary></indexterm>
+<indexterm><primary>FTP og sikkerhed</primary></indexterm>
 
 <para>
-Traditionel ftp, også kaldet aktiv ftp, er lidt et problem i forbindelse med 
-firewalle, da det laver indgående forbindelser. Ikke alene laver det 
+Traditionel FTP, også kaldet aktiv FTP, er lidt et problem i
+forbindelse med en firewall, da det laver indgående forbindelser.
+Ikke alene laver det 
 indgående forbindelser, men det er ikke muligt på forhånd at vide hvilken
 port, forbindelsen laves på. Det vil sige, at for at tillade sine brugere at
-benytte aktiv ftp, er man
+benytte aktiv FTP, er man
 nødt til at lade en masse porte stå åbne. Lad os se, hvad der sker,
-når man bruger traditionel ftp:
+når man bruger traditionel FTP:
 </para>
 
 <programlisting>
-Aktiv ftp 
+Aktiv FTP 
 
   Klient                  Server
                      command  data
@@ -521,13 +670,14 @@ Aktiv ftp
 <itemizedlist mark="bullet">
 
 <listitem><para>1) Først oprettes en forbindelse fra klienten på en 
-tilfældig port (her port 57724) til port 21, ftp kommando porten, 
+tilfældig port (her port 57724) til port 21, FTP kommando porten, 
 på serveren. Klienten overfører et portnummer, som den vil benytte 
 til dataoverførslen (her port 57726).</para></listitem>
 
 <listitem><para>2) Serveren siger ok</para></listitem>
 
-<listitem><para>3) Serveren opretter en dataforbindelse fra sin ftp
+<listitem><para>3) Serveren opretter en dataforbindelse fra sin
+FTP
 dataport - port 20 - til den angivne port på klienten
 (57726).</para></listitem>
 
@@ -538,23 +688,23 @@ dataport - port 20 - til den angivne port på klienten
 <para>
 Man kan se, at serveren opretter en forbindelse til klienten på port
 57726.  Da man ikke på forhånd kan vide hvilken port, der vil blive
-brugt på klienten - ftp-programmet vælger bare en ledig port - er det
-nødvendigt at lade et portinterval på klienten stå åbent for ftp
-forbindelser, så ftp klienten kan virke.
+brugt på klienten - FTP-programmet vælger bare en ledig port - er det
+nødvendigt at lade et portinterval på klienten stå åbent for FTP
+forbindelser, så FTP klienten kan virke.
 </para>
 
 <para>
-Problemet kan løses med nyere udgaver af ftp,
-som kan køre "passiv ftp" i stedet for. Ved passiv ftp er det kun klienten,
+Problemet kan løses med nyere udgaver af FTP,
+som kan køre "passiv FTP" i stedet for. Ved passiv FTP er det kun klienten,
 der starter forbindelser op. 
 </para>
 
-<indexterm><primary>passiv ftp</primary></indexterm>
+<indexterm><primary>passiv FTP</primary></indexterm>
 
-<example id="passiv-ftp">
-<title>Passiv ftp</title>
+<example id="passiv-FTP">
+<title>Passiv FTP</title>
 <programlisting>
-Passiv ftp 
+Passiv FTP 
 
   Klient                  Server
                      command      data
@@ -650,11 +800,32 @@ i kerne 2.4.
 
 <indexterm><primary>ipchains</primary></indexterm>
 
+<para>
+&lt;!-- (KOMMENTAR)
+NOTABENE!!! Vi bytter om på afsnittene. Her skal omtales
+iptables, hvad er en table, hvad er en chain, hvad er en default
+policy, hvordan lister/ændrer man default policy, hvordan laver
+man en kæde af regler, hvilke targets har man og hvordan bruger
+man dem, hvordan sætter man en almindelig firewall op? Hvorfor
+kan man ikke angive fx. ftp som --protocol parameter? men kun -p
+tcp eller -p udp eller evt. icmp? og hvordan bruger man mest
+fornuftigt --source og --destination parametre? endelig også
+hooks til traffic control tc kommandoen m.v. (Har jeg glemt
+noget?)
+/--&gt;
+</para>
 
 <para>
-I kerne 2.2, som er den Linux-kerne, man hovedsagelig anvender i dag, hedder 
-firewallværktøjet ipchains. Ipchains er en omskrivning af ipfwadm, som
-man anvendte i kerne 2.0. 
+Det program, som man anvender i dag og også i nærmeste fremtid på
+kerne 2.6, hedder iptables og henvender sig til et kernemodul,
+som hedder netfilter. Netfilter kan optimeres efter behov, og man
+skal generere sin egen kerne, hvis man vil have alle features med
+(i hvert fald så vidt angår RedHat 9.x++).
+</para>
+
+<para>
+I kerne 2.2, hed firewallværktøjet ipchains. Ipchains er en
+omskrivning af ipfwadm, som man anvendte i kerne 2.0. 
 </para>
 
 <para>
