@@ -33,14 +33,12 @@ anvende Fast_Cgi eller Mod_Perl modulet hvis funktion forklares senere.
 <title>Opsætning af Apache til at udføre CGI-programmer.</title>
 
 <para>
-Hvis du selv bestyrer en webserver skal den først konfigureres til at udføre
-filer af typen .cgi som CGI-programmer, hvis du bruger et web-hotel så vil
-du sikkert have adgang til noget information om hvor og hvordan programmer kan
-udføres. Følgende ændringer skal udføres i Apaches konfigurationsfiler, der
-ligger normalt i <filename>/etc/httpd/conf</filename> kataloget:
-</para>
-
-<para>Filen <filename>srm.conf</filename> skal indeholde følgende linier
+ Hvis du selv bestyrer en webserver skal den først sættes op til at køre
+ filer med endelsen ".cgi" som CGI-programmer. Hvis du bruger et web-hotel så
+ vil du sikkert have adgang til noget information om hvor og hvordan
+ programmer kan køres på webserveren. Følgende linier skal føjes til Apaches
+ opsætningsfil, <filename>httpd.conf</filename>, der normalt findes i
+ kataloget <filename>/etc/httpd/conf/</filename>:
 </para>
 
 <screen>
@@ -49,11 +47,10 @@ ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
 </screen>
 
 <para>
-Filen <filename>access.conf</filename> definere web browseres rettigheder til
-at hente sider i kataloger, og  'Options ExecCGI' skal være slået til i alle 
-kataloger hvor webserveren skal udføre programmer. Typisk er der i forvejen et
-<filename>/home/httpd/cgi-bin</filename> katalog hvor webserveren har
-rettigheder til at udføre programmer:
+ "Options ExecCGI" skal være slået til for alle kataloger, hvor webserveren
+ skal køre programmer. Typisk er der i forvejen et
+ <filename>/home/httpd/cgi-bin</filename>-katalog, hvor webserveren har ret
+ til at køre programmer:
 </para>
 
 <screen>
@@ -64,27 +61,30 @@ rettigheder til at udføre programmer:
 </screen>
 
 <para>
-Det kan være nødventigt at ændre adgangen til dette katalog så du som
-normal bruger kan skrive til det. Dette gøres med kommandoen "<command>chmod
-o+rwx /home/httpd/cgi-bin</command>"
+ Det kan være nødventigt at ændre rettighederne til dette katalog, så du som
+ normal bruger kan skrive i det. Det gøres med kommandoen "<command>chmod
+ o+rwx /home/httpd/cgi-bin</command>"
 </para>
 
 <para>
-I <filename>httpd.conf</filename> skal indeholde følgende liner
+ Til sidst skal du sikre dig at Apache overhovedet er i stand til at køre
+ CGI-programmer, ved at aktivere "mod_cgi":
 </para>
 
+<!--  Er det følgende eksempel ikke noget ævl? -->
 <screen>
 LoadModule dir_module         modules/mod_dir.so
 AddModule mod_cgi.c
 </screen>
 
 <para>
-Mange af disse ændringer består i at fjerne udkommenteringen '#' i
-eksisterende linier. Når disse ændringer er udført og webserveren genstartet
-med <command>/etc/rc.d/init.d/httpd restart</command>, så vil et program
-'<filename>runme.cgi</filename>' der ligger i
-<filename>/home/httpd/cgi-bin/</filename> kataloget kunne udføres ved at man i en
-browser beder om <filename>http://localhost/cgi-bin/runme.cgi</filename>.
+ Mange af disse ændringer består i at fjerne udkommenteringen (#) i
+ eksisterende linier. Når disse ændringer er udført og webserveren har indlæst
+ den nye opsætning (kør <command>/etc/rc.d/init.d/httpd reload</command>), så
+ vil et program, <filename>runme.cgi</filename>, der ligger i kataloget
+ <filename>/home/httpd/cgi-bin/</filename> kunne køres ved at man i en browser
+ <!-- oser! --> beder om
+ <filename>http://localhost/cgi-bin/runme.cgi</filename>.
 </para>
 
 </sect2>
@@ -108,12 +108,15 @@ CGI-programmet modtager også en række data igennem systemvariable.
 </para>
 
 <para>
-I det følgende afsnit vil vi introducere CGI-programmer der returnerer et
-simpelt svar og ikke modtager data, forklare hvordan programmer kan returnere
-forskellige data typer, og gå igennem hvordan programmer kan modtage data fra
-webformularer og anvende environment variable til at besteme f.eks. IP addressen
-på den web browser som ønsker data. Forklare sikkerhedsproblemerne der er
-omkring programmer, og hvordan man finder og fjerner fejl i dem.
+ I det følgende afsnit vil vi introducere CGI-programmer der returnerer et
+ simpelt svar og ikke modtager data, forklare hvordan programmer kan returnere
+ forskellige datatyper, og gennemgå hvordan programmer kan modtage data fra
+ webformularer og anvende systemvariable til at bestemme for eksempel
+ IP-addressen på den webbrowser som ønsker data.
+ <!--
+ Forklare sikkerhedsproblemerne der er omkring CGI-programmer, og hvordan man
+ finder og fjerner fejl i dem.
+ -->
 </para>
 
 </sect2><!-- cgi-komm -->
@@ -124,7 +127,7 @@ omkring programmer, og hvordan man finder og fjerner fejl i dem.
 
 <para>
 Det simpleste eksempel på et CGI-program er et der bare returnerer et svar
-f.eks. hvad er klokken. Gem følgende program i
+for eksempel hvad er klokken. Gem følgende program i
 <filename>/home/httpd/cgi-bin/</filename> som <filename>klokken.cgi</filename>
 </para>
 
@@ -158,18 +161,16 @@ Hvis dette ikke virker så kig i sektionen om 'Typiske Fejl'.
 </para>
 
 <para>
-Først udskriver programmet en linie med en "Content-Type" der fortæller web
-browseren, hvad den skal gøre med hvad de data der følger, feltet kaldes for
-media typen. Her betyder text/plain det at indholdet er ascii tekst
-formatteret, ligesom når man loader en .txt fil i browseren. Der kan være
-flere headere og de afsluttes med en tom linie, alt under den tomme linie er
-data der vises i browseren.
+ Først udskriver programmet en linie med et "Content-Type"-felt, der fortæller
+ webbrowseren, hvilken type data (hvilket filformat) der kommer. Her betyder
+ "text/plain" det at indholdet er tekst i et ikke nærmere angivet tegnsæt. Der
+ kan være flere felter i HTTP-hovedet og de afsluttes med en tom linie. Alt
+ efter den tomme linie er data til læseren.
 </para>
 
 <para>
-Tekst er lidt kedeligt, så vi kunne istedet ønske at returnere html
-formateret tekst. Dette kan let gøres ved at modificere programmet som
-følger:
+ Tekst er lidt kedeligt, så vi kunne i stedet ønske at returnere HTML. Det kan
+ let gøres ved at modificere programmet som følger:
 </para>
 
 <screen>
@@ -329,7 +330,7 @@ print "\r\n";
 </screen>
 
 <para>
-Programmet vil f.eks. udskrive en "Expires: Sat, 29 Jul 2000 16:45:27 GMT"
+Programmet vil for eksempel udskrive en "Expires: Sat, 29 Jul 2000 16:45:27 GMT"
 linie, der betyder at efter den dato er cache versionen forældet. Programmet
 fungere ved at time returnere antallet af sekunder, der er gået siden 1 januar
 1970, til dette antal sekunder lægges dokumentets levetid, og dette
@@ -350,7 +351,7 @@ der definere HTTP 1.0 og HTTP 1.1 protokollerne.
 <para>
 I mange situationer bruges et program til at sende browsereren en bestemt
 statisk side ud af mange, statisk i betydningen at indeholdet af siden ikke
-ændres af programmet, f.eks. kunne et programm returnere forskellige sider til
+ændres af programmet, for eksempel kunne et programm returnere forskellige sider til
 forskellige browsere, eller forskellige sider på forskellige tidspunkter af
 døgnet eller til forskellige IP addresser. Det kunne også være at man ville
 have en jukeboks der spiller en tilfældig lydfil, eller viser et tilfældigt
@@ -674,15 +675,15 @@ CGI-program modtager.
 <title>Information tilgængelig for et CGI-program.</title>
 
 <para>
-Når et program udføres, så modtager det information om browserens IP-adresse
-(typisk ikke dens DNS navn), og browserens navn og version. Kun hvis programmet
-befinder sig i et adgangskodebeskyttet katalog kan man få information om
-brugeren, der har indtastet data.
+ Når et program udføres, så modtager det information om browserens IP-adresse
+ (typisk ikke dens DNS navn), og browserens navn og version. Kun hvis
+ programmet befinder sig i et adgangskodebeskyttet katalog kan man få
+ information om brugeren, der har indtastet data.
 </para>
 
 <para>
 I HTML-koden der kalder programmet kan der også indlejres information
-f.eks.:
+for eksempel:
 </para>
 
 <screen>
@@ -798,7 +799,7 @@ CGI-programmer har til rådighed:
     </row>
     <row>
       <entry>HTTP_ACCEPT_CHARSET</entry>
-      <entry>Karakterset som browseren kan forstå f.eks. "iso-8859-1,*,utf-8" Dvs.
+      <entry>Karakterset som browseren kan forstå for eksempel "iso-8859-1,*,utf-8" Dvs.
         en browser der fortrækker et iso-8859-1 dvs. latin1 enkrypteret svar,
         man kan acceptere andre karakterset.</entry>
     </row>
@@ -810,12 +811,12 @@ CGI-programmer har til rådighed:
     </row>
     <row>
       <entry>HTTP_ACCEPT_ENCODING</entry>
-      <entry>Hvis browseren er istand til at klare komprimerede data. f.eks. "gzip,
+      <entry>Hvis browseren er istand til at klare komprimerede data. for eksempel "gzip,
         compress".</entry>
     </row>
     <row>
       <entry>HTTP_USER_AGENT</entry>
-      <entry><para>Identificere brugerens browser. f.eks. Netscape 4.73:
+      <entry><para>Identificere brugerens browser. for eksempel Netscape 4.73:
 
         "Mozilla/4.73 [en] (X11; U; Linux 2.2.16-3 i686)"
 
@@ -1284,7 +1285,7 @@ uden password fra en vilkårlig server i verden. Hackeren ville også kunne
 udsende emails, der tilsyneladende kommer fra webserveren.</para>
 
 <para>Men det er stadig kun småting en hacker kan med dette simple script oploade
-en terminal server (f.eks. netcat), oversætte den og køre den, således at han
+en terminal server (for eksempel netcat), oversætte den og køre den, således at han
 kunne logge ind på webserveren med samme rettigheder som webserveren og uden
 noget password. Og når en hacker har adgang til at køre vilkårlige kommandoer
 kunne han checker versionsnumre på alle deamons og sammenligne disse med
@@ -1313,7 +1314,7 @@ være tainted, og konkateneres en tainted og en normal streng bliver resultatet
 også tainted. Man kan derfor være rimelig sikker på at der opstår en fejl,
 hvis man forsøger at bruge usikker information i en farlig operation. Den
 eneste måde at untainte en streng på er ved at ekstrahere den fra et regulært
-udtryk, f.eks. et der fjerner forbudte karakterer som ';','|' og '/'. Se "man
+udtryk, for eksempel et der fjerner forbudte karakterer som ';','|' og '/'. Se "man
 perlsec" for mere information om tainted variable.</para>
 
 <para>Det følgende eksempel bruger tainted variable, og viser hvordan det
