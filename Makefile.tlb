@@ -11,28 +11,20 @@ Makefiler:
 		cp -f Makefile.subdir.tlb $$dir/Makefile; \
 	done;
 # Remove me later.
-	@cp -f alle/Makefile.tlb alle/Makefile
 
 filer:  Makefiler
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done;
-	$(MAKE) -C alle
+	$(MAKE) -C alle -f Makefile.tlb
 
 pspdf:	Makefiler
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir pspdf \
 	done;
 
-	$(MAKE) -C alle pspdf
+	$(MAKE) -C alle -f Makefile.tlb pspdf
 
-statusfiler:  Makefiler
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $$dir statusfiler \
-	done;
-
-	$(MAKE) -c alle statusfiler
-	
 version:
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir version \
@@ -40,7 +32,7 @@ version:
 
 	cp friheden/version.sgml alle/version.sgml
 
-eksempelbackup:  statusfiler
+eksempelbackup:
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir eksempelbackup; \
 	done;
@@ -51,7 +43,7 @@ clean: Makefiler
 		rm -f $$dir/Makefile; \
 	done;
 
-	$(MAKE) -C alle clean
+	$(MAKE) -C alle -f Makefile.tlb clean
 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
