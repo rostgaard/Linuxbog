@@ -92,6 +92,7 @@ htmlfiler: billeder
 	rm -rf bog
 	mkdir bog
 	cp tempdir/*.html bog
+	cp images/*.png bog
 	cp linuxbog.css bog
 	rm -rf tempdir
 	@echo "Done HTML (html)"
