@@ -14,21 +14,24 @@ version=$(shell cat version.sgml)
 dato=$(shell cat dato.sgml)
 
 # Her er en liste af sgml-filer der ændres automatisk
-badsgmlfiles=dato.sgml magic.sgml stikord.sgml
-
-# Her er  en liste af alle sgml
-allesgmlfiles=$(wildcard *.sgml)
+badfiles1 = $(wildcard ../*/dato.sgml)
+badfiles2 = $(wildcard ../*/magic.sgml)
+badfiles3 = $(wildcard ../*/stikord.sgml) 
+badfiles4 = $(wildcard ../*/version.sgml) 
+badfiles = $(badfiles1) $(badfiles2) $(badfiles3) $(badfiles4)
 
 # Her er en liste af sgml-filer der skal checkes
-#sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
-sgmlfiler=$(allesgmlfiles) \
-          ../friheden/*.sgml \
-          ../admin/*.sgml \
-          ../web/*.sgml \
-          ../applikationer/*.sgml \
-          ../c/*.sgml \
-          ../docbook/*.sgml \
-          ../program/*.sgml
+totalsgmlfiler=$(wildcard ../alle/*.sgml) \
+               $(wildcard ../friheden/*.sgml) \
+               $(wildcard ../admin/*.sgml) \
+               $(wildcard ../web/*.sgml) \
+               $(wildcard ../applikationer/*.sgml) \
+               $(wildcard ../c/*.sgml) \
+               $(wildcard ../docbook/*.sgml) \
+               $(wildcard ../program/*.sgml)
+
+sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
+
 
 # her er det der skal laves
 all:	billeder html palmpilot sgml pspdf exit
