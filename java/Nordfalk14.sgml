@@ -1,103 +1,81 @@
-<chapter>
-  <title>Hændelser i grafiske brugergrænseflader</title>
+<chapter id="java-events">
+<title>Hændelser i grafiske brugergrænseflader</title>
 
-<para>
-Indhold:
-</para>
+<para>Indhold:</para>
 
 <itemizedlist mark="bullet">
-  <listitem>
-
-<para>
-Forstå hændelser og lyttere
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Abonnere på hændelser
-</para>
-
-</listitem>
+  <listitem><para>Forstå hændelser og lyttere</para></listitem>
+  <listitem><para>Abonnere på hændelser</para></listitem>
 </itemizedlist>
 
+<para>Forudsættes af kapitel 21, Indre klasser.</para>
+
+<para>Forudsætter kapitel 10, Grafiske brugergrænseflader og 11, Interfaces.</para>
+
 <para>
-Forudsættes af kapitel 21, Indre klasser.
+  Hændelser (eng.: events) spiller en stor rolle i
+  programmering af grafiske brugergrænseflader. Når
+  brugeren foretager en handling, f.eks. bevæger musen, klikker,
+  trykker en knap ned, ændrer i et tekstfelt osv., opstår
+  der en <emphasis>hændelse</emphasis>. I Java
+  er alle hændelser objekter (af typen Event) med metoder
+  til at undersøge de præcise detaljer omkring hændelsen.
 </para>
 
 <para>
-Forudsætter kapitel 10, Grafiske brugergrænseflader og
-11, Interfaces.
+  Hændelser udsendes af de grafiske komponenter
+  (knapper, vinduer osv.), og hvis man vil behandle en bestemt type
+  hændelser fra en bestemt grafisk komponent, skal man &#148;lytte&#148;
+  efter den hændelse. Det gøres ved at registrere en
+  <emphasis>lytter</emphasis> (eng.: listener) på hændelsestypen på
+  den pågældende grafiske komponent.
 </para>
 
 <para>
-Hændelser (eng.: events) spiller en stor rolle i
-programmering af grafiske brugergrænseflader. Når
-brugeren foretager en handling, f.eks. bevæger musen, klikker,
-trykker en knap ned, ændrer i et tekstfelt osv., opstår
-der en <emphasis>hændelse</emphasis>. I Java
-er alle hændelser objekter (af typen Event) med metoder
-til at undersøge de præcise detaljer omkring hændelsen.
+  En lytter er et objekt, der kan &quot;abonnere&quot; på
+  en bestemt type hændelse. Når en lytter er registreret
+  hos en grafisk komponent, bliver der kaldt en metode på
+  lytter-objektet, når  hændelsen indtræffer (f.eks.
+  kaldes mouseClicked(), når der klikkes med musen).
 </para>
 
 <para>
-Hændelser udsendes af de grafiske komponenter
-(knapper, vinduer osv.), og hvis man vil behandle en bestemt type
-hændelser fra en bestemt grafisk komponent, skal man &#148;lytte&#148;
-efter den hændelse. Det gøres ved at registrere en
-<emphasis>lytter</emphasis> (eng.: listener) på hændelsestypen på
-den pågældende grafiske komponent.
+  For at sikre, at lytteren har den pågældende
+  metode, skal lytter-objektet implementere et interface, der
+  garanterer, at det har metoden.
+</para>
+
+<para>F.eks.:</para>
+
+<para>
+  Appletter kan udsende hændelser af typen
+  MouseEvent. Appletter har derfor metoden
+  addMouseListener(MouseListener lytter), der kan bruges til at
+  registrere lytter-objekter hos appletten. Det er kun objekter af
+  typen MouseListener, der kan registreres som lyttere. MouseListener
+  er et interface, så man skal lave en klasse, der implementerer
+  MouseListener og skabe lytter-objekter ud fra dette. Når
+  brugeren klikker med musen i appletten, udsender appletten en
+  MouseEvent-hændelse til alle lytter-objekter, der er blevet
+  registreret vha. addMouseListener(). Det gør appletten
+  ved at kalde metoden mouseClicked(MouseEvent hændelse) på
+  lytter-objekterne.
+</para>
+
+<sect1 id="java-events-eksempel-lyt-til-musen">
+<title>Eksempel - LytTilMusen</title>
+
+<para>
+  Herunder definerer vi klassen Muselytter, der
+  implementerer MouseListener. Hver gang der sker noget med musen,
+  skrives det ud til skærmen.
 </para>
 
 <para>
-En lytter er et objekt, der kan &quot;abonnere&quot; på
-en bestemt type hændelse. Når en lytter er registreret
-hos en grafisk komponent, bliver der kaldt en metode på
-lytter-objektet, når  hændelsen indtræffer (f.eks.
-kaldes mouseClicked(), når der klikkes med musen).
-</para>
-
-<para>
-For at sikre, at lytteren har den pågældende
-metode, skal lytter-objektet implementere et interface, der
-garanterer, at det har metoden.
-</para>
-
-<para>
-F.eks.:
-</para>
-
-<para>
-Appletter kan udsende hændelser af typen
-MouseEvent. Appletter har derfor metoden
-addMouseListener(MouseListener lytter), der kan bruges til at
-registrere lytter-objekter hos appletten. Det er kun objekter af
-typen MouseListener, der kan registreres som lyttere. MouseListener
-er et interface, så man skal lave en klasse, der implementerer
-MouseListener og skabe lytter-objekter ud fra dette. Når
-brugeren klikker med musen i appletten, udsender appletten en
-MouseEvent-hændelse til alle lytter-objekter, der er blevet
-registreret vha. addMouseListener(). Det gør appletten
-ved at kalde metoden mouseClicked(MouseEvent hændelse) på
-lytter-objekterne.
-</para>
-
-<sect1>
-  <title>Eksempel - LytTilMusen</title>
-
-<para>
-Herunder definerer vi klassen Muselytter, der
-implementerer MouseListener. Hver gang der sker noget med musen,
-skrives det ud til skærmen.
-</para>
-
-<para>
-MouseListener-interfacet har bl.a. metoden
-mousePressed, der kaldes, når musen trykkes ned. Parameteren er
-et MouseEvent-objekt, der bl.a. kan fortælle, hvor musen er, og
-hvilken knap der blev trykket på.
+  MouseListener-interfacet har bl.a. metoden
+  mousePressed, der kaldes, når musen trykkes ned. Parameteren er
+  et MouseEvent-objekt, der bl.a. kan fortælle, hvor musen er, og
+  hvilken knap der blev trykket på.
 </para>
 
 <screen>
@@ -131,32 +109,12 @@ public class Muselytter <emphasis>implements MouseListener</emphasis>
 }
 </screen>
 
-
-<para>
-Lad os nu lave en lille applet, der:
-</para>
+<para>Lad os nu lave en lille applet, der:</para>
 
 <orderedlist>
-  <listitem>
-
-<para>
-
-Opretter et muselytter-objekt.
-</para>
-
-</listitem>
-
-  <listitem>
-
-<para>
-Registrerer lytter-objektet, så det får
-  kaldt sine metoder, når der sker noget med musen.
-</para>
-
-</listitem>
+  <listitem><para>Opretter et muselytter-objekt.</para></listitem>
+  <listitem><para>Registrerer lytter-objektet, så det får kaldt sine metoder, når der sker noget med musen.</para></listitem>
 </orderedlist>
-
-
 
 <screen>
 import java.applet.*;
@@ -170,11 +128,7 @@ public class LytTilMusen extends Applet
 }
 </screen>
 
-
-<para>
-Uddata fra appletten kan ses i konsolvinduet (i Netscape:
-Communicator/Tools/Java Console):
-</para>
+<para>Uddata fra appletten kan ses i konsolvinduet (i Netscape: Communicator/Tools/Java Console):</para>
 
 <screen>
 Mus trykket ned i java.awt.Point[x=132,y=209]
@@ -185,27 +139,25 @@ Mus klikket i java.awt.Point[x=101,y=199]
 </screen>
 </sect1> 
 
-<sect1>
-  <title>Eksempel - Linietegning</title>
+<sect1 id="java-events-eksempel-linietegning">
+<title>Eksempel - Linietegning</title>
 
 <para>
-Det foregående eksempel giver ikke appletten besked om, at
-der er sket en hændelse. Det har man brug for, hvis man f.eks.
-vil tegne noget i appletten.
+  Det foregående eksempel giver ikke appletten besked om, at
+  der er sket en hændelse. Det har man brug for, hvis man f.eks.
+  vil tegne noget i appletten.
 </para>
 
 <para>
-Herunder er et eksempel, hvor lytter-objektet (Linielytter) giver
-informationer om klik videre til appletten (Linietegning), sådan
-at en grøn linie tegnes mellem det punkt, hvor man trykkede
-museknappen ind, og det punkt, hvor man slap museknappen. Lytteren
-giver appletten besked vha. applettens to public variabler
-trykpunkt og slippunkt.
+  Herunder er et eksempel, hvor lytter-objektet (Linielytter) giver
+  informationer om klik videre til appletten (Linietegning), sådan
+  at en grøn linie tegnes mellem det punkt, hvor man trykkede
+  museknappen ind, og det punkt, hvor man slap museknappen. Lytteren
+  giver appletten besked vha. applettens to public variabler
+  trykpunkt og slippunkt.
 </para>
 
-<para>
-Lad os først kigge på appletten:
-</para>
+<para>Lad os først kigge på appletten:</para>
 
 <screen>
 import java.awt.*;
@@ -236,11 +188,7 @@ public class Linietegning extends Applet
 }
 </screen>
 
-
-<para>
-Linielytter er nødt til at have en reference til
-Linietegning-appletten:
-</para>
+<para>Linielytter er nødt til at have en reference til Linietegning-appletten:</para>
 
 <screen>
 import java.awt.*;
@@ -271,50 +219,36 @@ public class Linielytter implements MouseListener
 }
 </screen>
 
-
-<para>
-Med linien
-</para>
+<para>Med linien</para>
 
 <screen>
     appletten.repaint();
 </screen>
 
-
 <para>
-
-fortæller vi Linietegning-appletten, at den skal gentegne sig
-selv. Det forårsager kort efter et kald til dens
-paint()-metode.
+  fortæller vi Linietegning-appletten, at den skal gentegne sig
+  selv. Det forårsager kort efter et kald til dens
+  paint()-metode.
 </para>
 
-<figure>
+<figure id="java-events-eksempel-linietegning-fig">
 <title>Java</title>
 
 <graphic fileref="Nordfalk1415444.&magic;" scale="60"></graphic>
 </figure>
 
-<sect2>
-  <title>Linietegning i &eacute;n klasse</title>
+<sect2 id="java-events-eksempel-linietegning-klasse">
+<title>Linietegning i &eacute;n klasse</title>
 
-<para>
-Herunder er Linietegning igen, men nu som en applet, der <emphasis>selv</emphasis>
-implementerer MouseListener.
-</para>
+<para>Herunder er Linietegning igen, men nu som en applet, der <emphasis>selv</emphasis> implementerer MouseListener.</para>
 
-<para>
-Det er linien
-</para>
+<para>Det er linien</para>
 
 <screen>
     this.addMouseListener(this);
 </screen>
 
-
-<para>
-
-der registrerer applet-objektet selv som lytter.
-</para>
+<para>der registrerer applet-objektet selv som lytter.</para>
 
 <screen>
 import java.applet.*;
@@ -361,44 +295,40 @@ public class Linietegning2 extends Applet <emphasis>implements MouseListener</em
 }
 </screen>
 
-
 <para>
-Bemærk, at nu kan vores trykpunkt og slippunkt-variabler
-være private i stedet for public, fordi de ikke behøver
-at være tilgængelige udefra.
+  Bemærk, at nu kan vores trykpunkt og slippunkt-variabler
+  være private i stedet for public, fordi de ikke behøver
+  at være tilgængelige udefra.
 </para>
 </sect2>  
 </sect1>  
 
-<sect1>
-  <title>Ekstra eksempler</title>
+<sect1 id="java-events-ekstra-eksempler">
+<title>Ekstra eksempler</title>
 
 <para>
-Ovenfor har vi brugt MouseListener som illustration. Her vil vi
-give eksempler på brug af de andre typer lyttere (beskrevet i
-appendiks senere i kapitlet).
+  Ovenfor har vi brugt MouseListener som illustration. Her vil vi
+  give eksempler på brug af de andre typer lyttere (beskrevet i
+  appendiks senere i kapitlet).
 </para>
 
-<sect2>
-  <title>Lytte til musebevægelser</title>
+<sect2 id="java-events-ekstra-eksempler-lytte-til-mus">
+<title>Lytte til musebevægelser</title>
 
 <para>
-Med MouseMotionListener får man adgang til hændelserne
-mouseMoved og mouseDragged. Det kan bruges til at tegne grafiske
-figurer ved at hive musen hen over skærmen.
-</para>
-
-<para>
-Her er en applet til at tegne kruseduller. Vi husker punktet, når
-musen trykkes ned (mousePressed()), og tegner en linie fra forrige
-punkt til musen, når den trækkes med nedtrykket knap
-(mouseDragged()).
+  Med MouseMotionListener får man adgang til hændelserne
+  mouseMoved og mouseDragged. Det kan bruges til at tegne grafiske
+  figurer ved at hive musen hen over skærmen.
 </para>
 
 <para>
-Tegningen af grafikken sker direkte i håndteringen af
-hændelsen.
+  Her er en applet til at tegne kruseduller. Vi husker punktet, når
+  musen trykkes ned (mousePressed()), og tegner en linie fra forrige
+  punkt til musen, når den trækkes med nedtrykket knap
+  (mouseDragged()).
 </para>
+
+<para>Tegningen af grafikken sker direkte i håndteringen af hændelsen.</para>
 
 <screen>
 import java.applet.*;
@@ -436,23 +366,22 @@ public class Kruseduller extends Applet
 }
 </screen>
 
-
 <para>
-Da vi ikke husker de gamle punkter, kan vi ikke gentegne
-krusedullen, når systemet kalder paint().
+  Da vi ikke husker de gamle punkter, kan vi ikke gentegne
+  krusedullen, når systemet kalder paint().
 </para>
 </sect2>  
 
-<sect2>
-  <title>Lytte til en knap</title>
+<sect2 id="java-events-ekstra-eksempel-lytte-til-knap">
+<title>Lytte til en knap</title>
 
 <para>
-Det vigtigste interface til programmering af grafiske
-brugergrænseflader er ActionListener med metoden
-actionPerformed(). Den bruges bl.a. til at lytte til, om knapper
-bliver trykket på. Her er et eksempel, hvor den tekst, der er
-valgt med musen i et tekstområde, bliver kopieret til det andet
-tekstområde, når man trykker på knappen:
+  Det vigtigste interface til programmering af grafiske
+  brugergrænseflader er ActionListener med metoden
+  actionPerformed(). Den bruges bl.a. til at lytte til, om knapper
+  bliver trykket på. Her er et eksempel, hvor den tekst, der er
+  valgt med musen i et tekstområde, bliver kopieret til det andet
+  tekstområde, når man trykker på knappen:
 </para>
 
 <screen>
@@ -485,30 +414,23 @@ public class LytTilKnap extends Applet <emphasis>implements ActionListener</emph
 }
 </screen>
 
-
-<para>
-Læg mærke til, at vi registrerer lytteren (som er
-applet-objektet selv) hos knappen.
-</para>
+<para>Læg mærke til, at vi registrerer lytteren (som er applet-objektet selv) hos knappen.</para>
 
 </sect2>  
 
-<sect2>
-  <title>Lyttere og deres metoder</title>
+<sect2 id="java-events-ekstra-eksempler-lyttere-metoder">
+<title>Lyttere og deres metoder</title>
+
+<para>Det følgende er en oversigt over lytter-interfaces og deres hændelser.</para>
+
+<sect3 id="java-events-ekstra-eks-lyttere-action">
+<title>ActionListener</title>
 
 <para>
-Det følgende er en oversigt over lytter-interfaces og deres
-hændelser.
-</para>
-
-<sect3>
-  <title>ActionListener</title>
-
-<para>
-Hændelsen ActionEvent sendes af den pågældende
-komponent, når brugeren klikker på en knap, trykker retur
-i et tekstfelt, vælger noget i et afkrydsningsfelt, radioknap,
-menu eller lignende.
+  Hændelsen ActionEvent sendes af den pågældende
+  komponent, når brugeren klikker på en knap, trykker retur
+  i et tekstfelt, vælger noget i et afkrydsningsfelt, radioknap,
+  menu eller lignende.
 </para>
 
 <screen>
@@ -518,13 +440,13 @@ public interface ActionListener {
 </screen>
 </sect3>     
 
-<sect3>
-  <title>ComponentListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-comp">
+<title>ComponentListener</title>
 
 <para>
-Sendes af alle grafiske komponenter (Button, TextField, Checkbox
-osv., og Frame, Applet, Panel,...), når de hhv. ændrer
-størrelse, position, bliver synlige eller usynlige.
+  Sendes af alle grafiske komponenter (Button, TextField, Checkbox
+  osv., og Frame, Applet, Panel,...), når de hhv. ændrer
+  størrelse, position, bliver synlige eller usynlige.
 </para>
 
 <screen>
@@ -537,13 +459,13 @@ public interface ComponentListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>FocusListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-focus">
+<title>FocusListener</title>
 
 <para>
-Sendes af komponenter, når de får fokus (dvs. hvis
-brugere trykker på en tast, vil det påvirke netop
-denne komponent). Kun en komponent har fokus ad gangen.
+  Sendes af komponenter, når de får fokus (dvs. hvis
+  brugere trykker på en tast, vil det påvirke netop
+  denne komponent). Kun en komponent har fokus ad gangen.
 </para>
 
 <screen>
@@ -554,12 +476,12 @@ public interface FocusListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>ItemListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-item">
+<title>ItemListener</title>
 
 <para>
-Sendes af afkrydsningsfelter og radioknapper, når en
-mulighed bliver krydset af eller fravalgt.
+  Sendes af afkrydsningsfelter og radioknapper, når en
+  mulighed bliver krydset af eller fravalgt.
 </para>
 
 <screen>
@@ -569,17 +491,17 @@ public interface ItemListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>KeyListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-key">
+<title>KeyListener</title>
 
 <para>
-Sendes af komponenten, der har fokus. keyPressed() kaldes, når
-en tast bliver trykket ned (bemærk, at der godt kan være
-flere taster trykket ned samtidig, f.eks. Ctrl og C) og
-keyReleased(), når den bliver sluppet. Er man mere
-overordnet interesseret i, hvad brugeren taster ind, bør man
-benytte keyTyped(), der svarer til, at brugeren har trykket en tast
-ned og sluppet den igen.
+  Sendes af komponenten, der har fokus. keyPressed() kaldes, når
+  en tast bliver trykket ned (bemærk, at der godt kan være
+  flere taster trykket ned samtidig, f.eks. Ctrl og C) og
+  keyReleased(), når den bliver sluppet. Er man mere
+  overordnet interesseret i, hvad brugeren taster ind, bør man
+  benytte keyTyped(), der svarer til, at brugeren har trykket en tast
+  ned og sluppet den igen.
 </para>
 
 <screen>
@@ -591,17 +513,17 @@ public interface KeyListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>MouseListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-mouse">
+<title>MouseListener</title>
 
 <para>
-Kan sendes af alle grafiske komponenter. mousePressed() kaldes,
-når en museknap bliver trykket ned, og mouseReleased(), når
-den bliver sluppet igen. Er man mere overordnet interesseret i
-at vide, om brugeren har klikket et sted (trykket ned og sluppet på
-det samme sted), bør man benytte mouseClicked().
-mouseEntered() og mouseExited() sendes, når musen går
-ind over hhv. væk fra komponenten.
+  Kan sendes af alle grafiske komponenter. mousePressed() kaldes,
+  når en museknap bliver trykket ned, og mouseReleased(), når
+  den bliver sluppet igen. Er man mere overordnet interesseret i
+  at vide, om brugeren har klikket et sted (trykket ned og sluppet på
+  det samme sted), bør man benytte mouseClicked().
+  mouseEntered() og mouseExited() sendes, når musen går
+  ind over hhv. væk fra komponenten.
 </para>
 
 <screen>
@@ -616,14 +538,14 @@ public interface MouseListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>MouseMotionListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-mouse-motion">
+<title>MouseMotionListener</title>
 
 <para>
-Kan sendes af alle grafiske komponenter. mouseDragged() kaldes,
-når en museknap er trykket ned og hives (bevæges, mens
-museknappen forbliver trykket ned). mouseMoved() svarer til, at musen
-flyttes (uden nogle knapper trykket ned).
+  Kan sendes af alle grafiske komponenter. mouseDragged() kaldes,
+  når en museknap er trykket ned og hives (bevæges, mens
+  museknappen forbliver trykket ned). mouseMoved() svarer til, at musen
+  flyttes (uden nogle knapper trykket ned).
 </para>
 
 <screen>
@@ -634,13 +556,10 @@ public interface MouseMotionListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>TextListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere--text">
+<title>TextListener</title>
 
-<para>
-Sendes af tekstfelter (TextField og TextArea), når brugeren
-ændrer teksten.
-</para>
+<para>Sendes af tekstfelter (TextField og TextArea), når brugeren ændrer teksten.</para>
 
 <screen>
 public interface TextListener {
@@ -649,13 +568,13 @@ public interface TextListener {
 </screen>
 </sect3>   
 
-<sect3>
-  <title>WindowListener</title>
+<sect3 id="java-events-ekstra-eks-lyttere-window">
+<title>WindowListener</title>
 
 <para>
-Sendes af vinduer (Frame og Dialog), når de åbnes,
-forsøges lukket, lukkes, minimeres, gendannes, får fokus
-og mister fokus.
+  Sendes af vinduer (Frame og Dialog), når de åbnes,
+  forsøges lukket, lukkes, minimeres, gendannes, får fokus
+  og mister fokus.
 </para>
 
 <screen>
@@ -669,7 +588,6 @@ public interface WindowListener {
     public void windowDeactivated(WindowEvent e);
 }
 </screen>
-
 
 </sect3>   
 </sect2>   
