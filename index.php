@@ -1,3 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+       "http://www.w3.org/TR/html40/loose.dtd">
+<HTML>
+<HEAD>
+<?php
+
+  $htmlmeta[] = "HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\"";
+  if (is_array($htmlmeta))
+    while (list(,$value) = each($htmlmeta))
+      echo "<META $value>\n";
+
+?>
+<title>Friheden til at vælge</title>
+</HEAD>
+
+
+
+<body>
 <?php
    // $Id$
    // Første version af Hans Schou. Dernæst har Peter og Hans rettet i et væk.
@@ -21,7 +39,7 @@
 
 if (!$b && !$t && !$matrix) { ?>
 <img src="front.png" alt="Friheden til at skrive bøger"
- align="right" width="<? echo $width ?>" height="<? echo $height ?>">
+ align=right width="<? echo $width ?>" height="<? echo $height ?>">
 <?php } ?>
 
 <h1>Friheden til at skrive bøger</h1>
@@ -170,7 +188,7 @@ function vistype($type) {
     ),
     "wm" => array(
       title => "Linux - Friheden til at vælge grafisk brugergrænseflade",
-      comment => "Lær hvilken window manager som passer dig bedst",
+      comment => "Lær hvilken grafisk brugergrænseflade som passer dig bedst",
       auth => array(
         "Peter Toft" => "pto@linuxbog.dk"
       )
