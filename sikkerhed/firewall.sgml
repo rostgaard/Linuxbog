@@ -1603,11 +1603,619 @@ Hvis man bruger en dynamisk IP adresse, skal kommandoen se lidt
 anderledes ud.
 </para>
 
-
+<para>TODO</para>
 
 
 </sect2>
 
+
+
+
+<sect2 id="proxy-server">
+<title>Linux som proxy server</title>
+
+<itemizedlist mark="bullet">
+<listitem><para>Squid</para></listitem>
+<listitem><para>Masquerading med ipchains</para></listitem>
+<listitem><para>Network Address Translation med iptables (Netfilter)
+i kerne 2.4</para></listitem>
+</itemizedlist>
+
+<sect3 id="proxy-squid">
+<title>Proxy med Squid</title>
+
+<para>
+Squid er en god proxy server bl.a. til Linux, der kan findes på 
+<ulink url="http://www.squid-cache.org/">http://www.squid-cache.org/</ulink>. Squid
+er en agent, der henter de hjemmesider, brugeren beder om, og
+videresender resultatet til brugeren. Samtidig kan Squid fungere som
+proxy-cache - den gemmer hjemmesiden i cache, og er der nu en anden
+bruger, der vil se den samme hjemmeside, hentes den direkte fra den
+lokale hukommelses- eller disk-cache på proxy-maskinen - det vil sige,
+uden at man skal via internettet. Squid tester, om en hjemmeside på
+nettet er nyere end den i cachen, og kun hvis cachen er forældet, vil
+en ny version blive hentet. Fordelen ved en proxy-cache er således, at
+man ofte kan spare måske 50% på båndbredden.
+</para>
+
+<para>
+Det er naturligvis ikke alt, som kan gemmes i en cache, f.eks.
+skal cgi-kald netop ikke køre fra cache. Disse hindringer
+håndterer Squid dog transparent. Ud over hjemmesider (HTTP) er FTP,
+GOPHER, SSL og WAIS protokollen understøttet. Squid kan dog ikke klare
+POP-mail, NNTP (News grupper) og RealAudio.
+</para>
+</sect3>
+
+<sect3 id="installation-squid">
+<title>Installation af Squid-serveren</title>
+
+
+<indexterm><primary>Squid</primary><secondary>installation</secondary></indexterm>
+<para>
+Man bør ikke installere Squid, så den kører som root. Ofte vælger man
+at lade Squid køre som brugeren <command>squid</command> i sin egen gruppe
+<command>squid</command>, og kun med få rettigheder.
+</para>
+
+<para>
+Vi har installeret <filename>squid-2.2.STABLE5-1.i386.rpm</filename>,
+som kan hentes fra <ulink
+url="http://www.squid-cache.org/">http://www.squid-cache.org/</ulink>. Squid
+startes op via <filename>/etc/rc.d/init.d/squid</filename>. Squids
+opsætningsfil hedder <filename>/etc/squid/squid.conf</filename>. Der er
+<emphasis>mange</emphasis> konfigurationsmuligheder. Basalt set skal
+man fjerne kommentartegnene fra nogle linjer i
+<filename>/etc/squid/squid.conf</filename> og udkommentere andre, og
+så starte Squid.  Den originale
+<filename>/etc/squid/squid.conf</filename> er stor, og vi vil nu se
+nærmere på en simpel opsætning af squid.
+</para>
+
+<sect4 id="basal-squid-conf">
+<title>Basal opsætning af squid.conf</title>
+
+<indexterm><primary>squid.conf</primary></indexterm>
+<para>
+Man kan i <filename>/usr/doc/squid-2.2.STABLE5/QUICKSTART</filename>
+finde en minimal beskrivelse af parametre for
+<filename>squid.conf</filename>. En meget bedre gennemgang fås ved at
+læse brugermanualen til Squid, som kan findes på 
+<ulink url="http://www.squid-cache.org/Doc/Users-Guide/">http://www.squid-cache.org/Doc/Users-Guide/</ulink>.
+En anden god start er også at læse (og gemme) den originale
+<filename>/etc/squid/squid.conf</filename>, som fulgte med RPM-pakken.
+</para>
+
+<para>
+Vi skal nu vise en kort <filename>squid.conf</filename>, hvor vi lader squid køre som 
+brugeren <filename>squid</filename>.
+</para>
+
+<programlisting>
+#squid.conf -  Basal opsætning
+
+#Laveste niveau af logging
+debug_options ALL,1
+
+#Gruppe af IP numre, som kan tilgå Squid (Access Control List) 
+#Vil man kun give access til netværket 192.168.0.0/255.255.255.0
+#så brug følgende linje
+acl all src 192.168.0.0/255.255.255.0
+
+#Skal alle kunne bruge Squid så udkommenter følgende linje.
+#acl all src 0.0.0.0/0.0.0.0
+
+#Port, man anvender til konfiguration af Netscape klienter
+http_port 3128
+
+#Lad alle i ACL bruge Squid til HTTP
+http_access allow  all
+
+#test følgende sites for at checke, om maskinen er koblet til internettet
+dns_testnames internic.net usc.edu cs.colorado.edu mit.edu yale.edu
+
+#Kør som effektiv bruger squid og gruppe squid
+cache_effective_user squid squid
+
+# Squid vil oftest bruge to-tre gange denne RAM størrelse. Vil man max
+# bruge 24 Mb RAM til Squid, så sæt cache_ram til 8 Mb. 
+# Jo mere cache_mem desto hurtige er cachen (mindre diskaccess).
+cache_mem  8 MB
+
+#Maximal størrelse på object i cache
+maximum_object_size 4096 KB
+
+# Næste parameter-opsætning er disk cache struktur. Parametre er
+#  Dirname - hvor på disken er disk cache dvs. spool dir
+#  Mbytes under spool dir - hvor mange Mb må gemmes i disk cache.
+#  Level-1 dir antal - Antal underkataloger under Dirname
+#  Level2 dir antal - Antal underkataloger for hver Level-1 kataloger
+# Sæt ikke produktet mellem de to sidste vildt højt!
+cache_dir /var/spool/squid 100 16 256
+</programlisting>
+
+
+<para>
+Lad os se nærmere på, hvad der installeres, og hvordan squid
+kører. Installer squid med 
+</para>
+
+<programlisting>
+#rpm -ivh squid-2.2.STABLE5-1.i386.rpm
+</programlisting>
+
+<para>
+Ret <filename>/etc/squid/squid.conf</filename> til som vist ovenfor. Husk dog at gemme 
+den originale <filename>/etc/squid/squid.conf</filename> før ovenstående eksempel anvendes.
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem><para><filename>/etc/squid/</filename> indeholder konfigurationsfiler - specielt er
+<filename>/etc/squid/squid.conf</filename> vigtig.</para></listitem> 
+
+<listitem><para><filename>/var/spool/squid</filename> indeholder den dynamiske database. (se
+parameteren <filename>cache_dir</filename> i <filename>squid.conf</filename>). Over 4000 filer laves med
+ovenstående opsætning.</para></listitem>
+
+<listitem><para><filename>/var/log/squid</filename> indeholder log-filer.
+</para></listitem>
+<listitem>
+  <itemizedlist mark="bullet">
+    <listitem><para><filename>access.log</filename> - Hvad blev hentet
+    fra  nettet. 
+    Her kan systemadministratoren overvåge trafik.</para></listitem>
+  <listitem><para><filename>cache.log</filename> - Opstartsmeddelelser.</para></listitem>
+<listitem><para><filename>store.log</filename> - Oversigt over, hvad der findes i proxy-cache nu.</para></listitem>
+  </itemizedlist>
+</listitem>
+
+</itemizedlist>
+
+<para>
+Med installation af squid blev <filename>squid</filename> brugeren og
+tilsvarende gruppe oprettet. Kataloget
+<filename>/var/spool/squid</filename> er tomt men ejet af brugeren
+squid. Selve databasestrukturen skal man en gang for alle sætte op -
+hertil bruges parameteren <filename>cache_dir</filename>.
+</para>
+
+<screen>
+<prompt>[root@sherwood root]#</prompt> <userinput>/usr/sbin/squid -z</userinput>
+</screen>
+
+<para>
+Anvender man 16 og 256 som de sidste to parametre til <filename>cache_dir</filename>, skal
+man ikke blive bange, når man initialiserer databasen. Der køres hårdt på
+harddisken, og det tager måske flere minutter - databasen bliver stor!
+</para>
+</sect4>
+
+<sect4 id="squid-bruger">
+<title>Brugerens opsætning</title>
+
+<indexterm><primary>Proxy klient</primary></indexterm>
+<para>
+For at man kan få squid til at virke sammen med lynx og wget, kan man
+sætte følgende environment variable 
+(her hedder vores proxy-server "proxy.herne.dk")
+</para>
+
+<programlisting>
+% setenv http_proxy http://proxy.herne.dk:3128/
+% setenv gopher_proxy http://proxy.herne.dk:3128/
+% setenv ftp_proxy http://proxy.herne.dk:3128/ 
+</programlisting>
+
+<para>
+I Netscape skal brugerne under
+<filename>Edit->Preferences->Advanced->Proxies</filename> vælge
+<filename>Manual proxy configuration</filename> og tryk på
+<filename>View</filename>. Som det kan ses på det næste billede, skal
+man skive navnet på proxy maskinen (her anvender vi
+<filename>proxy.herne.dk</filename>), og port 3128 svarer til
+parameteren "http_port" i <filename>squid.conf</filename>.
+</para>
+
+<figure id="proxy-fig" float="1">
+<title>Proxy opsætning i Netscape</title>
+<graphic fileref="proxy.&magic;"  scale="40"></graphic>
+</figure>  
+
+
+
+<para>
+Squid er i dagligdagen et meget driftsikkert program og kan anbefales.
+Vi skal dog lige huske at nævne, at hvis der ikke er blokeret for det
+via en firewall, så kan brugeren af Netscape faktisk godt køre
+forbi proxy cachen ved enten at udelade proxy-opsætningen eller 
+at holde SHIFT nede, før der trykkes på et
+link. Derfor skal firewallopsætningen være lavet, så
+proxy-programmet godt kan hente data fra internettet, men at brugere
+ikke kan - hvis man virkelig ønsker, at folk skal bruge
+proxy-serveren.
+</para>
+</sect4>
+</sect3>
+
+<sect3 id="transparent-proxy">
+<title>Transparent proxy med squid</title>
+
+<indexterm><primary>transparent proxy</primary></indexterm>
+
+<para>
+Man kan lave noget transparent proxy med squid sammen med ipchains. 
+Kernen skal være oversat med "Transparent proxying". Vi vil ikke
+beskrive det her, men der findes en mini-HOWTO på
+<ulink url="http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html ">http://sunsite.dk/ldp/HOWTO/mini/TransparentProxy.html </ulink>.
+</para>
+</sect3>
+
+<sect3 id="Masquerading-med-ipchains">
+<title>Masquerading med ipchains (kerne 2.2)</title>
+
+<indexterm><primary>Masquerading</primary></indexterm>
+
+<para>
+Masquerading er ikke proxying men en speciel form for NAT
+(<emphasis>N</emphasis>etwork <emphasis>A</emphasis>ddress
+<emphasis>T</emphasis>ranslation). Det giver delvis samme
+funktionalitet som proxying, - at man kan få sit lokalnetværk på
+internettet med kun een gyldig IP-adresse - men det giver ikke den
+samme sikkerhed som proxying.  Linux-kernen understøtter masquerading
+som en del af ipchains.
+</para>
+
+<para><emphasis>Bemærk at masquerading ikke er særlig sikkert. Der er
+fundet flere sikkerhedshuller. Bl.a et som går ud på, at man kan
+omskrive portnummeret på udp svarpakkerne til en masqueraded maskine,
+og derved kan få adgang til selv at sende pakker til en host inde
+bagved masqueraring.</emphasis> </para>
+
+<para>
+Med IP masquerading opnås, at mange forskellige maskiner kan komme på internet
+med kun én IP-adresse - såkaldt "Source NAT" (SNAT). Man sætter en masquerading 
+server op, og alle 
+maskinerne bagved skal bruge den som default gateway. Masquerading serveren 
+omskriver så alle pakkerne, der kommer forbi, til at have dens egen IP-adresse
+som afsender. Den "husker" så hvilke pakker, der har været sendt ud, og bruger 
+denne information til at genkende svaret, så den kan sørge for, at svaret 
+kommer til den maskine, der sendte forespørgslen ud.
+</para>
+
+<para>
+I sagens natur skal forwarding være slået til her, og der
+<emphasis>er</emphasis> oprettet direkte forbindelse imellem den
+lokale maskine og en maskine ude på internettet.  Fællestrækket ved proxy
+og masquerading er, at man kan sætte mange maskiner på internettet ved
+hjælp af kun én "ægte" ip-adresse. En fordel ved masquerading fremfor
+proxying er, at med masquerading kan man alt - der er ting, man ikke
+kan få igennem en proxy.  Men det er på bekostning af sikkerheden:
+Masquerading giver ikke den samme beskyttelse som en proxy. Man kan
+dog beskytte sig en del ved at sætte firewallregler op i kernen. Se
+afsnittet om pakkefiltrering tidligere i artiklen.
+</para>
+
+<para>
+Vi skal nu til at sætte forwardkæden op - den kan ud over de tre 
+almindelige policies også sættes til MASQ.
+</para>
+
+<para>
+Den simple og hurtige måde at sætte IP masquerading op på er:
+</para>
+
+<screen>
+<prompt>[root@myhost /root]#</prompt> <userinput>ipchains -A forward -i ppp0 -j MASQ</userinput>
+<prompt>[root@myhost /root]#</prompt> <userinput>ipchains -A forward -s 0.0.0.0/0 -d 0.0.0.0/0 -l -j REJECT</userinput>
+<prompt>[root@myhost /root]#</prompt> <userinput>echo 1 > /proc/sys/net/ipv4/ip_forward</userinput>
+</screen>
+
+<para>
+hvor ppp0 er det interface, der peger ud imod verden, imod internettet, imod 
+det net, man vil give sine maskiner adgang til via masquerading.
+</para>
+
+<para>
+Det kan også give mening at sætte timeouts for masquerading forbindelserne:
+</para>
+
+<screen>
+<prompt>[root@myhost /root]#</prompt> <userinput>ipchains -M -S 7200 10 160</userinput>
+</screen>
+
+<para>
+Det første tal er timeout for en tcp forbindelse, det næste er hvor
+længe en tcp forbindelse skal kunne eksistere efter modtagelsen af en
+FIN pakke, og det sidste er timeout for UDP. Timeout tiderne er i
+sekunder. Default timeout er 15 minutter, og det kan være lidt kort
+for en tcp session.
+</para>
+
+<para>
+Nu sættes de andre maskiner i lokalnetværket til at bruge myhost som
+default gateway, og voila! Man kan komme på internettet fra de andre
+maskiner. 
+</para>
+
+<sect4 id="ipchains-moduler">
+<title>Moduler til ipchains</title>
+
+<para>
+Og dog. Http mm virker nu, men der er et par protokoller, der kræver særlige 
+hensyn. Det er bla. ftp, realaudio, irc og forskellige spil.
+</para>
+
+<para>
+For at kunne bruge ftp, real audio, irc, spille quake mm via
+masquerading, er vi nødt til gøre det lidt mere indviklet. Der findes
+moduler til ipchains, der kan håndtere en del forskellige
+applikationer: ip_masq_ftp, ip_masq_raudio, ip_masq_irc, ip_masq_quake
+etc. For at kunne bruge disse moduler, skal de være oversat med, da
+man lavede kernen. Det er inde under networking options, hvor man skal
+slå "IP masquerading special module support" og "ipportfw masq
+support" til. I kerne 2.2.12 er det nødvendigt at slå "prompt for
+development and/or incomplete code/drivers" til for at få lov til at
+vælge ipportfw.
+</para>
+
+<para>
+Modulerne indlæses nu med:
+
+<screen>
+<prompt>[root@myhost /root]#</prompt> <userinput>/sbin/modprobe ip_masq_ftp</userinput>
+<prompt>[root@myhost /root]#</prompt> <userinput>/sbin/modprobe ip_masq_raudio</userinput>
+</screen>
+</para>
+
+<para>
+Nu virker ftp og realaudio fra de andre maskiner. Gør det samme med
+de andre moduler, der skal bruges. Der findes også et værktøj, der hedder 
+IPMASQADM, man kan bruge. 
+Der findes en slags beskrivelse af emnet i IP-Masquerade-HOWTO'en på
+<ulink url="http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO-6.html#ss6.8">http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO-6.html#ss6.8</ulink>
+</para>
+</sect4>
+
+<sect4 id="opsaetning-andre-maskiner">
+<title>Opsætning af de andre maskiner i nettet</title>
+<para>
+Default gateway sættes med kommandoen <command>route</command>:
+</para>
+
+<programlisting>
+route add default gw myhost
+</programlisting>
+
+<para>
+Hvis det skal være permanent, er der lidt forskel på distributionerne.
+Nogle har et fint konfigurationsværktøj, det vil vi ikke komme ind på
+her. I SuSE er det en <filename>/etc/route.conf</filename>, man kan
+sætte det ind i.  I debian er det direkte i
+<filename>/etc/init.d/</filename> i et netværks startup script.  I
+RedHat er det filen <filename>/etc/sysconfig/network</filename>, man
+sætter sin default gateway ind i.
+</para>
+
+<para>
+For yderligere information om IP masquerading kan man læse
+IP-Masquerade-HOWTO'en
+<ulink url="http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO">http://sunsite.dk/ldp/HOWTO/IP-Masquerade-HOWTO</ulink> .
+HOWTO'en indeholder også referencer til en række gode ressourcer.
+</para>
+</sect4>
+</sect3>
+
+<sect3 id="NAT">
+<title>Network Address Translation med iptables (Netfilter) i kerne 2.4</title>
+
+<indexterm><primary>NAT</primary></indexterm>
+<para>
+I kerne 2.4 er ipchains erstattet af iptables, som er en del af
+netfilter. Ipchains understøtter en bestemt form for NAT kaldet
+ip-masquerading. Iptables kan meget mere indenfor NAT. Ud over NAT
+bruges iptables også til pakkefiltrering, som er beskrevet tidligere i
+kapitlet.  For at kunne afbilde alle svarene på NAT pakkerne rigtigt,
+benytter iptable sig af connection tracking - den holder styr på de
+oprettede forbindelser.  Dette kan man checke på i sit pakkefilter -
+en meget spændende ny feature.  Se afsnittet om
+"state" under Iptables (Netfilter) - kerne 2.4.
+<!-- UPS -->
+</para>
+
+<sect4 id="source-NAT">
+<title>Source NAT</title>
+<indexterm><primary>Source NAT</primary></indexterm>
+
+<para>
+NAT går ud på at man kan afbilde IP-adresser. F.eks. kan man afbilde en 
+række lokale IP-adresser til en begrænset pulje af rigtige 
+internet-IP-adresser. IP masquerading er et særtilfælde af dette, hvor 
+man afbilder alle sine lokale IP-adresser til kun een gyldig internet-IP-adresse.
+I ovenstående tilfælde er det source adressen, man manipulerer - Source NAT.
+</para>
+</sect4>
+
+<sect4 id="Desination-NAT">
+<title>Destination NAT</title>
+<para>
+Man kan også afbilde destinationsadressen - Destination NAT - så folks 
+forespørgsler f.eks. bliver redirigeret hen til den lokale webserver eller 
+til en server pool. 
+</para>
+
+<para>
+For TCP og UDP kan man lave portmapping med iptables, hvor man skifter
+destinationsporten ud. F.eks. kan en klient oprette en forbindelse til
+en web-server på port 80, og NAT-serveren kan afbilde pakkerne til sin
+egen port 3128, hvor der kører en squid. Dette kaldes redirect,
+men er også en form for destination NAT. Resultatet er transparent proxying.
+</para>
+</sect4>
+
+<sect4 id="hvordan-NAT">
+<title>Hvordan</title>
+<para>
+For at bruge NAT skal modulet <filename>iptables_nat</filename> være indlæst.
+NAT med iptables laves med "-t nat" option til iptables.
+<emphasis>-t</emphasis> fortæller iptables, at det er NAT-tabellen den skal bruge.
+Til pakkefiltrering bruges filter-tabellen.</para>
+
+<para><emphasis>Kæder:</emphasis> 
+NAT har tre kæder, hvor man kan sætte regler op for pakkerne:</para>
+<itemizedlist mark="bullet">
+  <listitem><para>PREROUTING - Destination NAT</para></listitem>
+  <listitem><para>POSTROUTING - Source NAT</para></listitem>
+  <listitem><para>OUTPUT - Destination NAT fra lokale porte</para></listitem>
+</itemizedlist>
+
+<para>
+<emphasis>Targets:</emphasis> 
+</para>
+<itemizedlist mark="bullet">
+  <listitem><para>SNAT -source NAT</para></listitem>
+  <listitem><para>DNAT - destination NAT</para></listitem>
+  <listitem><para>MASQUERADING - Masquerading på dial-up interface</para></listitem>
+  <listitem><para>REDIRECT - destination NAT til lokal port</para></listitem>
+</itemizedlist>
+
+<para>
+Man kan angive <filename>-p protokol</filename>, og for tcp og udp kan
+man også angive portnummer eller port range. <filename>--to</filename>
+angiver den/de ip-adresse(r) der skal NAT'es til.
+</para>
+</sect4>
+
+<sect4 id="eksempel-masq">
+<title>Eksempler</title>
+<para>Opsætning af IP masquerading med iptables:</para>
+
+<para>Med fast ip-adresse:</para>
+
+<programlisting>
+# iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to 1.2.3.4
+</programlisting>
+
+<para>Med dynamisk ip-adresse:</para>
+<programlisting>
+# iptables -t nat -A POSTROUTING -o ppp0 -j MASQUERADE
+</programlisting>
+
+<para>
+MASQUERADING target er specielt til masquerading med en dynamisk
+tildelt ip-adresse, som en dial-up forbindelse har. Den finder 
+selv ud af det, når ip-adressen på ppp0 skifter. 
+</para>
+<para>Lav destination NAT til ip 1.2.3.4, 1.2.3.5 eller 1.2.3.6</para>
+<programlisting>
+# iptables -t nat -A PREROUTING -i eth1 -j DNAT --to 1.2.3.4-1.2.3.6
+</programlisting>
+
+<para>Lav destinations NAT fra port 80 til den lokale port 3128, hvor squid kører</para>
+<programlisting>
+# iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 \ 
+-j REDIRECT --to-port 3128
+</programlisting>
+
+<para>
+Eksemplerne er taget mere eller mindre direkte fra Linux 2.4 NAT HOWTO, og
+er blot ment som illustration af, hvad man kan med iptables NAT.
+</para>
+
+<para>
+For nærmere beskrivelse, se Linux 2.4 NAT HOWTO på <ulink
+url="http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/index.html">http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/index.html</ulink>
+Se desuden man-siden for iptables.
+</para>
+
+</sect4>
+</sect3>
+</sect2>
+</sect1>
+
+<sect1 id="firewall-test">
+<title>Afprøvning af en firewall</title>
+ <indexterm>
+  <primary>firewall</primary>
+  <secondary>afprøvning</secondary>
+ </indexterm>
+ <indexterm>
+  <primary>afprøvning af en firewall</primary>
+ </indexterm>
+<indexterm><primary>Firewall</primary><secondary>test</secondary></indexterm>
+<indexterm><primary>Test af firewall</primary></indexterm>
+<para>
+Når man har sat sin firewall op, skal man altid undersøge, 
+at den virker som forventet.</para>
+
+<itemizedlist mark="bullet">
+
+<listitem><para>
+  <emphasis>Funktionalitet: </emphasis>Test at de services, der skal
+  kunne benyttes, virker. Både indefra og udefra. Der er dog stor
+  chance for, at brugerne nok skal fortælle meget hurtigt, hvis det
+  ikke er tilfældet.
+</para></listitem>
+
+<listitem><para>
+  <emphasis>Sikkerhed: </emphasis>Test at firewallen rent faktisk
+  lukker for de ting, den burde. Prøv at bruge services, der skulle
+  være lukket for, ved at prøve at oprette forbindelser
+  udefra. Portscan firewallen for at se, hvad folk kan få at vide om
+  den udefra. Der findes også mere omfattende tests. Man kan forsøge
+  sig med diverse cracker-programmer, eller man kan betale andre for
+  at teste firewallen.
+</para></listitem>
+
+<listitem><para>
+  <emphasis>Vedligeholdelse: </emphasis> Hold altid softwaren på
+  firewallen opdateret med de nyeste sikkerhedsrettelser. Læs altid
+  logfiler.
+</para></listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1 id="epilog4">
+<title>Epilog</title>
+
+<para>
+Firewallløsninger kan ikke beskrives fuldstændigt her. Vi
+har taget en del af Linux-mulighederne, men der er meget, vi ikke har dækket:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem><para>
+    Trusted Information Systems Firewall Toolkit (FWTK): Se 
+    <ulink url="http://www.fwtk.org/fwtk/">http://www.fwtk.org/fwtk/</ulink>
+  </para></listitem>
+  <listitem><para>
+    T.REX: Open Source firewall: Se <ulink url="http://www.opensourcefirewall.com/">http://www.opensourcefirewall.com/</ulink> 
+  </para></listitem>
+  <listitem><para>
+    En side med mange links om firewalle: Se <ulink url="http://www.linux-firewall-tools.com/linux/">http://www.linux-firewall-tools.com/linux/</ulink>
+  </para></listitem>
+  <listitem><para>
+    Firewall-1 er en fuld kommerciel firewall: 
+    Se <ulink url="http://www.checkpoint.com/products/firewall-1/">http://www.checkpoint.com/products/firewall-1/</ulink>
+  </para></listitem>
+  <listitem><para>
+    Socks5 er en proxy server, der anvendes mange steder. 
+    Se <ulink url="http://www.socks.nec.com">http://www.socks.nec.com</ulink>
+  </para></listitem>
+  <listitem><para>
+    Mange gode netværkssikkerhedsværktøjer og ressourcer findes på
+    <ulink url="http://www.freefire.org">http://www.freefire.org</ulink>
+  </para></listitem>
+  <listitem><para>
+    En opskrift på test af firewall kan læses på <ulink url="http://linuxtoday.com/news_story.php3?ltsn=2001-05-04-015-20-SC">http://linuxtoday.com/news_story.php3?ltsn=2001-05-04-015-20-SC</ulink>.
+  </para></listitem>
+</itemizedlist>
+
+
 </sect1>
 </chapter>
+
+
+
 
