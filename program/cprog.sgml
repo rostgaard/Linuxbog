@@ -7,25 +7,26 @@
 
  <para>
   Programmeringssproget C og Unix-familien af styresystemer har traditionelt
-  været tæt knyttet til hinanden. Dette gælder i høj grad også for Linux.
-  Kernen og langt de fleste programmer er skrevet i C. C++ er en udvidelse af
+  været tæt knyttet til hinanden. Dette gælder i også for Linux. Kernen og
+  langt de fleste programmer er skrevet i C. C++ er en videreudvikling af
   C, der giver mulighed for objektorienteret programmering. 
  </para>
 
  <para>
   Skal et program køre hurtigt, så er C og C++ gode valg af
   programmeringssprog. Både C og C++ har dog en syntaks der dels er svær at
-  forstå for begyndere og dels let leder til alvorlige fejl i programmerne.
-  I både C og C++ er det op til brugeren at allokere hukommelse til
+  forstå for begyndere og dels kræver stor opmærksomhed hvis man vil undgå
+  fejl i sine programmer. Både i C og i C++ er det op til brugeren at allokere
+  hukommelse til
   datastrukturer, og sørge for at programmet kun skriver inden for den
   allokerede hukommelse. Dette er en egenskab ved C der historisk har ledt til
   mange problematiske programmeringsfejl, og en grund til at det kan tage lang
   tid at finde fejl i C- og C++-programmer. C har også en meget primitiv
   repræsentation af strenge. C++ er lidt bedre på dette punkt, men for
   eksempel Perl er et langt stærkere sprog til behandling af store mængder
-  tekst. I det hele taget har C og C++ problemer med håndtering af forskellige
-  datatyper og en alvorlig mangel på beskyttelse mod utilsigtede oversættelser
-  mellem de forskellige datatyper.
+  tekst. I det hele taget har C (og til en vis grad også C++) et lavt
+  abstraktionsniveau og en alvorlig mangel på beskyttelse mod utilsigtede
+  oversættelser mellem de forskellige datatyper.
  </para>
 
  <para>
@@ -36,10 +37,10 @@
   grafisk brugergrænseflade. Det giver større frihed for den enkelte til at
   sammensætte et personligt udviklingsmiljø - enten grafisk eller
   tekstbaseret. Med lidt tilvænning er det også hurtigt at anvende, specielt
-  hvis der skal oversættes meget kildetekst per gang. Der er også den store
+  hvis der skal oversættes megen kildetekst ad gangen. Der er også den store
   fordel,
   at det er meget udbredt inden for Unix-verdenen, hvorfor kildetekst og
-  oversættelsesfiler (engelsk: makefiles) uden problemer kan flyttes,
+  oversættelsesfiler ("makefiles") uden problemer kan flyttes,
   oversættes og køres på andre typer af Unix-systemer.
  </para>
 
@@ -78,21 +79,23 @@ int main(void)
   <para>
    <indexterm><primary>gcc</primary></indexterm>
 
-   C-oversætteren hedder <command>gcc</command>. Den skal her lave en kørbar
-   fil med navnet <filename>hello</filename>, og den skal oversætte og samle
-   programmet udfra kildeteksten i <filename>hello.c</filename>. Det oversatte
-   program <filename>hello</filename> køres ved at skrive
-   <command>./hello</command> i et terminalvindue.
-</para>
+   C-oversætteren hedder <command>gcc</command>. Den skal her udfra
+   kildeteksten i <filename>hello.c</filename> oversætte og samle programmet
+   til en kørbar fil med navnet <filename>hello</filename>. Det oversatte
+   program kan dernæst køres med kommandoen <command>./hello</command>.
+  </para>
+ </sect2><!-- foerstecprog -->
 
-</sect2><!-- foerstecprog -->
+ <sect2 id="biblioteker-c">
+  <title>Funktionsbiblioteker</title>
 
-<sect2 id="biblioteker-c">
-<title>Funktions biblioteker!</title>
-<indexterm><primary>Funktions biblioteker</primary><secondary>dynamisk linking</secondary></indexterm>
+  <indexterm>
+   <primary>Funktionsbiblioteker</primary>
+   <secondary>dynamisk linking</secondary>
+  </indexterm>
 
-<para>
-Programmet <command>nm</command> kan bruges til at liste funktionerne
+  <para>
+   Programmet <command>nm</command> kan bruges til at liste funktionerne
 der defineres i et program. Prøv at køre følgende kommando
 
 <screen>
@@ -114,15 +117,15 @@ hello</filename> <indexterm><primary>ldd</primary></indexterm>
         /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x00000000)
 </screen>
 
-<para>
-Ideen er, at alle de programmer bruger <command>printf</command>
-funktionen, kan deles om en <command>printf</command> funktion.
-Printf funktionen findes i et delt bibliotek af funktioner
-(biblioteket af alle standard C funktioner kaldes libc). På den
-måde bliver alle programmer mindre. Programmer, der gør brug af
-delte biblioteker, kan dog ikke køre på en computer med mindre
-alle delte biblioteker er tilstede.  
-</para>
+  <para>
+   Ideen er, at alle de programmer bruger <command>printf</command>-funktionen,
+   kan deles om en kopi af koden til <command>printf</command>-funktionen. Den
+   findes i et delt bibliotek af funktioner (biblioteket med alle standard C
+   funktioner kaldes libc). På den måde undgår man unødvendig duplikering af
+   kode og sparer hukommelse. Programmer, der gør brug af delte biblioteker,
+   kan dog ikke køre på en computer med mindre alle delte biblioteker er
+   tilstede.  
+  </para>
 
 
 <para>
@@ -137,9 +140,8 @@ fra <filename>libc</filename>, kan ses ved at skrive
 </screen>
 
 <para>
-Det var lidt om dynamisk linking. Koden kan også oversættes så
-funktioner fra delte biblioteker linkes statisk ind i den udføre
-bare fil.
+Koden kan også oversættes så
+funktioner fra delte biblioteker linkes statisk ind i den udførbare fil.
 </para>
 
 <screen>
@@ -150,27 +152,29 @@ bare fil.
 <para>
 Bemærk ændringen i filstørrelsen (fra ca. 4 kbytes til over 400 kbytes).
 Nu vil <command>ldd hello</command> vise, at der ikke er eksterne
-biblioteker nødvendige for at køre programmet.
+biblioteker, der er nødvendige for at køre programmet.
 </para>
 
-<para>
-Med Linux distributioner følger en lang række af funktions biblioteker
-der indeholder funktioner til at læse og skrive mange forskellige
-billedformater, læse XML filer, hente web sider, læse og skrive pakkede
-filer, vekselvirke med X windows og meget mere. Funktions biblioteker
-kommer næsten altid i to pakker: en der installere de filer, der
-kræves for at køre programmer anvender biblioteket, og en anden pakke
-(kaldet devel), der indeholder C headeres og dokumentation, der skal
-til for selv at udvikle programmer, der gør brug af et funktions bibliotek.
-</para>
+  <para>
+   Med Linux-distributioner følger en lang række af funktionsbiblioteker der
+   indeholder funktioner til at læse og skrive mange forskellige
+   billedformater, læse XML-filer, hente websider, læse og skrive pakkede
+   filer, kommunikere med grafiksystemet X og meget mere. Funktionsbiblioteker
+   kommer næsten altid delt i to pakker: En med oversatte udgaver af
+   bibliotekerne til de programmer der bruger bibliotekerne. Og en anden med
+   de nødvendige filer der er brug for, hvis man skal oversætte programmer der
+   bruger bibliotekerne.
+  </para>
 
-<para>
-Hvis programmer bruger funktionsbiblioteker, der ikke linkes ind som
-standard, så skal disse biblioteker listes når programmet oversættes.
-Foreksempel matematik biblioteket libm, linkes med når flaget -lm
-skrives sidst i oversættelseskommandoen. Da alle biblioteker
-starter med "lib" er der specificeres dette ikke på kommandolinien.
-</para>
+  <para>
+   Hvis et program bruger et funktionsbibliotek oversætteren ikke automatisk
+   tager med når et program oversættes, skal oversætteren instrueres om at
+   tage dem med med flaget "-l". Hvis et program for eksempel bruger et
+   bibliotek ved navn "libeksempel" tages det med ved at "-leksempel" føjes
+   til oversættelseskommandoen. Bemærk at biblioteker ligger i filer hvis navn
+   starter med "lib", men det er kun resten af navnet der bruges i denne
+   sammenhæng.
+  </para>
 
 <para>
 Hvis biblioteksfilen ikke ligger i de kataloger som oversætteren normalt
@@ -183,19 +187,19 @@ manglende symboler.
 </para>
 
 <para>
-Skal oversætteren inkludere header filer, der ikke ligger normale steder,
+Skal oversætteren inkludere header-filer, der ikke ligger normale steder,
 kan stien til disse inkluderes med flaget -I/home/mig/mineheadere.
 Når <command>#include "minhead.h"</command> oversættes vil 
 oversætteren finde <filename>minhead.h</filename> i
 <filename>/home/mig/mineheadere</filename> kataloget.
-Brug <command>man gcc</command> for at få hjælp til de mange
+Brug <command>man gcc</command> til at få hjælp til de mange
 muligheder som gcc og g++ har.
 </para>
 
 </sect2><!-- biblioteker -->
 
 <sect2 id="foerstecppprogram">
-<title>Det første C++-program</title>
+<title>Et C++-program</title>
 
 <para>
 I følgende enkle eksempel ønskes et program, der indlæser to tal, finder
@@ -259,7 +263,7 @@ oversættes ved at udføre følgende
 <para>
  Koden <filename>$1</filename> betyder første argument, hvorfor filen
  kaldes med første argument lig med C-kildetekstens filnavn. I filen
- inkluderes fejlsøgningsinformation med flaget -ggdb. Filen er gemt under
+ inkluderes information til fejlsøgning med flaget -ggdb. Filen er gemt under
  navnet <filename>mycompile</filename>. I eksemplet anvendes
  apostroffer ('), i det man med gåseøjne (dvs. "") får erstattet
  variable (med et dollar-tegn foran) <emphasis>før</emphasis>
@@ -272,7 +276,7 @@ Nu skal vi sørge for at filen kan køres:
 
 <screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>chmod a+x mycompile</userinput></screen>
 
-<para>Nu kan du skrive
+<para>Nu kan man skrive
 </para> 
 
 <screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>./mycompile filnavn
