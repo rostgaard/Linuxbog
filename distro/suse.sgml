@@ -8,10 +8,9 @@
 SuSE laves af et tysk firma der hedder SUSE LINUX <ulink
 url="http://suse.com">http://suse.com</ulink>, som for nylig er blevet
 købt af Novell. 
-Den nyeste version hedder 9.0. SuSE kan købes i en fin æske med CD'er og
-manual, eller den kan installeres fra deres ftp server. SuSE 9 var
-dog ikke kommet på ftp endnu da dette blev skrevet, så beskrivelsen er
-lavet ud fra version 8.2. 
+Den nyeste version hedder 9.1 (i skrivende stund.) SuSE kan købes
+i en fin æske med CD'er og manual, eller den kan installeres fra
+SuSE's ftp server.
 </para>
 
 <para>
@@ -38,9 +37,13 @@ lavet mere. Der er tilsyneladende stadig versioner til ppc, sparc og s390).
   </indexterm>
 
   <para>
-   SuSE's målgruppe er skrivebordsbrugere, der bare vil have noget der
-   virker.  <!-- Er det ikke også Mandrakes, Knoppix' og Fedoras
-   målgruppe? -->
+   SuSE henvender sig til brugere, der ønsker at få en
+   sammenhængende, let konfigurerbar distribution med et suverænt
+   administrationsværktøj (Yast). Dog skal det siges, at de
+   versioner der har nummer X.0 nok mere er for de der ikke kan
+   styre deres nysgerrighed, mens man bør vente på version X.1
+   eller højere nummer, hvis man ikke har lyst til at løbe ind i
+   større eller mindre skønhedsfejl.
   </para>
 
 <figure id="distro-suse-figname" float="1">
@@ -167,8 +170,9 @@ uden yderligere genstart af maskinen.
 <sect1 id="distro-suse-brug">
 <title>Brugen af SuSE</title>
 <para>
-SuSE 8.2 standard installationen indeholder KDE, openoffice, postfix,
-div. spil og naturligvis SuSEs glimrende opsætningsværktøj YaST.
+SuSE 9.1 standard installationen indeholder KDE, Open Office, postfix,
+div. spil og naturligvis SuSEs glimrende opsætningsværktøj
+YaST/Yast2.
 Der er en del programmer jeg savner i standard installationen, bl.a.
 mozilla, locate, ImageMacick og ncftp. Disse må formodes at være med
 hvis man vælger fuld installation. Det er let nok at installere dem med
@@ -180,10 +184,19 @@ standardinstallationen. SuSE bruger reiserfs.
 <para>
 Hvis man ellers har valgt rigtigt under installationen, så keyboard
 indstillinger m.m. virker som det skal, og SuSE har fundet ens hardware,
-er det lige til at gå i gang med at bruge. Opsætningsfilerne ligger
-nogenlunde hvor en Linuxbruger vil forvente at finde dem, men ofte er
-det bedre at benytte YaST da man så er sikker på at filerne bliver
-behandlet korrekt, når man en anden gang vil at lave ændringer via YaST. Den kan den vist godt finde på at overskrive ændringer man selv har lavet, hvis man kører YaST bagefter.  </para>
+er det lige til at gå i gang med at bruge.  SuSE arbejder med et
+sæt konfigurationsfiler i /etc/sysconfig, som danner udgangspunkt
+for ændringer i de enkelte programmers konfigurationsfiler,
+typisk placeret under /etc. Denne fremgangsmåde medfører, at
+opsætning/ændringer, der skrives direkte i de enkelte programmers
+konfigurationsfiler, ofte vil bliver slettet, hvis man senere
+benytter Yast til at lave ændringer. 
+</para>
+
+<para>
+Husk derfor altid backup af ændringer i konfigurationsfiler samt
+skriv i en log, hvad du laver.
+</para>
 
 <para>
 SuSE er meget grafisk orienteret med grafisk opstartsbillede, grafisk
@@ -222,12 +235,9 @@ Langt nemmere er det dog at bruge SuSE's YaST-system til at installere
 nye pakker med. YaST findes både som X-program og som ncurses-program
 der kan køre i et terminal- eller konsolvindue. YaST kan selv finde ud
 af pakkeafhængigheder. Man kan kalde YaST2 med kommandoen <command>yast2
---install pakename</command>, så kommer YaST GUI'et op med pakken
-tilvalgt. Der ser ikke rigtig ud til at være nogen batch mode så det kan
-scriptes. Desuden kommer SuSE 8.2 tilsyneladende med et indbygget
-pakkeafhængighedsproblem: Openoffice afhænger af jre1.3, som ikke er til
-rådighed. Enten må man tage hånd om dette eller klikke "Ignore" hvergang
-men vil installere nye pakker  </para>
+--install &gt;pakkenavn></command>, så kommer YaST GUI'et op med pakken
+tilvalgt. Der ser ikke rigtig ud til at være nogen batch mode.
+</para>
 
 <figure id="distro-suse-yast" float="1">
 <title>SuSEs opsætningsværktøj YaST, her softwareinstallation</title>
@@ -244,31 +254,34 @@ foretaget i Yast. Med andre ord, du bør bruge Yast til at lave de
 ændringer du ønsker.
 </para>
 
-
+<para>
+SuSE har indbygget opdateringssystemet YOU (Yast Online Update),
+som enten kan køres manuelt eller konfigureres til automatisk
+daglig opdatering. Alle installerede pakker kan automatisk holdes
+opdateret med seneste rettelser.
+</para>
 
 <para>
 Apt til SuSE findes på <ulink
 url="http://linux01.gwdg.de/apt4rpm/">http://linux01.gwdg.de/apt4rpm/</ulink>. 
-Apt virker kun hvis pakkeafhængigheder (eng. dependencies) er opfyldt. Som
-sagt er der fra starten et problem: Openoffice (som er installeret)
-afhænger jre1.3. Apt kan fixe dette ved at afinstallere openoffice,
-hvis man kører <command>apt-get -f install</command> kommandoen.
-Alternativt kan man prøve at installere jre fra Sun og se om det hjælper.
+Apt virker kun hvis pakkeafhængigheder (eng. dependencies) er opfyldt.
 </para>
 
 <para>
-Der er også noget der hedder <command>fou4s</command> (Fast OnlineUpdate for SuSE)
-som kan downloades på <ulink
-url="http://fou4s.gaugusch.at/">http://fou4s.gaugusch.at/</ulink>, som
-kan lave noget auto-opdatering. Det ser dog ikke helt så avanceret ud
-som apt, og har tilsyneladende problemer med selv at løse pakkeafhængigheder.
+Apt kan bruges til at fixe brudte pakkeafhængigheder, ved at man
+afinstallerer pakkenavn, og derefter geninstallerer med
+<command>apt-get -f install</command> kommandoen.
 </para>
-
 
 <para>
-SuSE brugere vil dog nok i praksis anvende YAST fremfor <command>apt</command>
-og <command>fou4s</command>.
+Der findes et alternativ til auto-opdatering med 'You':
+<command>fou4s</command> (Fast OnlineUpdate for SuSE) som kan
+downloades på <ulink
+url="http://fou4s.gaugusch.at/">http://fou4s.gaugusch.at/</ulink>.
+Det ser efter en af forfatternes mening dog ikke helt så avanceret ud
+som apt og har tilsyneladende problemer med selv at løse pakkeafhængigheder.
 </para>
+
 
  </sect1>
 
