@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Dette script bootstrapper/konfigurer det der skal til for at lave linuxbøgerne 
 
@@ -10,42 +10,63 @@ SUBDIRS="admin applikationer c dokumentation forsker friheden itplatform java ko
 ALLE=alle
 #SUBDIRS="alle signatur"
 
-
 ################################################################################
 #
-# Check for argumenter
-
-# help
-if test "x$1" == "x--help" -o "x$1" == "x-h" ; then
-    echo "\`configure' opsætter hvilke af \"Linux - friheden til at vælge bøgerne\" der skal"
-    echo "laves på dit system."
-    echo
+# Brug
+brug() {
     echo "Brug: ./configure [--help|-h|--med \"BØGER\"]"
     echo
     echo "  -h, --help          Viser denne hjælp og afslutter"
     echo "      --med \"BØGER\"   Bestemmer hvilke bøger der medtages, hvor BØGER er"
     echo "                      en liste af bøger. Kombiner:"
     echo "                      \"$SUBDIRS\""
+    echo "      --uden-alle     Lad være med at medtage alle (een stor bog) bogen"
     echo
-    echo "Eksempel: ./configure --med \"friheden applikationer\""
+    echo "Eksempel: ./configure --med \"friheden applikationer\"";
+}
+
+################################################################################
+#
+# hjaelp
+hjaelp() {
+    echo "\`configure' opsætter hvilke af \"Linux - friheden til at vælge bøgerne\" der skal"
+    echo "laves på dit system."
+    echo
+    brug
     exit
-fi
+}
 
-# med
 
-if test "x$1" == "x--med" ; then
-    if test "x$2" == "x" ; then
-	./configure --help
-	exit 1
-    else
-	SUBDIRS=$2
-    fi
-else
-    if test "x$1" != "x" ; then
-	./configure --help
-	exit 1
-    fi
-fi
+################################################################################
+#
+# Check for argumenter
+
+
+# Note that we use `"$@"' to let each command-line parameter expand to a
+# separate word. The quotes around `$@' are essential!
+# We need TEMP as the `eval set --' would nuke the return value of getopt.
+TEMP=`getopt -o ahm: --long uden-alle,help,med: -n "$0" -- "$@"`
+
+if [ $? != 0 ] ; then brug ; exit 1 ; fi
+
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+	-a|--uden-alle) ALLE= ; shift ;;
+	-h|--help) hjaelp; shift ;;
+	-m|--med) SUBDIRS=$2 ; shift 2 ;;
+	--) shift ; break ;;
+	*) echo "Internal error!" ; exit 1 ;;
+    esac
+done
+
+# Note, vi kunne sende resten af argumenterne til underliggende
+# ./configure programmer... 
+# echo "Remaining arguments:" for arg do
+# echo '--> '"\`$arg'" ; done
 
 ################################################################################
 #
@@ -62,6 +83,11 @@ fi
 # Rent faktisk gøre noget.
 
 echo "*** Opsætter følgende bøger: $SUBDIRS"
+if test "x$ALLE" != "x" ; then
+  echo "*** Opsætter alle bogen"
+else
+  echo "*** Opsætter ikke alle bogen"
+fi
 
 sed "s/@SUBDIRS@/$SUBDIRS/" < Makefile.in | sed "s/@ALLE@/$ALLE/" | sed "s/@Makefile.in@/RET IKKE I DENNE FIL - AUTOGENERERET FRA Makefile.in/" > Makefile
 
