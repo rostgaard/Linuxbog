@@ -2,6 +2,12 @@
    // $Id$
    // Første version af Hans Schou.
 
+   # Dette program virker kun på cvs.sslug.dk
+   if ($HTTP_HOST != "cvs.sslug.dk") {
+     header("Location: http://cvs.sslug.dk/linuxbog/search.php");
+     exit;
+   }
+
    /* top.phtml sets 
       <!--DOCTYPE ....
       .....
@@ -16,6 +22,11 @@
    @include($DOCUMENT_ROOT."/includes/top.phtml");
 
    list($width,$height) = getimagesize("front.png");
+
+   # \\ skal laves om til \
+   if (isset($q))
+     $q = preg_replace("|\\\\\\\|", "\\", $q);
+
 ?>
 
 <img src="front.png" alt="Friheden til at skrive bøger"
