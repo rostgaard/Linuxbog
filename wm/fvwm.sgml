@@ -1,8 +1,236 @@
 <?xml encoding="ISO-8859-1" ?>
+
+<!-- Originalfil http://www.sslug.dk/julekalender/4.php3 -->
+
 <chapter id="fvwm">
 <title>fvwm</title>
 
 <para>
-X
+ Da jeg i sin tid, for efterhånden ganske mange år siden begyndte
+ at bruge X (jeg havde allerede brugt Unix i et par år) var der
+ en af mine venner der viste mig hvordan jeg kunne erstatte den
+ kedelige og lidt besværlige vindueshåndtering der (stadig) er
+ standard på Digital Unix (der i dag hedder HP Tru64) med en noget
+ smartere en, jeg kunne finde ud af at få til at køre med flere
+ skriveborde, og hvor man kunne lave sine
+ egne menuer der kunne aktiveres med både mus og genvejstaster, etc.
+ Det var FVWM.  Siden da er der blevet skrevet videre på FVWM.  Og i
+ forbindelse med at formatet af opsætningsfilen blev ændret, blev
+ versionsnummeret talt op, så <command>fvwm</command> blev til
+ <command>fvwm2</command>.
 </para>
+
+
+<figure id="4-fvwm2_med_julepynt-hel-fig" float="1">
+<title>[skærmskud med fvwm i juleskrud]</title>
+<graphic fileref="4_fvwm2_med_julepynt_hel.png.&magic;" scale="60"></graphic>
+</figure>
+
+<sect1>
+  <title>Installation</title>
+
+<para>
+ FVWM2 findes formodentlig i de fleste Linux-distributioner og det
+ letteste er at installere den "fvwm2"- og "fvwm2-icons"-pakke der
+ følger med ens distribution. Hvis man selv ønsker at oversætte
+ FVWM, kan den hentes på hjemmesiden,
+ <ulink url="http://www.fvwm.org/">http://www.fvwm.org/</ulink>.</para>
+</sect2>    <!--   Installation -->
+
+<sect1>
+  <title>Opsætning</title>
+
+<para>
+ FVWM's opsætning styres i filen <command>~/.fvwm2rc</command>.  Som
+ et eksempel kan du hente den opsætningsfil der blev brugt i
+ skærmbilledet ovenfor kataloget <filename>fvwm</filename> under
+ eksempler til denne bog.  Dele af den vil blive gennemgået
+ nedenfor.</para>
+
+<sect2>
+  <title>Virtuelle skriveborde</title>
+
+<para>
+ Hvorfor nøjes med et skrivebord, når man kan have seks?  De fem
+ hvide og det ene gule rektangel nederst til højre på skærmen
+ giver en oversigt over de seks virtuelle skriveborde vi har valgt
+ at arbejde på med indstillingen:</para>
+
+<screen>
+DeskTopSize 3x2
+</screen>
+
+
+<figure id="4-virtuelle_skriveborde-fig" float="1">
+<title>oversigt over de virtuelle skriveborde</title>
+<graphic fileref="4_virtuelle_skriveborde.&magic;" scale="60"></graphic>
+</figure>
+</sect2>    <!--   Virtuelle skriveborde -->
+
+<sect2>
+  <title>Skriftsnit</title>
+
+<para>
+ Med:
+</para>
+
+<pre align=left>
+Style *   Font     -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*&nbsp;&nbsp;
+Style *   IconFont -adobe-helvetica-medium-r-*-*-11-*-*-*-*-*-*-*
+</pre>
+
+<para>
+ vælger vi standardskriftsnit for vinduestitler (fed Helvetica, 12pt)
+ og ikontitler (Helvetica, 11pt).</para>
+</sect2>    <!--   Skriftsnit -->
+
+<sect2>
+  <title>Vinduesfokus</title>
+
+<para>
+ Folk kan bruge meget tid på om vinduesfokus skal følge musen eller
+ først skal skifte når man klikker med musen i et nyt vindue.  Her
+ sætter vi det til at følge musen:</para>
+
+<screen>
+Style *   FocusFollowsMouse
+</screen>
+
+
+<para>
+ Alternativerne til <command>FocusFollowsMouse</command> er
+ <command>SloppyFocus</command>, <command>NeverFocus</command> og
+ <command>ClickToFocus</command>.
+</para>
+</sect2>    <!--   Vinduesfokus -->
+
+<sect2>
+  <title>Menuer</title>
+
+<para>
+ I FVWM er du ikke begrænset til at have én "start"-menu.  Du kan have
+ så mange forskellige menuer som du har lyst til.  Og du kan selv vælge
+ hvordan de skal aktiveres og hvilke funktioner der skal være på dem.
+ Her definerer vi en meget enkel menu med overskriften "Log ud" og
+ menupunktet "Afslut fvwm2" (der vil afslutte FVWM og dermed normalt
+ også logge brugeren ud):
+</para>
+
+<screen>
+AddToMenu Logud       &nbsp;
+ + "Log ud"       Title
+ + "Afslut fvwm2" Quit&nbsp;
+</screen>
+
+
+<para>
+ Hvis vi senere i opsætningen vil bruge denne menu gør vi det med
+ kommandoen " <command>Popup Logud</command> ".
+</pre>
+</sect2>    <!--   Menuer -->
+
+<sect2>
+  <title>Genvejstaster</title>
+<screen>
+Key Tab     A    M      Next (AcceptsFocus) Focus
+</screen>
+
+
+<para>
+ sørger for at Alt-Tab skifter til næste vindue.  Og nej, det er
+ ikke A'et der står for "Alt".  <command>A</command> står for i 
+ <filename>a</filename>lle sammenhænge.  <command>M</command> står for "Meta"
+ (der er det "Alt" hedder i FVWM).  Og
+ <command>Next (AcceptsFocus) Focus</command> giver fokus til det næste
+ vindue der er villigt til at komme i fokus.
+</para>
+
+<para>
+ Da jeg i sin tid satte FVWM op, så var en af de store fordele ved
+ FVWM at jeg kunne få den til at have omtrent samme genvejstaster
+ som OS/2 Warp 3.  Det klarede jeg hovedsageligt med de følgende ti linier.
+</para>
+
+<screen>
+Key F1      A    M      Iconify          &nbsp;
+Key F2      A    M      Maximize 100 100 &nbsp;
+Key F3      A    M      RaiseLower       &nbsp;
+Key F4      A    M      Close            &nbsp;
+Key F5      A    M      CirculateUp      &nbsp;
+Key F6      A    M      CirculateDown    &nbsp;
+Key F7      A    M      Move             &nbsp;
+Key F8      A    M      Resize           &nbsp;
+Key F9      A    M      Stick            &nbsp;
+Key F10     A    M      Maximize         &nbsp;
+</screen>
+
+
+<para>
+ Og med de følgende fire linier hægter jeg FVWM's vinduesoversigt og
+ tre hjemmelavede menuer på fire forskellige kombinationer af
+ Escape-tasten med Ctrl-, Alt- og Shift-tasterne:
+</para>
+
+<screen>
+Key Escape  A    C      WindowList              &nbsp;
+Key Escape  A    S      Popup "Programmer"      &nbsp;
+Key Escape  A    M      Popup "Terminalvinduer" &nbsp;
+Key Escape  A    CS     Popup "Systemstyring"   &nbsp;
+</screen>
+
+
+<para>
+ Og endelig sætter jeg Ctrl-Alt-T til at åbne en <command>xterm</command>:
+</para>
+
+<screen>
+Key T       A    CM     Exec xterm -fn 7x13 -ls -sb -rw -aw -sl 256 +vb +mb -bg white -fg blue
+</screen>
+</sect2>    <!--   Genvejstaster -->
+
+<sect2>
+  <title>Initialisering</title>
+
+<para>
+ FVWM kalder automatisk funktionen <command>InitFunction</command> når den
+ starter, så her kan man placere kommandoer man gerne vil have kørt når
+ man logger ind.  Vi kan for eksempel bruge den til at sætte
+ baggrundsbilledet:
+</para>
+
+<screen>
+AddToFunc InitFunction                                        &nbsp;
+ + I Exec xv -root -rmode 5 -8 -rbg white ~/Colibri-1.ppm -quit
+</screen>
+</sect2>    <!--   Initialisering -->
+</sect1>    <!--   Opsætning -->
+
+<sect1>
+  <title>Brugsanvisningen</title>
+
+<para>
+ Man kan finde <ulink url="http://www.fvwm.org/generated/manpages/">brugsanvisningen til
+ FVWM og de tilhørende moduler</ulink> på FVWM-webstedet.
+</para>
+</sect1>    <!--   Brugsanvisningen -->
+
+<sect1>
+  <title>Det fede ved FVWM</title>
+
+<para>
+ FVWM kræver ikke specielt mange ressourcer.  Syntaksen i opsætningsfilen
+ er rimeligt overskuelig.  Og så har jeg efterhånden brugt en del timer
+ på at tilpasse min opsætning af FVWM til hvordan jeg foretrækker at
+ arbejde.</para>
+
+<para>
+ Den standardopsætningsfil FVWM kommer med er ikke just smuk, men hvis
+ man tager et kig på <ulink url="http://www.fvwm.org/screenshots/">eksemplerne
+ på FVWM-webstedet</ulink> får man en idé om hvor fleksibel FVWM egentlig er.</para>
+
+<para>
+ Hvis man
+ begynder med FVWM, så kan man praktisk talt alt.
+</para>
+</sect1>
 </chapter>
