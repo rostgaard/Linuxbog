@@ -37,10 +37,10 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
-SUBDIRS = applikationer admin program web sikkerhed c dokumentation kontorbruger itplatform friheden
+SUBDIRS = applikationer admin program web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html palmpilot sgml flytalle
+all: html  pakhtml palmpilot sgml flytalle
 
 
 flytalle:
@@ -60,6 +60,7 @@ statusfiles:
 
 sgml: $(sgmlfiler) $(targetname)-$(version).sgml.tar.gz $(targetname)-$(version).sgml.zip
 
+
 $(targetname)-$(version).sgml.tar.gz:
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
 
@@ -74,10 +75,11 @@ $(targetname)-$(version).palm.zip: html
 	cp ../misc/*.prc palm
 	zip $(targetname)-$(version).palm.zip palm/*.prc palm/*.pdb
 
-html: statusfiles  versionfil $(targetshortname) pakhtml
+html: statusfiles versionfil $(targetshortname)
+
 $(targetshortname): $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz $(targetshortname)
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -93,6 +95,13 @@ $(targetshortname): $(sgmlfiler)
 	done;
 	cp linuxbog.css $(targetshortname)
 	rm -rf tempdir
+	echo %define buildname $(targetshortname) > $(targetshortname)/$(targetname).spec
+	echo Name: linuxbog-$(targetshortname) >> $(targetshortname)/$(targetname).spec
+	echo Summary: `grep -A2 "<title>" ../friheden/indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> $(targetshortname)/$(targetname).spec
+	echo Version: `cat ../friheden/version.sgml` >> $(targetshortname)/$(targetname).spec
+	echo Release: 1mdk >>  $(targetshortname)/$(targetname).spec
+	cat ../linuxbog.spec >> $(targetshortname)/$(targetname).spec
+
 ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
 	(cd $(targetshortname);perl ../../misc/insertimagesize)
 else
@@ -105,15 +114,7 @@ else
 endif
 
 
-specfile:
-	echo %define buildname $(targetshortname) > $(targetshortname)/$(targetname).spec
-	echo Name: linuxbog-$(targetshortname) >> $(targetshortname)/$(targetname).spec
-	echo Summary: `grep -A2 "<title>" ../friheden/indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> $(targetshortname)/$(targetname).spec
-	echo Version: `cat ../friheden/version.sgml` >> $(targetshortname)/$(targetname).spec
-	echo Release: 1mdk >>  $(targetshortname)/$(targetname).spec
-	cat ../linuxbog.spec >> $(targetshortname)/$(targetname).spec
-
-pakhtml: specfile $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip	
+pakhtml: $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip	
 
 $(targetname)-$(version).html.tar.gz:
 	tar czf $(targetname)-$(version).html.tar.gz $(targetshortname)
