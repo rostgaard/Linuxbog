@@ -272,7 +272,7 @@ function vistype($type) {
       )
     ),
     "forsker" => array(
-      title => "Friheden til at studere og forske",
+      title => "Linux - Friheden til at studere og forske",
       comment => "En begynderbog for samfundsfagfolk og humanister",
       auth => array(
         "Janus Sandsgaard" => "janus@janus.dk"
