@@ -2,8 +2,8 @@
 Url:		http://www.sslug.dk/linuxbog/
 Group:		Books/Computer books
 Copyright:	GNU GPL version 2
-Source:		%{name}-%{version}.html.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+Source:		${name}-${version}.html.tar.gz
+BuildRoot:	${_tmppath}/${name}-${version}-root
 Prefix:		${_prefix}
 
 %description -l da
@@ -19,11 +19,16 @@ Bogen er en del af en serie der kan findes samlet på http://www.sslug.dk/linuxbo
 * Linux - Friheden til at bruge kontorprogrammer - Kontorfunktioner på en Linux/KDE/Star Office-maskine.
 
 %prep
-%setup -q -n %{buildname}
+%setup -q -n ${buildname}
 
 %install
-mkdir -p $RPM_BUILD_ROOT/usr/share/books/${name}
-cp -r * $RPM_BUILD_ROOT/usr/share/books/${name}
+mkdir -p $RPM_BUILD_ROOT/usr/share/books/linuxbog/${name}
+(cd ${buildname}; cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/${name})
+
+if [ -d ./eksempler ] then
+	mkdir -p $RPM_BUILD_ROOT/usr/share/books/linuxbog/${name}/eksempler
+	(cd ./eksempler; cp -r * $RPM_BUILD_ROOT/usr/share/books/linuxbog/${name}/eksempler)
+fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
