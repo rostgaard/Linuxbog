@@ -57,9 +57,14 @@ opensource/misc
 ######################################
 # Spam-filtre
 
+## Alle mail, hvor afsenderadressen starter med _ eller et tegn, der kommer
+## før i alfabetet slettes
 :0
 * ^From:.*<_
 SKIDTPOST
+
+## Man kan sætte flere afsendere i samme linie, hvis de adskilles 
+## med tegnet "|". Undgå mellemrum
 
 :0
 * ^Content-type:.*(ks_c_5601-1987|ISO-2022-KR|EUC-KR|koi8-r)
@@ -274,6 +279,24 @@ SKIDTPOST
 #        $DEFAULT
 #    }
 #}
+
+:0
+* ^Content-type: (multipart/mixed|application/octet-stream)
+{
+    :0 HB
+    *  ^Content-Disposition: attachment;
+    *filename=.*\.(exe|vbs|shs|com|pif|bat|src|wfs|vbe|wsh|hta)
+    {
+        :0 fhw
+        | formail -i "Subject: Attachments kan indeholde virus !"
+    
+        :0:
+        $DEFAULT
+    }
+}
+
+
+
 
 
 #########################################
