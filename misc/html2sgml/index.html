@@ -1,0 +1,462 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>No title</title>
+  <style type="text/css">
+
+pre {background-color: #FFE9C1}</style>
+  <meta name="GENERATOR" content="amaya V3.2.1" />
+  <meta http-equiv="Content-Type" content="text/html" />
+</head>
+
+<body>
+<h1 title="hello">html2sgml konverter</h1>
+
+<p title="hello">Programmet modtager en html fil og konvertere en række html
+tags til de tilsvarende DocBook tags. Fx. laves &lt;i&gt; om til
+&lt;emphasis&gt;. Html koden checkes ikke for fejl før den konverteres, brug
+htmltidy fra www.w3.org til at checke html koden.</p>
+
+<h3>Syntax:</h3>
+
+<p>html2sgml.pl</p>
+
+<p>html2sgml.pl infile.html</p>
+
+<p>html2sgml.pl infile.html outfile.smgl</p>
+
+<p>html2sgml.pl infile.html -o outfile.smgl</p>
+
+<p>Hvis en input fil ikke specificeres bruges stdin, hvis output ikke
+specificeres bruges stdout.</p>
+
+<h3>Download:</h3>
+
+<p>Hent html2sgml.pl <a href="html2sgml.pl">her</a>. Den nuværende version er
+Pi-3+0.42</p>
+
+<h3>html koder</h3>
+
+<p title="hello">Langt fra alle html tags genkendes, men kun de der har en
+semantisk ekvivalent i docbook, eller layoutmæssigt ligner dem der bruges i
+html versionen af linuxbogen, dem der ikke genkendes vil sendes til output
+uforandret. Alt der ligger uden før &lt;body&gt; og efter &lt;/body&gt;
+slettes, dokumentet må manuelt indsættes i en passende docbook kontekst.</p>
+
+<p></p>
+
+<table border="1">
+  <caption>Konverteringstabel</caption>
+  <thead>
+    <tr>
+      <td>Html kode</td>
+      <td>Docbook kode</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&lt;p&gt;</td>
+      <td>&lt;para&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;pre&gt;</td>
+      <td>&lt;screen&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;code&gt;</td>
+      <td>&lt;command&gt; i tekst kontekst.
+
+        <p>&lt;prompt&gt; i &lt;pre&gt;..&lt;/pre&gt; kontekst</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;strong&gt;</td>
+      <td>&lt;filename&gt; i tekst kontekst
+
+        <p>&lt;userinput&gt; i &lt;pre&gt;..&lt;/pre&gt; kontekst</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;i&gt;</td>
+      <td>&lt;emphasis&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;em&gt;</td>
+      <td>&lt;emphasis&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;a href="URL"&gt;text&lt;/a&gt;</td>
+      <td>&lt;ulink url="URL"&gt;text&lt;/ulink&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;a href="#ref"&gt;text&lt;/a&gt;</td>
+      <td>&lt;xref linkend="ref"&gt;
+
+        <p>text smides bort da docbook selv generere en tekst.</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;ul&gt;</td>
+      <td>&lt;itemizedlist mark="bullet"&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;li&gt;..&lt;/li&gt;
+
+        <p>Virker også uden &lt;/li&gt;. Paragraf tags
+        &lt;li&gt;&lt;p&gt;..&lt;/p&gt;&lt;/li&gt; er optional.</p>
+      </td>
+      <td>&lt;listitem&gt;&lt;para&gt;..&lt;/para&gt;&lt;/listitem&gt;</td>
+    </tr>
+    <tr>
+      <td>&lt;h1 title="kamel"&gt;dromedar&lt;/h1&gt;..
+
+        <p>Alle tags imellem &lt;h1&gt; og &lt;/h1&gt; slettes.</p>
+      </td>
+      <td>&lt;chapter id="kamel"&gt;
+
+        <p>&lt;title&gt;dromedar&lt;/title&gt;</p>
+
+        <p>:</p>
+
+        <p>&lt;/chapter&gt;</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;h1&gt;dromedar&lt;a name="kamel"&gt;&lt;/h1&gt;..</td>
+      <td>&lt;chapter id="kamel"&gt;
+
+        <p>&lt;title&gt;dromedar&lt;/title&gt;</p>
+
+        <p>:</p>
+
+        <p>&lt;/chapter&gt;</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;h2&gt; til &lt;h5&gt;</td>
+      <td>&lt;sect2&gt; til &lt;sect5&gt;
+
+        <p>den tilsvarende &lt;/sectX&gt; bliver altid placeret lige før en ny
+        &lt;sectY&gt; begynder hvis  Y&lt;=X. Ditto med chapter.</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;img src="url" title="title" alt="beskrivelse" longdesc="lang
+        beskrivelse af indeholdet"&gt;</td>
+      <td>&lt;figure id="title" float="1"&gt;
+
+        <p>&lt;title&gt;lang beskrivelse af billedet&lt;/title&gt;</p>
+
+        <p>&lt;graphic fileref="url" scale="60"&gt;&lt;/graphic&gt;</p>
+
+        <p>&lt;/figure&gt;</p>
+
+        <p>Se bemærkning.</p>
+      </td>
+    </tr>
+    <tr>
+      <td>&lt;table summary="beskrivelse"&gt;
+
+        <p>&lt;caption&gt;Overskrift&lt;/caption&gt;</p>
+
+        <p>&lt;thead&gt;</p>
+
+        <p>&lt;tr&gt; &lt;td&gt;..&lt;/td&gt; &lt;td&gt;..&lt;/td&gt;
+        &lt;/tr&gt;</p>
+
+        <p>&lt;/thead&gt;</p>
+
+        <p>&lt;tbody&gt;</p>
+
+        <p>&lt;tr&gt; &lt;td&gt;..&lt;/td&gt; &lt;td&gt;..&lt;/td&gt;
+        &lt;/tr&gt;</p>
+
+        <p>&lt;/tbody&gt;</p>
+
+        <p>&lt;/table&gt;</p>
+      </td>
+      <td>&lt;table id="beskrivelse"&gt;
+
+        <p>&lt;title&gt;Overskrift&lt;/title&gt;</p>
+
+        <p>&lt;tgroup cols="2" align="char"&gt;</p>
+
+        <p>&lt;thead&gt;</p>
+
+        <p>&lt;row&gt; &lt;entry&gt;..&lt;/entry&gt;
+        &lt;entry&gt;..&lt;/entry&gt; &lt;/row&gt;</p>
+
+        <p>&lt;/thead&gt;</p>
+
+        <p>&lt;tbody&gt;</p>
+
+        <p>:</p>
+
+        <p>&lt;/tbody&gt;</p>
+
+        <p>&lt;/tgroup&gt;</p>
+
+        <p>&lt;/table&gt;</p>
+
+        <p>Se bemærkning.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p></p>
+
+<p>Billeder: Som figur id=".." bruges som default titel feltet, findes title
+ikke bruges alt feltet, og findes alt og title felterne ikke får figuren ikke
+nogen id. Som figur &lt;title&gt;..&lt;/title&gt; bruges longdesc feltet, hvis
+dette ikke findes så bruges alt feltet. Findes hverken alt eller longdesc så
+får figuren ikke nogen titel. Scale bliver altid sat til 60. (korrekt?)</p>
+
+<p>Tabeller: summary, caption og thead er alle optional. Ditto er
+&lt;tbody&gt;..&lt;/tbody&gt; indpakningen også optional, antallet af kolonner
+indsættes automatisk og udregnes på basis af den første række i tbody. Perl
+scriptet vil automatisk forsøger at beautyfy SMGL outputtet så det ser
+æstetisk tilfredsstillende ud. Avancerede tabeller med rowspans og colspans
+vil blive konverteret på bedste vis, hvilket uden tvivel vil producere html
+kode, der er forkert, perl scriptet vil crashe, harddisken smelte sammen, og
+skærmen vil eksplodere - der udskrives ikke en fejl hvis dette sker.</p>
+
+<p></p>
+
+<h3>Eksempler</h3>
+
+<p>Eksempel på &lt;code&gt; og &lt;strong&gt; i normal kontekst</p>
+<pre>Med kommandoen &lt;code&gt;cat /etc/passwd&lt;/code&gt; vises filen
+&lt;strong&gt;/etc/passwd&lt;/strong&gt;</pre>
+
+<p>bliver til:</p>
+<pre>Med kommandoen &lt;command&gt;cat /etc/passwd&lt;/command&gt; vises filen
+&lt;filename&gt;/etc/passwd&lt;/filename&gt;</pre>
+
+<p></p>
+
+<p>Mens &lt;code&gt; og &lt;strong&gt; i &lt;pre&gt; kontekst</p>
+<pre>&lt;pre&gt;
+&lt;code&gt;[root@daisy /root]# &lt;/code&gt; &lt;strong&gt;ls -al /etc/passwd&lt;/strong&gt;
+ -rw-r--r-- 1 root root 649 jun 16 21:54 /etc/passwd 
+&lt;/pre</pre>
+
+<p>bliver til</p>
+<pre>&lt;screen&gt;
+&lt;prompt&gt;[root@daisy /root]# &lt;/prompt&gt; &lt;userinput&gt;ls -al /etc/passwd&lt;/userinput&gt;
+ -rw-r--r-- 1 root root 649 jun 16 21:54 /etc/passwd
+&lt;/screen&gt;</pre>
+
+<p></p>
+
+<p>Eksempel på headline handling</p>
+<pre>&lt;h1 title="kamel"&gt;dromedar&lt;/h1&gt;
+Øverste niveau
+
+&lt;h2&gt;lama&lt;a name="hund"&gt;&lt;/h2&gt;
+h2 niveau
+
+&lt;h3&gt;&lt;strong&gt;hest&lt;/strong&gt;&lt;/h3&gt;
+h3 niveau
+
+&lt;h3&gt;elefant&lt;/h3&gt;
+h3 niveau
+
+&lt;h2&gt;spidsmus&lt;/h2&gt;
+h2 niveau
+
+&lt;h1&gt;olietanker&lt;/h1&gt;
+h1 indhold.</pre>
+
+<p></p>
+
+<p>Bliver konverteret til:</p>
+<pre>&lt;chapter id="kamel"&gt;
+  &lt;title&gt;dromedar&lt;/title&gt;
+Øverste niveau
+
+
+&lt;sect2 id="hund"&gt;
+  &lt;title&gt;lama&lt;/title&gt;
+h2 niveau
+
+&lt;sect3&gt;
+  &lt;title&gt;hest&lt;/title&gt;
+h3 niveau
+&lt;/sect3&gt;
+
+&lt;sect3&gt;
+  &lt;title&gt;elefant&lt;/title&gt;
+h3 niveau
+&lt;/sect3&gt;
+&lt;/sect2&gt;
+
+&lt;sect2&gt;
+  &lt;title&gt;spidsmus&lt;/title&gt;
+h2 niveau
+&lt;/sect2&gt;
+&lt;/chapter&gt;
+
+&lt;chapter&gt;
+  &lt;title&gt;olietanker&lt;/title&gt;
+h1 indhold.
+&lt;/chapter&gt;</pre>
+
+<p></p>
+
+<p>Unordered lists:</p>
+<pre>&lt;ul&gt;
+&lt;li&gt;Bohr
+&lt;li&gt;Planck
+&lt;li&gt;Ehrenfest&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Dirac&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</pre>
+
+<p></p>
+
+<p>Bliver til:</p>
+<pre>&lt;itemizedlist mark="bullet"&gt;
+  &lt;listitem&gt;
+     &lt;para&gt;Bohr&lt;/para&gt;
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+     &lt;para&gt;Planck&lt;/para&gt;
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+     &lt;para&gt;Ehrenfest&lt;/para&gt;
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+     &lt;para&gt;Dirac&lt;/para&gt;
+  &lt;/listitem&gt;
+&lt;/itemizedlist&gt;</pre>
+
+<p></p>
+
+<p>Billeder</p>
+<pre>&lt;img src="billed1.png"&gt;
+&lt;img src="billed2.png" alt="fisk"&gt;
+&lt;img src="billed3.png" longdesc="lang beskrivelse af fisk"&gt;
+&lt;img src="billed4.png" alt="fisk" longdesc="lang beskrivelse af fisk"&gt;
+&lt;img src="billed5.png" title="fiskebilled" alt="fisk" longdesc="lang beskrivelse af fisk"&gt;</pre>
+
+<p></p>
+
+<p>konverteres til</p>
+<pre>&lt;figure float="1"&gt;
+&lt;graphic fileref="billed1.png" scale="60"&gt;&lt;/graphic&gt;
+&lt;/figure&gt;
+
+&lt;figure id="fisk" float="1"&gt;
+&lt;title&gt;fisk&lt;/title&gt;
+&lt;graphic fileref="billed2.png" scale="60"&gt;&lt;/graphic&gt;
+&lt;/figure&gt;
+
+&lt;figure float="1"&gt;
+&lt;title&gt;lang beskrivelse af fisk&lt;/title&gt;
+&lt;graphic fileref="billed3.png" scale="60"&gt;&lt;/graphic&gt;
+&lt;/figure&gt;
+
+&lt;figure id="fisk" float="1"&gt;
+&lt;title&gt;lang beskrivelse af fisk&lt;/title&gt;
+&lt;graphic fileref="billed4.png" scale="60"&gt;&lt;/graphic&gt;
+&lt;/figure&gt;
+
+&lt;figure id="fiskebilled" float="1"&gt;
+&lt;title&gt;lang beskrivelse af fisk&lt;/title&gt;
+&lt;graphic fileref="billed5.png" scale="60"&gt;&lt;/graphic&gt;
+&lt;/figure&gt;</pre>
+
+<p></p>
+
+<p>Nogle eksempler på tabeller, en simpel tabel:</p>
+<pre>&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;Fisk&lt;/td&gt;&lt;td&gt;Fugl&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Stej&lt;/td&gt;&lt;td&gt;And&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</pre>
+
+<p>bliver til</p>
+<pre>&lt;table &gt;
+&lt;tgroup cols="2" align="char"&gt;
+&lt;tbody&gt;
+&lt;row&gt;
+  &lt;entry&gt;Fisk&lt;/entry&gt;
+  &lt;entry&gt;Fugl&lt;/entry&gt;
+&lt;/row&gt;
+
+&lt;row&gt;
+  &lt;entry&gt;Stej&lt;/entry&gt;
+  &lt;entry&gt;And&lt;/entry&gt;
+&lt;/row&gt;
+&lt;/tbody&gt;
+
+&lt;/tgroup&gt;
+&lt;/table&gt;</pre>
+
+<p>Et mere avanceret eksempel:</p>
+<pre>&lt;table summary="idkode"&gt;
+&lt;caption&gt;Beskrivelse&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+ &lt;td&gt;col 1&lt;/td&gt;&lt;td&gt;col 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+ &lt;td&gt;1&lt;/td&gt; &lt;td&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+ &lt;td&gt;3&lt;/td&gt; &lt;td&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</pre>
+
+<p></p>
+<pre>&lt;table  id="idkode"&gt;
+&lt;title&gt;Beskrivelse&lt;/title&gt;
+&lt;tgroup cols="2" align="char"&gt;
+&lt;thead&gt;
+&lt;row&gt;
+  &lt;entry&gt;col 1&lt;/entry&gt;
+  &lt;entry&gt;col 2&lt;/entry&gt;
+&lt;/row&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;row&gt;
+  &lt;entry&gt;1&lt;/entry&gt;
+  &lt;entry&gt;2&lt;/entry&gt;
+&lt;/row&gt;
+
+&lt;row&gt;
+  &lt;entry&gt;3&lt;/entry&gt;
+  &lt;entry&gt;4&lt;/entry&gt;
+&lt;/row&gt;
+&lt;/tbody&gt;
+
+&lt;/tgroup&gt;
+&lt;/table&gt;</pre>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+</body>
+</html>
