@@ -20,7 +20,8 @@ badsgmlfiles=dato.sgml magic.sgml stikord.sgml
 allesgmlfiles=$(wildcard *.sgml)
 
 # Her er en liste af sgml-filer der skal checkes
-sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+#sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+sgmlfiler=$(allesgmlfiles)
 
 # her er det der skal laves
 all:	html pspdf palmpilot sgml exit
