@@ -2,9 +2,8 @@
 
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
-all: cvs2htmlweb filer
 
-release: cvs2htmlweb filer 
+all: cvs2html filer
 
 start:
 	@for dir in $(SUBDIRS); do \
@@ -72,11 +71,12 @@ clean: start
 	rm -f *~*~  .#*[0-9]
 	rm -rf palm-samling
 
-cvs2htmlweb:
-	chmod +x /home/pto/utils/cvs2html
-	rm -rf cvs2html
-	mkdir cvs2html
-	/home/pto/utils/cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs2html/index.html -v -a -b -D 30 -C cvs_crono.html
+cvs2html:
+ifeq	($(shell if which cvs2html >/dev/null 2>&1; then echo -n 1; fi;), 1)
+	rm -rf cvs
+	mkdir cvs
+	cvs2html -i ../linux.png  -l http://cvs.linuxbog.dk -f -p -o cvs/index.html -v -a -b -D 30 -C cvs_crono.html
+endif
 
 mail:
 #	@echo "Nu er der nye bøger på tyge. Have a nice day" | mail -s "automatisk mail: bog OK" linuxbog@sslug.dk
