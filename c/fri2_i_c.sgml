@@ -1690,8 +1690,8 @@ fortsætter med en hexadecimal talværdi for det ønskede output
 tegn.
 </para>
 
-<example id="ex-mimeparser">
-<title>mime afkodning</title>
+<example id="ex-mime2asc">
+<title>mime afkodning, std.input</title>
 <programlisting>
 
 /* mime2asc.c - konvertering af mime - koder til ascii. */
@@ -1709,8 +1709,8 @@ int main(int argc, char *argv[])
         if (c != '=')
             putchar(c);
         else {
-            if ( (c2 = getchar()) == '\n')  /* ok, a continuation request */
-                continue;                   /* donot print a newline */
+            if ( (c2 = getchar()) == '\n')  /* aha! linien ønskes ikke brudt */
+                continue;                   /* print ikke ny-linie-tegn */
             else {
                 if (feof(stdin)) exit(1);
                 str[1] = getchar();
@@ -1771,14 +1771,165 @@ pointer. <literal>strtol(str,NULL,16);</literal>
 strtol ville returnere et 0, hvis de efterfølgende bogstaver ikke
 kan konverteres, og det ville selvfølgelig være en situation, vi
 burde undersøge nøjere, ligesom errno, en static variabel i
-library modulet, burde checkes. Prøv at gøre det, og send
-invalidt input til programmet og kontroller, at programmet
+library modulet, burde checkes. Prøv at gøre det, og giv
+programmet input med fejl i og kontroller, at programmet
 håndterer det på en fornuftig måde!
 </para>
 
 <para>
-Derefter prøv at lave en forbedring af programmet, som kan
-benytte kommandolinie parametre i stedet for omdirigering.
+Lad os til sidst forbede programmet, så det selv kan finde ud af
+at åbne filer, konvertere indholdet og skrive resultatet ud i en
+fil med et andet navn.
+</para>
+
+<example id="ex-mime2ascii">
+<title>Mime afkodning, fil input</title>
+<programlisting role="C">
+/* mime2ascii.c - fil konvertering af mime - koder til ascii. */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;strings.h>
+
+void konverter(FILE *infil, FILE *outfil);
+
+int verbose;            // global flag
+
+void error(char *message, int exitcode)
+{
+    fprintf(stderr,"%s\n",message);
+    exit(exitcode);
+}
+
+#define MAXNAME 512
+
+int main(int argc, char *argv[])
+{
+    FILE *fp, *nyfilp;
+    char nyfilnavn[MAXNAME];
+    char errormsg[MAXNAME+80];
+    int j=0;
+
+    while (++j &lt; argc) {
+        if (argv[j][0] == '-')
+            switch(argv[j][1]) {
+                case 'v': verbose=1;
+                          break;
+                default: error("Option ikke forstået", 40);
+            }
+    }
+    j=0;
+    while (++j &lt; argc) {
+        if (argv[j][0] == '-')
+            continue;
+        if (strlen(argv[j]) > MAXNAME - 2)
+            error("Filnavn er for langt", 100);
+        fp = fopen(argv[j],"r");
+        if (!fp) {
+            sprintf(errormsg, "Kan ikke åbne fil ved navn %s",argv[j]);
+            error(errormsg,2);
+        }
+        strcpy(nyfilnavn,argv[j]);
+        strcat(nyfilnavn,".X");
+        nyfilp = fopen(nyfilnavn,"w");
+        if (!nyfilp)
+            error("Kan ikke åbne fil for skrivning",103);
+        if (verbose)
+            fprintf(stderr,"Har åbnet %s, starter konvertering\n", argv[j]);
+        konverter(fp,nyfilp);
+    }
+    return 0;
+}
+
+void konverter(FILE *fil, FILE *outfil)
+{
+    int c, c2;
+    char *ptr;
+    static char str[3];
+
+    while ( (c=getc(fil)) != EOF) {
+        if (c != '=')
+            putc(c,outfil);
+        else {
+            if ( (c2 = getc(fil)) == '\n')  /* aha! linien ønskes ikke brudt */
+                continue;                   /* print ikke ny-linie-tegn */
+            else {
+                if (feof(stdin)) exit(1);
+                str[1] = getc(fil);
+                if (feof(stdin)) exit(1);
+                str[0] = c2;
+                c = strtol(str, &amp;ptr, 16);
+                putc(c,outfil);
+            }
+        }
+    }
+}
+
+</programlisting>
+</example>
+
+<para>
+En kommandolinie, som består af 3 ord, fx. mime2ascii fil1 fil2
+vil blive opdelt i de tre ord, altså "mime2ascii" er det første,
+"fil1" er det andet, "fil2" er det tredie ord.
+</para>
+
+<para>
+argc er sat til 3 af den startup kode, som sætter vores program i
+gang. argv[0] er derfor ordet "mime2ascii", det vil sige vores
+eget programs navn. Da vores program <emphasis> altid
+</emphasis> har et navn, er argc altid mindst 1. Man gemmer
+sommetider programnavnet i en global character-pointer, fx.
+således: <literal> 
+char *thisprog; 
+main(int argc, char *argv[])
+{
+    thisprog = argv[0];
+    /* mere program ... */
+</literal>
+</para>
+
+<para>
+Hvis man skal have fat i sidste ord på kommandolinien er det
+altså <literal> argv[argc-1] </literal> - <emphasis> Husk,
+</emphasis> at array elementer starter med 0, d.v.s. første
+element er argv[0].
+</para>
+
+<para>
+For at vise, hvordan main får argumenterne fra kommandolinien,
+kan man lave en "terrasse1" af dette program, hvor man nøjes med
+at løbe argumenterne igennem og skrive dem ud på skærmen.
+</para>
+
+<para>
+Læg mærke til, at programmet gennemløber kommandolinien 2 gange.
+Første gang er det blot for at få de eventuelle options. Vi har
+lavet en enkelt optionmulighed, nemlig -v for verbose. Det
+fungerer - men det er en meget rå form for kommandolinie analyse.
+Vi vil i andre eksempler vise flere måder at gøre dette.
+</para>
+
+<para>
+Alt i alt er mime2ascii dog betydeligt mere praktisk end
+forgængeren. Det læser de filer, som man angiver på
+kommandolinien, og skriver det konverterede indhold ud i en fil
+med samme navn med en tilføjelse af ".X". 
+</para>
+
+<para>
+Det kunne lige så godt være en anden endelse, og det står dig
+selvfølgelig frit for at ændre programmet til at lave filer, som
+ender på <command>.txt</command>. Nogle gange vil man måske
+ønske, at man sletter den oprindelige fil (eller gemmer den under
+et andet navn) og omdøber (renamer) den konverterede fil til det
+oprindelige filnavn. Dette er en god ide, hvis mime2ascii aldrig
+laver fejl!  Det vil være en god opgave til programmeringsarbejde
+at polere dette filter, således at det fungerer perfekt og selv
+genererer fornuftige filnavne.
+</para>
+
+<para>
 I afsnit <xref LinkEnd="sect-parser-programmer"> udvidedes denne
 programtype, så den kan håndtere lidt længere sekvenser af tegn,
 således at man kan analysere input på et lidt højere

@@ -1,0 +1,510 @@
+<chapter id="parser-tilstandsmaskine">
+<title>Parsere og tilstandsmaskiner</title>
+
+<sect1 id="declaration-parser">
+<title>En declaration parser</title>
+
+<para>
+Erklæringer kan være vanskelige at læse, især når der indgår
+pointere til funktioner. Installation af en signal handler med
+funktionen signal(2) er kendt for sin vanskelige prototype.
+</para>
+
+<para>
+Det ville være en god øvelse at skrive en komplet declaration
+parser (og en sådan er på ønskesedlen til en udvidet version af
+denne bog). Imidlertid findes der allerede en meget instruktiv
+parser til interaktiv / didaktiv anvendelse, cdecl.
+</para>
+
+<para>
+Cdecl manual-page går ud fra, at man er bekendt med de
+væsentligste problemstillinger, men den forklarer ikke, hvordan
+man løser læselighedsproblemet, hvis man ikke lige har cdecl ved
+hånden!
+</para>
+
+<para>
+For at gøre tingene vanskeligere, er Linux/Gnu signal.h fuld af
+defines og særlige syntaktiske konstruktioner, som skal lette
+læsningen for den erfarne multiplatform programmør - men som gør
+det fuldstændigt umuligt for den almindelige begynder at finde
+hoved og hale. I dette tilfælde er manual page for signal(2) en
+lettelse. Der er oven i købet en forklaring på, hvordan man kan
+opbygge deklarationen ved hjælp af "typedef"ning. Manual siderne
+for glibc er med i RedHat og andre distributioner, men er ikke
+en del af glibc systemet, der kun anvender info-pages.
+</para>
+
+<para>
+Men i header filerne - kast et blik på /usr/include/signal.h - er
+der så mange hensyn til diverse platforme at det bliver næsten
+ulæseligt. Leder vi på "signal(" finder vi:
+</para>
+
+<para>
+<literal>
+#define signal(sig, handler) __sysv_signal ((sig), (handler))
+</literal>
+</para>
+
+<para>
+Ovenstående define kan man ikke fodre cdecl med. Heldigvis er
+den ikke så svær at forstå. Signal er en funktion som skal
+erstattes af __sysv_signal. De to parametre skal gives videre som
+de er. Det ene skal være et signal, (fx. INTR, svarende
+til control-C) og det andet skal være den funktion, som vi vil
+have kørt, når vores program modtager signalet. Men så må vi jo
+kigge efter, hvordan headerfilen definerer __sysv_signal().
+</para>
+
+<para>
+<literal>
+extern __sighandler_t __sysv_signal __P ((int __sig, __sighandler_t __handler));
+</literal>
+</para>
+
+<para>
+Heri indgår der - desværre - også en #define macro, nemlig
+__sighandler_t. Så det er en større sag at finde rundt i.
+</para>
+
+<para>
+Det, som cdecl er glimrende til, er at fodre den med en vanskelig
+prototype og så se, hvordan den vil forklare det.
+</para>
+
+<para>
+Vi finder med <command> man signal </command> følgende prototype:
+</para>
+
+<para>
+<literal>
+void (*signal(int signum, void (*handler)(int)))(int);
+</literal>
+</para>
+
+<para>
+Er det en void funktion? Jeg spørger bare ... Nej, det er ikke en
+void funktion, det er en funktion, som returnerer en pointer til
+en anden funktion, som er void. Nemlig den tidligere signal
+handler. Så kan man jo geninstallere den, hvis man på et
+tidspunkt skal tilbage til forrige niveau af signal handling.
+</para>
+
+<indexterm><primary>cdecl, eksempel på anvendelse</primary></indexterm>
+<screen id="cdecl">
+<PROMPT>ax@pluto:/udvik/$</PROMPT><USERINPUT>cdecl</USERINPUT>
+<prompt>cdecl></prompt><userinput>void (*signal(int signum, void (*handler)(int)))(int)</userinput>
+syntax error
+</screen>
+
+<para>
+Ja, desværre kan denne udmærkede lille applikation heller ikke
+klare denne iøvrigt korrekte prototype, så der er virkelig et
+problem her.
+</para>
+
+<para>
+Løsningen er, uden de store anstrengelser, at lære sig
+"højre-venstre" teknikken. Vi kan også implementere en lille kopi
+af cdecl programmet, som om ikke andet så kan håndtere de
+simpleste deklarationer med funktions-pointere.
+</para>
+
+<para>
+Højre venstre - teknikken består i at læse indefra den
+identifier, som man ønsker at forstå. I ovenstående erklæring
+"signal".
+</para>
+
+<para>
+Til HØJRE for signal er der en parentes start. Det betyder:
+"Signal er en funktion ..."
+</para>
+
+<para>
+Efter parameter parentesen er der "lukket" ved hjælp af en
+slut-parentes ekstra. Derfor må vi gå til VENSTRE. Vi er nu nået
+til, at vi forventer angivelse af retur-type.
+</para>
+
+<para>
+Til venstre står der '*' hvilket vi læser som "returnerer en
+pointer til ..." - til hvad?
+</para>
+
+<para>
+Parentes start spærrer for yderligere adgang til venstre, så vi
+går mod højre, udenfor den matchende parentes og ser efter denne
+endnu en parentes, aha, en pointer TIL EN FUNKTION, der står jo
+igen parenteser, og i øvrigt med en int som parameter. Det mest
+vanskelige er, at den VOID, som står forrest på linien, er retur
+type angivelse til denne funktionspointer.
+</para>
+
+<para>
+Det er ikke nemt. Læs man - siden for signal, den forklarer (som
+nævnt ovenfor), at meningen med signal er, at den returnerer den
+tidligere handler, så man kan reinstallere den senere.
+</para>
+
+
+</sect1>
+
+<sect1 id="expression-parser">
+<title>En expression parser</title>
+<para>
+Et program, som kan fodres med beregningsudtryk og levere
+resultatet. Eksempel på input:
+</para>
+<programlisting>
+calcu '200 * sin(0.444)'
+85.911
+
+calcu &lt;&lt;SLUT
+2 + 3
+5 * X
+SLUT
+
+Calc:      5.0000
+Calc:     25.0000
+Calc:
+
+calcu
+Calc: 32/square(2)
+         ^Error
+</programlisting>
+
+<para>
+Programmet benytter en særlig slem variant af printf format
+specification, som skriver et antal spaces ud styret af en
+variabel:
+<literal>
+printf("En padded string: %*s\n",lengde,string);
+</literal>
+Meget smart - men første gang lidt vanskeligt at læse og forstå.
+Det styrer angivelsen af error positionen.
+</para>
+
+<para>
+Programmet er i sin nuværende form ganske anvendeligt, fordi det
+kan fungere som erstatning for expr programmet, der stiller alt
+for mange krav til spaces og anden formatering til de
+expressions, som skal evalueres. Men programmet kan simpelt hen
+også anvendes til beregning af prislister (det har det faktisk
+været!)
+</para>
+
+<example id="calculator">
+<title>Calculator, recursive descent expression parsing </title>
+<programlisting>
+/* file calcu.c */
+/* (c) Donald Axel GPL - license */
+/* ANSI - C program demonstration, command line calculator */
+/* Recursive descent parser */
+/* Improve: Make a HELP command. Add more variables.       */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;string.h>
+#include &lt;math.h>
+
+
+
+#define MAXL 8196
+char gs[MAXL];
+char *cp;
+char *errorp;
+double oldval;
+
+/* local prototypes: */
+int calcu();
+int evaluate(char *line, double *prev_result);
+int stricmp(const char *s1, const char *s2);
+int strnicmp(const char *s1, const char *s2, int len);
+
+
+int main(int argc, char *argv[])
+{
+    int rv, jj;
+
+    jj = 0;
+    while (++jj &lt; argc) {
+        strcat(gs, argv[jj]);
+    }
+    if (argc == 1)
+        return calcu();
+    strcat(gs, "\n");
+    rv = evaluate(gs, &amp;oldval);
+    if (!rv)
+        printf("%g\n", oldval);
+    else
+        printf("Calcu:%s\n%*s\n", gs, rv, "^Error");
+    return rv;
+}
+
+
+/* Description: */
+/* calcu() sets up a string which is then evaluated as an expression  */
+/* If (argc>1) main sets up string for evaluate() and prints result.  */
+/* stricmp does not stop at '\n' - so we have to compare with "xx\n"  */
+/* gettok() could solve that problem. TRY to use gettok().            */
+
+
+
+int nextchar()
+{
+    ++cp;
+    while (*cp == ' ')
+        ++cp;
+    return *cp;
+}
+
+
+int eatspace()
+{
+    while (*cp == ' ')
+        ++cp;
+    return *cp;
+}
+
+
+int calcu()
+{
+    FILE *ifil;
+    char line[MAXL];
+    int rpos;
+    double r;
+
+    ifil = stdin;
+    while (1) {
+        errorp = NULL;
+        printf("Calc:");
+        if (!fgets(line, MAXL, ifil))
+            break;
+        if (strlen(line) &amp;&amp; strnicmp(line,"QUIT",4)
+&amp;&amp; stricmp(line,"Q\n"))
+            rpos = evaluate(line, &amp;r);
+        else
+            break;
+        if (!rpos) {
+            printf("%-18g\n", r);
+            oldval = r;
+        } else {                /* prints Error in field min. 12 wide */
+            printf("%*s\n", rpos, "^Error");
+        }
+    }
+    return rpos;                /* if interactive rpos should always be 0 */
+}
+
+
+/* More local prototypes. This could, of course, be a separate file. */
+double expression();
+double product();
+double potens();
+double signedfactor();
+double factor();
+double stdfunc();
+
+
+int evaluate(char *s, double *r)
+{
+    cp = s;
+    eatspace();
+    *r = expression();
+    eatspace();
+    if (*cp == '\n' &amp;&amp; !errorp)
+        return (0);
+    else
+        return (cp - s) + 11;
+}
+
+
+double expression()
+{
+    double e;
+    int opera2;
+
+    /* printf("test arg:%s\n",cp); */
+
+    e = product();
+    while ((opera2 = *cp) == '+' || opera2 == '-') {
+        nextchar();
+        if (opera2 == '+')
+            e += product();
+        else
+            e -= product();
+    }
+    eatspace();
+    return e;
+}
+
+
+double product()
+{
+    double dp;
+    int ope;
+
+    dp = potens();
+    while ((ope = *cp) == '*' || ope == '/') {
+        nextchar();
+        if (ope == '*')
+            dp *= potens();
+        else
+            dp /= potens();
+    }
+    eatspace();
+    return dp;
+}
+
+
+double potens()
+{
+    double dpo;
+
+    dpo = signedfactor();
+    while (*cp == '^') {
+        nextchar();
+        dpo = exp(log(dpo) * signedfactor());
+    }
+    eatspace();
+    return dpo;
+}
+
+
+double signedfactor()
+{
+    double ds;
+    if (*cp == '-') {
+        nextchar();
+        ds = -factor();
+    } else
+        ds = factor();
+    eatspace();
+    return ds;
+}
+
+
+double factor()
+{
+    double df;
+
+    /* while (*cp!='\n') {
+       putchar(*cp++);
+       } 
+     */
+
+    switch (*cp) {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        df = strtod(cp, &amp;cp);
+        break;
+    case '(':
+        nextchar();
+        df = expression();
+        if (*cp == ')')
+            nextchar();
+        else
+            errorp = cp;
+        break;
+    case 'X':
+        nextchar();
+        df = oldval;
+        break;
+
+    default:
+        df = stdfunc();
+    }
+    /* printf("ddt: df = %lf, *cp = %c\n",df,*cp); */
+
+    eatspace();
+    return df;
+}
+
+
+char *functionname[] =
+{
+    "abs", "sqrt", "sin", "cos", "atan", "log", "exp", "\0"
+};
+
+double stdfunc()
+{
+    double dsf;
+    char **fnptr;
+    int jj;
+
+    eatspace();
+    jj = 0;
+    fnptr = functionname;
+    while (**fnptr) {
+        /* printf("%s\n",*fnptr); */
+        if (strncmp(*fnptr, cp, strlen(*fnptr)) == 0)
+            break;
+
+        ++fnptr;
+        ++jj;
+    }
+    if (!**fnptr) {
+        errorp = cp;
+        return 1;
+    }
+    cp += (strlen(*fnptr) - 1);
+    nextchar();
+    dsf = factor();
+    switch (jj) {
+    case 0: dsf = abs(dsf);  break;
+    case 1: dsf = sqrt(dsf); break;
+    case 2: dsf = sin(dsf);  break;
+    case 3: dsf = cos(dsf);  break;
+    case 4: dsf = atan(dsf); break;
+    case 5: dsf = log(dsf);  break;
+    case 6: dsf = exp(dsf);  break;
+    default:{
+            errorp = cp;
+            return 4;
+        }
+    }
+    eatspace();
+    return dsf;
+}
+
+
+/* end calcu.c */
+
+
+</programlisting>
+</example>
+</sect1>
+
+
+<sect1 id="Tilstandsmaskiner">
+<title>Tilstandsmaskiner</title>
+<para>
+Tilstandsmaskiner er betegnelse for 2 ting. Alle programmer
+er tilstands-maskiner. En speciel teknik, som anvendes i parsere,
+indeholder en tilstandstabel.
+</para>
+
+<para>
+Hvis man vil se en "rigtig" tilstandsmaskine, så kan man studere
+output fra yacc eller bison parser-generatorer.
+</para>
+
+<para>
+Næste udgave af denne bog vil bringe nogle overskuelige eksempler
+på tilstandstabeller, genererede med bison og "håndlavede". Følg
+med på www.sslug.dk i de nye udgaver af "Friheden" bøgerne!
+</para>
+
+</sect1>
+</chapter>
+
