@@ -52,7 +52,8 @@ function searchdir( $dir, $q ) {
         if (preg_match("|$q|i", $str)) {
           if (!$count) echo "<p>\n";
           $count++;
-          echo "<b>$line) ".htmllink("$dir/$fil").":</b> ".htmlentities($str)."<br>\n";
+          echo "<b>vi ".htmllink("$dir/$fil")." +$line</b><br>&nbsp;";
+          echo "<i>".htmlentities($str)."</i><br>\n";
           flush();
         }
       }
