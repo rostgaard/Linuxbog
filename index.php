@@ -462,7 +462,7 @@ eller køb en indbundet udgave hos følgende forretninger:
 <ul>
 <li><a href="http://www.printxpress.dk/linuxbog/">PrintXpress</a></li>
 <li><a href="http://www.pn-tryk.dk/html/linux.html">PN-tryk</a></li>
-<li><a href="http://www.sc-birkeroed.dk/htm-sider/Linux.htm">SC-Birkerød</a></li>
+<li><a href="http://linuxpusher.dk/docs/linuxboeger.php">SC-Birkerød i samarbejde med www.linuxpusher.dk</a></li>
 </ul>
 Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
 hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
