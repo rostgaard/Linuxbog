@@ -4,7 +4,7 @@
 	$mailto = "linuxbog@sslug.dk";
 
 	if ($HTTP_POST_VARS["tekst"]) {
-		$tekst = $HTTP_POST_VARS["tekst"];
+		$tekst = stripcslashes($HTTP_POST_VARS["tekst"]);
 		$email = $HTTP_POST_VARS["email"];
 		$reply = ($email ? $email : $mailto);
 		$subject = "[FTAV] ".$_SERVER["REQUEST_URI"]." $email";
@@ -54,7 +54,7 @@ Eventuelt din e-mail adresse:
 Din kommentar eller rettelse:
 <br>
 <textarea name="tekst" cols="60" rows="10">
-<?php echo $HTTP_POST_VARS["tekst"] ?>
+<?php echo stripcslashes($HTTP_POST_VARS["tekst"]) ?>
 </textarea>
 <input type="submit" name="submit" value="Submit">
 </form>
