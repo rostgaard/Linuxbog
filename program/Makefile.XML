@@ -26,7 +26,12 @@ html: stikord dato udgave
 	mkdir -p bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	cp -p images/*.png bog/
-	xmlto -o bog html bog.xml
+	#xmlto -o bog html bog.xml
+	jw -V html-index -f docbook -b html -o bog bog.sgml
+	collateindex.pl -g -i stikord  -o stikord.xml bog/HTML.index
+	rm -rf bog/
+	mkdir bog
+	db2html  -V  %use-id-as-filename%  bog.sgml
 	tidy -mq bog/*.html || tidy -mq bog/*.html || true
 
 pdf: stikord dato udgave
@@ -78,7 +83,7 @@ kildetekst:
 
 stikord:
 	@echo "Laver stikordsregister."
-	@perl  ./collateindex.pl    -s Symboler -t Stikordsregister -g -i stikord    -o stikord.sgml -N
+	@collateindex.pl    -s Symboler -t Stikordsregister -g -i stikord    -o stikord.sgml -N
 
 dato:
 	@echo "Laver datostempel."
