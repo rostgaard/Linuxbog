@@ -296,7 +296,7 @@ CD-Writing-HOWTO til det mest elementære. Se <ulink url="http://www.linuxdoc.org
 Du skal først installere følgende pakker:
 <filename>cdrecord-*.rpm</filename>,
 <filename>cdparanoia-III*.rpm</filename> og
-<filename>mkisofs-*</filename>.
+<filename>mkisofs-*.rpm</filename>.
 </para>
 
 <para>
@@ -375,7 +375,7 @@ Du kan nu brænde din cd-rom med kommandoen:
 </screen>
 
 <para>
-Man kan også være smart og kombinere <command>mkiso</command> og
+Man kan også være smart og kombinere <command>mkisofs</command> og
 <command>cdrecord</command> via en fifo-fil (dvs. en bufferfil, så man
 kommer aldrig til at fylde en hel cd-rom på harddisken):
 </para>
@@ -483,133 +483,113 @@ Denne detalje virker ikke med en musik-cd.
 
 <sect1 id="musik-cd">
 <title>Musik cd brændes</title>
+
 <para>
-Til at brænde en musik-cd kommer nu en helt basal opskrift.
-Optage en cd (eller dele af den), gøres med <command>cdparanoia</command>:
-Læg din originale musik-cd i cd-rom-drevet og kør så følgende for at
-rippe alle sange til filerne <filename>track01.cdda.wav</filename>, <filename>track02.cdda.wav</filename> osv.
+Hvis man vil lave en musik cd, som kan afspilles i et normalt
+stereoanlæg, skal man først sørge for at den musik, man ønsker på sin
+cd, findes på harddisken i wav-format; der skal være én fil for hvert
+nummer, man vil have på den færdige cd.
+</para>
+
+<para>
+Hvis udgangspunktet for cd'en er komprimeret musik i form af mp3-
+eller ogg-filer, skal disse derfor først laves om til wav-filer. De
+fleste programmer til at afspille komprimerede filer har mulighed for
+at lave en wav-fil i stedet for at afspille lyden. Hvis man for
+eksempel har filen <filename>Hestevise.mp3</filename> kan den laves om
+til <filename>Hestevise.wav</filename> ved hjælp af programmet
+<command>mpg123</command>:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdparanoia -B "1-"</USERINPUT>
+<prompt>[tux@linus musik]$</prompt> <userinput> mpg123 -w Hestevise.wav Hestevise.mp3</userinput>
 </screen>
 
 <para>
-Ønsker du kun at overføre numrene tre til fem, skal du køre
-<command>cdparanoia -B "3-5"</command>.
-</para>
-
-<para>
-Du kan nu brænde din musik-cd med kommandoen:
+På tilsvarende vis kan filen <filename>Ulilang.ogg</filename> laves om
+til <filename>Ulilang.wav</filename> ved hjælp af
+<command>ogg123</command>:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -audio track01.cdda.wav track02.cdda.wav ...</USERINPUT>
+<prompt>[tux@linus musik]$</prompt> <userinput>ogg123 -d wav -f Ulilang.wav Ulilang.ogg</userinput>
 </screen>
 
 <para>
-hvor ... naturligvis betyder at du fortsætter med at angive musik-filnavne.
-Du kan også bruge * (alle filer), hvis du har filerne i et katalog:
-<command>cdrecord -v speed=2 dev=0,0,0 -audio *.cdda.wav</command>
+Denne konvertering til wav-filer skal gøres for hver enkelt nummer,
+der skal med på cd'en.
 </para>
 
 <para>
-Omkring audio-formater se <command>man cdparanoia</command>. Kig evt. på
-<command>Sox</command> eller <command>ecasound</command>.
-</para>
-
-<para>
-Sox kan du finde mere om på
-<ulink url="http://home.sprynet.com/~cbagwell/sox.html">http://home.sprynet.com/~cbagwell/sox.html</ulink>.
-Men se om den ikke også er med i din Linux-distribution.
-</para>
-
-<para>
-Ecasound har hjemmesiden
-<ulink url="http://www.wakkanet.fi/ecasound">http://www.wakkanet.fi/ecasound</ulink>.
-</para>
-
-<para>
-Blandede skiver, dvs. både data og audio på samme medie, kan fremstilles
-ved at kombinere <command>-data</command> og <command>-audio</command>.
+Hvis musikken, der skal brændes, forefindes på en musik cd i forvejen
+(og der altså skal laves en kopi) kan programmet
+<command>cdparanoia</command> bruges til at danne de nødvendige
+wav-filer ud fra original cd'en. Med originalen i cd-rom-drevet kan
+man med følgende kommando få de enkelte numre gemt i filerne
+<filename>track01.cdda.wav</filename>,
+<filename>track02.cdda.wav</filename> og så videre. Operationen kan
+tage lang tid; dette afhænger meget af hvilken model cd-rom-drev, der
+anvendes.
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mine_ting -audio track01.cdda.wav</USERINPUT>
+<prompt>[tux@linus musik]$</prompt> <userinput>cdparanoia -B 1-</userinput>
 </screen>
 
 <para>
-Vedrørende CD-RW-medier er proceduren den samme, blot skal man
-huske at "blanke" mediet inden det bruges næste gang:
+Hvis ikke hele cd'en skal kopieres, kan man også nøjes med at overføre
+et enkelt nummer. For eksempel kan nummer fire dannes i filen
+<filename>track04.cdda.wav</filename> med kommandoen
+<command>cdparanoia -B 4</command>. Det kan være en god idé at give
+filerne et mere sigende navn når de er blevet overført.
+</para>
+
+<!-- Indsæt noget om "volume normalization" her -->
+
+<para>
+Når alle de numre, der skal på musik cd'en, ligger som wav-filer, er
+de klar til at blive brændt. Da alle filerne nu er wav-filer, er det
+herefter ligegyldigt hvorvidt filerne oprindeligt kom fra komprimerede
+mp3- eller ogg-filer, fra en eller flere cd'ere, eller en kombination
+af det hele. Wav-filerne kan brændes til en cd med følgende kommando:
 </para>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 blank=xxxx</USERINPUT>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,0,0 track01.cdda.wav track02.cdda.wav</USERINPUT>
 </screen>
 
 <para>
-hvor <command>xxxx</command> udfyldes ud fra dette:
+Hver enkelt musikfil, som skal med på cd'en, skal angives i denne
+kommando. I dette eksempel vil cd'en derfor komme til at bestå af blot
+to numre. På den færdige cd kommer numrene til at ligge i samme
+rækkefølge, som man angiver filnavnene i. Da numrenes rækkefølge ofte
+har betydning er det derfor ofte ikke nok blot at angive filnavnene;
+rækkefølgen af de enkelte filnavne må også overvejes.
 </para>
 
-<itemizedlist mark="bullet"  spacing="compact">
-<listitem>
- <para>
-  <emphasis>all</emphasis>             blank the entire disk
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>disc</emphasis>            blank the entire disk
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>disk</emphasis>            blank the entire disk
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>fast</emphasis>            minimally blank the entire disk (PMA, TOC, pregap)
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>minimal</emphasis>         minimally blank the entire disk (PMA, TOC, pregap)
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>track</emphasis>           blank a track
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>unreserve</emphasis>       unreserve a track
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>trtail</emphasis>          blank a track tail
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>unclose</emphasis>         unclose last session
- </para>
-</listitem>
-<listitem> 
- <para>
-  <emphasis>session</emphasis>         blank last session    
- </para>
-</listitem>
-</itemizedlist>
+<para>
+Normalt bliver der indsat en pause på cirka to sekunder mellem hvert
+nummer på cd'en. Dette er ofte intet problem, men hvis man laver en
+kopi af en cd hvor de enkelte numre glider sammen, kan pausen i kopien
+være meget irriterende. Dette problem gør sig især gældende ved
+live-optagelser. Pausen mellem numrene kan undgås ved at bruge "disk
+at once" brænding, hvor hele cd'en brændes i én køre, modsat normal
+"track at once" brænding, hvor de enkelte numre brændes individuelt.
+"Disk at once" brænding aktiveres ved hjælp af <command>-dao</command>
+og det tidligere eksempel ser så ud som følger:
+</para>
+
+<screen>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,0,0 -dao track01.cdda.wav track02.cdda.wav</USERINPUT>
+</screen>
 
 
 <para>
-For yderligere information læs:
-<command>man cdrecord</command>, <command>man cdparanoia</command>,
-<command>man mkisofs</command> og i øvrigt CD-Writing-HOWTO
-<ulink url="http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html">http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html</ulink>.
+Ud over manualerne til de anvendte programmer (<command>man
+cdrecord</command>, <command>man mkisofs</command> og <command>man
+cdparanoia</command>) er CD-Writing-HOWTO <ulink
+url="http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html">http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html</ulink>
+en god resurse omkring brænding af cd'ere.
 </para>
 
 </sect1> <!--cdrecord -->
