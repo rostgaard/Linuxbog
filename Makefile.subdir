@@ -25,6 +25,12 @@ alleeksfiles=$(wildcard eksempler/*)
 # Her er en liste af sgml-filer der skal checkes
 eksfiler=$(filter-out eksempler/CVS,$(alleeksfiles))
 
+# Har vi Perl-modulet Image::Size installeret
+imagesize=$(wildcard /usr/lib/perl5/site_perl/5.005/Image/Size.pm)
+
+# Har vi tidy installeret?
+tidy=$(wildcard /usr/bin/tidy)
+
 # her er det der skal laves
 all:	html pspdf palmpilot sgml eksempelbackup exit
 
@@ -71,9 +77,13 @@ htmlfiler:
 	@echo ""
 
 reparerhtml:
+ifneq   ("$(imagesize)","")
 	(cd bog;perl ../../misc/insertimagesize)	
+endif
+ifneq   ("$(tidy)","")
 	(cd bog;tidy -f err.txt -imu *html;rm -f err.txt)
-	(cd bog;ln -sf *apprevhist.html apprevhist.html)
+endif
+	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
 
 
 pakhtml:
