@@ -56,9 +56,27 @@ computer. Her en stribe fra <ulink url="http://www.userfriendly.org/">User Frien
 <graphic fileref="uf980915.&magic;"  scale="40"></graphic>
 </figure>  
 
+
+
 <sect1 id="log-filer">
 <title>Log-filer</title>
 <indexterm><primary>logfiler</primary></indexterm>
+
+
+<para>
+Pas på med tillid til logfilerne. Husk, at du ikke kan stole på
+din maskine, hvis der har været indbrud. Hvis dine logfiler ikke
+afslører et indbrud, kan der godt have været et, som er blevet
+skjult. Hvis logfilen viser, at der har været indbrud, så kan du
+som regel godt stole på den.
+</para>
+
+<para>
+Det er en god ide at bruge de retningslinier for oprydning, som
+CERT/CC har angivet på hjemmesiden 
+<ulink url="http://www.cert.org/nav/recovering.html">
+http://www.cert.org/nav/recovering.html </ulink>
+</para>
 
 <para>
 En Linux-maskine gemmer løbende en masse information om, hvad der sker 
@@ -601,9 +619,13 @@ dc2ac9d1c1658d5b4381ca2c280425ee  /bin/ls
 </screen>
 
 <para>
-Det er meget meget svært at ændre i filen <command>/bin/ls</command> og stadig få samme
-MD5-tjeksum. Lad os lave et eksempel med en lille fil, der får
-indholdet ændret, men hvor man kan ikke se udefra, at den er ændret.
+Et karakteristisk træk ved MD5 algoritmen er at selv små
+ændringer i input giver radikale forskelle i checksummen. Det er
+en almindelig antagelse, at det er umuligt at ændre filen
+<command> /bin/ls </command> uden at det kan afsløres ved hjælp
+af MD5-sum af den oprindelige version.  Lad os lave et eksempel
+med en lille fil, der får indholdet ændret, men hvor man kan ikke
+se udefra, at den er ændret.
 </para>
 
 <screen>
@@ -630,13 +652,13 @@ ved vi, at indholdet ikke det samme. Prøv selv at eksperimentere med dette.
 </para>
 
 <para>
-Der er andre hash-funktioner end MD5, såsom MD4 og
-snefnu. Det er i praksis ikke så vigtigt, om det er den ene eller den
-anden eller kombinationer af dem alle, man anvender - de er meget
-sikre. En inkarneret matematiker vil naturligvis protestere... men vi
-er jo kun ingeniører :-)
+Der er andre hash-funktioner end MD5, såsom MD4 og Snefru. 
+Det er ikke så vigtigt, hvilken algoritme man anvender (selv om
+en inkarneret kryptoanalytiker vil natuligvis protestere her!).
+Det vigtige er at kontrollere. Men selvfølgelig er MD5 den
+bedste, og nemmeste, da den jo kan kontrollere ud fra en
+tidligere genereret filliste.
 </para>
-
 
 <para>
 Vi vil nu omtale fire forskellige programmer til at hjælpe dig med at
@@ -785,11 +807,19 @@ og Debian.
 <indexterm><primary>tripwire</primary></indexterm>
 
 <para>
-Tripwire var oprindeligt et kommercielt produkt (se <ulink
-url="http://www.tripwire.com">http://www.tripwire.com</ulink>), men
-til Linux findes der nu også en Open Source udgave, som er udgivet
+Tripwire fra 1992, skabt af Eugene Spafford og Gene Kim, og
+kildeteksten stod fra begyndelsen til rådighed for brugerne.
+Siden dengang har en kvart million brugere downloadet 
+<emphasis>Tripwire Academic Source.</emphasis>
+Siden da er der kommet en kommerciel version med lidt flere
+features og support. (se <ulink
+url="http://www.tripwire.com">http://www.tripwire.com</ulink>).
+Til Linux findes der stadig en Open Source udgave, som er udgivet
 under GNU General Public Licence. Open Source udgaven kan hentes fra
 <ulink url="http://www.tripwire.org">http://www.tripwire.org</ulink>.
+Der er flere svar på den slags spørgsmål på <ulink
+url="http://www.tripwire.org/qanda/index.php"> dette
+site.</ulink>
 </para>
 
 <para>
@@ -1372,17 +1402,60 @@ godt spå en lysende fremtid for aide og vil opfordre til, at man følger
 med i udviklingen og evt.  bidrager til projektet.
 </para>
 
-<para>
-Andre programmer til at skanne filsystemet kan findes på
-<ulink url="http://www.mycert.mimos.my/resource/fic.htm">http://www.mycert.mimos.my/resource/fic.htm</ulink>.
-</para>
-
 </sect1>
+
 
 <sect1 id="skanning-af-filsystem">
 <title>Generelt om skanning af filsystemet</title>
 
 <indexterm><primary>skanne filsystem</primary></indexterm>
+
+
+<para>
+Ofte benyttede programmer til at skanne filsystemet kan findes på:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+<para>
+<ulink url="http://biatchux.dmzs.com/">
+F.I.R.E http://biatchux.dmzs.com/</ulink>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<ulink url="http://www.mycert.mimos.my/resource/fic.htm">http://www.mycert.mimos.my/resource/fic.htm</ulink>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<ulink url="http://www.knoppix.org/">
+http://www.knoppix.org/,
+</ulink> som jo kan bruges til at boote fra, så man er sikker på
+en kerne, der ikke er kompromitteret.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<ulink url="http://www.knoppix-std.org/tools.html">
+http://www.knoppix-std.org/tools.html
+</ulink>, Knoppix Security Tool Distribution, har mange værktøjer til sikkerhedscheck.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Radmind er en anden file-checker.
+<ulink url="http://rsug.itd.umich.edu/software/radmind/">http://rsug.itd.umich.edu/software/radmind/</ulink>.
+</para>
+</listitem>
+
+</itemizedlist>
+
+
 
 
 <para>
