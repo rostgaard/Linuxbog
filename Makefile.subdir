@@ -117,15 +117,16 @@ endif !BUILD_SGML
 # Laver en zip fil, kræver html target
 .PHONY : palmpilot
 if BUILD_PALM
-palmpilot_name:=$(basenavn).palm.zip
+palmpilot_navn:=$(basenavn).palm.zip
 palmpilot:	$(palmpilot_navn)
 $(palmpilot_navn):	html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):palmpilot"
 	@echo ".........................................."
 	rm -f $(palmpilot_navn)
-	rm -f PalmBuildDir/*.prc PalmBuildDir/*.pdb
+	rm -f PalmBuildDir/
 	mkdir -p PalmBuildDir
+	cp palm/* PalmBuildDir || true
 	(cd PalmBuildDir && plucker-build -V 0  -P . -f $(targetname) `pwd`/home.html)
 	@echo Advarsel: Palm target afhænger af toplevel....
 	cp ../misc/*.prc ../misc/*.pdb ../misc/gpl.txt ../misc/plucker.txt PalmBuildDir
@@ -282,7 +283,7 @@ $(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 .PHONY : clean
 clean:
 	@echo clean $(targetshortname)
-	rm -rf DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9] $(targetshortname)
+	rm -rf DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir PalmBuildDir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9] $(targetshortname)
 
 ################################################################################
 #
