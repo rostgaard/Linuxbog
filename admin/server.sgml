@@ -36,7 +36,8 @@ lignende.
 Gennem tiden er forskellige standarder indenfor
 datakommunikation blevet udviklet. En dominerende teknologi,
 kompatibel med flertallet af computersystemer, har ikke eksisteret før
-Internettet for alvor brød igennem i 90'erne.  </para>
+Internettet for alvor brød igennem i 90'erne.  
+</para>
 
 <para>
 For at muliggøre kommunikation mellem vidt forskellige
@@ -417,27 +418,23 @@ salgsafdeling og en regnskabsafdeling, med hver deres lokalnetværk:
 </FIGURE>
 
 <indexterm><primary>Gateway</primary></indexterm>
+
+
+
 <para>
-En maskine, der på den måde forbinder to netværk, kaldes en
-gateway. Computeren svend kan nu kontakte alle maskinerne på begge netværk
-direkte, og hvis vi fortæller de andre maskiner, at de skal lade
-henvendelser til det andet netværk gå igennem svend, kan alle i dette lille
-internet komme i kontakt med hinanden. Man fortæller altså, hvilken rute
-der skal bruges for at komme frem til en bestemt computer eller netværk, og
-det kaldes derfor rutning. Med det grafisk baserede program netcfg, der følger
-med Red Hat Linux, er det forholdsvis enkelt at konfigurere rutning.
+Disse PC'er har hidtil kørt i 2 seperate netværk, men skal nu forenes
+således at PC'erne kan kommunikere på tværs af hinandens netværk.
 </para>
 
 <para>
-Hvis vi nu forestiller os, at alfa (192.168.100.1) er forbundet videre ud
-til den store verden, begynder det at blive rigtig interessant. Knud
-(192.168.200.2) vil gerne i kontakt med 192.168.30.1. Det er ikke en
-adresse på knuds eget netværk, så den sender sagen videre til svend, der
-konstaterer, at den heller ikke kan komme i direkte kontakt med netværket
-192.168.30.0. Den overlader problemet til alfa (192.168.100.1), der enten
-kan komme i direkte kontakt med 192.168.30.1 eller ved, hvem den kan give
-sorteper videre til.
+Vi starter med at udnævne salgsafdelingens PC1 til at være gateway. Denne
+skal have et ekstra netkort installeret som fysisk skal tilkobles
+regnskabsafdelingens netværk. Dette ekstra netkort skal konfigureres til at
+kommunikere med de øvrige PC'er på regnskabsafdelingens netværk, derfor
+tildeles dette netkort IP adressen 192.168.20.10. Netværket ser herefter
+således ud:
 </para>
+
 
 <FIGURE ID="net2" FLOAT="1">
 <TITLE>Netværk med gateway</TITLE>
@@ -819,11 +816,11 @@ af at bruge dem.
 
 <para>
 Vi bygger videre på det foregående eksempel, og benytter derfor
-informationerne fra figur 9-5 igen, men denne gang vil vi benytte
-NAT. Primært for at øge sikkerheden, men også for at øge
-fleksibiliteten, i og med vi ikke behøver at kontakte vores Internet
-udbyder og ansøge om flere IP adresser, hvis de 16 viser sig at være
-for få.
+informationerne fra <xref linkend="privat-ip-net-eksempel"> igen, men
+denne gang vil vi benytte NAT. Primært for at øge sikkerheden, men
+også for at øge fleksibiliteten, i og med vi ikke behøver at kontakte
+vores Internet udbyder og ansøge om flere IP adresser, hvis de 16
+viser sig at være for få.
 </para>
 
 <para>
@@ -1084,7 +1081,7 @@ IP-adresse. Til dette bruger vi kommandoen <command>nslookup</command>.
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>nslookup www.sslug.dk</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>nslookup www.sslug.dk</userinput>
 Server:  danpost.uni-c.dk
 Address:  129.142.6.64
 
@@ -1124,7 +1121,7 @@ Nameserverne for en zone listes ved:
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t ns sslug.dk</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t ns sslug.dk</userinput>
 sslug.dk name server ns-soa.darenet.dk
 sslug.dk name server ns.sslug.dk
 sslug.dk name server ptah.dkuug.dk
@@ -1136,7 +1133,7 @@ navneserverne for domænet. Derefter spørger man denne navneserver:
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t mx domæne.dk navneserver.for.domæne.dk</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t mx domæne.dk navneserver.for.domæne.dk</userinput>
 </screen>
 
 <para>
@@ -1145,7 +1142,7 @@ Den ansvarlige administrator for en zone findes i zonens SOA-record
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t soa domæne.dk navneserver.for.domæne.dk</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t soa domæne.dk navneserver.for.domæne.dk</userinput>
 </screen>
 
 <para>
@@ -1162,7 +1159,7 @@ domænet om alt, hvad den ved om et givent navn:
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t any dette.navn.domæne.dk nameserver.for.domæne.dk</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t any dette.navn.domæne.dk nameserver.for.domæne.dk</userinput>
 </screen>
 
 <para>
@@ -1170,7 +1167,7 @@ Til nogle domæner er knyttet tekstinformation. Denne kan kaldes frem med:
 </para>
 
 <screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>host -t txt navn.med.info.domæne.dk</userinput>
+<prompt>[anne@linus ~]$ </prompt> <userinput>host -t txt navn.med.info.domæne.dk</userinput>
 </screen>
 
 <para>
@@ -1227,22 +1224,22 @@ håndtere navneopslag.
 </para>
 
 <para>
-Som gennemgående eksempel antager vi her at vi har domænet "kongeh.dk"
+Som gennemgående eksempel antager vi her at vi har domænet "intranet"
 med følgende maskiner. IP-adresserne her er private,
 dvs. maskinerne er ikke på Internet. Vi vælger derfor adresser fra
 <xref linkend="private-ip-adresser"> i <xref linkend="private-ip">.
 </para>
 
 <screen>
-192.168.0.1      daisy.kongeh.dk     daisy
-192.168.0.2      henri.kongeh.dk     henri
-192.168.0.3      dykker.kongeh.dk    dykker
-192.168.0.4      landmand.kongeh.dk  landmand
+192.168.0.1      linus.intranet     linus
+192.168.0.2      alan.intranet     alan
+192.168.0.3      richard.intranet    richard
+192.168.0.4      eric.intranet  eric
 </screen>
 
 <para>
-Vi vedtager også at maskinen "daisy" skal være DNS-server, og at samme
-maskine også skal være kendt som "ns.kongeh.dk" eller i kort form blot "ns".
+Vi vedtager også at maskinen "linus" skal være DNS-server, og at samme
+maskine også skal være kendt som "ns.intranet" eller i kort form blot "ns".
 </para>
 
 <sect2 id="Bind">
@@ -1269,7 +1266,7 @@ zoner er defineret.
 <para>
 <indexterm><primary>DNS</primary>
 <secondary>zone</secondary></indexterm>
-Som standard vil man skulle definere 4 zoner for domænet "kongeh.dk"
+Som standard vil man skulle definere 4 zoner for domænet "intranet"
 med IP-adresser i itervallet 192.168.0.1-192.168.0.254 (ikke 255, da
 dette er broadcast-adressen).
 </para>
@@ -1312,9 +1309,9 @@ eksempel, de eksisterer ikke på Internettet da de er nogle af de
 
 <listitem>
 <para>
-<filename>kongeh.dk</filename>: Du skal også lave en fil, der kan
+<filename>intranet</filename>: Du skal også lave en fil, der kan
 "mappe" fra navn til IP-nummer for det domæne, du sætter op. I filen
-<filename>/var/named/kongeh.dk</filename> kan du erklære navne og
+<filename>/var/named/intranet</filename> kan du erklære navne og
 aliases for alle maskiner.
 </para>
 </listitem>
@@ -1371,9 +1368,9 @@ zone "0.168.192.in-addr.arpa" in {
   file "192.168.0.rev";
 };
 
-zone "kongeh.dk" in {
+zone "intranet" in {
   type master;
-  file "kongeh.dk";
+  file "intranet";
 };
 </screen>
 
@@ -1403,9 +1400,9 @@ sekundær. Følgende er et eksempel på en slave zone:
 </para>
 
 <screen>   
-zone "kongeh.dk" in {
+zone "intranet" in {
   type slave;
-  file "kongeh.dk";
+  file "intranet";
   masters { 192.168.0.1; };
 };
 </screen>
@@ -1518,14 +1515,14 @@ M.ROOT-SERVERS.NET.      3600000      A     202.12.27.33
 
 
 <sect3 id="DNS-eks-kongeh-dk">
-<title>/var/named/kongeh.dk</title>
+<title>/var/named/intranet</title>
 <para>
 Den næste "reverse"-fil er for maskinerne i 192.168.0.* området:
 </para>
 
 <screen>
 $TTL	1D
-@	IN SOA ns.kongeh.dk. hostmaster.kongeh.dk. (
+@	IN SOA ns.intranet. hostmaster.intranet. (
                                       1999102400 ; serial number
                                       60000      ; refresh (1 day)
                                       3600       ; retry (1 hour)
@@ -1537,31 +1534,31 @@ $TTL	1D
 ;
 ; Dette domænes DNS servere:
 ;
-		IN	NS	ns.kongeh.dk.
+		IN	NS	ns.intranet.
 
 ;
 ; Mailserveren for dette domæne:
 ;
-		IN	MX	0	mail.kongeh.dk.
+		IN	MX	0	mail.intranet.
 
 ;
 ;  Standard hostnavne mappet til IP adresser:
 ;
 localhost	IN	A	127.0.0.1
-daisy		IN	A	192.168.0.1
+linus		IN	A	192.168.0.1
 
 ;
 ; Øvrige hostnavne mappet til IP adresser:
 ;
-henri		IN	A	192.168.0.2
-dykker		IN	A	192.168.0.3
-landmand	IN	A	192.168.0.4
+alan		IN	A	192.168.0.2
+richard		IN	A	192.168.0.3
+eric	IN	A	192.168.0.4
 
 ;
 ; Alias adresser:
 ;
-ns	IN	CNAME	daisy.kongeh.dk.
-mail	IN	CNAME	daisy.kongeh.dk.
+ns	IN	CNAME	linus.intranet.
+mail	IN	CNAME	linus.intranet.
 </screen>
 
 <para>
@@ -1575,7 +1572,7 @@ Bemærk specielt at der er punktum efter hvert maskin-navn i CNAME-linierne
 Linie to til syv angiver diverse parametre for selve domænet, det
 er ikke så vigtigt at forstå ordenen i disse linjer, derimod er det
 vigtigt at forstå betydningen. Det første tegn, @, er en variabel for
-selve domænet, her kunne altså istedet stå 'kongeh.dk.'. Grunden til
+selve domænet, her kunne altså istedet stå 'intranet.'. Grunden til
 at man istedet sætter en variabel er at man på den måde ikke behøver
 ændre dette felt hvis man bruger denne zone fil til at lave en anden
 zone fil.
@@ -1590,8 +1587,8 @@ hvilken name server som er ansvarlig for denne zone.
 </para>
 
 <para>
-'ns.kongeh.dk.' fortæller hvilket domæne name serveren er ansvarlig
-for, 'hostmaster.kongeh.dk' er email adressen til vedkommende som er
+'ns.intranet.' fortæller hvilket domæne name serveren er ansvarlig
+for, 'hostmaster.intranet' er email adressen til vedkommende som er
 ansvarlig for domænet. Bemærk at det første . (punktum) skal læses
 som et @.
 </para>
@@ -1662,16 +1659,16 @@ adresse til Mail serveren og TTL er sat til en uge.
 <para>
 Resten af zone filen er selve 'records'. Den første kolonne fortæller
 hvilket navn man vil omsætte. Eksempelvis kunne der stå
-'mail.kongeh.dk' for at fortælle hvad 'mail.kongeh.dk' skulle
+'mail.intranet' for at fortælle hvad 'mail.intranet' skulle
 referere til. Hvis man ikke angiver noget i den første kolonne vil
-selve zonen være default, altså 'kongeh.dk.'
+selve zonen være default, altså 'intranet.'
 </para>
 
 <para>
 En vigtig ting som altid gælder når man angiver navne, hvis man ikke
 afslutter med et . (punktum) vil serveren automatisk tilføje det
-pågældende domæne til navnet. 'mail.kongeh.dk' vil derfor blive til
-'mail.kongeh.dk.kongeh.dk'
+pågældende domæne til navnet. 'mail.intranet' vil derfor blive til
+'mail.intranet.intranet'
 </para>
 
 <para>
@@ -1715,7 +1712,7 @@ Den første "reverse"-fil er for "localhost", som vi i
 
 <screen>
 $TTL    1D
-@	IN	SOA	ns.kongeh.dk. hostmaster.kongeh.dk. (
+@	IN	SOA	ns.intranet. hostmaster.intranet. (
                                       1999102400 ; serial number
                                       60000     ; refresh (1 day)
                                       3600       ; retry (1 hour)
@@ -1726,7 +1723,7 @@ $TTL    1D
 ;
 ; DNS serveren for denne zone:
 ;
-	IN	NS	ns.kongeh.dk.
+	IN	NS	ns.intranet.
 
 ;
 ; Reverse mappings:
@@ -1772,7 +1769,7 @@ Den næste "reverse"-fil er for maskinerne i 192.168.0.* området:
 
 <screen>
 $TTL	1D
-@	IN	SOA	ns.kongeh.dk. hostmaster.kongeh.dk. (
+@	IN	SOA	ns.intranet. hostmaster.intranet. (
                                       1999102400 ; serial number
                                       60000      ; refresh (1 day)
                                       3600       ; retry (1 hour)
@@ -1783,15 +1780,15 @@ $TTL	1D
 ;
 ; Name Servers for this reverse zone:
 ;
-	IN	NS	ns.kongeh.dk.
+	IN	NS	ns.intranet.
 
 ;
 ; Reverse mappings:
 ;
-1	IN	PTR	daisy.kongeh.dk.
-2	IN	PTR	henri.kongeh.dk.
-3	IN	PTR	dykker.kongeh.dk.
-4	IN	PTR	landmand.kongeh.dk.
+1	IN	PTR	linus.intranet.
+2	IN	PTR	alan.intranet.
+3	IN	PTR	richard.intranet.
+4	IN	PTR	eric.intranet.
 </screen>
 
 <para>
@@ -1831,16 +1828,16 @@ ud er du igennem første syntakscheck. Dernæst kan du starte med at
 spørge din lokale DNS, f.eks.
 
 <screen>
-<prompt>[root@linus /root]# </prompt> <userinput>nslookup daisy daisy</userinput>
-<prompt>[root@linus /root]# </prompt> <userinput>nslookup henri daisy</userinput>
-<prompt>[root@linus /root]# </prompt> <userinput>nslookup 192.168.0.3 daisy</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup linus linus</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup alan linus</userinput>
+<prompt>[root@linus /root]# </prompt> <userinput>nslookup 192.168.0.3 linus</userinput>
 <prompt>[root@linus /root]# </prompt> <userinput>nslookup localhost localhost</userinput>
 </screen>
 
 Check både på IP-numre og maskin-navne. Går alt glat, skal dine UNIX
 maskiner nu have <filename>/etc/resolv.conf</filename> med indhold:
 <screen>
-search kongeh.dk
+search intranet
 nameserver 192.168.0.1
 </screen>
 for bruge din nye DNS.
@@ -1993,7 +1990,7 @@ max. gyldigt i 24 timer.</para></listitem>
 <LISTITEM><para>Netmasken er 255.255.255.0</para></listitem>
 <LISTITEM><para>Default gateway er 192.168.0.1</para></listitem>
 <LISTITEM><para>DNS serveren er 192.168.0.1</para></listitem>
-<LISTITEM><para>Domæne-navnet er "kongeh.dk"</para></listitem>
+<LISTITEM><para>Domæne-navnet er "intranet"</para></listitem>
 </itemizedlist>
 
 <para>
@@ -2008,7 +2005,7 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
         # default gateway
         option routers 192.168.0.1;
 
-        option domain-name "kongeh.dk";
+        option domain-name "intranet";
         option domain-name-servers 192.168.0.1;
 
         default-lease-time 36000;
@@ -2161,7 +2158,7 @@ det er en Linux maskine:
 </para>
 
 <screen>
-<prompt>[root@landmand]$</prompt> <userinput>/sbin/ifconfig eth0</userinput>
+<prompt>[root@eric]$</prompt> <userinput>/sbin/ifconfig eth0</userinput>
           Link encap:Ethernet  HWaddr 00:00:B4:C7:1E:E6  
           inet addr:192.168.0.104  Bcast:192.168.0.255  Mask:255.255.255.0
           UP BROADCAST RUNNING  MTU:1500  Metric:1
@@ -2187,14 +2184,14 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
         # default gateway
         option routers 192.168.0.1;
 
-        option domain-name "kongeh.dk";
+        option domain-name "intranet";
         option domain-name-servers 192.168.0.1;
 
         default-lease-time 36000;
         max-lease-time 86400;
 
 
-        host landmand {
+        host eric {
                 hardware ethernet 00:00:B4:C7:1E:E6;
                 fixed-address 192.168.0.4;
         }
@@ -2202,7 +2199,7 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
 </screen>
 
 <para>
-"host landmand" indleder en særlig specifikation af hvordan en enkelt
+"host eric" indleder en særlig specifikation af hvordan en enkelt
 host skal konfigureres. For at DHCP serveren kan kende host'en bruger
 vi Ethernet adressen - den tager vi fra ifconfig beskeden. For at
 tildele denne host en fast adresse bruges "fixed-address 192.168.0.4",
@@ -2245,7 +2242,7 @@ håndteres af DNS serveren. Hvordan hænger de to servere sammen?
 Svaret er, at lige nu (april 2000) hænger de ikke særlig godt
 sammen. DHCP serveren har endnu ikke nogen måde, hvor den kan fortælle
 DNS serveren at den lige har uddelt IP adresse 192.168.0.4 til en
-host, der gerne ville hedde "landmand.kongeh.dk", og at DNS serveren
+host, der gerne ville hedde "eric.intranet", og at DNS serveren
 skal sørge for at de to oplysninger bliver matchet.
 </para>
 
@@ -2259,8 +2256,8 @@ DHCP server softwaren, version 3.
 <para>
 Det er dog være en fordel at konfigurere en zone i DNS serveren, der
 mapper de IP adresser som DHCP serveren uddeler til et hostnavn -
-f.eks. 192.168.0.101 mappet til "dhcp-101.kongeh.dk", 192.168.0.102
-mappet til "dhcp-102.kongeh.dk" o.s.v. En del services laver nemlig
+f.eks. 192.168.0.101 mappet til "dhcp-101.intranet", 192.168.0.102
+mappet til "dhcp-102.intranet" o.s.v. En del services laver nemlig
 sådan et "reverse DNS" opslag når man forbinder sig til dem, og hvis
 ikke de kan få et eller andet hostnavn ud af det opslag, så tager det
 som regel længere tid at få forbindelse til den pågældende
@@ -3275,11 +3272,11 @@ En meget udførlig beskrivelse af brugen findes i filen
 <title>Konfigurering af klienterne</title>
 
 <para>
-Du har du konfigureret Samba på Linuxserveren samt besluttet dig for, om du vil
-benytte krypterede password eller ej, så det eneste du mangler er at få windows-
-klienterne til at tilslutte sig domænet. I den følgende afsnit vil vi anvise en
-løsning på dette. Der knytter sig følgende forudsætninger til det efterfølgende
-eksempel:
+Du har du konfigureret Samba på Linuxserveren samt besluttet dig for,
+om du vil benytte krypterede password eller ej, så det eneste du
+mangler er at få windows-klienterne til at tilslutte sig domænet. I
+den følgende afsnit vil vi anvise en løsning på dette. Der knytter sig
+følgende forudsætninger til det efterfølgende eksempel:
 </para>
 
 <para>
@@ -3361,8 +3358,8 @@ senere. </para>
 
 <LISTITEM>
 <para>
-Sæt linuxserveren til at 
-køre named - tcp/ip way, og fortæl windows at den skal bruge 
+Sæt Linuxserveren til at køre named - TCP/IP way, 
+og fortæl windows at den skal bruge 
 linuxserveren som DNS. Åbn
 indstillinger-&gt;kontrolpanel-&gt;netværk. Åbn 
 egenskaber for TCP/IP. Under fanebladet "Gateway" tilføjes

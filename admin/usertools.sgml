@@ -148,7 +148,7 @@ To learn about the programmers and ReiserFS, please go to
 http://www.devlinux.com/namesys
 
 Have fun.
-  <prompt>[root@linus root]#</prompt>
+  <prompt>[root@linus ~]#</prompt>
 </screen>
 </para>
 
@@ -159,11 +159,11 @@ Du er nu klar til at mounte din partition. Følgende vil mounte partitionen
 
 <para>
 <screen>
-  <prompt>[root@linus root]#</prompt> <userinput>mount -t reiserfs /dev/hda5 /home</userinput>
+  <prompt>[root@linus ~]#</prompt> <userinput>mount -t reiserfs /dev/hda5 /home</userinput>
 Checking ReiserFS transaction log (device 03:35)  ...
 Relayed 0 transaction in 0 seconds
 ReiserFS version 3.5.18
-  <prompt>[root@linus root]#</prompt>
+  <prompt>[root@linus ~]#</prompt>
 </screen>
 </para>
 
@@ -217,7 +217,7 @@ bestemmes af, hvilke skripts der er placeret i kataloget
 </PARA>
 
 <SCREEN>
-<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>ls /etc/rc.d/rc3.d</USERINPUT>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls /etc/rc.d/rc3.d</USERINPUT>
 K30mcserv    K40snmpd	  K55routed    K75gated     K80random	 K95nfsfs
 K96pcmcia    K97network   S01kerneld   S30syslog    S40atd	 S40crond
 S40portmap   S50inet	  S55named     S60lpd	    S75keytable  S80sendmail
@@ -364,7 +364,7 @@ på, er at skifte til root og skrive <userinput>init 0</userinput>
 eller <userinput>telinit 0</userinput>
 
 <SCREEN>
-<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>su -</USERINPUT>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su -</USERINPUT>
 Passwd: <USERINPUT>hemlig</USERINPUT>
 <PROMPT>[root@linus /root]# init 0</PROMPT>
 </SCREEN>
@@ -1139,14 +1139,14 @@ Et eksempel på en linje af adgangskodefilen, passwd, er
 </para>
 
 <screen>
-daisy:x:500:501::/home/daisy:/bin/bash
+anne:x:500:501::/home/anne:/bin/bash
 </screen>
 
 <para>
-Der står, at brugeren daisy er bruger nummer 500 på maskinen (ikke, at
-der faktisk er 500). Daisy er med i gruppe nummer 501, hvilket er
-styret af <filename>/etc/group</filename>. Brugeren daisy har
-hjemmemappe i <filename>/home/daisy</filename> og starter med
+Der står, at brugeren "anne" er bruger nummer 500 på maskinen (ikke, at
+der faktisk er 500). Brugeren "anne" er med i gruppe nummer 501, hvilket er
+styret af <filename>/etc/group</filename>. Brugeren "anne" har
+hjemmemappe i <filename>/home/anne</filename> og starter med
 <command>/bin/bash</command> som login-shell.  Det lille x betyder, at
 man kører med skygge-adgangskoder (eng. shadow-passwords), dvs. at
 adgangskoder står i <filename>/etc/shadow</filename>, og denne fil kan
@@ -1175,11 +1175,11 @@ shadow filen følger passwd-filen, en linje per bruger. Et eksempel er
 </para>
 
 <screen>
-daisy:$1$/hbYueDa$46ggNKFugoDABWOJZ3xvz0:10784:0:99999:7:::       
+anne:$1$/hbYueDa$46ggNKFugoDABWOJZ3xvz0:10784:0:99999:7:::       
 </screen>
 
 <para>
-For brugeren daisy står der de krypterede adgangskoder. For Red Hat er
+For brugeren "anne" står der de krypterede adgangskoder. For Red Hat er
 det længere end for SuSE, idet Red Hat anvender en bedre
 krypteringsmåde. Derefter vises antal dage siden 1/1-1970 for sidste
 ændring af adgangskoderne. Antal dage siden sidste ændring af
@@ -1213,11 +1213,11 @@ eksempel på en gruppe kan være
 </para>
 
 <screen>
-kongeh:x:1000:daisy,henri,dykker,landmand
+web:x:1000:anne,niels,svend
 </screen>
 
 <para>
-Dvs. gruppen "kongeh" har gruppe ID nummer 1000, og "x" betyder, at en
+Dvs. gruppen "web" har gruppe ID nummer 1000, og "x" betyder, at en
 eventuelt adgangkode for gruppen (anvendes ved skift til ny gruppe med
 <command>newgrp</command>) findes i shadowfilen
 <filename>/etc/gshadow</filename>. Hvis "x" blev fjernet 
@@ -1307,28 +1307,29 @@ kan være:
 
 <screen>
 127.0.0.1        localhost.localdomain localhost
-192.168.0.1      daisy.kongeh.dk       daisy
-192.168.0.2      henri.kongeh.dk       henri
-192.168.0.3      dykker.kongeh.dk      dykker
-192.168.0.4      landmand.kongeh.dk    landmand
+192.168.0.1      linus.intranet       linux
+192.168.0.2      alan.intranet        alan
+192.168.0.3      richard.intranet     richard
+192.168.0.4      eric.intranet        eric
 </screen>
 
 <para>
 IP-adressen 127.0.0.1 er en speciel "loopback"-adresse, som ikke
 anvendes til andet end, at Linux-kernen hurtigt kan kommunikere med
-sig selv. De fire maskiner daisy, henri, dykker og landmand har fået
+sig selv. De fire maskiner linus, alan, richard og eric har fået
 IP adresser i 192.168.0.*, som er et lukket net - dvs. de adresser er
 garanteret ikke-eksisterende på Internettet. <!-- Se mere i xref
 linkend="private-ip-adresser". -->
 </para>
 
-<para> 
-Vi vil i øvrigt konsekvent anvende et
-.dk-domæne. Skal du selv sætte et hjemmedomæne op, hvor maskinerne
-ikke skal være kendte på Internet, og du vil være sikker på at dit
+<para> Skal du selv sætte et hjemmedomæne op, hvor maskinerne ikke
+skal være kendte på Internet, og du vil være sikker på at dit
 hjemme-domænenavn ikke er kendt på Internet, så brug f.eks. at domænet
-hedder .hjemme, så daisy-maskinen bliver til daisy.hjemme - så får du
-aldrig overlap med en anden maskine.
+hedder ".hjemme" eller som her ".intranet", så linus-maskinen bliver til
+"linus.intranet" - så får du aldrig overlap med en anden maskine. Skal
+maskinerne være kendt på Internettet, så skal du ansøge om et domæne,
+sætte DNS op, og erstatte ".intranet" med ".MITDANSKEDOMAENE.dk", eller
+hvad du nu vælger.
 </para>
 
 <para>
@@ -1346,7 +1347,7 @@ slå en vilkårlig adresse op på Internettet. Et eksempel kan være
 </para>
 
 <screen>
-search kongeh.dk
+search intranet
 nameserver 129.142.6.64
 nameserver 129.142.6.65
 </screen>
@@ -1364,7 +1365,7 @@ cifre, der ikke bruges. I det ovenstående må du ikke skrive
 </para>
 
 <screen>
-search kongeh.dk
+search intranet
 nameserver 129.142.006.064
 nameserver 129.142.006.065
 </screen>
@@ -1576,15 +1577,15 @@ hvis du sender post til din Internet-udbyder, og denne har en hurtig
 <indexterm><primary>/etc/aliases</primary></indexterm>
 <para>
 Hvis du har brug for at have nem adgang til at lave post-aliaser, så
-e-post til dronningen@kongeh.dk automatisk bliver videresendt
-(eng. forwarded) til daisy@kongeh.dk, og måske vil du have at alle e-breve
-til "root" skal ende hos daisy,
-så kan du i <filename>/etc/aliases</filename> nemt anføre dette.
+e-post til &lt;web@sslug.dk&gt; automatisk bliver videresendt
+(eng. forwarded) til &lt;anne@sslug.dk&gt;, og måske vil du have at
+alle e-breve til "root" skal ende hos "anne", så kan du i
+<filename>/etc/aliases</filename> nemt anføre dette.
 </para>
 
 <screen>
-dronningen: daisy
-root: daisy
+web: anne
+root: anne
 </screen>
 
 <para>
@@ -2550,7 +2551,7 @@ mindst to muligheder, enten med <command>ps aux</command> eller
 
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ps aux | grep ping</userinput>
-pto       9149  0.0  0.1  1264  228 pts/4    S    Apr29   0:00 ping dykker
+pto       9149  0.0  0.1  1264  228 pts/4    S    Apr29   0:00 ping eric
 root      9418  0.0  0.4  1360  516 ttyp0    S    00:06   0:00 grep ping
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>pidof ping</userinput>
 9149
@@ -2621,10 +2622,10 @@ shell som proces nr. 1. Herefter køres
 </para>
 
 <screen>
-<PROMPT>[root]# </PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
-<PROMPT>[root]# </PROMPT> <userinput>passwd</userinput>                       # skift password
-<PROMPT>[root]# </PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
-<PROMPT>[root]# </PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
+<PROMPT>[root@linus ~]# </PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
+<PROMPT>[root@linus ~]# </PROMPT> <userinput>passwd</userinput>                       # skift password
+<PROMPT>[root@linus ~]# </PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
+<PROMPT>[root@linus ~]# </PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
 </screen>
 
 <para>
