@@ -1127,7 +1127,55 @@ af vilkårlige og almindelige Linux-kommandoer - i dette tilfælde "ls
 </FIGURE>  
 
 </sect2>
+<--
+<sect2 id="tunnel-med-ssh">
+<title>Tunnel med SSH</title>
+<indexterm><primary>Tunnel</primary></indexterm>
+<indexterm><primary>SSH</primary><secondary>Tunnel</secondary></indexterm>
+<para>
+En af de (mange) meget elegante ting man kan med SSH (og OpenSSH) er
+at lave en sikker krypteret tunnel gennem en firewall og endda kunne
+transmittere grafiske programmer (X-programmer). Skal man administere
+servere (evt. via grafiske programmer) på et lukket netværk er en SSH-server
+i firewallen yderside en god måde at give adgang til netværket
+hjemmefra (husk dog at følge sikkerhedlisten for den SSH-variant der
+installeres).
+</para>
 
+<para>
+Jeg har et mindre problem med hensyn til X. Da vi gerne vil have
+muligheden for at brug X fra nogle af vores kunder så har vi brug for at
+kunne bruge X over SSH. Vores problem et at vores netværk på kontoret er
+bag en firewall, og at denne firewall ikke har X.
+</para>
+
+<screen>
+|X klient hjemme|---|Firewall med SSH adgang uden X|---|X server internt net|
+</screen>
+
+
+firewall#> ssh login@kunde.dk -g -L 10022:127.0.0.1:22
+
+arbejdsstation#> ssh -p 10022 -X login@firewall
+
+kunde#> xclock  (xclock fra kundes pc på min computer)
+
+Jeg gætter du skal gøre:
+
+
+
+#kunde> ssh login@hjem.dk -g -L 10022:arbejdstation_lokal_ip:22
+
+#kunde> ssh -p 10022 -X login@localhost
+
+#arbejdstation> xclock (xclock fra din computer på kundes pc)
+
+ssh er sejt!
+
+mvh. Jakob Hilmer
+
+</sect2>
+-->
 <sect2 id="epilog2">
 <title>Epilog</title>
 <para>

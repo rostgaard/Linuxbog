@@ -6,14 +6,6 @@ all: filer
 
 release: cvs2html filer 
 
-yk:
-	@for dir in $(SUBDIRS); do \
-		mv $$dir/todo-$$dir.html $$dir/todo.html; \
-		cvs delete $$dir/todo-$$dir.html;\
-		cvs add  $$dir/todo.html; \
-	done;
-
-
 start:
 	@for dir in $(SUBDIRS); do \
 		cp -f Makefile.subdir $$dir/Makefile; \
