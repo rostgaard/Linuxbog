@@ -1,3 +1,4 @@
+# $Id$
 all: Makefiler filer
 
 release : all cvs2html mail
