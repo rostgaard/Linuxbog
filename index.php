@@ -189,8 +189,8 @@ Filtyper:
   reset($books);
   while (list($short,$desc) = each($books)) {
     echo "<li><b>$short:</b> ";
-    echo href("#$short","<b>$desc->title</b>");
-    echo "<br> $desc->comment";
+    echo href("#$short","<b>$desc[title]</b>");
+    echo "<br> $desc[comment]";
     echo "</li>\n";
   }
 ?>
@@ -379,5 +379,5 @@ foretages.
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  include($DOCUMENT_ROOT."includes/bottom.phtml");
+  include($DOCUMENT_ROOT."/includes/bottom.phtml");
 ?>
