@@ -509,6 +509,17 @@ if (count($notexists))
 [<a href="alle/bog/idx.html">Stikord</a>]
 </font>
 
+<p>Stikord:
+<a href="alle/bog/idx-symbol.html">Symbol</a>
+<?php
+	$c = 65;
+	while ($c < 91) {
+		echo "<a href=\"alle/bog/idx-".chr($c+32).".html\">&nbsp;".chr($c)."&nbsp;</a> \n";
+		$c++;
+	}
+?>
+</p>
+
 <h2>Vi har følgende bøger</h2>
 <p>
 Filtyper: 
