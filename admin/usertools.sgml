@@ -226,25 +226,27 @@ kopieringen. Dette kan man sikre sig ved at skifte til
 enkeltbruger-tilstand, der svarer lidt til fejlsikret tilstand i
 Windows. Når man er færdig med systemarbejdet, hopper man tilbage til
 "flerbrugersystem" og folk har igen adgang til computeren, og vil ikke
-bemærke at deres filer pludseligt ligger på et andet drev.
+bemærke at deres filer pludselig ligger på et andet drev.
 </para>
 
 <para>
-Computeren kører en masse services for brugerne, dette kunne
+Computeren kører en masse services for brugerne, dette kan
 f.eks. være netværksforbindelse (network) og forskellige
 netværksrelaterede services som f.eks. e-post
 (sendmail/routed/named/snmpd/portmap), adgang til filsystemer på andre
-computere (nfsfs), mulighed for at udskrive til printer (lpd) og
+computere (nfs), mulighed for at udskrive til printer (lpd) og
 lydkort (sound). Men mens Linux er ved at starte, har man ikke brug
 for at have adgang til printeren, så printer-servicen startes først
 når systemet går ind i "flerbrugersystem" tilstanden.  Når man er ved
 at genstarte eller slukke computeren, slukker man igen for
-printer-forbindelsen. Når computeren skiftes fra en tilstand til en
-anden tilstand, udføres en række scripts der bestemmer hvad for
-services der skal tændes og slukkes. Hvilke scripts der kører ved
-skift til f.eks.  runlevel 3 (Flerbrugersystem), bestemmes af, hvilke
-scripts der er placeret i kataloget
-<filename>/etc/rc.d/rc3.d</filename> (Corel og Debian har tilsvarende
+printer-servicen.</para>
+
+<para> Når computeren omstilles fra en tilstand til en anden tilstand,
+udføres en række scripts, der bestemmer hvilke services der skal
+tændes og slukkes. Hvilke scripts der kører ved skift til f.eks.
+runlevel 3 (Flerbrugersystem), bestemmes af, hvilke scripts der er
+placeret i kataloget <filename>/etc/rc.d/rc3.d</filename> (Corel,
+Debian og nu også Red Hat 7.0 har tilsvarende
 <filename>/etc/rc3.d</filename>).
 </PARA>
 
@@ -259,14 +261,14 @@ S85sound   S99local
 <PARA>
 Disse filer svarer til services der skal startes (dem der starter med
 S) eller dræbes (starter med K for Kill) når systemets tilstand ændres
-til tilstand 3 (Flerbrugersystem). Tallet bestemmer rækkefølgen
+til tilstand 3 (Flerbrugersystem). Tallet bestemmer rækkefølgen;
 <filename>S01kerneld</filename> startes altså før
 <filename>S30syslog</filename>, mens <filename>K96pcmcia</filename>
 servicen dræbes efter <filename>K30mcserv</filename>. Hver fil i dette
 katalog er i virkeligheden et link til et script i
-<filename>/etc/rc.d/init.d/</filename> og "S50inet" betyder i
-virkeligheden at "/etc/rd.d/init.d/inetd start" udføres, hvilket
-starter alle net-services.
+<filename>/etc/rc.d/init.d/</filename>, og "S50inet" betyder i
+virkeligheden at "/etc/rc.d/init.d/inetd start" udføres, hvilket
+starter netværks-enhederne.
 </PARA>
 
 <PARA>
@@ -286,7 +288,7 @@ viser, at der intet tidligere runlevel er, dvs. computeren har været i
 runlevel 3, siden den blev tændt. Du skifter runlevel
 med kommandoen <FILENAME>telinit</FILENAME>. Du bør altid synkronisere 
 dine harddiske (tømme filsystemernes buffere) inden du skifter
-runlevel, dvs. kør <command>sync</command> et par gange lige inden, du
+runlevel, dvs. kør <command>sync</command> et par gange, lige inden du
 skifter runlevel med <command>telinit</command>.
 </PARA>
 
@@ -358,8 +360,8 @@ rettelser.
 
 <PARA>
 I filen <FILENAME>/etc/inittab</FILENAME> angives, hvilket
-runlevel der er det forvalgte runlevel. Vil du ændre at man f.eks. starter
-i runlevel 5 og ikke 3, så skal du ændre linien
+runlevel der er det forvalgte runlevel. Ønsker man f.eks. at 
+maskinen starter i runlevel 5 og ikke 3, så skal du ændre linien
 </para>
 
 <screen>
@@ -388,9 +390,9 @@ de forskellige Linux-distributioner.
 <indexterm><primary>Ctrl-Alt-Del</primary></indexterm>
 <PARA>
 En Linux-maskine er, som du nok allerede har forstået, et meget stort
-system med mange muligheder. Du skal også være meget opmærksom på, at
-man ikke bare må slukke for en Linux-maskine - den skal lukkes pænt
-ned.
+system med mange muligheder.  Du skal også være meget opmærksom på, at
+man (ligesom med en Windows-maskine) ikke bare må slukke for en
+Linux-maskine - den skal helst lukkes pænt ned.
 </PARA>
 
 <PARA>
@@ -409,17 +411,15 @@ Passwd: <USERINPUT>hemlig</USERINPUT>
 <indexterm><primary>Ctrl-Alt-Delete</primary></indexterm>
 
 <para>
-Det er dog nemmere at stoppe den grafiske brugerflade med en
-<command>exit</command> i en tekst-login konsol (evt. kan
-"Ctrl-Alt-Backspace" bruges) og så trykke
-"Ctrl-Alt-Delete", når du er i en tekstkonsol. 
+En hurtig nedlukning fås ved at trykke
+"Ctrl-Alt-Delete", når du er i en tekstkonsol - f.eks. efter du
+trykker "Ctrl-Alt-F1".
 </para>
 
 <para>
 Du skal dog en gang for alle lave en ændring, så "Ctrl-Alt-Delete"
 kommer til at medføre at Linux lukkes ned. Ændres intet, genstarter
-systemet (og du vil nok her synes, at det er sjovt, at det minder om
-den mest kendte DOS-kommando).  For at få maskinen til at stoppe
+systemet.  For at få maskinen til at stoppe
 kaldes <command>/sbin/halt</command>, og skal du ændre i
 <FILENAME>/etc/inittab</FILENAME>
 </para>
