@@ -15,7 +15,7 @@ locdirname:=$(shell pwd)
 targetshortname:=$(notdir $(locdirname))
 
 # Med linux- foran
-targetname:=linux-$(notdir $(locdirname))
+targetname:=linuxbog-$(notdir $(locdirname))
 
 # version
 version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
@@ -92,9 +92,10 @@ else
 	echo "Du bør installere plucker for at kunne lave palm-udgaven"
 endif
 
+rpm:
+	cp linuxbog-$(targetshortname).spec bog
 
-
-pakhtml:
+pakhtml: rpm
 	mv bog $(targetshortname)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html.tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-$(version)_html.zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
