@@ -35,6 +35,11 @@
    } else if (file_exists($f="top.php")) {
 	include($f);
    }
+   if (preg_match("/[cvsw]{3}\.linuxbog\.dk/", $_SERVER["HTTP_HOST"])) {
+	$USE_SUBMIT_INC = ".php";
+   } else {
+        $USE_SUBMIT_INC = "";
+   }
 
    list($width,$height) = getimagesize("front.png");
 
@@ -340,7 +345,7 @@ function vistype($type) {
     "Online" => array(
       first => "bog",
       form => "",
-      last => "index.html".($_SERVER["HTTP_HOST"] == "tyge.sslug.dk" ? ".php" : ""),
+      last => "index.html".$USE_SUBMIT_INC,
       online => 1  // Hvis bognavn kun skal med een gange
     ),
     // Eks: frihed/bog/index.html
