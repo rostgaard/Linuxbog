@@ -340,7 +340,7 @@ function vistype($type) {
     "Online" => array(
       first => "bog",
       form => "",
-      last => "index.html",
+      last => "index.html".($_SERVER["HTTP_HOST"] == "tyge.sslug.dk" ? ".php" : ""),
       online => 1  // Hvis bognavn kun skal med een gange
     ),
     // Eks: frihed/bog/index.html
