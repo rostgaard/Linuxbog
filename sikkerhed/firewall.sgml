@@ -63,7 +63,8 @@ Der findes forskellige måder at opbygge en firewall, næste afsnit
 lister de vigtigste.
 </para>
 
-<sect2><title>Firewall typer</title>
+<sect2 id="sikkerhed-firewall-typer">
+<title>Firewall typer</title>
 
 <itemizedlist mark="bullet">
   <listitem><para>Pakkefiltrering</para></listitem>
@@ -99,9 +100,12 @@ proxyen altså sende dem videre, som om de kom fra den selv, og
 desuden inspicere dem på indholdsniveau eller applikationslag;
 man taler om netværkslag, som fx. den forsimplede Department of
 Defence model, DoD 4-lags modellen her: 
+</para>
 
+<sect3 id="sikkerhed-layer">
+<title>Netværks-lag</title>
 
-<itemizedlist mark="bullet">
+<itemizedlist mark="bullet" id="sikkerhed-network-layer">
 
 <listitem><para>
 Fysisk link-lag, d.v.s. ethernetkort og ledninger (der er
@@ -121,6 +125,12 @@ applikationslaget, fx. FTP og HTTP.
 </para></listitem>
 </itemizedlist>
 
+</sect3>
+
+<sect3 id="sikkerhed-proxy-applikationslag">
+<title>Filtrering på applikationslag</title>
+
+<para>
 En proxy kan inspicere på applikationslaget. Den kan derfor kan
 kaldes for et censur-program, netværks-barnepige eller spion.
 </para>
@@ -150,6 +160,7 @@ user-applikation kan inkorporeres i kernen (for at effektivisere
 den), så man kan skam bygge tip top professionelle SMLI-firewalls
 på basis af Linux.
 </para>
+</sect3>
 </sect2>
 
 <sect2 id="sikkerhed-grundlaeggende-pakkefilter">
@@ -674,7 +685,7 @@ vide om, hvordan Linux fungerer.
 
 
 <sect1 id="sikkerhed-router-marked">
-<title>Linux på router-markedet</title>
+<title>Lidt om Linux som router</title>
 
 <para>
 Som sagt kan en Linux-PC fungere som router, men en router kan
@@ -710,17 +721,29 @@ systemer.
 /-->
 
 </sect2>
+</sect1>
 
 
 <!--dax 2003-10-22 arbejder her HUSK/-->
-<sect2 id="sikkerhed-pakkefiltrering">
-<title>Netværks-niveauer: pakkefiltrering på pakkeniveau</title>
+<sect1 id="sikkerhed-pakkefiltrering">
+<title>Netværks-niveauer</title>
 
+<para>
+Man taler ofte om netværksniveauer, se evt. <xref
+linkend="sikkerhed-layer"/>
+</para>
+
+<sect2><title>Filtrering på pakkeniveau</title>
 <para>
 Pakkefiltrering kan sættes op på en maskine, som pakkerne skal
 igennem for at komme videre. Det er typisk en maskine med to
-netkort. En sådan maskine eller enhed kaldes en router, det
-udtales på engelsk rauter, man danskere har for vane at sige
+netkort. En sådan maskine eller enhed kaldes en en gateway i Unix
+terminologi. "Router" er blot en lidt anden betegnelse. <!--TODO
+er det nu også helt rigtigt?/-->
+</para>
+
+<para id="sikkerhed-router-udtale">
+Router udtales på engelsk rauter, man danskere har for vane at sige
 ruter, (hvilket er ok). En router forbinder to eller flere
 netværk med hinanden. Det ene netkort går til lokalnettet, det
 andet til det offentlige net eller noget lignende. Det kan være
@@ -738,23 +761,10 @@ denne måde kaldes Internet Protokollen (IP).
 </para>
 
 </sect2>
+</sect1>
 
-
-<sect2 id="sikkerhed-nat">
-<title>NAT, Netværks Adresse Translation</title>
-
-<para>
-En router for et lokalnetværk har som regel flere opgaver end at
-sende pakker videre og stoppe uvedkommende pakker. Den skal (som
-tidligere nævnt) omsætte de interne IP adresser til den rigtige
-IP adresse, som man har fået af sin Internet Udbyder, Internet
-Service Provider, ISP.  Man kan for eksempel bruge adresserne
-192.168.1.1-255 som lokale adresser, denne nummerserie er
-reserveret. Det er en del af de såkaldt "private adresser", som
-ikke bliver sendt rundt på det offentlige net. De er reserverede
-for at gøre det lettere at etablere et lokalnet uden at skulle
-søge og betale for "rigtige IP-adresser".
-</para>
+<sect1 id="sikkerhed-nat-og-ftp">
+<title>Diskussion af vanskelige routeropgaver</title>
 
 <para>
 En af de vigtigste ting for en firewall til et privat netværk er,
@@ -764,6 +774,21 @@ alle, der udefra forsøger at komme ind på systemet. Hvis man
 forestiller at hver enkelt maskine på et lokalnet er sikret på
 denne måde, så kan man forstå, hvorfor Linux/GNU/BSD af fagfolk
 anses for at være bedre og sikrere systemer.
+</para>
+
+<sect2 id="sikkerhed-nat">
+<title>NAT giver også mere sikkerhed</title>
+
+<para>
+Som tidliger nævnt skal en NAT-ing router omsætte de interne
+eller private IP-adresser til den offentlige (lovligt købte)
+IP adresse, som man har fået af sin Internet Udbyder, Internet
+Service Provider, ISP.  Man kan for eksempel bruge adresserne
+192.168.1.1-255 som lokale adresser, denne nummerserie er
+reserveret. Det er en del af de såkaldt "private adresser", som
+ikke bliver sendt rundt på det offentlige net. De er reserverede
+for at gøre det lettere at etablere et lokalnet uden at skulle
+søge og betale for "rigtige IP-adresser".
 </para>
 
 <para>
@@ -781,6 +806,14 @@ heldigvis meget sjældent.
 
 <sect2 id="sikkerhed-pakkefilt-ejnok">
 <title>Filtrering på pakkeniveau</title>
+
+<para>
+Hvorfor skal det være så besværligt? Kunne man ikke bare sige, at
+alle forbindelse indefra til http-servere udenfor skulle være
+tilladt? Jo, det kan man godt, men det giver ikke det ønskede
+resultat.
+</para>
+
 <para>
 Hvis man lukker for al adgang med den undtagelse, at pakker, som
 skal til port 80 på eksterne computere, skal have lov at passere,
