@@ -79,6 +79,7 @@ endif
 	rm -rf tempdir 
 	@echo "Done HTML (html)"
 	@echo ""
+	(cd images;tar cvf billeder.tar .)
 
 pdf: bog.pdf
 bog.pdf: $(sgmlfiler)
@@ -118,7 +119,7 @@ bog.pdf: $(sgmlfiler)
 ################################################################################
 clean:
 	@echo clean $(targetshortname)
-	@rm -rf bog.pdf bog.log dato.sgml version.sgml linuxbogurl.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9]
+	@rm -rf images/billeder.tar bog.pdf bog.log dato.sgml version.sgml linuxbogurl.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9]
 ifeq ($(lokmake),Makefile_local)
 	@echo X $(lokmake) X
 	@make -f Makefile_local clean
