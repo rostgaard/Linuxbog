@@ -16,30 +16,27 @@ Det er muligt at vælge en version af Adamantix med RSBAC (Rule Set Based
 Access Control), som er et avanceret adgangs-kontrol system, hvor man på
 et detaljeret niveau kan styre adgang til forskellige ressourcer. Iflg.
 hjemmesiden skal man vide hvad man gør, hvis man skal anvende dette. Læs
-mere om RSBAC på <ulink
+mere på <ulink
 url="http://www.rsbac.org/">http://www.rsbac.org/</ulink>. Vi tester
 ikke RSBAC versionen.
 </para>
 
 <para>
-Adamantix laves af en fyr der hedder Peter Busser. At få mere at vide
-om ham er stort set umuligt. Han skjuler sin identitet godt. Han er
-muligvis hollænder, ellers er han tysker. 
-</para>
-
-<para>
-Adamantix' hjemmeside er
-<ulink url="http://adamantix.org/">http://adamantix.org/</ulink>
+Adamantix laves af en fyr der hedder Peter Busser. Han er vist enten
+hollænder eller tysker. Der følger en Adamantix CD med decembernummeret
+af det tyske Linux Magazin: <ulink
+url="http://www.linux-magazin.de/Produkte/Bestellen/lms_2004_1.html">http://www.linux-magazin.de/Produkte/Bestellen/lms_2004_1.html</ulink>. Måske står der også noget inde i bladet om hvem der laver det. På websiden, 
+<ulink url="http://adamantix.org/">http://adamantix.org/</ulink>, står
+der ikke noget.
 </para>
 
 
 <sect1 id="distro-adamantix-maalgruppe">
 <title>Hvem er målgruppen for Adamantix</title>
 <para>
-Folk som vil have et sikkert Linux-OS, patentfrit i modsætning til
-SELInux, og brugbart med X og div. applikationer. Og som ikke er bange
-for Debian, eller for at rekompilere en softwarepakke selv.
-</para>
+Folk som vil have et sikkert Linux-OS, der stadig er brugbart.
+Og som ikke er bange for Debian, eller for at rekompilere en
+softwarepakke selv.  </para>
 
 <figure id="distro-adamantix-figname" float="1">
 <title>Adamantix logo</title>
@@ -52,16 +49,22 @@ for Debian, eller for at rekompilere en softwarepakke selv.
 <sect1 id="distro-adamantix-installation">
 <title>Installation</title>
 <para>
+<para>
+Adamantix bygger på Debian, og for at installere den skal man først
+installere et debian base-system (woody). Derefter "opgraderer" man til
+Adamantix.
+Som noget nyt er det nu også muligt at installere Adamantix direkte fra
+CD, men de advarer en del om at installeren ikke er testst så meget og
+kan ødelægge ting. Desuden vil jeg hellere installere over net.
 </para>
 
 <sect2 id="distro-adamantix-baseinstallation">
 <title>Installation af Debian basesystem</title>
 
 <para>
-Adamantix bygger på Debian, og for at installere den, skal man først
-installere et debian base-system (woody) uden sikkerhedsopdateringer
-eller pakker. Da Debians installationvejledning er meget indvilket,
-kommer den korte udgave her:
+Først installeres woody uden sikkerhedsopdateringer eller pakker. Da
+Debians installationvejledning er meget indvilket, kommer den korte
+udgave her:
 </para>
 
 <para>
@@ -139,21 +142,9 @@ apt-get update
 apt-get install libncurses5
 apt-get dist-upgrade
 </screen>
-Den klager lidt over at pakkerne ikke er valid debian pakker [check lige
-hvad den sagde], men det er nok ok, for Adamantix bliver da i hvert fald
-installeret. 
-</para>
-
-<para>
-På værste debian-vis spørger den om alt muligt man ikke ved
-undevejs.  Dette kan muligvis slås fra. Man bliver bedt om at vælge
-interface, her valgte jeg non-interactive fordi der stod, at så fik jeg
-ingen spørgsmål. Derefter skal man vælge, hvor kritisk et spørgsmål skal
-være før man vil se det. Her valgte jeg dumt nok "medium", fordi jeg
-troede jeg allerede havde valgt spørgsmålene fra. havde jeg valgt
-"Critical" her var det nok gået bedre. Under alle omstændigheder er der
-ikke så mange pakker der skal installeres når det kun er et basesystem,
-man opgraderer.
+Den klager lidt over at pakkerne ikke er valid debian pakker.
+Dette kan iflg. Adamantix websiden klares ved at installere pakkerne 
+debsig-verify og debsigs-adamantix.
 </para>
 
 <para>
@@ -165,7 +156,7 @@ apt-get install kernel-image-2.4.22-1-386
 Der var ikke nogen 2.4.23 images. Jeg ved ikke om den kernefejl der var
 for nylig findes i Adamantix kerner og om rettelsen i så fald er
 back-ported. Der er kerner med -soft og -sec endelser. Lad dem være,
-medmindre du har læst mere om Adamantix end jeg har.
+medmindre du skal bruge RSBAC.
 Apt-get advarer om at det er en initrd kerne, det betyder at man skal
 indsætte flg. linie i sin <filename>/etc/lilo.conf</filename>:
 <screen>initrd=/initrd.img</screen>
@@ -189,10 +180,9 @@ En standard installation af Adamantix svarer til Debian base, hvilket
 vil sig at der næsten ikke er installeret nogen programmer. Jeg startede
 med at installere X. Det viste sig at det kun findes i unstable.
 Allerede her begyndte min mistanke om at Adamantix nok ikke er verdens
-mest færdige produkt, selvom de slynger om sig med store ord på deres
-webside.
+mest færdige produkt.
 
-For at hente pakker fra testing eller unstable skal een af de to flg. linier
+For at hente pakker fra testing hhv. unstable skal een af de to flg. linier
 indsættes i /etc/apt/sources.list:
 <screen>
 deb ftp://ftp.szczepanek.de/adamantix testing main contrib
@@ -203,17 +193,14 @@ url="http://adamantix.org/mirrors.html">http://adamantix.org/mirrors.html</ulink
 Det var ikke helt nemt at få alle de ting med X kræver. Der var en
 "x-window-system" som jeg tror er beregnet til at installere det hele
 for een, men den kunne jeg ikke installere da den manglede en dependency. 
-Efter lidt
-forskelligt gætteri og apt-getteri, fik jeg dog X til at virke. 
-Jeg kan nævne xlibs, xfree86-common, xbase-clients, samt diverse xfonts.
-Husk at genstarte xfs. Der er
-ikke noget X konfigurationsprogram med, men en at de installerede pakker havde
-lagt en <filename>/etc/X11/XF86Config</filename> fil, som blot skulle
+Efter lidt forskelligt gætteri og apt-getteri, fik jeg dog X til at
+virke.  Jeg kan nævne xlibs, xfree86-common, xbase-clients, samt diverse
+xfonts.
+Husk at genstarte xfs. Der er ikke noget X konfigurationsprogram med,
+men en at de installerede pakker havde lagt en
+<filename>/etc/X11/XF86Config</filename> fil, som blot skulle
 rettes lidt til. Den eneste Window manager jeg kunne finde var twm. Husk
 også at installere xterm og ssh.
-</para>
-
-<para>
 </para>
 
 </sect1>
@@ -241,7 +228,7 @@ privilegier meget nøjagtigt.
 </para>
 
 <para>
-Desværre er det meget svært for "menigmand" at vrudere, hvor sikkert det
+Desværre er det meget svært for "menigmand" at vurdere, hvor sikkert det
 er at køre Adamantix nu, da der tilsyneladende ikke kommer
 sikkerhedsopdateringer. Om disse anses for unødvendige, eller man blot ikke kan overkomme at lave dem pga. alt det andet gode der skal puttes ind, vides ikke. Der står ikke noget på deres webside om sikkerhedsopdateringer.
 </para>
@@ -254,16 +241,17 @@ sikkerhedsopdateringer. Om disse anses for unødvendige, eller man blot ikke kan 
 <para>
 Ved første blik ser Adamantix rigtig godt ud. Når men kigger lidt bedre
 efter, viser det sig at det er meget ufærdigt. Deres hjemmeside er ikke
-særlig informativ. Der står at projektet er fuldt åbent og transperant,
-men der står ikke ret meget reel information om f.eks. hvem der står
-bag.
+særlig informativ. Der står at projektet er fuldt åbent og transparent,
+men der står ikke meget reel information om f.eks. hvem der står bag,
+hvordan projektet styres, hvordan man får sikkerhedsrettelser mv.
 </para>
 
 <para>
-Adamantix ligner et godt initiativ, som for de fleste af os ikke er
-produktionsmodent endnu. Det sikkert bliver et spændende system en dag,
-hvis ikke det inden da er blevet overhalet indenom af
-noget bedre.
+Adamantix ligner nu mere et godt initiativ, som ikke er særlig
+produktionsmodent endnu. De har helt sikkert fat i noget af det rigtige
+med RSBAC og lidt bedre beskyttelse mod buffer overflows, og det bliver
+nok et godt system når det bliver færdigt. Hvis ikke det i mellemtiden
+bliver overhalet indenom af et andet system der kan de samme ting.
 </para>
 
 </sect1>
