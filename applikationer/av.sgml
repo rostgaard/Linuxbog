@@ -175,6 +175,20 @@ over til <filename>.ogg</filename>-filer (svarer til MP3-filer) gør du følgende:
 <PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>oggenc -o FILNAVN.ogg -a MUSIKER -t TITEL -l STED FILNAVN.wav</USERINPUT>
 </screen>
 
+<para> 
+Har du en stereo Wave-fil (.wav), f.eks. med et
+foredrag som reelt er i mono, så kan du spare pladsen
+ved at lave en mono-udgave af ogg-filen ved at køre 
+filen igennem <command>sox</command> først. I dette 
+eksempel er der ikke anført musiker-navn, optage-sted 
+som i det ovenstående.
+</para>
+
+<screen>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cat foo.wav | sox -t wav - -c 1 -t wav - | oggenc -b 1 - > foo.ogg</USERINPUT>
+</screen>
+
+
 <para>
 Filerne kan spilles enten med <command>freeamp</command> eller
 <command>xmms</command>. <command>xmms</command> kræver dog at du har
@@ -251,6 +265,273 @@ se <xref linkend="realplayer">).
 </para>
 
 </sect2>
+
+<!-- Skrevet af Anders Bruun Olsen anders@bruun-olsen.net -->
+<sect2>
+<title>DiVX og andre film formater</title>
+<indexterm><primary>DivX</primary></indexterm>
+<indexterm><primary>Film</primary></indexterm>
+<indexterm><primary>Mplayer</primary></indexterm>
+
+<para>
+MPlayer:
+Denne tekst handler om hvordan man griber installationen af programmet MPlayer
+an.
+</para>
+
+<para>
+MPlayer er en film afspiller til Linux som kan afspille alle de samme formater
+som f.eks. Windows Media Player (deriblandt DiVX og AVI).
+</para>
+
+<para>
+Først skal du hente selve programmet fra http://mplayer.sourceforge.net. I
+skrivende stund er den nyeste version 0.18pre5. For at afspille mange af
+formaterne skal du også have fat i en zip fil som indeholder en række Win32
+codecs (filer der beskriver hvordan et filmformat afspilles).
+I skrivende stund kan de nødvendige filer hentes her:
+<ulink url="http://mp.dev.hu/MPlayer/releases/MPlayer-0.18pre.tgz">http://mp.dev.hu/MPlayer/releases/MPlayer-0.18pre.tgz</ulink>
+<ulink url="http://mp.dev.hu/MPlayer/releases/w32codec-0.18.zip">http://mp.dev.hu/MPlayer/releases/w32codec-0.18.zip</ulink>
+</para>
+
+<para> 
+Det første du skal gøre er at sikre dig at du har de værktøjer
+og programmer der skal bruges for at få kompileret MPlayer korrekt.
+Du skal bruge en så ny som muligt version af GCC (Gnu's C Compiler)
+samt GCC-CPP (C Pre Processor) og programmet Nasm (Assembler).  Du
+skal desuden bruge libSDL (Simple DirectMedia Layer) af mindst version
+1.1 for at få det bedste output fra MPlayer.
+</para>
+
+<para>
+For at få lyd til at virke i MPlayer skal du bruge et af følgende lydsystemer:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+OSS Audio
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Alsa
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ESD
+ </para>
+</listitem>
+<listitem> 
+ <para>
+Sun Audio
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Hvis du benytter en RPM baseret distribution af Linux er der store chancer for
+at alle disse programmer allerede findes som RPM pakker den nemt kan
+installeres. Dette gælder ihvertfald for Mandrake 8. Hvis du har en ikke-RPM
+baseret distribution såsom Slackware skal du ud på de forskellige programmers
+hjemmesider for at hente dem og selv sørge for at kompilere og installere dem.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+GCC og GCC-CPP: http://.gnu.org
+ </para>
+</listitem>
+<listitem>
+ <para>
+Nasm: http://.cryogen.com/Nasm/
+ </para>
+</listitem>
+<listitem>
+ <para>
+libSDL: http://.libsdl.org
+ </para>
+</listitem>
+<listitem>
+ <para>
+Alsa: http://.alsa-project.org
+ </para>
+</listitem>
+<listitem> 
+ <para>
+OSS: http://.opensound.com
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Installationen af disse (ikke-RPM) programmer vil ikke blive gennemgået i denne
+tekst.
+</para>
+
+<para>
+Vejledningen i denne tekst er skrevet til at blive udført af din normale bruger
+og derfor ikke som root medmindre andet er anført.
+Det første du gør er at
+udpakke zip filen med Win32 codecs:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mkdir /usr/lib/win32</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /usr/lib/win32</USERINPUT>
+<PROMPT>[root@linus /usr/lib/win32]#</PROMPT> <USERINPUT>unzip -a /path/to/w32codec-0.18.zip</USERINPUT>
+</screen>
+
+<para>
+Dernæst udpakker du MPlayer, f.eks. hjemme hos root:
+</para>
+
+<screen>
+<PROMPT>[root@linus /usr/lib/win32]#</PROMPT> <USERINPUT>cd /usr/local</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>tar -zxvf MPlayer-0.18pre.tgz</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>cd MPlayer-0.18pre5</USERINPUT>
+<PROMPT>[root@linus /usr/local]#</PROMPT> <USERINPUT>./configure</USERINPUT>
+</screen>
+
+<para>
+Hvis du benytter et system som har GCC 2.96 skal du tilføje
+<literal>--disable-gcc-checking</literal> til <command>./configure</command>
+(Du skal altså IKKE køre <command>./configure</command> uden denne parameter
+hvis du har 2.96):
+</para>
+
+<para> Du skal sørge for at checke hvad den har
+konfigureret sig til (står til sidst i det output
+<command>./configure</command> gav). Hvis den ikke har
+fundet ihvertfald SDL og mindst 1 slags audio skal du
+tjekke at du har installeret libSDL samt 1 audio system
+korrekt.
+</para>
+
+<para>
+Et eksempel på output fra configure som er korrekt:
+</para>
+
+<screen>
+Checking for mmx support ... yes
+Checking for mmx2 support ... yes
+Checking for 3dnow support ... no
+Checking for 3dnowex support ... no
+Checking for sse support ... yes
+Checking for mtrr support ... yes
+Screen size ... 1x1
+Checking for X11 libs ... -L/usr/X11R6/lib
+Checking for X11 headers ...
+Checking mga_vid device ... no
+Checking for xmga ... no
+Checking for SDL ... yes
+Checking for OpenGL ... yes
+Checking for Xv ... yes
+Checking for X11 ... yes
+Checking for DGA ... yes
+Checking for DGA 2.0 .. yes
+Checking for Xf86VM ... yes
+Checking for SVGAlib ... no
+Checking for FBDev ... yes
+Checking for OSS Audio ... yes
+Checking for ALSA Audio ... no
+Checking for ESD Audio ... no
+Checking for Sun Audio ... no
+Checking for DeCSS support ... no
+Checking for PNG support ... yes
+Checking for DirectShow ... yes
+Checking for libavcodec ... yes
+</screen>
+
+<para>
+Der vil være en del andre ting, men det er disse linier som er vigtige at kigge
+igennem...
+</para>
+
+<para>
+Nu skal du have opsat MPlayer, det første du gør er at oprette et katalog til
+MPlayers config-filer - nu ikke som root, men som dig selv:
+</para>
+
+
+<screen>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd</USERINPUT>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>mkdir .mplayer</USERINPUT>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd .mplayer</USERINPUT>
+<PROMPT>[anne@linus cd .mplayer]$</PROMPT> <USERINPUT>cp /usr/local/MPlayer-0.18pre5/DOCS/codecs.conf .</USERINPUT>
+<PROMPT>[anne@linus cd .mplayer]$</PROMPT> <USERINPUT>echo "vo=sdl" > config</USERINPUT>
+</screen>
+
+<para> 
+Hvis du vil have MPlayer til at afspille film i
+fuldskærms tilstand som standard tilføjer du linien
+<literal>fs=yes</literal> til <command>config</command>:
+</para>
+
+<screen>
+<PROMPT>[anne@linus .mplayer]$</PROMPT> <USERINPUT>echo "fs=yes" >> config</USERINPUT>
+</screen>
+
+<para>
+MPlayer har en mængde andre opsætnings muligheder som alle kan gennemses med:
+<command>mplayer --help</command>
+</para>
+
+<para> 
+Generelt er det sådan at hvis du vil lade en
+parameter være standard for <command>mplayer</command>
+(såsom f.eks. <literal>-vm</literal> eller
+<literal>-zoom</literal>) så tilføjer du bare
+<literal>parameter=yes</literal> (f.eks.
+<literal>vm=yes</literal>). Vil du f.eks. tilrette
+hvilken en audio driver mplayer skal benytte som
+standard tilføjer du <literal>ao=driver</literal> (hvor
+du med <command>mplayer -ao help</command> kan se en
+liste over tilgængelige drivere) og det samme gælder
+<literal>vo</literal> (video output).  
+</para>
+
+<para>
+Så er det tid til at afprøve MPlayer, til dette formål skal du have en film fil
+f.eks. en MPEG eller AVI fil:
+</para>
+
+<screen>
+<PROMPT>[anne@linus cd .mplayer]$</PROMPT> <USERINPUT>/usr/local/MPlayer-0.18pre5/mplayer /path/to/file</USERINPUT>
+</screen>
+
+<para>
+Når du afspiller en fil og benytte SDL som output driver kan du benytte 'f' til
+at skifte mellem vindue og fuldskærm og 'c' for at skifte imellem opløsninger i
+fuldskærm. 'q' afslutter afspilningen og piletasterne til højre og venstre
+spoler i filmen.
+</para>
+
+<para> 
+Hvis alt fungerer som det skal er der blot at
+skifte til root og køre <command>make install</command>
+i MPlayer-kataloget.
+</para>
+
+<screen>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>su</USERINPUT>
+<PROMPT>[root@linus /home/anne]$</PROMPT> <USERINPUT>cd /usr/local/MPlayer-0.18pre5</USERINPUT>
+<PROMPT>[anne@linus /usr/local/MPlayer-0.18pre5]$</PROMPT> <USERINPUT>make install</USERINPUT>
+</screen>
+
+<sect3>
+<title>Avi</title>
+<para>
+Skal du afspille Avi-filer på en Debian kan programmet
+<command>Avifile</command> anbefales, denne ligger i en Debian-unstable
+pakke.
+</para>
+</sect3>
+
+</sect2>
+
 </sect1>
 
 
