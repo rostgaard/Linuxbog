@@ -436,7 +436,60 @@ køres når systemet startes op. I Red Hat f.eks. i bunden af
 /dev/hda:
  Timing buffer-cache reads:   128 MB in  3.35 seconds = 38.21 MB/sec
  Timing buffered disk reads:  64 MB in  7.56 seconds =  8.47 MB/sec
+</screen>
 
+<para>
+Den første og sidste kommando måler hastigheden på harddisken. Der kommer to 
+tal. Det første "byffer-cache" er reelt et mål for processor og bushastighed, 
+mens det andet tal angiver I/O fra disken. 
+</para>
+
+<para>
+For de fleste diske er den standard opsætning du har fin, men får du væsentligt
+mindre på det andet tal (se ovenfor), så skal du igang med at lege :)
+</para>
+
+<itemizedlist mark="bullet">
+
+<listitem> 
+ <para>
+-u[0|1] Styrer interrupt-masker for disken. Det er noget der giver en del.
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+-m[tal] Multiple sector mode (dvs. IDE Block Mode), er om man kan hente mere data per gang. De fleste chipsæt understøtter nu dette. 2, 4, 8, 16 og 32 er lovlige værdier. 16 eller 32 er nok interessant for de fleste. 
+ </para>
+</listitem>
+
+
+<listitem>
+ <para>
+-d[0|1] er tilkobling/fravalg af DMA-overførsel. Dette genkendes 
+oftest automatisk, og sættes default til -d1 hvis det er muligt.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+-X[mode] sættes til højest mulige hastighed pr. default.
+Anvend -X66 er UltraDMA mode 2. -X67 for UltraDMA mode 3 osv.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+-c[0|1|2|3] E)IDE 32-bit I/O support. 
+0  for at fravælge 32-bit I/O support, 
+1 for at tilkoble  32-bit data overførsel og 
+3 for 32 bit dataoverførsel med synkroninsering (mange chipsæt kræver dette. 
+ </para>
+</listitem>
+</itemizedlist>
+
+
+<screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -u1 -m16 -c3 -d1 -X66 /dev/hda</userinput>
 
 /dev/hda:
@@ -456,17 +509,45 @@ køres når systemet startes op. I Red Hat f.eks. i bunden af
  Timing buffered disk reads:  64 MB in  6.80 seconds =  9.41 MB/sec
 </screen>
 
+
 <para>
-Den første og sidste kommando måler hastigheden på harddisken. Der kommer to 
-tal. Det første "byffer-cache" er reelt et mål for processor og bushastighed, 
-mens det andet tal angiver I/O fra disken. I eksemplet giver jeg kommandoer
+I eksemplet giver jeg kommandoer
 som passer til de nyere Ultra DMA 66-controllere, og få lidt højere hastighed.
 Målefunktionen bør dog køres en del gange før man kan få en statistisk korrekt
 vurdering af ydelsen. Du skal være opmærksom på at du kan låse din maskine, 
 hvis du angiver mere end hvad din maskine kan yde. I praksis ser du nok 
 et reboot hvis du går for langt. Tilføj den endelige optimale opsætning til 
 <filename>/etc/rc.local</filename> eller tilsvarende opstartsfil, når du er 
-sikker på maskinen kører godt.
+sikker på maskinen kører godt. Se også <command>man hdparm</command>.
+</para>
+
+<para>
+Red Hat 7.1 kan du justere i filerne:  <filename>/etc/sysconfig/harddiskhd[a-h]</filename> og så gør <filename>/etc/rc.sysinit</filename> resten ved 
+system start. Udfør <command>cp /etc/sysconfig/harddisks /etc/sysconfig/harddiskhdX</command>, hvor X er a,b,c osv for hda, hdb, hdc osv.
+Der er følgende parametre: 
+</para>
+
+<screen>
+USE_DMA=1    
+# det samme som -d1 
+# brug DMA   fra = 0, til = 1
+
+LOOKAHEAD=1
+# det samme som -A1 
+
+MULTIPLE_IO=16
+# det samme som -m16 
+
+EIDE_32BIT=3
+
+EXTRA_PARAMS= -X69  
+# -X69 UDMA5 for ATA/100 
+# UDMAX er -X(64 + X) hvor X er et number 1-5.
+</screen>
+
+<para>
+Læs også Red Hat 7.1-filen <filename>/etc/sysconfig/harddisks</filename> hvor 
+generel opsætning kan laves for alle diske.
 </para>
 
 <para>
