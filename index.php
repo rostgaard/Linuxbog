@@ -1,4 +1,5 @@
 <?php
+   // $Id$
 
    /* top.phtml sets 
       <!--DOCTYPE ....
