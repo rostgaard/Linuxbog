@@ -47,7 +47,8 @@
   To spørgsmål melder sig hurtigt til systemadministratoren: Hvad med
   sikkerheden og hvordan kan man styre softwareudviklingsprocessen,
   når der er mange mennesker involveret, på en sådan måde at man kan
-  lave udgivelser som altid kan genskabes (til serviceformål)ereudvikler, og dermed har behov for at kunne bakke
+  lave udgivelser som altid kan genskabes (til serviceformål), mens
+  man samtidigt videreudvikler, og dermed har behov for at kunne bakke
   tilbage gennem opdateringerne i tilfælde af fejl.
  </para>
 
@@ -133,8 +134,9 @@
    CVS udmærker sig ved at have et sæt af
    kommandoer til at pakke distributionen ud, at opdatere ens egen
    distribution med andres ændringer, at lægge ens egne ændringer i
-   repositoriet, at lave sideløbende grene af udviklingen af
-   produktet, at samle sideløbende grenion om historien af ændringer osv.
+   arkivet, at lave sideløbende grene af udviklingen af
+   produktet, at samle sideløbende grene af udviklingen, at hente
+   information om historien af ændringer osv.
   </para>
 
   <para>
@@ -184,7 +186,7 @@
 
 <screen>
 <prompt>[daisy@linus daisy]$ </prompt><userinput>cvs \
--d /usr/local/CVSROOerinput>
+-d /usr/local/CVSROOT checkout webspell</userinput>
 </screen>
 
    <itemizedlist>
@@ -255,7 +257,8 @@
       Og endelig er "kde-i18n" navnet på det projekt vi vil have en
       kopi af.  I dette konkrete tilfælde er det oversættelser af KDE
       (menutekster og brugsanvisninger) til forskellige sprog.
-     </parm>
+     </para>
+    </listitem>
    </itemizedlist>
   </example>
 
@@ -324,7 +327,7 @@
 
    <indexterm>
     <primary>CVS</primary>
-    <secondsonlig kopi</secondary>
+    <secondary>opdatér personlig kopi</secondary>
    </indexterm>
 
    <indexterm>
@@ -394,7 +397,7 @@
     <listitem>
      <para>
       "-m 'validator.w3.org brokkede sig'" betyder at rettelserne i
-      CVS-arkivets logbog skal have kommeidator.w3.org
+      CVS-arkivets logbog skal have kommentaren "validator.w3.org
       brokkede sig".
      </para>
     </listitem>
@@ -470,7 +473,9 @@
     kataloget og derefter køre <command>cvs update -d -P</command>.
     Her vil <literal>-d</literal> gøre at kataloger opdateres med, og 
     <literal>-P</literal> er at fjerne ("prune") tomme kataloger.
-ara>
+   </para>
+
+   <para>
     I nedenstående eksempel fjerner vi <filename>mit_katalog</filename>
     som er et underkatalog af <filename>projekt</filename>.
    </para>
@@ -590,7 +595,8 @@ CVS      Makefile    prg.c      prg.h
 
    <para>
     Hvis det er en ny fil, du vil oprette i CVS-arkivet, er det først
-    anden gang du taster <keysym>Ctrl-X</keysym> <keysy</keysym>, at filen rent faktisk bliver lagt ind i arkivet.
+    anden gang du taster <keysym>Ctrl-X</keysym> <keysym>V</keysym>
+    <keysym>V</keysym>, at filen rent faktisk bliver lagt ind i arkivet.
     I første omgang bliver filen blot registreret (svarer til
     <command>cvs add</command>).
    </para>
@@ -645,7 +651,7 @@ bliver opdateret, så man ved hvornår dette sker (brug
     mellemtiden også har opdateret filen, så vil du skulle flette de to
     opdateringer sammen, før du kan lægge dine rettelser ind i det fælles
     arkiv. Det gøres ved at du først "opdaterer" din lokale kopi af filen
-    (<command>cvslename></command>).
+    (<command>cvs update <filename>&lt;filnavn&gt;</filename></command>).
     CVS vil så markere forskellene mellem de to udgaver, så du i dit
     tekstbehandlingsprogram kan vælge hvilke udgaver af rettelserne du
     foretrækker. Når du har valgt mellem rettelserne og i øvrigt tjekket
@@ -684,7 +690,7 @@ bliver opdateret, så man ved hvornår dette sker (brug
     at man til hver en tid kan gå tilbage til netop den version af filen.
     For at sætte et mærke (engelsk "tag") kører man 
     <command>cvs tag MÆRKE fil_liste</command>, hvor <literal>MÆRKE</literal>
-    er et navn (desværre må man ikke anvende mellemrum) ala 
+    er et navn (desværre må man ikke anvende mellemrum) à la 
     <literal>efter_indfletning_af_SSLUG_kode</literal> eller 
     <literal>foer_Peters_sommerferie</literal>.
    </para>
@@ -705,7 +711,8 @@ bliver opdateret, så man ved hvornår dette sker (brug
    </indexterm>
 
    <para>
-    Enhver kan og bør principielt tjekke st   opdateringer bliver lagt ind i det fælles arkiv. Det gøres med kommandoen
+    Enhver kan og bør principielt tjekke status for de enkelte filer før 
+    opdateringer bliver lagt ind i det fælles arkiv. Det gøres med kommandoen
     <command>cvs status <filename>&lt;filnavn&gt;</filename></command>.
     CVS vil så vise udgavenummeret for den fil du har liggende såvel som
     udgavenummeret for den fil der ligger i det fælles arkiv.
@@ -735,7 +742,8 @@ bliver opdateret, så man ved hvornår dette sker (brug
     ændringer. I <xref linkend="cvs-kom-i-gang-commit"/> bruger vi
     kommandolinieflaget "-m" til at angive teksten til logbogen. Hvis du ikke
     bruger "-m"-flaget, vil CVS i stedet starte det tekstbehandlingsprogram
-    systemvariablen "EDITOR" peger på, så du kan skrive teksten der.
+    systemvariablen "<literal>EDITOR</literal>" peger på, så du kan skrive
+    teksten der.
    </para>
 
 <!--
@@ -763,7 +771,7 @@ log-beskeder direkte
 </screen>
 
    <para>
-    Den med de forskellige udgaver af filen, hvem der
+    Den vil give dig en liste med de forskellige udgaver af filen, hvem der
     har lavet ændringerne, og hvad der står om dem i logbogen. Selve
     ændringerne bliver dog ikke vist.
    </para>
@@ -848,7 +856,6 @@ log-beskeder direkte
     <emphasis>uden</emphasis> at fortælle CVS det. Det gør man i SSH's
     opsætningsfil <filename>$HOME/.ssh/config</filename>, hvor man for
     eksempel kan tilføje:
-</para>
 
 <programlisting>
 Host cvs.virksomhed.dk
@@ -856,7 +863,6 @@ Host cvs.virksomhed.dk
    Port 4444
 </programlisting>
 
-   <para>
     hvilket betyder at når CVS -- og dermed SSH -- bliver bedt om at kontakte
     "cvs.virksomhed.dk" (underforstået at det er på port 22), så vil SSH i
     virkeligheden kontakte "cvs-bag-doervogter.virksomhed.dk" på port 4444.
@@ -906,7 +912,8 @@ Host cvs.virksomhed.dk
     filer ind i, må du oprette et. Hvis du har systemadministratorrettigheder
     bør du oprette et katalog med navnet
     <filename>/usr/share/CVSROOT</filename> og lægge det der. Alternativt
-    kan du for eksempel lægge det i <fil    Det er vigtigt at alle, der skal kunne lægge filer ind i og rette
+    kan du for eksempel lægge det i <filename>$HOME/.CVSROOT</filename>.
+    Det er vigtigt at alle, der skal kunne lægge filer ind i og rette
     filer i CVS-arkivet har adgang til at skrive i kataloget. Vi går her
     ud fra at de alle er med i brugergruppen "cvsusers" (se
     systemadministratorbogen for information om brugergrupper). CVS-arkivet
@@ -961,7 +968,7 @@ Host cvs.virksomhed.dk
 
    <para>
     Lad os komme videre. For at du kan lægge dine filer i CVS for første
-u flytte dig til hovedbiblioteket for kildeteksten (vi antager
+    gang skal du flytte dig til hovedbiblioteket for kildeteksten (vi antager
     at det - og projektet - hedder <filename>webspell</filename> og at du
     oprettede CVS-arkivet som beskrevet i forrige afsnit) og importere
     filerne, fjerne filtræet og til sidst trække det ud af CVS-arkivet igen
@@ -1008,7 +1015,7 @@ u flytte dig til hovedbiblioteket for kildeteksten (vi antager
    <title>Få breve med log-meddelelser ved cvs commit</title>
 
    <para>
-    Når flsammen på et software-projekt er det nødvendigt
+    Når flere folk arbejder sammen på et software-projekt er det nødvendigt
     at man nemt kan se hvad andre personer har ændret i filerne. Med
     <command>cvs watch add FILNAVN</command> vil du modtage breve når andre
     kører <command>cvs commit FILNAVN</command>, men her vil du ikke se hvad
@@ -1051,15 +1058,17 @@ Dernæst skal vi rode i noget af de "helligste" af cvs-opsætningen.
 </screen>
 
 <para>
-Indsæt følgende linie til sidst hvis <filename>pto@sslug.dk</filename>
+Indsæt følgende linie til sidst hvis <filename>anne@linus</filename>
 skal modtage breve. Er der flere som skal modtage breve så tilføj
-gerne flere <filename>-m modtager@e-postadresse</filename> efter hinanden.
+gerne flere "-m modtager@maskine" efter hinanden.
 </para>
 
 <programlisting>
-DEFAULT /usr/share/cvs/contrib/log -m pto@sslug.dk -f STI_TIL_CVS-RODEN/CVSROOT/commitlog
+DEFAULT /usr/share/cvs/contrib/log -m anne@linus -f STI_TIL_CVS-RODEN/CVSROOT/commitlog
 </programlisting>
-nus ~]$</prompt> <userinput>cvs commit -m "Man kan modtage logbeskeder per post" CVSROOT/loginfo</userinput>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit -m "Man kan modtage logbeskeder per post" CVSROOT/loginfo</userinput>
 <prompt>[anne@linus ~]$</prompt> <userinput>cvs release -d CVSROOT</userinput>
 </screen>
 
@@ -1123,17 +1132,18 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
   </para>
 
   <para>
-   For at skabe "gren1" ud fra hovedgrenen "version0" skriver man (uden
-   at man nødvendigvis har koden  </para>
+   <indexterm>
+    <primary>CVS</primary>
+    <secondary>rtag</secondary>
+   </indexterm>
 
-  <indexterm>
-   <primary>CVS</primary>
-   <secondary>rtag</secondary>
-  </indexterm>
+   For at skabe "gren1" ud fra hovedgrenen "version0" skriver man (uden
+   at man nødvendigvis har koden checket ud):
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 gren1 sslugkode</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>cvs rtag -b -r version0 gren1 sslugkode</userinput>
 </screen>
+  </para>
 
   <para>
    Tilsvarende kunne man måske have en anden udvikler, som skal arbejde
@@ -1201,7 +1211,7 @@ gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
    </indexterm>
 
    <para>
-ntag at to udviklingsgrene, som hver for sig har udviklet sig, på et
+    Antag at to udviklingsgrene, som hver for sig har udviklet sig, på et
     tidspunkt skal flettes sammen. Du har været så smart at du kørte 
     <command>cvs tag TAG1</command> da du startede med din "gren1" og
     du har også gemt et mærke TAG2 ved slutningen af "gren1" - dvs. du har
@@ -1257,7 +1267,7 @@ Der er lidt mere information om emnet på
    Vi har tidligere vist, at projekt/kildetekst hentes med:
 
 <screen>
-<prompt>[anne@linus ~]$</prompt> <userinput>cvs STI_TIL_CVS-RODEN checkrinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs STI_TIL_CVS-RODEN checkout projektnavn</userinput>
 </screen>
   </para>
 
