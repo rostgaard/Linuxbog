@@ -90,9 +90,15 @@ function form_filename( $bookname, $format ) {
       return "$bookname/$format[last]";
       break;
     default:
+      $last = $format[last];
+      /* UNDTAGELSE: søg efter "samling" */
+      if ($bookname == "samling" && $last == ".pdf.gz") {
+	echo "\n<!-- SIKKE NOGET GRIS. SÅDAN BØR MAN IKKE PROGRAMMERE. (chlor) -->\n\n";
+        $last = ".tar.gz";
+      }
       # Eks: admin/linuxbog-admin-ps-5.6.tar.gz
       #      admin      /  linuxbog-      admin     -ps-          5.6                        .tar.gz
-      return $bookname."/".$format[first].$bookname.$format[form].$books[$bookname][version].$format[last];
+      return $bookname."/".$format[first].$bookname.$format[form].$books[$bookname][version].$last;
   }
 }
 
@@ -305,6 +311,7 @@ function vistype($type) {
      )
     ),
    "samling" => array(
+     /* UNDTAGELSE: søg efter "samling" */
      title => "Linux - Friheden til at skrive bøger",
      comment => "En pakke med alle bøgerne i",
      auth => array(
@@ -378,18 +385,11 @@ function vistype($type) {
       form => "-htmlub-",
       last => ".tar.gz"
     ),
-    // Eks: linuxbog-samling-pdf-5.7.tar.gz
-    /* Grove siger nedenstående er rigtigt til "samling" */
-    "PDFa" => array(
+    /* Eks: linuxbog-frihed-pdf-5.7.pdf.gz */
+    "PDF" => array(
       first => "linuxbog-",
       form => "-pdf-",
-      last => ".tar.gz"
-    ),
-    // Eks: linuxbog-frihed-pdf-5.7.pdf.gz
-    /* Grove siger nedenstående er rigtig til fx "friheden" */
-    "PDFb" => array(
-      first => "linuxbog-",
-      form => "-pdf-",
+      /* UNDTAGELSE: søg efter "samling" */
       last => ".pdf.gz"
     ),
     "Palm Pilot" => array(
