@@ -1,0 +1,697 @@
+<!-- $Id$ -->
+<chapter id="Server-Side-Includes">
+<title>Server-Side Includes</title>
+
+<!-- Skrevet af Carsten Svaneborg <carsten.svaneborg@risoe.dk> -->
+
+<para>
+Apache har en parser indbygget, når en webside afsendes kan
+apache indsætte html kode stumper fx. hvis alle sider skal have en
+fælles header og footer, Apache kan også indsætte datoen hvor html
+filen sidst blev rettet, samt inkludere eller ekskludere html stumper
+alt efter fx. hvilken browser ønsker siden. Alle disse features kaldes
+under et for Server-Side Includes, og forkortes SSI. SSI gør mange
+trivielle ting lettere, men det betyder også at sider skal fortolkes
+før de afsendes, hvilket betyder at det tager længrer tid at sende en
+webside.
+</para>
+
+<sect1 id="ssi-Apache-conf-SSI">
+<title>Konfiguration af Apache for at udføre SSI</title>
+
+
+<para>
+For at Apache skal udføre SSI skal følgende linier udkommenteres i
+<filename>/etc/httpd/conf/srm.conf</filename>
+</para>
+
+
+<screen>
+AddType text/html .shtml
+AddHandler server-parsed .shtml
+</screen>
+
+<para>
+Aller filer med typen <filename>.shtml</filename> bliver fortolket af Apaches
+SSI modul (mod_include), og resultatet udskrives med media type text/html,
+dvs. som en html fil.
+</para>
+
+
+<para>
+For at slå SSI til for et bestemt katalog <filename>/www</filename>
+skal <command>"Options Includes"</command> includes i katalogets
+adgangskonfiguration disse befinder sig i
+<filename>/etc/httpd/conf/access.conf</filename> filen, f.eks.:
+</para>
+
+<screen>
+&lt;directory /www &gt;
+Options Includes
+&lt;/directory&gt;
+</screen>
+
+<para>
+Bruges <command>IncludesNOEXEC</command> istedet for Includes, så kan
+dynamisk genereret output ikke inkluderes, dvs. alle inkludes der
+anvender CGI-scripts eller udfører shell scripts negligeres.
+</para>
+
+
+<para>
+Filer af typen <filename>.html</filename> eller
+<filename>.htm</filename> vil blive ikke blive fortolket, kun filer
+med typen <filename>.shml</filename>. Det kan dog være praktisk også
+at fortolke visse <filename>.html</filename> og
+<filename>.htm</filename> filer. Dette kan vha. XBitHack kommandoen
+som følger
+</para>
+
+<screen>&lt;directory /www &gt;
+
+#*.shtml filer fortolkes
+Options Includes
+
+#filer med chmod u+x fil fortolkes
+XBitHack on
+&lt;/directory&gt;
+</screen>
+
+<para>
+Alle filer hvor brugeren har rettigheder til at udføre dem vil nu
+blive fortolket (<command>chmod u+x fil.html</command>). Normalt
+bliver SSI svar ikke cachet fordi deres indhold kan variere fra gang
+til gang, fx. ved at dags dato indsættes et sted. Men hvis de html
+stumer der indsættes er statiske, dvs. at man f.eks. indsætter den samme
+html kode som header og footer hver gang, så kan siden jo sagtens
+caches uden problem. Man kan gøre dette muligt med "XBitHack full".
+Alle filer hvor både brugeren og gruppen har rettighed til at udføre
+filen vil nu blive afsendt med en "Last-Modified" header, der
+fortæller browseren hvornår filen sidst blev ændret (<command>chmod ug+x
+fil.html</command>).
+</para>
+
+
+<para>
+Bruger man "XBitHack full" og ændrer i de html stumper der indsættes
+som header og footer, vil det derfor være hensigtsmæssig at touche
+alle filer der får header og footer indsat, således at den dato der
+returneres altid er nyere end html stumperne, således browseren er
+istand til at cache svaret. Følgende kommandoer finder alle filer i og
+under det <filename>/www</filename> kataloget, der kan udføres af
+brugeren og gruppen (ug+x), og updatere tiden på de filer:
+</para>
+
+<screen>
+<PROMPT>[daisy@linus daisy]$ </PROMPT><USERINPUT>cd /www</userinput>
+<PROMPT>[daisy@linus www]$ </PROMPT><USERINPUT>find * -perm 110 | xargs touch</USERINPUT>
+</screen>
+
+</sect1>
+
+<sect1 id="ssi-Inkludering-af-tekst-i-et-HTML-dokument">
+<title>Inkludering af tekst i et HTML dokument</title>
+
+<para>
+Typisk bruges SSI til at inkludere en fælles header i alle .shtml
+filer.  Dette kan gøres med <command>#include</command> kommandoen der
+har følgende syntaks:
+</para>
+
+<screen>&lt;!--#include virtual="URL" --></screen>
+
+<para>
+
+</para>
+
+
+<para>
+Dette er en SSI kommando, og alt mellem <command>&lt;..&gt;</command>
+vil blive erstattet af indholdet i URL'en. I alle SSI udtryk er det
+meget vigtig at der er styr på mellemrum, der må ikke være mellemrum
+mellem <command>&lt;!--#kommando</command> og der SKAL være et
+mellemrum før den afsluttende <command>--></command>. Følgende er et
+eksempel på hvordan en header og footer kan inkluderes i et html
+dokument:
+</para>
+
+<screen>
+&lt;body&gt;&lt;!--#include virtual="/header.html" --&gt;
+
+&lt;h1&gt;Header&lt;/h1&gt;
+&lt;p&gt;Indeholdet af dokumentet&lt;/p&gt;
+
+&lt;!--#include virtual="/footer.html" --&gt;&lt;/body&gt;
+</screen>
+
+<para>
+Her ligger både header og footer html stumperne i WebRoot
+<filename>/</filename>. Men include filer kan ligge hvor som helst
+inden for WebRoot, hvis URL ikke starter med / så findes filerne med
+html stumperne relativt til den fil de skal indsættes i.  En vigtig
+detalje er at URL'en til den html stump, der skal inkluderes, ikke må
+indeholde http://server/, den må kun være et absolut eller relativ sti
+til en fil.
+</para>
+
+
+</sect1>
+<sect1 id="ssi-shellCGI-script">
+<title>Inkludering af CGI-script og shell kommando output</title>
+
+
+<para>
+Outputtet fra et CGI-script kan også inkluders f.eks. 
+</para>
+
+<screen>
+&lt;!--#exec cgi="/cgi-bin/header.cgi" --&gt;
+</screen>
+
+<para>
+Alt imellem <command>&lt;..&gt;</command> vil blive erstattet af de
+data som <filename>header.cgi</filename> scriptet udskriver. Hvis cgi
+scriptet udskrive en redirektion af formen "Location: URL\r\n\r\n"
+linie indsættes URL som et link istedet.
+</para>
+
+
+<para>
+Den følgende eksempel bruger et cgi script til at generere <command>&lt;body
+bgcolor="#farve"&gt;</command>, hvor farven afhænger af tiden.
+</para>
+
+<screen>
+&lt;!--#exec cgi="/cgi-bin/colorbody.cgi" --&gt; 
+ &lt;h1&gt;Test&lt;/h1&gt;
+&lt;/body&gt;
+</screen>
+
+
+<para>
+Og koden til <filename>colorbody.cgi</filename> er et lille perl script
+</para>
+
+<screen>
+#!/usr/bin/perl
+
+#find RRGGBB farve på basis af tiden
+my $color=sprintf("%x", ( time*25 % 0x1000000 ));
+
+print "Content-Type: text/html\r\n\r\n";
+
+#udskriver &lt;body ..&gt; tag
+print "&lt;body bgcolor=\"#$color\"&gt;\n";
+</screen>
+
+<para>
+Scriptet fungere ved at time er antallet af sekunder siden 1 jan. 1970.
+Dette ganges med 25 der er 'hastigheden' hvormed farven ændres og modulus
+0x1000000 tages, det giver et resultat mellem 0x000000 og 0xffffff, dvs. alle
+mulige farver. Blå nivauet cykler med en periode på 10 sekunder, grøn nivauet
+cykler med en periode på 43 minutter og det tager ca. en uge før at cyklusen
+af farver starter forfra.
+</para>
+
+<para>
+Browseren modtager html kode som:
+</para>
+
+<screen>
+&lt;body bgcolor="#ff1adc78"&gt;
+ &lt;h1&gt;Test&lt;/h1&gt;
+&lt;/body&gt;
+</screen>
+
+<para>
+Reloades siden så vil baggrundfarven ændre sig fra gang til gang. NB. dette
+kunne gøres smartere med Javascript, men det kræver at browseren vil køre
+Javascript programmer.
+</para>
+
+
+
+<para>
+Det er også muligt at udføre programmer direkte og inkludere deres
+output f.eks.
+</para>
+
+<screen>&lt;!--#exec cmd="who" --&gt;</screen>
+
+<para>
+Apache vil starte en shell og udføre
+<command>who</command>-programmet, der lister alle, der er logged ind
+på serveren.
+</para>
+
+
+<para>
+Et mere avanceret eksempel er følgende:
+</para>
+
+<screen>
+&lt;pre&gt;
+De sidste 50 sider du hentede på denne server var:
+&lt;!--#exec cmd="cat /var/log/httpd/access_log | grep ${REMOTE_ADDR} | tail -n50" --&gt;
+&lt;/pre&gt;
+</screen>
+
+<para>
+Først udskrives Apache's log af alle filer den har afsendt. Dette filteres
+af grep der udskriver alle linier der matcher IP addressen på den server der
+ønsker denne side, og tail -n50 udskriver de sidste 50 linier. Dvs. de sidst
+50 filer som den server hentede. Er access_log filen stor tager det dog en del
+tid at udføre.
+</para>
+
+
+<para>
+Der er nogle sikkerhedaspekter i at give alle og enhver bruger på
+serveren lov til at bruge apache processen til at udføre arbitrære
+kommandoer med arbitrære input. Med <command>Options
+IncludesNOEXEC</command> vil ovenstående #exec kommandoer ikke kunne
+udføres.
+</para>
+</sect1>
+
+<sect1 id="ssi-Inkludere-datoer-i-html-sider">
+<title>Inkludere datoer i html sider</title>
+
+
+<para>
+Enhver fil har indbygget en tid og dato for hvornår den sidst blev ændret,
+og mange på nettet vil være interesseret i at se hvornår den side de læser
+sidst blev opdateret. Istedet for at skrive dette direkte i html koden,
+således at man manuelt skal justere datoen hvergang man retter i filen, så kan
+man anvende SSI til at automatisk indsætte fil datoen som følger:
+</para>
+
+<screen>
+&lt;!--#echo var="LAST_MODIFIED" --&gt;
+</screen>
+
+<para>
+Dette vil udskrive "Friday, 04-Aug-2000 21:00:41 CEST". Det er datoen, men
+ikke i et særligt anvendeligt format!
+</para>
+
+
+<para>
+Formattet for hvordan tider udskrives kan ændres med <command>&lt;!--#config
+timefmt="%d/%m %Y" --&gt;</command>,  indsættes denne før at fil datoen vil den
+istedet udskrives datoen som som "04/08 2000". %d bliver substitueret med
+numret på dagen i måneden. En fuldstændig liste af alle koderne kan findes med
+<command>man strftime</command>.
+</para>
+
+
+<table>
+  <title>De mest interessante koder:</title>
+<tgroup cols="2" align="char">
+  <tbody>
+    <row>
+      <entry>%S</entry>
+      <entry>Sekunder (00-61)</entry>
+    </row>
+    <row>
+      <entry>%M</entry>
+      <entry>Minut (00-59)</entry>
+    </row>
+    <row>
+      <entry>%H</entry>
+      <entry>Time (00-23)</entry>
+    </row>
+    <row>
+      <entry>%a</entry>
+      <entry>Forkortet navn på dag (Man)</entry>
+    </row>
+    <row>
+      <entry>%A</entry>
+      <entry>Navn på dag. (Mandag)</entry>
+    </row>
+    <row>
+      <entry>%e</entry>
+      <entry>Nummer dag i denne måned (1-31)</entry>
+    </row>
+    <row>
+      <entry>%j</entry>
+      <entry>Nummer dag i dette år. (001-365)</entry>
+    </row>
+    <row>
+      <entry>%u</entry>
+      <entry>Nummer dag i ugen. (1-7) 1 er Mandag.</entry>
+    </row>
+    <row>
+      <entry>%b</entry>
+      <entry>Forkortet månedsnavn (Jan)</entry>
+    </row>
+    <row>
+      <entry>%B</entry>
+      <entry>Månedsnavn  (Januar)</entry>
+    </row>
+    <row>
+      <entry>%m</entry>
+      <entry>Månedsnummer (01-12)</entry>
+    </row>
+    <row>
+      <entry>%y</entry>
+      <entry>Årsnummer (00-99)</entry>
+    </row>
+    <row>
+      <entry>%Y</entry>
+      <entry>Årsnummer med 4 cifre (2000)</entry>
+    </row>
+  </tbody>
+</tgroup>
+</table>
+
+<para>
+Alle navne er relative til det nuværende lokale, og der tages også hensyn
+til skudsekunder. Man kan også inkludere dagens dato ved at bruge
+<command>&lt;!--#echo var="DATE_LOCAL" --&gt;</command>, 
+hvilket udskriver lokal tiden,
+mens <command>&lt;!--#echo var="DATE_GMT" --&gt;</command> 
+udskriver datoen i Greenwich
+Mean Time (GMT).
+</para>
+</sect1>
+
+<sect1 id="ssi-Inkludere-information-om-filer">
+<title>Inkludere information om filer</title>
+
+<para>
+Når man kan downloade store billeder eller filer så er det praktisk hvis
+størrelsen på filen står et eller andet sted, så man ikke ender med at
+downloade 20Mb via en langsomt modem forbindelse. Istedet for at skrive dette
+i html koden kan man med SSI automatisk indsætte størrelsen af filen:
+</para>
+
+<screen>
+&lt;!--#fsize virtual="storfil.mp3" --&gt;
+</screen>
+
+<para>
+Størrelsen af <filename>storfil.mp3</filename> bliver så indsat fx. 11k eller
+8.2M.
+</para>
+
+
+<para>
+Hvis man istedet vil have antallet af bytes kan man bruge 
+</para>
+
+<screen>
+&lt;!--#config sizefmt="bytes" --&gt;
+</screen>
+
+<para>
+Apache vælger automatisk at udskrive den mest fornuftige størrelse i kilo
+eller megabyte alt efter hvor stor filen er, dette svarer til følgende config
+kommando:
+</para>
+
+<screen>
+&lt;!--#config sizefmt="abbrev" --&gt;
+</screen>
+
+<para>
+På samme måde kan man indsætte tiden for hvornår fil sidst blev ændret
+med
+</para>
+
+<screen>
+&lt;!--#flastmod virtual="storfil.mp3" --&gt;
+</screen>
+
+<para>
+Formatet på output fra denne kommando kan konfigueres ligesom i sidste
+afsnit.
+</para>
+</sect1>
+
+<sect1 id="ssi-Fejl-meddelelser">
+<title>Fejl meddelelser</title>
+
+<para>
+Hvis der opstår en fejl mens en SSI kommando vil der udskrives den voldsomt
+informative fejlmeddelelse:
+</para>
+
+<screen>
+[an error occurred while processing this directive]
+</screen>
+
+<para>
+Hvis man ønsker at customizere denne fejl meddelelse kan det gøres med
+</para>
+
+<screen>
+&lt;!--#config errmsg="(SSI-Fejl: Sand i maskineriet, støvsug mig!)" --&gt;
+</screen>
+
+<para>
+Enhver ascii streng kan bruges som fejl meddelelse. Fejlmeddelelser vil fx.
+blive udskrevet hvis man forsøger at indsætte kode stumper der ikke findes,
+hvis man forsøger at indsætte CGI-script output med #include og ikke #exec,
+eller hvis man forsøger at indsætte en fil i sig selv.
+</para>
+</sect1>
+
+<sect1 id="ssi-Variabler">
+<title>Variabler</title>
+
+<para>
+I virkeligheden betyder 
+<command>&lt;!--echo var="LAST_MODIFIED" --&gt;</command> at variablen
+LAST_MODIFIED skal udskrives, så man spørger sig selv, hvilke andre variabler
+findes der? Der findes en kommando der udskriver alle de variable der er
+kendt:
+</para>
+
+<screen>
+&lt;pre&gt;
+&lt;!--#printenv --&gt;
+&lt;/pre&gt;
+</screen>
+
+<para>
+Følgende er et udklip af hvad ovenstående eksempel udskriver:
+</para>
+
+<screen>
+HTTP_USER_AGENT=Mozilla/4.73 [en] (X11; U; Linux 2.2.16-3 i686)
+REMOTE_ADDR=127.0.0.1
+REMOTE_HOST=localhost
+SCRIPT_FILENAME=/www/cgibog/test.shtml
+REQUEST_URI=/cgibog/test.shtml
+DATE_LOCAL=Sunday, 06-Aug-2000 13:11:39 CEST
+DATE_GMT=Sunday, 06-Aug-2000 11:11:39 GMT
+LAST_MODIFIED=Sunday, 06-Aug-2000 13:11:38 CEST
+DOCUMENT_URI=/cgibog/test.shtml
+:
+</screen>
+
+
+<para>
+Mange er disse variable er des samme som et CGI-script modtager,
+normalt modtager man ikke DNS navnet på den server der ønsker data
+(REMOTE_HOST), men kun dens IP adresse, slåes <command>HostNameLookups
+On</command> for et katalog definition i
+<command><filename>/etc/httpd/conf/access.conf</filename></command> så
+vil REMOTE_HOST indeholde server navnet. Environment variable oprettes
+når Apache begynder med at fortolker den shtml fil som browseren beder
+om, og indsættes en shtml fil i en anden, vil den shtml fil der
+indsættes have de samme environment variable til rådighed.
+</para>
+
+
+<para>
+Det er muligt selv at erklære variable, dette gøres med 
+</para>
+
+<screen>
+&lt;!--#set var="minvariabel" value="Dette er indholdet af min variabel" --&gt;
+</screen>
+
+<para>
+Det er også muligt at anvende andre variable til at definere nye variabler
+f.eks.:
+</para>
+
+<screen>
+&lt;!--#set var="ServerFil" value="${REMOTE_ADDR} -> ${DOCUMENT_URI}" --&gt;
+</screen>
+
+<para>
+Variablen ServerFil vil så i ovenstående eksempel indeholder strengen
+"127.0.0.1 -> /cgibog/test.shtml".
+</para>
+
+</sect1>
+
+<sect1 id="ssi-Logiske-udtryk">
+<title>Logiske udtryk</title>
+
+
+<para>
+Det er muligt at anvende logiske udtryk i SSI. Dette minder lidt om
+#define, #ifdef,#else og #endif i C/C++. Syntaksen i SSI er:
+</para>
+
+<screen>
+&lt;!--#if expr="betingelse" --&gt;
+&lt;!--#elif expr="betingelse" --&gt;
+&lt;!--#else --&gt;
+&lt;!--#endif --&gt;
+</screen>
+
+<table>
+  <title>Betingelser:</title>
+<tgroup cols="2" align="char">
+  <tbody>
+    <row>
+      <entry>Streng</entry>
+      <entry>Er sandt hvis strengen ikke er tom.</entry>
+    </row>
+    <row>
+      <entry>Streng1=Streng2</entry>
+      <entry>Er sand hvis Streng1 og Streng2 er identiske.</entry>
+    </row>
+    <row>
+      <entry>Streng=/regularudtryk/</entry>
+      <entry>Er sand hvis regular udtrykket matcher strengen.</entry>
+    </row>
+    <row>
+      <entry>Streng1!=Streng2</entry>
+      <entry>Er sand hvis Streng1 og Streng2 er forskellige</entry>
+    </row>
+    <row>
+      <entry>betingelse1 &amp;&amp; betingelse2</entry>
+      <entry>Er sand hvis BÅDE betingelse1 OG betingelse2 er sande, ellers
+      falsk.</entry>
+    </row>
+    <row>
+      <entry>betingelse1 || betingelse2</entry>
+      <entry>Er sand hvis ENTEN betingelse1 ELLER betingelse2 er sande.</entry>
+    </row>
+    <row>
+      <entry>!betingelse</entry>
+      <entry>Er sand hvis betingelsen er falsk, og falsk hvis betingelsen er
+        sand. (negation)</entry>
+    </row>
+    <row>
+      <entry>(betingelse)</entry>
+      <entry>Er sand hvis betingelsen er sand, ellers falsk.</entry>
+    </row>
+  </tbody>
+</tgroup>
+</table>
+
+<para>
+Strenge må ikke indeholde whitespace, dvs. mellemrum tab oa. Skal strenge
+matches der inderholder whitespace må de skrives med aprostroffer som
+'string1' = 'streng2'. Apache SSI bruger den samme regular dialekt som egrep.
+For mere information om regulære udtryk se <command>man
+egrep</command>. 
+</para>
+
+
+<para>
+Et eksempel:
+</para>
+
+<screen>
+&lt;body&gt;
+&lt;!--#if expr="${HTTP_USER_AGENT} = /Mozilla/" --&gt;
+
+  Du bruger Netscape!
+     &lt;!--#if expr="${HTTP_USER_AGENT} = /Gecko/" --&gt;
+       Og din browser er bruger Gecko rendering engine!
+     &lt;!--#endif --&gt;
+
+&lt;!--#elif expr="${HTTP_USER_AGENT} = /MSIE/" --&gt;
+
+  Du bruger Explorer.
+
+&lt;!--#else --&gt;
+  Din browser kan ikke genkendes.
+&lt;!--#endif --&gt;
+&lt;/body&gt;
+</screen>
+
+<para>
+I dette eksempel bruges SSI til at genkende hvilken browser der bruges, og
+sende specielle html koder til de forskellige browsere. HTTP_USER_AGENT linien
+fortæller hviken browser brugeren anvender.
+</para>
+
+
+<table>
+  <title>HTTP_USER_AGENT for nogle typiske browsere</title>
+<tgroup cols="2" align="char">
+  <tbody>
+    <row>
+      <entry>Netscape 4.73</entry>
+      <entry>Mozilla/4.73 [en] (X11; U; Linux 2.2.16-3 i686)</entry>
+    </row>
+    <row>
+      <entry>Galeon </entry>
+      <entry>Mozilla/5.0 (X11; U; Linux 2.2.16-3 i686; en-US; Galeon)
+        Gecko/20000807</entry>
+    </row>
+    <row>
+      <entry>Mozilla M17</entry>
+      <entry>Mozilla/5.0 (X11; U; Linux 2.2.16-3 i686; en-US; m17) Gecko/20000807
+        </entry>
+    </row>
+    <row>
+      <entry>Lynx</entry>
+      <entry>Lynx/2.8.2rel.1 libwww-FM/2.14</entry>
+    </row>
+  </tbody>
+</tgroup>
+</table>
+
+<para>
+
+</para>
+
+
+<para>
+Slår man <command>HostnameLookups</command> til så modtager man DNS
+navnet på den server der ønsker data så giver det en række
+interessante muligheder f.eks.:
+</para>
+
+<screen>
+&lt;body&gt;
+&lt;!--#if expr="${REMOTE_HOST} = /microsoft.com/" --&gt;
+
+Sorry this site is off limit for Microsoft employees!
+
+&lt;!--#else --&gt;
+
+This is Tux - the most powerfull Penguin in the world!
+It could shoot windows right off the desktop.
+Now did you reboot windows 5 or 6 times?
+
+&lt;!--#endif --&gt;
+&lt;/body&gt;
+</screen>
+
+<para>
+Scriptet vil returnere en side til alle folk der surfer på servere i
+Microsoft og en anden side til resten af verden.
+</para>
+</sect1>
+
+<sect1 id="ssi-Mere-information"><title>Mere information</title>
+
+<para>
+Reference information kan findes i Apache dokumentationen der typisk ligger
+i <filename>/home/httpd/html/manual/mod/mod_include.htm</filename>.
+</para>
+
+</sect1>
+</chapter>
+
