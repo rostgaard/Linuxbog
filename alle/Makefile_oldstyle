@@ -159,6 +159,6 @@ test:
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt images/*
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt images/*.png images/*.eps
 
 
