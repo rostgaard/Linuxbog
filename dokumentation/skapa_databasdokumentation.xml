@@ -1,0 +1,810 @@
+<!--
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                         "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+]>
+<book id="SSLUG" lang="en">
+  <bookinfo>
+    <title>Autogenering</title>
+  </bookinfo>
+  <toc id="toc"></toc>
+-->
+<chapter>
+  <title>DocBook i XML : Ett konkret exempel</title>
+  <subtitle>Autogenerering av databasbeskrivning</subtitle>
+  <para>
+    H&auml;r skall vi prova att s&auml;tta DocBook i arbete, och
+    samtidigt prova k&ouml;ra DockBook i XML ist&auml;llet f&ouml;r SGML.
+    Vi t&auml;nker oss att vi jobbar med en relativt stor databas,
+    som dessutom genomg&aring;r f&ouml;r&auml;ndringar ibland. Vi vill kunna
+    ta ut, automatiskt, ett dokument som beskriver tabellerna
+    i databasen. Dokumentformaten skall vara pdf, en ensam HTML fil och
+    en HTML struktur, uppdelad per tabell. Dessutom vill vi g&auml;rna kunna
+    byta plattform, om det skulle beh&ouml;vas.
+  </para>
+  <para>
+    Ett externt verktyg kommer att g&aring; igenom databasen, i detta
+    fall en PostgreSQL 7.3.1, och skapa en fil med XML-syntax
+    f&ouml;r att beskriva databasen. Vi anv&auml;nder oss av tcl f&ouml;r att g&aring; igenom
+    databasen, pgtcl som har st&ouml;d f&ouml;r PostgreSQl inbyggt.
+    Utdata fr&aring;n pgtcl passar dock inte riktig in
+    i DocBooks struktur, s&aring; vi m&aring;ste stuva om datat. Det g&ouml;r vi med
+    XSL. Vi beskriver hur transformeringen skall g&aring; till i ett XSL-dokument.
+    Vi har dessutom ett ramdokument f&ouml;r att beskriva metadata om dokumentet,
+    och vi g&ouml;r 'include' p&aring; den XSL-processade databasbeskrivningen. Vi
+    &auml;r dessutom lata, och stoppar allt i en Makefile.
+  </para>
+  <para>
+    Databasen kan givetvis bytas mot n&aring;gon annan, men d&aring; m&aring;ste
+    XSL-dokumentet anpassas d&auml;refter, likas&aring; det externa verktyget, dvs
+    tcl-skriptet.
+  </para>
+  <sect1>
+    <title>Verktyg</title>
+    <para>
+      F&ouml;r att klara detta kommer vi att anv&auml;nda oss av:
+      <itemizedlist>
+        <listitem><para>PostgreSQL med pgtclsh</para></listitem>
+        <listitem><para>Java</para></listitem>
+        <listitem><para>Fop (Formatting Objects Processor) fr&aring;n Apache</para></listitem>
+        <listitem><para>Saxon (XSL motor)</para></listitem>
+        <listitem><para>DocBook Stylesheets</para></listitem>
+        <listitem><para>Make</para></listitem>
+      </itemizedlist>
+      F&ouml;r att bringa ordning i detta kommer vi att hantera dessa filer:
+      <itemizedlist>
+        <listitem><para><filename>datamodel.xml</filename>
+        - statiskt huvuddokument</para></listitem>
+        <listitem><para><filename>make_tables.tcl</filename>
+        - skriptet som skaffar r&aring;data</para></listitem>
+        <listitem><para><filename>tables.xml</filename>
+        - utdata fr&aring;n <filename>make_tables.tcl</filename></para></listitem>
+        <listitem><para><filename>to_docbook_table.xsl</filename>
+        - stylesheet f&ouml;r att dockbook-anpassa r&aring;data</para></listitem>
+        <listitem><para><filename>docbook_tables.xml</filename>
+        - utdata fr&aring;n stylsheetet, i docbook-format</para></listitem>
+        <listitem><para><filename>Makefile</filename>
+        - hur vi utf&ouml;r kommandona</para></listitem>
+      </itemizedlist>
+
+    </para>
+    <sect2>
+      <title>Installation av verktyg</title>
+      <para>
+        H&auml;r g&aring;r vi bara genom de docbookrelaterade verktygen,
+        databas och make utg&aring;r jag fr&aring;n att de redan finns.
+      </para>
+      <sect3>
+        <title>Java</title>
+        <para>
+        Java kan h&auml;mtas p&aring; <ulink url="http://java.sun.com/">Suns javasidor</ulink>.
+        Detta exempel har anv&auml;nt Java SDK 1.4.1 rpm-versionen, men de flesta
+        nyare versioner duger. Rpm-versionen installerar det mesta, men jag brukar
+        l&auml;gga till f&ouml;ljande i <filename>~/.basrc</filename>:
+        <programlisting>
+export JAVA_HOME=/usr/java/j2sdk1.4.1_01/jre
+        </programlisting>
+        Dessutom brukar jag skapa en symbolisk l&auml;nk till java
+        <programlisting>
+ln -s $JAVA_HOME/bin/java /usr/bin/java
+        </programlisting>
+        </para>
+      </sect3>
+      <sect3>
+        <title>FOP</title>
+        <para>
+        Fop kan h&auml;mtas p&aring; <ulink url="http://xml.apache.org/fop">
+        Apaches XML sidor</ulink>.
+        Detta exempel har anv&auml;nt Fop 0.20.5. Tara upp Fop, och l&auml;gg det
+        t.ex. under <filename>/usr/java/fop</filename>.
+        Det &auml;r bra att l&auml;gga till f&ouml;ljande i
+         <filename>~/.basrc</filename>:
+          <programlisting>
+export FOP_HOME=/usr/java/fop/fop-0.20.5rc3a
+          </programlisting>
+        </para>
+        <para>
+        F&ouml;r att hantera bilder beh&ouml;vs ett bildbibliotek. H&auml;mta
+        <ulink url="http://java.sun.com/products/jimi/">Jimi hos Sun</ulink> och packa
+        upp det med <userinput>tar xvzf jimi1_0.tar.Z</userinput>. Leta upp
+        <filename>JimiProClasses.zip</filename> och kopiera det till
+        <filename>$FOP_HOME/lib/jim-1.0.jar</filename>. Det skall allts&aring; till
+        ett namnbyte p&aring; filen.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Saxon</title>
+        <para>
+        Saxon kan h&auml;mtas hos
+        <ulink url="https://sourceforge.net/project/showfiles.php?group_id=29872">
+        SourceForge</ulink>.
+        Detta exempel har anv&auml;nt Saxon 6.5.2, eftersom det &auml;r den rekomenderade
+        versionen, &auml;ven om det finns nyare. Packa upp Saxon, och l&auml;gg det
+        t.ex. under <filename>/usr/java/saxon</filename>.
+        </para>
+      </sect3>
+      <sect3>
+        <title>DocBook Stylesheets</title>
+        <para>
+          Stylesheets kan h&auml;mtas hos
+          <ulink url="http://sourceforge.net/projects/docbook">
+          SourceForge</ulink>. Det &auml;r 'Docbook-xsl' som skall h&auml;mtas,
+          jag k&ouml;r version 1.61.2. Mandrake 9.1 har 1.60.1 installerat och det duger bra.
+          Finns som <filename>/usr/share/sgml/docbook/xsl-stylesheets-1.60.1</filename>.
+          Det &auml;r ganska vettigt att skapa katalogen
+          <filename>/usr/share/sgml/docbook/xsl-stylesheets</filename> som en
+          symbolisk l&auml;nk till den docbook-version som anv&auml;ds i systemet.
+          D&aring; blir det l&auml;tt att byta mellan versioner, om man vill. Mandrake 9.1
+          har satt upp det s&aring;.
+        </para>
+        <para>
+          Dessutom beh&ouml;vs en DTD, Mandrake har xml-dtd-4.1.2, som finns som
+          <filename>/usr/share/sgml/docbook/xml-dtd-4.1.2</filename> men vill man den nyaste
+          &auml;r det 4.2, som finns hos <ulink url="http://www.oasis-open.org/docbook/">
+          Oasis</ulink>.
+        </para>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Skaffa fram r&aring;datat</title>
+    <para>
+      Vi utg&aring;r fr&aring;n att vi har PostgreSQL k&ouml;rande, med
+      m&ouml;jlighet att koppla upp via TCP/IP. Vi har
+      endast 2 tabeller tills vidare, skapade s&aring; h&auml;r:
+      <programlisting>
+        create table master (
+          m_id integer,
+          some_data char(20),
+          primary key (m_id));
+
+        create table slave (
+          m_id integer,
+          s_id integer,
+          some_other_data char(30),
+          primary key (m_id, s_id),
+          foreign key (m_id) references master (m_id));
+      </programlisting>
+      Vi ska nu f&aring; till en fil med detta useende:
+      <programlisting>
+      &lt;Tables&gt;
+        &lt;Table&gt;
+          &lt;Name&gt;
+          &lt;Keys&gt;
+            &lt;Key&gt;
+              &lt;Name&gt;
+              &lt;IsPrimary&gt;
+              &lt;IsUnique&gt;
+              &lt;Definition&gt;
+            &lt;/Key&gt;
+          &lt;Keys&gt;
+          .
+          .
+          &lt;Relations&gt;
+          &lt;/Relations&gt;
+          .
+          .
+          &lt;Fields&gt;
+            &lt;Fielddesc&gt;
+              &lt;Name&gt;
+              &lt;Type&gt;
+              &lt;NotNull&gt;
+              &lt;HasDef&gt;
+              &lt;FieldNum&gt;
+            &lt;/Fielddesc&gt;
+          &lt;/Fields&gt;
+          .
+          .
+        &lt;/Table&gt;
+        .
+        .
+       &lt;/Tables&gt;
+      </programlisting>
+      Vi bryr oss inte om relationerna i detta exempel.
+    </para>
+    <para>
+      Ett s&auml;tt att f&aring; fram detta utseende &auml;r att k&ouml;ra detta tcl-skript.
+      Vi k&ouml;r det genom att skicka stdout till <filename>tables.xml</filename>.
+      Databasen vi skall dokumentera heter bnl. Se till att skriptet &auml;r exekverbart.
+    </para>
+    <screen>
+       <prompt>
+[bnl@della source]$</prompt><userinput>make_tables.tcl bnl > tables.xml</userinput>
+    </screen>
+    <programlisting>
+# ExtractDefinition :
+# Get the description of tables in database provided
+# as first argument to the script, in XML format, to stdout
+# Bj&ouml;rn Lundin 2003-06-21
+
+#!/bin/sh
+# \
+exec pgtclsh $0 $*
+
+proc getFields {Connection The_Table} {
+        set Fields {}
+        set res [pg_exec $Connection \
+          "SELECT a.attname, \
+             pg_catalog.format_type(a.atttypid, a.atttypmod), \
+             a.attnotnull, a.atthasdef, a.attnum \
+           FROM pg_catalog.pg_attribute a \
+           WHERE a.attrelid = (select relfilenode from pg_catalog.pg_class \
+                               where relname = '$The_Table') \
+           AND a.attnum > 0 AND NOT a.attisdropped \
+           ORDER BY a.attnum"]
+        set ntups [pg_result $res -numTuples]
+        for {set i 0} {$i &lt; $ntups} {incr i} {
+           lappend Fielddata [pg_result $res -getTuple $i]
+        }
+        puts "    &lt;Fields&gt;"
+        foreach Field $Fielddata {
+          puts "      &lt;Fielddesc&gt;"
+          puts "        &lt;Name&gt;[lindex $Field 0]&lt;/Name&gt;"
+          puts "        &lt;Type&gt;[lindex $Field 1]&lt;/Type&gt;"
+          puts "        &lt;NotNull&gt;[lindex $Field 2]&lt;/NotNull&gt;"
+          puts "        &lt;HasDef&gt;[lindex $Field 3]&lt;/HasDef&gt;"
+          puts "        &lt;FieldNum&gt;[lindex $Field 4]&lt;/FieldNum&gt;"
+          puts "      &lt;/Fielddesc&gt;"
+        }
+        puts "    &lt;Fields&gt;"
+        pg_result $res -clear
+}
+
+proc getKeys {Connection The_Table} {
+        set Fields {}
+        set res [pg_exec $Connection \
+          "SELECT c2.relname, i.indisprimary, i.indisunique, \
+                 pg_catalog.pg_get_indexdef(i.indexrelid) \
+           FROM pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_index i \
+           WHERE c.oid = (select relfilenode from pg_catalog.pg_class \
+                               where relname = '$The_Table') \
+           AND c.oid = i.indrelid AND i.indexrelid = c2.oid \
+           ORDER BY i.indisprimary DESC, i.indisunique DESC, c2.relname"]
+        set ntups [pg_result $res -numTuples]
+        for {set i 0} {$i &lt; $ntups} {incr i} {
+           lappend Keydata [pg_result $res -getTuple $i]
+        }
+        puts "    &lt;Keys&gt;"
+        foreach Key $Keydata {
+          puts "      &lt;Key&gt;"
+          puts "        &lt;Name&gt;[lindex $Key 0]&lt;/Name&gt;"
+          puts "        &lt;IsPrimary&gt;[lindex $Key 1]&lt;/IsPrimary&gt;"
+          puts "        &lt;IsUnique&gt;[lindex $Key 2]&lt;/IsUnique&gt;"
+          puts "        &lt;Definition&gt;[lindex $Key 3]&lt;/Definition&gt;"
+          puts "      &lt;/Key&gt;"
+      }
+      puts "    &lt;/Keys&gt;"
+      pg_result $res -clear
+}
+
+proc getRelations {Connection The_Table} {
+        puts "    &lt;Relations&gt;"
+        puts "    &lt;/Relations&gt;"
+}
+
+
+proc ExtractDefinition { db {host "localhost"} {port "5432"} } {
+    set conn [pg_connect $db -host $host -port $port]
+    #Put all tables in list
+    set res [pg_exec $conn \
+    "SELECT  c.relname as Name \
+     FROM pg_catalog.pg_class c \
+       LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner \
+       LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace \
+     WHERE c.relkind ='r' \
+       AND n.nspname NOT IN ('pg_catalog', 'pg_toast') \
+       AND pg_catalog.pg_table_is_visible(c.oid) \
+     ORDER BY c.relname"]
+    set ntups [pg_result $res -numTuples]
+    for {set i 0} {$i &lt; $ntups} {incr i} {
+        lappend Tables [pg_result $res -getTuple $i]
+    }
+    pg_result $res -clear
+
+    puts "&lt;Tables&gt;"
+    foreach Table $Tables {
+        puts "  &lt;Table&gt;"
+        puts "    &lt;Name&gt;$Table&lt;/Name&gt;"
+    #For each table put keys
+        getKeys $conn $Table
+    #For each table put relations (implemented as dummy)
+        getRelations $conn $Table
+    #For each table put fields
+        getFields $conn $Table
+        puts "  &lt;/Table&gt;"
+    }
+    puts "&lt;/Tables&gt;"
+
+    pg_disconnect $conn
+    return ""
+}
+
+#Main
+ExtractDefinition [lindex $argv 0]
+    </programlisting>
+  </sect1>
+  <sect1>
+    <title>Transformera till DocBook</title>
+    <para>
+      I <filename>tables.xml</filename> har vi nu ett
+      'well-formed' XML dokument. Detta skall nu mappas mot
+      docbook. XSL-transformering &auml;r precis vad docbook i XML
+      g&aring;r ut p&aring;. En XML-parser validerar dokumentet som
+      skall &ouml;vers&auml;ttas, mot en DTD, docbooks DTD. Om det
+      &auml;r OK kan processen med att skapa m&aring;ldokumentet forts&auml;tta.
+      Skapandet av m&aring;ldokumentet sker genom att k&ouml;ra det
+      genom ett antal XSL-stylesheet, som byter docbook-taggarna mot
+      t.ex. HTML-taggar.
+    </para>
+    <para>
+      Problemet h&auml;r, &auml;r att <filename>tables.xml</filename> inte
+      alls st&auml;mmer med docbooks DTD. Vi l&ouml;ser det med att
+      skicka in det i ett eget XSL-stylesheet, som byter ut XML-taggarna fr&aring;n
+      <filename>make_tables.tcl</filename> till docbook-XML-taggar.
+      Detta stylesheet kallar vi <filename>to_docbook_table.xsl</filename>.
+      Om det verkar helt obegripligt, s&aring; g&ouml;r det inte s&aring; mycket,
+      XSL &auml;r inte helt enkelt.
+    </para>
+    <programlisting>
+&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;
+&lt;xsl:stylesheet
+    version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+  &lt;xsl:output method="xml"/&gt;
+
+  &lt;!-- Main --&gt;
+  &lt;xsl:template match="/"&gt;
+    &lt;chapter&gt; &lt;!-- document root --&gt;
+      &lt;title&gt;
+        Database Table Description
+      &lt;/title&gt;
+      &lt;xsl:apply-templates/&gt;
+    &lt;/chapter&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- The table --&gt;
+  &lt;xsl:template match="Tables"&gt;
+    &lt;para&gt;  &lt;!-- found node Tables, print something and continue --&gt;
+       This chapter was autogenerated to document the
+       structure of database tables used in project XXX.
+    &lt;/para&gt;
+    &lt;xsl:apply-templates/&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- The tables --&gt;
+  &lt;xsl:template match="Table"&gt;
+  &lt;!-- Inside a table node, start a new section--&gt;
+    &lt;xsl:variable name="Table_Name" select="Name"/&gt;
+    &lt;sect1 id="{$Table_Name}"&gt;
+      &lt;title&gt;
+        &lt;xsl:value-of select="$Table_Name"/&gt;
+      &lt;/title&gt;
+      &lt;xsl:apply-templates/&gt;
+    &lt;/sect1&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="Name"/&gt;         &lt;!-- surpress output again--&gt;
+  &lt;xsl:template match="Description"/&gt;  &lt;!-- surpress output again --&gt;
+
+  &lt;!-- Keys --&gt;
+  &lt;xsl:template match="Keys"&gt;
+  &lt;!-- If there are any keys, process them, else say they are missing--&gt;
+    &lt;xsl:choose&gt;
+      &lt;xsl:when test="count(Key) &gt; 0"&gt;
+        &lt;table&gt;
+          &lt;title&gt;Keys in &lt;xsl:value-of select="../Name"/&gt; &lt;/title&gt;
+          &lt;tgroup cols="4"&gt;
+            &lt;thead&gt;
+              &lt;row&gt;
+                &lt;entry&gt; Name &lt;/entry&gt;
+                &lt;entry&gt; Primary? &lt;/entry&gt;
+                &lt;entry&gt; Unique? &lt;/entry&gt;
+                &lt;entry&gt; Definition &lt;/entry&gt;
+              &lt;/row&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              &lt;xsl:apply-templates/&gt;
+            &lt;/tbody&gt;
+          &lt;/tgroup&gt;
+        &lt;/table&gt;
+      &lt;/xsl:when&gt;
+      &lt;xsl:otherwise&gt;
+        &lt;para&gt;
+          There are no keys.
+        &lt;/para&gt;
+      &lt;/xsl:otherwise&gt;
+    &lt;/xsl:choose&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="Key"&gt;
+  &lt;!-- Fill the table --&gt;
+    &lt;row&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Name"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="IsPrimary"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="IsUnique"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Definition"/&gt;
+      &lt;/entry&gt;
+    &lt;/row&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Relations --&gt;
+  &lt;xsl:template match="Relations"&gt;
+    &lt;xsl:choose&gt;
+      &lt;xsl:when test="count(Relation) &gt; 0"&gt;
+        &lt;table&gt;
+          &lt;title&gt;Relations for &lt;xsl:value-of select="../Name"/&gt; &lt;/title&gt;
+          &lt;tgroup cols="5"&gt;
+            &lt;thead&gt;
+              &lt;row&gt;
+                &lt;entry&gt; Description &lt;/entry&gt;
+                &lt;entry&gt; Constraints &lt;/entry&gt;
+                &lt;entry&gt; # of keys &lt;/entry&gt;
+                &lt;entry&gt; Index &lt;/entry&gt;
+                &lt;entry&gt; Foreign keys &lt;/entry&gt;
+              &lt;/row&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              &lt;xsl:apply-templates/&gt;
+            &lt;/tbody&gt;
+          &lt;/tgroup&gt;
+        &lt;/table&gt;
+      &lt;/xsl:when&gt;
+      &lt;xsl:otherwise&gt;
+        &lt;para&gt;
+          There are no relations.
+        &lt;/para&gt;
+      &lt;/xsl:otherwise&gt;
+    &lt;/xsl:choose&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="Relation"&gt;
+    &lt;row&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Relatedtable"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Delconstr"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Keyno"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Index"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Foreignkeyfields"/&gt;
+      &lt;/entry&gt;
+    &lt;/row&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Fields --&gt;
+  &lt;xsl:template match="Fields"&gt;
+    &lt;xsl:choose&gt;
+      &lt;xsl:when test="count(Fielddesc) &gt; 0"&gt;
+        &lt;table&gt;
+          &lt;title&gt;Fields in &lt;xsl:value-of select="../Name"/&gt;&lt;/title&gt;
+          &lt;tgroup cols="5"&gt;
+            &lt;thead&gt;
+              &lt;row&gt;
+                &lt;entry&gt; Fieldname &lt;/entry&gt;
+                &lt;entry&gt; Type &lt;/entry&gt;
+                &lt;entry&gt; Not null? &lt;/entry&gt;
+                &lt;entry&gt; Has defult? &lt;/entry&gt;
+                &lt;entry&gt; Field number &lt;/entry&gt;
+              &lt;/row&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              &lt;xsl:apply-templates/&gt;
+            &lt;/tbody&gt;
+          &lt;/tgroup&gt;
+        &lt;/table&gt;
+      &lt;/xsl:when&gt;
+      &lt;xsl:otherwise&gt;
+        &lt;para&gt;
+          There are no fields.
+        &lt;/para&gt;
+      &lt;/xsl:otherwise&gt;
+    &lt;/xsl:choose&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="Fielddesc"&gt;
+    &lt;row&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Name"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="Type"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="NotNull"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="HasDef"/&gt;
+      &lt;/entry&gt;
+      &lt;entry&gt;
+        &lt;xsl:value-of select="FieldNum"/&gt;
+      &lt;/entry&gt;
+    &lt;/row&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+    </programlisting>
+    <para>
+      Om du nu har orkat h&auml;nga med, s&aring; &auml;r resten ganska enkelt.
+      Vi vill skapa <filename>docbook_tables.xml</filename> som &auml;r
+      datat fr&aring;n <filename>tables.xml</filename>, fast med docbook-syntax.
+      Dags att utnyttja Saxon. Saxon beh&ouml;ver en del parametrar, s&aring; vi
+      skapar en <filename>Makefile</filename>, som vi bygger p&aring; efter
+      hand. Justera s&ouml;kv&auml;garna efter ditt system.
+    </para>
+    <para>
+      Vi skapar en katalogstrukur enligt nedan
+     <screen><prompt>
+[bnl@della docbook_xml]$</prompt><userinput>tree</userinput><computeroutput>
+|-- source
+|   |-- Makefile
+|   |-- datamodel.xml
+|   |-- make_tables.tcl
+|   |-- tables.xml
+|   `-- to_docbook_table.xsl
+`-- target
+    |-- html
+    |-- html_one
+    `-- pdf
+      </computeroutput>
+    </screen>
+    d&auml;r <filename>Makefile</filename> ser ut s&aring; h&auml;r:
+    <programlisting>
+#A list over source files
+SRC=datamodel.xml docbook_tables.xml tables.xml to_docbook_table.xsl
+DB=/usr/share/sgml/docbook/xsl-stylesheets
+SAXON=/home/bnl/distributions/java/saxon.jar
+TARGET=/home/bnl/public_html/sslug/docbook_xml/target
+
+OPTIONS=paper.type=A4 \
+        admon.graphics=1 \
+        admon.graphics.path=$(DB)/images/ \
+        use.extensions=1 \
+        fop.extensions=1 \
+        section.autolabel=1 \
+        callout.graphics.path=$(DB)/images/callouts/ \
+        tablecolumns.extension=0
+
+#What to do when just 'make' is run
+all: docbook_tables.xml
+
+docbook_tables.xml: tables.xml
+	java -jar $(SAXON) tables.xml  to_docbook_table.xsl \
+        $(OPTIONS) &gt; docbook_tables.xml
+    </programlisting>
+    Skapa docbook_tables.xml genom att skriva:
+    <screen><prompt>
+[bnl@della source]$</prompt><userinput>make docbook_tables.xml</userinput>
+    </screen>
+    Vi har nu allt vi beh&ouml;er f&ouml;r att komma i m&aring;l
+    </para>
+  </sect1>
+  <sect1>
+    <title>Skapa ett HTML-dokument</title>
+    <para>
+    F&ouml;r att skapa ett HTML-dokument beh&ouml;ver vi bara fylla p&aring;
+    make-filen. Vi l&auml;gger till f&ouml;ljande:
+    <programlisting>
+all: docbook_tables.xml html_one
+html_one: $(SRC)
+	java -jar $(SAXON) datamodel.xml  $(DB)/html/docbook.xsl \
+        $(OPTIONS) &gt; $(TARGET)/html_one/datamodel.html
+	touch html_one
+    </programlisting>
+    Som du ser &auml;r skillnaden bara argumenten till Saxon. Vilken
+    k&auml;lldatafil som skall anv&auml;ndas, och vilket stylesheet som
+    skall anv&auml;das. <filename>$(DB)/html/docbook.xsl</filename> &auml;r
+    startpunkten f&ouml;r HTML.
+    </para>
+  </sect1>
+  <sect1>
+    <title>Skapa ett uppdelat HTML-dokument</title>
+    <para>
+    F&ouml;r att skapa en HTML-struktur uppdelad per section beh&ouml;ver
+    vi bara fylla p&aring; make-filen igen. Vi l&auml;gger till f&ouml;ljande:
+    <programlisting>
+all: docbook_tables.xml html_one html
+html: $(SRC)
+	java -jar $(SAXON) datamodel.xml  $(DB)/html/chunk.xsl \
+        $(OPTIONS)
+	cp *.html $(TARGET)/html
+	rm -f *.html
+	touch html
+    </programlisting>
+      Genom att anv&auml;nda <filename>$(DB)/html/chunk.xsl</filename> som
+      XSL-startpunkt f&aring;r vi ett annat resultat.
+    </para>
+  </sect1>
+  <sect1>
+    <title>Skapa ett PDF-dokument</title>
+    <para>
+      B&aring;da HTML-varianterna klarar Saxon av i ett svep. Med PDF &auml;r det
+      annorlunda. Saxon kan skapa utdata i FO-format, som &auml;r
+      <firstterm>Formatting Objects</firstterm>. Det &auml;r ett sidbeskrivningsspr&aring;k/format
+      i XML/XSL. FOP kan sedan konvertera detta till PDF. Det &auml;r allts&aring; en
+      tv&aring;stegsraket. Vi forts&auml;tter med make-filen.
+    <programlisting>
+all: docbook_tables.xml html_one html pdf
+pdf: $(SRC)
+	java -jar $(SAXON) datamodel.xml  $(DB)/fo/docbook.xsl \
+        $(OPTIONS) &gt; datamodel.fo
+	$$FOP_HOME/fop.sh -fo datamodel.fo -pdf $(TARGET)/pdf/datamodel.pdf
+	rm -f datamodel.fo
+	touch pdf
+    </programlisting>
+      Vi byter stylesheetet mot <filename>$(DB)/fo/docbook.xsl</filename> f&ouml;
+      att f&aring; v&aring;rt fo-dokument, <filename>datamodel.fo</filename>. Sedan
+      ber vi Fop att skapa en pdf-fil av fo-filen.
+    </para>
+  </sect1>
+  <sect1>
+    <title>Parametrar</title>
+    <para>
+      Vi har skickat in lite parametrar till Saxon, utan att kommentera dem.
+      <itemizedlist mark="callout">
+        <listitem><para>
+          paper.type=A4 : Utan denna blir det US-letter
+        </para></listitem>
+        <listitem><para>
+        admon.graphics=1 : Tjusiga figurer till t.ex &lt;note&gt; taggen
+        </para></listitem>
+        <listitem><para>
+        admon.graphics.path=$(DB)/images/ : S&ouml;kv&auml;g till figurerna
+        </para></listitem>
+        <listitem><para>
+        use.extensions=1 : Anv&auml;nd XSL/Fop ut&ouml;kningar
+        </para></listitem>
+        <listitem><para>
+        fop.extensions=1 : Anv&auml;nd Fop ut&ouml;kningar
+        </para></listitem>
+        <listitem><para>
+        section.autolabel=1 : Anv&auml;nd sektions-texter
+        </para></listitem>
+        <listitem><para>
+        callout.graphics.path=$(DB)/images/callouts/ : S&ouml;kv&auml;g till bilderna i bildnumrerade listor
+        </para></listitem>
+        <listitem><para>
+        tablecolumns.extension=0 : F&ouml;rb&auml;ttra kolumnstorlek i tabeller. Kr&auml;ver
+                                   att $CLASSPATH &auml;r satt till extensions/saxon(version).jar
+        </para></listitem>
+      </itemizedlist>
+       Det finns m&aring;nga fler parametrar, dokumenterade i
+       <filename>$(DB)/doc/reference.html</filename>
+    </para>
+  </sect1>
+  <sect1>
+    <title>XML - SGML</title>
+    <para>
+      Huvuddokumentet &auml;r v&auml;ldigt likt dess SGML-kusin. Skillanden
+      ligger i att ?xml? taggen skall finnas med, och att en URL till docbooks DTD skall
+      finnas med. Jag brukar l&auml;gga in en lokal referens n&auml;r jag jobbar med
+      dokumentet, annars h&auml;mtas den in via n&auml;tverket varje g&aring;ng, och
+      det tar l&auml;ngre tid.
+      <programlisting>
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                         "file:///usr/share/sgml/docbook/xml-dtd-4.2/docbookx.dtd" [
+]&gt;
+&lt;!--
+&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                         "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+]&gt;
+--&gt;
+&lt;book id="SSLUG" lang="en"&gt;
+  &lt;bookinfo&gt;
+    &lt;title&gt;En bra titel&lt;/title&gt;
+  &lt;/bookinfo&gt;
+  &lt;toc id="toc"&gt;&lt;/toc&gt;
+  Inkluderat autogenererat dokument skapat enligt ovan
+&lt;/book&gt;
+      </programlisting>
+    </para>
+    <para>
+      F&ouml;r att lyckas med DocBook i XML b&ouml;r man t&auml;nka p&aring; f&ouml;ljande:
+      <itemizedlist>
+        <listitem><para>
+          Alla taggar skall avslutas. Taggar utan avslutande tagg skall
+          skrivas som tomma taggar. Ex &lt;xref linkend=...../&gt;. Notera
+          den sista '/'.
+        </para></listitem>
+        <listitem><para>
+          Alla taggar skall skrivas med sm&aring; bokst&auml;ver.
+        </para></listitem>
+        <listitem><para>
+          Inga genv&auml;gar &auml;r till&aring;tna, som i SGML d&auml;r man kan skriva &lt;tag&gt; ....&lt;/&gt;
+        </para></listitem>
+      </itemizedlist>
+      I &ouml;vrigt &auml;r det v&auml;ldigt likt SGML.
+    </para>
+  </sect1>
+  <sect1>
+    <title>Komplett Makefile</title>
+    <para>
+      Vi l&auml;gger till ett clean kommando:
+      <programlisting>
+#A list over source files
+SRC=datamodel.xml docbook_tables.xml tables.xml to_docbook_table.xsl
+DB=/usr/share/sgml/docbook/xsl-stylesheets
+SAXON=/home/bnl/distributions/java/saxon.jar
+TARGET=/home/bnl/public_html/sslug/docbook_xml/target
+
+OPTIONS=paper.type=A4 \
+        admon.graphics=1 \
+        admon.graphics.path=$(DB)/images/ \
+        use.extensions=1 \
+        fop.extensions=1 \
+        section.autolabel=1 \
+        callout.graphics.path=$(DB)/images/callouts/ \
+        tablecolumns.extension=0
+
+#What to do when just 'make' is run
+all: docbook_tables.xml html html_one pdf
+
+html_one: $(SRC)
+	java -jar $(SAXON) datamodel.xml  $(DB)/html/docbook.xsl \
+        $(OPTIONS) &gt; $(TARGET)/html_one/datamodel.html
+	touch html_one
+
+html: $(SRC)
+	java -jar $(SAXON) datamodel.xml  $(DB)/html/chunk.xsl \
+        $(OPTIONS)
+	cp *.html $(TARGET)/html
+	rm -f *.html
+	touch html
+
+pdf: $(SRC)
+	java -jar $(SAXON) datamodel.xml  $(DB)/fo/docbook.xsl \
+        $(OPTIONS) &gt; datamodel.fo
+	$$FOP_HOME/fop.sh -fo datamodel.fo -pdf $(TARGET)/pdf/datamodel.pdf
+	rm -f datamodel.fo
+	touch pdf
+
+docbook_tables.xml: tables.xml
+	java -jar $(SAXON) tables.xml  to_docbook_table.xsl \
+        $(OPTIONS) &gt; docbook_tables.xml
+
+.PHONY: clean
+clean:
+	rm -f docbook_tables.xml pdf html_one html
+	rm -f $(TARGET)/pdf/*
+	rm -f $(TARGET)/html/*
+	rm -f $(TARGET)/html_one/*
+      </programlisting>
+    </para>
+  </sect1>
+  <sect1>
+    <title>Problem/F&ouml;rdelar/Nackdelar</title>
+    <para>
+      N&auml;r dokumenten blir stora, kan man r&aring;ka ut f&ouml;r att
+      Fop eller Saxon krashar p&aring; 'out-of-memory'. Jag upplever detta
+      vid 100+ tabeller. L&ouml;sningen &auml;r att skicka med -Xmx128m till
+      java, dvs till&aring;t att java f&aring;r anv&auml;nda 128 mb minne.
+    </para>
+    <para>
+      Stora dokument tar tid, framf&ouml;r allt om PDF skall genereras.
+    </para>
+    <para>
+      Java/XML/XSL &auml;r mycket flexibelt.
+    </para>
+    <para>
+      Enkelt att s&auml;tta upp, f&aring; verktyg.
+    </para>
+    <para>
+      Saxon och Fop kan ers&auml;ttas med andra XSLT verktyg.
+    </para>
+  </sect1>
+</chapter>
+<!--
+</book>
+-->
