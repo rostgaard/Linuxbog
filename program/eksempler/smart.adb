@@ -111,11 +111,13 @@ procedure Smart is
       for Bitmønster'Address use Tændt'Address;
 
    begin
+      New_Line;
       Put (Item  => " -- Sætter porten til ");
       Put (Item  => Bitmønster,
            Base  => 2,
            Width => 11);
       Put (Item  => " -- ");
+      New_Line;
    end Sæt_Port;
 
    ---------------------------------------------------------------------------
