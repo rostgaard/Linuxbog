@@ -1,5 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
         "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!--
+$Id$
+-->
 <html>
 <HTML>
 <HEAD>
@@ -20,17 +23,14 @@
   }
 
   include($DOCUMENT_ROOT."includes/top.phtml");
+
+	list($width,$height) = getimagesize("front.png");
 ?>
 
-<h1 align="center">SSLUG - Friheden til at skrive bøger</h1>
-<!--
-$Id$
--->
-
-<p align="center">
-<img src="front.png" alt="Friheden til at skrive bøger">
+<img src="front.png" alt="Friheden til at skrive bøger"
+ align="right" width="<? echo $width ?>" height="<? echo $height ?>">
+<h1>SSLUG - Friheden til at skrive bøger</h1>
 </p>
-
 
 <?php
 
@@ -212,6 +212,7 @@ hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
 
   echo "<hr><h2>Bøger</h2>\n";
 
+  // Liste over alle bøger. Alle bøger har hver sin tabel med forskellig filtyper
   reset($books);
   while (list($short,$desc) = each($books)) {
     echo "<a name=\"$short\"></a><h3>$desc->title</h3>\n";
@@ -222,6 +223,7 @@ hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
     echo "<th>Dato</th>\n";
     echo "<th>Bytes</th>\n";
     echo "</tr>\n";
+    // Her kommer listen over filtyper
     reset($packs);
     while (list($type,$attr) = each($packs)) {
       echo "<tr>\n";
@@ -248,6 +250,7 @@ hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
 
   echo "<hr><h2>Filtyper</h2>\n";
 
+  // Liste over filtype. Hver filtype har sin egen tabel med alle bogtitler.
   reset($packs);
   while (list($type,$attr) = each($packs)) {
     echo "<a name=\"".rawurlencode($type)."\"></a><h3>$type</h3>\n";
@@ -289,6 +292,7 @@ hvilket gør at SSLUG ikke er indvolveret i de trykte udgaver.
 <tr bgcolor="#F0F0FF"><th>Bøger/filtype</th>
 <?php
 
+  // Stor tabel med alle bøger og filtyper samlet.
   reset($packs);
   list($type) = current($packs);
   while (list($type) = each($packs)) {
