@@ -67,20 +67,20 @@ gemversion:
 	@grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml
 	version=$(shell cat version.sgml)
 
-sgml: $(targetname)-$(version).sgml.tgz
+sgml: $(targetname)-$(version).sgml.tar.gz
 
-$(targetname)-$(version).sgml.tgz: $(sgmlfiler)
-	tar cvzf $(targetname)-$(version).sgml.tgz *.sgml Makefile collateindex.pl
+$(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
+	(cd ..;tar cvzf $(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
 
-palmpilot: $(targetname)-$(version).palm.tgz
+palmpilot: $(targetname)-$(version).palm.tar.gz
 
-$(targetname)-$(version).palm.tgz: $(sgmlfiler)
+$(targetname)-$(version).palm.tar.gz: $(sgmlfiler)
 ifneq   ("$(plucker)","")
 	$(MAKE) html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
-	tar cvzf $(targetname)-$(version).palm.tgz palm/*.prc palm/*.pdb
+	tar cvzf $(targetname)-$(version).palm.tar.gz palm/*.prc palm/*.pdb
 else
 	echo "Du bør installere plucker for at kunne lave palm-udgaven"
 endif
@@ -100,7 +100,7 @@ exit:
 
 htmlfiler: 
 	@echo "Target er HTML i" $(targetshortname)/bog
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz bog
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -130,12 +130,12 @@ endif
 
 pakhtml:
 	mv bog $(targetshortname)
-	tar cvzf $(targetname)-$(version).html.tgz $(targetshortname) eksempler
+	tar cvzf $(targetname)-$(version).html.tar.gz $(targetshortname) eksempler
 	zip $(targetname)-$(version)_html.zip -r $(targetshortname) eksempler
-	tar cvzf $(targetname)-$(version).html-ub.tgz $(targetshortname)/*.html $(targetshortname)/*.css eksempler
+	tar cvzf $(targetname)-$(version).html-ub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css eksempler
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
-	tar cvzf $(targetname)-$(version).png.tgz $(targetshortname)_images/
+	tar cvzf $(targetname)-$(version).png.tar.gz $(targetshortname)_images/
 	mv $(targetshortname)_images images 
 	@echo "Done HTML pakning (pakhtml)"
 	@echo ""
@@ -152,7 +152,7 @@ html: gemversion bog/index.html
 
 bog/enfil.html: statusfiler html
 	@echo "Target er HTML i" $(targetshortname)/bog1
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz bog1
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog1
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bog1
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -235,9 +235,9 @@ test:
 	echo $(eksfiler)
 
 
-eksempelbackup:  $(targetname)-$(version)_eksempler.tgz
+eksempelbackup:  $(targetname)-$(version)_eksempler.tar.gz
 
-$(targetname)-$(version)_eksempler.tgz : $(eksfiler)
+$(targetname)-$(version)_eksempler.tar.gz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
 	rm -f $(targetname)-$(version)_eksempler.tar.gz  
 	touch $(targetname)-$(version)_eksempler.tar
@@ -246,11 +246,11 @@ ifneq    ("$(eksfiler)","")
 	rm -f eksempler/BACKUPDATO
 	find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-$(version)_eksempler.tar =
 	gzip -9 $(targetname)-$(version)_eksempler.tar
-	mv $(targetname)-$(version)_eksempler.tar.gz $(targetname)-$(version)_eksempler.tgz
+	mv $(targetname)-$(version)_eksempler.tar.gz $(targetname)-$(version)_eksempler.tar.gz
 else
 	echo "Bogen" $(targetname) "har ikke nogen eksempler";
 endif
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*zip $(targetname)*.pdf*$(targetname)*.zip $(targetname)-*.palm.tgz $(targetname)-*.png.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz palm/*.prc palm/*.pdb sideantal.txt $(targetname)-*_eksempler.tgz
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tar.gz $(targetname)*zip $(targetname)*.pdf*$(targetname)*.zip $(targetname)-*.palm.tar.gz $(targetname)-*.png.tar.gz $(targetname)-*.sgml.tar.gz $(targetname)-*.html-ub.tar.gz palm/*.prc palm/*.pdb sideantal.txt $(targetname)-*_eksempler.tar.gz
