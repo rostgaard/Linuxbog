@@ -510,7 +510,7 @@ if (count($notexists))
 </font>
 
 <p>Stikord:
-<a href="alle/bog/idx-symbol.html">Symbol</a>
+<a href="alle/bog/idx-symboler.html">Symbol</a>
 <?php
 	$c = 65;
 	while ($c < 91) {
