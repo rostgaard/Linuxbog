@@ -1725,6 +1725,14 @@ der virker med de fleste programmer:
 </TGROUP>
 </TABLE>
 
+<para>
+For at gøre det nemmere at skrive og læse regulære
+udtryk, har man indført nogle forkortelser.
+Den "rigtige" syntax for at matche bogstavet 'a',
+er ved at skrive '[a]', men her kan man i stedet
+blot skrive 'a' (uden anførselstegn).
+</para>
+
 <!-- forkortelser -->
 <TABLE id="regex-fork">
 <title>Forkortelser af regulære udtryk</title>
@@ -1773,6 +1781,137 @@ der virker med de fleste programmer:
 </TBODY>
 </TGROUP>
 </TABLE>
+
+<para>
+Et simpelt eksempel på brug af ovenstående, kunne
+være at matche en datoer i filen <filename>regex</filename>.
+Herunder ses en del af fil, hvor nogle linier kun
+har en dato, og andre dato og en tekst.
+Datoen er skrevet i ISO-8601 formatet, som også
+kan udtrykkes som YYYY-MM-DD (ÅÅÅÅ-MM-DD).
+</para>
+
+<progamlisting>
+# En kommentar 2002-12-01
+2002-12-27
+2002-12-28 Linus Torvalds 33
+</programlisting>
+
+<para>
+For at få listen over alle linier der ikke indeholder
+en kommentar, skrives så:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[^#]" regex</userinput>
+2002-12-27
+2002-12-28 Linus Torvalds 33
+</screen>
+
+<para>
+Ovenstående giver nok ikke helt det ønskede resultat,
+i tilfælde af at der er skrevet noget i filen der er en ugyldig dato.
+Mere rigtigt vil det derfor være at matche datoerne.
+Da der kan forekomme datoer i kommentarer, så skal
+et match starte først på linien, hvilket matches med '^'.
+Dernæst skal første tegn være et tal.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[0-9]" regex</userinput>
+2002-12-27
+2002-12-28 Linus Torvalds 33
+</screen>
+
+<para>
+Match af fire tal, kan enten skrives som:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[0-9][0-9][0-9][0-9]" regex</userinput>
+</screen>
+
+<para>
+eller lidt mere overskueligt:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[0-9]{4}" regex</userinput>
+</screen>
+
+<para>
+Et lidt mere præcist dato-match der både checker
+år, måned og dag bliver så:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[0-9]{4}-[0-9]{2}-[0-9]{2}" regex</userinput>
+</screen>
+
+<para>
+En mere løs form, hvor der kun matches tegn og bindestreger,
+der er nem at læse, kunne være:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^....-..-.." regex</userinput>
+</screen>
+
+<para>
+Vil man kun have de linier hvor der alene står en dato,
+indsættes et '$'-tegn der angiver slutning af linie.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" regex</userinput>
+2002-12-27
+</screen>
+
+<para>
+Det modsatte match hvor der kun vises linier med dato og kommentar,
+kan så fås ved at angive at der skal være et eller flere tegn efter
+datoen. Det kan gøres ved at indsætte '.+'.
+Ikke alle programmer forstår '+', så man kan også skrive '..*'
+for at få det samme resultat.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^[0-9]{4}-[0-9]{2}-[0-9]{2}.+$" regex</userinput>
+2002-12-28 Linus Torvalds 33
+</screen>
+
+<para>
+I datoer anvendes ret få tal, da der fx. kun er 12 måneder,
+og maksimum 31 dage i en måned. Hvis man dertil også kun
+ønsker årstal imellem 2000 og 2099, kan dette skrives som:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^20[0-9]{2}-[01][0-9]-[0-3][0-9]" regex</userinput>
+2002-12-27
+2002-12-28 Linus Torvalds 33
+</screen>
+
+<para>
+Da der kun er 12 måneder, kan dette matches lidt mere præcist
+ved at tage højde for at andet tal kun kan være 0-9 hvis første
+tal er et 0. Er første tal 1, kan andet tal kun være 0-2.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>egrep "^20[0-9]{2}-(0[0-9]|1[0-2])-[0-3][0-9]" regex</userinput>
+2002-12-27
+2002-12-28 Linus Torvalds 33
+</screen>
+
+<para>
+De ovenstående eksempler viser så dels hvordan man kan skrive
+forskelligt og få det samme output, og dels at man meget nemt
+kan komme til at matche upræcist.
+Netop med datoer er det meget komplekst at lave det fuldstændige
+match, der også tager højde for skudår, så mindre kan i mange
+tilfælde gøre det.
+</para>
 
 <para>
 Et meget brugt regulært udtryk i tekst-programmer,
