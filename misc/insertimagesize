@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+
+use Image::Size 'html_imgsize';
+
+opendir(THISDIR,".");
+
+@allhtmlfiles = grep(/\.html$/,readdir(THISDIR));
+closedir(THISDIR);
+
+print $#allhtmlfiles."\n";
+
+foreach (@allhtmlfiles) {
+  $filename = $_;
+  print "Inserting image size in $filename\n";
+
+
+  open(IN, $filename) or die;
+  open(OUT, ">$filename.tmp") or die;
+  while(<IN>) {
+    $line = $_;
+    ($image) = $line =~ /^SRC="(.*)"><\/P$/;
+    if (length($image)>0) {
+      $ssize = html_imgsize($image);
+      print OUT 'SRC="'.$image.'" '.$ssize.'><\/P'."\n";
+    }
+    else {
+      print OUT $line;
+    }
+
+  }
+  close(OUT);
+  close(IN);
+  unlink $filename;
+  rename "$filename.tmp", $filename;
+}
+
+
