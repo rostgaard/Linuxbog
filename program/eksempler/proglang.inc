@@ -1,7 +1,7 @@
 <?php
 
 /* HTML reference til selve bogen */
-$boghref = "/linuxbog/prog/";
+$boghref = "/linuxbog/program/";
 
 /* Her er alle programmeringssprogene */
 $proglang = array(
