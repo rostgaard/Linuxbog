@@ -40,7 +40,8 @@ versionfil:
 	@cp ../friheden/version.sgml .
 	@cp ../friheden/dato.sgml .
 
-# Hmm. Jeg har ingen ide om hvad det her laver...
+# Hmm. Jeg har ingen ide om hvad det her laver... Ser ud som om det
+# bare skriver noget ud?
 statusfiles:
 	@for dir in $(SUBDIRSALLE); do \
 		echo -n "$$dir "; \
@@ -50,22 +51,18 @@ statusfiles:
 	done;
 
 ################################################################################
+# Autobyg bog.sgml
+################################################################################
+.PHONY: bog.sgml
+bog.sgml:
+	./make.bog.sgml.pl $(SUBDIRSALLE) > bog.sgml
+
+################################################################################
 # Pak SGML_filerne sammen
 ################################################################################
-if BUILD_SGML
-sgml: $(sgmlfiler) $(targetname)-sgml-$(version).tar.gz $(targetname)-sgml-$(version).zip
-
-# Alle sgml filerne i alle kataloget. Det giver jo ikke rigtigt nogen mening
-$(targetname)-sgml-$(version).tar.gz:
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile)
-
-# Alle sgml filerne i alle kataloget. Det giver jo ikke rigtigt nogen mening
-$(targetname)-sgml-$(version).zip:
-	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile)
-else !BUILD_SGML
+# Det her target giver ikke rigtigt nogen mening.
 sgml:
 	@echo "Overspringer sgml"
-endif !BUILD_SGML
 
 ################################################################################
 # Byg Palm Pilot udgaven
@@ -117,7 +114,7 @@ html: statusfiles versionfil $(targetshortname)
 
 $(targetshortname): alle/index.html
 
-alle/index.html: $(sgmlfiler)
+alle/index.html: $(sgmlfiler) bog.sgml
 #	echo $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
 	rm -rf stikord.sgml magic.sgml bog alle
@@ -158,12 +155,40 @@ else !BUILD_HTML
 	@echo "Overspring html"
 endif !BUILD_HTML
 
+################################################################################
+# Byg PDF filen
+################################################################################
+
+if BUILD_PDF
+pdf: $(targetname)-pdf-$(version).zip
+$(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.sgml
+	@echo ".........................................."
+	@echo "Target $(targetshortname):pdf"
+	@echo ".........................................."
+	@echo '<!ENTITY magic "png">' > magic.sgml
+	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	rm -rf tempdir
+	mkdir tempdir
+	cp *.{sgml,xml} tempdir
+	(cd tempdir && ln -s ../images/*png .)
+	(cd tempdir && jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
+	(cd tempdir && collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
+	(cd tempdir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
+	(cd tempdir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
+
+	mv tempdir/bog.pdf $(targetname)-$(version).pdf
+	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
+	rm -rf tempdir
+	@echo "Done PDF (pdf)"
+	@echo ""
+endif BUILD_PDF
 
 ################################################################################
 # clean
 ################################################################################
 
-.PHONY clean:
-	rm -rf version.sgml dato.sgml magic.sgml bog DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images 	*~*~  .#*[0-9]
+.PHONY: clean
+clean:
+	rm -rf bog.sgml version.sgml dato.sgml magic.sgml bog DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images 	*~*~  .#*[0-9]
 
 
