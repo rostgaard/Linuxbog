@@ -470,6 +470,7 @@ eller køb en indbundet udgave hos følgende forretninger:
 <li><a href="http://www.pn-tryk.dk/html/linux.html">PN-tryk</a></li>
 <li><a href="http://linuxpusher.dk/docs/linuxboeger.php">SC-Birkerød i samarbejde med www.linuxpusher.dk</a></li>
 </ul>
+<p>
 Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
 hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
 </p>
@@ -479,14 +480,12 @@ Værktøj til konvertering af bøgerne til Word 95 format kan findes her.
 <a href="http://www.klid.dk/~cs/proj/">www.klid.dk/~csi/proj/</a>.
 </p>
 
-<p>
 <FORM METHOD="GET" ACTION="http://www.netmind.com/cgi-bin/uncgi/url-mind">
 Vil du modtage E-post om nye versioner af bogen?
 <BR>Skriv din E-post adresse her
 <BR><INPUT TYPE=TEXT SIZE=40 NAME="required-email">
 <BR><INPUT TYPE=HIDDEN VALUE="http://www.sslug.dk/linuxbog" NAME="url">
 <INPUT TYPE=SUBMIT VALUE="Indsend form"></FORM>
-</p>
 
 <p>
 Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen, Hans Schou, Donald Axel og Michael Rasmussen - 
