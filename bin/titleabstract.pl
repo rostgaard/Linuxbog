@@ -101,7 +101,7 @@ Se efter bogpakken kaldet "samling" for at downloade en opdatering.
 </p>
 </body></html>
 };
-open(HTML, ">index-samling.html");
+open(HTML, ">samling/index.html");
 print HTML $html;
 close HTML;
 
