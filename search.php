@@ -2,12 +2,6 @@
    // $Id$
    // Første version af Hans Schou.
 
-   # Dette program virker kun på cvs.sslug.dk
-   if ($HTTP_HOST != "cvs.sslug.dk") {
-     header("Location: http://cvs.sslug.dk/linuxbog/search.php");
-     exit;
-   }
-
    /* top.phtml sets 
       <!--DOCTYPE ....
       .....
@@ -21,7 +15,7 @@
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
    @include($DOCUMENT_ROOT."/includes/top.phtml");
 
-   list($width,$height) = getimagesize("front.png");
+   list($width,$height) = @getimagesize("front.png");
 
    # \\ skal laves om til \
    if (isset($q))
@@ -31,14 +25,14 @@
 
 <img src="front.png" alt="Friheden til at skrive bøger"
  align="right" width="<? echo $width ?>" height="<? echo $height ?>">
-<h1>SSLUG - Friheden til at søge i sgml-filer</h1>
+<h1>SSLUG - Friheden til at søge i sgml/html-filer</h1>
 
 <form action="<?php echo $PHP_SELF ?>" method="get">
 Søg efter:
 <input type="text" name="q" value="<?php echo $q ?>" size="40">
 <input type="submit" name="s" value="Submit">
 <br>
-<font size="-1">Der søges med <a href="friheden/bog/joker-redir-pipe.html#REGEXP">regulære udtryk</a> - case insentive</font>
+<font size="-1">Der søges med <a href="http://www.sslug.dk/linuxbog/unix/bog/regexp.html">regulære udtryk</a> - case insentive</font>
 </form>
 
 <?php
@@ -68,27 +62,33 @@ function searchinfile( $file, $q ) {
   return $count;
 }
 
-function searchdir( $dir, $q ) {
+function searchdir( $dir, $ext, $q ) {
   $count = 0;
   $d = dir($dir);
   while ($fil = $d->read())
-    if (is_file($dir."/".$fil) && preg_match("|^[a-z0-9-_]+.+\.sgml$|", $fil))
+    if (is_file($dir."/".$fil) && preg_match("|^[a-z0-9-_]+.+\.${ext}$|", $fil))
       $count += searchinfile("$dir/$fil", $q);
   $d->close();
   return $count;
 }
 
 /*
- Man er doven. Vi gider kun at søge i de filer der
- ligger i de sub-dir der i dette sub-dir.
+ Man er doven. Vi gider kun søge i de filer der
+ ligger i de sub-dir der er i dette sub-dir.
 */
 
 if ($q) {
   flush();
   $d = dir(".");
   while ($dir = $d->read())
-    if (is_dir($dir) && preg_match("|^[a-z0-9]+$|", $dir))
-      $count += searchdir($dir, $q);
+    if (@is_dir($dir)) {
+      # Prøv og find nogle SGML filer
+      if (preg_match("|^[a-z0-9]+$|", $dir))
+        $count += searchdir($dir, "sgml", $q);
+      # prøv med HTML
+      if (@is_dir("$dir/bog"))
+        $count += searchdir("$dir/bog", "html", $q);
+    }
   $d->close();
 }
 
