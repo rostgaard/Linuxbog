@@ -805,45 +805,45 @@ op i mindre :-)
 <title>Kursomregning</title>
 <para>
 For at illustrere, hvordan man trækker en beregning ud af et
-program, kan vi bruge en beregning så simpel som x = a + b.
+program, kunne vi bruge en beregning så simpel som x = a + b.
 </para>
 
 <para>
-For at gøre eksemplet en lille smule realistisk foreslår jeg, at
-vi laver en kursomregningsfunktion. Man kan forestille sig, at
-der er skal så mange beregninger til (fx. en tabel i en udskrift
-eller priser på en faktura) at det er en stor lettelse at få
-udført beregningen i en funktion.
+Skal eksemplet være en lille smule realistisk foreslår jeg
+imidlertid, at vi i stedet laver en kursomregningsfunktion. Man
+kan forestille sig, at der er skal så mange beregninger til (fx.
+en tabel i en udskrift eller priser på en faktura) at det er en
+stor lettelse at få udført beregningen i en funktion.
 </para>
 
 <para>
-Men det er nu mest for at arbejde med et eksempel på, hvordan 
-man kan lave en beregningsfunktion, der kan genbruges
-i forskellige sammenhæng. For en "euro-funktion" er det
-forhåbentlig indlysende, at den vil kunne indgå i bankers
-udbetalingsautomater, i faktureringsprogrammer etc.etc.
+Det er forhåbentlig indlysende, at en "euro-funktion" 
+ville kunne indgå i bankers udbetalingsautomater, i
+faktureringsprogrammer etc.etc.
 </para>
 
 <para>
 Lad os derfor benytte kursomregning til at forske i den
-teknik, som kaldes modularisering. Vi vil gerne ende med at have
-et bibliotek, som indeholder omregningsfunktioner af forskellig
-slags, man kan forestille sig omregning med og uden gebyr og
-afrunding etc, men vi begynder ganske simpelt med en funktion,
-som får vores kroner og "afleverer" dollar (eller
-Euro<!--&eur;-->); vores udgangspunkt er en tilretning af
-<xref LinkEnd="ex-io-ber">.
+teknik, som kaldes modularisering. Det endelige mål er en
+omregningsfunktion i et bibliotek af forskellige financielle
+funktioner. Man må forestille sig valutaveksling med og
+uden gebyr og afrunding etc. Dette er så den rå omregning
+til brug for rapporter eller lignende. Det er simpelt hen en
+funktion, som får vores kroner og "afleverer" dollar (eller
+Euro<!--&eur;-->).  Udgangspunktet er en tilretning af <xref
+LinkEnd="ex-io-ber">, så vi kan afprøve funktionen mens vi
+skriver på den. For at gøre det mere overskueligt, har jeg
+imidlertid valgt at sløjfe prompt-input delen; den kan man
+evt. selv tilføje efter mønsteret i <xref LinkEnd="ex-io-ber">.
 </para>
 
 <para>
 Jeg må indrømme, at jeg efter at have skrevet dette her afsnit syntes,
-at det var lidt rigeligt langt! Men grunden til, at jeg lader det stå
+at det var lidt rigeligt langt! Grunden til, at jeg lader det stå
 er, at jeg har set så mange programmører, der havde svært ved at forstå
-mekanikken i funktionskald. Når man forstår hvad der sker i computeren
-under et funktionskald, så først kan man udnytte C sprogets fulde
-styrke. For at gøre det mere overskueligt, har jeg valgt at
-sløjfe prompt-input delen; man kan evt. lave en efter mønsteret i
-<xref LinkEnd="ex-io-ber">.
+mekanikken i funktionskald. Først når man forstår hvad der sker i
+computeren under et funktionskald kan man udnytte C sprogets
+fulde styrke. 
 </para>
 
 <sect3 id="spaghetti">
@@ -1168,27 +1168,51 @@ double kr2dollar(double kr)
 
 <para>
 Kompilering uden prototype vil som sagt alligevel resultere i en
-objektfil, som kan linkes med vores nye finans-library uden at man får
-en fejlmeddelelse. Når man kører et sådant program, skriver printf fire
-bytes ud som om det var en integer, selv om det altså er en del af en
-double precision floating point variabel.
+objektfil, som kan linkes med vores nye finans-library uden at
+man får en fejlmeddelelse. Men når man kører programmet, kan man
+se, at det ikke regner rigtigt, uha uha.
+</para>
+
+<para>
+Når man compilerer et sådant program, vil compileren opfatte
+retur værdien fra en ikke erklæret funktion som en integer. Denne
+vil typisk være placeret i det primære register. På Intel x86
+register EAX eller EBX. Compileren kan ikke kontrollere, om den
+kaldte funktion placerer sin retur værdi dér. Det er jo et helt
+andet modul, og måske endda et modul, som ikke er skrevet endnu.
+</para>
+
+<para>
+Compileren "ser", at den returnerede værdi (fx. EBX) skal
+afleveres til funktionen printf. Derfor placerer den værdien
+af EBX det sted, hvor man afleverer funktionsparametre (det
+er typisk en stak, applikationens stak). Printf, derimod,
+aner ikke noget om, hvad der faktisk afleveres til den; hvis
+vi skulle personificere printf, så ville den sige: "Jeg skal
+skrive et double precision floating point tal ud, ergo må der
+ligge sådan et på stakken. Det tager jeg!" Og det gør den så,
+den tager 8 bytes fra stakken uden at kunne kontrollere, om de
+rent faktisk er en double precision floating point talstørrelse
+eller ej!
 </para>
 
 <para>
 Det, som jeg prøver på at demonstrere, er konsekvensen af, at 
-ANSI-C specifikationen 
-ikke omfatter et krav om typekontrol under link-processen.
-Derfor er det nyttigt at tage notits af alle warnings.
+ANSI-C specifikationen ikke omfatter et krav om typekontrol under
+link-processen.  Derfor er det nyttigt at tage notits af alle
+warnings.
 </para>
 
 <para>
-<literal>strtod(3)</literal> (STRing-TO-Double) er en funktion, som
-konverterer en string til double. Denne funktion er mere avanceret end
-atoi, idet den kan sætte en fejl-variabel, hvis konverteringen ikke
-lykkes, og den kan flytte en pointer hen ad tekst strengen til det
-første bogstav, der ikke kunne konverteres. Her bruger vi den imidlertid
-på en mere simpel måde, vi giver den blot NULL som anden parameter, så
-går det nok alt sammen ...  
+Det er specielt vanskeligt med <literal> printf(3) </literal>,
+fordi det er tilladt at aflevere så mange parametre efter
+format-specifikationen, som man har lyst til, af de typer,
+som man har brug for. Det er vildt anarki, siger nogen,
+men det er uhyre praktisk. Med printf kan man formatere
+komplicerede rapporter med ét printf-statement, hvor det i
+C++ kan ende med mange liniers kompliceret kode, som skal styre
+forskellige skjulte interne variable i <literal> cout </literal>
+funktionens talkonvertering.
 </para>
 
 </sect3>
@@ -1257,7 +1281,7 @@ Her kommer det grundlæggende program:
 
 int main()
 {
-    char c;
+    int c;
     while ( (c=getchar()) != EOF)
       putchar(c);
     }
@@ -1282,6 +1306,24 @@ datafiler.
 </para>
 
 <para>
+For at forstå den klassiske konstruktion ((c=getchar()) != EOF)
+er det en god ide at erstatte (c=getchar()) med c, variabelen,
+som indeholder det læste bogstav. Et assignment (en tilskrivning,
+på lokalsproget) har en værdi, nemlig værdien af den sidst
+foretagne tildeling. Her er der kun en tildeling i udtrykket, så
+det er meget nemt. Værdien af (c=getchar()) er c.
+</para>
+
+<para>
+Læg også mærke til, at det er en int vi bruger til at gemme
+vores indlæste bogstav. Integer er en datatype, som er
+større end char. Derfor kan den rumme en værdi, som garanteret
+ikke er et lovligt bogstav, og det er den, som systembiblioteket
+indsætter, når der ikke er mere input. Det er som regel -1, og
+EOF skal være defineret i stdin.
+</para>
+
+<para>
 Lad os først bruge programmet til at tælle characters.
 </para>
 
@@ -1296,7 +1338,7 @@ int nc;
 
 int main()
 {
-    char c;
+    int c;
     while ( (c=getchar()) != EOF)
       ++nc;
     }
@@ -1419,24 +1461,37 @@ Programmet er så simpelt, at vi skriver det i et hug.
 /* summer.c */
 
 #include &lt;stdio.h>
+#include &lt;stdlib.h>   /* for string to double, strtod() */
 #define MAXL 80000
 int main()
 {
-    char line[MAXL];/* for input */
-    char *ptr; /* for strtod konverteringspointer */
-    double tal;/* for det laeste tal */
-    double sum;/* for totalen */
+    char line[MAXL];   /* for input */
+    char *ptr;         /* for strtod konverteringspointer */
+    double tal;        /* for det laeste tal */
+    double sum = 0;    /* for totalen */
 
-    while ( (fgets(line,MAXL,stdin) != NULL)
-     tal = strtod(line,&amp;ptr)
-     sum += tal;
+    while ( (fgets(line,MAXL,stdin)) != NULL) {
+        tal = strtod(line,&amp;ptr);
+        sum += tal;
     }
-    printf("%g\n",sum);
+    printf("%18.2f\n",sum);
     return 0;
 }
 /* end of file summer.c */
 </programlisting>
 </example>
+
+<para>
+<literal>strtod(3)</literal> (STRing-TO-Double) er en funktion,
+som konverterer en string til double. Denne funktion er mere
+avanceret end atoi, idet den kan sætte en fejl-variabel, hvis
+konverteringen ikke lykkes, og den kan flytte en pointer hen ad
+tekst strengen til det første bogstav, der ikke kunne
+konverteres. Man kan også bruge den på en mere simpel måde;
+man giver den blot NULL som anden parameter, og krydser fingre og
+siger: det skal nok gå alt sammen ...
+</para>
+
 </sect2>
 
 </sect1>
@@ -1636,6 +1691,11 @@ rettere ISO-8859-1, så bør vi altså ikke begynde at lave check af
 CPU temperatur, disk tilstand etc. Det hører hjemme et andet sted
 og er ikke interessant for vores filterprogram.
 </para>
+<FIGURE ID="fig-fejl-fil-mangler" FLOAT="1">
+<TITLE>Eksempel på fejlhåndtering, informativ besked</TITLE>
+<GRAPHIC FILEREF="err2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
 </sect2>
 </sect1>
 
