@@ -64,7 +64,36 @@ Nedenfor er en kort vejledning på dansk.
 <para>
 Man kan som regel installere docbook systemet ved under
 system-installation (eller system-opgradering) at medtage
-"document processing".  Hvis du bruger en af de distributioner,
+"document processing".
+</para>
+
+
+<para>
+På Mandrake 9.1 er det ret enkelt at få DocBook værktøjerne til at virke.
+Installer følgende pakker med <command>urpmi</command> (efterfulgt af 
+følgende navne). Dette gøres som root.
+</para>
+
+<screen>
+docbook-dtd412-xml
+docbook-style-dsssl
+docbook-dtd41-sgml
+docbook-style-xsl
+docbook-dtd30-sgml
+docbook-style-dsssl
+docbook-dtd42-xml
+docbook-utils-pdf
+docbook-dtd31-sgml
+docbook-style-xsl
+docbook-utils
+openjade
+jadetex
+libopenjade0
+</screen>
+
+
+<para>
+Hvis du bruger en af de distributioner,
 som har det hele med, kan du afprøve installationen ved fx. at
 bruge docbook-eksemplet, der kan hentes fra bogens hjemmeside under
 eksempler, eller med <xref linkend="dokumentation-hallo-hallo">
@@ -140,16 +169,10 @@ prøver, vil vi gerne høre resultatet.
 </para>
 
 <para>
-Hvis ikke din Red Hat installation har docbook-pakkerne, så er her
-en "wildcard-liste" over de pakker, som du skal bruge. Det er
-pakkerne sgml-common*, docbook*, openjade-* og tetex*. Hvis du
-vælger at gå tilbage til Red Hat-6.2, så tag sgml-tools-* med.
-</para>
-
-<para>
 Hvis du kører Red Hat-8.0, Mandrake-9.0, eller SuSE kan du regne
 med, at tingene fungerer med det samme, du har installeret.
 </para>
+
 
 <para>
 Man kan med fx. Red Hat bruge en fil-manager til at kigge på
@@ -366,12 +389,6 @@ man docbook til at acceptere ren asciitekst, "typewriter-style".
 lade SGML gøre dette automatisk eller stoppe blokken og starte en ny.-->
 </para>
 
-<para>
-Man må ikke have andre strukturer inden i
-<command>&lt;para&gt;</command> blokken såsom lister
-eller tabeller. <command>&lt;para&gt;</command> blokken
-skal i så fald afsluttes først.
-</para>
 
 <example>
 <title>para</title>
@@ -730,6 +747,13 @@ med <command>&lt;table&gt;</command>. Det er for at
 kunne krydsreferere til tabellen fra et sted i teksten.
 </para>
 
+<para>
+Det skal bemærkes, at man med <command>&lt;colspec&gt;</command>
+kan lave en del bedre formattering af tabeller, såsom farvelægning af
+celler og andre fikse ting som bredde af tabeller, 
+kolonner etc. 
+</para>
+
 </sect3>
 
 <sect3 id="docbook-figure">
@@ -740,11 +764,12 @@ kunne krydsreferere til tabellen fra et sted i teksten.
 <indexterm><primary>magic</primary></indexterm>
 
 <para>
-Figurer er en smule værre i Docbook, fordi man ikke har
-så store muligheder (under Linux i hvertfald). Selvom
+Figurer kan inkluderes i Docbook-dokumenter. Selvom
 det anføres at en lang række grafik formater er
 understøttet, så gælder det i praksis ikke, hvis man
 skal kunne oversætte både til HTML, PDF og Postscript.
+Vi anbefaler PNG-format til billeder, da dette er generelt
+understøttet.
 </para>
 
 <example>
@@ -923,9 +948,10 @@ nummer de har. Vi anvender blot deres label.
 </sect3>
 
 <sect3 id="docbook-lister">
-<title>Lister - itemizedlist</title>
+<title>Lister - itemizedlist og orderedlist</title>
 <indexterm><primary>lister</primary></indexterm>
 <indexterm><primary>SGML-tags</primary><secondary>itemizedlist</secondary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>orderedlist</secondary></indexterm>
 
 
 <para>
@@ -969,13 +995,50 @@ Dette kommer til at se ud som:
  </para>
 </listitem>
 </itemizedlist>
+</example>
 
 <para>
-Bemærk at <command>&lt;itemizedlist&gt;</command> ikke er inde i en 
-<command>&lt;para&gt;</command>, men hver af de tekstblokke som nævnes
-er det (samt en <command>&lt;listitem&gt;</command>). 
+Tilsvarende til <command>&lt;itemizedlist&gt;</command>
+kan man lave lister, som er nummererede.
 </para>
+
+<example>
+<title>orderedlist</title>
+
+<programlisting>
+&lt;orderedlist&gt;
+&lt;listitem&gt;
+ &lt;para&gt;
+  Første punkt i listen skriver jeg her.
+ &lt;/para&gt;
+&lt;/listitem&gt;
+&lt;listitem&gt; 
+ &lt;para&gt;
+  Andet punkt i listen skriver jeg derefter her.
+ &lt;/para&gt;
+&lt;/listitem&gt;
+&lt;/orderedlist&gt;
+</programlisting>
+
+<para>
+Dette kommer til at se således ud
+</para>
+
+<orderedlist>
+<listitem>
+ <para>
+  Første punkt i listen skriver jeg her.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  Andet punkt i listen skriver jeg derefter her.
+ </para>
+</listitem>
+</orderedlist>
 </example>
+
+
 </sect3>
 </sect2>
 
@@ -1725,25 +1788,6 @@ kan ændres på samme vis som i
 <filename>/usr/share/sgml/docbook/dsssl-stylesheets/html/dbparam.dsl</filename>.
 </para>
 
-
-<para>
-Hvis du har problemer med at oversætte store bøger til PS eller PDF 
-er det nødvendigt at ændre nogle værdier i 
-<filename>/usr/share/texmf/web2c/texmf.cnf</filename>. 
-Sæt nedenstående variabler til 
-de viste værdier for at få PDF-genereringen til at virke.
-Med Red Hat 7.2 pakkerne skulle dette ikke være nødvendigt.
-</para>
-
-<programlisting>
-hash_extra = 10000
-
-pool_size.context = 1250000
-pool_size.jadetex = 1250000
-pool_size = 250000
-
-max_strings = 25000
-</programlisting>
 
 </sect3>
 </sect2>
