@@ -41,9 +41,6 @@ eksempelbackup:  Makefiler
 	make -C web  eksempelbackup
 	make -C sikkerhed  eksempelbackup
 	make -C c  eksempelbackup
-	make -C alle  eksempelbackup
-
-
 
 clean: Makefiler
 	make -C friheden clean
