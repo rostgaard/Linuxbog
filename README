@@ -6,6 +6,7 @@ Dette er README filen til bøgerne "Linux -- Friheden til at vælge".
 1) Hvad er "Linux -- Friheden til at vælge" (FTAV)
 2) Bygning af bøgerne fra kildekode
 3) Adgang til kildekoden fra CVS
+4) Mere om bygning af bøgerne fra CVS
 
 -------------------------------------------------------------------------------
 1) Hvad er Linux -- Friheden til at vælge (FTAV)
@@ -29,6 +30,7 @@ http://www.linuxbog.dk/, men bøgerne indeholder de sidste rettelser
 også information om hvordan du kan komme i kontakt med
 forfatterne/udviklerne på bøgerne.
 
+
 -------------------------------------------------------------------------------
 2) Bygning af bøgerne fra kildekode
 
@@ -46,58 +48,94 @@ færdigbyggede bøger på cvs.linuxbog.dk, eller www.linuxbog.dk. Hvis du
 vil bygge bøgerne selv, bliver det i det følgende beskrevet hvordan
 dette gøres.
 
+For at kunne bygge bøgerne, skal du have en del forskellige programmer
+installeret. Det drejer sig om værktøjer der kan oversætte sgml koden
+(som bøgerne er skrevet i) til de forskellige formater (html, pdf, ps,
+palm pilot, mv) som bøgerne kan oversættes til.
+
 Fremgangsmåden for at bygge bøgerne er lidt forskellig, afhængigt af
 hvordan du har fået fat i kildeteksterne. Hvis du har fået CVS adgang
 til kildekoden, skal du starte med at læse afsnittet nedenfor kaldet
-"Adgang til kildekoden fra CVS". 
+"Adgang til kildekoden fra CVS". I det følgende beskrives hvordan en
+enkelt bog, downloadet som en tar.gz fil, oversættes.
+
+Først skal du udpakke bogen, f.eks. med kommandoen
+
+$tar zxvf linuxbog-applikationer-dist-*.tar.gz
+
+Derefter skal du skifte til kataloget er der blevet oprettet, og
+konfigurere bogen:
+
+$cd applikationer
+$./configure --help
+
+Ved at skrive --help vil du få en oversigt over de argumenter
+configure kan tage. I øjeblikket er det kun argumentet
+"--enable-softlink" (som gør at der ikke bliver kopieret så mange
+filer under bygning af bøgerne) som du kan give til configure
+programmet.
+
+Du kan nu konfigurere bygning af bogen, med
+
+$./configure --enable-softlink
+
+Herefter vil configure undersøge dit system for at finde ud af om du
+har de nødvendige værktøjer til at bygge bogen med. Hvis configure
+finder ud af at du mangler centrale værktøjer, vil den afbryde med en
+fejl. Det kan f.eks. være at du mangler programmet "jade" som kan læse
+sgml filer, eller programmet "jw" som er en frontend til jade. Disse
+programmer er altid krævet for overhovedet at kunne oversætte
+bøgerne. For de forskellige formater bøgerne skal oversættes til,
+kræves desuden nogle forskellige værktøjer. F.eks. kræves programmet
+"db2html" for at kunne lave en udgave af bøgerne i html
+format. Configure programmet vil ikke afbryde hvis disse værktøjer
+mangler, men blot konfigurere oversættelsen således at disse ikke kan
+bygges. Til slut vil configure udskrive en oversigt over hvilke
+formater der kan oversættes til. Det kan f.eks. se sådan her ud:
+
+configure: Oversigt over hvilke moduler der kan laves
+configure:  Kan SGML bygges    : ja
+configure:  Kan PALM bygges    : nej
+configure:  Kan PDF bygges     : ja
+configure:  Kan HTML bygges    : ja
+configure:  Kan PAKHTML bygges : ja
+
+Hvis det format du gerne vil bygge til, ikke understøttes, kan du
+kigge i det configure har skrevet for at finde årsagen. Eksempelvis
+finder jeg følgende linie:
+
+checking for plucker-build... nej - det er ikke muligt at lave PALM udgaven
+
+og ud fra det kan jeg altså regne ud at jeg skal bruge programmet
+"plucker-build" for at kunne bygge bøgerne til palmpilot.
+
+TODO: Man kan sådan set ikke bygge palm fra standalone i
+øjeblikket. Hmm.
+
+Hvis du mangler nogen værktøjer må du installere dem, og køre
+configure igen. Hvis du har vanskeligt ved at finde ud af hvorfor du
+ikke kan bygge et bestemt format, kan du kigge i filen "config.log"
+hvor configure skriver detaljeret information om hvad det foretager
+sig.
+
+Når du har fået support for de formater du gerne vil have, kan du
+skrive f.eks.
+
+$make html
+
+for at lave html udgaven. Eller, make pdf for at lave pdf udgaven,
+osv.
+
+TODO: palm udgaven hedder palmpilot....
 
 
-
-
-
+-------------------------------------------------------------------------------
 3) Adgang til kildekoden fra CVS
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
-$Id$
->>>>>>> 1.17
-Dette katalog indeholder eksempler svarende til 
-bogen, hvis vi har ment dette er relevant.
-
-Seneste bøger kan findes på 
-http://www.linuxbog.dk
-
-Udviklingen foregår på
-http://cvs.linuxbog.dk
-
----------------------------------------
-Vedledning i at få fat i bøgerne via CVS
-
-Vis at du vil være aktiv med bøgerne og
-kan arbejde ansvarligt med bøgerne :)
-Få login på tyge.sslug.dk ved at skrive til
-Peter Toft <pto@linuxbog.dk> og gør følgende.
+For at få adgang til bøgerne via CVS, skal du vise at du vil være
+aktiv og kan arbejde ansvarligt med bøgerne :) Få login på
+tyge.sslug.dk ved at skrive til Peter Toft <pto@linuxbog.dk> og gør
+dernæst følgende.
 
 Installer OpenSSH på din maskine og følg 
 vejledningen på 
@@ -289,3 +327,34 @@ at jorden er flad, det ville dog have gjort det
 hele lidt nemmere.
 
 
+-------------------------------------------------------------------------------
+4) Mere om bygning af bøgerne fra CVS
+
+Når man checker bøgerne ud fra CVS, vil jeg referere til det katalog
+der hedder "linuxbog" som "toplevel" og de enkelte bøgers kataloger
+(f.eks. applikationer, sikkerhed, mv) som subdir.
+
+Hensigten med det byggesystem vi bruger i CVS og i de enkelte subdirs,
+er at 
+
+a) Det skal være nemt for folk at bidrage til de enkelte bøger, _uden_
+   at have skriveadgang til CVS.
+
+b) Alle bøger skal kunne bygges til html, palmpilot, mv.
+
+c) Alle bogen skal kunne bygges
+
+d) Afhængigheder skal fungere
+
+e) Der skal være install, uninstall, mv, targets
+
+f) På sigt skal man kunne bygge bøgerne under andre platforme end Linux
+   (f.eks. FreeBSD)
+
+Motivation og uddybning af disse punkter:
+
+a) Tidligere har det været vanskeligt at bidrage til bøgerne af to
+   hovedårsager: Den eneste måde at få adgang til _alle_ de nødvendige
+   filer, var ved at få adgang til CVS udgaven af bøgerne & tests for
+   de nødvendige værktøjer var uigennemskuelig og flettet ind i
+   makefilerne. Det første 
