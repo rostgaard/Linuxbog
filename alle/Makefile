@@ -29,6 +29,7 @@ totalsgmlfiler=$(wildcard ../alle/*.sgml) \
 	$(wildcard ../web/*.sgml) \
 	$(wildcard ../applikationer/*.sgml) \
 	$(wildcard ../c/*.sgml) \
+	$(wildcard ../java/*.sgml) \
 	$(wildcard ../dokumentation/*.sgml) \
 	$(wildcard ../kontorbruger/*.sgml) \
 	$(wildcard ../itplatform/*.sgml) \

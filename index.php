@@ -167,7 +167,6 @@ function vistype($type) {
       comment => "Vælg programmer til Linux",
       auth => array(
         "Peter Toft" => "pto@sslug.dk",
-        "Jacob Sparre Andersen" => "sparre@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
@@ -197,6 +196,7 @@ function vistype($type) {
       title => "Linux - Friheden til at programmere",
       comment => "Programmering på Linux",
       auth => array(
+        "Jacob Sparre Andersen" => "sparre@sslug.dk",
         "Peter Toft" => "pto@sslug.dk",
         "Hans Schou" => "chlor@sslug.dk"
       )
@@ -208,12 +208,18 @@ function vistype($type) {
         "Donald Axel" => "donald_j_axel@get2net.dk"
       )
     ),
+    "java" => array(
+      title => "Linux - Friheden til at programmere i Java",
+      comment => "Programmering i Java",
+      auth => array(
+        "Christian Damsgaard" => "damsgaard@image.dk"
+      )
+    ),
     "sikkerhed" => array(
       title => "Linux - Friheden til sikkerhed på internettet",
       comment => "Sikkerhed omkring din Linux-boks",
       auth => array(
-        "Peter Toft" => "pto@sslug.dk",
-        "Hans Schou" => "chlor@sslug.dk"
+        "Peter Toft" => "pto@sslug.dk"
       )
     ),
     "web" => array(
