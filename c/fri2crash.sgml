@@ -123,7 +123,8 @@ linieskift mellem doublequotes.
 <example id="ex-hello-types">
 <title>Hello, World! med type-specifikationer.</title>
 <programlisting>
-/* Dette program skriver Hello, world! i et terminalvindue. */
+/* Dette program skriver Hello, world! i et terminalvindue og er
+ * meget omhyggeligt med consistent anvendelse af typer. */
 
 #include &lt;stdio.h&gt;
 
@@ -247,7 +248,7 @@ int tal, *ptr2tal;</literal> (men kønt er det ikke!)
 "Og" tegnet, ampersand på engelsk, er adresse-operatoren
 d.v.s. at den tager adressen på den variabel, den stilles foran.
 <literal> px = &amp;x; </literal> betyder tag adressen på x og
-læg den over i variabelen px.
+læg den over i variablen px.
 </para>
 
 <para>
@@ -353,7 +354,7 @@ Op.   ex.          Beskrivelse
 Desuden kan lighedstegnet kombineres med de 
 forskellige aritmetiske operatorer:
 
-x += kaxi; /* tael x op med vaerdien af variabelen kaxi */
+x += kaxi; /* tael x op med vaerdien af variablen kaxi */
 </programlisting>
 
 
@@ -407,7 +408,7 @@ bitkolonner efter den almindelige logik.
 |    bitvis OR                1 | 0 == 1; 17 | 1 == 17;
 ^    bitvis XOR               1 ^ 0 == 1; 17 ^ 1 == 16;
 ~    bitvis NOT               ~1    == 0xfffffffe;
-&gt;&gt;   shift right              1 &gt;&gt;1 == 0; 17 &gt;&gt;1 == 8;
+>>   shift right              1 >>1 == 0; 17 >>1 == 8;
 &lt;&lt;   shift left               1 &lt;&lt;1 == 2; 17 &lt;&lt;1 == 34;
 </programlisting>
 
@@ -454,7 +455,7 @@ foretager et shift, fx.
         numstr[34] = 0;                     /* End of string mærke */
         while (i++ < 32) {
             numstr[34-i] = (x & 1) + '0';
-            x &gt;&gt; 1;
+            x >> 1;
         }
         printf("%s\n",numstr);
     }
@@ -474,7 +475,7 @@ nedenstående, god øvelse:
 <programlisting>
 main()
 {
-    printf("17 &gt;&gt; 1 == %d \n",17&gt;&gt;1);
+    printf("17 >> 1 == %d \n",17>>1);
     return 0;
 }
 </programlisting>
@@ -645,7 +646,7 @@ Et eksempel på en for-løkke:
 main()
     int fahr, celsius;
 
-    for (fahr = 0; fahr < 200; fahr = fahr + 20) {
+    for (fahr = 0; fahr &lt; 200; fahr = fahr + 20) {
         celsius = 5 * (32 - fahr) / 9;
         printf("Fahrenheit %3d svarer til celsius %3d\n", fahr, celsius);
     }
@@ -723,35 +724,39 @@ sker undervejs. Når et problem er kompliceret, så skil det ad i mindre
 dele og indsæt printf statements, så du kan se, hvad der sker undervejs.
 </para>
 
+<example id="ex-kryptering1">
+<title>Simpel kryptering</title>
 <programlisting>
 /* file krypter1.c - en brugbar (men forsimplet)
  * krypteringsalgoritme. Kan ikke håndtere linieskift m.v.
  */
 
-static char *keystring = "Under traeerne var der stille og roligt.";
-static int inuse;
-static char *mv;
-static int keylen;
-
 int krypter(int inpchar)
 {
-   if (!inuse) {
-       inuse = 1;
-       mv = keystring;
-       keylen = strlen(keystring);
-   }
-   if (mv - keystring > keylen)
-       mv = keystring;
-   if (inpchar &lt; ' ')
-       inpchar = ' ';
-   else if (inpchar > 126)
-       inpchar = '~';
-   return (inpchar + *mv++) % 93 + 33;
+    static char *keystring = "Under traeerne var der stille og roligt.";
+    static int inuse;
+    static char *mv;
+    static int keylen;
+
+    if (!inuse) {
+        inuse = 1;
+        mv = keystring;
+        keylen = strlen(keystring);
+    }
+    if (mv - keystring > keylen)
+        mv = keystring;
+    if (inpchar &lt; ' ')
+        inpchar = ' ';
+    else if (inpchar > 126)
+        inpchar = '~';
+    return (inpchar + *mv++) % 93 + 33;
 }
 </programlisting>
+</example>
 
 <para>
-Virker kun for ren ASCII tekst.<footnote>
+Virker kun for ren ASCII tekst.
+<footnote>
 <para>
 I parentes bemærket, hvis du vil gøre krypteringen ovenfor ubrydelig
 skal du forbedre den lidt. Længere keystring (helst længere en
@@ -771,6 +776,15 @@ bruges til afkodning men ikke indkodning.
 </para>
 
 <para>
+Ordet static, som står foran de 4 variable, som skal anvendes i
+modulet her, betyder, at de ikke må kunne bruges fra andre
+moduler eller funktioner i det færdige program. Det er såmænd
+ikke fordi de skal være hemmelige, men blot for at sikre, at vi
+har styr på, hvor der sker ændringer af variablen, som peger
+fremad i krypteringsnøglen.
+</para>
+
+<para>
 Hvis du blev bidt af ovenstående, så lav en dekryptering til den.
 Eller læs eksempel-programmet afkrypt1.c. Desuden er der en
 forbedret version, som håndterer linieskift, krypter2.c og
@@ -779,13 +793,13 @@ afkrypt2.c
 
 <para>
 Det var små eksempler på anvendelse af datatyper, operatorer,
-flowkontrol statements og modularisering. De næste fire afsnit
+flowkontrol statements og modularisering. Det næste afsnit
 af crash course i C programmering går lidt mere i dybden med
 disse emner.
 </para>
 
 <para>
-Først et spørgsmål: Lagde du mærke til, at variabelen 'keylen'
+Først et spørgsmål: Lagde du mærke til, at variablen 'keylen'
 havde fået ordet <emphasis>static</emphasis> stillet foran? Det
 er en storage specifikation. Læs videre!
 </para>
@@ -793,8 +807,10 @@ er en storage specifikation. Læs videre!
 </sect2>
 </sect1>
 
-<sect1 id="data-del-2">
-<title>Program sektioner</title>
+<sect1 id="sect-C-fundamentet">
+<title>Lager klassifikation, storage classes</title>
+
+<!--OBS! AL TEKST ER ÆNDRET RADIKALT:-->
 
 <para>
 Emner:
@@ -803,37 +819,37 @@ Emner:
 <itemizedlist mark="bullet">
 <listitem>
 <para>
-scope (synlighed), 
+externe variable, funktioner og konstanter
 </para>
 </listitem>
 <listitem>
 <para>
-lokale variable (auto),
+funktioner og lokale variable (auto)
 </para>
 </listitem>
 <listitem>
 <para>
-programsektioner, stak, heap, bss, data, text.
+programsektioner, stak, heap, bss, data, text
 </para>
 </listitem>
 <listitem>
 <para>
-kontrolvariable for løkker eller loops,
+kontrolvariable for løkker eller loops
 </para>
 </listitem>
 <listitem>
 <para>
-lokale static variabel,
+scope (synlighed) og varighed, lokale static variabel
 </para>
 </listitem>
 <listitem>
 <para>
-rekursion og statics,
+rekursion og statics
 </para>
 </listitem>
 <listitem>
 <para>
-funktioner som returnerer pointer til buffer,
+funktioner som returnerer pointer til buffer
 </para>
 </listitem>
 <listitem>
@@ -849,53 +865,606 @@ register variable.
 </itemizedlist>
 
 <para>
-Der er forskellige måder at organisere et kørselen af et program.
-Vi kører på Linux, et operativsystem med virtual memory
-management, og det giver nogle fordele, som er ret store. Vi kan
-simpelt hen lade vores program benytte 3 GB memory - også selv om
-vi ikke har installeret så meget.
+Et C program består af definitioner af eksterne objekter, som
+kan være funktioner eller variable. Eksterne objekter kan bruges
+overalt i det program, hvori de forekommer, også fra separat
+kompilerede funktioner.
+</para>
+<para>
+Modsætningen til eksterne variable er de variable, som defineres
+inde i en funktion og de parametre, som funktionen modtager når
+den bliver kaldt. De eksisterer, mens funktionen kører. De bliver
+automatisk oprettet når programmet eksekverer funktionen (eller
+blokken) og nedlægges igen, når programmet forlader funktionen.
+De kaldes derfor også automatiske variable. Det reserverede ord
+<emphasis>auto</emphasis> kan anvendes om lokale variable, men er
+overflødigt - det stammer fra de tidligste versioner af C
+sproget.
+</para>
+<para>
+Funktioner er altid eksterne objekter; man kan ikke definere en
+funktion inden i en anden funktion, sådan som man for eksempel
+kan i Pascal sproget.
+</para>
+<para>
+Selv om eksterne objekter uden videre er "synlige" i hele
+programmet, er der en metode til gøre dem private for et modul.
+Det skal vi se på senere i dette afsnit.
+</para>
+
+<sect2>
+<title>Externe variable, funktioner og konstanter</title>
+
+<!--OBS! AL TEKST ER ÆNDRET RADIKALT:-->
+
+<para>
+For helt at være klar til diskussion af eksterne variable skal
+det lige understreges, at et C program næsten altid opbygges af
+separat oversatte moduler. De fleste af dem ligger måske i et
+library - måske er det standard-library, libc.a - Andre ligger i
+vores egne oversatte moduler, og vi kan give compileren besked om
+det på kommandolinien ved simpelthen at nævne alle de moduler,
+som skal med. Compileren består af mange forskellige programmer,
+og det sidste af dem, nemlig linkeren, foretager sammenkædningen
+af modulerne (link = hægte eller led i en kæde).
+</para>
+
+<programlisting>
+gcc -o mitprogram modul_1.c modul_2.c modul_3.o
+</programlisting>
+
+<para>
+Compileren finder ud af, at modul_3.o er et oversat modul og
+nøjes med at medtage det i link-kommandoen, som bygger den
+eksekverbare fil, "program-image filen" eller bare "programmet".
 </para>
 
 <para>
-For at gøre det lettere for operativsystemet at optimere
-anvendelsen af memory er et program delt op i forskellige
-sektioner. Nogle sektioner skal kun læses, fx. er det dårlig
-programmerings praksis at modificere CPU instruktioner mens
-programmet kører, så kode-delen, instruktionerne til CPU'en, er
-altid READ-ONLY. Hvis nu vores program alligevel forsøger at
-skrive på fx. adressen for en funktion, så skal Linux kernens
-memory management modul reagere ved at stoppe programmet.
+En definition af en (ekstern) variabel består af en type
+angivelse og et navn, kaldet en variabel-identifikation, på
+engelsk: identifier.
+</para>
+
+<programlisting>
+typespecifikator variabel-navn [, variabel-navn] ... ;
+</programlisting>
+
+<para>
+Altså typisk fx. følgende:
+</para>
+
+<programlisting>
+int en_taeller;
+</programlisting>
+
+<para>
+En funktion defineres nogenlunde på samme måde, altså ved en type
+og et navn (lige som en variabel) men derefter har vi brug for
+nogle flere oplysninger, nemlig en parentes med argumentlisten,
+og de program-sætninger (statements), som udgør funktionens
+<emphasis>krop</emphasis>, omsluttet af braces. 
+</para>
+
+<programlisting>
+typespecifikator funktion-navn(parameter-liste)
+{
+    funktion-sætning(er);
+}
+</programlisting>
+
+<para>
+En minimum funktion ses nedenfor:
+</para>
+
+<programlisting>
+int placeholder() { }
+</programlisting>
+
+<para>
+Selv om en tom funktion ikke laver noget, kan den dog være ganske
+nyttig under udviklingen af et større program ved simpelthen at
+være til stede, evt. returnere en brugbar (default) værdi.
 </para>
 
 <para>
-På samme måde er der dele af memory med data, som ikke må
+Der skelnes i C sproget mellem en definition og en deklaration.
+På dansk ser man ofte ordet erklæring i stedet for deklaration.
+</para>
+
+<para>
+Hvis vi ønsker at anvende en variabel, som allerede er defineret
+i et andet modul, så bruger vi en deklaration. Det er en
+forklaring, så at sige, til compileren om, at der er en variabel
+til rådighed i et andet modul i det færdige program, som hedder
+sådan og sådan og er af den og den type, men som altså IKKE
+findes i nærværende overstættelses-enhed (translation unit).
+</para>
+
+<programlisting>
+extern int en_taeller;
+</programlisting>
+
+<para>
+Nu ved compileren, at der i et andet modul findes en variabel,
+som hedder en_taeller, og at det er ok, at vi bruger den.
+</para>
+
+<para>
+Hvis vi derimod vil reservere lager til en variabel, så kaldes
+det definition af en variabel. Når programmet kører og vi
+opretter et objekt (enten ved hjælp af dynamisk lagerallokering
+eller ved hjælp af lokale variable i en kodeblok) kaldes det
+instantiering af et objekt.
+</para>
+
+<para>
+I C foregår deklaration og definition ofte på samme tid.
+Når jeg skriver <emphasis>int xyzzy</emphasis> foretager jeg både
+deklaration og lagerudlægning.
+</para>
+
+<para>
+Hvis jeg derimod skriver <emphasis>extern int xyzzy</emphasis> 
+udlægges der ikke lager, men jeg indføjer en entry i compilerens
+symboltabel. I denne entry ligger oplysning om navn og type.
+</para>
+
+<para>
+I det andet modul skal der være defineret en variabel på 
+<emphasis>det yderste niveau</emphasis> - så er det en ekstern
+variabel, som kan eksistere uafhængigt af de funktioner, som det
+andet modul måtte indeholde (måske indeholder det kun variable).
+En variabel, som er erklæret i <emphasis>det yderste
+niveau</emphasis> er altid en variabel, som kan ses af andre
+moduler. Den er, pr default, eksporteret, ville man måske sige i
+sprog som ADA og Oberon.
+</para>
+
+<para>
+En ekstern variabel er - i C sproget - også altid en <emphasis>
+statisk </emphasis> variabel.  Sådanne statiske variable har lige
+så lang levetid som det program, der anvender dem. På den måde
+ligner de programmets instruktioner.
+</para>
+
+<para>
+Programkode og statiske data ligger da også anbragt på samme måde
+i lageret, nemlig forneden, på de lave adresser, under det
+område, som anvendes til hhv. bunke (heap) og stak. Både heap og
+stak kan vokse, så det er meget passende, at de enes om at
+udnytte det store mellemrum fra "bunden" med faste data og
+programinstruktioner og "toppen" hvor operativsystemet forlanger
+at få lov til at være i fred.
+</para>
+
+ <informaltable frame="all">
+   <tgroup cols="1">
+<thead>
+  <row>
+    <entry>toppen af lageret</entry>
+  </row>
+</thead>
+<tbody>
+  <row>
+    <entry>Operativ system kode</entry>
+  </row><row>
+    <entry>Stak for bruger applikationer</entry>
+  </row><row>
+    <entry>Mellemrum mellem stak og heap</entry>
+  </row><row>
+    <entry>Heap til dynamisk lageradministration</entry>
+  </row><row>
+    <entry>.bss, nulstillede externe variable</entry>
+  </row><row>
+    <entry>.data initialiserede, eksterne variable</entry>
+  </row><row>
+    <entry>.string konstanter mv.</entry>
+  </row><row>
+    <entry>.text, program instruktioner</entry></row>
+</tbody>
+   </tgroup>
+</informaltable>
+
+
+<para>
+Der er dog lidt forskel på, hvor data anbringes, er de
+initialiserede, således som fx. vores keystring i eksempel 
+<xref LinkEnd="ex-kryptering1">, anbringes de i en sektion, som
+kaldes .data. Hvis vi ikke selv specificerer, at data skal
+initialiseres, anbringes variablen i den sektion, som kaldes BSS
+(eller .bss), og alle bit-terne vil blive nulstillet.
+</para>
+
+<para>
+Navnet <emphasis>bss</emphasis> er et navn, som har rødder i IBM
+- assembler sproget, og som egentlig står for block started by
+symbol. Lad os i stedet huske det som <emphasis> base static
+storage</emphasis>. Det er garanteret, at variable, som erklæres
+uden for en funktionsblok men som ikke er explicit initialiserede
+ved en "initializer", er nulstillede ved programmets start. Det
+sørger opstartsmodulet af programkoden for, traditionelt kaldet
+c0.c
+</para>
+
+<para>
+Læg især mærke til, at lokale variable anbringes på "stak for
+applikationer". Det er de højest tilgængelige adresser for vores
+program. Herfra kan stakken vokse (hov - den vokser nedad!)
+indtil den møder heap. På en Linux maskine kan den vokse mere end
+to gigabyte, før der sker sammenstød. MS NT har "kun" afsat 2 GB
+til applikationer.
+</para>
+
+</sect2>
+
+<sect2 id="sect-storage-spec">
+<title>Storage specifications</title>
+
+<para>
+Det reserverede ord <emphasis> static </emphasis> betyder
+selvfølgelig statisk. Det kan, som vi har set i 
+<xref LinkEnd="ex-kryptering1">, bruges, hvis man <emphasis> inde
+</emphasis> i en funktion ønsker at have en variabel, som
+overlever funktionen, så at sige, husker fra gang til gang, hvad
+værdi, den havde sidste gang. For eksempel en sidetæller i en
+udskriftsfunktion.
+</para>
+
+<programlisting>
+void topmargin_udskrift(char *section_navn)
+{
+     static int sidenummer;
+     printf("%s %d\n", section_navn, sidenummer);
+}
+
+</programlisting>
+<para>
+Stakken gør det muligt at have lokale variable i funktioner, og
+for at have et sæt variable HVER gang funktionen kaldes, det er
+betingelsen for, at man kan benytte rekursion.  Tilsvarende er
+heapen det område, som benyttes til dynamiske lager-strukturer
+som fx. en "liste" og et "træ". (se kap. 3,
+<xref LinkEnd="abstract-datatypes">).
+</para>
+
+<para>
+De steder, hvor der i nedenstående opstilling af lager-anvendelse
+er anbragt nogle punktummer på sidelinien er steder, hvortil der
+ikke nødvendigvis er knyttet noget RAM, fysisk memory.
+Programmets anbringelse i lageret ser normalt ud sådan her:
+</para>
+
+<indexterm><primary>memory</primary><secondary>layout</secondary></indexterm>
+<programlisting>
+              +----------------------------+
+              | Den øverste gigabyte       |
+              |   som operativsystemet     |
+              |     benytter og beskytter  |
+              |                            |
+              .                            .
+              .                            .
+              .                            .
+              |                            |
+              |                            |
+              +----------------------------+
+              |                            |
+              |  Stack område for          |
+              |          brugerprogram     |
+              |                            |
+              |  Her laves en ramme med    |
+              |  data for hver function    |
+              |  som kaldes                |
+              |                            |
+              .                            .
+              .                            .
+              .                            .
+              .                            .
+              |                            |
+              +----------------------------+
+              |                            |
+              |  Heap - der, hvor man kan  |
+              |    allokere mere lager     |
+              |                            |
+              |  Benyttes af funktionerne  |
+              |    malloc(3), calloc(3),   |
+              |     free(3) og realloc(3). |
+              |                            |
+              |                            |
+              +----------------------------+  -
+              |                            |   \
+              |  bss -                     |    \
+              |    blok started by symbol  |     \
+              |  ell. base static storage  |      NULSTILLES
+              |                            |      ved load af program
+              |  static variable som IKKE  |     /
+              |  er initialiserede         |    /
+              |                            |   /
+              +----------------------------+  -
+              |  .data                     |
+              |  initialiserede strings mv.|
+              +----------------------------+
+              |  .text                     |
+              |  Programmets instruktioner |
+              |  d.v.s. kommandoer til CPU |
+              +----------------------------+
+              | Lille stykke i bunden til  |
+              |   Operativsystemets        |
+              |   Hardwarehaandtering      |
+              +----------------------------+
+
+</programlisting>
+
+<para>
+Hvis vi ønsker at anbringe en variabel i .bss sektionen, skal vi
+blot erklære den uden for en funktion. Hvis en variabel erklæret
+inde i en funktion skal kunne huske sin værdi fra gang til gang,
+når funktionen kaldes, skal den defineres som static, hvilket vil
+bevirke, at den bliver anbragt i .bss sektionen.
+</para>
+
+</sect2>
+
+<sect2>
+<title>Konstanter og memory protection</title>
+
+<para>
+Der er forskellige måder at organisere kørselen af et program,
+men stort set alle benytter ovenstående opstilling som
+udgangspunkt. Det egner sig til virtual memory management,
+hvilket jo fra starten var udgangspunktet for Linux, og det giver
+nogle fordele, som er ret store. Vi kan simpelt hen lade vores
+program benytte 3 GB memory - også selv om vi ikke har
+installeret så meget. Afhængig af operativsystemets snedighed vil
+der kun blive tildelt fysisk memory, når det er strengt
+nødvendigt. Det vil sige, hvis vi vil skrive til memory. Når vi
+har loadet vores program og vil starte det op igen fra en anden
+brugers terminal, kan man stole på, at operativsystem kernen ikke
+bruger mere RAM til at loade endnu en kopi af program
+instruktionerne.
+</para>
+
+<para>
+Så opdelingen af programmet i sektioner skyldes både vores egne
+behov for at strukturere programmet og så et hensyn til
+operativsystemet. Sektionerne skal gøre det lettere for
+operativsystemet at optimere anvendelsen af memory.  Nogle
+sektioner skal kun læses, fx. program-instruktionerne, andre
+skal både læses og opdateres, og i hhv. heap og stack skal man
+kunne udvide området under kørselen.
+</para>
+
+<para>
+Hvis nu vores program alligevel forsøger at skrive på fx.
+adressen for en funktion, så skal Linux kernens memory management
+modul reagere ved at stoppe programmet.
+</para>
+
+<para>
+På samme måde er der dele af initialiserede data, som ikke må
 overskrives. Fx. streng-konstanten "Hello, world!\n" i eks.
-<xref LinkEnd="hello-world">
+<xref LinkEnd="hello-world">. Man kan heller ikke så nemt komme
+til at gøre det i netop det eksempel. Men se lige her:
 </para>
 
+<example id="ex-konst">
+<title>Konstant streng</title>
+<programlisting>
+/* constviol.c, at aendre en konstant ... */
+#include &lt;stdio.h>
 
-<sect2 id="storage-specifikation">
-<title>Storage specifikation</title>
+char * ms1 = "Hello, ever changing world!\n";
+
+int main()
+{
+     *ms1 = 'A'; /* segmentation violation, signal 11 */
+     return 0;   /* abort forinden, exitkoden er 139 == 128+11 */
+}
+
+</programlisting>
+</example>
+
+</sect2>
+
+<sect2 id="sect-scope">
+<title>Storage specifikation og scope</title>
+
+<para>
+Scope betyder synlighed. En af de rigtig gode ting ved C sproget
+er, at man kan skrive programmerne således, at variable kun er
+tilgængelige i en funktion eller et modul. Derved kan man uden
+stort besvær anvende objektorienterede programmeringsprincipper.
+</para>
+
+<example id="ex-scope-rules">
+<title>Scope eller synlighed</title>
+
+<programlisting>
+/* ... demonstration af scope regler, synligheds regler. */
+
+char * ms1 = "Min nye Hello-world rapport";
+char * ms2 = "(c) 2001 Donald Axel, 3210 Vejby";
+static char *msp = "Denne char-ptr kan kun bruges i denne fil."
+
+headerlinie(){
+     static int sidenummer; /* kan kun bruges i denne funktion */
+     printf("%s Side %d\n", ms1, ++sidenummer);
+}
+</programlisting>
+</example>
+
+
+<para>
+Hvis vi definerer en variabel, fx. ms1, på samme niveau som
+funktioner, så kaldes den et eksternt objekt. (Husk: Et C program
+består af en række definitioner af eksterne objekter.)
+</para>
+
+<para>
+Variablen ms1 vil - uden særlig angivelse af, at den er
+"public", blive synlig i andre kildetekst filer. De skal blot
+erklære en extern char * ms1;
+</para>
+
+<example id="ex-external-decl">
+<title>Extern declaration</title>
+
+<programlisting>
+/* External declaration */
+
+extern char * ms1;        /* synlig i hele denne source-fil.*/
+
+bundlinie(){
+     extern char * ms2;   /* kun synlig i denne funktion */
+     printf("%s\n", ms1);
+     printf("%s\n", ms2);
+}
+</programlisting>
+</example>
+
+<para>
+Hov! Hvad er nu det - kan man deklarere en ekstern <emphasis>
+inde </emphasis> i en funktion? Jada, og så er det meningen, at
+compileren skal redde os, hvis vi kommer til at bruge den
+<emphasis> uden </emphasis> for funktionen. Men deklarationen af
+extern char *ms2; inde i funktionen forudsætter, at variablen er
+defineret (og helst også initialiseret, i dette tilfælde!) et
+andet sted, d.v.s. i en anden kildetekst-fil (source-file).
+</para>
+
+<para>
+Bemærk dog, at det stadig accepteres af mange compilere, at man
+erklærer en extern variabel flere gange med samme navn. Det kan
+man vist roligt sige er en praksis, som bør undgås. Specielt kan
+det nævnes, at gcc accepterer at man definerer den samme variabel
+to eller flere gange, hvis den defineres i ydre niveau og dermed
+implicit er ekstern variabel!
+</para>
+
+<programlisting>
+/* fil 1. Demonstration af uheldig praksis. */
+/* programmet kompilerer uden warnings - ikke engang option
+ * -Wall, som ellers betyder "giv mig alle warnings", får gcc til
+ * at reagere på denne konstruktion! Men benyttes g++ får man
+ * heldigvis en fejl på denne uheldige fremgangsmåde. */
+
+int min_globale_variabel; /* ok, det bør enhver compiler acceptere. */
+
+int min_globale_variabel; /* uha - burde udløse en warning! */
+int min_globale_variabel; /* uha - burde udløse en warning! */
+
+int main()
+{
+     printf("Værdien af min_globale_variabel er %d\n", min_globale_variabel);
+     return 0;
+}
+
+</programlisting>
+
+<para>
+Det er jo godt nok kedeligt, hvis man tror, at man har to
+forskellige variable, og compileren tror, at der kun er en.
+Heldigvis findes der et værktøj (ud over c++) som kan afsløre
+denne og andre sjuskefejl. Lint, en statisk syntax-checker, har
+været på banen siden Unix version 7, altså den første offentlige
+udgave fra 1978. Der findes nu en open source lclint, som er
+fantastisk god til at gennemgå programmer, og som vel at mærke
+kan komme igennem include-filer uden brok. Lclint er så
+pedantisk, at man somme tider ønsker at slå en masse warnings
+fra, men det er der heldigvis også altid anvisninger på.
+</para>
+
+<para>
+<programlisting>
+
+<prompt>fri2c: </prompt><userinput>lclint globviol.c</userinput>
+pluto:/qf3/attic/don/fri ::lclint globviol.c
+LCLint 2.4b --- 18 Apr 98
+
+globviol.c:14:5: Variable min_globale_variabel redefined
+  A function or variable is redefined. One of the declarations should use
+  extern. (-redef will suppress message)
+   globviol.c:12:5: Previous definition of min_globale_variabel
+globviol.c:15:5: Variable min_globale_variabel redefined
+   globviol.c:12:5: Previous definition of min_globale_variabel
+globviol.c:12:5: Variable exported but not used outside globviol:
+                    min_globale_variabel
+  A declaration is exported, but not used outside this module. Declaration can
+  use static qualifier. (-exportlocal will suppress message)
+
+Finished LCLint checking --- 4 code errors found
+
+</programlisting>
+</para>
+
+<para>
+lclint er endog så omhyggelig, at den advarer mig om, at
+min_globale_variabel faktisk ikke bliver brugt i andre moduler
+(der er jo heller ikke andre lige for tiden ...) og at jeg derfor
+burde erklære denne variabel for static. Godt
+gået.<footnote><para> lint og den portable C compiler har som
+oprindelig ophavsmand Stephen C. Johnson, som er en af de kendte
+compiler-teoretikere der arbejder på Bell-labs.</para></footnote>
+</para>
+
+<para>
+Hvis man omvendt kun har erklæret alle sine eksterne variable med
+keywordet extern, så vil gcc beklagende meddele "undefined
+reference to min_extern". (Se øvelser i kap. 2 for at få mere
+føling med håndtering af variable i C programmer).
+</para>
+
+<para>
+<command>Tilbage til external variables!</command>
+</para>
+
+<para>
+Lige som extern kan også <emphasis> static </emphasis> bruges
+inde i og ude af funktioner.
+</para>
+
+<para>
+Resumé: En variabel, som er erklæret i starten af en
+funktion, er lokal - den er kun synlig i funktionen. Hvis man
+angiver, at den skal være static, så anbringes den fysisk i en
+datasektion, som eksisterer i hele programmets køretid. Men den
+er stadig kun synlig i funktionen, hvori den er defineret.
+</para>
+
+<para>
+Så hvad nu hvis man anvender det reserverede ord <literal>
+static </literal> <emphasis>udenfor</emphasis> funktionerne,
+altså lige som eksterne objekter? Jo, så bliver variablens
+synlighed indskrænket - ikke til en funktion, vi er jo udenfor
+funktionerne - men til den fil, hvori den er erklæret.
+</para>
 
 <para>
 En af de lidt morsomme ting i C sprogets anvendelse af ordene er,
-at ordet <emphasis>static</emphasis> har fået flere betydninger.
+at ordet <emphasis>static</emphasis> derved kommer til at
+betyde, at en variabel er "privat" for det modul, hvori den er
+erklæret!
 </para>
 
 <para>
-Den oprindelige betydning er, at de de data, som klassificeres
-som <emphasis>static</emphasis> skal anbringes i sektionen for
-globale data.
+Den oprindelige betydning af specifikationen "static" er
+selvfølgelig, at variablen skal være statisk. Den skal anbringes
+i sektionen for globale data, statiske data. De kalde statiske,
+fordi de eksisterer hele tiden, så længe programmet kører. Men
+for at give programmøren en hjælpende hånd med at kontrollere,
+hvor den pågældende variabel kan være blevet ændret (hvis der af
+en eller anden grund skulle opstå fejl i programmet?) så kan
+synligheden af statiske variable på denne måde begrænses.
 </para>
 
 <para>
-Hvis man nu inde i en funktion havde brug for en variabel, fx.
-sidetaeller, som
-ingen andre skulle pille ved, men som alligevel gerne måtte huske
-fra gang til gang, hvor vi var kommet til, så at sige, så var det
-en god ide at erklære en static variabel INDE i en funktion. Det
-betyder, at funktionen kan regne med, at denne variabel "husker"
-fra gang til gang.
+Static variabel erklæres inde i en funktion - scope i funktionen,
+static inde i et modul = scope i modulet.
+</para>
+
+<para>
+Variablen i eksemplet ovenfor, sidenummer, kan kun bruges inde i
+funktionen headerlinie(), men den husker alligevel nummeret fra
+gang til gang, når funktionen bliver kaldt.
 </para>
 
 <para>
@@ -906,19 +1475,83 @@ funktionen.
 </para>
 
 <para>
-Når nu en funktion gerne vil have sådan en buffer "for sig selv"
-så er det jo rimeligt at variabelen kun har scope i funktionen.
-Static kommer derfor til at angive en indskrænkning i synlighed,
-scope. Man kunne somme tider ønske sig, at ordet static blev
-erstattet af "modul-specifik" eller "privat", men det kan man jo
-bare gøre selv ved hjælp af typedef, hvis man virkelig er bidt af
-det!
+Man kunne somme tider ønske sig, at ordet static blev erstattet
+af "modul-specifik" eller "privat". Det kan man jo bare gøre
+selv ved hjælp af #define. I så fald skal man lige huske, at
+private er et reserveret ord i C++. Man kunne måske i stedet
+anvende "privat" (uden 'e' til sidst!) eller, bedre, et ord som
+"hidden" eller ... "local"? SÅ ville der rigtig være rod i
+semantikken! Problemet er nævnt i forbindelse med revision af C
+som basis for C++, men som sagt finder private anvendelse i C++ ,
+og det er altså på en lidt anden måde.
 </para>
 
 <para>
 Husk at et C program består af eksterne objekter, som kan være
-enten funktioner eller variable.  Oversigt over anvendelsen af
-static:
+enten funktioner eller variable.
+</para>
+
+</sect2>
+
+<sect2>
+<title>kontrolvariable for løkker eller loops</title>
+
+<para>
+Det fremhæves somme tider, at C++ er særlig smart fordi man kan
+erklære variable der, hvor man har brug for dem. Det er sandelig
+også en god ting. Man har dog for nylig indført nogle
+forbedringer (læs rettelser) således at en kontrol-loop variabel,
+som erklæres i fx. en for-løkke, går ud af scope ved afslutningen
+af den blok, som styres af for løkken. Ellers kunne der nemt
+opstå noget rod.
+</para>
+
+<para>
+Denne fejlkilde er elimineret i C ved at man kan erklære variable
+i enhver blok (hver gang man skriver en krøllet parentes start,
+brace start), og denne variabels scope går så indtil blokkens
+slutning. Nemt og logisk. Denne facilitet anvendes alt for lidt!
+</para>
+
+<example id="ex-local-control-var">
+<title>En lokal kontrol variabel</title>
+
+<programlisting>
+/* loopcount.c, demonstration af ad-hoc variabel. */
+
+#include &lt;stdio.h>
+
+char *thisprog;
+
+int main(int argc, char *argv[])
+{
+    thisprog = argv[0];
+    printf("Program %s er startet ... \n", thisprog);
+    {
+        int jj = 0;              /* jj bliver oprettet */
+        while(jj++ &lt; 10)
+            printf("For %d. gang: Ih hvor vi kører\n", jj);
+    }
+                                 /* nu er jj nedlagt "automatisk" */
+    printf("Program %s exiter graciøst!\n", thisprog);
+    return 0;
+}
+</programlisting>
+</example>
+
+<para>
+For at tillade compileren at optimere kan det forekomme, at
+interne blokkes auto-variable faktisk oprettes samtidig med at
+funktionens stack-frame sættes. Således gør gcc.
+</para>
+
+</sect2>
+
+<sect2>
+<title>Oversigt over variabel - anvendelse</title>
+
+<para>
+Oversigt over anvendelsen af static:
 </para>
 
 <itemizedlist mark="bullet">
@@ -943,12 +1576,11 @@ den er nulstillet.
 
 <listitem>
 <para>
-static for external object: specifikation af, at variabelen
+static for external object: specifikation af, at variablen
 <emphasis> kun </emphasis> skal være synlig i det oversættelses
 modul (translation unit) hvori den forekommer.
 </para>
 </listitem>
-
 <listitem>
 <para>
 static for variabel i en funktion (kaldes lokal static) betyder,
@@ -959,7 +1591,7 @@ at den kun er synlig i den funktion, hvori den er erklæret.
 </itemizedlist>
 
 <para>
-Her er en præcisering af, hvordan man kan bruge de
+Her er en præcisering af, hvordan man kan definere
 forskellige slags lokale variable.
 </para>
 
@@ -972,12 +1604,35 @@ funktionsstakken. Skal initialiseres hver gang funktionen køres.
 </listitem>
 <listitem>
 <para>
-keyword auto (samme som ovenfor).
+reserveret ord auto: overflødigt, samme som ovenfor.
 </para>
 </listitem>
 <listitem>
 <para>
-Listen fortsættes i næste revision.
+reserveret ord register: Compileren vil, hvis det er muligt, anbringe
+denne variabel i et af maskinens hurtige registre. Man kan ikke
+tage adressen på en registervariabel.
+</para>
+</listitem>
+<listitem>
+<para>
+reserveret ord extern: Variablen er defineret et andet sted,
+normalt i en anden oversættelses enhed.
+</para>
+</listitem>
+<listitem>
+<para>
+reserveret ord static: Variablen anbringes i regionen for
+statiske variable. Den er kun synlig i den blok, gerne en
+funktionsblok, hvori den er deklareret. (Den er selvfølgelig også
+synlig i den oversættelses enhed, hvori den er defineret!)
+</para>
+</listitem>
+<listitem>
+<para>
+En lokal variabel behøver ikke at blive defineret øverst i
+funktionens yderste blok. Man kan definere nye lokale variable,
+hver gang man skriver en start-brace (klamme).
 </para>
 </listitem>
 

@@ -1280,7 +1280,6 @@ int main()
     int c;
     while ( (c=getchar()) != EOF)
       putchar(c);
-    }
     return 0;
 }
 </programlisting>
@@ -1481,11 +1480,202 @@ PROMPT $ man ascii
 PROMPT $ man groff-char
 </programlisting>
 
+</sect2>
+
+<sect2>
+<title>Et typisk filter</title>
+
 <para>
-Et andet filter, som senere skal stå HER, er et character -
-filter, som konverterer CodePage 865 til ISO-8859-1. Det kan
-gøres på forskellige måder.
+Et filterprogram, som svarer til den normale anvendelse af ordet
+filter, er et program som kan konverterer CodePage 865
+til ISO-8859-1. Det kan gøres på forskellige måder, men eksemplet
+egner sig godt til at demonstrere, hvordan man "mapper" en
+datamængde over i en anden.
 </para>
+
+<para>
+Lad os for simplicitetens skyld gå ud fra, at hvert bogstav er en
+byte. (Desværre er jeg ikke klar over, om iso8859-1 altid er en
+byte, men det går vi altså ud fra, at de er.) Vi skal med andre
+ord kunne konvertere en byte til en anden byte. Antallet af
+mulige værdier i begge lejre er kun 256.
+</para>
+
+<para>
+Den hurtigste teknik til en sådan opgave er derfor tabelopslag,
+som kan svare på, hvilken ny værdi vores byte skal have ved at
+bruge vores input som index i et array med 256 værdier.
+</para>
+
+<para>
+For at prøve teknikken lader vi først en loop initialisere
+arrayet først, således at der ingen konvertering ville finde
+sted. Derefter prøver vi, om vores program kopierer input til
+output <emphasis>uden</emphasis> ændringer.
+</para>
+
+<example id="ex-msdos2iso8859-1-forstadium">
+<title>Codepage 865 til iso8859-1, forstadium.</title>
+<programlisting>
+/* ibm2iso0v1.c, forstadium til konverteringsprogram 
+ * Codepage 865 -> iso8859.1
+ */
+
+#include &lt;stdio.h>
+
+static char conv[256];
+
+int main(int argc, char *argv[])
+{
+    int c;
+    int jj;
+
+    for (jj = 0; jj &lt; 256 ; ++jj)
+        conv[jj] = jj;
+
+    while ( (c=getchar()) != EOF) 
+        putchar(conv[c]);
+
+    return 0;
+}
+
+</programlisting>
+</example>
+
+<para>
+Somme tider klager folk over, at C programmet ikke har boundary
+check for arrays. Det er der selvfølgelig den gode grund til, at
+det ville være spild af tid i et godt program. Hvorfor vil
+ovenstående program ALDRIG gå ud over grænserne fra 0 til 256?
+</para>
+
+<para>
+Hvordan tester man nu sådan et program? Her er Unix suverænt, man
+omdirigerer input fra en fil og samler test output op i en anden
+fil. På den måde opnår man, at selve test-proceduren kan
+automatiseres (evt. sættes ind som et target i en makefile.)
+</para>
+
+<para>
+<programlisting>
+<prompt>fri2c: </prompt> gcc -Wall ibm2iso0v1.c -o ibm2iso0v1
+<prompt>fri2c: </prompt> ibm2iso0v1 &lt textfile > textfile.kpi
+<prompt>fri2c: </prompt> cmp textfile textfile.kpi
+</programlisting>
+</para>
+
+<para>
+Den næste terrasse, som vi vil nå op på, skal konvertere et
+enkelt tegn og lade resten være. Vi benytter derfor stadig
+loopen, men tilføjer nu en linie, som ændrer en enkelt af
+tabelværdierne, og ser, om vi får det ønskede resultat, hvis vi
+sender input af den pågældende værdi. (Det gør vi selvfølgelig).
+</para>
+
+<example id="ex-msdos2iso8859-1-Terrasse2">
+<title>Terrasse 2</title>
+<programlisting>
+
+/* ibm2iso0v2 - forstadium 2, konvertering af en enkelt værdi. */
+
+#include &lt;stdio.h>
+
+static char conv[256];
+
+int main(int argc, char *argv[])
+{
+    int c;
+    int jj;
+
+    for (jj = 0; jj &lt; 256 ; ++jj)
+        conv[jj] = jj;
+
+    conv['A'] = 'a';                  /* Ja, man må gerne! */
+
+    while ( (c=getchar()) != EOF) 
+        putchar(conv[c]);
+
+    return 0;
+}
+
+</programlisting>
+</example>
+
+<para>
+Når man kører ovenstående program (fra kommandolinie, med input
+fra tastaturet) skal man få lille a hvis man taster store a.
+Ellers skal alt output være det samme som input.
+</para>
+
+<para>
+Den version af programmet, som vi slutter med her, behøver ikke
+at være den endelige version. De mange sjove grafiske tegn, som
+findes i codepage850 og 865 kan man jo forestille sig efterlignet
+på mange måder, afhængig af, om man skal ud på en printer eller
+en ascii skærm eller en grafisk tegneflade (stort arbejde!). Vi
+nøjes med en version, som konverterer de danske tegn i
+IBM-tegnsættet codepage 850 til ækvivalenterne i iso8859-1.
+</para>
+
+<example id="ex-msdos2iso8859-1-Terrasse3">
+<title>Terrasse 3</title>
+<programlisting>
+
+/* ibm2iso.c - terrase 3, konvertering af danske tegn. */
+
+#include &lt;stdio.h>
+
+static char conv[256];
+
+int main(int argc, char *argv[])
+{
+    int c;
+    int jj;
+
+    for (jj = 0; jj &lt; 256 ; ++jj)
+        conv[jj] = jj;
+
+    conv[134] = 'å';              /* 134 er codepage850 for å */
+    conv[143] = 'Å';              /* 143 er codepage850 for Å */
+    conv[145] = 'æ';
+    conv[146] = 'Æ';
+    conv[155] = 'ø';
+    conv[157] = 'Ø';
+    conv[130] = 'é';
+    conv[144] = 'É';
+                                  /* fortsæt listen efter behov */
+
+    while ( (c=getchar()) != EOF)
+        putchar(conv[c]);
+
+    return 0;
+}
+
+</programlisting>
+</example>
+<para>
+Den teknik, som er vist her ovenfor, er selvfølgelig lidt for
+nem. Hvis man vil have en lynhurtig service ved hjælp af en
+opslagstabel, skal tabellen selvfølgelig være initialiseret i
+forvejen. Det må man med andre ord skrive i hånden:
+</para>
+<programlisting>
+char ctab[256] = 0,1,2,3, /* nej ikke stop her! */
+</programlisting>
+
+<para>
+Det er den teknik, som anvendes i library funktionerne
+isprint(3), isdigit(3), toupper(3) osv. fordi det simpelthen er
+den hurtigste måde. Hver konvertering koster kun en enkelt
+indexerings-operation - især hvis funktionerne er erklæret som
+inline funktioner (findes i gcc og er med i den nye standard
+C99).
+</para>
+
+</sect2>
+
+<sect2 id="sect-oversaetter-forstadium">
+<title>Oversætter - teknik, forstadium</title>
 
 <para>
 Ud over de grundlæggende typer tekstfiltre, som som vi har
@@ -1493,13 +1683,109 @@ set på her, ville det være nyttigt at se et par eksempler på
 programmer, som kan filtrere mime-kodede postfiler, og en 
 slags preprocessor filter, som kan
 forstå &lt;tags> og f.eks. udtrække ren ascii fra en sgml fil.
-Desuden er det min plan at vise, hvordan et sådant filter
-kan udstrækkes til at checke nesting af tags. Det kan gøres
-v.hj.a recursive descent parsning.
 </para>
+
+<para>
+Denne gang nytter det ikke at lave byte til byte mapning. Vi har
+som input sekvenser, der begynder med et lighedstegn og
+fortsætter med en hexadecimal talværdi for det ønskede output
+tegn.
+</para>
+
+<example id="ex-mimeparser">
+<title>mime afkodning</title>
+<programlisting>
+
+/* mime2asc.c - konvertering af mime - koder til ascii. */
+
+#include &lt;stdio.h>
+
+static char str[3];
+
+int main(int argc, char *argv[])
+{
+    int c, c2;
+    char *ptr;
+
+    while ( (c=getchar()) != EOF) {
+        if (c != '=')
+            putchar(c);
+        else {
+            if ( (c2 = getchar()) == '\n')  /* ok, a continuation request */
+                continue;                   /* donot print a newline */
+            else {
+                if (feof(stdin)) exit(1);
+                str[1] = getchar();
+                if (feof(stdin)) exit(1);
+                str[0] = c2;
+                c = strtol(str, &amp;ptr, 16);
+                putchar(c);
+            }
+        }
+    }
+
+    return 0;
+}
+
+</programlisting>
+</example>
+
+<para>
+Programmet er uhyre simpelt i forhold til en produktionsversion,
+men indeholder det nødvendige for at fremhæve pointen.
+Håndteringen af End-Of-File er klodset, og fejl ved konvertering
+af de to tegn efter lighedstegn håndteres slet ikke. EOF
+håndteringen kunne håndteres ved at benytte en liniebuffer og
+fgets(), og strtol(3) giver os et errno, som vi kunne checke på.
+</para>
+
+<para>
+Vi benytter os af det faktum, at ethvert '=' skal forstås på en
+speciel måde, det indleder en mime sekvens. Det kan man kalde for
+et meta tegn, et tegn, som ikke blot er et tegn. Det er en
+kommando, på samme måde som '\' er en speciel kommando i en C
+string, '\n' betyder newline og ikke bogstavet n.
+</para>
+
+<para>
+Hver gang vi støder ind i et tegn, undersøges, om det er et
+lighedstegn, og hvis ikke går det ufiltreret til output.
+</para>
+
+<para>
+Lighedstegnet smides væk og de to næste characters puttes i en
+streng, der bliver opfattet som en hexadecimal værdi. Denne
+konverteres ved kald til strtol(3) string to long. Denne fornemme
+konverteringsrutine får en pointer til stringen med hexadecimal
+tallet, adressen på en character pointer, som den så kan bruge
+til at rapportere, hvor meget den kunne konvertere, og endelig et
+tal, som er radix for konverteringen, d.v.s. at hvis vi vil
+konvertere et almindeligt tal, skal vi aflevere et 10-tal her.
+</para>
+
+<para>
+strtol(3) kunne godt undvære parameter 2, eller rettere, vi kunne
+fortælle den, at der ikke er nogen pointer ved at aflevere en NULL
+pointer. <literal>strtol(str,NULL,16);</literal>
+</para>
+
+<para>
+strtol ville returnere et 0, hvis de efterfølgende bogstaver ikke
+kan konverteres, og det ville selvfølgelig være en situation, vi
+burde undersøge nøjere, ligesom errno, en static variabel i
+library modulet, burde checkes. Prøv at gøre det, og send
+invalidt input til programmet og kontroller, at programmet
+håndterer det på en fornuftig måde!
+</para>
+
+<para>
+Derefter prøv at lave en forbedring af programmet, som kan
+benytte kommandolinie parametre i stedet for omdirigering.
+</para>
+
 </sect2>
 
-<sect2 id="s3-file-adder">
+<sect2 id="sect3-file-adder">
 <title>Summering af tal i en fil.</title>
 <para>
 Et program, som ønsker at behandle linier i st.f. characters, kan
@@ -1511,8 +1797,8 @@ af et sekund.
 </para>
 
 <para>
-Allerede nu kan det forudses, at den - hvis vi kan "forstå"
-negative tal, også ville kunne trække fra.
+Allerede nu kan det forudses, at hvis den kan "forstå"
+negative tal også vil kunne trække fra.
 </para>
 
 <para>
@@ -1582,6 +1868,121 @@ tekst strengen til det første bogstav, der ikke kunne
 konverteres. Man kan også bruge den på en mere simpel måde;
 man giver den blot NULL som anden parameter, og krydser fingre og
 siger: det skal nok gå alt sammen ...
+</para>
+
+</sect2>
+
+<sect2>
+<title>En tag - parser</title>
+
+<para>
+I dette eksempel demonstreres den teknik at lade en funktion
+hente rigeligt input til en buffer, selv om vi ofte kun anvender et
+tegn af gangen. Når vi har brug for at sammenligne med en string-
+compare, ved vi, at der er tegn nok bufferen, for vi lader den
+"efterfylde" hver gang vi kommer til en newline eller en tag -
+som desværre jo kan ligge hen over en liniedeling eller to.
+Vores buffer lader vi være så stor, at der ikke er umiddelbar
+fare for overfyldning.
+</para>
+
+<example id="ex-tag-parser">
+<title>En tag - parser</title>
+<programlisting role="C">
+/* tagpars.c Minimalt program til genkendelse af tags. */
+
+#include &lt;stdio.h>
+#include &lt;string.h>
+#include &lt;strings.h>
+
+#define INTAG  257
+#define OUTTAG 258
+int status;
+int eof;                        /* global end of file */
+
+#define MAXB 8000
+
+char buf[MAXB];
+int endbuf;
+int bufindex;
+
+int init();
+int fillbuf();
+int ch();
+int gch();
+
+int main()
+{
+    int c;
+
+    if (init() == 0)
+        return 1;
+    while (!eof && ch() != '&lt;')
+        putchar(gch());
+
+    return 0;
+}
+
+int init()
+{
+    /* do any initializing of globvars */
+    return fillbuf();
+}
+
+int fillbuf()
+{
+    char *rv;
+    int tlen;
+    char tmpbuf[MAXB];
+
+    /* til at begynde med er status 0 altså != INTAG */
+    if (status == INTAG)
+        while ((rv = fgets(tmpbuf, MAXB, stdin)) != NULL) {
+            if ((tlen = strlen(tmpbuf)) > (MAXB - endbuf)) {
+                fprintf(stderr, "Tagparse, fatal: buffer full\n");
+                exit(255);
+            }
+            strcpy(&amp;buf[endbuf], tmpbuf);
+            endbuf += tlen;
+            if (index(&amp;buf[endbuf], '>'))
+                break;
+        }
+    /* end-while */ 
+    else {
+        rv = fgets(buf, MAXB, stdin);
+        endbuf = strlen(buf);
+        bufindex = 0;
+    }
+    if (rv == NULL) {
+        eof = 1;
+        return 0;
+    } else
+        return 1;
+}
+
+int ch()
+{
+    return buf[bufindex];
+}
+
+int gch()
+{
+    if (ch() == 0)
+        fillbuf();
+    return buf[bufindex++];
+}
+
+</programlisting>
+</example>
+
+
+<para>
+Beklager, programmet er ikke færdigt! Der tilføjes et linieskift
+for meget i output.
+</para>
+
+<para>
+asd
 </para>
 
 </sect2>
