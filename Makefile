@@ -1,4 +1,4 @@
-all: clean statusfiler html palmpilot pspdf cvs2html mail
+all: clean statusfiler html palmpilot pspdf sgml cvs2html mail
 
 statusfiler:
 	make -C friheden statusfiler
