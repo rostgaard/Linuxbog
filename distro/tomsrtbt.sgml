@@ -7,8 +7,8 @@ bootable" og findes på
 
 Det er et Linux-system der kan ligge på en floppydisk, som er
 god til f.eks. rescue disk, som man kan boote fra hvis man har fået
-lavet sin maskine så den ikke kan starte Linux. Eller vi kan kalde det
-en universel bootdisk.
+lavet sin maskine så den ikke kan starte Linux. Eller i det hele taget
+som en universel bootdisk.
 </para>
 
 
@@ -16,7 +16,7 @@ en universel bootdisk.
 <title>Hvem er målgruppen for Tomsrtbt</title>
 <para>
 Alle os der somme tider kommer til at lave noget dumt, og har brug for
-en boot diskette. Og som er for dovne eller sparsommelige til at lave en
+en boot diskette. Og som er for dovne eller selvsikre til at lave en
 boot disk under installationen, hvergang vi installerer en maskine.
 </para>
 
@@ -37,11 +37,10 @@ downloader og laver bootdisken på denne måde:
 <screen>
 wget http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/tomsrtbt-2.0.103.tar.gz
 </screen>
-(eller download fra dette link:
+(eller klik på dette link:
 <ulink url="http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/tomsrtbt-2.0.103.tar.gz">/http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/tomsrtbt-2.0.103.tar.gz</ulink>)
 
-Indsæt en floppy i drevet (vi er på en Linux maskine) og skriv (som
-root):
+Indsæt en floppy i drevet på en Linux maskine og skriv som root:
 <screen>
 # tar xvzf tomsrtbt-2.0.103.tar.gz
 # cd tomsrtbt-2.0.103
@@ -60,28 +59,55 @@ url="http://www.toms.net/rb/tomsrtbt.FAQ">http://www.toms.net/rb/tomsrtbt.FAQ</u
 <sect1 id="distro-toms-brug">
 <title>Brugen af Tomsrtbt</title>
 <para>
-Man booter fra disketten. Undervejs kan man vælge video modes og
-keyboard type. Så logger man ind som root, passwordet står på skærmen.
-Man kan ændre passwordet ved at editere i /etc/passwd filen (man skal
-nok gøre det på et andet system, medmindre man kan kryptere i hovedet).
-Eller man kan ændre det i tomsrtbt-2.0.103/settings.s inden man
-installerer tomsrtbt på disketten.  </para>
+Man booter fra disketten. I starten viser Tomsrtbt en stor og en lille
+pingvin i ascii art, hvorunder der står hhv. "Other distributions" og
+"Tomsrtbt". 
+<screen>
+        #####
+       #######
+       ##O#O##
+       #VVVVV#
+     ##  VVV  ##
+    #          ##
+   #            ##
+   #            ###          .~.
+  QQ#           ##Q          /V\
+QQQQQQ#        #QQQQQQ      // \\
+QQQQQQQ#     #QQQQQQQ      /(   )\
+  QQQQQ#######QQQQQ         ^`~'^
+
+ Other distributions       tomsrtbt
+</screen>
+
+Dette er for at illustrere at Tomsrtbt er lille, det er ikke
+fordi man kan vælge en option der hedder "Other distributions".
+</para>
+<para>
+Undervejs kan man vælge video modes og
+keyboard type. Så logger man ind som root, default passwordet står på skærmen.
+</para>
 
 <para>
-Der er mange systemværktøjer med, for en enkelt lille diskette, bl.a
-badblocks, e2fsck, insmod, lsmod, traceroute, nslookup, dhcpcd, wget, nc
-og enddog httpd. Der er desuden telnet og telnetd, men ingen ssh.
-Som shell er valgt sh. Ash er også med, men ingen af dem har tab
-completion som i bash. Der er også man sider med på disketten.
-Man kan downloade add-on pakker på <ulink
-url="http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/programs/">http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/programs/</ulink>, disse kan f.eks, lægges på en diskette nummer to.
+Der er rimelig mange systemværktøjer med, taget i betragtning at det kun
+fylder en enkelt lille diskette. Til gengæld er der ret få drivere. Af systemværktøjer kan bl.a nævnes badblocks, e2fsck, insmod, lsmod,
+traceroute, nslookup, dhcpcd, wget, nc og enddog httpd. Der er desuden
+telnet og telnetd, men ingen ssh. Som shell er valgt sh. Ash er også
+med, men ingen af dem har tab completion som i bash. Der er også man
+sider med på disketten. Man kan downloade add-on pakker på <ulink
+url="http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/">http://www.tux.org/pub/distributions/tinylinux/tomsrtbt/add-ons/programs/</ulink>, disse kan f.eks, lægges på en diskette nummer to. Der er heller ingen ssh at finde her.
 Tomstrbt kører pt. kernel 2.2.20 med ext3. Reiserfs er ikke
-understøttet. Det er muligt at downloade en 2.4 kerne inde på deres
-wikiwiki under "Contributed Things".
+understøttet, hvilket gør det lidt meningsløst at bruge tomsrtbt som
+rescue diskette for systemer, der benytter dette. Det er muligt at
+downloade en 2.4 kerne inde på deres wikiwiki under "Contributed
+Things".
 </para>
+
+<para>
+Det er beskrevet kort i FAQ'en, del 7, hvordan man tilpasser sin tomsrtbt, ved
+at lægge andre programmer eller moduler ind, eller ændre i konfigurationen (f.eks. skifte passwordet). Ideen er at man udpakker med ./unpack.s . Så får man et 1 og et 2 directory. Under 1 ligger der et par konfigurationsfiler, under 2 ligger filsystemet med /bin, /lib osv., hvor man kan lægge programmer ind. Derefter bygger man disketten igen med ./buildit.s . Det virker bare ikke på mit system. Så foreslår de i FAQ'en at man bygger under tomsrtbt selv, men dette kræver at man kan tilgå den udpakkede tomsrtbt på harddisken. Da den ikke understøtter reiserfs havde jeg ikke lige noget harddiskplads, jeg kunne mounte. Så det projekt må læseren selv eksperimentere med.
+</para>
+
 </sect1>
-
-
 
 <sect1 id="distro-toms-killer">
 <title>Killer-feature</title>
@@ -97,6 +123,11 @@ behov for lidt andre programmer eller drivere.
 <sect1 id="distro-toms-vurdering">
 <title>Samlet vurdering af Tomsrtbt</title>
 <para>
+Tomsbtrt er god at have ved hånden, hvis man skal boote et system fra
+floppy, som ikke kan mounte sin root partition. Til de fleste andre ting
+er systemets egen bootdisk eller boot cdrom mindst lige så god. Roder
+man lidt med hvilke ting man vil have ind i toms, kan den blive et meget
+nyttigt værktøj at have i sin kasse.
 </para>
 </sect1>
 
