@@ -24,11 +24,14 @@ default:
 # Tanken er at denne her makefile afhænger af de faelles filer
 # Desuden gøres den afhængig af de filer der skal til for at opdatere 
 # underbiblioteker - dermed autolaves disse, hvis nogen filer ændres.
-# Der en lille detalje; Hvis man ikke har konfigureret for alle, køres configure
-# alligevel hvis Makefile.alle er blevet ændret. Sådan er det bare.
+#
+# Der en lille detalje; Hvis man ikke har konfigureret for alle, køres
+# configure alligevel hvis Makefile.alle er blevet ændret. Sådan er det
+# bare. - Men nu findes Makefile.alle slet ikke mere!
+#
 FAELLES_FILER:=faelles-filer/*.css faelles-filer/*.sgml
 BYGGE_FILER:=linuxbog.spec misc/insertimagesize \
-		configure Makefile.in Makefile.alle Makefile.samling \
+		configure Makefile.in Makefile.samling \
 		bootstrap.subdir Makefile.subdir configure.ac.subdir
 Makefile:	$(FALLES_FILER) $(BYGGE_FILER)
 	./configure @CONFIGUREARGS@
@@ -90,7 +93,7 @@ clean:	$(addsuffix /Makefile,$(SUBDIRS) $(SAMLING))
 #
 # reallyclean
 # reallycleaner i alle subdirs == tilbage til før bootstrap
-reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
+reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(SAMLING))
 	rm -f *.tar.gz *~
 	@for dir in $(SUBDIRS) $(SAMLING) ; do \
 		echo "*** Kører make $@ i $$dir" && \
