@@ -1,0 +1,593 @@
+<chapter id="etc-filer">
+<title>Hvor finder jeg konfigurationsfilerne?</title>
+
+<PARA>
+Dette afsnit vil beskrive, hvilke filer der er relevante at kende i
+et Linux system. Det er normalt at gemme konfigurationsfiler i
+<filename>/etc</filename>, så du kan have glæde af at læse de enkelte
+filer igennem, når du er blevet lidt erfaren i at styre Linux. Vi vil
+i dette afsnit give dig et overblik over de vigtigste
+konfigurationsfiler, så du selv kan forstå, hvad der foregår.
+</para>
+
+
+<sect1 id="etc-password-filen">
+<title>/etc/passwd</title>
+<indexterm><primary>/etc/passwd</primary></indexterm>
+<para>
+Filen <filename>/etc/passwd</filename> indeholder en linje per bruger,
+som har login på maskinen. Brugeren "root" har også en linje her. Kun
+hvis man kører NIS (tidligere kendt som "yellow pages"), kan man lade
+ekstra brugere være styret af andre servere.
+</para>
+
+<para>
+Et eksempel på en linje af adgangskodefilen, passwd, er 
+</para>
+
+<screen>
+anne:x:500:501::/home/anne:/bin/bash
+</screen>
+
+<para>
+Der står, at brugeren "anne" er bruger nummer 500 på maskinen (ikke, at
+der faktisk er 500). Brugeren "anne" er med i gruppe nummer 501, hvilket er
+styret af <filename>/etc/group</filename>. Brugeren "anne" har
+hjemmemappe i <filename>/home/anne</filename> og starter med
+<command>/bin/bash</command> som login-shell.  Det lille x betyder, at
+man kører med skygge-adgangskoder (eng. shadow-passwords), dvs. at
+adgangskoder står i <filename>/etc/shadow</filename>, og denne fil kan
+ikke læses af andre end "root" - dvs. skygge-adgangskoder er en
+sikring af dine adgangskoder.
+</para>
+
+<para>
+Hvis en person ikke skal have lov til at logge ind på maskinen, så kan
+du rette i <filename>/etc/passwd</filename> og indsætte en stjerne
+(dvs. *) foran den krypterede adgangskode. Har du krypterede adgangskoder på
+maskinen, så er det i stedet i <filename>/etc/shadow</filename>, du
+skal indsætte * (efter første kolon).
+</para>
+
+
+</sect1>
+
+<sect1 id="etc-shadow-filen">
+<title>/etc/shadow</title>
+<indexterm><primary>/etc/shadow</primary></indexterm>
+
+<para>
+Formatet af
+shadow filen følger passwd-filen, en linje per bruger. Et eksempel er
+</para>
+
+<screen>
+anne:$1$/hbYueDa$46ggNKFugoDABWOJZ3xvz0:10784:0:99999:7:::       
+</screen>
+
+<para>
+For brugeren "anne" står der de krypterede adgangskoder. For Red Hat er
+det længere end for SuSE, idet Red Hat anvender en bedre
+krypteringsmåde. Derefter vises antal dage siden 1/1-1970 for sidste
+ændring af adgangskoderne. Antal dage siden sidste ændring af
+adgangskode. Antal dage før udløb af adgangskoder skal der sendes en
+advarsel (her 99999). Sidste anvendte felt (7) er antal dage siden 1/1
+1970 til kontoen bliver lukket. Endelig er der et felt som ikke anvendes.
+</para>
+<para>
+Hvis din maskine ikke kører skygge-adgangskoder, og vil du dette, så kør
+<command>/usr/sbin/pwconv</command> som brugeren root. Tilsvarende
+findes <command>/usr/sbin/pwunconv</command> til at få adgangskoderne gemt
+i selve passwd-filen og ikke shadow-filen.
+</para>
+</sect1>
+
+
+<sect1 id="etc-group-filen">
+<title>/etc/group</title>
+<indexterm><primary>/etc/group</primary></indexterm>
+<para>
+Hver person er med i en eller flere grupper, og dette bruger man til
+at udskille, hvem der har adgang til hvilke dataområder. Kommandoen
+<command>chmod g+w fil</command> vil f.eks. gøre, at andre brugere, som
+er i sammen gruppe som ejeren af filen, kan skrive i
+<filename>fil</filename>. 
+</para>
+
+<para>
+Hver linje i <filename>/etc/group</filename> svarer til en gruppe. Et
+eksempel på en gruppe kan være
+</para>
+
+<screen>
+web:x:1000:anne,niels,svend
+</screen>
+
+<para>
+Dvs. gruppen "web" har gruppe ID nummer 1000, og "x" betyder, at en
+eventuelt adgangkode for gruppen (anvendes ved skift til ny gruppe med
+<command>newgrp</command>) findes i shadowfilen
+<filename>/etc/gshadow</filename>. Hvis "x" blev fjernet 
+anvendes gruppe-adgangskoder ikke. 
+Til sidst på linjen står der de login-navne (fra
+passwd-filen) som er medlemmer af gruppen.
+</para>
+</sect1>
+
+
+<sect1 id="etc-gshadow-filen">
+<title>/etc/gshadow</title>
+<indexterm><primary>/etc/gshadow</primary></indexterm>
+
+<para>
+Filen <filename>/etc/gshadow</filename> følger nøje
+<filename>/etc/group</filename> med en linje per gruppe. 
+</para>
+</sect1>
+
+
+
+<sect1 id="etc-fstab-filen">
+<title>/etc/fstab</title>
+<indexterm><primary>/etc/fstab</primary></indexterm>
+<indexterm><primary>Mount, cdrom</primary></indexterm>
+<indexterm><primary>Floppy</primary></indexterm>
+<indexterm><primary>Floppy, bruger</primary></indexterm>
+<indexterm><primary>Mount, floppy</primary></indexterm>
+
+<para>
+Filen <filename>/etc/fstab</filename> indeholder information om de
+disk-partitioner, som skal eller kan mountes ved systemopstart.
+Et eksempel kan være
+</para>
+
+<screen>
+/dev/hdb2   /            ext2    defaults        1 1
+/dev/hda1   /dosc        vfat    defaults        0 0
+/dev/hdb3   /home        ext2    defaults        1 2
+/dev/hdb1   swap         swap    defaults        0 0
+/dev/fd0    /mnt/floppy  vfat    noauto,user,rw  0 0
+/dev/cdrom  /mnt/cdrom   iso9660 noauto,user,ro  0 0
+none        /proc        proc    defaults        0 0
+none        /dev/pts     devpts  mode=0622       0 0  
+</screen>
+
+<para>
+De to sidste linjer er noget, Red Hat automatisk selv har sat op,
+det ser vi bort fra. Dernæst kan vi se, at der er to harddiske i
+maskinen hda og hdb. Den sekundære harddisk på første IDE-kontroller,
+dvs. hdb har tre partitioner. Swap partitionen er sat op på den første
+partition <filename>/dev/hdb1</filename> og de to næste partitioner
+på hdb, dvs. <filename>/dev/hdb2</filename> og
+<filename>/dev/hdb3</filename> er af typen ext2 (Linux-type), og de
+mountes i rækkefølge som vist yderst til højre, dvs
+<filename>/dev/hdb2</filename> (roden) før
+<filename>/dev/hdb3</filename> (brugerens hjemmekatalog i
+<filename>/home</filename>). De to sidste linjer viser, at en
+almindelig bruger (user) kan monterer cdrom'er og disketter, men at det ikke
+gøres automatisk (noauto) under opstart. cdrom'et vil efter
+<command>mount /mnt/cdrom</command> kunne findes under
+<filename>/mnt/cdrom</filename>. 
+Brug i øvrigt <command>man mount</command>.
+<!-- Se i øvrigt xref linkend="Mount" -->
+</para>
+
+<para>
+Det bør nok nævnes, at brugere med SCSI diske bør bruge UUID i stedet
+for device navne til at identificere devices. Ellers opfører hele
+filsystemet sig underligt, hvis én af diskene på SCSI controlleren går
+ned. Se <command>man fstab</command>.
+</para>
+
+</sect1>
+
+<sect1 id="etc-hosts-filen">
+<title>/etc/hosts</title>
+<indexterm><primary>/etc/hosts</primary></indexterm>
+
+<para>
+Hosts-filen anvendes ofte på maskiner, som ikke har navneserver
+(eng. DNS server eller name server) til rådighed. Man skriver en
+ip-adressse, det fulde netværknavn og et eventuelt alias. Et eksempel
+kan være:
+</para>
+
+<screen>
+127.0.0.1        localhost.localdomain localhost
+192.168.0.1      linus.intranet       linux
+192.168.0.2      alan.intranet        alan
+192.168.0.3      richard.intranet     richard
+192.168.0.4      eric.intranet        eric
+</screen>
+
+<para>
+IP-adressen 127.0.0.1 er en speciel "loopback"-adresse, som ikke
+anvendes til andet end, at Linux-kernen hurtigt kan kommunikere med
+sig selv. De fire maskiner linus, alan, richard og eric har fået
+IP adresser i 192.168.0.*, som er et lukket net - dvs. de adresser er
+garanteret ikke-eksisterende på Internettet. <!-- Se mere i xref
+linkend="private-ip-adresser". -->
+</para>
+
+<para> Skal du selv sætte et hjemmedomæne op, hvor maskinerne ikke
+skal være kendte på Internet, og du vil være sikker på at dit
+hjemme-domænenavn ikke er kendt på Internet, så brug f.eks. at domænet
+hedder ".hjemme" eller som her ".intranet", så linus-maskinen bliver til
+"linus.intranet" - så får du aldrig overlap med en anden maskine. Skal
+maskinerne være kendt på Internettet, så skal du ansøge om et domæne,
+sætte DNS op, og erstatte ".intranet" med ".MITDANSKEDOMAENE.dk", eller
+hvad du nu vælger.
+</para>
+
+<para>
+Uden DNS (navneserver - se <xref linkend="dns-opsaetning">) bruger
+systemet automatisk hosts-filen ved ssh, telnet, ftp, ping osv.
+</para>
+</sect1>
+
+<sect1 id="etc-resolv-conf-filen">
+<title>/etc/resolv.conf</title>
+<indexterm><primary>/etc/resolv.conf</primary></indexterm>
+<para>
+Resolver-filen viser, hvilken maskine der er navneserver, så man kan
+slå en vilkårlig adresse op på Internettet. Et eksempel kan være
+</para>
+
+<screen>
+search intranet
+nameserver 129.142.6.64
+nameserver 129.142.6.65
+</screen>
+
+<para>
+Første linje (search) viser domæne navnet for netværket. De to næste
+linjer er to navneservere (danpost-maskiner). Laver du Internet
+opkobling til din egen ISP, skal du have nogle andre ip-adresser
+end de viste. <!--Se også xref linkend="PPP".-->
+</para>
+
+<para>
+NB: Brug <emphasis>IKKE</emphasis> ekstra nuller til at udfylde de
+cifre, der ikke bruges. I det ovenstående må du ikke skrive
+</para>
+
+<screen>
+search intranet
+nameserver 129.142.006.064
+nameserver 129.142.006.065
+</screen>
+
+</sect1>
+
+<sect1 id="etc-inetd-conf-filen">
+<title>/etc/inetd.conf</title>
+<indexterm><primary>/etc/inetd.conf</primary></indexterm>
+
+<para>
+Denne fil er vigtig for din netværksikkerhed, idet den viser en stribe
+af de servicer, som Linux-maskinen tilbyder netværket.
+Du vil f.eks. finde disse linjer:
+</para>
+
+<screen>
+ftp     stream  tcp     nowait  root    /usr/sbin/tcpd  in.ftpd -l -a    
+telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd  
+</screen>
+
+<para>
+som viser, at du modtager ftp og telnet login. Hvis du kan undvære
+disse servicer, så udkommentér dem ved at sætte et # foran dem.  
+Næste gang du genstarter maskinen (eller inet dæmonen), kan man ikke logge
+på via <command>telnet</command>. 
+Prøv <command>man inetd</command> for at læse mere.
+</para>
+</sect1>
+
+<sect1 id="etc-issue">
+<title>/etc/issue.net og /etc/issue</title>
+<indexterm><primary>/etc/issue</primary></indexterm>
+<indexterm><primary>/etc/issue.net</primary></indexterm>
+<para>
+<filename>/etc/issue</filename> og <filename>/etc/issue.net</filename>
+kan være en god måde for en cracker at finde ud af hvilket system og
+version af Linux man kører. <filename>/etc/issue</filename> vises på skærmen lige op over
+login prompten og <filename>/etc/issue.net</filename> vises blandt andet når man logger på
+system via telnet. Derfor fjern alt tekst i begge filer og sæt
+havelåger foran dette i <filename>/etc/rc.d/rc.local</filename>:
+</para>
+
+<screen>
+# This will overwrite /etc/issue at every boot. So, make any changes you
+# want to make to /etc/issue here or you will lose them when you reboot.
+# echo "" > /etc/issue
+# echo "$R" >> /etc/issue
+# echo "Kernel $(uname -r) on $a $SMP$(uname -m)" >> /etc/issue
+# cp -f /etc/issue /etc/issue.net
+# echo >> /etc/issue
+fi
+</screen>   
+</sect1>
+
+<sect1 id="etcrcdfilen">
+<title>/etc/rc.d/</title>
+<indexterm><primary>/etc/rc.d/</primary></indexterm>
+<para>
+I mappen <filename>/etc/rc.d/</filename> findes styringen af,
+hvilke programmer, der automatisk startes op, når maskinen startes. Der
+er lidt forskel mellem Red Hat og SuSE, men begge har samme struktur,
+kaldes SysV (udtales system fem), i modsætning til BSD.
+</para>
+
+<sect2 id="RH-etc-rc-d-filen">
+<title>Red Hats opstartsfiler</title>
+
+<para>
+Red Hat har følgende indhold af <filename>/etc/rc.d/</filename>
+</para>
+
+<screen>
+init.d  rc.local    rc0.d  rc2.d  rc4.d  rc6.d
+rc      rc.sysinit  rc1.d  rc3.d  rc5.d         
+</screen>
+
+<para>hvor <filename>rc0.d</filename> op til <filename>rc6.d</filename> er
+mapper med links for hvert af de syv runlevels. Links laves til
+<filename>init.d</filename>, der indeholder skript-filer, som starter
+programmerne. Se i øvrigt <xref linkend="runlevel">.
+</para>
+
+<para>
+Filen <filename>rc.sysinit</filename> ændrer man oftest ikke, idet den
+styrer opstart af tastatur, tjek af filsystemer, montering af swap, samt
+andet basalt.
+</para>
+
+<para>
+I filen <filename>rc.local</filename> kan man selv tilføje kommandoer, som
+skal startes efter de almindelige programmer. 
+</para>
+
+<para>
+Alle de ovenstående filer kan læses af alle på et Red Hat system,
+mens SuSE har valgt, at kun "root" kan læse de filer.
+</para>
+</sect2>
+
+<sect2 id="SuSE-etc-rc-d-filen">
+<title>SuSE opstartsfiler</title>
+
+<para>
+SuSE kan have følgende indhold af <filename>/etc/rc.d/</filename>
+</para>
+
+<screen>
+README      cron        kbd         random      rcS.d       skeleton
+apmd        dummy       kerneld     rc          reboot      ssh
+at          gpm         lpd         rc0.d       route       syslog
+autofs      halt        network     rc1.d       routed      xdm
+boot        halt.local  nfs         rc2.d       rpc
+boot.d      inetd       nfsserver   rc3.d       rwhod
+boot.local  init.d      pcmcia      rc4.d       sendmail
+boot.setup  inn         pcnfsd      rc5.d       serial
+cdb         ipfwadm     powerfail   rc6.d       single           
+</screen>
+
+<para>
+Som det ses, er der mapper rcX.d (hvor X går fra 0 til 6),
+med links for hvert af de syv runlevels, ligesom Red Hat. I modsætning
+til Red Hat er der i SuSE intet <filename>init.d</filename>
+katalog, og skript-filerne, der linkes til, findes direkte i
+<filename>/etc/rc.d/</filename>. Indhold af hver af opstartsfilerne,
+f.eks. <filename>autofs</filename>, er kommandoer til at starte,
+stoppe, checke og genstarte den pågældende service. Man skriver
+således <command>/etc/rc.d/autofs stop</command> for at stoppe autofs
+og tilsvarende <command>/etc/rc.d/autofs start</command> for at starte
+den igen.
+</para>
+</sect2>
+</sect1>
+
+<sect1  id="etc-sysconfig-filen">
+<title>/etc/sysconfig/</title>
+<indexterm><primary>/etc/sysconfig</primary></indexterm>
+
+<para>
+I Red Hat er mappen <filename>/etc/sysconfig/</filename> vigtig.
+</para>
+
+<screen>
+apmd   console  keyboard  network          sendmail   static-routes
+clock  init     mouse     network-scripts  soundcard           
+</screen>
+
+<para>
+For Red Hat vil alle filer i dette katalog indeholde konfigurationsparametre 
+og er koblede til filerne i <filename>/etc/rc.d/init.d</filename>. F.eks. vil
+<filename>mouse</filename> indeholde musetype.
+</para>
+
+<para>
+Et skridt længere nede i filtræet finder du
+mappen <filename>/etc/sysconfig/network-scripts</filename>, som 
+f.eks. kan indeholde
+</para>
+
+<screen>
+chat-ppp0   ifcfg-ppp0   ifdown-ppp    ifup-plip    network-functions
+chat-ppp1   ifcfg-ppp1   ifdown-sl     ifup-post
+chat-ppp2   ifcfg-ppp2   ifup          ifup-ppp
+ifcfg-eth0  ifdown       ifup-aliases  ifup-routes
+ifcfg-lo    ifdown-post  ifup-ipx      ifup-sl          
+</screen>
+
+<para>
+Her er alle skript filer til at starte PPP-forbindelser og netkort op
+og tilsvarende lukke ned. Har du en meget underlig opkobling til
+Internet, ender du med at skulle rette i filer her.
+</para>
+</sect1>
+
+<sect1 id="etc-crontab-filen">
+<title>/etc/crontab</title>
+<indexterm><primary>/etc/crontab</primary></indexterm>
+<para>
+Crontab systemet og filstyring er forklaret i <xref linkend="crontab">.
+</para>
+</sect1>
+
+<sect1 id="etc-sendmail-cf-filen">
+<title>/etc/sendmail.cf</title>
+<indexterm><primary>/etc/sendmail.cf</primary></indexterm>
+
+<para>
+Sendmail er det gode gamle postprogram til Linux, som desværre
+tit viser sig at have sikkerhedsfejl.
+<--Tag et kik på Postfix i XREF LINKEND="postfix". -->
+Konfigurationsfilen til sendmail er notorisk svær, og du bør
+ikke rette ret meget i din. 
+Du kan dog med fordel rette feltet DS til 
+</para>
+
+<screen>
+DSsmtp.ISP.dk
+</screen>
+
+<para>
+hvis du sender post til din Internet-udbyder, og denne har en hurtig
+"mailforwarder" - ofte kaldet en SMTP maskine,  i eksemplet kaldet
+"smtp.ISP.dk".
+</para>
+</sect1>
+
+<sect1 id="etc-aliases-filen">
+<title>/etc/aliases</title>
+<indexterm><primary>/etc/aliases</primary></indexterm>
+<para>
+Hvis du har brug for at have nem adgang til at lave post-aliaser, så
+e-post til &lt;web@sslug.dk&gt; automatisk bliver videresendt
+(eng. forwarded) til &lt;anne@sslug.dk&gt;, og måske vil du have at
+alle e-breve til "root" skal ende hos "anne", så kan du i
+<filename>/etc/aliases</filename> nemt anføre dette.
+</para>
+
+<screen>
+web: anne
+root: anne
+</screen>
+
+<para>
+Efter du har redigeret filen, skal du køre
+<command>newaliases</command> kommandoen.
+</para>
+</sect1>
+
+
+<sect1 id="etc-printcap-filen">
+<title>/etc/printcap</title>
+<indexterm><primary>/etc/printcap</primary></indexterm>
+
+<para>
+For hver printer vil programmet <command>printtool</command> i Red Hat
+tilføje et afsnit til <filename>/etc/printcap</filename> med definition
+af printeren, såsom
+</para>
+
+<screen>
+##PRINTTOOL3## LOCAL POSTSCRIPT 600x600 a4 {} PostScript Default 1
+lp:\
+        :sd=/var/spool/lpd/lp:\
+        :mx#0:\
+        :sh:\
+        :lp=/dev/lp0:\
+        :if=/var/spool/lpd/lp/filter:
+</screen>
+
+<para>
+Her er "sd" spool-directory. Printeren sidder på
+<filename>/dev/lp0</filename>, og der printes med filter som vist
+med "if". <!-- Der er mere forklaring i xref linkend="printere".-->
+</para>
+</sect1>
+
+<sect1 id="etc-conf-modules-filen">
+<title>/etc/conf.modules</title>
+<indexterm><primary>/etc/conf.modules</primary></indexterm>
+<para>
+Denne fil indeholder opsætning og parametre til de moduler, som kan
+læses ind og ud af systemet uden at genstarte. Der er mere forklaring i
+<xref linkend="kerne-moduler">.
+</para>
+</sect1>
+
+<sect1 id="etc-securetty-filen">
+<title>/etc/securetty</title>
+<indexterm><primary>/etc/securetty</primary></indexterm>
+<para>
+I <filename>/etc/securetty</filename> anføres alle de terminaler,
+hvorfra root-brugeren kan logge ind. Filen ser ofte således ud
+</para>
+
+<screen>
+tty1
+tty2
+tty3
+tty4
+tty5
+tty6
+tty7
+tty8    
+</screen>
+
+<para>
+<filename>tty1-tty8</filename> svarer til de terminal vinduer som er
+på selve maskinen. Det er således ikke tilladt for root at logge ind
+via telnet på maskinen, og det bør <emphasis>ikke</emphasis> tillades.
+</para>
+
+</sect1>
+
+
+
+<sect1 id="etc-exports">
+<title>/etc/exports</title>
+<indexterm><primary>/etc/exports</primary></indexterm>
+<para>
+Hvis din maskine skal køre NFS, dvs. kunne være diskserver for andre
+UNIX maskiner, skal du i <filename>/etc/exports</filename> skrive,
+hvilke mapper du vil lade andre montere. For at det virker, skal du
+have "portmap" og "nfs" kørende. 
+</para>
+
+<para>
+Desuden kal du anvende <command>man exports</command> for at lære
+syntaks af <filename>/etc/exports</filename>. Som eksempel viser vi,
+hvordan du lader alle maskiner læse (ikke skrive) fra dit cdrom-drev, som
+du her har monteret fast på <filename>/mnt/cdrom</filename>. Derudover
+lader vi maskiner i domænet kongeh.dk montere hele
+<filename>/usr/local/</filename> med både læse- og skrive-rettigheder,
+så alle maskinerne kan lægge nyt programmel ind hér og programmellet anvendes
+så på alle klient-maskinerne. Husk, at du måske også skal tænke over
+sikkerheden, når du distribuerer data over netværket. Giv kun adgang
+til data til de personer, som skal have den adgang.
+</para>
+
+<screen>
+/mnt/cdrom      *(r)
+/usr/local      *.kongeh.dk(rw)
+</screen>
+</sect1>
+
+<sect1 id="XF86Config-filen-kort">
+<title>/etc/X11/XF86Config - /etc/XF86Config</title>
+<indexterm><primary>/etc/XF86Config</primary></indexterm>
+<indexterm><primary>/etc/X11/XF86Config</primary></indexterm>
+<para>
+I Red Hat er den basale Xwindow-konfigurationsfil
+<filename>XF86Config</filename> lagt i
+<filename>/etc/X11/XF86Config</filename>, og tilsvarende i SuSE er den
+i <filename>/etc/XF86Config</filename>. Syntaksen findes ved at skrive
+<command>man XF86Config</command>. <!-- men der er mere hjælp i 
+xref linkend="nulGUIapp".-->
+</para>
+</sect1>
+</chapter>

@@ -1,0 +1,500 @@
+<chapter id="cdrombraending">
+<title>Opsætning af cdbrænder under linux</title>
+<indexterm><primary>Brænde cdrom</primary></indexterm>
+<indexterm><primary>cdrom</primary><secondary>brænde</secondary></indexterm>
+
+<para>
+Er man så heldig at man har en scsi brænder, så skulle man bare kunne
+installere Xcdroast og få det til at virke direkte. Har man en brænder
+af ide/atapi typen, så bliver man nødt tilat lave en ide-scsi
+emuluering for at få dette til at virke, det er dog ikke så svært som
+det lyder og fungerer ligesågodt. Det første kræver at kernen skal
+bygges op til at have ide-scsi, scsi cdrom, generic scsi og ide-cd
+bygget som moduler. Dette kontrolleres ved at skrive
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT> cd /usr/src/linux; make xconfig</USERINPUT>
+</screen>
+
+<para>
+Hvorefter man skal ind i de 2 vinduer med "SCSI support" og "Block
+Devices". De punkter der er interessante er dem der er markeret med
+rødt her:
+</para>
+
+<FIGURE ID="roast1-fig" FLOAT="1">
+<TITLE>Opsætning af kernen</TITLE>
+<GRAPHIC FILEREF="roast1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="roast2-fig" FLOAT="1">
+<TITLE>Opsætning af kernen</TITLE>
+<GRAPHIC FILEREF="roast2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Hvorefter kernen skal genoversættes. <!-- som vist i afsnittet om
+genoversættelse af kernen xref linkend="kernelcompile" -->.  Inden den nye
+kerne nu bootes skal der lige laves en ændring til lilo. I
+<filename>/etc/lilo.conf</filename> skal der laves følgende ændring
+(se linien med append). <!-- Se i øvrigt xref linkend="lilo".-->
+</para>
+
+<screen>
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+lba32
+timeout=50
+append="hdd=ide-scsi" // hdd = secondary slave device
+image=/boot/vmlinuz-2.2.5-15
+        label=linux
+        root=/dev/hda5
+        read-only
+</screen>
+
+<para>
+I linien append skal skrives hvilken enhed brænderen er på
+ide-controlleren. Bagefter køres <command>/sbin/lilo</command> og den
+nye kerne bootes. Når systemet kommer op igen kan man nu skrive
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-cd ignore=hdd</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe sg</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-scsi</USERINPUT>
+</screen>
+
+
+
+<para>
+Så skulle scsi emulueringen være iorden og man kan nu lave en:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cat /proc/scsi/scsi</USERINPUT> 
+Attached devices: 
+Host: scsi0 Channel: 00 Id: 00 Lun: 00
+  Vendor: HP       Model: CD-Writer+ 7200  Rev: 3.01
+  Type:   CD-ROM                           ANSI SCSI revision: 02
+</screen>
+
+<para>
+Og der skal brænderen være dukket op. Så er det bare at installere
+brændersoftware, så kan du brænde din først linux cd til dine venner.
+</para>
+
+<para>
+Skal man nu automatisere dette lidt så man ikke skal skrive modprobe
+linierne efter hver bootup, så skal de tilføjes i systemets bootup
+script som på min Red Hat er <filename>/etc/rc.d/rc.local</filename>,
+hvor jeg har tilføjet linierne.
+</para>
+
+<sect1 id="X-cdroast">
+<title>X-cdroast</title>
+<indexterm><primary>X-cdroast</primary></indexterm>
+<para>
+Hvor får man nu fat i xcdroast henne? <ulink url="http://www.xcdroast.org">http://www.xcdroast.org</ulink>. Få fat
+i den og installer den. Skal man kunne brænde cdrommer uden at være root
+bliver man nødt til at sætte s-bit på xcdroast, dette gøres:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>which xcdroast</USERINPUT>
+/usr/local/bin/xcdroast
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chmod +s /usr/local/bin/xcdroast</USERINPUT>
+</screen>
+
+<para>
+Så skulle det være i orden. Derefter startes
+<application>xcdroast</application> hvorefter man lige skal svare på:
+</para>
+
+
+<FIGURE ID="xcdroast1-fig" FLOAT="1">
+<TITLE>xcdroast</TITLE>
+<GRAPHIC FILEREF="xcdroast1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Det antages nu at cdrom brænderen er sat op til at virke, dette testes
+med "Setup".  Under "CD Setup" Vælges brænderen som CD- Writer-device
+og speed sættes. Eksisterer brænderen ikke under dette punkt, så
+skyldes det, at brænderen enten ikke er tilsluttet ordentligt (SCSI)
+eller at det er en ide-brænder som kræver en ide-scsi
+emuluering. Dette ses i sidste afsnit.  Under "HD Setup" vælges et
+image-mount point. Her kan man vælge, hvis man har en hel partition
+dedikeret til cd-images eller lignende at den skal bruge dette. Det
+er meget praktisk at der mindst er plads til en enkelt hel cd på den
+valgte placering. Det er på denne plads i filsystemet at xcdroast
+lægger de rippede images.  Under Misc og Defaults, kan sættes ting som
+lyd, vindues placering, etc. Ikke vigtigt for brændingen. Derefter
+vælges "Save" og "Done". Nu skulle de øvrige knapper ikke være grå
+længere, men alle skulle kunne bruges.  Så afhænger det af hvad man
+skal brænde. Under "Copy Data CD" ligger alle de operationer man skal
+kunne bruge på en hel cd.
+</para>
+
+<FIGURE ID="xcdroast2-fig" FLOAT="1">
+<TITLE>xcdroast</TITLE>
+<GRAPHIC FILEREF="xcdroast2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="xcdroast0-fig" FLOAT="1">
+<TITLE>xcdroast</TITLE>
+<GRAPHIC FILEREF="xcdroast0.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Det skal lige bemærkes at xcdroast bruger <filename>.raw</filename> i
+stedet for <filename>.iso</filename> som endelse. Dette ligger kun i
+navnet ikke andet, skal man derfor bruge det rippede image til noget
+hvor denne endelse er vigtig kan man bare lave en symlink med det
+andet navn. De rippede (eller andre) images skal dog have endelse
+<filename>.raw</filename> for at xcdroast vil kendes ved dem. Der er
+heller ikke noget krav til at de faktisk skal ligge i
+<filename>/image</filename> kataloget:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>ls -l</USERINPUT>
+total 1
+lrwxrwxrwx 1 root root   38 Jun 14 20:32 Mandrake-7.1-ext.raw -> /home/ftp/pub/iso/Mandrake-7.1-ext.iso
+lrwxrwxrwx 1 root root   39 Jun 14 19:32 Mandrake-7.1inst.raw -> /home/ftp/pub/iso/Mandrake-7.1-inst.iso
+lrwxrwxrwx 1 root root   32 Apr  3 19:19 Redhat61.raw -> /home/ftp/pub/iso/RedHat-6.1.iso
+lrwxrwxrwx 1 root root   32 Apr  3 19:19 Redhat62.raw -> /home/ftp/pub/iso/RedHat-6.2.iso
+drwxr-xr-x 2 root root 1024 Feb 29 20:26 tmp
+</screen>
+
+<para>
+Under "Copy Audio CD" er der samme features som ved data, dette virker
+bare på audio cd´er i stedet:
+</para>
+
+<FIGURE ID="xcdroast3" FLOAT="1">
+<TITLE>xcdroast</TITLE>
+<GRAPHIC FILEREF="xcdroast3.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Skal man nu selv til at lægge et filsystem ud på cd, så er det punktet
+"Master CD", man skal vælge. Under Master from/to, kan man nu vælge
+den del af filsystemet man ønsker at brænde ud. Følgende valg vil lave
+et master image med <filename>/home</filename> på hvor
+<filename>/home/ftp</filename> ikke er på.
+</para>
+
+
+<FIGURE ID="xcdroast4" FLOAT="1">
+<TITLE>xcdroast</TITLE>
+<GRAPHIC FILEREF="xcdroast4.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<para>
+Så bliver vi nødt til at vælge "Master Image", hvor vi kan danne et
+image af det, vi gerne vil brænde ud, så brænder vi bare det under
+"Write image".
+</para>
+
+<para>
+Mere om Xcdroast og opsætning af brænder
+<filename>/usr/local/xcdroast-0.96ex/README*</filename> eller hvor du
+nu ellers installerede <application>xcdroast</application>.
+</para>
+</sect1>
+
+<sect1 id="cdrecord">
+<title>Brænde cdrom med cdrecord</title>
+<!-- Skrevet af Gert Holtoft <holtoft@get2net.dk> -->
+<indexterm><primary>cdrecord</primary></indexterm>
+
+<para>
+I dette afsnite findes en mini-HOWTO på dansk til CD-R og CD-RW, 
+i bund og grund kun en oversættelse og 'nedkogning' af
+CD-Writing-HOWTO til det mest elementære.
+</para>
+
+<para>
+Du skal starte med at installere følge pakker:
+<filename>cdrecord-*.rpm</filename>,
+<filename>cdparanoia-III*.rpm</filename> og
+<filename>mkisofs-*</filename>.
+</para>
+
+<para>
+Vi forudsætter at brænderen er sat op og virker, dog kører vi lige en
+<command>cdrecord -scanbus</command>. Husk at loade brænder modulerne,
+hvis det ikke er gjort.  I denne opsætning ser den således ud:
+</para>
+
+<screen>
+	Using libscg version 'schily-0.1'
+Cdrecord release 1.8a29 Copyright (C) 1995-1999 Jörg Schilling
+scsibus0:
+	0,0,0	  0) 'HP      ' 'CD-Writer+ 8100 ' '1.0g' Removable CD-ROM
+	0,1,0	  1) *
+	0,2,0	  2) *
+	0,3,0	  3) *
+	0,4,0	  4) *
+	0,5,0	  5) *
+	0,6,0	  6) *
+	0,7,0	  7) *
+</screen>
+
+<para>
+Det vil sige at vores cdrom-brænder-device i dette tilfælde 
+er: <filename>dev=0,0,0</filename>
+</para>
+
+<sect2 id="cdrom-skrivning">
+<title>Skrivning og brænding af et data image</title>
+
+<para>
+Læg alle libs og filer i et bibliotek (eks. <filename>/test</filename>)
+Vedtag et navn for dit cd image (eks. <filename>mit_stof</filename>).
+</para>
+
+<para>
+Lav dit cdrom-image med <command>mkisofs</command>:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -o  mit_stof  /test/</USERINPUT>
+</screen>
+
+
+<para>
+Ønskes et mere Windowsvenligt image, brug -J option ( Joliet )
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs  -r  -J  -o  mit_stof /test/</USERINPUT>
+</screen>
+
+<para>
+Test indholdet med følgende kommando:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t iso9660 -o ro,loop=/dev/loop0  mit_stof /mnt</USERINPUT>
+</screen>
+
+<para>
+I <filename>/mnt</filename> kan indholdet checkes, afmonter dernæst
+med kommandoen <command>umount mit_stof /mnt</command>.
+</para>
+</sect2>
+
+<sect2 id="braende-cdrom">
+<title>Cdrom brændes</title>
+	
+<para>
+Du kan nu brænde din cdrom med
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof</USERINPUT>
+</screen>
+
+
+<para>
+En langt mere interssant metode er at oprette en fil på 650/700 MB
+(alt efter mediestørrelse), som så fyldes med diverse ting og sager og
+derefter brændes som et iso-image.
+</para>
+
+<para>
+Oprettelse af filen  test.iso
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>dd if=/dev/zero of="test.iso" bs=1024k count=650/700</USERINPUT>
+</screen>
+
+<para>
+Opret et ext2 filsystem på denne fil	
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>/sbin/mke2fs -b 2048 test.iso</USERINPUT>
+</screen>
+
+<para>
+Til spørgsmålet "test.iso is not a block device", skal du bare sige
+"y" for "yes - proceed anyway".
+</para>
+
+<para>
+Mount filen med:	
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mount -t ext2 -o loop=/dev/loop1 test.iso /mnt</USERINPUT>
+</screen>
+	
+<para>
+Kopier hvad du har lyst til, til <filename>/mnt</filename> og afmonter
+den med kommandoen <command>umount test.iso /mnt</command>.
+</para>
+
+
+<para>
+Vi kan nu brænde vores cdrom med:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data test.iso </USERINPUT>
+</screen>
+
+
+<para>
+Det er jo dejligt at kunne redigere frit i et "iso-image" der jo kun
+er "read only". Den sidste gode ting med data-medier er direkte og rå
+kopiering fra cd-rom (her <filename>/dev/hdb</filename>) til brænder. 
+Kommandoen er:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,0 speed=2 -isosize /dev/hdb</USERINPUT>
+</screen>
+
+
+
+<para>
+Skulle kildemediet være større end modtagermediet, kommer der automatisk en
+fejlmelding fra cdrecord, og der bliver ikke brændt noget.
+Denne detalje virker ikke med en musik cd.
+</para>
+
+<para>
+Til at brænde en musik-cd kommer nu en helt basal opskrift.
+Optage en cd (eller dele af den), gøres med <command>cdparanoia</command> :
+Læg din original musik cd i cdrom drevet og kør så følgende for at
+rippe alle sange til filerne <filename>track01.cdda.wav</filename>, <filename>track02.cdda.wav</filename> osv.
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdparanioa -B "1-"</USERINPUT>
+</screen>
+
+<para>
+Ønsker du kun at overføre numrene 3 til fem skal du køre <command>cdparanioa -B "3-5"</command>.
+</para>
+
+<para>
+Du kan nu brænde din musik-cd med
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -audio track01.cdda.wav track02.cdda.wav ...</USERINPUT>
+</screen>
+
+<para>
+hvor ... naturligvis betyder at du fortsætter med at angive musik-filnavne.
+Du kan også bruge * (alle filer), hvis du har filerne i et katalog:
+<command>cdrecord -v speed=2 dev=0,0,0 -audio *.cdda.wav</command>
+</para>
+
+<para>
+Omkring audio formater se <command>man cdparanoia</command> kig evt på
+<command>Sox</command> eller <command>ecasound</command>.
+</para>
+
+<para>Sox kan du finde mere om på <ulink url="ftp://sunsite.unc.edu/pub/Linux/apps/sound/convert/sox-11gamma-cb3.tar.gz">ftp://sunsite.unc.edu/pub/Linux/apps/sound/convert/sox-11gamma-cb3.tar.gz</ulink>.
+Men se om den ikke også er med i din Linux-distribution.
+</para>
+
+<para>
+Ecasound har hjemmesiden <ulink url="http://www.wakkanet.fi/ecasound">http://www.wakkanet.fi/ecasound</ulink>.
+</para>
+
+<para>
+Blandede skiver dvs både data og audio på samme medie kan du også lave
+ved at kombinere <command>-data</command> og <command>-audio</command>.
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mit_stof -audio track01.cdda.wav</USERINPUT>
+</screen>
+
+<para>
+Vedrørende CD-RW medier er proceduren den samme, blot skal man
+huske at "blanke" mediet inden det bruges næste gang:
+</para>
+
+<screen>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 blank=xxxx</USERINPUT>
+</screen>
+
+<para>
+hvor <command>xxxx</command> udfyldes ud fra dette:
+</para>
+
+<itemizedlist mark="bullet"  spacing="compact">
+<listitem>
+ <para>
+  <emphasis>all</emphasis>             blank the entire disk
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>disc</emphasis>            blank the entire disk
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>disk</emphasis>            blank the entire disk
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>fast</emphasis>            minimally blank the entire disk (PMA, TOC, pregap)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>minimal</emphasis>         minimally blank the entire disk (PMA, TOC, pregap)
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>track</emphasis>           blank a track
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>unreserve</emphasis>       unreserve a track
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>trtail</emphasis>          blank a track tail
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>unclose</emphasis>         unclose last session
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  <emphasis>session</emphasis>         blank last session    
+ </para>
+</listitem>
+</itemizedlist>
+
+
+<para>
+For yderligere information læs :
+<command>man cdrecord</command>, <command>man cdparanoia</command>,
+<command>man mkisofs</command> og i øvrigt CD-Writing HOWTO.
+</para>
+</sect2>
+
+</sect1> <!--cdrecord -->
+</chapter>
+
