@@ -80,6 +80,26 @@ endif
 	@echo "Done HTML (html)"
 	@echo ""
 
+pdf: bog.pdf
+bog.pdf: $(sgmlfiler)
+	@echo ".........................................."
+	@echo "Target $(targetshortname):pdf"
+	@echo ".........................................."
+	@echo '<!ENTITY magic "png">' > magic.sgml
+	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	rm -rf tempdir
+	mkdir tempdir
+	cp *.sgml tempdir
+	cp images/*png tempdir
+	(cd tempdir;jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
+	(cd tempdir;collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
+	(cd tempdir; db2pdf bog.sgml; db2pdf bog.sgml)
+	mv tempdir/bog.pdf bog.pdf
+	rm -rf tempdir
+	@echo "Done PDF (pdf)"
+	@echo ""
+
+
 
 
 
