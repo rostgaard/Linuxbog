@@ -1,0 +1,526 @@
+<!-- $Id$ -->
+<CHAPTER ID="friheden-opstart">
+<TITLE>Opstart af Linux</TITLE>
+<indexterm><primary>Boot af Linux</primary></indexterm>
+<indexterm><primary>Opstart af Linux</primary></indexterm>
+<indexterm><primary>Microsoft Windows</primary><secondary>98</secondary></indexterm>
+<indexterm><primary>Windows</primary><secondary>98</secondary></indexterm>
+
+<PARA>
+Som tidligere skrevet kan Linux fint eksistere sammen med Windows
+95/98 eller Windows NT. Hvad angår Windows 95/98, skal du se på LILO
+eller Loadlin som opstartsindlæser (bootloader), men med hensyn til
+Windows NT kommer der i det følgende en vejledning i at anvende Linux sammen
+med Windows NT's "OS Loader". 
+</para>
+
+
+
+<para>
+Et alternativ til dette er at benytte "bootpart" programmet - så kan
+du have LILO liggende på din Linux-partition i stedet for at lægge 
+den i master boot record (MBR) - se
+<ulink url="http://www.winimage.com">http://www.winimage.com</ulink> og
+<ulink url="http://www.winimage.com/bootpart.htm">http://www.winimage.com/bootpart.htm</ulink>.
+</para>
+
+<sect1 id="grub">
+ <title>GRUB</title>
+
+ <indexterm>
+  <primary>Opstart af Linux</primary>
+  <secondary>GRUB</secondary>
+ </indexterm>
+
+ <indexterm>
+  <primary>Start af Linux</primary>
+  <secondary>GRUB</secondary>
+ </indexterm>
+
+ <indexterm>
+  <primary>GRUB</primary>
+  <secondary>startprogram</secondary>
+ </indexterm>
+
+<para>
+GRUB er et nyere alternativ til LILO-opstartsprogrammet (se <xref
+linkend="lilo">), dvs. et program som kan håndtere opstarten af et
+eller flere styresystemer på maskinen (eng: boot loader).  GRUB er en
+del af bl.a. Red Hat 7.2. Se f.eks. <ulink url="http://www.redhat.com/docs/manuals/linux/RHL-7.2-Manual/ref-guide/ch-grub.html">http://www.redhat.com/docs/manuals/linux/RHL-7.2-Manual/ref-guide/ch-grub.html</ulink>.
+</para>
+
+<para>
+Fordelene med GRUB i forhold til LILO er at man ikke behøver at køre
+nogen kommando for at installere en ny kerne (Med LILO skal man køre
+<command>/sbin/lilo</command> - nogle vil med rette mene at dette ikke
+er en fordel når man tænker på fejlmulighederne :) Man får også
+muligheden for at gøre opstart-menuen lidt mere appetitvækkende, ved
+at kunne lægge et baggrundbillede ind bag menuen (den virker mere
+grafisk orienteret). Endelig understøtter GRUB LBA fuld ud - dvs. der
+er problemer med at opstartspartitionen skal ligge før cylinder 1024 (som 
+LILO har haft problemer med).
+</para>
+
+<para>
+I <xref linkend="grub-conf-ex"> er vist et eksempel på den filen
+<filename>/boot/grub/grub.conf</filename> som styrer
+opstartsprogrammet.  Først er der en linie
+<literal>default=0</literal>, der viser at det første menupunkt
+(nummer nul) er det som man får per default. Næste del er
+<literal>timeout=10</literal>, som betyder at default-menupunket vil
+blive startet efter 10 sekunder. Parameteren
+<literal>splashimage</literal> angiver stien til at billede som lægges
+bag ved menuen. Det skal være et billede i VGA-størrelse dvs. 640x480
+og man har kun 14 farver at gøre godt med. Filen skal gemmes i
+XPM-format (f.eks. lavet med GIMP eller ImageMagick) 
+og derefter skal man køre 
+<command>gzip</command> på filen
+idet den ellers vil fylde <emphasis>meget</emphasis> mere. Stien til
+filen er interessant. <literal>(hd0,0)</literal> betyder den første
+harddisk og første partition - dvs. <literal>/dev/hda1</literal> hvor
+<filename>/boot/</filename> skal ligge. Dernæst er stien relativ til
+kataloget <filename>/boot/</filename> - dvs. stien her er fysisk
+<filename>/boot/grub/splash2.xpm.gz</filename> i eksemplet.  Dernæst
+er der i <filename>/boot/grub/grub.conf</filename> en eller flere
+sektioner, der startes med <literal>title</literal>. Hver af dem
+bliver til et menu-punkt som man kan vælge mellem. I eksemplet er der
+tre menupunkter, som vil fremkomme med titlerne "Dell" hhv. "Red Hat
+Linux (2.4.7-10)" og "Windows". 
+Bemærk at man igen her angiver den lidt specielle
+notation for hvilken Linux-kerne der skal hentes ved at skrive
+harddisk og partition som <literal>root
+(hd&lt;DREV&gt;,&lt;PARTITION&gt;)</literal>.
+</para>
+
+<para> 
+Under det første
+menupunkt "Dell" hentes kernen fra
+<filename>/boot/bzImage.417</filename> og filsystemets rod
+(dvs. <filename>/</filename>) bliver sat til
+<filename>/dev/hda2</filename>. <literal>ro</literal> betyder at
+read-only fra start (sådan er det bare).
+</para>
+
+<para> 
+Man kan også se at det andet menupunkt "Red Hat Linux (2.4.7-10)"
+har en initiel RAM-disk <filename>/boot/initrd-2.4.7-10.img</filename>.
+I eksemplet er den originale Red Hat 7.2 kerne lagt
+under menupunktet "Red Hat Linux (2.4.7-10)", mens "Dell" er en nyere 
+Linux-kerne uden initiel RAM-disk.
+</para>
+
+<para>
+Det tre menupunkt "Windows" anvendes til at starte en Windows 95 eller
+NT op fra <filename>/dev/hda2</filename> (det er den anden partition
+på første disk - dvs. <literal>(hd0,1)</literal>.
+</para>
+
+<example id="grub-conf-ex">
+<title>Eksempel på en grub.conf</title>
+<programlisting>
+default=0
+timeout=10
+splashimage=(hd0,0)/grub/splash2.xpm.gz
+title Dell
+     root (hd0,0)
+     kernel /bzImage.417 ro root=/dev/hda2
+title Red Hat Linux (2.4.7-10)
+     root (hd0,0)
+     kernel /vmlinuz-2.4.7-10 ro root=/dev/hda2
+     initrd /initrd-2.4.7-10.img
+title Windows 
+     root        (hd0,1)
+     makeactive
+     chainloader +1
+</programlisting>
+</example>
+
+<para>
+Det eneste man skal gøre hvis man vil ændre i opstarts-opsætningen er
+at rette i <filename>/boot/grub/grub.conf</filename> og ved næste
+genstart af maskinen anvendes den nye opsætning. I bogens eksempler
+kan man finde <filename>splash2.xpm.gz</filename> som er et
+opstarts-billede med SSLUG-logo, der passer til GRUB.
+</para>
+
+<para>
+Det skal lige nævnes at muligheden for at lægge et billede ind
+kræver et patch til GRUB der kan hentes fra <ulink url="http://people.redhat.com/~katzj/grub/patches/">http://people.redhat.com/~katzj/grub/patches/</ulink>.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> Se <ulink url="http://linuxtoday.com/news_story.php3?ltsn=2002-03-08-014-20-PS-MS-RH">http://linuxtoday.com/news_story.php3?ltsn=2002-03-08-014-20-PS-MS-RH</ulink> for information om GRUB, Linux og Windows XP.
+</para>
+
+</sect1>
+
+<sect1 id="lilo">
+<title>LILO</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>LILO</secondary></indexterm>
+<indexterm><primary>LILO</primary><secondary>LILO</secondary></indexterm>
+<para>
+Mange vil allerede under installationen af Red Hat have installeret
+LILO som opstarter (eng. Boot Manager). Senere kan det være, at du vil
+have mulighed for at opstarte med en ny kerne eller lignende. Du skal
+så ændre i opsætningsfilen <FILENAME>/etc/lilo.conf</FILENAME>, hvor
+der står en del for hvert af de styresystemer, der kan opstartes. Når
+du har rettet, skal du køre <command>/sbin/lilo</command> som "root",
+hvorefter rettelserne har effekt.
+</para>
+
+<para>
+Et eksempel på <FILENAME>/etc/lilo.conf</FILENAME> kan være
+</para>
+
+<programlisting>
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+lba32
+timeout=50
+image=/boot/bzImage
+        label=linux
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+        append="max_loop=128 quiet"
+image=/boot/vmlinuz-2.0.35-2
+        label=linux2
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+other=/dev/hda1
+        label=dos
+        table=/dev/hda
+</programlisting>
+
+<para>
+I eksemplet opstartes på første IDE-disk
+(<filename>hda</filename>).  En opstartsfil indlæses og lægges i
+opstartssektoren, og der opstartes efter 5 sekunder på den første af
+de tre muligheder. Der er her to muligheder for at opstarte Linux med
+to forskellige kerner (linierne med image). Begge starter op med root-partition
+på <FILENAME>/dev/hda3</FILENAME>. Feltet "label" (mærkat)
+er det, du ser på skærmen som opstarts-valgmulighed. Den sidste
+mulighed i eksemplet er, at DOS startes på den første partition
+(hda1) på første IDE-disk. <filename>lba32</filename> er tilføjet for
+at kunne understøtte meget store harddiske.
+</PARA>
+
+<para>
+I eksemplet er der benyttet kommandoerne <command>restricted</command>
+og <command>password</command>. De linier gør at man ikke kan starte
+op i enkeltbruger-tilstand (eng. single user mode) uden at give
+password "HEMLIPASSWORD". Husk at <command>/etc/lilo.conf</command>
+ikke bør kunne læses af andre end root, dvs. kør én gang for alle
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> chmod 600 /etc/lilo.conf</userinput>
+</screen>
+
+<para>
+I eksemplet ses også kommandoen <command>append=</command> som får
+LILO til at give kernen nogle ekstra direktiver til opstart.
+Læs mere om direktiverne i <xref linkend="kernelparm">.
+</para>
+
+<PARA>
+LILO kan en hel del, men kan være et lige så besværligt værktøj, som
+det kan være suverænt. Du bør måske læse den mini-HOWTO om LILO, som
+kan findes under "Linux Documentation Project" på <ulink
+url="http://sunsite.dk/ldp">http://sunsite.dk/ldp</ulink>.
+Specielt kan det være at de to alternativer "restricted" eller "password" 
+(adgangskode) er værd at forstå.
+</PARA>
+
+
+<sect2 id="slette-lilo">
+<title>Slette LILO</title>
+<para>
+<indexterm><primary>Slette LILO</primary></indexterm>
+<indexterm><primary>LILO</primary><secondary>Slette</secondary></indexterm>
+
+<emphasis>Tip:</emphasis> LILO kan fjernes i DOS (vfat under Windows) ved at køre
+<userinput>fdisk /mbr</userinput> i en DOS-vindue under DOS/Windows.
+</para>
+
+<para>
+<emphasis>Tip:</emphasis> LILO kan i Linux fjernes ved at køre
+<command>/sbin/lilo -u /dev/hda</command>, hvis din boot-harddisk er
+<filename>/dev/hda</filename>.
+</para>
+</sect2>
+
+<sect2 id="lilo-rescue">
+<title>LILO gik galt!</title>
+<indexterm><primary>LILO</primary><secondary>problemer</secondary></indexterm>
+<para>
+Hvis uheldet er ude og du har Linux installeret og der er problemer
+med LILO, så maskinen ikke booter, så kan du bruge din
+installations-cd-rom til at reparere systemet med.
+</para>
+
+<para>
+Du skal starte op på din Linux-cd-rom og vælge
+<command>rescue</command>-muligheden. Du får ikke kontakt med din
+harddisk derved, men får Linux startet op med programmer til at klare
+problemerne. 
+</para>
+
+<para>
+Hvis vi antager at Linux er installeret med <filename>/</filename>
+(roden) på <filename>/dev/hda1</filename>, så kan du skrive følgende
+for at montere harddisk-roden på <filename>/mnt</filename>. 
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#  </prompt><userinput>mount /dev/hda1 /mnt</USERINPUT>
+</SCREEN>
+
+<para> 
+Nu kan du med <command>cd /mnt/etc</command> komme ned til
+<filename>/etc</filename> på harddisken. Husk at dit Linux-system er
+fra din cd-rom og din cd-rom er tilgængelig via
+<filename>/mnt</filename>. Du kan nu rette i
+<filename>lilo.conf</filename> eller rettere
+<filename>/mnt/etc/lilo.conf</filename>, f.eks. med
+<command>vi</command> eller <command>pico</command>. Derefter kan du
+køre <command>lilo -r /mnt</command>, der læser
+<filename>lilo.conf</filename>-filen fra
+<filename>/mnt/etc/lilo.conf</filename>, og installerer LILO, som om
+du havde <filename>/mnt</filename> som dit rod-filsystem.
+</para>
+
+<para>
+Husk at det kan være et problem at boote fra en harddisk, som har
+flere end 1024 cylindre - hvis de filer som LILO skal bruge for at
+boote ligger over cylinder 1024, 
+er det ikke altid LILO eller din BIOS kan finde
+ud af det, og derfor vil LILO i så fald komme med en advarsel. Det kan
+være årsagen til, at den ikke vil installeres automatisk. Heldigvis
+er dette kun et problem med ældre distributioner, 
+idet LILO fra version 0.21.4.2
+og fremover kan understøtte op til 2 Tb diske, hvilket vel stadig
+dækker de fleste personers behov :-)
+Husk dog at den nye LILO kun vil virke med BIOS'er der understøtter
+de udvidede LBA-funktioner til store diske, så ældre BIOS'er og
+nyere BIOS'er der ikke helt følger standarden kan stadig give problemer.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="loadlin">
+<title>Loadlin</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>Loadlin</secondary></indexterm>
+<PARA>
+En anden mulighed er at starte op i Windows 95 og dér lave en opstarter
+via <FILENAME>CONFIG.SYS</FILENAME> og
+<FILENAME>AUTOEXEC.BAT</FILENAME>-filerne. Først hentes DOS-programmet
+LOADLIN fra f.eks. <ulink url="http://freshmeat.net">http://freshmeat.net</ulink>.
+
+</PARA>
+
+<PARA>
+Vi har installeret <command>loadlin</command> i
+<FILENAME>c:\linux\loadlin</FILENAME> (loadlin kan hentes i
+zip-format og pakkes ud som vanligt med 
+<command>pkunzip</command> eller <command>WinZip</command>).  Vor
+Linux-kerne har vi kopieret til 
+<filename>c:\linux</filename> med navnet <filename>vmlinuz</filename>,
+og i nedenstående <filename>autoexec.bat</filename> har vi vores
+root-partition på <filename>/dev/hda3</filename> (tredje partition på
+hoveddisken). Du skal rette i linien
+<filename>c:\linux\loadlin\loadlin c:\linux\vmlinuz root=/dev/hda3
+ro</filename> svarende til din opsætning.
+</PARA>
+
+<PARA>
+I det følgende skal du erstatte indholdet for Windows 95 (Win95) med
+det, som du selv har. Linux har reelt kun noget i
+<FILENAME>AUTOEXEC.BAT</FILENAME>
+</PARA>
+
+<PARA>
+<EMPHASIS>CONFIG.SYS</EMPHASIS>
+</PARA>
+
+<programlisting>
+[MENU]
+MENUITEM=Win95
+MENUITEM=Linux
+MENUDEFAULT=Linux,5
+
+[Win95]
+DEVICE=C:\UCD\UCDIDE.SYS /D:UCD0001
+DEVICE=C:\WINDOWS\SETVER.EXE
+DEVICE=C:\WINDOWS\HIMEM.SYS
+DOS=HIGH
+device=C:\WINDOWS\COMMAND\display.sys con=(ega,,1)
+Country=045,850,C:\WINDOWS\COMMAND\country.sys
+
+[Linux]
+
+</programlisting>
+
+<PARA>
+<EMPHASIS>AUTOEXEC.BAT</EMPHASIS>
+</PARA>
+
+<programlisting>
+GOTO %CONFIG%
+
+:Win95
+rem - By Windows Setup - C:\WINDOWS\COMMAND\MSCDEX /D:UCD0001
+@ECHO OFF
+PROMPT $p$g
+SET PATH=C:\WINDOWS;C:\WINDOWS\COMMAND;C:\DOS;
+SET TEMP=C:\DOS
+mode con codepage prepare=((850) C:\WINDOWS\COMMAND\ega.cpi)
+mode con codepage select=850
+keyb dk,,C:\WINDOWS\COMMAND\keyboard.sys
+GOTO END
+
+:Linux
+c:\linux\loadlin\loadlin c:\linux\vmlinuz root=/dev/hda3 ro
+GOTO END
+
+:END
+</programlisting>
+</sect1><!-- loadlin -->
+
+<sect1 id="kernelparm">
+<title>Kerneparametre</title>
+<indexterm><primary>Opstart af Linux</primary><secondary>kerneparametre</secondary></indexterm>
+<indexterm><primary>Boot af Linux</primary><secondary>kerneparametre</secondary></indexterm>
+<indexterm><primary>Kerneparametre</primary><secondary>LILO</secondary></indexterm>
+<indexterm><primary>LILO</primary><secondary>append</secondary></indexterm>
+
+<para>
+Når din computer bootes med LILO, holdes der typisk en pause. Pausen kan
+enten bruges til at vælge en anden kerne at boote med, men kan også bruges
+til at indtaste ekstra parametre til Linux.
+En ofte brugt kommando er at boote Linux op i "single user mode", hvilket gør
+at man kan udfører systemarbejde uden alt for mange programmer kørende,
+eller hvis du har glemt password til <command>root</command>.
+Kommandoen er:
+</para>
+
+<SCREEN>
+<PROMPT>boot: </prompt><userinput>linux single</USERINPUT>
+</SCREEN>
+
+<para>
+Flere parametre angives med et mellemrum imellem:
+</para>
+
+<SCREEN>
+<PROMPT>boot: </prompt><userinput>linux single debug</USERINPUT>
+</SCREEN>
+
+<para>
+Disse parametre kan også indsættes permanent i <filename>/etc/lilo.conf</filename>
+så de altid er med og man ikke skal taste dem ind hver gang computeren booter.
+Fra eksemplet om LILO i <xref linkend="lilo"> er der tilføjet to parametre
+med linien <command>append="max_loop=128 quiet"</command>:
+</para>
+
+<programlisting>
+...
+image=/boot/bzImage
+        label=linux
+        root=/dev/hda3
+        read-only
+        restricted  
+        password=HEMLIPASSWORD
+        <userinput>append="max_loop=128 quiet"</userinput>
+...
+</programlisting>
+
+<para>
+Der er mange parametre og de fleste af dem har til formål at give
+en bestemt type hardware, f.eks. en harddisk, nogle ekstra parametre
+om I/O eller interrupt. Her er en liste af nogle af de mere generelle
+parametre som kan skrives enten på boot-prompten eller i lilo.conf i
+<command>append</command>-linien.
+</para>
+
+<itemizedlist>
+ <listitem>
+  <para><command>console=ttyS0,9600n</command> - få output til skærmen ud på den
+  serielle port. Kommandoen kan bruges til at sende data til et modem eller en
+  seriel skærmterminal. Alternativt til en printer med kommandoen
+  <command>console=lp0</command>.
+  Læs mere i <filename>/usr/src/linux/Documentation/serial-console.txt</filename>.
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>debug</command> - modsat <command>quiet</command>
+  skriver denne parameter om muligt endnu mere information ud under boot.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>init=3</command> - bestemmer i hvilken mode Linux booter.
+  <command>init=3</command> svarer til at Linux booter op i tekstmode,
+  og <command>init=5</command> er boot i grafisk mode. Init-level bestemmes
+  normalt i <filename>/etc/inittab</filename>, men hvis man f.eks. skifter skærmkort
+  og dette ikke virker med den gamle grafik-opsætning bruges denne kommando.
+  <command>init=1</command> starter Linux i single user mode.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>max_loop=128</command> - øger antallet af loop-back
+  devices i Linux. Værdien kan være helt op til 255. Default-værdien er 8.
+  Loop-back bruges f.eks. til at mounte iso-filer:
+  <command>mount -o loop redhat.iso /mnt</command> .
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>panic=5</command> - antal sekunder der skal gå efter en kernel panic
+  før systemet rebooter.
+  Denne kommando vil typisk være noget man skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>quiet</command> - undertrykker de fleste informationslinier
+  Linux skriver ud under boot. Fejl udskrives stadig, men ligegyldig
+  information udskrives ikke. De beskeder der normalt ses, kan efter boot 
+  stadig læses med <command>dmesg</command>.
+  Denne kommando vil typisk være noget man med glæde skriver i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>ro</command> - filsystemer bliver mounted read-only
+  under boot. Herefter kan man foretage systemarbejde på et "sygt" system.
+  Denne kommando vil typisk blive tastet ind under boot.
+  </para>
+ </listitem>
+ <listitem>
+  <para><command>single</command> - starter Linux i single user-mode
+  hvilket er det samme som <command>init=1</command>.
+  Denne kommando vil nok mest blive tastet ind, men kan også skrives
+  i <filename>/etc/lilo.conf</filename>.
+  </para>
+ </listitem>
+</itemizedlist>
+
+<para>
+Den fulde liste af kerneparametre kan findes på din harddisk:
+<filename>/usr/src/linux/Documentation/kernel-parameters.txt</filename>
+</para>
+
+<para>
+Der er meget mere om Linux kernen i bogen "Linux - Friheden til systemadministration",
+der kan findes på <ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
+</para>
+
+</sect1><!-- kernelparm -->
+
+</chapter>

@@ -1,0 +1,778 @@
+<!-- $Id$ -->
+<CHAPTER ID="friheden-program">
+<TITLE>Programmer til Linux</TITLE>
+
+
+<PARA>
+Det findes masser af programmer til Linux. Du kan finde links i <xref
+linkend="Linuxhjemmesider"> til en masse af dem. Nogle programmer
+kommer i rpm-format, andre i deb-format, og nogle i
+tar.gz-format. Formatet kan ses som slutningen af filnavnet på det man
+kan hente. Det er desværre lidt rodet. I dette kapitel ser vi nærmere
+på håndtering af de enkelte filformater. Langt de fleste af de ting
+der omtales i dette kapitel foregår ved at starte et terminal-vindue op.
+(I KDE tastes alt-F2 og man skriver <command>xterm</command>)
+</PARA>
+
+<FIGURE ID="KDE-menubar-xterm-fig" FLOAT="1">
+<title>Terminal-vinduet kan startes fra menu-linien i KDE</title>
+<GRAPHIC FILEREF="KDE-menubar-xterm.&magic;"  SCALE="100"></GRAPHIC>
+</FIGURE>
+
+
+<sect1 id="rpm-intro">
+<para>
+RPM-pakker, dvs. filer du kan hente med filnavn som slutter på .rpm,
+passer typisk enten til Red Hat, SuSE, eller Mandrake Linux. Det er
+ofte sådan at der mangler noget hvis man prøver at installere pakker
+fra SuSE på Red Hat eller Mandrake og omvendt. Heldigvis skriver
+hjemmesiderne oftest til hvilken distribution, de enkelte pakker
+passer.
+</para>
+
+<para>
+RPM står for <emphasis>Red Hat Package Manager</emphasis> og der er
+formatet der anbefales (af Linux Standard Base) for færdig-oversatte
+programmer til Linux. Det er programmer, der direkte kan
+installeres og sidenhen afinstalleres eller opgraderes.
+</para>
+
+<para>
+En RPM-pakke findes oversat til en eller flere
+processor-artitekturer. Formatet er typisk som følger:
+NAVN-VERSION-PAKKETAG.PROCESSOR.rom, hvor NAVN er navnet på programmet
+eller program-pakken, f.eks. "mplayer".  Versionen indikerer typisk
+hvor langt man er i udviklingen, hvor 1.0 indikerer stabilt, og
+væsentligt under 0.5 er meget tidligt i udviklingen. PAKKETAG kan
+forekomme, hvis den der har lavet RPM-pakken vil vise at han eller hun
+har lavet den typisk ved at sætte PAKKETAG til ens egne initialer.
+PROCESSOR er "i386" for alle Intel-kompatible 32-bit maskiner. Har man en 
+Alpha-maskine sætter man PROCESSOR til "alpha". Et eksempel på navn for 
+en RPM-pakke er "mplayer-0.90pre5-fr1.i386.rpm". 
+</para>
+
+<para>
+En RPM-pakke er oversat ud fra en "source"-pakke, der indeholder kildekoden
+samt en specifikation af hvordan man oversætter programmet.  Det er i
+specifikationen der desværre stadig er lidt forskelle mellem de forskellige
+Linux-distributioner. En "source"-pakke kan således ikke installeres
+direkte, men kan bruges til at oversætte programmets kildekode på egen
+maskine og derefter installere programmet. Et eksempel på en "source"-pakke
+er "mplayer-0.90pre5-fr1.src.rpm" - bemærk at processor-arkitektur ikke
+er en del af "source"-pakkens navn.
+</para>
+
+<para>
+Den ultra-korte guide til RPM (se mere i bogen "Linux -
+Friheden til systemadministration") er følgende:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<command>rpm -ivh PROGRAM.rpm</command>: installerer PROGRAM-rpm-pakken.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<command>rpm -Uvh PROGRAM.rpm</command>: opgraderer PROGRAM-rpm-pakken.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<command>rpm -e PROGRAM</command>: afinstallerer PROGRAM-rpm-pakken. 
+Bemærk at man ikke skal have .rpm på her.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+RPM-programmet kan både arbejde med program-pakker, der allerede er hentet
+fra nettet, eller som angives ved en URL - enten ftp eller http-adressse.
+</para>
+
+<para>
+Til Mandrake Linux kan installation af programmer med fordel udføres
+med <command>urpmi program</command>, hvor <command>urpmi</command> selv
+vil hente
+</para>
+
+</sect1>
+
+<!-- Skrevet af Tommy Olsen -->
+<sect1 id="installer-debian">
+<title>Debian</title>
+<indexterm><primary>Debian</primary></indexterm>
+
+
+<para>
+En egentlig installationsvejledning i Debian er ikke her,
+se da <ulink url="http://dkdg.sourceforge.net">http://dkdg.sourceforge.net</ulink>,
+vi ser dog
+nærmere på håndtering af DEB-pakker i Debian.
+</para>
+
+<sect2 id="debian-apt">
+<title>Apt - Debians pakkehåndtering</title>
+<indexterm><primary>apt</primary></indexterm>
+
+<para>
+Hvis man bruger Debian, eller overvejer at bruge det, og ikke kender
+dens pakkesystem, så er denne lille guide en glimrende introduktion
+til emnet.
+</para>
+ 
+<para>
+Apt står for "Advanced Package Tool" og er det værktøj i Debian som
+håndterer installerede software-pakker. Når man bruger Apt, eller
+pakker generelt, så downloader man som regel et præ-oversat stykke
+software og installerer det via sit pakke-håndteringsprogram. Fordelen
+ved dette er så at uerfarne Linux-brugere kan installere en masse
+software uden at skulle igennem en - nogen gange - vanskelig proces
+med at oversætte programmet, hvilket sker ud fra kildeteksten. En af
+ulemperne ved kildetekst er også at når et program er blevet
+opgraderet så skal man til at gen-oversætte hele programmet igen, og det
+kan hurtigt blive en uoverskuelig opgave hvis man bare bruger XFree86
+og nogle enkelte stykker software udover det. Men med f.eks. Apt kan
+dette gøres rigtig nemt og hurtigt.
+</para>
+
+<para>
+Med Apt kan man installere/opdatere/fjerne pakker med et
+snuptag, fordi man ikke skal bruge selve pakken, men blot navnet på
+pakken som input. Så sørger Apt selv for at hente pakken, om så det er
+fra CD eller en http-server. Men for at få dette til at virke rigtigt
+bruger Apt en simpel konfigurerings-fil kaldet sources.list og denne
+fil ligger som standard i kataloget <filename>/etc/apt</filename>. I
+denne fil er der specificeret hvor Apt skal få pakkerne fra. Som
+standard installerer man fra sin cd-rom-enhed, men dette kan nemt
+ændres hvis man kører følgende kommando i konsollen eller i en
+xterm/wterm/etc. som root:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-setup</USERINPUT>
+</SCREEN>
+
+<para> 
+Så skulle der gerne komme en menu hvori man kan vælge hvordan man vil
+hente sine pakker. Her vælger man så f.eks.: http
+</para>
+
+<para>
+Så spørger den om man vil bruge "Non-free software" -- Det vil jeg
+lade op til brugeren selv at bestemme. Som standard i Debian er dette
+"off", fordi det ikke følger ånden i GPL-licensen. Men man har her
+muligheden for at sætte det til "on", hvis der er noget software som
+man gerne vil have. Under "Non-free software" findes
+bl.a. programpakken, der indeholder mail-klienten PINE og editoren
+PICO.
+</para>
+
+<para>
+Så spørger den om at bruge "Contrib software" -- Dette valg skal man
+nok basere på det valg man lavede ovenfor.
+</para>
+
+<para>
+Resten af spørgsmålene skulle gerne give sig selv. Og når man har
+svaret på dem begynder den at downloade en "package-list", som Apt
+skal bruge fremover når man vil installere pakker.
+</para>
+
+<para>
+Nu er Apt søsat til at hente pakkerne fra internettet, så nu vil
+jeg introducere det program som man vil bruge for at håndtere
+pakkerne: <command>apt-get</command>.
+</para>
+
+<para>
+Apt-get fungerer ved at man sætter første parameter efter hvad man
+gerne vil have gjort med pakken, f.eks. hvis man vil installere noget:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-get install pakkenavn</USERINPUT>
+</SCREEN>
+
+<para>
+Læg her mærke til at jeg skriver "pakkenavn" og ikke "pakkenavn.deb" -
+Det gør jeg fordi pakkesystemet er bygget sådan op at man kun
+skal bruge pakkens navn.
+</para>
+
+<para>
+Når jeg udfører denne kommando, så søger den i den underliggende
+"Package List" efter en pakke kaldet "pakke". Derudover søger den også
+i "Dependency List", og hvis den pakke man vil installere kræver en
+anden pakke så vil Apt også hente den.  Nu vil Apt så begynde at hente
+pakken fra internettet og når det er gjort vil den installere og
+derefter opsætte pakken.
+</para>
+
+<para>
+Hvis man vil fjerne/afinstallere en pakke fra systemet skriver man så:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-get remove pakkenavn</USERINPUT>
+</SCREEN>
+
+<para>
+Her vil Apt afinstallere "pakkenavn" fra systemet.
+</para>
+
+<para>
+Alt dette er jo meget godt, men man kan også lave mere avancerede ting,
+f.eks. kan man opgradere alle pakker på sit system, ved først at
+skrive:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-get update</USERINPUT>
+</SCREEN>
+
+<para>
+Dette vil opdatere "Package Lists" og "Dependency Lists", så man vil
+hente de nyeste pakker fra internettet.
+</para>
+
+<para>
+Herefter kører man:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-get upgrade</USERINPUT>
+</SCREEN>
+
+<para>
+Denne kommando vil sammenligne "Package List" med de installerede
+pakker og så opdatere de pakker på systemet, som er nyere i "Package
+List". Denne kommando er utrolig fiks til at opdatere alle installerede
+pakker med. Udover 'apt-get upgrade' findes der også: 'apt-get
+dist-upgrade' og som navnet antyder opgraderer den
+distributionen. Forskellen mellem 'upgrade' og 'dist-upgrade' er at
+'dist-upgrade' vil prøve at opdatere "Dependency List" med nye
+versioner af pakkerne.
+</para>
+
+<para>
+Når Apt har downloadet en pakke bliver den lagt i
+<filename>/var/cache/apt/archives</filename> og der bliver den faktisk
+liggende, også efter at pakken er installeret. For at slette pakkerne
+man har liggende skriver man:
+</para>
+
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-get clean</USERINPUT>
+</SCREEN>
+
+<para>
+Dette var en kort indledning til 'apt-get' - Men tro ikke at de
+funktioner jeg har nævnt her er det eneste den kan. Den kan faktisk en
+masse andet, f.eks. downloade sourcen til et program for derefter at
+kompilere det. Alle disse smarte features kan man finde i Man-siden
+til <filename>apt-get(8)</filename>.
+</para>
+
+<para>
+Nogle gange når man skal installere en pakke kan det være svært at
+gennemskue hvad pakken hedder i Apt fordi der kan være versions-numre
+og lignende i navnet. I sådanne situationer hvor man ønsker at finde
+det præcise navn på en pakke kan man bruge programmet
+<command>apt-cache</command>. Hvis man f.eks. gerne vil vide hvad
+pakkenavnet for IRC-klienten EPIC4 hedder, kan man skrive:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </prompt><userinput>apt-cache search epic</USERINPUT>
+</SCREEN>
+
+<para>
+Programmet vil så svare om der findes nogle pakker med det
+søgekriterium man har skrevet. I dette tilfælde vil den bl.a. komme
+med følgende linie:
+</para>
+
+<programlisting>
+epic4 - epic irc client, version 4
+</programlisting>
+
+<para>
+Fra denne oplysning kan jeg se at pakken jeg er interesseret i, hedder
+"epic4", og for at lette brugen udskriver den også en lille
+beskrivelse af pakken. Hvis man så ønsker at installere den kan man bare
+fodre <command>apt-get</command> med pakkens præcise navn og den vil
+så begynde at downloade og installere pakken.
+</para>
+
+<para>
+Dette var en lettere kort introduktion til det efterhånden ret geniale
+værktøj Apt, som gør brugen af Debian meget god og nem at
+vedligeholde. Hvis man vil kompilere alle sine programmer selv, så er
+Debian nok ikke distribution for én.  Hvis man vil have mere info
+omkring de forskellige parametre, som man kan smide på programmerne
+kan Man-siderne godt anbefales: apt-cache(8), apt-get(8), sources.list(5)
+</para>
+
+<para>
+Som en slutreplik kan nævnes at hvis man editerer
+<filename>/etc/apt/sources.list</filename> så kan man opsætte
+forskellige ting i denne fil, bl.a. om man vil have stable-, unstable-
+eller testingpakker installeret. I denne fil kan man også indsætte
+flere entries til Apt, som man så kan bruge. Man skal blot huske at
+køre en <command>apt-get update</command> efter man har opdateret
+<filename>sources.list</filename>. Se mere om dette i næste afsnit.
+</para>
+</sect2>
+
+<sect2 id="debian-unstable"> <!-- Herfra og frem er Makholm den skyldige -->
+<title>At bruge en lettere ustabil Debian</title>
+
+<para>
+Debian er ikke særlig hurtig til at udgive nye stabile udgaver, så derfor
+ønsker mange at bruge dele af en af udviklingsudgaverne af Debian for
+at få nyere versioner af nogle programmer.
+</para>
+
+<para>
+Debian Unstable hedder ikke unstable for sjov, og der er en grund til
+at Debian Testing ikke officielt er erklæret for en stabil udgave
+endnu. Følger man vejledningerne i dette afsnit kommer man til at
+bruge programmer, der ikke er fuldstændigt testet og hvis ens maskine
+pludselig ikke virker er det bare synd! (Tag dette som en advarsel, I
+får ikke flere)
+</para>
+
+<para>
+Når en udvikler har lavet en ny Debian-pakke ryger den direkte ind i
+Unstable. Man kan derfor let komme ud for at pakker i unstable har
+nogle ret kritiske fejl. Når en pakke har været i unstable i mindst 14
+dage, ikke har nogle kritiske fejl og er oversat til alle platforme, så
+bliver pakken automatisk installeret i Testing. Der skulle derfor ikke
+være ret mange kritiske fejl i Debian Testing, men det er som sagt
+ikke fuldt ud gennemprøvet.
+</para>
+
+<sect3 id="debian-fuldt-unstable">
+<title>At lave en fuld opdatering</title>
+
+<para>
+Hvis man ønsker at bruge en ren Testing eller Unstable kan det
+anbefales at begynde med at installere i Debian Stable og så opdatere
+over netværket.
+</para>
+
+<para>
+Når man har installeret Debian har man en fil, der hedder
+<filename>/etc/apt/sources.list</filename>. Denne fil bestemmer hvor
+Debian henter pakker fra. Formodentligt, har den to linier, der ligner
+følgende:
+</para>
+
+<programlisting>
+deb http://http.us.debian.org/debian stable main contrib non-free
+deb http://non-us.debian.org/debian-non-US stable/non-US main contrib non-free
+</programlisting>
+
+<para>
+For fuldt ud at skifte til testing eller unstable, skal disse filer
+ændres, så de nævner henholdsvis testing eller unstable i stedet for
+stable. Det vil sige at linierne skal se således ud:
+</para>
+
+<programlisting>
+deb http://http.us.debian.org/debian testing main contrib non-free
+deb http://non-us.debian.org/debian-non-US testing/non-US main contrib non-free
+</programlisting>
+
+<para>
+Dernæst skal man opdatere sin pakkeliste og så er det bare at
+opgradere (til en ny distribution):
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get update</userinput>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get dist-upgrade</userinput>
+</screen>
+
+<para>
+Fremover holder man sin maskine opdateret ved med jævne mellemrum at
+opdatere sin pakkeliste og opgradere (samme distribution):
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get update</userinput>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get upgrade</userinput>
+</screen>
+
+<para>
+Kalder man <command>apt-get upgrade</command> med en -u option, altså
+<command>apt-get -u upgrade</command> fortæller den om alle de pakker
+den opgraderer.
+</para>
+
+<para>
+En række pakker vil apt-get fortælle at den ikke vil opdatere ("The
+following packages have been kept back"). Dette betyder at pakkerne
+ikke kan opgraderes uden enten at installere flere pakker eller ved
+at fjerne pakker fra systemet. Disse pakker kan så opgraderes ved at
+skrive:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get install &lt;pakke&gt;</userinput>
+</screen>
+</sect3>
+
+<sect3 id="debian-enkelte-unstable">
+<title>At opdatere udelukkende enkelte pakker</title>
+
+<para>
+Ofte er det kun enkelte pakker man virkelig har brug for at skulle
+have i en nyere version. Det kan derfor være smart kun at opdatere de
+pakker man har brug for at opdatere. Det kan man gøre hvis man
+bruger en nogenlunde ny version af apt (den der ligger i testing).
+</para>
+
+<para>
+Først skal man fortælle apt at den skal hente pakkelisterne for både
+stable, testing og unstable (eller bare to af dem). Det gøres ved at
+skrive begge distributioner ind i <filename>/etc/apt/sources.list</filename>:
+</para>
+
+<programlisting>
+deb http://http.us.debian.org/debian stable main contrib non-free
+deb http://http.us.debian.org/debian testing main contrib non-free
+deb http://http.us.debian.org/debian unstable main contrib non-free
+deb http://non-us.debian.org/debian-non-US stable/non-US main contrib non-free
+deb http://non-us.debian.org/debian-non-US testing/non-US main contrib non-free
+deb http://non-us.debian.org/debian-non-US unstable/non-US main contrib non-free
+</programlisting>
+
+<para>
+Dernæst skal pakkelisten opdateres:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get update</userinput>
+</screen>
+
+<para>
+Vi skal nu fortælle apt at selv om der findes nyere versioner af en
+pakke, skal den altid bruge pakken fra stable, med mindre den
+eksplicit får fortalt andet. Det gøres ved at lave en fil
+<filename>/etc/apt/preferences</filename>, der indeholder følgende:
+</para>
+
+<programlisting>
+Package: *
+Pin: release a=stable
+Pin-Priority: 600
+</programlisting>
+
+<para>
+Dermed ved apt at den skal give alle pakker, der kommer fra stable, en
+prioritet på 600. (standardprioriteten er 500). Når apt skal vælge
+hvilke pakker den skal installere (opgradere til) vælger den de pakker
+med højst prioritet (før den ser på versionsnumre).
+</para>
+
+<para>
+Det er nu muligt at installere enkelte pakker direkte fra testing ved
+at skrive:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get install slashem/testing</userinput>
+</screen>
+
+<para>
+Dette installerer pakken slashem fra testing. Hvis pakken er afhængig
+af andre pakker, der ikke er i stable, skal disse angives
+eksplicit. Hvis man ønsker at opfylde alle afhængigheder ved at
+installere pakker fra testing kan man skrive følgende:
+</para>
+
+<screen>
+<prompt>[root@linux /root]# </prompt><userinput>apt-get --target-release testing install slashem</userinput>
+</screen>
+
+<para>
+Hvormed apt vil give prioriteten 990 til alle pakker i testing.
+</para>
+
+<para>
+Hvis man altid vil følge pakken slashem fra testing, kan man skrive
+følgende i sin <filename>/etc/apt/preferences</filename>:
+</para>
+
+<programlisting>
+Package: slashem
+Pin: release a=testing
+Pin-Priority: 700
+
+Package: *
+Pin: release a=stable
+Pin-Priority: 600
+</programlisting>
+
+<para>
+Så vil slashem fra testing have en højere prioritet en slashem fra
+stable (600) og slashem fra unstable (500).
+</para>
+
+<para>
+Den fulde dokumentation af hvad man kan med /etc/apt/preferences
+findes i manualsiden apt_preferences(8)
+</para>
+</sect3>
+
+<sect3 id="debian-unstable-tips">
+<title>Lidt andre gode råd</title>
+
+<para>
+Hvis man følger udviklingen af Debian kan det værer en god ide at
+installere pakken apt-listchanges. Denne pakke giver mulighed for at
+læse changelog-filerne for de pakker apt ønsker at opdatere. Dermed
+kan man kyllinge ud hvis der er sket for store ændringer i en pakke.
+</para>
+
+<para>
+<emphasis>Og husk:</emphasis> Debian Unstable bliver udviklet
+aktivt. At opdatere centrale pakker som glibc eller perl kan let gøre
+dit system ubrugligt. Brug derfor kun Debian Testing og Debian
+Unstable på produktionsmaskiner, du ikke kan tåle at miste, når du er
+absolut sikker på at det vil virke.
+</para>
+
+<para>
+Et projekt som en Debian-interesseret bruger bør følge er
+<ulink url="http://dkdg.sourceforge.net">http://dkdg.sourceforge.net</ulink>.
+</para>
+
+</sect3>
+</sect2>
+</sect1>
+
+<sect1 id="tar-gz-intro">
+<title>tar.gz-pakker</title>
+<para>
+Langt de fleste programmer til Linux er skrevet i C eller C++.  Mange
+programmer distribueres fra deres programmører som en ".tar.gz"-pakke eller
+".tgz"-pakke - som er eksakt det samme. En "tar"-pakke er en container af
+filer lagt ned i en fil, uden komprimering eller kryptering. Typisk fylder
+en ".tar"-fil ca. dobbelt så meget som den behøver, og derfor man kan
+kompimere denne med <command>gzip</command>
+(evt. <command>bzip2</command>), hvorefter filen kommer til at hedde 
+".tar.gz" til slut (eller ".tar.bz2" hvis <command>bzip2</command> blev
+anvendt).
+</para>
+
+<para>
+En ".tar.gz"-pakke (eller ".tgz") udpakkes med <command>tar xvzf
+pakke.tar.gz</command> og på skærmen vises hvilke filer der bliver
+udpakket.  Man kan med <command>tar tvzf pakke.tar.gz</command> se hvilke
+filer og kataloger der er indeholdt i en given program-pakke.  Enkelte
+programmer skaber ikke et nyt underkatalog med de nye filer (hvilket er god
+kutume), og i de tilfælde må man selv lave et underkatalog og udpakke
+program-pakken der. Heldigvis vil langt de fleste programmer automatisk
+udpakke kildekode og hjælpefiler i en nyt underkatalog under det nuværende
+katalog. Gør det f.eks. til en regel at udpakke program-pakker i kataloget
+<command>src</command> i eget hjemmekatalog, dvs. <filename>~/src/</filename>.
+Og der er ingen grund til at være root før at et program evt. skal installeres
+på systemet - til oversættelse og test er det (oftest) ikke nødvendigt.
+</para>
+
+<para>
+Når man har pakket kildekoden ud kan man derefter gå ned i det nye katalog
+(brug <command>cd katalognavn</command> i terminalvinduet) og nu kan vi gå
+igang med at oversætte kildekoden til ens egen maskine.
+</para>
+
+<para>
+Langt de fleste programmer kan oversættes efter følgende 
+opskrift
+</para>
+
+<orderedlist>
+<listitem>
+ <para>
+ Udpak pakken med kildekoden.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ cd UNDERKATALOG_MED_PROGRAMMET
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ $ ./configure
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ $ make
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ $ su
+ </para>
+</listitem>
+<listitem> 
+ <para>
+ # make install
+ </para>
+</listitem>
+</orderedlist>
+
+<example id="cdbakeoven-eks">
+<title>Eksempel på oversættelse af et KDE-program: cdbakeoven</title>
+<para>
+Som eksempel kan vi se på kildekoden til
+<filename>cdbakeoven-1.8.9</filename> som findes til KDE. I dette tilfælde
+hentes kildekoden i formen <filename>cdbakeoven-1.8.9.tar.bz2</filename>.
+</para>
+
+<para>
+Først udpakkes kildekoden:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>tar xvjf cdbakeoven-1.8.9.tar.bz2</userinput>
+cdbakeoven-1.8.9/
+cdbakeoven-1.8.9/admin/
+cdbakeoven-1.8.9/admin/CVS/
+cdbakeoven-1.8.9/admin/CVS/Root
+cdbakeoven-1.8.9/admin/CVS/Repository
+cdbakeoven-1.8.9/admin/CVS/Entries
+cdbakeoven-1.8.9/admin/old-ltcf-cxx.sh
+cdbakeoven-1.8.9/admin/old-ltcf-gcj.sh
+...
+cdbakeoven-1.8.9/AUTHORS
+cdbakeoven-1.8.9/INSTALL
+cdbakeoven-1.8.9/.cvsignore
+cdbakeoven-1.8.9/COPYING
+</screen>
+
+<para>
+Alt kildekode er nu lagt i kataloget <command>cdbakeoven-1.8.9/</command>.
+Denne ser vi nu nærmere på.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd cdbakeoven-1.8.9</userinput>
+<prompt>[anne@linus ~/cdbakeoven-1.8.9]$</prompt> <userinput>ls</userinput>
+AUTHORS      Makefile.cvs  aclocal.m4    config.h.in      configure.in.in
+COPYING      Makefile.in   admin         configure        kdeutils.lsm
+INSTALL      README        cdbakeoven    configure.files  stamp-h.in
+Makefile.am  acinclude.m4  config.h.bot  configure.in     subdirs
+</screen>
+
+<para>
+Der er en hel del, der er værd at lægge mærke til her.  Først de fire filer
+<filename>COPYING</filename>, <filename>AUTHORS</filename>,
+<filename>README</filename> og <filename>INSTALL</filename>. De filer
+vil følge med langt de fleste programmer.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<filename>COPYING</filename>: I denne fil beskrives licensen for
+programmet - oftest GPL - General Public License.
+ </para>
+</listitem>
+<listitem>
+ <para>
+ <filename>AUTHORS</filename>: I denne fil anføres hvem der
+har lavet programmet og evt. kontaktinformation.
+ </para>
+</listitem>
+<listitem>
+ <para>
+<filename>README</filename>: I denne fil skrives typisk lidt eller meget
+om hvad programmet er og hvad man kan forvente.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<filename>INSTALL</filename>: I denne fil skrives typisk en kort 
+vejledning i hvordan man kan få oversat programmet på ens egen maskine.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Det er naturligvis forskelle i hvordan de enkelte programmører skriver
+vejledningen filerne, men ovenstående dækker måske 80% af alle programmer.
+</para>
+
+<para>
+Det næste vi skal lægge mærke til er filen <filename>configure</filename>,
+der viser at programmørerne har hjulpet os brugere med at lave et
+konfigurations-script, der automatisk kan se om alle de øvrige nødvendige
+program-biblioteker er til stede. Typisk bygger programmer på hinanden og
+<filename>configure</filename> er et eksekverbart script, der holder styr
+på det. Nu køres dette - bemærk at man typisk tilføjer "./" foran kommandoen
+<command>configure</command> for at være sikker på at det er et program-script
+i det nuværende katalog, der vil blive eksekveret.
+</para>
+
+<screen>
+<prompt>[anne@linus ~/cdbakeoven-1.8.9]$</prompt> <userinput>./configure</userinput>
+creating cache ./config.cache
+checking host system type... i686-pc-linux-gnu
+checking target system type... i686-pc-linux-gnu
+checking build system type... i686-pc-linux-gnu
+checking for a BSD compatible install... /usr/bin/install -c
+...
+</screen>
+
+<para>
+For hver parameter, der er nødvendig for at oversætte programmet vil
+<command>configure</command>-scriptet selv afgøre hvad der er rigtigt.
+Typisk tager det få minutter. Hvis der er fejl bliver man nødt til at
+efterinstallere program-pakker først, eller give flag til programmet med
+hvad der skal gøres. Hvordan dette gøres kan ikke beskrives kortfattet, da
+det afhænger af det enkelte program. Ofte skal der installeres
+udviklings-pakker af nogle programmer. De hedder typisk "-devel" i navnet.
+</para>
+
+<para>
+Efter at have kørt <command>./configure</command> igennem succes-fuldt kan
+programmet oversættes - ofte tager dette en del tid (alt efter maskinens
+CPU-hastighed). Oversættelsen sker ved at køre programmet
+<command>make</command>, der kalder C/C++-oversætteren  <command>gcc</command> og <command>g++</command>. Alle tre dele skal således være installeret.
+</para>
+
+<screen>
+<prompt>[anne@linus ~/cdbakeoven-1.8.9]$</prompt> <userinput>make</userinput>
+</screen>
+
+<para>
+Nu er programmet oversat og du har normalt fået et program der kan køres. 
+Det eneste der mangler er at få det installeret det det kan køres ligesom 
+alle andre programmer.
+</para>
+
+<screen>
+<prompt>[anne@linus ~/cdbakeoven-1.8.9]$</prompt> <userinput>su</userinput>
+<prompt>[anne@linus /home/anne/cdbakeoven-1.8.9]#</prompt> <userinput>make install</userinput>
+...
+<prompt>[anne@linus /home/anne/cdbakeoven-1.8.9]#</prompt> <userinput>exit</userinput>
+</screen>
+
+<para>
+Nu er programmet installeret - typisk i
+<filename>/usr/local/bin/</filename>. Nu er vi færdige :)
+</para>
+
+</example>
+</sect1>
+</CHAPTER>
+
+
