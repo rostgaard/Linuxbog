@@ -165,17 +165,23 @@ $(targetshortname)/$(targetname)-html-$(version).tar.gz: html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):pakhtml"
 	@echo ".........................................."
+# 	Fjerner et eventuelt eksisterende pakkekatalog
+	rm -Rf $(targetshortname)/
+# 	Roder lidt rundt med en spec fil (todo)
 	@echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	@echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
 	@echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
 	@echo Version: `cat version.sgml` >> bog/$(targetname).spec
 	@echo Release: 1mdk >>  bog/$(targetname).spec
 	cat linuxbog.spec >> bog/$(targetname).spec
+# 	FLytter bog (fra html) til pakkekatalog for at kunne få et korrekt navn ved nedpakning
 	mv bog $(targetshortname)
 	(cd ..;tar hczf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
 	(cd ..;tar hczf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+#	Flytter pakkekatalog tilbage igen
 	mv $(targetshortname) bog 
+# 	Tilsvarende for billeder.
 	mv images $(targetshortname)_images
 	(cd ..;tar hczf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
 	mv $(targetshortname)_images images 
@@ -196,8 +202,8 @@ pakhtml.clean:
 ################################################################################
 .PHONY : html
 if BUILD_HTML
-html: bog/index.html 
-bog/index.html: $(dep_sgml_filer)
+html: html.stamp
+html.stamp: $(dep_sgml_filer)
 	@echo ".........................................."
 	@echo "Target $(targetshortname):html"
 	@echo ".........................................."
@@ -233,6 +239,7 @@ else !HAVE_TIDY
 	@echo "Du bør installere tidy"
 endif !HAVE_TIDY
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
+	touch html.stamp
 	@echo "Done HTML (html)"
 	@echo ""
 else !BUILD_HTML
@@ -241,7 +248,7 @@ html:
 endif !BUILD_HTML
 
 html.clean:	
-	rm -Rf bog/
+	rm -Rf bog/ html.stamp
 
 
 ################################################################################

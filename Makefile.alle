@@ -140,9 +140,9 @@ endif !BUILD_PAKHTML
 if BUILD_HTML
 html: statusfiles $(targetshortname)
 
-$(targetshortname): alle/index.html
+$(targetshortname): html.stamp
 
-alle/index.html: $(dep_sgml_filer) bog.sgml
+html.stamp: $(dep_sgml_filer) bog.sgml
 #	echo $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
 	rm -rf stikord.sgml magic.sgml bog alle
@@ -183,7 +183,9 @@ endif ADD_SUBMITBOX
 else !HAVE_TIDY
 	@echo "Du bør installere tidy"
 endif !HAVE_TIDY
+	touch html.stamp
 else !BUILD_HTML
+html:
 	@echo "Overspring html"
 endif !BUILD_HTML
 
@@ -232,7 +234,7 @@ endif BUILD_PDF
 .PHONY : clean
 clean:
 	@echo clean $(targetshortname)
-	rm -rf DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)* sideantal.txt *~ .#*[0-9] $(targetshortname)
+	rm -rf DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)* sideantal.txt *~ .#*[0-9] $(targetshortname) html.stamp
 
 ################################################################################
 #
