@@ -2727,6 +2727,7 @@ at optage med, skal du altså bruge parameteren "--format dv2".</para>
 <indexterm><primary>mp2enc</primary></indexterm>
 <indexterm><primary>lavrec</primary></indexterm>
 <indexterm><primary>mplex</primary></indexterm>
+<indexterm><primary>dvdauthor</primary></indexterm>
 
 <para>mjpegtools er en samling af en lang række kommandolinieværktøjer
 der kan konvertere fra MPEG og DV codecs (samt et par YUV
@@ -2784,6 +2785,13 @@ oversat og installeret.</para>
 <command>lav2divx</command>, der angiveligt skulle kunne bruges til at
 konvertere til aiv/divx format. Jeg har dog ikke testet det.</para>
 
+<para>Hvis du har <command>mjpegtools</command> installeret og er
+interesseret i at brænde dine færdige film på DVD, skulle programmet
+<command>dvdauthor</command> angiveligt kunne bruges. Det kan du finde
+på <ulink
+url="http://dvdauthor.sourceforge.net/">http://dvdauthor.sourceforge.net/</ulink>.
+</para> 
+
 </sect3>
 
 <sect3 id="videoreg-konvertering-andre">
@@ -2818,9 +2826,8 @@ følgende vil nogen af de mest populære blive præsenteret. Disse
 programmer har typisk også mulighed for at redigere og filtrere en
 smule i lyd - Broadcast 2000 har f.eks. rigtigt mange lydfiltre - men
 iøvrigt vil jeg ikke komme ind på lydredigering i sig selv. Der findes
-en del programmer til dette under Linux af varierende modenhed. Et af
-de mest spændende projekter jeg har set er Glame på 
-<ulink url="http://www.sourceforge.net/projects/glame/">http://www.sourceforge.net/projects/glame/</ulink>.</para>
+en del programmer til dette under Linux af varierende modenhed, se
+<xref linkend="lydredigering">.</para>
 
 <sect3 id="broadcast2000">
 <title>Broadcast 2000</title>
@@ -2892,14 +2899,9 @@ til Broadcast 2000 Cinelerra. Hjemmesiden er på
 <ulink
 url="http://sourceforge.net/projects/heroines/">http://sourceforge.net/projects/heroines/</ulink>.
 Cinelerra er en gennemgribende omskrivning af Broadcast 2000. Mens
-dette skrives (maj 2002) kaldes den nyeste version "Backups 050302" og
-dette må være at betragte som en alfa udgave. Cinelerra skal
-oversættes fra source. Processen er ikke triviel. Makefilen er
-"hjemmestrikket" og har blandt andet den uheldige egenskab at den
-forsøger at oversætte flere dele af programmet samtidig, men ikke
-tager højde for at nogen dele kan fejle. Det vil sige at man faktisk
-kan risikere at det ser ud som om at programmet er blevet oversat
-korrekt, uden at det er tilfældet. Visse dele af programmet virker dog
+dette skrives (august 2002) er den nyeste version 1.0.0. Selv om
+Cinelerra således har nået version 1, oplever jeg ikke programmet som
+særligt stabilt. Visse dele af programmet virker dog
 fint, blandt andet lydredigering og grænsefladen er langt mere
 intuitiv end for Broadcast 2000. Så, hvis man er frisk på at
 eksperimentere lidt, så er det absolut interessant at prøve Cinelerra
@@ -2911,11 +2913,28 @@ Cinelerra med composition og ressource vinduet vist.</para>
 <graphic fileref="cinelerra.&magic;"  scale="30"></graphic>
 </figure>
 
-<para>Oversættelse og installation af Cinelerra er som sagt ret
-besværligt og beskrives ikke i detaljer her. Du skal have en rimelig
-erfaring med at oversætte software under Linux for at få det til at
-virke. Download alle backup pakkerne (4 stks; cinelerra, xmovie,
-libmpeg og quicktime) og udpak dem i et katalog. Læs derefter filen
+<para>Hvis du har et DV kamera kan du konvertere filer i DV2 AVI
+format til et format Cinelerra kan indlæse
+vha. <command>mjpegtools</command>. Det kan gøres eksempelvis sådan
+her, hvor <filename>fil.dv2.avi</filename> konverteres til
+<filename>fil.mjpeg.mov</filename> (uddata fra programmerne slettet):</para>
+<screen>
+<prompt>[anne@linus ~%]$ </prompt><userinput>lav2wav fil.dv2.avi > audio.wav</userinput>
+<prompt>[anne@linus ~%]$ </prompt><userinput>lav2yuv fil.dv2.avi | yuv2lav -q100 -fq -b 512 -o video.mjpeg.mov</userinput>
+<prompt>[anne@linus ~%]$ </prompt><userinput>lavaddwav video.mjpeg.mov audio.wav fil.mjpeg.mov</userinput>
+<prompt>[anne@linus ~%]$ </prompt><userinput>rm video.mpjeg.mov audio.wav</userinput>
+</screen> 
+
+<para>Hvis du vælger at oversætte Cinelerra fra source, skal du vide
+at processen ikke er triviel. Makefilen er "hjemmestrikket" og har
+blandt andet den uheldige egenskab at den forsøger at oversætte flere
+dele af programmet samtidig, men ikke tager højde for at nogen dele
+kan fejle. Det vil sige at man faktisk kan risikere at det ser ud som
+om at programmet er blevet oversat korrekt, uden at det er tilfældet.
+Du skal have en rimelig erfaring med at oversætte software under Linux
+for at få det til at virke. Download alle backup pakkerne (4 stks;
+cinelerra, xmovie, libmpeg og quicktime) og udpak dem i et
+katalog. Læs derefter filen
 <filename>cinelerra/doc/doc_2002.html</filename> og ret i
 <filename>cinelerra/global_config</filename>. Jeg måtte f.eks. fjerne
 ALSA support fra config, for at få det til at virke, selvom jeg
@@ -3091,6 +3110,12 @@ lave en Super VideoCD strøm gives her:</para>
 -rw-r--r--    1 anne     anne      5519548 maj 28 20:52 video.avi
 -rw-rw-r--    1 anne     anne       501984 maj 28 20:58 video.mpg
 </screen>
+
+<para>Bemærk at der er mange parametre at skrue på og at forskellige
+afspillere, især DVD afspillere, har mulighed for at afspille VCD'ere
+med langt højere kvalitet end standarden egentlig lægger op til. Det
+kan absolut betale sig at eksperimentere - brug eventuelt et
+rewritable CD medie indtil du er helt tilfreds.</para>
 
 </sect3> <!-- Indkodning til VideoCD MPEG film -->
 
