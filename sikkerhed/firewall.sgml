@@ -284,8 +284,8 @@ fra det udenfor, så der aldrig oprettes en forbindelse igennem
 proxy'en. Det er altid proxy'en, der opretter forbindelsen ud, og derfor
 kun proxy'en, der er kendt udenfor. Et helt andet aspekt er, at man et
 centralt sted får direkte mulighed for at begrænse, hvad der kan
-downloades, og administratoren får relativ nem adgang til at overvåge,
-hvad der downloades. Her skal man dog være opmærksom på både etiske
+hentes, og administratoren får relativ nem adgang til at overvåge,
+hvad der hentes. Her skal man dog være opmærksom på både etiske
 regler og registerlovene - det er ikke alt, der må overvåges.
 </para>
 
@@ -464,10 +464,10 @@ port 57726 - til den angivne port på serveren (58734).</para></listitem>
 
 <para>
 Lad os se på, hvad der er vundet. Hvis man vedligeholder en firewall
-bag hvilken, der er klienter, der gerne vil downloade via
+bag hvilken, der er klienter, der gerne vil hente via
 ftp, er man ved traditionel ftp nødt til at lade et portinterval stå
 åbent til indgående forbindelser, som de forskellige ftp-servere, folk
-downloader fra, skal oprette. Bruges der derimod passiv ftp, skal man
+henter fra, skal oprette. Bruges der derimod passiv ftp, skal man
 kun tillade udgående forbindelser - man behøver ikke længere lade et
 portinterval stå åbent til de indgående forbindelser fra diverse ftp
 servere.
@@ -534,12 +534,13 @@ En mere grundig introduktion til ipchains kan findes i IPCHAINS-HOWTO
 </sect2>
 
 <sect2 id="har-jeg-ipchains">
-<title>Er ipchains installeret på min maskine?</title>
-<para>
-Ipchains er en del af selve Linux kernen. Man skal altså bruge en kerne, 
-som ipchains er kompileret ind i. Undersøg om kernen er oversat med 
-support for ipchains: 
-</para>
+ <title>Er ipchains installeret på min maskine?</title>
+
+ <para>
+  Ipchains er en del af selve Linux kernen. Man skal altså bruge en kerne, der
+  er oversat med ipchains. Undersøg om kernen er oversat med understøttelse af
+  ipchains: 
+ </para>
 
 <SCREEN>
 [root@sherwood /root]# ls /proc/net/ip_fwchains
@@ -548,7 +549,7 @@ support for ipchains:
 <para>
 Hvis filen eksisterer, er ipchains understøttet i den kerne, der er
 installeret. Hvis den ikke gør, skal der oversættes
-(kompileres) en ny kerne. Vi vil ikke her komme ind på, hvordan man
+en ny kerne. Vi vil ikke her komme ind på, hvordan man
 oversætter en ny kerne. Der findes en del beskrivelser på Internet om
 dette, f.eks. <ulink url="http://www.sslug.dk/linuxbog/bog/kernelcompile.html">
 http://www.sslug.dk/linuxbog/bog/kernelcompile.html</ulink>. Man skal
@@ -1041,7 +1042,7 @@ ipchains -A input -p tcp -j ACCEPT -s 0/0 -d 0/0 auth -y
 
 <para>
 Tillad ftp dataforbindelser (når vores hjemmebruger vil lave ftp
-downloads og ftp dir kommandoer på ftp-servere ude i verden)
+nedhentninger og ftp dir kommandoer på ftp-servere ude i verden)
 </para>
 
 <SCREEN>
@@ -1263,8 +1264,8 @@ narre - iptables kan meget mere.
 <sect2 id="hvad-skal-jeg-bruge">
 <title>Hvad skal jeg bruge?</title>
 <para>
-For at komme igang med netfilter skal man bruge en 2.3 kerne med netfilter
-kompileret ind samt user space værktøjet iptables. Iptables kan downloades
+For at komme igang med netfilter skal man bruge en 2.3 kerne oversat med
+netfilter aktiveret samt user space-værktøjet iptables. Iptables kan hentes 
 fra Netfilter hjemmesiden: <ulink url="http://netfilter.kernelnotes.org/">http://netfilter.kernelnotes.org/</ulink> .
 </para>
 
@@ -1476,7 +1477,7 @@ i kerne 2.3 (2.4)</para></listitem>
 <para>
 Squid er en god proxy server bl.a. til Linux, der kan findes på 
 <ulink url="http://www.squid-cache.org/">http://www.squid-cache.org/</ulink>. Squid
-er en agent, der downloader de hjemmesider, brugeren beder om, og
+er en agent, der henter de hjemmesider, brugeren beder om, og
 videresender resultatet til brugeren. Samtidig kan Squid fungere som
 proxy-cache - den gemmer hjemmesiden i cache, og er der nu en anden
 bruger, der vil se den samme hjemmeside, hentes den direkte fra den
@@ -1509,7 +1510,7 @@ at lade Squid køre som brugeren <COMMAND>squid</COMMAND> i sin egen gruppe
 
 <para>
 Vi har installeret <FILENAME>squid-2.2.STABLE5-1.i386.rpm</FILENAME>,
-som kan downloades fra <ulink
+som kan hentes fra <ulink
 url="http://www.squid-cache.org/">http://www.squid-cache.org/</ulink>. Squid
 startes op via <FILENAME>/etc/rc.d/init.d/squid</FILENAME>. Squids
 opsætningsfil hedder <FILENAME>/etc/squid/squid.conf</FILENAME>. Der er
@@ -1695,7 +1696,7 @@ proxy-serveren.
 
 <para>
 Man kan lave noget transparent proxy med squid sammen med ipchains. 
-Kernen skal være kompileret med "Transparent proxying". Vi vil ikke
+Kernen skal være oversat med "Transparent proxying". Vi vil ikke
 beskrive det her, men der findes en mini-HOWTO på
 <ulink url="http://sunsite.auc.dk/ldp/HOWTO/mini/TransparentProxy.html ">http://sunsite.auc.dk/ldp/HOWTO/mini/TransparentProxy.html </ulink>.
 </para>
@@ -1795,7 +1796,7 @@ hensyn. Det er bla. ftp, realaudio, irc og forskellige spil.
 er vi nødt til gøre det lidt mere indviklet. Der findes moduler til ipchains, 
 der kan håndtere en del forskellige applikationer: ip_masq_ftp, ip_masq_raudio,
 ip_masq_irc, ip_masq_quake etc. For at kunne bruge disse moduler, skal de
-være kompileret med, da man lavede kernen. Det er inde under networking options,
+være oversat med, da man lavede kernen. Det er inde under networking options,
 hvor man skal slå "IP masquerading special module support"
 og "ipportfw masq support" til. I kerne 2.2.12 er det nødvendigt at
 slå "prompt for development and/or incomplete code/drivers" til for at
