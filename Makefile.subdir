@@ -23,7 +23,7 @@ allesgmlfiles=$(wildcard *.sgml)
 sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
 
 # her er det der skal laves
-all:	statusfiler html pspdf palmpilot sgml exit
+all:	html pspdf palmpilot sgml exit
 
 sgml: $(targetname)-$(version).sgml.tgz
 
@@ -33,6 +33,7 @@ $(targetname)-$(version).sgml.tgz: $(sgmlfiler)
 palmpilot: $(targetname)-$(version).palm.tgz
 
 $(targetname)-$(version).palm.tgz: $(sgmlfiler)
+	make html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
@@ -84,6 +85,7 @@ pakhtml:
 	@echo ""
 
 bog/index.html: $(sgmlfiler)
+	make statusfiler
 	make htmlfiler 
 	make reparerhtml 
 	make pakhtml
@@ -93,6 +95,7 @@ html: bog/index.html
 pspdf:	$(targetname)-$(version).pdf
 
 $(targetname)-$(version).pdf: $(sgmlfiler)
+	make statusfiler
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
