@@ -5,7 +5,8 @@ SUBDIRSSAMLING = @SUBDIRSSAMLING@
 # version - skal bruges til samlingerne (i øjeblikket kun palm)
 version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > ../samling/version.sgml; cat ../samling/version.sgml))
 
-all: kun-fra-toplevel palmpilot ps pdf
+# html er unødvendigt
+all: kun-fra-toplevel palmpilot ps pdf pakhtml 
 
 ps: kun-fra-toplevel
 	echo "Vi bygger desværre ikke PostScript-bøger for tiden - ØV!"
@@ -28,16 +29,23 @@ palmpilot: kun-fra-toplevel
 	@for dir in $(SUBDIRSSAMLING); do \
 		cp ../$$dir/PalmBuildDir/linuxbog-$$dir.pdb palm-samling/ || /bin/true; \
 	done;
-	tar vczf linuxbog-samling-palm-$(version).tar.gz palm-samling/
+	tar czf linuxbog-samling-palm-$(version).tar.gz palm-samling/
 
 html:
-	@echo 'html-versionen af samling-"bogen" er endnu ikke implementeret.'
-	@echo 'men giver det overhovedet mening?'
+	@echo 'html er et internt target - der ikke er nødvendigt at gennemføre for samling.'
 
+pakhtml: kun-fra-toplevel
+	mkdir -p html-samling; \
+	cd html-samling; \
+	for dir in $(SUBDIRSSAMLING); do \
+		mkdir -p $$dir; \
+		ln -s ../../../$$dir/$$dir $$dir/$$dir; \
+		ln -s ../../../$$dir/eksempler $$dir/eksempler; \
+	done; \
+	cd ..; \
+	tar hczf linuxbog-samling-html-$(version).tar.gz html-samling/;
+	@echo 'HTML uden billeder er lidt svært.'
 
-pakhtml:
-	@echo 'pakhtml-versionen af samling-"bogen" er endnu ikke implementeret.'
-	@echo 'men giver det overhovedet mening?'
 
 eksempelbackup:
 	@echo 'eksempelbackup target for samling-"bogen" er endnu ikke implementeret.'
@@ -70,6 +78,7 @@ clean:
 # Skal ændres når vi engang begynder at bygge PostScript-versioner igen!
 #	rm -fr ps-samling
 	rm -fr pdf-samling
+	rm -fr html-samling
 
 	rm -f linuxbog-samling-*.tar.gz
 
