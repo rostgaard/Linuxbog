@@ -14,7 +14,6 @@
  <secondary>fil-deling</secondary>
 </indexterm>
 
-
 <para>
 Selv om denne bog handler om Linux, skal man ikke glemme, at der findes
 andre styresystemer. Et af de mere udbredte er Windows - herunder
@@ -64,11 +63,10 @@ ftp://sunsite.dk/pub/UNIX/networking/samba</ulink>.
 Vi vil dog meget anbefale at bruge en færdigoversat pakke, og vi
 vil i eksemplet gå ud fra, at du har Red Hat installeret. Når du har
 hentet rpm-pakken, skriver du bare:
-</para>
-
-<SCREEN>
-<prompt>[root@linus /root]#</prompt> <USERINPUT>rpm -ivh samba-*.i386.rpm</USERINPUT>
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>rpm -ivh samba-*.i386.rpm</userinput>
 </screen>
+</para>
 
 <sect1 id="Samba-Unix">
 <title>Konfigurering af Samba-serveren i Linux</title>
@@ -264,7 +262,7 @@ Når vi har tilføjet vores Windows-klient i
 <filename>/etc/passwd</filename>, skal vi få Samba til at generere
 vores MTA. Det gøres med kommandoen
 <screen>
-<prompt>[root@linus /root]#</prompt> <USERINPUT>smbpasswd -a -m WS1</USERINPUT>
+<prompt>[root@linus /root]#</prompt> <userinput>smbpasswd -a -m WS1</userinput>
 </screen>
 </para>
 
@@ -284,8 +282,8 @@ N.B. Det kan være at <filename>smbpasswd</filename> ligger i
 </sect3>
 </sect2>
 
-<sect2 id="samba-andet">
-<title>Andre ting om samba</title>
+<sect2 id="samba-pdc">
+<title>Samba som primær domænekontroller</title>
 
 <para>
 Som noget nyt i version 2.x.x har man nu mulighed for at sætte Samba op som
@@ -334,34 +332,31 @@ hedder <command>swat</command> (Samba Web Administration Tool).  Med
 dette værktøj er det muligt at klikke sig gennem opsætningen af Samba.
 </para>
 
-<FIGURE ID="swat-fig" FLOAT="1">
-<TITLE>Swat</TITLE>
-<GRAPHIC FILEREF="swat.&magic;"  SCALE="60"></GRAPHIC>
-</FIGURE>
-
+<figure id="swat-fig" float="1">
+<title>Swat</title>
+<graphic fileref="swat.&magic;"  scale="60"></graphic>
+</figure>
 
 <para> 
 Her ses et eksempel på, hvordan <command>swat</command> ser ud, jeg
 har defineret et "share" (en delt mappe), der hedder spil. I
 <filename>smb.conf</filename> ser det således ud:
-</para>
-
-<screen>
+<programlisting>
 [spil]
   create mask =  0775
   read only = no
   path = /mnt/hdd/spil/
-</screen>
+</programlisting>
+</para>
 
 <para>
 Hvis man bruger swat, ser det således ud: 
 </para>
 
-<FIGURE ID="swatspil-fig" FLOAT="1">
-<TITLE>Swat spil</TITLE>
-<GRAPHIC FILEREF="swat_spil.&magic;" SCALE="60"></GRAPHIC>
-</FIGURE>
-
+<figure id="swatspil-fig" float="1">
+<title>Swat spil</title>
+<graphic fileref="swat_spil.&magic;" scale="60"></graphic>
+</figure>
 
 <para>
 Her er det kun den øverste del af siden, der er taget med. Det skal bemærkes,
@@ -398,8 +393,9 @@ Hvordan man installerer DNS på Linux, kan du læse mere om her. Se
  <primary>Samba, Konfigurering</primary>
  <secondary>Krypterede adgangskoder</secondary>
 </indexterm>
+</sect1)
 
-<sect2 id="kryptpass">
+<sect1 id="kryptpass">
 <title>Krypterede adgangskoder</title>
 
 <para>
@@ -423,51 +419,50 @@ enkelt at få Samba til at benytte krypterede adgangskoder.
 Fordele ved krypterede adgangskoder:
 </para>
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM>
-<PARA>Sikkerhed. Adgangskoder bliver ikke sendt over netværket i klar tekst.</PARA>
-</LISTITEM>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+<para>Sikkerhed. Adgangskoder bliver ikke sendt over netværket i klar tekst.</para>
+</listitem>
 
 
-<LISTITEM>
-<PARA>Windows 95 med OSR2, Windows 98 og NT 4.0 SP4 vil som standard kun
-tale med en server, der anvender krypterede adgangskoder.</PARA>
-</LISTITEM>
-</ITEMIZEDLIST>
+<listitem>
+<para>Windows 95 med OSR2, Windows 98 og NT 4.0 SP4 vil som standard kun
+tale med en server, der anvender krypterede adgangskoder.</para>
+</listitem>
+</itemizedlist>
 
 <para>
 Ulemper ved krypterede adgangskoder:
 </para>
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM>
-<PARA>Der skal vedligeholdes endnu en passwd-fil.</PARA>
-</LISTITEM>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+<para>Der skal vedligeholdes endnu en passwd-fil.</para>
+</listitem>
 
-<LISTITEM>
-<PARA>Hvis du allerede bruger services, der sender adgangskoder i klar
+<listitem>
+<para>Hvis du allerede bruger services, der sender adgangskoder i klar
 tekst (f.eks telnet og ftp), gør det ikke den store forskel, om
-SMB også gør det.</PARA>
-</LISTITEM>
+SMB også gør det.</para>
+</listitem>
 
-</ITEMIZEDLIST>
+</itemizedlist>
 
 <para>
 Windows 98 og Windows NT 4 (SP3 og senere) kræver som standard brug af 
 krypterede adgangskoder. Det betyder, at du har to valg:
 </para>
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM>
-<PARA>Du konfigurerer Samba til at bruge krypterede adgangskoder.
-</PARA>
-</LISTITEM>
-<LISTITEM>
-<PARA>Du ændrer Windows 98/95/NT registry, så de ikke kræver krypterede adgangskoder.
-</PARA>
-</LISTITEM>
-</ITEMIZEDLIST>
-</sect2>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
+<para>Du konfigurerer Samba til at bruge krypterede adgangskoder.
+</para>
+</listitem>
+<listitem>
+<para>Du ændrer Windows 98/95/NT registry, så de ikke kræver krypterede adgangskoder.
+</para>
+</listitem>
+</itemizedlist>
 
 <sect2 id="Sambaconfig">
 <title>Konfigurering af Samba</title>
@@ -475,11 +470,10 @@ krypterede adgangskoder. Det betyder, at du har to valg:
 I modsætning til tidligere er Samba i dag født til at kunne håndtere
 krypterede adgangskoder. Det eneste man skal gøre, er at tilføje følgende
 linje til [global]-sektionen i <filename>/etc/smb.conf</filename>
-</para>
-
-<screen>
+<programlisting>
 encrypt password = yes
-</screen>
+</programlisting>
+</para>
 
 <para>
 Hvis du gerne vil have flyttet dine Unix-adgangskoder over til Samba,
@@ -487,6 +481,9 @@ skal du lave en ny passwd-fil til brug for Samba alene. Der findes
 et program, som kan generere en Samba-adgangskodefil 
 (<filename>/etc/samba/smbpasswd</filename>) ud fra den
 eksisterende Unix-adgangskodefil (<filename>/etc/passwd</filename>):
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput> mksmbpasswd.sh &lt; /etc/passwd &gt; /etc/samba/smbpasswd</userinput>
+</screen>
 </para>
 
 <indexterm>
@@ -500,10 +497,6 @@ eksisterende Unix-adgangskodefil (<filename>/etc/passwd</filename>):
  <primary>Kommandooversigt</primary>
  <secondary>mksmbpasswd</secondary>
 </indexterm>
-
-<SCREEN>
-<prompt>[root@linus /root]#</prompt> <USERINPUT> mksmbpasswd.sh &lt; /etc/passwd &gt; /etc/samba/smbpasswd</USERINPUT>
-</SCREEN>
 
 <para>
 I SuSE 6.3 er <filename>smbpasswd.sh</filename> placeret i kataloget
@@ -535,9 +528,8 @@ er konfigureret. Hvis du gerne vil oversætte dit eget programmel, skal
 du anvende linkerflaget <filename>-lcrypt</filename> til LIBSM. 
 </para>
 </sect2>
-</sect1>
 
-<sect1 id="SambaconfigWin">
+<sect2 id="SambaconfigWin">
 <title>Opsætning af Windows 98/NT</title>
 
 <para>
@@ -550,21 +542,19 @@ Windows, da man ellers ikke vil kunne logge sig på.
 På Windows 95/98-maskiner skal følgende skrives i
 registreringsdatabasen for at få Windows til at undlade at sende
 krypterede adgangskoder:
-</para>
-
-<screen>
+<programlisting>
 [HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\VxD\VNETSUP]
 "EnablePlainTextPassword"=dword:00000001
-</screen>
+</programlisting>
+</para>
 
 <para>
 Tilsvarende for Windows NT:
-</para>
-
-<screen>
+<programlisting>
 [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Rdr\Parameters]
 "EnablePlainTextPassword"=dword:00000001
-</screen>
+</programlisting>
+</para>
 
 <para>
 Hvis man ikke har mod på at ændre i registreringsdatabasen selv, kan
@@ -572,12 +562,12 @@ man kopiere en af følgende filer til sin Windows-maskine og afvikle dem
 fra <command>stifinder</command>:
 </para>
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM><para><filename>Win95_PlainPassword.reg</filename></para></LISTITEM>
-<LISTITEM><para><filename>Win98_PlainPassword.reg</filename></para></LISTITEM>
-<LISTITEM><para><filename>NT4_PlainPassword.reg</filename></para></LISTITEM>
-<LISTITEM><para><filename>Win2000_PlainPassword.reg</filename></para></LISTITEM>
-</ITEMIZEDLIST>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para><filename>Win95_PlainPassword.reg</filename></para></listitem>
+<listitem><para><filename>Win98_PlainPassword.reg</filename></para></listitem>
+<listitem><para><filename>NT4_PlainPassword.reg</filename></para></listitem>
+<listitem><para><filename>Win2000_PlainPassword.reg</filename></para></listitem>
+</itemizedlist>
 
 <para>
 Hvis man afvikler dem, vil ovenstående ændringer automatisk blive tilføjet i
@@ -593,8 +583,9 @@ En meget udførlig beskrivelse af brugen findes i filen
  <primary>Samba, Konfigurering </primary>
  <secondary>Konfigurering af klienterne</secondary>
 </indexterm>
+</sect1>
 
-<sect2 id="configWinClient">
+<sect1 id="configWinClient">
 <title>Konfigurering af klienterne</title>
 
 <para>
@@ -609,11 +600,11 @@ følgende forudsætninger til det efterfølgende eksempel:
 Maskiner i vores netværk:
 </para>
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM><para>test.domain.net; Linux-serveren</para></LISTITEM>
-<LISTITEM><para>router.domain.net; Router til internettet</para></LISTITEM>
-<LISTITEM><para>WS1.domain.net; Windows-klient</para></LISTITEM>
-</ITEMIZEDLIST>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>test.domain.net; Linux-serveren</para></listitem>
+<listitem><para>router.domain.net; Router til internettet</para></listitem>
+<listitem><para>WS1.domain.net; Windows-klient</para></listitem>
+</itemizedlist>
 
 <indexterm>
  <primary>Samba, Konfigurationsfiler (eksempler) </primary>
@@ -622,13 +613,12 @@ Maskiner i vores netværk:
 
 <para>
 Indhold af filen <filename>/etc/hosts</filename>:
-</para>
-
-<screen>
+<programlisting>
 127.0.0.1	localhost.localdomain	localhost
 192.168.1.1	test.domain.net		test
 172.10.10.1	router.domain.net	router
-</screen>
+</programlisting>
+</para>
 
 <indexterm>
  <primary>Samba, Konfigurationsfiler (eksempler) </primary>
@@ -637,11 +627,7 @@ Indhold af filen <filename>/etc/hosts</filename>:
 
 <para>
 Indhold af filen <filename>/etc/smb.conf</filename>:
-</para>
-
-
-
-<screen>
+<programlisting>
 [global]
    workgroup = testdomain
 
@@ -679,8 +665,8 @@ Indhold af filen <filename>/etc/smb.conf</filename>:
    public = no
    writable = no
    create mode = 0700
-</screen>
-
+</programlisting>
+</para>
 
 <para>
 For at kunne få forbindelse til Samba-serveren, kræves der en fungerende
@@ -688,8 +674,8 @@ løsning på navneopslag. Det kan løses på 2 måder:
 </para>
 
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem>
 <para>
 Hosts og Lmhosts - netbios-way (har i øvrigt suffixet .sam): I disse filer
 skal samba-serveren være nævnt. Når du har foretaget ændringerne i
@@ -698,7 +684,7 @@ filerne, skal deres navne ændres til Hosts og Lmhosts - efternavnene
 senere. </para> 
 </listitem>
 
-<LISTITEM>
+<listitem>
 <para>
 Sæt Linux-serveren til at køre named - TCP/IP-way, 
 og fortæl Windows at den skal bruge 
@@ -711,8 +697,8 @@ maskinens navn WS1 (det skal være det samme navn som blev angivet som
 Indstillinger-&gt;kontrolpanel-&gt;netværk). "Domæne" sættes til testdomain.
 Feltet "Rækkefølge" til søgning efter navneserver tilføjes 192.168.1.1
 (hvis den står som den første, går det hurtigere).
-</para></LISTITEM>
-</ITEMIZEDLIST>
+</para></listitem>
+</itemizedlist>
 
 
 <para>
@@ -734,11 +720,11 @@ test.domain.net, og har følgende stående i filen:
 er følgende navne ikke tilladte for workgroup/domain:
 </para>
 
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM><para>localhost.localdomain</para></LISTITEM>
-<LISTITEM><para>test.domain.net</para></LISTITEM>
-<LISTITEM><para>router.domain.net</para></LISTITEM>
-</ITEMIZEDLIST>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>localhost.localdomain</para></listitem>
+<listitem><para>test.domain.net</para></listitem>
+<listitem><para>router.domain.net</para></listitem>
+</itemizedlist>
 
 
 <para>
@@ -747,11 +733,11 @@ forbudt tegn.
 </para>
 
 <para>
-<ITEMIZEDLIST MARK="bullet" SPACING="compact">
-<LISTITEM><para>localhost</para></LISTITEM>
-<LISTITEM><para>test</para></LISTITEM>
-<LISTITEM><para>router</para></LISTITEM>
-</ITEMIZEDLIST>
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>localhost</para></listitem>
+<listitem><para>test</para></listitem>
+<listitem><para>router</para></listitem>
+</itemizedlist>
 </para>
 
 <para>
@@ -759,7 +745,7 @@ I dette afsnit kommer så vores eksempel på, hvordan filerne
 <filename>Hosts</filename> og <filename>Lmhosts</filename> skal se ud.
 </para>
 
-<sect3 id="hosts-samba">
+<sect2 id="hosts-samba">
 <title>Hosts</title>
 
 <indexterm>
@@ -775,9 +761,7 @@ For Windows 95/98 gemmes filen som
 <para>
 For Windows NT gemmes filen som 
 <filename>c:\winnt\system32\drivers\etc\Hosts</filename>.
-</para>
-
-<screen>
+<programlisting>
 # Copyright (c) 1998 Microsoft Corp.
 #
 # This is a sample HOSTS file used by Microsoft TCP/IP stack for Windows98
@@ -799,17 +783,18 @@ For Windows NT gemmes filen som
 127.0.0.1 localhost
 192.168.1.1 test
 172.10.10.1 router
-</screen>
-</sect3>
+</programlisting>
+</para>
+
+</sect2>
+
+<sect2>
+<title>Lmhosts</title>
 
 <indexterm>
  <primary>Samba, Konfigurationsfiler (eksempler) </primary>
  <secondary>C:\windows\Lmhosts </secondary>
 </indexterm>
-
-<sect3>
-<title>Lmhosts</title>
-
 
 <para>
 For Windows 95/98 gemmes filen som 
@@ -819,10 +804,7 @@ For Windows 95/98 gemmes filen som
 <para>
 For Windows NT gemmes filen som 
 <filename>c:\winnt\system32\drivers\etc\Lmhosts</filename>.
-</para>
-
-
-<screen>
+<programlisting>
 # Copyright (c) 1998 Microsoft Corp.
 #
 # This is a sample LMHOSTS file used by the Microsoft Wins Client (NetBios
@@ -902,17 +884,19 @@ For Windows NT gemmes filen som
 # end of this file.
 
 192.168.1.1 test #PRE #DOM:testdomain #net group's DC
-</screen>
-</sect3>
+</programlisting>
+</para>
+
 </sect2>
 </sect1>
+
+<sect1 id="videre-samba">
+<title>Videre med Samba</title>
 
 <indexterm>
  <primary>Samba, Links </primary>
 </indexterm>
 
-<sect1 id="videre-samba">
-<title>Videre med Samba</title>
 <para>
 Ud over man-siderne og dokumentationen, som installeres i
 <filename>/usr/doc</filename>, findes der en række bøger om Samba. Den 
