@@ -179,13 +179,6 @@ function vistype($type) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
-    "itplatform" => array(
-      title => "Linux - Friheden til at vælge IT-løsning",
-      comment => "Valg af Linux-baseret IT-løsning",
-      auth => array(
-        "Michael Rasmussen" => "mir@miras.org"
-      )
-    ),
     "admin" => array(
       title => "Linux - Friheden til systemadministration",
       comment => "Administrer din egen Linux-server",
@@ -253,6 +246,13 @@ function vistype($type) {
         "Mads Bondo Dydensborg" => "madsdyd@challenge.dk"
       )
     ),
+//    "itplatform" => array(
+//      title => "Linux - Friheden til at vælge IT-løsning",
+//      comment => "Valg af Linux-baseret IT-løsning",
+//      auth => array(
+//        "Michael Rasmussen" => "mir@miras.org"
+//     )
+//    ),
    "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",
