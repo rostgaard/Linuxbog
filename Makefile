@@ -42,11 +42,6 @@ pspdf:  Makefiles
 	make -C program pspdf
 	make -C web pspdf 
 	make -C sikkerhed pspdf 
-	rm friheden/Makefile
-	rm admin/Makefile
-	rm web/Makefile
-	rm program/Makefile
-	rm sikkerhed/Makefile
 	       
 	       
 clean: Makefiles    
@@ -55,6 +50,11 @@ clean: Makefiles
 	make -C program clean
 	make -C web clean 
 	make -C sikkerhed clean 
+	rm -f friheden/Makefile
+	rm -f admin/Makefile
+	rm -f web/Makefile
+	rm -f program/Makefile
+	rm -f sikkerhed/Makefile
 	rm -rf cvs2html
 
 cvs2html:
