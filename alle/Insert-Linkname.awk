@@ -13,8 +13,9 @@ BEGIN {
     if (iostat > 0)
        fatal_already();
     x = 1;
-    while (x) {
+    while (x > 0) {
        x = getline lina < "bog/index.html.php" ;
+       if (x < 1) fatal_file();
        if (lina ~ "alle-stikord.html")
           printf("<DT><A href=\"alle-stikord.html\">Stikordsregister</A></DT>\n") > "bog/nyt-index.html.php";
        else
@@ -40,5 +41,15 @@ function fatal_already()
 {
     printf("File index.html.php-1 exists, cannot run this script twice!\n");
     exit (105);
+}
+
+function fatal_file()
+{
+    printf("File index.html.php is missing.\n");
+    # we accept this error because somebody may run the
+    # script/makefile on a private, non-tyge basis, so
+    # addsubmitbox must have been run. Bad reasoning, by the way.
+    # Private user would like the same name inserted. Well ...
+    exit (0);
 }
 
