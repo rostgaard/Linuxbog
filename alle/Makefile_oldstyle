@@ -41,7 +41,7 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 SUBDIRS = applikationer admin program unix web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html  pakhtml palmpilot sgml
+all: html  pakhtml palmpilot sgml pspdf
 
 
 versionfil:
@@ -156,7 +156,7 @@ $(targetname)-$(version)_pdf.zip: statusfiles
 	cp *.sgml bogpdf
 	rm -f $(targetname)-*.pdf
 	for dir in $(SUBDIRS); do \
-		cp ../$$dir/images/*.png bog; \
+		cp ../$$dir/images/*.png bogpdf; \
 	done;
 	(cd bogpdf; db2pdf bog.sgml )
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
