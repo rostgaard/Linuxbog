@@ -1871,8 +1871,68 @@ siger: det skal nok gå alt sammen ...
 </para>
 
 </sect2>
+</sect1>
 
-<sect2>
+
+<sect1 id="parser-filter-programmer">
+<title>Parsere set som filter programmer</title>
+
+<para>
+Er et oversætterprogram et filter? På en måde ja. En bestemt
+slags input giver altid et bestemt output. Output er afhængigt af
+input.
+</para>
+
+<para>
+Hvis vi ændrer variables navne og laver om på liniedeling mv. kan
+vi alligevel ende med at få nøjagtigt samme maskininstruktioner
+ud af det, med andre ord, der er en entydig bestemmelse af ouput
+ud fra input, men den anden vej er der ikke nogen sammenhæng.
+</para>
+
+<para>
+Der sker en transformering af input, og den er bestemt af regler.
+I en parser er det reglerne, som er de mest interessante, så
+vores fokus skifter fra de laveste, små input enheder, til større
+enheder, udtryk, blokke eller afsnit, sætninger m.v.
+</para>
+
+<para>
+Der er mange teknikker til at skifte fokus fra de laveste
+inputenheder, characters og words, til højere niveauer, blokke
+mv. En af de ældste og mest taknemmelige metoder er den rekusivt
+nedstigende parser, som opbygger et hierarki af funktioner, hvor
+de øverste (som man skriver først) tager sig af de store linier,
+og de nederste i call-hierarkiet tager sig af de mindste,
+syntaktiske enheder.
+</para>
+
+<para>
+Den rekursivt nedstignings-parser (recursive descent parser)
+tager sig godt ud for den viderekomne (Bjarne Stroustrup
+fortæller i sin bog om Evolution af C++ at han oprindelig ville
+have skrevet sine første C++ compilere som en rekursiv
+nedstigningsparser, men Stephen C. Johnson talte ham fra det,
+hvilket han ærgrer sig over i dag. En parser, som fx. yacc, er
+ofte bygget med et specielt sprog som objekt).
+</para>
+
+<para>
+For begynderen er det imidlertid vanskeligt at forstå en
+fuld-skala rekursiv nedstignings parser, men det klares, som
+bekendt, ved at dele opgaven op i små bidder. Intet problem er så
+stort, at det ikke kan deles i flere mindre. Hvem har sagt det?
+</para>
+
+<para>
+I de næste eksempler vil vi derfor opbygge en tag-parser, som
+ikke er så avanceret. Først når den virker, kommer vi yderligere
+features på. Man er nødt til at skrive nogle simple inputfiler
+for at teste programmet, men det kan nu være ganske fornøjeligt
+at se, hvad der sker, når man "leger" med input.
+</para>
+
+<sect2 id="sect-tag-parser">
 <title>En tag - parser</title>
 
 <para>
@@ -2074,7 +2134,7 @@ pointer - men det er da rart at se, at det kan lade sig gøre.
 <para>
 I den (næsten) færdige version af tag-parseren, tagbal01.c, kan
 man se, hvordan input mekanismen er bevaret. Programmet er ikke
-gengivet her (det kunne man måske godt), men ligger som en fil i
+gengivet her i sin fulde udstrækning, men ligger som en fil i
 kataloget med eksempler. 
 </para>
 
@@ -2142,6 +2202,13 @@ prøve programmet med forskelligt input og se med printf
 statements anbragt de rigtige steder, hvad der sker.
 </para>
 
+<para>
+Her kommer det centrale sted i programmet tagbal01.c:
+</para>
+
+
+<example id="ex-tag-balance1">
+<title>Check om sgml-tags balancerer</title>
 <programlisting>
 #define MAXT 80
 
@@ -2165,6 +2232,7 @@ int parse_level1()
 }
 
 </programlisting>
+</example>
 
 <para>
 Den anden funktion, have_endtag(), er vanskelig at placere, hvis
@@ -2185,20 +2253,25 @@ fald jo vil tilhøre samme niveau som de nys afsluttede tag-par.
 
 </sect2>
 
-</sect1>
 
-
-<sect1 id="parser-filter-programmer">
-<title>Parsere set som filter programmer</title>
+<sect2 id="sect-intelligent-wordcount">
+<title>Filter med tilstandsvariabel</title>
 
 <para>
-Det er lidt for at provokere, at jeg kalder det næste program for
-et filter. Man kunne lige så godt kalde det en parser, eller i
-hvert fald forstadiet til en lexical analyzer. Men strengt taget
-er det også et filter. Der kommer noget input ind fra (kun) én
-kilde, og afhængigt af dette spytter programmet noget andet ud.
-Der er en årsagssammenhæng fra input til output. Det samme input
-vil altid give det samme output.
+Det er lidt af en provokation at kalde det næste program for
+et filter. Man kunne lige så godt kalde det en parser eller en
+tilstandsmaskine. Det er på en måde også forstadiet til en
+lexical analyzer. Men strengt taget er det også et filter. Der
+kommer noget input ind fra (kun) én kilde, og afhængigt af dette
+spytter programmet noget andet ud.  Der er en årsagssammenhæng
+fra input til output. Det samme input vil altid give det samme output.
+Men det går kun den ene vej. Et bestemt output kan produceres af
+mange forskellige slags input.
+</para>
+
+<para>
+I modsætning til de tidligere eksempler er der i dette eksempel
+en variabel, som husker den tilstand, vi er i.
 </para>
 
 <para>
@@ -2355,10 +2428,10 @@ Hvis vi skal forfine programmet, så er det klogt at skifte taktik.
 Løsningen ovenfor skalerer ikke godt, når antallet af tilstande
 vokser, og input indeholder mange flere kategorier. En
 tilstandstabel kan bedre håndtere opgaven.
-Se <xref LinkEnd="parser-filter-tilstandsmaskine">.
+Se <xref LinkEnd="parser-tilstandsmaskine">.
 </para>
 
-
+</sect2>
 </sect1>
 
 <sect1 id="fejl-og-haandtering">
