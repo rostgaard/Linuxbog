@@ -599,5 +599,100 @@ afsluttes ved at hoppe ud af et break udtryk, eller fordi while udtrykket ikke
 længere er sandt?</para>
 </sect1>    <!--   Loops -->
 
+<!-- Skrevet af Keld Simonsen -->
+<sect1 id="cookies">
+<title>Brug af infokager (cookies> i PHP</title>
+<indexterm><primary>cookies</primary></indexterm>
+<indexterm><primary>infokager</primary></indexterm>
+<indexterm><primary>PHP</primary><secondary>cookies</secondary></indexterm>
+<indexterm><primary>PHP</primary><secondary>infokager</secondary></indexterm>
+<indexterm><primary>HTML</primary><secondary>cookies</secondary></indexterm>
+<indexterm><primary>HTML</primary><secondary>infokager</secondary></indexterm>
+
+<para>
+Infokager er små stykker information, der gemmes hos brugeren,
+og kan hentes frem igen af netlæseren ved det næste besøg.
+De kan bruges til mange formål, eksemplet nedenunder 
+viser hvordan man kan spare en bruger for at indtaste den samme
+information igen i en formular.
+</para>
+
+<para>
+Programmeringsmæssigt skal man først indsamle informationen, via en
+FORM-formular, denne udfører en anden HTML-side, hvor man så kan se
+den indsamlede information, og gemme informationen hos
+brugeren. Gemningen af informationen, med PHP-funktionen
+<literal>setcookie()</literal> skal ske før der overhovedet er skrevet
+andet ud, incl. den begyndende DTD og &lt;html&gt;-mærket.  Informationen
+gemmes som regel i en tekstfil et administrationskatalog for
+netlæseren i brugerens hjemmekatalog, fx <filename>~/.netscape/cookies</filename>.
+</para>
+
+<para>
+Eksemplet indeholder to sider <filename>bestilling.php</filename> og
+<filename>bestilt.php</filename>.  <filename>bestilling.php</filename>
+er siden brugeren kommer til og indtaster oplysningerne, og
+<filename>bestilt.php</filename> er den side som kvitterer for
+indtastningen. De to filer udgør et komplet eksempel, der kører.
+</para>
+
+<screen>
+Siden "bestilling.php"
+&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
+&lt;? 
+  $navn=$HTTP_COOKIE_VARS["navn"];
+  $epost=$HTTP_COOKIE_VARS["epost"];
+?&gt;
+&lt;FORM METHOD="post" ACTION="bestilt.php"&gt;
+  Navn: &lt;INPUT NAME="navn" VALUE="&lt;? echo $navn; ?&gt;" &gt;
+  Epost: &lt;INPUT NAME="epost" VALUE="&lt;? echo $epost; ?&gt;" &gt;
+  &lt;INPUT TYPE="submit" VALUE="Bestil"&gt;
+&lt;/FORM&gt; &lt;/body&gt;
+</screen>
+
+<para>
+"bestilling.php" indhenter information om navn og epostadresse, via indtastning.
+Hvis vi tidligere har fået informationen og gemt den i infokager hos brugeren,
+så vil eksemplet udfylde indtastningen på forhånd med disse værdier.
+Dette sker ved at hente informationen via PHPs systemvariabel HTTP_COOKIE_VARS,
+som ved aktiveringen af siden allerede indeholder alle infokager for netstedet,
+og give det som værdier med VALUE tildelinger, og brug af PHP echo-udskrivning.
+</para>
+
+<screen>
+Siden "bestilt.php"
+&lt;?
+  setcookie("navn",$navn,time()+3600*24*365,"/",".ditfirma.dk");
+  setcookie("epost",$epost,time()+3600*24*365,"/",".ditfirma.dk");
+
+echo "&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;Dit navn: " . $navn . "&lt;br&gt;Din epostadresse: " . $epost . "&lt;/body&gt;" ;
+?&gt;
+</screen>
+
+<para>
+<filename>bestilt.php</filename> aktiveres med tryk på
+"Bestil"-knappen fra <filename>bestilling.php</filename>.  Den får med
+over alle variable fra formularen i
+<filename>bestilling.php</filename>, og det første vi gør er at sende
+infokagerne til brugeren med <literal>setcookie()</literal>.
+</para>
+
+<para>
+Parametrene er: 1: navnet på infokagen, 2: værdien, 3: hvor længe infokagen gælder, i
+eksemplet et år (i sekinder), 4: en sti hos værten, som regel "<literal>/</literal>" (og der er
+netlæsere, der ikke forstår andet), 5: domænenavnet for værten, "<literal>.</literal>" betyder
+incl alle underdomæner. Dette er navnet på de web-servere der kan få fat på
+infokagen igen.
+</para>
+
+<para>
+Dernæst udskriver
+vi et lille HTML-skript med de indtastede oplysninger. 
+Bemærk "<literal>.</literal>" bruges til at sætte flere strenge sammen til én streng
+i PHP, derved undgås mange <literal>echo</literal> sætninger.
+</para>
+</sect1>
+
+
 </chapter>    <!--   Php: Hypertext Processor -->
 
