@@ -68,6 +68,74 @@ bruge <command>e2fsck</command>:
 <prompt>[root@linus /root]#</prompt> <userinput>/sbin/e2fsck /dev/hda5</userinput>
 </screen>
 
+<!-- skrevet af Hanne Munkholm http://www.linuxlab.dk/fcl/technotes/badblocks.php -->
+<sect1 id="bad-blocks">
+<title>Defekte blokke på harddisken</title>
+
+<indexterm>
+  <primary>badblocks</primary>
+</indexterm>
+<indexterm>
+  <primary>e2fsck</primary>
+</indexterm>
+<indexterm>
+  <primary>Defekt blokke på harddisk</primary>
+</indexterm>
+<indexterm>
+  <primary>Harddisk</primary>
+  <secondary>Defekt blokke</secondary>
+</indexterm>
+
+<para>
+Hvis man har en harddisk med defekte blokke på så bliver man
+nød til at finde dem og få filsystemet til at gå uden om.
+I det følgende gives en vejledning i at gøre dette.
+</para>
+
+<para>
+Start op på en Red Hat cdrom. Skriv: "linux rescue"
+ved den prompt man får frem.
+</para>
+
+<para>
+Redningsproceduren (eng. rescue) vil bede om at få sprog og keyboard
+valgt - eksakt som det gøres ved en egentlig installation. Bare rolig
+- det er ikke en installation vi starter på. Når redningsproceduren
+beder om at montere root-filsystemet under
+<filename>/mnt/sysimage</filename> skal der bare svares "no" (nej), og
+derefter får man en shell.
+</para>
+
+<para>
+Kør nu kommandoen <command>badblocks -o /tmp/blocks
+/dev/hda5</command> hvor <filename>hda5</filename> erstattes af den
+partition man ønsker at tjekke for defekte blokke, og 
+<filename>/tmp/blocks</filename> er et arbitrært valgt filnavn.
+</para>
+
+<para>
+Derefter <emphasis>kan</emphasis> man læse filen med 
+<command>cat /tmp/blocks</command> for at se om der blev fundet nogle
+defekte blokke. Hvis der ikke blev fundet nogen, så behøver man ikke
+at fortsætte.
+</para>
+
+<para>
+Kør derefter <command>e2fsck -l /tmp/blocks /dev/hda5</command>.
+Dette indsætter listen over de defekte blokke fra
+<filename>/tmp/blocks</filename> i filsystemets liste over defekte
+blokke. Tryk "Ctrl-d" for at komme ud af shellen og genstarte maskinen.
+Husk at tage din cdrom ud.
+</para>
+
+<para>
+Herefter vil maskinen ikke længere prøve at anvende de defekte 
+blokke på harddisken.
+Mere information om de anvendte kommandoer kan læses 
+på <command>man badblocks</command> og <command>man e2fsck</command>. 
+</para>
+</sect1>
+
 
 <sect1 id="reiserFS">
 <title>ReiserFS</title>
