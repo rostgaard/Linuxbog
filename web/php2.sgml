@@ -59,7 +59,7 @@ På n
 <indexterm><primary>PHP</primary><secondary>installation</secondary></indexterm>
 
 <para>
-RPM pakker følger med Redhat 7.0 disse hedder mod_php*.rpm og php*.rpm,
+RPM pakker følger med Red Hat. Disse hedder mod_php*.rpm og php*.rpm,
 men Pentium optimerede versioner kan downloades fra  Troels Arvins Php
 homepage, der kan findes på
 <ulink url="http://rpms.arvin.dk/php/">http://rpms.arvin.dk/php/</ulink>.
@@ -73,6 +73,23 @@ AddModule mod_php4.c
 
 &lt;IfModule mod_php4.c&gt;
         AddType application/x-httpd-php .php .php3 .phtml
+        AddType application/x-httpd-php-source .phps
+&lt;/IfModule&gt;
+</programlisting>
+
+<para>
+Her har vi ikke tilladt at brugere laver PHP-kode inden i almindelige
+.html-filer, men lagt om til at disse hedder .phtml. Vil vi også gerne
+have at .html-filer også godt kan indeholde PHP-kode, så anvendes
+følgende opsætning i stedet. Det vil være lidt langsommere, men det er et valg.
+</para>
+
+<programlisting>
+LoadModule php4_module /usr/lib/apache/libphp4.so
+AddModule mod_php4.c
+
+&lt;IfModule mod_php4.c&gt;
+        AddType application/x-httpd-php .php .php3 .phtml .html
         AddType application/x-httpd-php-source .phps
 &lt;/IfModule&gt;
 </programlisting>
