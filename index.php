@@ -412,7 +412,8 @@ if ($matrix) { ?>
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
 [<a href="search">Søg i sgml-filer</a>]
-[<a href="alle/bog/stikord.html">Stikord for alle bøger</a>]
+[<a href="">Søg i sgml-filer</a>]
+[<a href="hjaelpe.html">Om at hjælpe</a>]
 </font>
 
 <h2>Vi har følgende bøger</h2>
