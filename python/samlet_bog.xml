@@ -275,7 +275,38 @@ forvejen kan programmere, men bare ikke kender Python.
 
 <listitem>
 <para>
-<command>Biblioteks reference (Library reference)</command> - Her er ..
+<command>Biblioteks reference (Library reference)</command> - En
+gennemgang af de mest brugte biblioteker i Python samt mere
+gennemgribende eksempler på brug end du finder i modul oversigten.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>Macintosh reference</command> - Gennemgang af de biblioteker
+der er specifikke for Macintosh.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>Sprog reference (Language reference)</command> - Gennemgang
+af sprogets brug og opbygning (syntax, funktioner, klasser m.m.)
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>Sprog udvidelser (Extending and embedding)</command> - En
+guide i hvordan du kan udvide Python med C/C++, embedde Python i
+andre applikationer m.m.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<command>Python/C API</command> - En gennemgang af et C API til Python,
+der lader C programmører bruge Python i deres applikationer.
 </para>
 </listitem>
 </itemizedlist>
@@ -337,16 +368,21 @@ Når du programmerer har du fra tid til anden brug for at indsætte
 kommentarer - dele af programmet, som du og andre kan læse, men som
 computersproget springer over. I Python markerer \# (hashtegnet - på
 dansk kaldet havelåge eller bøftegn). En kommentar begynder ved
-havelågen og fortsætter programlinjen ud.
+havelågen og fortsætter programlinjen ud. Eks. 1:
 </para>
 <screen>
-Eks. 1:
-\# Python springer over kommentarer
+>>># Python springer over kommentarer
 >>> print "Kommentarer er til dig og ikke til computeren."
 Kommentarer er til dig og ikke til computeren.
 </screen>
 <para>
-Eks. 2: (NB I dette eksempel er der INGEN kommentarer. Bøftegnet er her
+Det er også muligt at udskrive hash-tegnet, hvis det er en del af en
+tekst-streng. Eks. 2:
+<screen>
+>>> print "Her udskriver vi et hash-tegn #"
+Her udskriver vi et hash-tegn #
+</screen>
+I dette eksempel var der INGEN kommentarer. Bøftegnet er her
 en del af en teksstreng. En sådan skal Python meget gerne reagere på og
 ikke forbigå. Læg mærke til at bøftegnet udskrives her, hvad det ikke
 gjorde i eksemplet, hvor det tjente sit rette formål.
@@ -355,10 +391,9 @@ gjorde i eksemplet, hvor det tjente sit rette formål.
 <sect2 id="python-kommentar1">
 <title>Kommentarer i anførselstegns par</title>
 <para>
-<screen>
-Strenge kan også være indesluttet i 3 anførselstegn (enkelte eller dobbelte):
-
+Strenge kan også være indesluttet i 3 anførselstegn (enkelte eller dobbelte).
 Eks. 1:
+<screen>
 >>> print """
 ... Navn:       Klippeøen Bornholm
 ... Befolkning: 44.500
@@ -366,32 +401,38 @@ Eks. 1:
 
 Navn:   	Klippeøen Bornholm
 Befolkning:     44.500
-
->>>
+</screen>
 
 Eks. 2:
+
+<screen>
 >>> def Funktion():
 ...     """Indskudt tekst"""
 ...     return "Normalt bruges 1 tegnsæt"
 ...
 >>> Funktion()
 'Normalt bruges 1 tegns\xe6t'
+</screen>
 
-Eks. 3
+Eks. 3:
+
+<screen>
 >>> class Klasse:
 ...     """ Bruges ofte, hvor teksten ikke skal udskrives. """
 ...     print "Normal tekst til normal udskrift."
 ...
 Normal tekst til normal udskrift.
->>>
+</screen>
 
+Eks. 4:
+
+<screen>
 >>> def inaktiv():
 ...     """Vær passiv, men dokumemter det.
 ... Nej, der sker virkelig intet."""
 ...     pass
 ...
 >>> inaktiv()
->>>
 </screen>
 </para>
 <para>
@@ -406,19 +447,57 @@ behøver den ellers krævede blokindrykning.
 <sect1 id="python-aritop">
 <title>Aritmetiske operatorer</title>
 
-<screen>
+<itemizedlist mark="opencircle">
+<listitem>
+<para>
 Addition    +   eks:  3 + 4 = 12
-Subtraktin  -    eks: 3 - 4 = -1
+</para>
+</listitem>
+
+<listitem>
+<para>
+Subtraktion  -    eks: 3 - 4 = -1
+</para>
+</listitem>
+
+<listitem>
+<para>
 Multiplikation   *    eks:  3 * 4 = 12
+</para>
+</listitem>
+
+<listitem>
+<para>
 Eksponent notation   **   eks:  3 ** 4 = 81
+</para>
+</listitem>
+
+<listitem>
+<para>
 Division     /   eks: 3 / 4 = 0 (afrunder nedad til nærmeste hele tal)
+</para>
+</listitem>
+
+<listitem>
+<para>
 Division     //    eks: 3 // 4 = 0 (afrunder nedad til nærmeste hele tal)
-Modulus    \%   eks: 3.0 \% 4.0 = 0.75
+</para>
+</listitem>
 
+<listitem>
+<para>
+Modulus    %   eks: 3.0 % 4.0 = 0.75
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
 FARE:  Pas på ved heltalsdivisioner
+</para>
 
- >>> 25 / 24
- >>>
+<screen>
+>>> 25 / 24
+>>>
  1
 </screen>
 
@@ -426,16 +505,17 @@ FARE:  Pas på ved heltalsdivisioner
 25 divideret med 24 burde give 1.0416666666666667, men Python runder
 automatisk af nedad til nærmeste heltal, som i dette tilfælde er 1.
 </para>
+
 <para>
 <screen>
 >>> 25 / 24.0
 1.0416666666666667
 </screen>
-</para>
-<para>
+
 For at få decimaldelen returneret (udskrevet) er det nødvendigt, at
 mindst det ene af tallene er et decimaltal (et tal med flydende komma).
 </para>
+
 <para>
 I Python er der fuld støtte for flydende tal (floating point numbers).
 Operatorer med operanter af blandet type konverterer heltals (integer)
@@ -447,16 +527,14 @@ operanten til tal med flydende komma (på engelsk punktum):
 3.5
 </screen>
 </para>
+
 <para>
 <screen>
 >>> print "simpelt eksempel " * 3
  simpelt eksempel simpelt eksempel simpelt eksempel
 </screen>
-</para>
-<para>
 I de traditionelle computersprog kan det ikke gøres så enkelt. Der kræves noget som:
-</para>
-<para>
+
 <screen>
 print "simpelt eksempel " + "simpelt eksempel " + "simpelt eksempel "
 </screen>
@@ -502,18 +580,18 @@ navne (på lister, tuples m.v.)
 0
 >>> z
 0
+</screen>
 
 BEMÆRK: I Python anvendes  == for lig med  og = for tildel. Der er
 således markant forskel på  x == y og x = y
-</screen>
 </para>
 </sect2>
 
 <sect2 id="python-variabler2">
 <title>Variabler kan overskrives</title>
 <para>
+Globale variabler kan overskrives:
 <screen>
- Globale variabler kan overskrives:
 >>> e = 1000 # definering af global variabel
 >>> def nix():
 ...     global e
@@ -524,8 +602,11 @@ således markant forskel på  x == y og x = y
 >>> nix()
 >>> e
 25
+</screen>
 
 Globale navne er flere ting, så pas på:
+
+<screen>
 >>> liste = [1,2,3,4,5]
 >>> def funktion(l):
 ...     global liste
@@ -537,24 +618,26 @@ Globale navne er flere ting, så pas på:
 >>> liste
 [1, 2, 3, 4, 5, 12345]
 >>>
+</screen>
+</para>
 
-
+<para>
 Indledningsvis oprettes listen [1,2,3,4,5]. Det første kald viser, at
 såfremt listen kaldes, inden den i funktionen funktion erklærede globale
 liste overtager 1: den udenfor funktionen definerede liste og 2: tildeler
 den et element (12345) yderligere. Her markeres det, at en
 global variabel erklæret i en funktion overstyrer en global variabel
 erklæret udenfor funktionen.
- </screen>
 </para>
 </sect2>
 
 <sect2 id="python-variabler3">
 <title>Variablers adresse</title>
+
 <para>
+Variablers type kan findes med type:
 
 <screen>
-Variablers type kan findes med type:
 >>> a = 25
 >>> type(a)
 &lt;type 'int'>
@@ -570,9 +653,10 @@ Variablers type kan findes med type:
 
 <sect2 id="python-variabler4">
 <title>Variablers adresse</title>
+
 <para>
-<screen>
 Variablers adresse i RAM kan findes med id
+<screen>
 >>> a = 12.4
 >>> id(a)
 136095956
@@ -584,8 +668,11 @@ Variablers adresse i RAM kan findes med id
 1078892096
 </screen>
 </para>
+
 <para>
 Af  følgende udskrift fremgår det, at samme bogstav == samme adresse:
+
+<screen>
 >>> s = "Dette er en streng."
 >>> for i in range(0,18):
 ...     print s[i], id(s[i])
@@ -608,8 +695,11 @@ r 1076518048
 e 1076630176
 n 1076614816
 g 1076690208
+</screen>
 </para>
+
 <para>
+<screen>
 >>> s = "AABBCCaabbcc"
 >>> for i in range(0,len(s)):
 ...     print s[i], id(s[i])
@@ -626,6 +716,7 @@ b 1076679584
 b 1076679584
 c 1076690176
 c 1076690176
+</screen>
 </para>
 </sect2>
 
@@ -648,7 +739,7 @@ Eks. 1:
 >>> # Her sker der 2 ting: 1: variablen a erklæres (is declared) og
 >>> # 2: tildeles samtidig værdien "Tekststreng" d.v.s. den sættes til
 >>> # at pege på de adresser i computerens lager, hvor "Tekststreng"
->>> # opbeveres.
+>>> # opbevares.
 >>> a = "Tekststreng"
 >>> a
 Tekststreng
@@ -658,13 +749,18 @@ Tekststreng
 25
 </screen>
 </para>
+
 <para>
+
+<screen>
 Eks. 2:
 >>> a = "Tekststreng " + str(25)
 >>>
 >>> a
 'Tekststreng 25'
+</screen>
 </para>
+
 <para>
 Python er ikke strong typed som C, Pascal og mon ikke de fleste andre
 computersprogs variabler skal være det. At et sprog er strong typed
@@ -677,7 +773,7 @@ variablerne er sat til at pege på.
 </sect1>
 
 <sect1 id="python-bool">
-<title>Bollske udtryk/variabler </title>
+<title>Boolske udtryk/variabler </title>
 <para>
 Boolske udtryk/variabler kan indtage/tildeles 2 værdier og kun 2. De 2
 værdier er sand (true) og falsk (false). De 2 værdier burde i alle
@@ -687,8 +783,9 @@ logiske altså: 0 for falsk og 1 for sand, hvad følgende eksempel kan
 påvise:
 </para>
 <para>
+Eks. 1:
+
 <screen>
-Eks. 1
 >>> 2 == 3
 0
 >>> 2 == 2
@@ -696,23 +793,71 @@ Eks. 1
 </screen>
 </para>
 <para>
-\begin{tabular}{|r|c|r|c|}
-\hline
-Udtryk & Resultat \\
-\hline
-true and true & true \\
-true and false & false \\
-false and true &  false \\
-false and false & false \\
-not true & false \\
-not false & true \\
-true or true & true \\
-true or false & true \\
-false or true & true \\
-false or false & false \\
-\hline
-\end{tabular}
+<command>Udtryk & Resultat</command>
 </para>
+
+<itemizedlist mark="openring">
+<listitem>
+<para>
+true and true & true
+</para>
+</listitem>
+
+<listitem>
+<para>
+true and false & false
+</para>
+</listitem>
+
+<listitem>
+<para>
+false and true &  false
+</para>
+</listitem>
+
+<listitem>
+<para>
+false and false & false
+</para>
+</listitem>
+
+<listitem>
+<para>
+not true & false
+</para>
+</listitem>
+
+<listitem>
+<para>
+not false & true
+</para>
+</listitem>
+
+<listitem>
+<para>
+true or true & true
+</para>
+</listitem>
+
+<listitem>
+<para>
+true or false & true
+</para>
+</listitem>
+
+<listitem>
+<para>
+false or true & true
+</para>
+</listitem>
+
+<listitem>
+<para>
+false or false & false
+</para>
+</listitem>
+</itemizedlist>
+
 <para>
 Eks. 2
 Vi begynder med at lade en variabel, pege på en adresse i lageret, hvor
@@ -730,8 +875,8 @@ samme talsum, som i dette tilfælde så er \ a == b.
 <para>
 Nu kan vi gå videre og teste de tildelte værdiers sandhedsværdier i
 matematiske udtryk:
-</para>
-<para>
+
+<screen>
 >>> a == 5
 1
 >>> a == 7
@@ -754,6 +899,7 @@ matematiske udtryk:
 1
 >>> not ( a == 7 and b == 6)
 1
+</screen>
 </para>
 </sect1>
 
