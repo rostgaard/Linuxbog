@@ -74,17 +74,175 @@ url="http://cmf.zope.org">http://cmf.zope.org</ulink>
 </para>
 
 <sect2 id="zope-installation">
+<!-- Skrevet af Flemming Bjerke -->
 <title>Installation af Zope</title>
+
 <para>
-Start med at hente tar.gz filen fra <ulink
-url="http://www.zope.org">http://www.zope.org</ulink>. Følgende skal
-udføres som root: Udpak tarball'en i
-<filename>/usr/local</filename>. Skift katalog til Zope-xx/ (xx er
-versionsnummeret på Zope).  Kør filen: <command>./install</command>,
-(denne skulle gerne være eksekverbar - ellers gør det med en
-<command>chmod +x install</command>).  Nu oversættes et start og et
-stop script til Zope.  Der vil også blive vist et admin password -
-skriv dette ned!  Den basale Zope er nu installeret!
+Her gives en beskrivelse af hvordan man kan få en fungerende (binær) 
+Zope-2.6.1 til at anvende mysql-3.23-52 og mysql-4.0. Man skulle også kunne 
+anvende rpm-pakker og debian-pakker, men hvis der opstår problemer, kan man 
+falde tilbage på nedenstående og download af binær zope fra 
+<ulink url="http://www.zope.org">http://www.zope.org</ulink>:
+</para>
+
+<para>
+Zope-mysql connections kræver to at man downloader 
+MySQL-python-0.9.2.tar.gz og ZMySQLDA-2.0.8.tar.gz (eller nyere stabile 
+pakker) fra: <ulink url="http://sourceforge.net/project/showfiles.php?group_id=22307">http://sourceforge.net/project/showfiles.php?group_id=22307</ulink>.
+</para>
+
+<para>
+Læg de to tar pakker yderst i din zope-mappe (dér hvor du starter zope). 
+Udpak pakkerne med: <command>tar xvzf PAKKENAVN</command>.
+</para>
+
+<para>
+Nu lægger den udpakkede mappe MySQL-python-0.9.2 sig i zope-mappen,
+hvorimod ZMySQLDA lægger sig i
+<filename>lib/python/Products/</filename> under ZOPE-mappen og er
+sådan set klar til at blive anvendt inde fra zope - idet man kan tilføje
+en MySQL-connection. Dog kræver det først at python kan kommunikere
+med MySQL.
+</para>
+
+<para>
+Til det formål skal man gå ind i mappen MySQL-python-0.9.2 og køre følgende 
+kommando: <command>../bin/python setup.py build</command>.
+</para>
+
+
+<para>
+Nu er der bygget de programmer som kræves. Det bemærkes at man anvender den 
+python-udgave der følger med zopes binære programpakke. Dette er vist ikke 
+mindst vigtigt, hvis ens python ikke er python2.1.3, men f.eks. python2.2, 
+fordi zope bruger 2.1.3. Herudover er det afgørende at der med zopes python 
+følger biblioteket distutils som skal bruges ved kompileringen. (Hvis man 
+selv har kompileret zope, skal man angiveligt blot skrive: python setup.py 
+build, men så må man have distutils-biblioteket i sin python.)
+</para>
+
+<para>
+Man skal også sørge for at c-biblioteket mysql hvori mysql.h ligger,
+findes et sted hvor gcc-compileren kan finde den,
+f.eks. <filename>/usr/include/mysql</filename>.  Biblioteket kommer
+med i mysql-4.0-standard-tgz-pakken som kan downloades fra <ulink
+url="http://www.mysql.com">http://www.mysql.com</ulink>. Kopier det så
+til <filename>/usr/include</filename>. 
+</para>
+
+<para>
+Man skal også have en af mig ukendt delmængde af følgende biblioteker:
+</para>
+
+<screen>
+/usr/lib/libmysqlclient.a
+/usr/lib/libmysqlclient.la
+/usr/lib/libmysqlclient.so
+/usr/lib/libmysqlclient.so.10
+/usr/lib/libmysqlclient.so.10.0.0
+/usr/lib/libmysqlclient_r.so
+/usr/lib/libmysqlclient_r.so.10
+/usr/lib/libmysqlclient_r.so.10.0.0
+</screen>
+
+<para>
+Mangler de relevante biblioteker, går oversættelsen i stå med beskeden:
+</para>
+
+<screen> 
+/usr/bin/ld: cannot find mysqlclient_r 
+</screen>
+
+<para>
+Det kan også være at oversættelsen går i stå med:
+</para>
+
+<screen>
+/usr/bin/ld: cannot find -lz
+</screen>
+
+<para>
+I så fald går du ind på: <ulink url="http://www.gzip.org/zlib/">http://www.gzip.org/zlib/</ulink>
+og henter <filename>zlib</filename> som kildekode. (Tager du f.eks. en rpm-pakke, risikerer 
+du uendelige afhængighedsproblemer). 
+</para>
+
+<para>
+Du udpakker zlib med <command>tar xvzf PAKKENAVN</command>.
+(hvis du har hentet tar.gz-filen) og går ind i den resulterende 
+zlib-mappe hvor du foretager:
+</para>
+
+<screen>
+./configure
+make test
+make install
+</screen>
+
+<para>
+Når du er færdig med at installere relevante biblioteker, bør du formentlig 
+køre: <command>/sbin/ldconfig</command> så bibliotekerne bliver fundet under oversættelsen.
+</para>
+
+<para>
+Læs iøvrigt README-filen. 
+</para>
+
+<para>
+Nu mangler man blot at installere MySQL-python. Det gøres med følgende 
+kommando, inde fra mappen MySQL-python-0.9.2:
+</para>
+
+<screen>
+../bin/python setup.py install
+</screen>
+
+<para>
+Du skulle nu kunne starte zope som du plejer og adde en 
+ZMySQL-Connection inde i zope. 
+</para>
+
+<para>
+Når du inde i zope har valgt en mysql connection (vi forudsætter at mysqld 
+kører), skriver du i feltet "Database Connection String", f.eks.:
+</para>
+
+<screen>
+&lt;databasenavn&gt; &lt;bruger&gt; &lt;password&gt;
+</screen>
+
+<FIGURE ID="zope-addcon-fig" FLOAT="1">
+<TITLE>Tilføj MySQL forbindeler</TITLE>
+<GRAPHIC FILEREF="add_con.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Så kommer zope sikkert ud og siger:
+"<literal>Can't connect to local MySQL server through socket ....</literal>"
+I så fald går du ud i en bash-terminal og skriver: 
+</para>
+
+<screen>
+mysqladmin -u root -p variables | grep socket
+</screen>
+
+<para>
+har du ikke sti til mysqladmin, så tilføj fuld sti foran den kommando.
+</para>
+
+<para>
+Nu kan du skrive den rigtige "Database Connection String":
+</para>
+
+<screen>
+&lt;databasenavn&gt; &lt;bruger&gt; &lt;password&gt; &lt;sti til socket&gt;
+</screen>
+
+<para>
+Derefter går du formentlig fuldstændig i ekstase over at din 
+mysql-forbindelse virker. Du kan i stedet flytte de to tar-pakker fra 
+zope-mappen - og sikkert også mappen MySQL-python-0.9.2 - væk fra 
+zope-mappen.
 </para>
 
 <FIGURE ID="zope-fig" FLOAT="1">
@@ -181,10 +339,6 @@ REQUEST-objektet, kalder man sin ZSQL-Method med alder-variablen.
 ZSQL-metoden.
 </para>
 
-<FIGURE ID="zope-addcon-fig" FLOAT="1">
-<TITLE>Tilføj MySQL forbindeler</TITLE>
-<GRAPHIC FILEREF="add_con.&magic;"  SCALE="60"></GRAPHIC>
-</FIGURE>
 
 <FIGURE ID="zope-addsql-fig" FLOAT="1">
 <TITLE>Tilgang til MySQL</TITLE>
@@ -192,8 +346,9 @@ ZSQL-metoden.
 </FIGURE>
 
 </sect3>
+</sect2>
 
-<sect3 id="andre-zope">
+<sect2 id="andre-zope">
 <title>Andre Zope-produkter</title>
 <para>
 Som tidligere nævnt findes der mange forskellige produkter til Zope,
@@ -224,7 +379,6 @@ nu være synligt i listen over produkter (Control Panel - Products).
 Du bruger produkterne ved at tilføje dem i de relevante mapper i dit
 administrationsinterface.
 </para>
-</sect3>
 </sect2>
 
 
