@@ -816,6 +816,9 @@ hvor der er et program til at benchmark-teste harddisk-ydelse.
 <indexterm><primary>process-ID</primary></indexterm>
 <indexterm><primary>Kommandooversigt</primary><secondary>pidof </secondary></indexterm>
 <indexterm><primary>pidof </primary></indexterm>
+
+<sect2 id="lsof">
+<title>lsof</title>
 <para>
 Ofte vil dit program have filer åbne som du måske ikke lige
 vidste. Med <command>lsof</command> kan du se hvad der sker. Vi kan
@@ -874,13 +877,65 @@ Eksemplet viser, at der er tre programmer <command>at</command>,
 filer under <filename>/var/spool</filename>. Meget nyttige ting for en
 systemadministrator.
 </para>
+</sect2>
+
+<sect2 id="fuser">
+<title>fuser</title>
 
 <para>
 Et tilsvarende nyttigt program til nogenlunde samme formål er
 <command>/sbin/fuser DEVICE</command>. F.eks. kan man se hvilket
-proces-ID, som låser <filename>/dev/audio</filename> ved at skrive
-<command>/sbin/fuser /dev/audio</command>.
+proces-ID, som låser lydenheden <filename>/dev/dsp</filename> ved at skrive
+<command>/sbin/fuser /dev/dsp</command>. Med <command>/sbin/fuser -k
+/dev/dsp</command> kan man endda direkte dræbe den proces som låser
+enheden.
+</para>
+</sect2>
+
+<sect2 id="proc-afmontering">
+<title>Afmontering af filsystem via /proc</title>
+<indexterm><primary>/proc</primary>
+<secondary>Problem med afmontering af filsystem</secondary></indexterm>
+
+<para>
+Et alternativ til ovenstående er at anvende <filename>/proc/</filename>.
+Antag at man vil afmontere <filename>/usr/src/postgresql-7.2.1/</filename>
 </para>
 
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>umount /usr/src/postgresql-7.2.1/</userinput>
+umount: /usr/src/postgresql-7.2.1: device is busy
+</screen>
+
+<para>
+Hvem pokker er synderne?
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>ls -l /proc/*/cwd|grep /usr/src/postgresql-7.2.1/</userinput>
+lrwxrwxrwx 1 postgres postgres 0 Apr 30 03:49 /proc/3943/cwd -> /usr/src/postgresql-7.2.1/
+lrwxrwxrwx 1 postgres postgres 0 Apr 30 03:49 /proc/3944/cwd -> /usr/src/postgresql-7.2.1/
+lrwxrwxrwx 1 postgres postgres 0 Apr 30 03:49 /proc/3950/cwd -> /usr/src/postgresql-7.2.1/
+</screen>
+
+<para>
+Aha! Det er således processerne 3943 3944 3950 som låser filsystemet.
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>kill -9 3943 3944 3950</userinput>
+</screen>
+
+
+<para>
+Nogen kunne sikkert lave et script, der gjorde dræbningen nemmere:
+</para>
+
+<screen>
+perl -e '$dir=shift; map {m:/proc/(\d+)/cwd -> $dir[/\n]: and do {print
+"$1\n"; kill 9, $1 } } `ls -l /proc/*/cwd`' /usr/src/postgresql-7.2.1/
+</screen>
+
+</sect2>
 </sect1>
 </chapter>
