@@ -1,52 +1,49 @@
 <!-- $Id$ -->
 <chapter id="cdrombraending">
-<title>Opsætning af cd-brænder under Linux</title>
+<title>Brænding af cd'er</title>
 <indexterm><primary>Brænde cd-rom</primary></indexterm>
 <indexterm><primary>cd-rom</primary><secondary>brænde</secondary></indexterm>
 
 <para>
-De fleste distributioner idag sætter automatisk systemet op til 
-at der kan brændes cd'er fra det, hvis der under installationen
-detecteres at der er en brænder tilknyttet systemet.
+Linux understøtter cd-brænding på alle drev fremstillet siden 1999,
+hvor en standardisering af cd-brændere slog igennem. Desuden er en
+række ældre brændere understøttet; den fulde liste findes på adressen
+<ulink
+url="http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html">http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html</ulink>.
 </para>
 
 <para>
-Idag understøtter Linux stort set alle nye brændere, da de alle
-implementere en standard indenfor CD brænder som er fint understøttet
-under linux. I følge <ulink
-url="http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html">http://www.fokus.gmd.de/research/cc/glone/employees/joerg.schilling/private/cdwriters-1.11.html</ulink>
-skulle det være alle cdbrændere der er produceret i 1999 eller nyere. 
+De fleste moderne distributioner sørger automatisk for at der kan
+brændes cd'er, såfremt der er tilsluttet en brænder under installation
+af distributionen.
 </para>
 
 <para>
-Hvis det er en scsibrænder man ejer, så skal man bare sørge for at sin
-scsicontroller er understøttet af Linux, så virker cdbrændingen helt
-af sig selv. Har man derimod en ide-brænder, så skal der sættes
-ide-scsi emulering op. Dette lyder nok meget advanceret, men idag
-klarer de fleste distributioner det automatisk under installationen.
+Der findes kun ét egentligt brænderprogram under Linux; det hedder
+<command>cdrecord</command> og følger med stort set alle
+distributioner. <command>cdrecord</command> er et tekstbaseret program
+med en mængde muligheder, så det kan være lidt tungt at danse med.
+Derfor findes også en række grafiske programmer, der fungerer som
+lettilgængelige overbygninger af <command>cdrecord</command>. Nogle
+meget benyttede grafiske programmer er <command>X-CD-Roast</command> og
+<command>gcombust</command>.
 </para>
 
 <para>
-Der er kun 1 brænder program under linux, det hedder cdrecord og kan
-findes på installationsmedierne til stort set alle distributioner og
-understøtter også fint teknologier som BURN-Proof, Just-link, etc. der
-sikrer mod at brænderens buffer løber tør for data under brændingen.
-</para>
-
-<para>
-Hvis ikke cdrecord er installeret på dit system, så start med at gøre
-dette. Så er det nemt at se om brænder systemet kører som det skal: 
+Hvis ikke <command>cdrecord</command> er installeret på dit system, så
+start med at gøre dette. Så er det nemt at se om brændersystemet kører
+som det skal. Ved at give kommandoen <userinput>cdrecord
+-scanbus</userinput> udskrives en liste over de drev, der er genkendt:
 </para>
 
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
-[jesper@luke cdbraending]$ cdrecord -scanbus
-Cdrecord 1.11a19 (i586-mandrake-linux-gnu) Copyright (C) 1995-2002 Jörg Schilling
+Cdrecord 1.11a12 (i586-mandrake-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
 Linux sg driver version: 3.1.22
-Using libscg version 'schily-0.6'
+Using libscg version 'schily-0.5'
 scsibus0:
-        0,0,0     0) *
-        0,1,0     1) 'PLEXTOR ' 'CD-R   PX-W1210S' '1.01' Removable CD-ROM
+        0,0,0     0) 'PIONEER ' 'CD-ROM DR-744   ' '1.02' Removable CD-ROM
+        0,1,0     1) 'LITE-ON ' 'LTR-12101B      ' 'LS3J' Removable CD-ROM
         0,2,0     2) *
         0,3,0     3) *
         0,4,0     4) *
@@ -56,57 +53,119 @@ scsibus0:
 </screen>
 
 <para>
-Her ses at systemet fint har genkendt brænderen og den er klar til
-brug. Det kan hvis kernedriverne ikke er indsat i kernen ( dette sker
-automatisk ), kan det være at kommandoen skal køres 2 gange før at de
-bliver initialiseret korrekt. 
+Her ses at systemet har fundet to drev. Det første er et almindeligt
+cd-rom-drev, det andet er brænderen. Det er ikke umiddelbart muligt at
+se forskel, men hvis man kender mærket på sin brænder burde man kunne
+finde den i listen. Da <command>cdrecord</command> kan se flere drev,
+er det nødvendigt at mærke sig hvilket af dem, der skal anvendes. I
+dette tilfælde er det drevet med nummeret
+<userinput>0,1,0</userinput>. Sådan et nummer skal altid bruges når
+man vil brænde, også hvis brænderen er det eneste drev, man har i
+maskinen.
 </para>
 
 <para>
-Nu er man så klar til at brænde CD'er. I de følgende afsnit vil der
-blive gennemgået hvad man kan gøre hvis ens cdbrænder ikke er genkent
-og et lille udpluk af frontends ( grafiske brugergrænseflader ) til
-cdrecord programmet, så man ikke nødvendigvis bliver nødt til at
-benytte det fra kommandolinien. Ligeledes er vist hvorledes cdrecord
-benyttes fra kommandolinien.
-</para>
-
-<sect1 id="opsaetning-ide-emulering">
-<title>Opsætning af ide-scsi emulering på hjemmebygget kerne</title>
-<para>
-Hvis man nu selv har hentet sin linuxkerne fra <ulink
-url="http://www.kernel.org">http://www.kernel.org</ulink> så er man
-ikke så heldig at det hele er sat op for en fra starten, dette skal
-man selv gøre, men dette giver så også lidt dybere kendskab til
-opbygningen af systemet. 
+I de følgende afsnit vil der blive gennemgået hvad man kan gøre hvis
+ens brænder ikke umiddelbart bliver genkendt. Der vil derefter blive
+vist et lille udpluk af de nemme grafiske overbygninger til
+<command>cdrecord</command>. Endelig bliver det vist hvorledes
+<command>cdrecord</command> benyttes fra kommandolinien, til at lave
+cd'er med enten data eller musik.
 </para>
 
 <para>
-Har man en scsi-brænder er det blot at finde den korrekt driver til
-sin scsicontroller også kører det. Har man en brænder
-af ide/atapi-typen, så er man nødt til at lave en ide-scsi-emuluering
-for at få det til at virke. Det er dog ikke så svært som det lyder
-og det fungerer fint. Det første kræver at kernen skal oversættes med 
-support for ide-scsi, scsi-cdrom, generic scsi og ide-cd. Når kernen
-er oversat med dette, enten som moduler eller bygget ind, følgende
-viser hvordan det bringes til at virke når de er oversat som moduler.
+En mere detaljeret gennemgang af cd-brænding under Linux findes i
+<ulink
+url="http://www.linuxdoc.org/HOWTO/CD-Writing-HOWTO.html">http://www.linuxdoc.org/HOWTO/CD-Writing-HOWTO.html</ulink>.
+Her er især svar på mange mulige komplikationer, som ikke er dækket i
+indeværende tekst.
+</para>
+
+
+<sect1 id="opsaetning-braender-kerne">
+<title>Opsætning af brænder på hjemmebygget kerne</title>
+
+<para>
+I dette afsnit beskrives hvorledes en Linux-kerne bringes til at
+genkende en brænder. Hvis brænderen allerede genkendes med kommandoen
+<userinput>cdrecord -scanbus</userinput> som beskrevet ovenfor, kan
+dette afsnit derfor springes over. Har man imidlertid selv hentet sin
+kerne fra <ulink
+url="http://www.kernel.org">http://www.kernel.org</ulink> eller kan
+ens distribution af én eller anden grund ikke finde brænderen, så må
+man selv til at rode lidt dybere.
 </para>
 
 <para>
-Det man skal være opmærksom på under kerne-oversættelsen
-er menupunkterne under "SCSI med SCSI generic" og "SCSI
-cdrom" som skal tilvælges (evt. som modul) og
-menupunkterne under "Block Devices med SCSI-emulation" og "IDE/ATAPI
-cdrom"-support er med som enten modul eller bygget ind i kernen.
+For <command>cdrecord</command> findes der kun SCSI-brændere. Uanset
+hvad, skal man derfor i indstillingerne til kernen aktivere
+SCSI-understøttelse. Dette gøres ved under "SCSI support" at aktivere
+"SCSI CD-ROM support" og "SCSI generic support". Hvis dette er gjort,
+vil man på det kørende system have et bibliotek ved navn
+<filename>/proc/scsi/</filename>.
 </para>
 
 <para>
-Vælges de som modul så skal der køres en <command>modprobe</command>
-på modulnavnet. Når systemet kommer op for at loade modulerne, bygges
-de ind i kernen og så virker de bare. Når det er gjort kan man bare
-fortsætte her.  Så skal der lige laves en lille ændring først. I
-<filename>/etc/lilo.conf</filename> skal der laves følgende ændring
-(se linien med append).
+Hvis man ejer en SCSI-brænder, så skal man endvidere sørge for at ens
+SCSI-controller er understøttet af Linux, så virker
+<command>cdrecord</command> uden videre. Dette sker under kernens
+indstillinger for "SCSI low-level drivers", hvor man blot vælger det
+SCSI-kort, man nu engang ejer.
+</para>
+
+<para>
+Har man i stedet en IDE-brænder, så skal der sættes IDE-SCSI emulering
+op, således at brænderen overfor <command>cdrecord</command> fremstår
+som en SCSI-brænder. De fleste brændere er af IDE-typen, og er man i
+tvivl hvad man har, så er det ganske sikkert en IDE-brænder.
+</para>
+
+<sect2 id="opsaetning-ide-scsi-emulering">
+<title>IDE-SCSI emulering</title>
+
+<para>
+For at få en IDE-brænder til at fremstå som en SCSI-brænder må man
+gøre to ting. Det første er at kernen skal oversættes med support for
+ide-scsi, scsi-cdrom, generic scsi og ide-cd. Desuden skal den
+hidtidige IDE-understøttelse fjernes, så de to systemer ikke træder
+hinanden over tæerne.
+</para>
+
+<para>
+Det man skal være opmærksom på under kerne-oversættelsen er
+menupunkterne "SCSI emulation support" samt "Include IDE/ATAPI CDROM
+support" under afdelingen "IDE, ATA and ATAPI Block devices", som igen
+findes under "ATA/IDE/MFM/RLL support". Disse valg er i tilgift til
+"SCSI CD-ROM support" og "SCSI generic support" som beskrevet ovenfor.
+Man kan frit vælge om tingene skal bygges direkte ind i kernen, eller
+om de skal laves som moduler. I det følgende er det dog antaget at der
+benyttes moduler.
+</para>
+
+<para>
+Når man har fået bygget sig en kerne med de rette elementer, skal man
+sørge for at fjerne den normale IDE-cd-rom understøttelse. Det skal
+ske i opstarten af Linux, hvor man skal give parametren
+<userinput>hdX=ide-scsi</userinput>, forudsat at ens brænder har
+navnet <userinput>hdX</userinput>. Hvis man er i tvivl, hvilket navn,
+brænderen har, kan man bruge følgende kommando, som vil udskrive en
+liste over de cd-rom-drev (brænder eller ej), der er fundet af Linux:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>
+(cd /proc/ide; for d in hd* ; do [ `<$d/media` == 'cdrom' ] && echo $d; done)
+</USERINPUT>
+hdc
+hdd
+</screen>
+
+<para>
+I dette tilfælde er der altså to drev i maskinen, og man skal tilføje
+<userinput>hdc=ide-scsi hdd=ide-scsi</userinput> som parameter til
+kernen. Bruger man LILO til at starte Linux skal man ind og ændre i
+<filename>/etc/lilo.conf</filename>, hvor der skal tilføjes en
+<userinput>append</userinput> linie:
 </para>
 <indexterm><primary>LILO</primary><secondary>append ekstra device</secondary></indexterm>
 
@@ -117,17 +176,16 @@ install=/boot/boot.b
 prompt
 lba32
 timeout=50
-append="hdb=ide-scsi" 
-image=/boot/vmlinuz-2.2.5-15
+append="hdc=ide-scsi hdd=ide-scsi"
+image=/boot/vmlinuz-2.4.17-6
         label=linux
         root=/dev/hda5
         read-only
 </programlisting>
 
 <para>
-I linien append skal skrives hvilken enhed brænderen er på
-ide-controlleren (f.eks. hdb = primær slave-enhed). Bagefter køres
-<command>/sbin/lilo</command> og maskinen skal genstartes.
+Efter tilføjelsen køres <command>/sbin/lilo</command> og maskinen skal
+så genstartes for at glemme alt om IDE-drevet.
 </para>
 
 <para>
@@ -136,15 +194,15 @@ kan du lave en linie i <command>autoexec.bat</command> med
 </para>
 
 <programlisting>
-c:\linux\loadlin c:\linux\vmlinuz.244 root=/dev/hdb5 ro hdd=ide-scsi   
+c:\linux\loadlin c:\linux\vmlinuz.244 root=/dev/hdb5 ro hdc=ide-scsi hdd=ide-scsi
 </programlisting>
 
 <para>
 Hvis du har <command>loadlin.exe</command> i
 <filename>c:\linux</filename> og vil bruge en kerne
 <filename>vmlinuz.244</filename> med system-roden på
-<filename>/dev/hdb5</filename> og dit cd-rom-brænder-drev er
-<filename>/dev/hdd</filename>.
+<filename>/dev/hdb5</filename> og du har de to cd-rom-drev
+<filename>hdc</filename> og <filename>hdd</filename>.
 </para>
 
 
@@ -161,33 +219,28 @@ Efter genstart af systemet kan man nu skrive
 </screen>
 
 <para>
-Så skulle scsi-emuleringen være i orden og man kan nu køre:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cat /proc/scsi/scsi</USERINPUT> 
-Attached devices: 
-Host: scsi0 Channel: 00 Id: 00 Lun: 00
-  Vendor: HP       Model: CD-Writer+ 7200  Rev: 3.01
-  Type:   CD-ROM                           ANSI SCSI revision: 02
-</screen>
-
-<para>
-Og der skal brænderen være dukket op. Så er det bare at installere
-brændersoftware, så kan du brænde din første Linux-cd-rom.
+Så skulle IDE-SCSI-emuleringen være i orden, og drevene være synlige
+via <command>cdrecord -scanbus</command>.
 </para>
 
 <para>
-Skal man nu automatisere dette lidt så man ikke skal skrive
+Vil man automatisere dette, så man ikke skal skrive
 <command>modprobe</command>-linierne efter hver genstart af maskinen,
-så skal de tilføjes i systemets opstarts-script som på Red Hat er
-<filename>/etc/rc.d/rc.local</filename>, hvor man skal tilføje
-linierne.
+kan man på mange distributioner finde filen
+<filename>/etc/modules</filename>. I denne fil kan man skrive navne på
+moduler, som automatisk skal indlæses ved opstart. Man kan altså
+tilføje følgende linier og behøver så ikke tænke på at huske at
+indlæse modulerne selv:
 </para>
 
-<para> 
-For nu at kunne bruge det drev, der er lavet scsi-emulering på,
-som almindeligt cd-rom-drev også, skal der lige laves en lille
+<programlisting>
+sg
+ide-scsi
+</programlisting>
+
+<para>
+For at kunne bruge det drev, der er lavet IDE-SCSI-emulering på, som
+almindeligt cd-rom-drev også, skal der lige laves en sidste lille
 ændring. Følgende symlink er sandsynligvis sat.
 </para>
 
@@ -196,13 +249,14 @@ som almindeligt cd-rom-drev også, skal der lige laves en lille
 lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> hdb
 </screen>
 
-<para> 
-Eftersom der nu er lavet en scsi-emulering, så eksisterer cd-drevet
-ikke længere på ide-bussen på systemet, men på den emulerede
-scsi-bus. Derfor har den også fået et nyt device, nemlig
-<filename>/dev/scd0</filename> (lidt afhængigt af om der er andre
-scsi-enheder i systemet), og så skal dette symlink også ændres til at
-pege det korrekte sted hen.
+<para>
+Eftersom der nu er lavet en IDE-SCSI-emulering, så eksisterer
+cd-drevet ikke længere på IDE-bussen på systemet, men på den emulerede
+SCSI-bus. Derfor har den også fået et nyt device, nemlig
+<filename>/dev/scd0</filename> (tallet nul er dog lidt afhængigt af om
+der er andre SCSI-enheder i systemet), og så skal
+<filename>/dev/cdrom</filename> også ændres til at pege det korrekte
+sted hen.
 </para>
 
 <screen>
@@ -211,17 +265,21 @@ pege det korrekte sted hen.
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
 lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 </screen>
+
+</sect2>
+
 </sect1>
 
-<sect1 id="X-cdroast">
-<title>X-CD-roast</title>
-<indexterm><primary>X-CD-roast</primary></indexterm>
-<indexterm><primary>cd-rom</primary><secondary>brændeprogram, X-CD-roast</secondary></indexterm>
+
+<sect1 id="X-CD-Roast">
+<title>X-CD-Roast</title>
+<indexterm><primary>X-CD-Roast</primary></indexterm>
+<indexterm><primary>cd-rom</primary><secondary>brændeprogram, X-CD-Roast</secondary></indexterm>
 
 <para>
 På <ulink
 url="http://www.xcdroast.org">http://www.xcdroast.org</ulink> kan du
-finde X-CD-roast. Få fat i den og installér den. Skal man kunne brænde
+finde X-CD-Roast. Få fat i den og installér den. Skal man kunne brænde
 cd-rom'er uden at være root bliver man nødt til at sætte suid-bitten på
 <filename>xcdroast</filename>. Dette gøres:
 </para>
@@ -240,7 +298,7 @@ en ret morsom "disclaimer".
 
 
 <FIGURE ID="xcdroast1-fig" FLOAT="1">
-<TITLE>X-CD-roast</TITLE>
+<TITLE>X-CD-Roast</TITLE>
 <GRAPHIC FILEREF="xcdroast1.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
@@ -265,22 +323,22 @@ hel cd.
 </para>
 
 <FIGURE ID="xcdroast2-fig" FLOAT="1">
-<TITLE>X-CD-roast</TITLE>
+<TITLE>X-CD-Roast</TITLE>
 <GRAPHIC FILEREF="xcdroast2.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
 <FIGURE ID="xcdroast0-fig" FLOAT="1">
-<TITLE>X-CD-roast</TITLE>
+<TITLE>X-CD-Roast</TITLE>
 <GRAPHIC FILEREF="xcdroast0.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
 <para>
-Det skal lige bemærkes at X-CD-roast bruger <filename>.raw</filename> i
+Det skal lige bemærkes at X-CD-Roast bruger <filename>.raw</filename> i
 stedet for <filename>.iso</filename> som endelse. Dette ligger kun i
 navnet, ikke andet. Skal man derfor bruge det rippede image til noget
 hvor denne endelse er vigtig, kan man bare lave et symlink med det
 andet navn. De rippede (eller andre) images skal dog have endelse
-<filename>.raw</filename> for at X-CD-roast vil kendes ved dem. Der er
+<filename>.raw</filename> for at X-CD-Roast vil kendes ved dem. Der er
 heller ikke noget krav til at de faktisk skal ligge i
 <filename>/image</filename>-kataloget:
 </para>
@@ -301,7 +359,7 @@ bare på audio-cd'er i stedet:
 </para>
 
 <FIGURE ID="xcdroast3" FLOAT="1">
-<TITLE>X-CD-roast</TITLE>
+<TITLE>X-CD-Roast</TITLE>
 <GRAPHIC FILEREF="xcdroast3.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
@@ -316,12 +374,12 @@ derefter "Write Image", så er du i gang.
 
 
 <FIGURE ID="xcdroast4" FLOAT="1">
-<TITLE>X-CD-roast</TITLE>
+<TITLE>X-CD-Roast</TITLE>
 <GRAPHIC FILEREF="xcdroast4.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
 <para>
-Mere om X-CD-roast og opsætning af brænder
+Mere om X-CD-Roast og opsætning af brænder
 <filename>/usr/local/xcdroast-0.96ex/README*</filename> eller hvor du
 nu ellers installerede <command>xcdroast</command>.
 </para>
@@ -334,41 +392,35 @@ nu ellers installerede <command>xcdroast</command>.
 <indexterm><primary>cd-rom</primary><secondary>brændeprogram, cdrecord</secondary></indexterm>
 
 <para>
-I dette afsnit findes en mini-HOWTO på dansk til CD-R og CD-RW, 
-i bund og grund kun en oversættelse og 'nedkogning' af
-CD-Writing-HOWTO til det mest elementære. Se <ulink url="http://www.linuxdoc.org/HOWTO/CD-Writing-HOWTO.html">http://www.linuxdoc.org/HOWTO/CD-Writing-HOWTO.html</ulink>.
+Det bliver nu gennemgået, hvorledes man kan brænde en cd udelukkende
+ved hjælp af <command>cdrecord</command>, altså uden en grafisk
+overbygning. Det forudsættes at brænderen er sat op og virker. Vi kan
+derfor, som omtalt i kapitlets indledning, finde brænderens nummer ved
+hjælp af kommandoen <command>cdrecord -scanbus</command>.
 </para>
 
-<para>
-Du skal først installere følgende pakker:
-<filename>cdrecord-*.rpm</filename>,
-<filename>cdparanoia-III*.rpm</filename> og
-<filename>mkisofs-*.rpm</filename>.
-</para>
-
-<para>
-Vi forudsætter at brænderen er sat op og virker, dog kører vi lige en
-<command>cdrecord -scanbus</command>. Husk at loade brænder-modulerne,
-hvis det ikke er gjort.  I denne opsætning ser den således ud:
-</para>
-
-<programlisting>
-	Using libscg version 'schily-0.1'
-Cdrecord release 1.8a29 Copyright (C) 1995-1999 Jörg Schilling
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cdrecord -scanbus</USERINPUT>
+Cdrecord 1.11a12 (i586-mandrake-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
+Linux sg driver version: 3.1.22
+Using libscg version 'schily-0.5'
 scsibus0:
-	0,0,0	  0) 'HP      ' 'CD-Writer+ 8100 ' '1.0g' Removable CD-ROM
-	0,1,0	  1) *
-	0,2,0	  2) *
-	0,3,0	  3) *
-	0,4,0	  4) *
-	0,5,0	  5) *
-	0,6,0	  6) *
-	0,7,0	  7) *
-</programlisting>
+        0,0,0     0) 'PIONEER ' 'CD-ROM DR-744   ' '1.02' Removable CD-ROM
+        0,1,0     1) 'LITE-ON ' 'LTR-12101B      ' 'LS3J' Removable CD-ROM
+        0,2,0     2) *
+        0,3,0     3) *
+        0,4,0     4) *
+        0,5,0     5) *
+        0,6,0     6) *
+        0,7,0     7) *
+</screen>
 
 <para>
-Det vil sige at vores cd-rom-brænder-enhed i dette tilfælde 
-er: <filename>dev=0,0,0</filename>
+Brænderen har i dette tilfælde nummeret <userinput>0,1,0</userinput>,
+og dette nummer bruges i de følgende eksempler, hvor der angives
+<userinput>dev=0,1,0</userinput>. Der skal muligvis skiftes ud med et
+andet nummer, som man selv kan finde med <command>cdrecord
+-scanbus</command>.
 </para>
 
 <sect2 id="cdrom-skrivning">
@@ -420,7 +472,7 @@ Du kan nu brænde din cd-rom med kommandoen:
 <indexterm><primary>cdrecord</primary></indexterm>
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data mine_ting</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,1,0 -data mine_ting</USERINPUT>
 </screen>
 
 <para>
@@ -432,7 +484,7 @@ kommer aldrig til at fylde en hel cd-rom på harddisken):
 <screen>
 <PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkfifo image.iso</USERINPUT>
 <PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>mkisofs -r -J -o image.iso STI_TIL_DATA  &</USERINPUT>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,0,0 -eject speed=4 -data image.iso</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,1,0 -eject speed=4 -data image.iso</USERINPUT>
 <PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>rm image.iso</USERINPUT>
 </screen>
 
@@ -500,7 +552,7 @@ Du kan nu brænde en cd-rom med kommandoen:
 
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,0,0 -data test.iso</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v speed=2 dev=0,1,0 -data test.iso</USERINPUT>
 </screen>
 
 
@@ -513,7 +565,7 @@ Kommandoen er:
 
 
 <screen>
-<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,0 speed=2 -isosize /dev/hdb</USERINPUT>
+<PROMPT>[root@linus /test]#</PROMPT> <USERINPUT>cdrecord -v dev=0,1,0 speed=2 -isosize /dev/hdb</USERINPUT>
 </screen>
 
 
@@ -528,9 +580,8 @@ Denne detalje virker ikke med en musik-cd.
 <indexterm><primary>musik-cd</primary><secondary>cdparanoia</secondary></indexterm>
 <indexterm><primary>cdparanoia</primary></indexterm>
 </sect2>
-</sect1>
 
-<sect1 id="musik-cd">
+<sect2 id="musik-cd">
 <title>Musik cd brændes</title>
 
 <para>
@@ -604,7 +655,7 @@ af det hele. Wav-filerne kan brændes til en cd med følgende kommando:
 </para>
 
 <screen>
-<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,0,0 track01.cdda.wav track02.cdda.wav</USERINPUT>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,1,0 track01.cdda.wav track02.cdda.wav</USERINPUT>
 </screen>
 
 <para>
@@ -629,7 +680,7 @@ og det tidligere eksempel ser så ud som følger:
 </para>
 
 <screen>
-<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,0,0 -dao track01.cdda.wav track02.cdda.wav</USERINPUT>
+<PROMPT>[root@linus musik]#</PROMPT> <USERINPUT>cdrecord speed=2 dev=0,1,0 -dao track01.cdda.wav track02.cdda.wav</USERINPUT>
 </screen>
 
 
@@ -641,6 +692,9 @@ url="http://sunsite.dk/ldp/HOWTO/CD-Writing-HOWTO.html">http://sunsite.dk/ldp/HO
 en god resurse omkring brænding af cd'ere.
 </para>
 
-</sect1> <!--cdrecord -->
+</sect2>
+
+</sect1>
+
 </chapter>
 
