@@ -1,21 +1,23 @@
 <chapter id="signatur-program">
 <title>Information til programmører</title>
 
-<para><emphasis>Bemærk, informationerne heri er ikke kontrolleret med
-KMD-CA's proces endnu</emphasis></para>
-
 <para>Dette kapitel indeholder information til de der ønsker
 at udvikle programmer, der automatiserer de processer, der er
 beskrevet i de foregående afsnit. Det antages at man vil gøre det som
 en frontend til <command>openssl</command> programmet og derfor
 beskrives hvorledes dette kan gøres.</para>
 
+<para>Disse informationer handler udelukkende om at danne en
+certifikat forespørgsel til KMD-CA.</para>
+
 <sect1>
 <title>Dannelse af certifikat forespørgslen</title>
 <indexterm><primary>Certifikat forespørgsel</primary></indexterm>
+<indexterm><primary>x.509</primary></indexterm>
+<indexterm><primary>req</primary></indexterm>
 
 <para>Man bør sætte sig ind i hvordan <command>req</command>
-programmet kan kaldes. Det er en del af <command>openssl</command>
+programmet anvendes. Det er en del af <command>openssl</command>
 programmet. Basalt set kan <command>req</command> lave en x.509
 request som den der eftersøges, hvis det gives en række informationer.  Den
 nemmeste måde at få disse informationer videregivet til
@@ -32,7 +34,8 @@ andre processer på systemet.</para>
 <sect2>
 <title>Eksempel på forespørgselsdannelses fil</title>
 
-<para>Nedenfor gives et eksempel på hvordan en request config fil til programmet
+<para>Nedenfor gives et eksempel på hvordan en
+forespørgselskonfigurationsfil til programmet
 <command>openssl</command> kan se ud. Linier der starter med tegnet # er kommentarer.</para>
 
 <programlisting>
@@ -117,13 +120,13 @@ request config fil. I det følgende forsøges de relevante felter beskrevet.</para
 <itemizedlist mark="bullet">
 <listitem>
  <para>
-  givenName - personens fornavn indsættes her
+  givenName - personens fornavn (og eventuelle mellemnavne) indsættes her
  </para>
 </listitem>
 <indexterm><primary>givenName</primary></indexterm>
 <listitem>
  <para>
-  surname - personens efternavn (mellemnavne?) indsættes her
+  surname - personens efternavn indsættes her
  </para>
 </listitem>
 <indexterm><primary>surname</primary></indexterm>
@@ -184,16 +187,76 @@ tilføje følgende liste: "Key Agreement, Non Repudiation, Key Encipherment".</par
 <sect1 id="signatur-request-perl">
 <title>Eksempel program til generering af forespørgsel</title>
 
-<para>I eksemplet nedenfor kan du se et interaktivt
-perl
-program der laver en forespørgsel baseret på de informationer brugeren
-taster ind. Bemærk, at det er et eksempel og ikke velegnet til
+<para>I eksemplet nedenfor kan du se et interaktivt perl program der
+laver en forespørgsel baseret på de informationer brugeren taster
+ind. Bemærk, at det er et eksempel og ikke nødvendigvis velegnet til
 slutbrugerbrug. Scriptet kan <ulink
 url="req-kmd-ca.pl">downloades</ulink>.</para>
 
 <programlisting id="req-kmd-ca">
 &signatur-req-kmd-ca;
 </programlisting>
+
+
+<para>Eksempel på anvendelse af scriptet:</para>
+<screen>
+<prompt>$ </prompt><userinput>./req-kmd-ca.pl</userinput>
+Dettte program vil lave en certifikat forespørgsel til KMD-CA for dig.
+
+Du skal indtaste en række oplysninger
+Efter indtastning af hver oplysning skal du trykke på enter/return
+For oplysninger hvor der gives flere valg, kan du som regel trykke enter for den
+mest almindelige værdi. Denne vil være illusteret med et stort bogstav.
+
+Indtast dit fornavn(e) : <userinput>Anders Benjamin</userinput>
+Indtast dit efternavn : <userinput>Christensen</userinput>
+Indtast din emailadresse : <userinput>abc@example.org</userinput>
+
+Certifikatet kan bruges til enkryptering, signering eller begge dele
+Hvad skal det bruges til? [E]nkryptering, [S]ignering eller [B]egge?
+Angiv hvad certifikatet skal bruges til [e/s/B] : <userinput>B</userinput>
+
+Nogle Certifikat udstedere understøtter ikke ÆØÅ (såsom KMD) og skal
+du bruge certifikatet med en sådan udsteder skal du svare J her, så
+konverteres Æ, Ø, Å, til henholdsvis Ae, Oe, Aa.
+Ønsker du at få konverteret ÆØÅ? [J/n] : <userinput>J</userinput>
+
+Det anbefales at man beskytter sin private nøgle med en adgangskode
+Indtast en sådan - bemærk at den vil blive skrevet til skærmen!
+Angiv adgangskode : <userinput>abctester</userinput>
+
+Her er de informationer du indtastede.
+
+NB. Bemærk at hvis du svarede J til Konverter ÆØÅ, vil alle ÆØÅ og
+    æøå være repræsenteret som Ae,Oe,Aa og ae, oe, aa nedenfor.
+
+Fornavn       : Anders Benjamin
+Efternavn     : Christensen
+Email         : abc@example.org
+Nøglebrug     : Digital Signature, Data Enchiperment
+Konverter ÆØÅ : J
+Adgangskode   : abctester
+
+Er informationerne korrekte? [J/n] : <userinput>J</userinput>
+Information: Starter openssl (god ting)
+Using configuration from request.config.6854
+Generating a 1024 bit RSA private key
+.......++++++
+..........++++++
+writing new private key to 'Anders_Benjamin_Christensen_Nøgle.pem'
+-----
+Information: Den midlertidige fil er blevet slettet (god ting)
+
+Succes!
+
+To filer er blevet lavet:
+
+"Anders_Benjamin_Christensen_Anmod.req" er den anmodningsfil KMD-CA skal have
+"Anders_Benjamin_Christensen_Nøgle.pem" er din private nøgle
+
+NB: Du må ikke lade andre få adgang til din private nøgle!
+</screen>
+
 </sect1>
 
 
@@ -209,10 +272,13 @@ Bemærk at KMD-CA's rodcertifikat skal være installeret, inden
 man kan besøge disse sider.</para>
 
 <para>Nedenfor er vist en række skærmbilleder fra
-registreringsprocessen. KMD-CA kræver at forespørgselsfilen
-ender i <filename>.req</filename>.<emphasis>(TODO: Som det fremgår er
-der fejl i proceduren for mine værdier - min email accepteres
-ikke. Jeg forstår ikke hvorfor.</emphasis></para>
+registreringsprocessen. KMD-CA kræver at forespørgselsfilen ender i
+<filename>.req</filename>.<emphasis>(Som det fremgår er der fejl i
+proceduren for mine værdier &ndash; min email accepteres ikke. Det skyldes
+muligvis mit valg af browser &ndash; således er det muligt at
+f.eks. Mozilla 1.0 virker uden problemer. Dette afsnit
+vil blive opdateret i en kommende udgave af denne
+bog).</emphasis></para>
 
 <figure id="kmd-ca-upload-1-fig" float="1">
 <title>KMD-CA upload, skridt 1</title>

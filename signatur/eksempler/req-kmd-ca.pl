@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# Script der laver en kmd-ca request.
+# Script der laver en kmd-ca certifikat forespørgsel.
 
 # Følgende oplysninger kræves fra brugeren:
 # Æ Ø Å eller ae oe aa i certifikatet?
@@ -11,8 +11,17 @@
 # om den private nøgle skal enkrypteres
 # eventuelt password for denne nøgle
 
-# NB: Dette script er ikke tænkt som et "rigtigt" program, men som en
-# illustration af hvordan en forespørgsel kan opbygges og laves.
+# NB: Dette script er ikke tænkt som et "rigtigt" slutbrugerprogram, men som en
+# illustration af hvordan en forespørgsel kan opbygges og laves. Så vidt vides
+# indeholder programmet ingen fejl og har den fulde funktionalitet til at lave
+# en certifikat forespørgesel til brug for KMD-CA.
+
+# Dette script frigives valgfrit under "Åben dokumentlicens" (ÅDL) eller 
+# Gnu Public Licensen (GPL )v. 2.
+
+# Oprindeligt lavet af Mads Bondo Dydensborg <madsdyd@challenge.dk>
+# Tilføjelser af Klavs Klavsen og Christian Boesgaard
+# Copyright 2002 Mads Bondo Dydensborg.
 
 ################################################################################
 # Check at brugeren ikke gav nogen argumenter
@@ -28,10 +37,10 @@ if (defined $arg && $arg ne "") {
 
 $openssl = `which openssl`;
 if ("" eq $openssl) {
-    printf STDERR "Fejl: Du skal have installeret openssl programmet\n";
-    printf STDERR "og det skal være tilgængeligt i din PATH (udførbart)\n";
-    printf STDERR "Dette program kan fås fra http://www.openssl.org/\n";
-    printf STDERR "De fleste distributioner inkluderer dog dette program\n";
+    print STDERR "Fejl: Du skal have installeret openssl programmet\n";
+    print STDERR "og det skal være tilgængeligt i din PATH (udførbart)\n";
+    print STDERR "Dette program kan fås fra http://www.openssl.org/\n";
+    print STDERR "De fleste distributioner inkluderer dog dette program\n";
     exit 1;
 }
 
@@ -46,14 +55,17 @@ $prompt = "> ";
 ################################################################################
 # Lidt info til brugeren
 
-printf "Dettte program vil lave en forespørgsel til KMD-CA for dig.\n";
-printf "Du skal indtaste en række oplysninger\n\n";
+print "Dettte program vil lave en certifikat forespørgsel til KMD-CA for dig.\n\n";
+print "Du skal indtaste en række oplysninger\n";
+print "Efter indtastning af hver oplysning skal du trykke på enter/return\n";
+print "For oplysninger hvor der gives flere valg, kan du som regel trykke enter for den\n";
+print "mest almindelige værdi. Denne vil være illusteret med et stort bogstav.\n\n";
 
 ################################################################################
 # Læs de nødvendige værdier
 do {
     
-    $prompt = "Indtast dit fornavn : ";
+    $prompt = "Indtast dit fornavn(e) : ";
     $givenName= $term->readline($prompt);
 
     $prompt = "Indtast dit efternavn : ";
@@ -62,9 +74,9 @@ do {
     $prompt = "Indtast din emailadresse : ";
     $emailAddress = $term->readline($prompt);
 
-    printf "Certifikatet kan bruges til enkryptering, signering eller begge dele\n";
-    printf "Hvad skal det bruges til? [E]nkryptering, [S]ignering eller [B]egge?\n";
-    $prompt = "Angiv hvad nøglen skal bruges til [e/s/B] : ";
+    print "\nCertifikatet kan bruges til enkryptering, signering eller begge dele\n";
+    print "Hvad skal det bruges til? [E]nkryptering, [S]ignering eller [B]egge?\n";
+    $prompt = "Angiv hvad certifikatet skal bruges til [e/s/B] : ";
     $keyUsage = $term->readline($prompt);
     
     if ("e" eq $keyUsage || "E" eq keyUsage) {
@@ -77,18 +89,18 @@ do {
 	}
     }
 
-    printf "Nogle Certifikat udstedere understøtter ikke ÆØÅ (såsom KMD) og skal\n";
-    printf "du bruge certifikatet med en sådan udsteder skal du svare J her, så\n";
-    printf "konverterer jeg Æ, Ø, Å, til henholdsvis Ae, Oe, Aa.\n";
-    $prompt = "Ønsker du at få konverteret ÆØÅ? [J/N] : ";
+    print "\nNogle Certifikat udstedere understøtter ikke ÆØÅ (såsom KMD) og skal\n";
+    print "du bruge certifikatet med en sådan udsteder skal du svare J her, så\n";
+    print "konverteres Æ, Ø, Å, til henholdsvis Ae, Oe, Aa.\n";
+    $prompt = "Ønsker du at få konverteret ÆØÅ? [J/n] : ";
     $convert = $term->readline($prompt);
 
     #Konverter æøå og ÆØÅ hvis der blev valgt J ovenfor.
-    if ($convert eq "J")  # do ÆØÅ conversions
+    if ($convert eq "J" || "" eq $convert)  # do ÆØÅ conversions
     {
        foreach ($givenName,$surname,$emailAddress)
        {
-	  printf "Converting ÆØÅ...\n";
+	  #printf "Konverterer ÆØÅ...\n";
           $_ =~ s/Æ/Ae/g;  # 
           $_ =~ s/Ø/Oe/g;  # 
           $_ =~ s/Å/Aa/g;  # 
@@ -98,24 +110,24 @@ do {
        }
     }
 
-    printf "Det anbefales at man beskytter sin private nøgle med en adgangskode\n";
-    printf "Indtast en sådan - bemærk at den vil blive skrevet til skærmen\n";
+    printf "\nDet anbefales at man beskytter sin private nøgle med en adgangskode\n";
+    printf "Indtast en sådan - bemærk at den vil blive skrevet til skærmen!\n";
     $prompt = "Angiv adgangskode : ";
     $output_password = $term->readline($prompt);
     
 ################################################################################
 # Bekræft 
     
-    printf "\nHer er de informationer du indtastede.\n\n";
-    printf "NB. Bemærk at hvis du svarede J til Konverter ÆØÅ, vil alle ÆØÅ og\n";
-    printf "    æøå være repræsenteret som Ae,Oe,Aa og ae, oe, aa nedenfor.\n\n";
+    print "\nHer er de informationer du indtastede.\n\n";
+    print "NB. Bemærk at hvis du svarede J til Konverter ÆØÅ, vil alle ÆØÅ og\n";
+    print "    æøå være repræsenteret som Ae,Oe,Aa og ae, oe, aa nedenfor.\n\n";
     
-    printf "Fornavn       : $givenName\n";
-    printf "Efternavn     : $surname\n";
-    printf "Email         : $emailAddress\n";
-    printf "Nøglebrug     : $keyUsage\n";
-    printf "Konverter ÆØÅ : $convert\n";
-    printf "Adgangskode   : $output_password\n\n";
+    print "Fornavn       : $givenName\n";
+    print "Efternavn     : $surname\n";
+    print "Email         : $emailAddress\n";
+    print "Nøglebrug     : $keyUsage\n";
+    print "Konverter ÆØÅ : $convert\n";
+    print "Adgangskode   : $output_password\n\n";
     
     $prompt = "Er informationerne korrekte? [J/n] : ";
     $OK = "J";
@@ -191,6 +203,8 @@ if (0 != $status) {
 }
 
 print "\nSucces!\n";
-print "I filen $reqfile ligger den anmodningsfil der skal sendes til KMD-CA\n";
-print "I filen $keyfile ligger din private nøgle, som du skal passe godt på, og\n";
-print "ikke lade andre få adgang til.\n";
+print "\nTo filer er blevet lavet:\n\n";
+
+print "\"$reqfile\" er den anmodningsfil KMD-CA skal have\n";
+print "\"$keyfile\" er din private nøgle\n";
+print "\nNB: Du må ikke lade andre få adgang til din private nøgle!\n";
