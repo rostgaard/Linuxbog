@@ -868,7 +868,7 @@ register variable.
 Et C program består af definitioner af eksterne objekter, som
 kan være funktioner eller variable. Eksterne objekter kan bruges
 overalt i det program, hvori de forekommer, også fra separat
-kompilerede funktioner.
+oversatte funktioner.
 </para>
 <para>
 Modsætningen til eksterne variable er de variable, som defineres
@@ -902,9 +902,9 @@ For helt at være klar til diskussion af eksterne variable skal
 det lige understreges, at et C program næsten altid opbygges af
 separat oversatte moduler. De fleste af dem ligger måske i et
 library - måske er det standard-library, libc.a - Andre ligger i
-vores egne oversatte moduler, og vi kan give compileren besked om
+vores egne oversatte moduler, og vi kan give oversætteren besked om
 det på kommandolinien ved simpelthen at nævne alle de moduler,
-som skal med. Compileren består af mange forskellige programmer,
+som skal med. Oversætteren består af mange forskellige programmer,
 og det sidste af dem, nemlig linkeren, foretager sammenkædningen
 af modulerne (link = hægte eller led i en kæde).
 </para>
@@ -914,7 +914,7 @@ gcc -o mitprogram modul_1.c modul_2.c modul_3.o
 </programlisting>
 
 <para>
-Compileren finder ud af, at modul_3.o er et oversat modul og
+Oversætteren finder ud af, at modul_3.o er et oversat modul og
 nøjes med at medtage det i link-kommandoen, som bygger den
 eksekverbare fil, "program-image filen" eller bare "programmet".
 </para>
@@ -974,7 +974,7 @@ På dansk ser man ofte ordet erklæring i stedet for deklaration.
 <para>
 Hvis vi ønsker at anvende en variabel, som allerede er defineret
 i et andet modul, så bruger vi en deklaration. Det er en
-forklaring, så at sige, til compileren om, at der er en variabel
+forklaring, så at sige, til oversætteren om, at der er en variabel
 til rådighed i et andet modul i det færdige program, som hedder
 sådan og sådan og er af den og den type, men som altså IKKE
 findes i nærværende overstættelses-enhed (translation unit).
@@ -985,7 +985,7 @@ extern int en_taeller;
 </programlisting>
 
 <para>
-Nu ved compileren, at der i et andet modul findes en variabel,
+Nu ved oversætteren, at der i et andet modul findes en variabel,
 som hedder en_taeller, og at det er ok, at vi bruger den.
 </para>
 
@@ -1005,7 +1005,7 @@ deklaration og lagerudlægning.
 
 <para>
 Hvis jeg derimod skriver <emphasis>extern int xyzzy</emphasis> 
-udlægges der ikke lager, men jeg indføjer en entry i compilerens
+udlægges der ikke lager, men jeg indføjer et punkt i oversætterens
 symboltabel. I denne entry ligger oplysning om navn og type.
 </para>
 
@@ -1324,7 +1324,7 @@ bundlinie(){
 <para>
 Hov! Hvad er nu det - kan man deklarere en ekstern <emphasis>
 inde </emphasis> i en funktion? Jada, og så er det meningen, at
-compileren skal redde os, hvis vi kommer til at bruge den
+oversætteren skal redde os, hvis vi kommer til at bruge den
 <emphasis> uden </emphasis> for funktionen. Men deklarationen af
 extern char *ms2; inde i funktionen forudsætter, at variablen er
 defineret (og helst også initialiseret, i dette tilfælde!) et
@@ -1332,8 +1332,8 @@ andet sted, d.v.s. i en anden kildetekst-fil (source-file).
 </para>
 
 <para>
-Bemærk dog, at det stadig accepteres af mange compilere, at man
-erklærer en extern variabel flere gange med samme navn. Det kan
+Bemærk dog, at det stadig accepteres af mange oversættere, at man
+erklærer en ekstern variabel flere gange med samme navn. Det kan
 man vist roligt sige er en praksis, som bør undgås. Specielt kan
 det nævnes, at gcc accepterer at man definerer den samme variabel
 to eller flere gange, hvis den defineres i ydre niveau og dermed
@@ -1342,12 +1342,12 @@ implicit er ekstern variabel!
 
 <programlisting>
 /* fil 1. Demonstration af uheldig praksis. */
-/* programmet kompilerer uden warnings - ikke engang option
- * -Wall, som ellers betyder "giv mig alle warnings", får gcc til
+/* programmet oversættes uden advarsler - ikke engang option
+ * -Wall, som ellers betyder "giv mig alle advarsler", får gcc til
  * at reagere på denne konstruktion! Men benyttes g++ får man
  * heldigvis en fejl på denne uheldige fremgangsmåde. */
 
-int min_globale_variabel; /* ok, det bør enhver compiler acceptere. */
+int min_globale_variabel; /* ok, det bør enhver oversætter acceptere. */
 
 int min_globale_variabel; /* uha - burde udløse en warning! */
 int min_globale_variabel; /* uha - burde udløse en warning! */
@@ -1362,11 +1362,11 @@ int main()
 
 <para>
 Det er jo godt nok kedeligt, hvis man tror, at man har to
-forskellige variable, og compileren tror, at der kun er en.
+forskellige variable, og oversætteren tror, at der kun er en.
 Heldigvis findes der et værktøj (ud over c++) som kan afsløre
-denne og andre sjuskefejl. Lint, en statisk syntax-checker, har
+denne og andre sjuskefejl. Lint, en statisk syntakstjekker, har
 været på banen siden Unix version 7, altså den første offentlige
-udgave fra 1978. Der findes nu en open source lclint, som er
+udgave fra 1978. Der findes nu en fri lclint, som er
 fantastisk god til at gennemgå programmer, og som vel at mærke
 kan komme igennem include-filer uden brok. Lclint er så
 pedantisk, at man somme tider ønsker at slå en masse warnings
@@ -1401,9 +1401,9 @@ lclint er endog så omhyggelig, at den advarer mig om, at
 min_globale_variabel faktisk ikke bliver brugt i andre moduler
 (der er jo heller ikke andre lige for tiden ...) og at jeg derfor
 burde erklære denne variabel for static. Godt
-gået.<footnote><para> lint og den portable C compiler har som
+gået.<footnote><para> lint og den systemuafhængige C-oversætter har som
 oprindelig ophavsmand Stephen C. Johnson, som er en af de kendte
-compiler-teoretikere der arbejder på Bell-labs.</para></footnote>
+oversætter-teoretikere der arbejder på Bell Labs.</para></footnote>
 </para>
 
 <para>
@@ -1540,7 +1540,7 @@ int main(int argc, char *argv[])
 </example>
 
 <para>
-For at tillade compileren at optimere kan det forekomme, at
+For at tillade oversætteren at optimere kan det forekomme, at
 interne blokkes auto-variable faktisk oprettes samtidig med at
 funktionens stack-frame sættes. Således gør gcc.
 </para>
@@ -1609,7 +1609,7 @@ reserveret ord auto: overflødigt, samme som ovenfor.
 </listitem>
 <listitem>
 <para>
-reserveret ord register: Compileren vil, hvis det er muligt, anbringe
+reserveret ord register: Oversætteren vil, hvis det er muligt, anbringe
 denne variabel i et af maskinens hurtige registre. Man kan ikke
 tage adressen på en registervariabel.
 </para>
