@@ -13,43 +13,41 @@ version=$(shell cat version.sgml)
 # dato
 dato=$(shell cat dato.sgml)
 
-# cygnus dsl ligger ikke ens på MDK8 og RH6.2
-cygnusdsl = $(firstword $(wildcard  /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl))
-
+# Her er en liste af sgml-filer der ændres automatisk
 badfiles1 = $(wildcard ../*/dato.sgml)
 badfiles2 = $(wildcard ../*/magic.sgml)
-badfiles3 = $(wildcard ../*/stikord.sgml)
-badfiles4 = $(wildcard ../*/version.sgml)
+badfiles3 = $(wildcard ../*/stikord.sgml) 
+badfiles4 = $(wildcard ../*/version.sgml) 
 badfiles = $(badfiles1) $(badfiles2) $(badfiles3) $(badfiles4)
 
 # Her er en liste af sgml-filer der skal checkes
 totalsgmlfiler=$(wildcard ../alle/*.sgml) \
-	$(wildcard ../friheden/*.sgml) \
-	$(wildcard ../admin/*.sgml) \
-	$(wildcard ../web/*.sgml) \
-	$(wildcard ../applikationer/*.sgml) \
-	$(wildcard ../c/*.sgml) \
-	$(wildcard ../docbook/*.sgml) \
-	$(wildcard ../kontorbruger/*.sgml) \
-	$(wildcard ../itplatform/*.sgml) \
-	$(wildcard ../program/*.sgml)
+               $(wildcard ../friheden/*.sgml) \
+               $(wildcard ../admin/*.sgml) \
+               $(wildcard ../web/*.sgml) \
+               $(wildcard ../applikationer/*.sgml) \
+               $(wildcard ../c/*.sgml) \
+               $(wildcard ../docbook/*.sgml) \
+               $(wildcard ../kontorbruger/*.sgml) \
+               $(wildcard ../itplatform/*.sgml) \
+               $(wildcard ../program/*.sgml)
 
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
+
 # her er det der skal laves
-all: html palmpilot sgml
+all:	billeder html palmpilot sgml exit
 
-sgml: $(sgmlfiler) $(targetname)-$(version).sgml.tar.gz $(targetname)-$(version).sgml.zip
+sgml: $(targetname)-$(version).sgml.tar.gz
 
-$(targetname)-$(version).sgml.tar.gz:
+$(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
-
-$(targetname)-$(version).sgml.zip:
 	(cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
 palmpilot: $(targetname)-$(version).palm.zip
 
-$(targetname)-$(version).palm.zip: html
+$(targetname)-$(version).palm.zip: $(sgmlfiler)
+	make html
 	rm -f palm/*.prc palm/*.pdb
 	(cd palm;plucker-build -v -P . -f $(targetname))
 	cp ../misc/*.prc palm
@@ -57,62 +55,78 @@ $(targetname)-$(version).palm.zip: html
 
 statusfiler:
 	@$(shell date +%d/%m-%Y> dato.sgml)
+	@echo start på $(targetshortname)	
+	@echo Version er $(version)
 	@echo Dato sat til $(dato)
+	@echo Checker $(sgmlfiler)
 
-html: $(targetshortname) pakhtml
-$(targetshortname): $(sgmlfiler) statusfiler
+exit:
+	@echo slut på $(targetshortname)
+	@echo --------------
+	@echo 
+
+billeder:
+	cp ../friheden/images/*.png images
+	cp ../admin/images/*.png images
+	cp ../web/images/*.png images
+	cp ../program/images/*.png images
+	cp ../c/images/*.png images
+	cp ../docbook/images/*.png images
+	cp ../kontorbruger/images/*.png images
+	cp ../itplatform/images/*.png images
+	cp ../applikationer/images/*.png images
+	cp ../sikkerhed/images/*.png images
+
+
+htmlfiler: billeder
 	@echo "Target er HTML i" $(targetshortname)/bog
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -x -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d $(cygnusdsl)\#html -V html-index bog.sgml)
+	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V html-index bog.sgml)
 	(cd tempdir; perl ../collateindex.pl -s Symboler  -x -t Stikordsregister  -g -i stikord  -o stikord.sgml HTML.index)
 	#db2html bog.sgml
-	(cd tempdir;jade -t sgml -ihtml -d $(cygnusdsl)\#html bog.sgml)
-	mkdir $(targetshortname)
-	cp tempdir/*.html $(targetshortname)
-	cp ../friheden/images/*.png $(targetshortname)
-	cp ../admin/images/*.png $(targetshortname)
-	cp ../web/images/*.png $(targetshortname)
-	cp ../program/images/*.png $(targetshortname)
-	cp ../c/images/*.png $(targetshortname)
-	cp ../docbook/images/*.png $(targetshortname)
-	cp ../kontorbruger/images/*.png $(targetshortname)
-	cp ../itplatform/images/*.png $(targetshortname)
-	cp ../applikationer/images/*.png $(targetshortname)
-	cp ../sikkerhed/images/*.png $(targetshortname)
-	cp linuxbog.css $(targetshortname)
+	(cd tempdir;jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html bog.sgml)
+	rm -rf bog
+	mkdir bog
+	cp tempdir/*.html bog
+	cp images/*.png bog
+	cp linuxbog.css bog
 	rm -rf tempdir
-ifeq	("$(shell perl -e 'use Image::Size; print "1"' 2> /dev/null)", "1")
-	(cd html;perl ../../misc/insertimagesize)
-else
-	@echo Du mangler perl modulet Image::Size.
-endif
-ifeq	("1", "1")
-#ifneq	($(shell if which tidy &> /dev/null; then echo -n 1; fi), "1")
-	(cd html;tidy -f err.txt -imu *html;rm -f err.txt)
-else
-	@echo du mangler tidy.
-endif
+	@echo "Done HTML (html)"
+	@echo ""
 
-pakhtml: $(targetname)-$(version).html.tar.gz $(targetname)-$(version).html-ub.tar.gz $(targetname)-$(version).png.tar.gz $(targetname)-$(version)_html.zip	
+reparerhtml:
+	(cd bog;perl ../../misc/insertimagesize)	
+	(cd bog;tidy -f err.txt -imu *html;rm -f err.txt)
 
-$(targetname)-$(version).html.tar.gz:
-	tar czf $(targetname)-$(version).html.tar.gz $(targetshortname)
 
-$(targetname)-$(version).html-ub.tar.gz:
-	tar czf $(targetname)-$(version).html-ub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
-
-$(targetname)-$(version).png.tar.gz:
-	tar czf $(targetname)-$(version).png.tar.gz $(targetshortname)/*.png
-
-$(targetname)-$(version)_html.zip:
+pakhtml:
+	mv bog $(targetshortname)
+	tar cvzf $(targetname)-$(version).html.tar.gz $(targetshortname)
 	zip $(targetname)-$(version)_html.zip $(targetshortname)/*
+	tar cvzf $(targetname)-$(version).html-ub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
+	mv $(targetshortname) bog 
+	mv images $(targetshortname)_images
+	tar cvzf $(targetname)-$(version).png.tar.gz $(targetshortname)_images/
+	mv $(targetshortname)_images images 
+	@echo "Done HTML pakning (pakhtml)"
+	@echo ""
+
+bog/index.html: $(sgmlfiler)
+	make statusfiler
+	make htmlfiler 
+	make reparerhtml 
+	make pakhtml
+
+html: bog/index.html
 
 pspdf:	$(targetname)-$(version)_pdf.zip
-$(targetname)-$(version)_pdf.zip: billeder statusfiler
+
+$(targetname)-$(version)_pdf.zip: $(sgmlfiler) billeder
+	make statusfiler
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
@@ -147,6 +161,8 @@ $(targetname)-$(version)_pdf.zip: billeder statusfiler
 test:
 	echo $(sgmlfiler)
 
-.PHONY clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images
+
+clean:
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt images/*.png images/*.eps
+
 
