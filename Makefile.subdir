@@ -9,72 +9,77 @@
 
 # Lokalt katalog (fuld sti)
 
-locdirname=$(shell pwd)
+locdirname:=$(shell pwd)
 
 # Kort navn
-targetshortname=$(notdir $(locdirname))
+targetshortname:=$(notdir $(locdirname))
 
 # Med linux- foran
-targetname=linux-$(notdir $(locdirname))
+targetname:=linuxbog-$(notdir $(locdirname))
 
 # version
-version=$(shell cat version.sgml)
+version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
 
 # dato
-dato=$(shell cat dato.sgml)
+dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)
 
 # Her er en liste af sgml-filer der ændres automatisk
 badsgmlfiles=dato.sgml version.sgml magic.sgml stikord.sgml
 
 # Her er  en liste af alle sgml
-allesgmlfiles=$(wildcard *.sgml)
+allesgmlfiles:=$(wildcard *.sgml)
 
 # Her er en liste af sgml-filer der skal checkes
-sgmlfiler=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
+sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
 
 # Her er  en liste af alle eksempler
-alleeksfiles=$(wildcard eksempler/*)
+alleeksfiles:=$(wildcard eksempler/*)
 
 # Her er en liste af sgml-filer der skal checkes
-eksfiler=$(filter-out eksempler/CVS,$(alleeksfiles))
+eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
 
 # Har vi Perl-modulet Image::Size installeret
-imagesize=$(wildcard /usr/lib/perl5/site_perl/5.005/Image/Size.pm)
+imagesize:=$(wildcard /usr/lib/perl5/site_perl/5.005/Image/Size.pm)
 
 # Har vi Plucker inde
-plucker = $(wildcard /usr/bin/plucker-build)
+plucker:=$(wildcard /usr/bin/plucker-build)
 
 # Har vi tidy installeret?
-tidy=$(wildcard /usr/bin/tidy)
+tidy:=$(wildcard /usr/bin/tidy)
 
 # Cygnus path
-cygnusf=$(wildcard /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl )
-cygnus = $(firstword $(cygnusf))
+cygnus:=$(firstword $(wildcard /usr/share/sgml/docbook/dsssl-stylesheets-cygnus/stylesheets/cygnus-both.dsl /usr/lib/sgml/stylesheets/cygnus-both.dsl))
 
 # Image Magick convert
-ImageMagickconvertf=$(wildcard /usr/bin/convert /usr/X11R6/bin/convert)
-ImageMagickconvert = $(firstword $(ImageMagickconvertf))
+ImageMagickconvert:=$(firstword $(wildcard /usr/bin/convert /usr/X11R6/bin/convert))
 
 # her er det der skal laves
-all:	starter gemversion html pspdf palmpilot sgml eksempelbackup exit
+all: start html pspdf palmpilot sgml eksempelbackup stop
 
-starter: gemversion
-	@echo "---------------------------------------------"
-	@echo "Starter oversættelser af " $(targetshortname)
-	@echo "---------------------------------------------"
+start:
+	@echo "-------------------------------------------"
+	@echo "Starter oversættelser af $(targetshortname)"
+	@echo "-------------------------------------------"
+	@echo Version er $(version)
+	@echo Dato sat til $(dato)
 
-gemversion:
-	@grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml
-	version=$(shell cat version.sgml)
+stop:
+	@echo "-------------------------------------------"
+	@echo "Slut på $(targetshortname) $(version)      "
+	@echo "-------------------------------------------"
+	@echo 
 
+version:
+	@echo $(targetshortname) $(version)
+
+# Build the sgml package
 sgml: $(targetname)-$(version).sgml.tar.gz
-
 $(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
 	(cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
+# Build the Palm Pilot Package
 palmpilot: $(targetname)-$(version).palm.zip
-
 $(targetname)-$(version).palm.zip: $(sgmlfiler)
 ifneq   ("$(plucker)","")
 	rm -f $(targetname)-$(version).palm.zip $(targetname)-$(version).palm.tar.gz
@@ -87,51 +92,15 @@ else
 	echo "Du bør installere plucker for at kunne lave palm-udgaven"
 endif
 
-statusfiler:
-	@$(shell date +%d/%m-%Y> dato.sgml)
-	@echo start på $(targetshortname)	
-	@echo Version er $(version)
-	@echo Dato sat til $(dato)
-	@echo Checker $(sgmlfiler)
+specfile:
+	echo %define buildname $(targetshortname) > bog/$(targetname).spec
+	echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
+	echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> bog/$(targetname).spec
+	echo Version: `cat version.sgml` >> bog/$(targetname).spec
+	echo Release: 1mdk >>  bog/$(targetname).spec
+	cat ../linuxbog.spec >> bog/$(targetname).spec
 
-exit:
-	rm -rf tempdir
-	@echo "---------------------------------------------"
-	@echo slut på $(targetshortname)
-	@echo "---------------------------------------------"
-	@echo 
-
-htmlfiler: gemversion
-	@echo "Target er HTML i" $(targetshortname)/bog
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
-	echo '<!ENTITY magic "png">' > magic.sgml
-	mkdir tempdir
-	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	cp *.sgml tempdir
-	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
-	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
-	rm -rf tempdir
-	db2html bog.sgml
-	cp linuxbog.css bog
-	cp images/*.png bog
-	@echo "Done HTML (html)"
-	@echo ""
-
-reparerhtml:
-ifneq   ("$(imagesize)","")
-	(cd bog;perl ../../misc/insertimagesize)
-else
-	echo "Du bør installere Perl-modulet Image:Size"
-endif
-ifneq   ("$(tidy)","")
-	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
-else
-	echo "Du bør installere tidy"
-endif
-	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
-
-
-pakhtml: html
+pakhtml: specfile
 	mv bog $(targetshortname)
 	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).html.tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-$(version)_html.zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
@@ -143,20 +112,40 @@ pakhtml: html
 	@echo "Done HTML pakning (pakhtml)"
 	@echo ""
 
-bog/index.html: $(sgmlfiler)
-	$(MAKE) clean
-	$(MAKE) statusfiler
-	$(MAKE) htmlfiler 
-	$(MAKE) reparerhtml 
-	$(MAKE) pakhtml
-
-html: gemversion bog/index.html
-
-
-bog/enfil.html: statusfiler html
-	@echo "Target er HTML i" $(targetshortname)/bog1
-	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog1
+# Build the html
+html: bog/index.html pakhtml
+bog/index.html: $(sgmlfiler) 
+	@echo "Target er HTML i" $(targetshortname)/bog
+	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
+	mkdir tempdir
+	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	cp *.sgml tempdir
+	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
+	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml tempdir/HTML.index
+	rm -rf tempdir
+	db2html bog.sgml
+	cp linuxbog.css bog
+	cp images/*.png bog
+ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
+	(cd bog;perl ../../misc/insertimagesize)
+else
+	@echo "Du bør installere Perl-modulet Image:Size"
+endif
+ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
+	(cd bog;tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
+else
+	@echo "Du bør installere tidy"
+endif
+	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
+	@echo "Done HTML (html)"
+	@echo ""
+
+enhtmlfil: bog/enfil.html
+bog/enfil.html: $(sgmlfiler)
+	@echo "Target er HTML i" $(targetshortname)/bog1
+	@rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tar.gz bog1
+	@echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bog1
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml bog1
@@ -165,12 +154,12 @@ bog/enfil.html: statusfiler html
 	(cd bog1; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V nochunks bog.sgml > index.html)
 	cp linuxbog.css bog1
 #	cp images/*.png bog1
-ifneq   ("$(imagesize)","")
+ifeq	($(shell perl -e 'use Image::Size; print "1"' 2> /dev/null), 1)
 	(cd bog1;perl ../../misc/insertimagesize)
 else
 	echo "Du bør installere Perl-modulet Image:Size"
 endif
-ifneq   ("$(tidy)","")
+ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
 	(cd bog1;tidy -f err.txt -imu *html;rm -f err.txt)
 else
 	echo "Du bør installere tidy"
@@ -178,13 +167,9 @@ endif
 	cp bog1/index.html bog/enfil.html
 	rm -rf bog1
 
-enhtmlfil: gemversion bog/enfil.html
-
-
-pspdf:	gemversion $(targetname)-$(version)_pdf.zip
-
+# Build pdf package.
+pspdf: $(targetname)-$(version)_pdf.zip
 $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
-	$(MAKE) statusfiler
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	rm -f $(targetname)-*.pdf*    
 	rm -f $(targetname)-*_pdf.zip
@@ -213,7 +198,6 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
 	zip $(targetname)-$(version)_pdf.zip $(targetname)-$(version).pdf
-
 	@echo "Done PDF (pspdf)"
 	@echo ""
 
@@ -237,9 +221,7 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 test:
 	echo $(eksfiler)
 
-
 eksempelbackup:  $(targetname)-$(version)_eksempler.tar.gz
-
 $(targetname)-$(version)_eksempler.tar.gz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
 	rm -f $(targetname)-$(version)_eksempler.tar.gz  
@@ -255,4 +237,5 @@ endif
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*.tar.gz $(targetname)*zip $(targetname)*.pdf $(targetname)*.ps  $(targetname)*.ps.gz  palm/*.prc palm/*.pdb sideantal.txt $(targetname)-*_eksempler.tar.gz
+	@rm -rf dato.sgml version.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*.tar.gz $(targetname)*zip $(targetname)*.pdf $(targetname)*.ps  $(targetname)*.ps.gz  palm/*.prc palm/*.pdb sideantal.txt $(targetname)-*_eksempler.tar.gz $(targetshortname)
+	@echo Cleaning.
