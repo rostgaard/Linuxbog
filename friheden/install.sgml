@@ -1273,37 +1273,89 @@ modprobe ne io=0x300 irq=10
 
 <PARA>
 Specielt med ældre specielle cdrom-drev kan det ske, at du ikke kan
-installere via cdrom-drevet. 
-I stedet kan du prøve at installere Linux via ftp (eller http).
+installere via cdrom-drevet. I stedet kan du prøve at installere Linux
+via ftp (NFS eller http). Og har du mange maskiner der skal installeres
+er det lettere på den måde.
 </para>
 
 <para>
-Skal man installere Linux på en sådan maskine, bruges en diskette
-med filen <FILENAME>/mnt/cdrbootnet.img</FILENAME>.
-Da de fleste computere i dag kan starte direkte fra CD,
-har du sikkert glemt hvordan man fremstiller en opstartsdiskette.
-Der er mange måder at gøre det på, her er en af de nemme:
+Skal man installere Linux via netværk, bruges en diskette med filen
+<FILENAME>bootnet.img</FILENAME>. Den ligger under
+<FILENAME>/images/</FILENAME> på cdrommen.  Da de fleste computere i
+dag kan starte direkte fra cdrom, har du sikkert glemt hvordan man
+fremstiller en opstartsdiskette. Der er mange måder at gøre det på,
+her er en af de nemme:
 </PARA>
 
+<para>
+Indsæt en formateret diskette i diskettedrevet og monter cdrommen.
+</para>
+
 <SCREEN>
-<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>cat /mnt/cdrbootnet.img &gt; /dev/fd0H1440</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cd /mnt/cdrom/images</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>dd if=bootnet.img of=/dev/fd0 bs=1440k</USERINPUT>
 </SCREEN>
 
 <PARA>
-En anden Linux-maskine sættes så op i netværket med ftp-server og
-Linux-cdrom'en monteres.
+Nu har du din startdiskette. Hvis din maskine har et skummelt netkort
+så lav evt. en diskette med <FILENAME>drivers.img</FILENAME> så har du
+flere netkort at vælge imellem.
+</PARA>
+
+<PARA>
+Nu skal vi så have noget at installere fra. 
+En anden Linux-maskine sættes så op i netværket med ftp-server,
+NFS-server eller hvad du nu ønsker.
+</PARA>
+
+<PARA>
+Da Red Hat 7.1 er på 2 cdrommer går det desværre ikke, bare at montere
+cdrommen og installere fra den. Cdrommerne skal hældes over på en
+harddisk (de fylder næsten 1 GB).
+</PARA>
+
+<PARA>
+Følgende fremgangsmåde er en omarbejdet udgave af den Red Hat beskriver:
 </PARA>
 
 <SCREEN>
-<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>mkdir /home/ftp/cdrom</USERINPUT>
-<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>mount /dev/cdrom /home/ftp/cdrom</USERINPUT>
+<PROMPT>[root@ftpserv /root]# </PROMPT><USERINPUT>mkdir /home/ftp/cdrom</USERINPUT> (For eksempel)
 </SCREEN>
+
+<PARA>
+Indsæt cdrom nummer 1.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom /mnt/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cp -var /mnt/cdrom/RedHat /home/ftp/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /mnt/cdrom</USERINPUT>
+</SCREEN>
+<PARA>
+Indsæt cdrom nummer 2.
+</PARA>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>mount /dev/cdrom /mnt/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cp -var /mnt/cdrom/RedHat /home/ftp/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>umount /mnt/cdrom</USERINPUT>
+</SCREEN>
+
+<PARA>
+Hvis du vil installere via NFS skriver du i filen
+filen<FILENAME>/etc/exports</FILENAME> følgende:
+</PARA>
+
+<SCREEN>
+/home/ftp/cdrom (ro)
+</SCREEN>
+
 
 <PARA>
 Herefter starter man den gamle maskine uden cdrom drev fra
 <FILENAME>bootnet.img</FILENAME> disketten, og angiver IP-nummer eller
 navn på serveren når man bliver spurgt.  Som under-katalog angives
-blot som <FILENAME>cdrom</FILENAME>.  Resten af installationen foregår
+blot som <FILENAME>cdrom</FILENAME> ved ftp-installation, og <FILENAME>/home/ftp/cdrom</FILENAME> ved nfs-installation.  Resten af installationen foregår
 som beskrevet i <XREF LINKEND="install">.
 </PARA>
 
