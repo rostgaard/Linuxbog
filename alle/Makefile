@@ -122,9 +122,9 @@ bog/index.html: $(sgmlfiler)
 
 html: bog/index.html
 
-pspdf:	$(targetname)-$(version).pdf
+pspdf:	$(targetname)-$(version)_pdf.zip
 
-$(targetname)-$(version).pdf: $(sgmlfiler)
+$(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	make statusfiler
 	@echo "Target is" $(targetname).ps.gz
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
