@@ -27,7 +27,7 @@ dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)
 badsgmlfiles=dato.sgml version.sgml magic.sgml stikord.sgml bogoversigt.sgml ophavsret.sgml
 
 # Her er  en liste af alle sgml
-allesgmlfiles:=$(wildcard *.sgml)
+allesgmlfiles:=$(wildcard *.{sgml,xml})
 
 # Her er en liste af sgml-filer der skal checkes
 sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles))
@@ -81,9 +81,9 @@ ekstra:
 # Build the sgml package
 sgml: $(targetname)-$(version).sgml.tar.gz
 $(targetname)-$(version).sgml.tar.gz: $(sgmlfiler)
-	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.sgml $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
+	(cd ..;tar cvzf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl)
 	(cd ..;ln -sf $(targetshortname)/$(targetname)-$(version).sgml.tar.gz $(targetshortname)/$(targetname).sgml.tar.gz)
-	(cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.sgml $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
+	(cd ..;zip $(targetshortname)/$(targetname)-$(version).sgml.zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
 # Build the Palm Pilot Package
 palmpilot: $(targetname)-$(version).palm.zip
@@ -129,7 +129,7 @@ bog/index.html: $(sgmlfiler)
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
-	cp *.sgml tempdir
+	cp *.{sgml,xml} tempdir
 	touch test.inc
 	cp *.inc tempdir
 	rm -f test.inc
@@ -137,7 +137,7 @@ bog/index.html: $(sgmlfiler)
 	perl ./collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	rm -rf tempdir/ bog
 	mkdir bog
-	cp *.sgml bog/
+	cp *.{sgml,xml} bog/
 	(cd bog; docbook2html  -V  %use-id-as-filename% bog.sgml)
 	cp linuxbog.css bog
 	cp images/*.png bog
@@ -165,7 +165,7 @@ bog/enfil.html: $(sgmlfiler)
 	mkdir bog1
 	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	touch test.inc
-	cp *.sgml bog1
+	cp *.{sgml,xml} bog1
 	cp *.inc bog1
 	rm -f test.inc
 	(cd bog1; jade -t sgml -ihtml -d $(cygnus)\#html -V html-index bog.sgml)
@@ -199,7 +199,7 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	perl ./collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	touch test.inc
-	cp *.sgml tempdir
+	cp *.{sgml,xml} tempdir
 	cp *.inc tempdir
 	rm -f test.inc
 	(cd tempdir; jade -t sgml -ihtml -d $(cygnus)\#print -V html-index -V nochunks bog.sgml > ged.html)
@@ -210,11 +210,11 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	mkdir bogpdf
 	touch test.inc
 	cp *.inc bogpdf
-	cp *.sgml bogpdf
+	cp *.{sgml,xml} bogpdf
 	rm -f test.inc
 	rm -f $(targetname)-*.pdf
 	cp images/*.png bogpdf
-	(cd bogpdf; perl ../../httpsplit.pl *.sgml)
+	(cd bogpdf; perl ../../httpsplit.pl *.{sgml,xml})
 #	(cd bogpdf; jade -t tex -d $(cygnus)\#print -o bogpre.tex bog.sgml )
 #	(cd bogpdf; cat bogpre.tex | sed 's#--#-{}-{}#g' > bog.tex)
 #	(cd bogpdf; cat bogpre.tex > bog.tex)
@@ -232,9 +232,9 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	touch test.inc	
 	cp *.inc bogps
-	cp *.sgml bogps
+	cp *.{sgml,xml} bogps
 	rm -f test.inc
-	(cd bogps; perl ../../httpsplit.pl *.sgml)
+	(cd bogps; perl ../../httpsplit.pl *.{sgml,xml})
 	(cd bogps; docbook2ps bog.sgml )
 	mv bogps/bog.ps $(targetname)-$(version).ps
 	gzip -9 $(targetname)-$(version).ps
