@@ -8,21 +8,21 @@ release : version cvs2html filer
 
 Makefiler:
 	@for dir in $(SUBDIRS); do \
-		cp -f Makefile.subdir.tlb $$dir/Makefile; \
+		cp -f Makefile.subdir $$dir/Makefile; \
 	done;
 
 filer:  Makefiler
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done;
-	$(MAKE) -C alle -f Makefile.tlb
+	$(MAKE) -C alle -f Makefile
 
 pspdf:	Makefiler
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir pspdf; \
 	done;
 
-	$(MAKE) -C alle -f Makefile.tlb pspdf
+	$(MAKE) -C alle -f Makefile pspdf
 
 eksempelbackup:
 	@for dir in $(SUBDIRS); do \
@@ -36,7 +36,7 @@ clean: Makefiler
 		rm -f $$dir/linuxbog-$$dir.spec; \
 	done;
 
-	$(MAKE) -C alle -f Makefile.tlb clean
+	$(MAKE) -C alle -f Makefile clean
 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz
