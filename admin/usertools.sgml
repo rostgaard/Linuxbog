@@ -7,505 +7,42 @@ I dette kapitel ser vi nærmere på nogle af de værktøjer og opgaver som
 systemadministratoren kommer ud for.
 </para>
 
-<SECT1 ID="filsystem">
-<TITLE>Opbygningen af filsystemet</TITLE>
-<indexterm><primary>/etc/hosts</primary></indexterm>
 
-<sect2 ID="filsystempaspaa">
-<TITLE>Basalt systemarbejde</TITLE>
+<sect1 id="glemt-passwd">
+<title>Har du glemt din adgangskode?</title>
 
-<PARA>
-Linux-systemer er på mange måder meget standardiserede
-forstået på den måde, at diverse kataloger bruges til det
-samme.
+<indexterm><primary>adgangskode</primary><secondary>glemt</secondary></indexterm>
+<indexterm><primary>glemt password</primary></indexterm>
+<indexterm><primary>password</primary><secondary>glemt</secondary></indexterm>
+
+
+<para>
+Hvis du har dummet dig meget og glemt din root-adgangskode, så kan du 
+få sat en ny ind. 
 </para>
 
 <para>
-Kataloget <filename>/etc</filename> indeholder konfigurationsfiler til dit
-Linux-system. Filerne er vitale for dit Linux-system, så vær derfor
-forsigtig, når du ved hjælp af en teksteditor retter i filerne. Vi vil
-foreslå, at du <emphasis>altid</emphasis> først laver en kopi af den
-fil, du vil ændre, dvs.
+I så fald booter du med "linux init=/bin/sh" . Så starter den en
+shell som proces nr. 1. Herefter køres
 </para>
 
 <screen>
-<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>cp hosts hosts.orig</USERINPUT>
-<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>vi hosts</USERINPUT>
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>passwd</userinput>                       # skift adgangskode
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
 </screen>
 
 <para>
-Hvis der skulle gå noget galt, kan du altid bruge den oprindelige
-udgave af filen.
+Dette lyder jo som et stort sikkerhedshul, og det er det også, hvis man
+har fysisk adgang til maskinen. Du kan dog undgå dette ved at tilføje 
+linien "password=MIT_PASSWORD" til din
+<filename>/etc/lilo.conf</filename>, men så skal du kunne huske
+root-adgangskoden og den adgangskode, du har sat i <filename>/etc/lilo.conf</filename>.
 </para>
 
-<screen>
-<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>cp hosts.orig hosts</USERINPUT>
-</SCREEN>
-</SECT2>
-
-
-
-<sect2 id="filsystemer">
-<title>Filsystemer</title>
-<indexterm><primary>Filsystemer</primary></indexterm>
-<indexterm><primary>Filsystemer</primary>
-  <secondary>ext2</secondary></indexterm>
-<indexterm><primary>ext2</primary></indexterm>
-<para>
-Linux bruger som standard et filsystem kaldet
-<emphasis>ext2</emphasis> (Extended file system version 2), men kan
-også læse fra og skrive til mange andre filsystemer, f.eks. FAT-baserede
-filsystemer der bruges af DOS og Windows.
-</para>
-
-<para>
-Generelt formateres et filsystem under Linux ved at benytte kommandoen 
-<command>mkfs</command> (MaKe File System). Har du en uformateret partition 
-(her <filename>/dev/hda5</filename>), som du ønsker at formatere, sker
-formateringen ved at skrive (som root):
-</para>
-
-<para>
-<screen>
-  <prompt>[root@linus /root]#</prompt> <userinput>mkfs /dev/hda5</userinput>
-  <prompt>[root@linus /root]#</prompt> 
-</screen>
-</para>
-
-<para>
-Programmet <command>mkfs</command> finder selv ud af, hvilket filsystem
-du har valgt til den ønskede partition, idet denne oplysning findes i
-partition-tabellen.
-</para>
-
-<para>
-Når din computer går ned (ja, det sker, f.eks. når strømmen går), kan
-du komme ud for at dine filsystemer er i en fejlbehæftet tilstand. Dette
-kan dog ofte reddes af programmet <command>fsck</command> (File
-System ChecK). Faktisk
-køres dette program altid ved opstart for at sikre at alle filsystemer
-er i en god tilstand.
-</para>
-
-<sect3 id="reiserFS">
-<title>ReiserFS</title>
-<indexterm><primary>ReiserFS</primary></indexterm>
-
-<indexterm><primary>Filsystemer</primary>
-<secondary>ReiserFS</secondary></indexterm>
-<indexterm><primary>Filsystemer</primary>
-<secondary>ext2</secondary></indexterm>
-<para>
-ReiserFS er et af de nyere filsystemer til Linux. Faktisk er det så nyt,
-at det endnu ikke er en del af den officielle kerne. Indtil kerne
-2.4 vil det kun være det gamle velprøvede ext2-filsystem, som 
-kernen understøtter officielt, men det er allerede bebudet at i kerne
-2.4.1 vil ReiserFS være med.
-</para>
-
-<para>
-ReiserFS er en anden type filsystem end den der kendes fra Linux'
-ext2, og DOS/Windows' FAT-drev, idet ReiserFS er et journaliserende
-filsystem. Det betyder, at alle filer til en hver tid er
-opdaterede. Det betyder, at hvis din computer går ned pga. en
-strømafbrydelse, vil du ikke miste data. Endvidere betyder det, at de
-partitioner som er formateret ved hjælp af ReiserFS, ikke skal tjekkes
-ved opstart. Hvis du har meget store harddiske vil det betyde at du
-får en meget kortere opstartstid. Dette kan være vigtigt, hvis din
-computer er server med f.eks. 100 GB harddisk (ikke ualmindeligt i den
-virkelige serververden).
-</para>
-
-<para>
-Tidligere versioner af ReiserFS ville ikke virke med Lilo boot fra en
-ReiserFS-partition.  Dette kunne løses ved at lægge
-<filename>/boot</filename> på en ext2-partition, og hvis
-<filename>/boot</filename> er en lille selvstændig partition, kan
-<filename>/</filename>-partitionen være ReiserFS-formateret.
-I de nyeste versioner af ReiserFS (november 2000) bør denne
-begrænsning være væk, blot man monterer boot-partitionen med et ekstra
-flag, "<literal>notail</literal>":
-</para>
-
-<screen>
-/dev/hda2 on / type reiserfs (rw,notail)
-</screen>
-
-
-<para>
-ReiserFS følger med Mandrake (fra version 7.1) og SuSE (fra
-6.4) og under disse distributioner er det let at vælge
-formatering med ReiserFS i stedet for ext2 under
-installation.
-Men selv under andre distributioner er det ikke
-svært. Du skal sikre dig, at kernen understøtter ReiserFS som
-filsystem. Måske skal du omkonfigurere din kerne (se også <xref
-linkend="kernelcompile">). Det kan godt betale sig at få ReiserFS
-oversat som et kernemodul. Modulsystemet vil typisk selv finde ud af,
-at modulet skal bruges, dvs. når du begynder at bruge kommandoer som
-involverer en ReiserFS-baseret partition, vil modulet automatisk blive
-indlæst.
-</para>
-
-<para>
-Først og fremmest skal du have en partition, som er tom. Du kan 
-oprette en partition til formålet. Her kan du bruge programmer som 
-<command>fdisk</command> og <command>cfdisk</command>. Når du har 
-en partition klar, skal du formatere den. I eksemplet benytter vi
-partitionen <filename>/dev/hda5</filename>, som vi antager allerede er 
-oprettet.
-</para>
-
-<para>
-<screen>
-<prompt>[root@linus root]#</prompt> <userinput>mkreiserfs /dev/hda5</userinput>
-<-----------MKREISERFS, 1999----------->
-ReiserFS version 3.5.18
-Block size 4096 bytes
-Block count 325576
-First 16 blocks skipped
-Super block is in 16
-Bitmap blocks are : 
-   17, 32768, 65536, 98304, 131072, 163840, 196608, 229376, 262144, 294912
-Journal size 8192 (blocks 18-8210 of device 0x3:0x5)
-Root block 8211
-Used 8221 blocks
-ATTENTION: ALL DATA WILL BE LOST ON '/dev/hda5'! (y/n) <userinput>y</userinput>
-Initializing journal - 0%....20%....40%....60%....80%....100%
-Syncing..
-
-ReiserFS core development sponsored by SuSE Labs (suse.com)
-
-Journaling sponsored by MP3.com.
-
-Item handlers sponsored by Ecila.com
-
-To learn about the programmers and ReiserFS, please go to
-http://www.devlinux.com/namesys
-
-Have fun.
-  <prompt>[root@linus ~]#</prompt>
-</screen>
-</para>
-
-<para>
-Du er nu klar til at montere din partition. Følgende vil montere partitionen
-<filename>/dev/hda5</filename> som <filename>/home</filename>.
-</para>
-
-<para>
-<screen>
-  <prompt>[root@linus ~]#</prompt> <userinput>mount -t reiserfs /dev/hda5 /home</userinput>
-Checking ReiserFS transaction log (device 03:35)  ...
-Relayed 0 transaction in 0 seconds
-ReiserFS version 3.5.18
-  <prompt>[root@linus ~]#</prompt>
-</screen>
-</para>
-
-<para>
-Naturligvis kan du indsætte din nye partition i filen
-<filename>/etc/fstab</filename> med typen
-<emphasis>reiserfs</emphasis>. Derved vil partitionen blive monteret
-under opstart.
-</para>
-
-</sect3>
-</sect2>
-
-
-<SECT2 ID="runlevel">
-<TITLE>Hvad er et "runlevel"?</TITLE>
-<indexterm><primary>Runlevels</primary></indexterm>
-<indexterm><primary>/etc/rc.d</primary></indexterm>
-<indexterm><primary>Start i grafisk tilstand</primary></indexterm>
-<PARA>
-Et runlevel er den tilstand, som systemet kører i. Computeren kan køre
-i tilstande så som "ved at starte systemet", "enkelbrugersystem",
-"flerbrugersystem", "genstarter system" og "slukker computeren". Hvis
-man f.eks. vil kopiere <filename>/home</filename> kataloget over på en
-større harddisk fordi ens brugere har for mange MP3 filer liggende.
-Så er det nødvendigt at sikre, at der ikke er nogen brugere, der har
-filer åbne, mens man kopierer, idet der så kan opstå en fejl i
-kopieringen. Dette kan man sikre sig ved at skifte til
-enkeltbruger-tilstand, der svarer lidt til fejlsikret tilstand i
-Windows. Når man er færdig med systemarbejdet, hopper man tilbage til
-"flerbrugersystem" og folk har igen adgang til computeren, og vil ikke
-bemærke at deres filer pludselig ligger på et andet drev.
-</para>
-
-<para>
-Computeren kører en masse services for brugerne, dette kan
-f.eks. være netværksforbindelse (network) og forskellige
-netværksrelaterede services som f.eks. e-post
-(sendmail/routed/named/snmpd/portmap), adgang til filsystemer på andre
-computere (nfs), mulighed for at udskrive til printer (lpd) og
-lydkort (sound). Men mens Linux er ved at starte, har man ikke brug
-for at have adgang til printeren, så printer-servicen startes først
-når systemet går ind i "flerbrugersystem" tilstanden.  Når man er ved
-at genstarte eller slukke computeren, slukker man igen for
-printer-servicen.</para>
-
-<para> Når computeren omstilles fra en tilstand til en anden tilstand,
-udføres en række scripts, der bestemmer hvilke services der skal
-tændes og slukkes. Hvilke scripts der kører ved skift til f.eks.
-runlevel 3 (Flerbrugersystem), bestemmes af, hvilke scripts der er
-placeret i kataloget <filename>/etc/rc.d/rc3.d</filename> (Corel,
-Debian og nu også Red Hat 7.0 har tilsvarende
-<filename>/etc/rc3.d</filename>).
-</PARA>
-
-<SCREEN>
-<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls /etc/rc.d/rc3.d</USERINPUT>
-K30mcserv  K40snmpd   K55routed  K75gated  K80random   K95nfsfs
-K96pcmcia  K97network S01kerneld S30syslog S40atd      S40crond
-S40portmap S50inet    S55named   S60lpd    S75keytable S80sendmail
-S85sound   S99local
-</SCREEN>
-
-<PARA>
-Disse filer svarer til services der skal startes (dem der starter med
-S) eller dræbes (starter med K for Kill) når systemets tilstand ændres
-til tilstand 3 (Flerbrugersystem). Tallet bestemmer rækkefølgen;
-<filename>S01kerneld</filename> startes altså før
-<filename>S30syslog</filename>, mens <filename>K96pcmcia</filename>
-servicen dræbes efter <filename>K30mcserv</filename>. Hver fil i dette
-katalog er i virkeligheden et link til et script i
-<filename>/etc/rc.d/init.d/</filename>, og "S80sendmail" betyder i
-virkeligheden at "/etc/rc.d/init.d/sendmail start" udføres, hvilket
-starter sendmail-dæmonen op.
-</PARA>
-
-<PARA>
-Det er ikke svært at finde ud af, hvilket runlevel din computer er
-i. Nedenfor er vist hvordan.
-</PARA>
-
-<SCREEN>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/runlevel</USERINPUT>
-N 3
-</SCREEN>
-
-<PARA>
-3-tallet viser dig, at din PC er i runlevel 3. Det er muligt
-at skifte runlevel uden at lukke computeren ned, men N'et
-viser, at der intet tidligere runlevel er, dvs. computeren har været i
-runlevel 3, siden den blev tændt. Du skifter runlevel
-med kommandoen <FILENAME>telinit</FILENAME>. Du bør altid synkronisere 
-dine harddiske (tømme filsystemernes buffere) inden du skifter
-runlevel, dvs. kør <command>sync</command> et par gange, lige inden du
-skifter runlevel med <command>telinit</command>.
-</PARA>
-
-<PARA>
-Runlevel 3 er det mest almindelige. Skemaet nedenfor viser
-betydningen af de forskellige runlevels.
-</PARA>
-
-<TABLE frame="all">
-  <TITLE>Runlevels</TITLE>
-  <TGROUP COLS=2 ALIGN="char">
-  <THEAD>
-    <ROW>
-      <ENTRY>Runlevel</ENTRY>
-      <ENTRY>Betydning</ENTRY>
-    </ROW>
-  </THEAD>
-  <TBODY>
-    <ROW>
-      <ENTRY>0</ENTRY>
-      <ENTRY>Lukker systemet ned (<userinput>shutdown -h now</userinput>)</ENTRY>
-    </ROW>
-    <ROW>
-      <ENTRY>1</ENTRY>
-      <ENTRY>Enkeltbrugertilstand (Single-user mode)</ENTRY>
-    </ROW>
-    <ROW>
-      <ENTRY>2</ENTRY>
-      <ENTRY>Flerbrugertilstand uden NFS</ENTRY>
-    </ROW>
-    <ROW>
-      <ENTRY>3</ENTRY>
-      <ENTRY>Flerbrugertilstand med NFS</ENTRY>
-    </ROW>
-    <ROW>
-      <ENTRY>4</ENTRY>
-      <ENTRY>Bruges ikke</ENTRY>
-    </ROW>
-    <ROW>
-      <ENTRY>5</ENTRY>
-      <ENTRY>Starter op i X11</ENTRY>
-    </ROW>
-    <ROW>
-      <ENTRY>6</ENTRY>
-      <ENTRY>Genstart systemet (<userinput>reboot</userinput>)</ENTRY>
-    </ROW>
-  </TBODY>
-</TGROUP>
-</TABLE>
-
-<PARA>
-Som det fremgår af skemaet, er runlevel 6 det samme som at genstarte
-systemet, dvs. når systemadministratoren genstarter systemet ved at
-bruge kommandoen <command>reboot</command> (genstart), skiftes der til runlevel
-6.
-</PARA>
-
-<PARA>
-Enkeltbrugertilstand er et meget nyttigt runlevel. Hvis det sker, at du
-kommer til at konfigurere et eller andet forkert en dag - ja, det vil ske
-på et eller andet tidspunkt! - og din PC låser under
-opstarten, kan du starte den op i Enkeltbrugertilstand og foretage diverse
-rettelser.
-</PARA>
-
-<indexterm><primary>/etc/inittab</primary></indexterm>
-<indexterm><primary>runlevel</primary></indexterm>
-<indexterm><primary>opstart af Linux</primary></indexterm>
-
-<PARA>
-I filen <FILENAME>/etc/inittab</FILENAME> angives, hvilket
-runlevel der er det forvalgte runlevel. Ønsker man f.eks. at 
-maskinen starter i runlevel 5 og ikke 3, så skal man ændre linien
-</para>
-
-<screen>
-id:3:initdefault:
-</screen>
-
-<para>
-til
-</para>
-<screen>
-id:5:initdefault:
-</screen>
-
-<para>
-Se også <xref linkend="etcrcdfilen"> for detaljer om forskelle mellem
-de forskellige Linux-distributioner.
-</para>
-
-</SECT2>
-
-<SECT2 ID="Nedlukning">
-<TITLE>Nedlukning af Linux</TITLE>
-<indexterm><primary>Nedlukning</primary></indexterm>
-<indexterm><primary>Reboot</primary></indexterm>
-<indexterm><primary>Genstart</primary></indexterm>
-<indexterm><primary>Ctrl-Alt-Del</primary></indexterm>
-<PARA>
-En Linux-maskine er, som du nok allerede har forstået, et meget stort
-system med mange muligheder.  Du skal også være meget opmærksom på, at
-man (ligesom med en Windows-maskine) ikke bare må slukke for en
-Linux-maskine - den skal helst lukkes pænt ned.
-</PARA>
-
-<PARA>
-Som vi viste i <xref linkend="runlevel">, er runlevel 0 det samme som
-at lukke ned. En generel, men lidt besværlig måde at lukke en UNIX-maskine
-på, er at skifte til root og skrive <userinput>init 0</userinput>
-eller <userinput>telinit 0</userinput>
-</para>
-
-<SCREEN>
-<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su -</USERINPUT>
-Passwd: <USERINPUT>hemlig</USERINPUT>
-<PROMPT>[root@linus /root]# init 0</PROMPT>
-</SCREEN>
-
-<indexterm><primary>Ctrl-Alt-Delete</primary></indexterm>
-
-<para>
-En hurtig nedlukning fås ved at trykke
-"Ctrl-Alt-Delete", når du er i en tekstkonsol - f.eks. efter du
-trykker "Ctrl-Alt-F1".
-</para>
-
-<para>
-Du skal dog en gang for alle lave en ændring, så "Ctrl-Alt-Delete"
-kommer til at medføre at Linux lukkes ned. Ændres intet, genstarter
-systemet.  For at få maskinen til at stoppe
-kaldes <command>/sbin/halt</command>, og skal du ændre i
-<FILENAME>/etc/inittab</FILENAME>
-</para>
-
-<SCREEN>
-# Trap CTRL-ALT-DELETE
-ca::ctrlaltdel:/sbin/shutdown -t3 -r now
-</SCREEN>
-
-<para>
-så der kommer til at stå
-</para>
-
-<SCREEN>
-# Trap CTRL-ALT-DELETE
-ca::ctrlaltdel:/sbin/shutdown -t3 -h now
-</SCREEN>
-
-<para>
-Du kan selvfølgelig være fræk, så maskinen slet ikke kan stoppes fra
-tastaturet med "Ctrl-Alt-Delete", f.eks. kan du
-ændre <FILENAME>/etc/inittab</FILENAME> til
-</para>
-
-<SCREEN>
-# Trap CTRL-ALT-DELETE
-ca::ctrlaltdel:echo "No reboot for you my friend!\n"
-</SCREEN>
-
-<para>
-Dette er uhyre praktisk, hvis din maskine står et sted, hvor der er
-mange pilfingre, f.eks. edb-lokalet på en skole!
-</PARA>
-</sect2>
-
-</SECT1>
-
-
-
-
-<sect1 id="crontab">
-<title>Crontab</title>
-<indexterm><primary>Cron</primary><secondary>crontab</secondary></indexterm>
-<para>
-Crontab er et smart system til automatisk at køre programmer på givne
-tidspunkter, såsom daglig backup. Det er en standarddel af et
-UNIX-system og er derfor altid med i Linux.
-</para>
-
-<para>
-Man kan få kørt vilkårlige programmer på vilkårlige tidspunkter,
-f.eks. hvert minut, hver time, hver dag, ugedag eller månedsdag.  I filen
-<filename>/etc/crontab</filename> retter man normalt ikke, men denne
-fil viser, at der køres jobs hver time fra
-<filename>/etc/cron.hourly</filename> til tilsvarende hver dag, uge og
-måned via <filename>/etc/cron.daily</filename>,
-<filename>/etc/cron.monthly</filename> og
-<filename>/etc/cron.weekly</filename>.  For en almindelig bruger er
-det normalt, at man føjer de kommandoer man vil have kørt på et givet
-tidspunkt, til filen <filename>~/.crontab</filename> og kører
-kommandoen <command>crontab ~/.crontab</command>.
-</para>
-
-<para>
-Syntaksen for alle disse crontab-filer er den samme: En kommando per linje
-og i rækkefølge fra venstre mod højre, minut (0-59), time (0-23),
-månedsdag (0-31), måned (0-12), ugedag (0-7, hvor 0 og 7 begge er søndag)
-og endelig den kommando du vil have udført. Hvert felt adskilles af et
-mellemrum, og hvis man vil have, at f.eks. alle dage køres
-programmet, så indsæt en "*" for månedsdag og måned.</para>
-
-<para> Vi giver nu et eksempel, hvor vi hver morgen kl. 7 fra mandag
-til fredag sender brugeren "root" et brev med, hvor meget belastning 
-der er på maskinen.
-<screen>
-0 7 * * 1-5 uptime | mail root
-</screen>
-Brug <command>man -a crontab</command> til at læse mere om
-crontab. Skift til næste man-fil ved at trykke 'q'.
-</para>
 </sect1>
+
 
 <sect1 id="Opstart">
 <title>Opstart af Linux</title>
@@ -728,241 +265,298 @@ Linux-cdrommen hedder filen <filename>/doc/HOWTO/mini/LILO</filename>
 </sect2>
 </sect1>
 
-<sect1 id="software-raid">
-<title>Software RAID</title>
-<indexterm><primary>RAID</primary></indexterm>
-<!-- Skrevet af peter_frederiksen@danbbs.dk -->
-<!-- sprog rettet lidt til : pto -->
 
-<sect2 id="hvad-er-raid">
-<title>Hvad er RAID?</title>
-<para>
-RAID er en metode til at slå flere diske sammen til en
-<emphasis>volume</emphasis> (dvs. en logisk disk); det kan gøres for
-at opnå et større brugerdrev eller for at højne sikkerheden ved
-redundans.
+<SECT1 ID="runlevel">
+<TITLE>Hvad er et "runlevel"?</TITLE>
+<indexterm><primary>Runlevels</primary></indexterm>
+<indexterm><primary>/etc/rc.d</primary></indexterm>
+<indexterm><primary>Start i grafisk tilstand</primary></indexterm>
+<PARA>
+Et runlevel er den tilstand, som systemet kører i. Computeren kan køre
+i tilstande så som "ved at starte systemet", "enkelbrugersystem",
+"flerbrugersystem", "genstarter system" og "slukker computeren". Hvis
+man f.eks. vil kopiere <filename>/home</filename> kataloget over på en
+større harddisk fordi ens brugere har for mange MP3 filer liggende.
+Så er det nødvendigt at sikre, at der ikke er nogen brugere, der har
+filer åbne, mens man kopierer, idet der så kan opstå en fejl i
+kopieringen. Dette kan man sikre sig ved at skifte til
+enkeltbruger-tilstand, der svarer lidt til fejlsikret tilstand i
+Windows. Når man er færdig med systemarbejdet, hopper man tilbage til
+"flerbrugersystem" og folk har igen adgang til computeren, og vil ikke
+bemærke at deres filer pludselig ligger på et andet drev.
 </para>
 
 <para>
-Derfor er der flere måder at kombinere diske til et RAID, og man har
-derfor vedtaget nogle RAID-levels.
-</para>
-</sect2>
+Computeren kører en masse services for brugerne, dette kan
+f.eks. være netværksforbindelse (network) og forskellige
+netværksrelaterede services som f.eks. e-post
+(sendmail/routed/named/snmpd/portmap), adgang til filsystemer på andre
+computere (nfs), mulighed for at udskrive til printer (lpd) og
+lydkort (sound). Men mens Linux er ved at starte, har man ikke brug
+for at have adgang til printeren, så printer-servicen startes først
+når systemet går ind i "flerbrugersystem" tilstanden.  Når man er ved
+at genstarte eller slukke computeren, slukker man igen for
+printer-servicen.</para>
 
-<sect2 id="hw-sw-raid">
-<title>Forskel mellem hardware- og software-RAID</title>
+<para> Når computeren omstilles fra en tilstand til en anden tilstand,
+udføres en række scripts, der bestemmer hvilke services der skal
+tændes og slukkes. Hvilke scripts der kører ved skift til f.eks.
+runlevel 3 (Flerbrugersystem), bestemmes af, hvilke scripts der er
+placeret i kataloget <filename>/etc/rc.d/rc3.d</filename> (Corel,
+Debian og nu også Red Hat 7.0 har tilsvarende
+<filename>/etc/rc3.d</filename>).
+</PARA>
 
-<para>
-RAID kan laves hardware- eller software-mæssigt, det sikreste
-er via hardware eller med andre ord en RAID-controller.
-</para>
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>ls /etc/rc.d/rc3.d</USERINPUT>
+K30mcserv  K40snmpd   K55routed  K75gated  K80random   K95nfsfs
+K96pcmcia  K97network S01kerneld S30syslog S40atd      S40crond
+S40portmap S50inet    S55named   S60lpd    S75keytable S80sendmail
+S85sound   S99local
+</SCREEN>
 
-<sect3 id="Hardwareraid">
-<title>Hardware-RAID</title>
-<indexterm><primary>RAID</primary><secondary>Hardware</secondary></indexterm>
+<PARA>
+Disse filer svarer til services der skal startes (dem der starter med
+S) eller dræbes (starter med K for Kill) når systemets tilstand ændres
+til tilstand 3 (Flerbrugersystem). Tallet bestemmer rækkefølgen;
+<filename>S01kerneld</filename> startes altså før
+<filename>S30syslog</filename>, mens <filename>K96pcmcia</filename>
+servicen dræbes efter <filename>K30mcserv</filename>. Hver fil i dette
+katalog er i virkeligheden et link til et script i
+<filename>/etc/rc.d/init.d/</filename>, og "S80sendmail" betyder i
+virkeligheden at "/etc/rc.d/init.d/sendmail start" udføres, hvilket
+starter sendmail-dæmonen op.
+</PARA>
 
-<para>
-Ved at lade hardwaren styre diskene og "narre" styresystemet til at
-tro at der er tale om et eller flere logiske drev, behøver man ikke at
-bekymre sig så meget om opsætning af Linux, da hardwareproducenterne
-som regel har en brugervenlig opsætningsmenu installeret i kortets
-BIOS.
-</para>
+<PARA>
+Det er ikke svært at finde ud af, hvilket runlevel din computer er
+i. Nedenfor er vist hvordan.
+</PARA>
 
-<para>
-Ulempen er at disse kort som regel er dyre at anskaffe og ofte
-benytter sig af de noget dyrere scsi-diske. Med andre ord: En
-RAID-controller er ofte "bare" en avanceret scsi-controller.
-</para>
-</sect3>
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/runlevel</USERINPUT>
+N 3
+</SCREEN>
 
-<sect3 id="Softwareraid">
-<title>Software-RAID</title>
-<indexterm><primary>RAID</primary><secondary>Software</secondary></indexterm>
+<PARA>
+3-tallet viser dig, at din PC er i runlevel 3. Det er muligt
+at skifte runlevel uden at lukke computeren ned, men N'et
+viser, at der intet tidligere runlevel er, dvs. computeren har været i
+runlevel 3, siden den blev tændt. Du skifter runlevel
+med kommandoen <FILENAME>telinit</FILENAME>. Du bør altid synkronisere 
+dine harddiske (tømme filsystemernes buffere) inden du skifter
+runlevel, dvs. kør <command>sync</command> et par gange, lige inden du
+skifter runlevel med <command>telinit</command>.
+</PARA>
 
-<para>
-Her lader man et stykke software styre RAID, hvilket sparer en
-RAID-controller og det er muligt at blande scsi-diske med IDE eller kun
-benytte sig af IDE.
-</para>
+<PARA>
+Runlevel 3 er det mest almindelige. Skemaet nedenfor viser
+betydningen af de forskellige runlevels.
+</PARA>
 
-<para>
-Ulempen er at man så selv skal konfigurere RAID og på Linux er
-det lidt besværligt.
-</para>
-</sect3>
-</sect2>
+<TABLE frame="all">
+  <TITLE>Runlevels</TITLE>
+  <TGROUP COLS=2 ALIGN="char">
+  <THEAD>
+    <ROW>
+      <ENTRY>Runlevel</ENTRY>
+      <ENTRY>Betydning</ENTRY>
+    </ROW>
+  </THEAD>
+  <TBODY>
+    <ROW>
+      <ENTRY>0</ENTRY>
+      <ENTRY>Lukker systemet ned (<userinput>shutdown -h now</userinput>)</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>1</ENTRY>
+      <ENTRY>Enkeltbrugertilstand (Single-user mode)</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>2</ENTRY>
+      <ENTRY>Flerbrugertilstand uden NFS</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>3</ENTRY>
+      <ENTRY>Flerbrugertilstand med NFS</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>4</ENTRY>
+      <ENTRY>Bruges ikke</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>5</ENTRY>
+      <ENTRY>Starter op i X11</ENTRY>
+    </ROW>
+    <ROW>
+      <ENTRY>6</ENTRY>
+      <ENTRY>Genstart systemet (<userinput>reboot</userinput>)</ENTRY>
+    </ROW>
+  </TBODY>
+</TGROUP>
+</TABLE>
 
+<PARA>
+Som det fremgår af skemaet, er runlevel 6 det samme som at genstarte
+systemet, dvs. når systemadministratoren genstarter systemet ved at
+bruge kommandoen <command>reboot</command> (genstart), skiftes der til runlevel
+6.
+</PARA>
 
-<sect2 id="spejlet-raid">
-<title>Opsætning af spejlede diske.</title>
-<indexterm><primary>RAID</primary>
-<secondary>spejling</secondary></indexterm>
+<PARA>
+Enkeltbrugertilstand er et meget nyttigt runlevel. Hvis det sker, at du
+kommer til at konfigurere et eller andet forkert en dag - ja, det vil ske
+på et eller andet tidspunkt! - og din PC låser under
+opstarten, kan du starte den op i Enkeltbrugertilstand og foretage diverse
+rettelser.
+</PARA>
 
-<para>
-Et disk-spejl er hvis man ønsker 2 diske som en logisk enhed,
-hvor begge diske indeholder samme data. Sikkerheden er her at hvis en
-disk står af, så kører den anden videre.
-</para>
+<indexterm><primary>/etc/inittab</primary></indexterm>
+<indexterm><primary>runlevel</primary></indexterm>
+<indexterm><primary>opstart af Linux</primary></indexterm>
 
-<para>
-Hvis man ønsker yderligere sikkerhed, kan man benytte en ekstra
-sparedisk som vil kunne erstatte en nedbrudt disk i spejlet, på den
-måde undværer man kun sikkerheden i den tid som det tager
-RAID-softwaren at opbygge et nyt spejl på sparedisken.
-</para>
-
-<sect3 id="spejlet-raid-howto">
-<title>Fremgangsmåde</title>
-
-<itemizedlist mark="bullet" spacing="compact">
-<listitem><para>
-Start i singleusermode - (<command>linux s</command> ved opstart eller
-<command>init 1</command>).
-</para></listitem>
-
-<listitem><para>
-Opret partition med fdisk på begge diske, filsystemet skal være
-(Linux RAID autodetect), og skriv devicenummeret ned.
-</para></listitem>
-
-<listitem><para>
-Opret en <filename>/etc/raidtab</filename> fil, med indhold som
-kunne se således ud:</para>
-
-<screen>
-raiddev               /dev/md0
-raid-level                   1
-nr-raid-disks                2
-chunk-size                   8
-persistent-superblock        1
-nr-spare-disks               0
-    device           /dev/sdc1
-    raid-disk                0
-    device           /dev/sdd1
-    raid-disk                1         
-</screen>
-</listitem>
-
-<listitem><para>
-  Opret RAID device med kommandoen <command>mkraid /dev/md0</command>.
-</para></listitem>
-
-<listitem><para> 
- Opret filsystem til din logiske enhed
- <filename>/dev/md0</filename> med kommandoen <command>mkfs
- /dev/md0</command>.
-</para></listitem>
-
-<listitem><para> 
- Monter det logiske drev eks. <command>mount /dev/md0 /spejl</command>
-</para></listitem>
-
-<listitem><para> 
- Opret en linie i <filename>/etc/fstab</filename> svarende til det nye spejl.
-</para>
-
-<screen>
-/dev/sda1  /           ext2    defaults        1 1
-/dev/md0   /Spejl      ext2    defaults        1 2
-/dev/sda5  /home       ext2    defaults        1 2
-/dev/cdrom /mnt/cdrom  iso9660 noauto,owner,ro 0 0
-/dev/sdb5  /vol2       ext2    defaults        1 2
-/dev/sdb1  swap        swap    defaults        0 0
-/dev/fd0   /mnt/floppy ext2    noauto,owner    0 0
-none       /proc       proc    defaults        0 0
-none       /dev/pts    devpts  gid=5,mode=620  0 0
-</screen>
-
-</listitem>
-</itemizedlist>
-
-<para>
-Har du tidligere haft et RAID system sat op på diskene, skal du bruge
-<command>mkraid --really-force /dev/md0</command> til at initialisere 
-diskene igen, også selvom de er slettede med fdisk. Husk dog at tage
-backup (f.eks. <command>tar pcfz data.tar.gz /mount/data</command>, 
-før du anvender 
-<command>mkraid --really-force /dev/md0</command>, da RAID-diskene slettes
-derved.
-</para>
-
-</sect3>
-</sect2>
-
-<sect2 id="linear-raid">
-<title>Opsætning af linear RAID</title>
-<indexterm><primary>linear RAID</primary></indexterm>
-
-<para>
-Linear RAID er når man ønsker at slå flere diske sammen til en logisk
-enhed og udnytte den samlede kapacitet.  Eks. på 2 diske som slås
-sammen <filename>/etc/raidtab</filename>
-</para>
-
-
-<screen>
-raiddev              /dev/md0
-raid-level                  linear
-nr-raid-disks               2
-chunk-size                  8
-persistent-superblock       1
-nr-spare-disks              0
-    device           /dev/sdc1
-    raid-disk               0
-    device           /dev/sdd1
-    raid-disk               1         
-</screen>
-</sect2>
-
-
-<sect2 id="raidhotadd-remove">
-<title>raidhotadd og raidhotremove</title>
-<indexterm><primary>RAID</primary>
-<secondary>raidhotadd og raidhotremove</secondary></indexterm>
-<para>
-Det er muligt at tilføje og fjerne diske fra RAID-systemet medens systemet
-kører. Det kan være en god ting, hvis filsystemet af en eller anden
-grund er gået i stykker på den ene af diskene. Det kan
-ske uden, at disken rent fysisk har fejlet.
-</para>
-
-<para> 
-<emphasis>Fjern disk</emphasis>
-</para>
-
-<para>
-F.eks. fjern disk <filename>/dev/hdd1</filename> fra RAID-systemet:
+<PARA>
+I filen <FILENAME>/etc/inittab</FILENAME> angives, hvilket
+runlevel der er det forvalgte runlevel. Ønsker man f.eks. at 
+maskinen starter i runlevel 5 og ikke 3, så skal man ændre linien
 </para>
 
 <screen>
-<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>raidhotremove -a /dev/md0 /dev/hdd1</USERINPUT>
+id:3:initdefault:
 </screen>
 
 <para>
-Nu kan man arbejde på disken med <command>fdisk</command>
+til
 </para>
-
-<para> 
-<emphasis>Tilføj disk</emphasis>
-</para>
-
-<para>
-Disken som er blevet repartioneret, kan tages i brug således:
-</para>
-
 <screen>
-<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>raidhotadd -a /dev/md0 /dev/hdd1</USERINPUT>
+id:5:initdefault:
 </screen>
 
 <para>
-RAID-systemet vil automatisk blive opdateret, og et evt. spejl vil blive
-genopbygget medens produktionen kører, performancenedgangen er lille
-selv ved IDE-diske.
+Se også <xref linkend="etcrcdfilen"> for detaljer om forskelle mellem
+de forskellige Linux-distributioner.
 </para>
 
-</sect2>
+</SECT1>
+
+<SECT1 ID="Nedlukning">
+<TITLE>Nedlukning af Linux</TITLE>
+<indexterm><primary>Nedlukning</primary></indexterm>
+<indexterm><primary>Reboot</primary></indexterm>
+<indexterm><primary>Genstart</primary></indexterm>
+<indexterm><primary>Ctrl-Alt-Del</primary></indexterm>
+<PARA>
+En Linux-maskine er, som du nok allerede har forstået, et meget stort
+system med mange muligheder.  Du skal også være meget opmærksom på, at
+man (ligesom med en Windows-maskine) ikke bare må slukke for en
+Linux-maskine - den skal helst lukkes pænt ned.
+</PARA>
+
+<PARA>
+Som vi viste i <xref linkend="runlevel">, er runlevel 0 det samme som
+at lukke ned. En generel, men lidt besværlig måde at lukke en UNIX-maskine
+på, er at skifte til root og skrive <userinput>init 0</userinput>
+eller <userinput>telinit 0</userinput>
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>su -</USERINPUT>
+Passwd: <USERINPUT>hemlig</USERINPUT>
+<PROMPT>[root@linus /root]# init 0</PROMPT>
+</SCREEN>
+
+<indexterm><primary>Ctrl-Alt-Delete</primary></indexterm>
+
+<para>
+En hurtig nedlukning fås ved at trykke
+"Ctrl-Alt-Delete", når du er i en tekstkonsol - f.eks. efter du
+trykker "Ctrl-Alt-F1".
+</para>
+
+<para>
+Du skal dog en gang for alle lave en ændring, så "Ctrl-Alt-Delete"
+kommer til at medføre at Linux lukkes ned. Ændres intet, genstarter
+systemet.  For at få maskinen til at stoppe
+kaldes <command>/sbin/halt</command>, og skal du ændre i
+<FILENAME>/etc/inittab</FILENAME>
+</para>
+
+<SCREEN>
+# Trap CTRL-ALT-DELETE
+ca::ctrlaltdel:/sbin/shutdown -t3 -r now
+</SCREEN>
+
+<para>
+så der kommer til at stå
+</para>
+
+<SCREEN>
+# Trap CTRL-ALT-DELETE
+ca::ctrlaltdel:/sbin/shutdown -t3 -h now
+</SCREEN>
+
+<para>
+Du kan selvfølgelig være fræk, så maskinen slet ikke kan stoppes fra
+tastaturet med "Ctrl-Alt-Delete", f.eks. kan du
+ændre <FILENAME>/etc/inittab</FILENAME> til
+</para>
+
+<SCREEN>
+# Trap CTRL-ALT-DELETE
+ca::ctrlaltdel:echo "No reboot for you my friend!\n"
+</SCREEN>
+
+<para>
+Dette er uhyre praktisk, hvis din maskine står et sted, hvor der er
+mange pilfingre, f.eks. edb-lokalet på en skole!
+</PARA>
 </sect1>
+
+<sect1 id="crontab">
+<title>Crontab</title>
+<indexterm><primary>Cron</primary><secondary>crontab</secondary></indexterm>
+<para>
+Crontab er et smart system til automatisk at køre programmer på givne
+tidspunkter, såsom daglig backup. Det er en standarddel af et
+UNIX-system og er derfor altid med i Linux.
+</para>
+
+<para>
+Man kan få kørt vilkårlige programmer på vilkårlige tidspunkter,
+f.eks. hvert minut, hver time, hver dag, ugedag eller månedsdag.  I filen
+<filename>/etc/crontab</filename> retter man normalt ikke, men denne
+fil viser, at der køres jobs hver time fra
+<filename>/etc/cron.hourly</filename> til tilsvarende hver dag, uge og
+måned via <filename>/etc/cron.daily</filename>,
+<filename>/etc/cron.monthly</filename> og
+<filename>/etc/cron.weekly</filename>.  For en almindelig bruger er
+det normalt, at man føjer de kommandoer man vil have kørt på et givet
+tidspunkt, til filen <filename>~/.crontab</filename> og kører
+kommandoen <command>crontab ~/.crontab</command>.
+</para>
+
+<para>
+Syntaksen for alle disse crontab-filer er den samme: En kommando per linje
+og i rækkefølge fra venstre mod højre, minut (0-59), time (0-23),
+månedsdag (0-31), måned (0-12), ugedag (0-7, hvor 0 og 7 begge er søndag)
+og endelig den kommando du vil have udført. Hvert felt adskilles af et
+mellemrum, og hvis man vil have, at f.eks. alle dage køres
+programmet, så indsæt en "*" for månedsdag og måned.</para>
+
+<para> Vi giver nu et eksempel, hvor vi hver morgen kl. 7 fra mandag
+til fredag sender brugeren "root" et brev med, hvor meget belastning 
+der er på maskinen.
+<screen>
+0 7 * * 1-5 uptime | mail root
+</screen>
+Brug <command>man -a crontab</command> til at læse mere om
+crontab. Skift til næste man-fil ved at trykke 'q'.
+</para>
+</sect1>
+
+
+
+
 
 <SECT1 ID="sikkopi">
 <!-- Skrevet af Claus Sørensen "cs@klid.dk" -->
@@ -1362,190 +956,5 @@ under Linux, så kig i
 </para>
 
 
-<sect2 id="harddisk-tuning">
-<title>Harddisk-tuning</title>
-<indexterm><primary>Harddisk tuning</primary></indexterm>
-<indexterm><primary>hdparm</primary></indexterm>
-<indexterm><primary>/sbin/hdparm</primary></indexterm>
-<para>
-Har du brug for at få ekstra "tryk" på din IDE-harddisk,
-så kan du bruge <command>hdparm</command> til at tune hastigheden.
-Her er givet de to vigtigste parametre (bruge DMA og lookahead), som
-nærmest alle nyere diske understøtter. Der kan tunes endnu mere - have
-fun :-)
-</para>
-
-<para>
-Når det virker fint, kan og bør du lægge kommandoerne ind i filer, der
-køres når systemet startes op. I Red Hat f.eks. i bunden af
-<filename>/etc/rc.d/rc.local</filename>.
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -d1 -A1 /dev/hda</userinput>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -k 1</userinput>
-</screen>
-
-<para>
-Samme program kan bruges til at få harddisken til at spinne ned i
-hastighed - f.eks. efter 5 sekunder. Dette betyder mere slid på
-harddisken, men din maskine bliver stille.
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -S 1 /dev/hda</userinput>
-</screen>
-
-<para>
-Hvis man har et eller flere programmer der jævnligt checker om nogle filer
-er ændret skal disse filers access tid også opdateres jævnligt - det
-giver skrivninger til disken selvom filsystemets egtl. data ikke ændres
-(kun dets metadata).  Det kan være en god ide at montere disken via <filename>/etc/fstab</filename> noget i stil med
-</para>
-
-<screen>
-/dev/hda1  /  ext2  defaults,noatime  1 1
-</screen>
-
-
-<para>
-Kernens IDE-driver skal supportere det IDE chipsæt, der anvendes af
-bundkortet, og ikke alle IDE chipsæt er supporteret med (U)DMA.  Så
-hvis en given funktion ikke tillades af <command>hdparm</command>, så
-kan det være forklaringen.
-</para>
-
-<para>
-Hdparm har kun begrænset anvendelse med scsi. Til scsi skal man dels
-se på driveren, dvs. tilføje eventuelle modulparametre.  Symbios
-scsi-driverne kan dog fintunes via <command>/proc/scsi</command> under
-drift.  Et nyttigt grafisk værktøj til at tune scsi-diske er
-<command>scsi-config</command>, selvom der normalt ikke er så meget at
-"tune".
-</para>
-
-<para>
-Du kan måske også være interesseret i at se mere på 
-<ulink url="http://www.iozone.org/">http://www.iozone.org/</ulink>
-hvor der er program til at benchmark-teste harddisk-ydelse.
-</para>
-
-</sect2>
-
-<sect2 id="hvad-laver-hvad">
-<title>Hvilke filer har programmet åbne?</title>
-<indexterm><primary>Fil</primary><secondary>åbne</secondary</indexterm>
-<indexterm><primary>lsof</primary></indexterm>
-<indexterm><primary>/sbin/lsof</primary></indexterm>
-<indexterm><primary>fuser</primary></indexterm>
-<indexterm><primary>/sbin/fuser</primary></indexterm>
-<indexterm><primary>pid</primary></indexterm>
-<indexterm><primary>ps aux</primary></indexterm>
-<indexterm><primary>process-ID</primary></indexterm>
-<para>
-Ofte vil dit program have filer åbne som du måske ikke lige
-vidste. Med <command>lsof</command> kan du se hvad der sker. Vi kan
-f.eks. se hvad programmet arbejder med. Som eksempel kan vi se hvad
-der sker, når man har <command>ping</command> kørende. Først finder vi
-den <emphasis>pid</emphasis> - proces-ID - som <command>ping</command>
-kører med. Der er mindst to muligheder, enten med <command>ps
-aux</command> eller <command>pidof</command>.
-</para>
-
-
-<screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ps aux | grep ping</userinput>
-pto       9149  0.0  0.1  1264  228 pts/4    S    Apr29   0:00 ping eric
-root      9418  0.0  0.4  1360  516 ttyp0    S    00:06   0:00 grep ping
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>pidof ping</userinput>
-9149
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>lsof -p 9149</userinput>
-COMMAND PID USER  FD TYPE DEVICE    SIZE   NODE NAME
-ping   9149 root cwd  DIR    3,7    4096  30919 /home/pto/tmp
-ping   9149 root rtd  DIR    3,5    4096      2 /
-ping   9149 root txt  REG    3,5   17968 114094 /bin/ping
-ping   9149 root mem  REG    3,5  340663  16023 /lib/ld-2.1.3.so
-ping   9149 root mem  REG    3,5  169720  16071 /lib/libresolv-2.1.3.so
-ping   9149 root mem  REG    3,5 4101324  16030 /lib/libc-2.1.3.so
-ping   9149 root mem  REG    3,5  246652  16061 /lib/libnss_files-2.1.3.so
-...
-</screen>
-
-<para>
-Så man kan se at programmer har fat i mange filer.  Det skal nævnes at
-<command>pidof</command> kræver SysVinit-pakken er installeret og
-stien til <command>pidof</command> varierer desværre alt efter
-Linux-distribution. Det skal også nævnes, at <command>ps aux</command>
-bruges på en Linux-maskine, mens mange andre UNIX-varianter anvender
-<command>ps -ef</command>.
-</para>
-
-<para>
-Tilsvarende kan man have stor glæde af at kunne se, hvilke programmer
-der har filer åbne under et givet katalog i filtræet. Det er meget
-relevant ved afmontering af f.eks. cdrom-drev. Prøv følgende:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>lsof +D /var/spool</userinput>
-COMMAND  PID USER   FD   TYPE DEVICE SIZE  NODE NAME
-atd      459 root  cwd    DIR    3,5 4096 32594 /var/spool/at
-crond    473 root  cwd    DIR    3,5 4096    12 /var/spool/
-lpd     9299 root    4w   REG    3,5    5  4507 /var/spool/lpd/lpd.lock
-</screen>
-
-<para>
-Eksemplet viser, at der er tre programmer <command>at</command>,
-<command>crond</command> og <command>lpd</command> som pt. anvender
-filer under <filename>/var/spool</filename>. Meget nyttige ting for en
-systemadministrator.
-</para>
-
-<para>
-Et tilsvarende nyttigt program til ca. samme formål er
-<command>/sbin/fuser DEVICE</command>, f.eks. kan man se hvilket
-proces-ID, som låser <filename>/dev/audio</filename> ved at skrive
-<command>/sbin/fuser /dev/audio</command>.
-</para>
-
-</sect2>
-
-
-<sect2 id="glemt-passwd">
-<title>Har du glemt din adgangskode?</title>
-
-<indexterm><primary>adgangskode</primary><secondary>glemt</secondary></indexterm>
-<indexterm><primary>glemt password</primary></indexterm>
-<indexterm><primary>password</primary><secondary>glemt</secondary></indexterm>
-
-
-<para>
-Hvis du har dummet dig meget og glemt din root-adgangskode, så kan du 
-få sat en ny ind. 
-</para>
-
-<para>
-I så fald booter du med "linux init=/bin/sh" . Så starter den en
-shell som proces nr. 1. Herefter køres
-</para>
-
-<screen>
-<PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
-<PROMPT>[root@linus ~]#</PROMPT> <userinput>passwd</userinput>                       # skift adgangskode
-<PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,ro /</userinput>     # remount / read-only
-<PROMPT>[root@linus ~]#</PROMPT> <userinput>exec /sbin/init 3 </userinput>           # start init i runlevel 3
-</screen>
-
-<para>
-Dette lyder jo som et stort sikkerhedshul, og det er det også, hvis man
-har fysisk adgang til maskinen. Du kan dog undgå dette ved at tilføje 
-linien "password=MIT_PASSWORD" til din
-<filename>/etc/lilo.conf</filename>, men så skal du kunne huske
-root-adgangskoden og den adgangskode, du har sat i <filename>/etc/lilo.conf</filename>.
-</para>
-
-</sect2>
 </SECT1>
 </chapter>

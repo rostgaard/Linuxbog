@@ -1,0 +1,557 @@
+<chapter id="filsystemer">
+<title>Filsystemerer</title>
+<indexterm><primary>Filsystemer</primary></indexterm>
+<indexterm><primary>Filsystemer</primary>
+  <secondary>ext2</secondary></indexterm>
+<indexterm><primary>ext2</primary></indexterm>
+<para>
+Linux bruger som standard et filsystem kaldet
+<emphasis>ext2</emphasis> (Extended file system version 2), men kan
+også læse fra og skrive til mange andre filsystemer, f.eks. FAT-baserede
+filsystemer der bruges af DOS og Windows.
+</para>
+
+<para>
+Generelt formateres et filsystem under Linux ved at benytte kommandoen 
+<command>mkfs</command> (MaKe File System). Har du en uformateret partition 
+(her <filename>/dev/hda5</filename>), som du ønsker at formatere, sker
+formateringen ved at skrive (som root):
+</para>
+
+<para>
+<screen>
+  <prompt>[root@linus /root]#</prompt> <userinput>mkfs /dev/hda5</userinput>
+  <prompt>[root@linus /root]#</prompt> 
+</screen>
+</para>
+
+<para>
+Programmet <command>mkfs</command> finder selv ud af, hvilket filsystem
+du har valgt til den ønskede partition, idet denne oplysning findes i
+partition-tabellen.
+</para>
+
+<para>
+Når din computer går ned (ja, det sker, f.eks. når strømmen går), kan
+du komme ud for at dine filsystemer er i en fejlbehæftet tilstand. Dette
+kan dog ofte reddes af programmet <command>fsck</command> (File
+System ChecK). Faktisk
+køres dette program altid ved opstart for at sikre at alle filsystemer
+er i en god tilstand.
+</para>
+
+<sect1 id="reiserFS">
+<title>ReiserFS</title>
+<indexterm><primary>ReiserFS</primary></indexterm>
+
+<indexterm><primary>Filsystemer</primary>
+<secondary>ReiserFS</secondary></indexterm>
+<indexterm><primary>Filsystemer</primary>
+<secondary>ext2</secondary></indexterm>
+<para>
+ReiserFS er et af de nyere filsystemer til Linux. Faktisk er det så nyt,
+at det endnu ikke er en del af den officielle kerne. Før kerne
+2.4 vil det kun være det gamle velprøvede ext2-filsystem, som 
+kernen understøtter officielt, men med kerne
+2.4.1 er ReiserFS også med.
+</para>
+
+<para>
+ReiserFS er en anden type filsystem end den der kendes fra Linux'
+ext2, og DOS/Windows' FAT-drev, idet ReiserFS er et journaliserende
+filsystem. Det betyder, at alle filer til en hver tid er
+opdaterede. Det betyder, at hvis din computer går ned pga. en
+strømafbrydelse, vil du ikke miste data. Endvidere betyder det, at de
+partitioner som er formateret ved hjælp af ReiserFS, ikke skal tjekkes
+ved opstart. Hvis du har meget store harddiske vil det betyde at du
+får en meget kortere opstartstid. Dette kan være vigtigt, hvis din
+computer er server med f.eks. 100 GB harddisk (ikke ualmindeligt i den
+virkelige serververden).
+</para>
+
+<para>
+Tidligere versioner af ReiserFS ville ikke virke med Lilo boot fra en
+ReiserFS-partition.  Dette kunne løses ved at lægge
+<filename>/boot</filename> på en ext2-partition, og hvis
+<filename>/boot</filename> er en lille selvstændig partition, kan
+<filename>/</filename>-partitionen være ReiserFS-formateret.
+I de nyeste versioner af ReiserFS (november 2000) bør denne
+begrænsning være væk, blot man monterer boot-partitionen med et ekstra
+flag, "<literal>notail</literal>":
+</para>
+
+<screen>
+/dev/hda2 on / type reiserfs (rw,notail)
+</screen>
+
+
+<para>
+ReiserFS følger med Mandrake (fra version 7.1) og SuSE (fra
+6.4) og under disse distributioner er det let at vælge
+formatering med ReiserFS i stedet for ext2 under
+installation.
+Men selv under andre distributioner er det ikke
+svært. Du skal sikre dig, at kernen understøtter ReiserFS som
+filsystem. Måske skal du omkonfigurere din kerne (se også <xref
+linkend="kernelcompile">). Det kan godt betale sig at få ReiserFS
+oversat som et kernemodul. Modulsystemet vil typisk selv finde ud af,
+at modulet skal bruges, dvs. når du begynder at bruge kommandoer som
+involverer en ReiserFS-baseret partition, vil modulet automatisk blive
+indlæst.
+</para>
+
+<para>
+Først og fremmest skal du have en partition, som er tom. Du kan 
+oprette en partition til formålet. Her kan du bruge programmer som 
+<command>fdisk</command> og <command>cfdisk</command>. Når du har 
+en partition klar, skal du formatere den. I eksemplet benytter vi
+partitionen <filename>/dev/hda5</filename>, som vi antager allerede er 
+oprettet.
+</para>
+
+<para>
+<screen>
+<prompt>[root@linus root]#</prompt> <userinput>mkreiserfs /dev/hda5</userinput>
+<-----------MKREISERFS, 1999----------->
+ReiserFS version 3.5.18
+Block size 4096 bytes
+Block count 325576
+First 16 blocks skipped
+Super block is in 16
+Bitmap blocks are : 
+   17, 32768, 65536, 98304, 131072, 163840, 196608, 229376, 262144, 294912
+Journal size 8192 (blocks 18-8210 of device 0x3:0x5)
+Root block 8211
+Used 8221 blocks
+ATTENTION: ALL DATA WILL BE LOST ON '/dev/hda5'! (y/n) <userinput>y</userinput>
+Initializing journal - 0%....20%....40%....60%....80%....100%
+Syncing..
+
+ReiserFS core development sponsored by SuSE Labs (suse.com)
+
+Journaling sponsored by MP3.com.
+
+Item handlers sponsored by Ecila.com
+
+To learn about the programmers and ReiserFS, please go to
+http://www.devlinux.com/namesys
+
+Have fun.
+  <prompt>[root@linus ~]#</prompt>
+</screen>
+</para>
+
+<para>
+Du er nu klar til at montere din partition. Følgende vil montere partitionen
+<filename>/dev/hda5</filename> som <filename>/home</filename>.
+</para>
+
+<para>
+<screen>
+  <prompt>[root@linus ~]#</prompt> <userinput>mount -t reiserfs /dev/hda5 /home</userinput>
+Checking ReiserFS transaction log (device 03:35)  ...
+Relayed 0 transaction in 0 seconds
+ReiserFS version 3.5.18
+  <prompt>[root@linus ~]#</prompt>
+</screen>
+</para>
+
+<para>
+Naturligvis kan du indsætte din nye partition i filen
+<filename>/etc/fstab</filename> med typen
+<emphasis>reiserfs</emphasis>. Derved vil partitionen blive monteret
+under opstart.
+</para>
+
+</sect1>
+
+<sect1 id="software-raid">
+<title>Software RAID</title>
+<indexterm><primary>RAID</primary></indexterm>
+<!-- Skrevet af peter_frederiksen@danbbs.dk -->
+<!-- sprog rettet lidt til : pto -->
+
+<sect2 id="hvad-er-raid">
+<title>Hvad er RAID?</title>
+<para>
+RAID er en metode til at slå flere diske sammen til en
+<emphasis>volume</emphasis> (dvs. en logisk disk); det kan gøres for
+at opnå et større brugerdrev eller for at højne sikkerheden ved
+redundans.
+</para>
+
+<para>
+Derfor er der flere måder at kombinere diske til et RAID, og man har
+derfor vedtaget nogle RAID-levels.
+</para>
+</sect2>
+
+<sect2 id="hw-sw-raid">
+<title>Forskel mellem hardware- og software-RAID</title>
+
+<para>
+RAID kan laves hardware- eller software-mæssigt, det sikreste
+er via hardware eller med andre ord en RAID-controller.
+</para>
+
+<sect3 id="Hardwareraid">
+<title>Hardware-RAID</title>
+<indexterm><primary>RAID</primary><secondary>Hardware</secondary></indexterm>
+
+<para>
+Ved at lade hardwaren styre diskene og "narre" styresystemet til at
+tro at der er tale om et eller flere logiske drev, behøver man ikke at
+bekymre sig så meget om opsætning af Linux, da hardwareproducenterne
+som regel har en brugervenlig opsætningsmenu installeret i kortets
+BIOS.
+</para>
+
+<para>
+Ulempen er at disse kort som regel er dyre at anskaffe og ofte
+benytter sig af de noget dyrere scsi-diske. Med andre ord: En
+RAID-controller er ofte "bare" en avanceret scsi-controller.
+</para>
+</sect3>
+
+<sect3 id="Softwareraid">
+<title>Software-RAID</title>
+<indexterm><primary>RAID</primary><secondary>Software</secondary></indexterm>
+
+<para>
+Her lader man et stykke software styre RAID, hvilket sparer en
+RAID-controller og det er muligt at blande scsi-diske med IDE eller kun
+benytte sig af IDE.
+</para>
+
+<para>
+Ulempen er at man så selv skal konfigurere RAID og på Linux er
+det lidt besværligt.
+</para>
+</sect3>
+</sect2>
+
+
+<sect2 id="spejlet-raid">
+<title>Opsætning af spejlede diske.</title>
+<indexterm><primary>RAID</primary>
+<secondary>spejling</secondary></indexterm>
+
+<para>
+Et disk-spejl er hvis man ønsker 2 diske som en logisk enhed,
+hvor begge diske indeholder samme data. Sikkerheden er her at hvis en
+disk står af, så kører den anden videre.
+</para>
+
+<para>
+Hvis man ønsker yderligere sikkerhed, kan man benytte en ekstra
+sparedisk som vil kunne erstatte en nedbrudt disk i spejlet, på den
+måde undværer man kun sikkerheden i den tid som det tager
+RAID-softwaren at opbygge et nyt spejl på sparedisken.
+</para>
+
+<sect3 id="spejlet-raid-howto">
+<title>Fremgangsmåde</title>
+
+<itemizedlist mark="bullet" spacing="compact">
+<listitem><para>
+Start i singleusermode - (<command>linux s</command> ved opstart eller
+<command>init 1</command>).
+</para></listitem>
+
+<listitem><para>
+Opret partition med fdisk på begge diske, filsystemet skal være
+(Linux RAID autodetect), og skriv devicenummeret ned.
+</para></listitem>
+
+<listitem><para>
+Opret en <filename>/etc/raidtab</filename> fil, med indhold som
+kunne se således ud:</para>
+
+<screen>
+raiddev               /dev/md0
+raid-level                   1
+nr-raid-disks                2
+chunk-size                   8
+persistent-superblock        1
+nr-spare-disks               0
+    device           /dev/sdc1
+    raid-disk                0
+    device           /dev/sdd1
+    raid-disk                1         
+</screen>
+</listitem>
+
+<listitem><para>
+  Opret RAID device med kommandoen <command>mkraid /dev/md0</command>.
+</para></listitem>
+
+<listitem><para> 
+ Opret filsystem til din logiske enhed
+ <filename>/dev/md0</filename> med kommandoen <command>mkfs
+ /dev/md0</command>.
+</para></listitem>
+
+<listitem><para> 
+ Monter det logiske drev eks. <command>mount /dev/md0 /spejl</command>
+</para></listitem>
+
+<listitem><para> 
+ Opret en linie i <filename>/etc/fstab</filename> svarende til det nye spejl.
+</para>
+
+<screen>
+/dev/sda1  /           ext2    defaults        1 1
+/dev/md0   /Spejl      ext2    defaults        1 2
+/dev/sda5  /home       ext2    defaults        1 2
+/dev/cdrom /mnt/cdrom  iso9660 noauto,owner,ro 0 0
+/dev/sdb5  /vol2       ext2    defaults        1 2
+/dev/sdb1  swap        swap    defaults        0 0
+/dev/fd0   /mnt/floppy ext2    noauto,owner    0 0
+none       /proc       proc    defaults        0 0
+none       /dev/pts    devpts  gid=5,mode=620  0 0
+</screen>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Har du tidligere haft et RAID system sat op på diskene, skal du bruge
+<command>mkraid --really-force /dev/md0</command> til at initialisere 
+diskene igen, også selvom de er slettede med fdisk. Husk dog at tage
+backup (f.eks. <command>tar pcfz data.tar.gz /mount/data</command>, 
+før du anvender 
+<command>mkraid --really-force /dev/md0</command>, da RAID-diskene slettes
+derved.
+</para>
+
+</sect3>
+</sect2>
+
+<sect2 id="linear-raid">
+<title>Opsætning af linear RAID</title>
+<indexterm><primary>linear RAID</primary></indexterm>
+
+<para>
+Linear RAID er når man ønsker at slå flere diske sammen til en logisk
+enhed og udnytte den samlede kapacitet.  Eks. på 2 diske som slås
+sammen <filename>/etc/raidtab</filename>
+</para>
+
+
+<screen>
+raiddev              /dev/md0
+raid-level                  linear
+nr-raid-disks               2
+chunk-size                  8
+persistent-superblock       1
+nr-spare-disks              0
+    device           /dev/sdc1
+    raid-disk               0
+    device           /dev/sdd1
+    raid-disk               1         
+</screen>
+</sect2>
+
+
+<sect2 id="raidhotadd-remove">
+<title>raidhotadd og raidhotremove</title>
+<indexterm><primary>RAID</primary>
+<secondary>raidhotadd og raidhotremove</secondary></indexterm>
+<para>
+Det er muligt at tilføje og fjerne diske fra RAID-systemet medens systemet
+kører. Det kan være en god ting, hvis filsystemet af en eller anden
+grund er gået i stykker på den ene af diskene. Det kan
+ske uden, at disken rent fysisk har fejlet.
+</para>
+
+<para> 
+<emphasis>Fjern disk</emphasis>
+</para>
+
+<para>
+F.eks. fjern disk <filename>/dev/hdd1</filename> fra RAID-systemet:
+</para>
+
+<screen>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>raidhotremove -a /dev/md0 /dev/hdd1</USERINPUT>
+</screen>
+
+<para>
+Nu kan man arbejde på disken med <command>fdisk</command>
+</para>
+
+<para> 
+<emphasis>Tilføj disk</emphasis>
+</para>
+
+<para>
+Disken som er blevet repartioneret, kan tages i brug således:
+</para>
+
+<screen>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>raidhotadd -a /dev/md0 /dev/hdd1</USERINPUT>
+</screen>
+
+<para>
+RAID-systemet vil automatisk blive opdateret, og et evt. spejl vil blive
+genopbygget medens produktionen kører, performancenedgangen er lille
+selv ved IDE-diske.
+</para>
+
+</sect2>
+</sect1>
+
+<sect1 id="harddisk-tuning">
+<title>Harddisk-tuning</title>
+<indexterm><primary>Harddisk tuning</primary></indexterm>
+<indexterm><primary>hdparm</primary></indexterm>
+<indexterm><primary>/sbin/hdparm</primary></indexterm>
+<para>
+Har du brug for at få ekstra "tryk" på din IDE-harddisk,
+så kan du bruge <command>hdparm</command> til at tune hastigheden.
+Her er givet de to vigtigste parametre (bruge DMA og lookahead), som
+nærmest alle nyere diske understøtter. Der kan tunes endnu mere - have
+fun :-)
+</para>
+
+<para>
+Når det virker fint, kan og bør du lægge kommandoerne ind i filer, der
+køres når systemet startes op. I Red Hat f.eks. i bunden af
+<filename>/etc/rc.d/rc.local</filename>.
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -d1 -A1 /dev/hda</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -tT /dev/hda</userinput>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -k 1</userinput>
+</screen>
+
+<para>
+Samme program kan bruges til at få harddisken til at spinne ned i
+hastighed - f.eks. efter 5 sekunder. Dette betyder mere slid på
+harddisken, men din maskine bliver stille.
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>/sbin/hdparm -S 1 /dev/hda</userinput>
+</screen>
+
+<para>
+Hvis man har et eller flere programmer der jævnligt checker om nogle filer
+er ændret skal disse filers access tid også opdateres jævnligt - det
+giver skrivninger til disken selvom filsystemets egtl. data ikke ændres
+(kun dets metadata).  Det kan være en god ide at montere disken via <filename>/etc/fstab</filename> noget i stil med
+</para>
+
+<screen>
+/dev/hda1  /  ext2  defaults,noatime  1 1
+</screen>
+
+
+<para>
+Kernens IDE-driver skal supportere det IDE chipsæt, der anvendes af
+bundkortet, og ikke alle IDE chipsæt er supporteret med (U)DMA.  Så
+hvis en given funktion ikke tillades af <command>hdparm</command>, så
+kan det være forklaringen.
+</para>
+
+<para>
+Hdparm har kun begrænset anvendelse med scsi. Til scsi skal man dels
+se på driveren, dvs. tilføje eventuelle modulparametre.  Symbios
+scsi-driverne kan dog fintunes via <command>/proc/scsi</command> under
+drift.  Et nyttigt grafisk værktøj til at tune scsi-diske er
+<command>scsi-config</command>, selvom der normalt ikke er så meget at
+"tune".
+</para>
+
+<para>
+Du kan måske også være interesseret i at se mere på 
+<ulink url="http://www.iozone.org/">http://www.iozone.org/</ulink>
+hvor der er program til at benchmark-teste harddisk-ydelse.
+</para>
+
+</sect1>
+
+<sect1 id="hvad-laver-hvad">
+<title>Hvilke filer har programmet åbne?</title>
+<indexterm><primary>Fil</primary><secondary>åbne</secondary</indexterm>
+<indexterm><primary>lsof</primary></indexterm>
+<indexterm><primary>/sbin/lsof</primary></indexterm>
+<indexterm><primary>fuser</primary></indexterm>
+<indexterm><primary>/sbin/fuser</primary></indexterm>
+<indexterm><primary>pid</primary></indexterm>
+<indexterm><primary>ps aux</primary></indexterm>
+<indexterm><primary>process-ID</primary></indexterm>
+<para>
+Ofte vil dit program have filer åbne som du måske ikke lige
+vidste. Med <command>lsof</command> kan du se hvad der sker. Vi kan
+f.eks. se hvad programmet arbejder med. Som eksempel kan vi se hvad
+der sker, når man har <command>ping</command> kørende. Først finder vi
+den <emphasis>pid</emphasis> - proces-ID - som <command>ping</command>
+kører med. Der er mindst to muligheder, enten med <command>ps
+aux</command> eller <command>pidof</command>.
+</para>
+
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ps aux | grep ping</userinput>
+pto       9149  0.0  0.1  1264  228 pts/4    S    Apr29   0:00 ping eric
+root      9418  0.0  0.4  1360  516 ttyp0    S    00:06   0:00 grep ping
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>pidof ping</userinput>
+9149
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>lsof -p 9149</userinput>
+COMMAND PID USER  FD TYPE DEVICE    SIZE   NODE NAME
+ping   9149 root cwd  DIR    3,7    4096  30919 /home/pto/tmp
+ping   9149 root rtd  DIR    3,5    4096      2 /
+ping   9149 root txt  REG    3,5   17968 114094 /bin/ping
+ping   9149 root mem  REG    3,5  340663  16023 /lib/ld-2.1.3.so
+ping   9149 root mem  REG    3,5  169720  16071 /lib/libresolv-2.1.3.so
+ping   9149 root mem  REG    3,5 4101324  16030 /lib/libc-2.1.3.so
+ping   9149 root mem  REG    3,5  246652  16061 /lib/libnss_files-2.1.3.so
+...
+</screen>
+
+<para>
+Så man kan se at programmer har fat i mange filer.  Det skal nævnes at
+<command>pidof</command> kræver SysVinit-pakken er installeret og
+stien til <command>pidof</command> varierer desværre alt efter
+Linux-distribution. Det skal også nævnes, at <command>ps aux</command>
+bruges på en Linux-maskine, mens mange andre UNIX-varianter anvender
+<command>ps -ef</command>.
+</para>
+
+<para>
+Tilsvarende kan man have stor glæde af at kunne se, hvilke programmer
+der har filer åbne under et givet katalog i filtræet. Det er meget
+relevant ved afmontering af f.eks. cdrom-drev. Prøv følgende:
+</para>
+
+<screen>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>lsof +D /var/spool</userinput>
+COMMAND  PID USER   FD   TYPE DEVICE SIZE  NODE NAME
+atd      459 root  cwd    DIR    3,5 4096 32594 /var/spool/at
+crond    473 root  cwd    DIR    3,5 4096    12 /var/spool/
+lpd     9299 root    4w   REG    3,5    5  4507 /var/spool/lpd/lpd.lock
+</screen>
+
+<para>
+Eksemplet viser, at der er tre programmer <command>at</command>,
+<command>crond</command> og <command>lpd</command> som pt. anvender
+filer under <filename>/var/spool</filename>. Meget nyttige ting for en
+systemadministrator.
+</para>
+
+<para>
+Et tilsvarende nyttigt program til ca. samme formål er
+<command>/sbin/fuser DEVICE</command>, f.eks. kan man se hvilket
+proces-ID, som låser <filename>/dev/audio</filename> ved at skrive
+<command>/sbin/fuser /dev/audio</command>.
+</para>
+
+</sect1>
+
+
+
+
+</chapter>
