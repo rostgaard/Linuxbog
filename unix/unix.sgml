@@ -2546,7 +2546,7 @@ sleep 2
 <para>
 Man kommer til tider ud for at man bliver 
 nødt til at oprette midlertidige filer, der senere
-skal bruges til et andet program.
+skal bruges af et andet program.
 Nogle programmer kan kun tage filer som input,
 og hvis output kommer fra en proces, skal der gøres noget andet.
 Disse midlertidige filer skal til slut slettes,
@@ -2582,7 +2582,7 @@ finde på et godt midlertidigt navn til sin
 I stedet for at oprette en midlertidig fil, kan man tage
 output fra <command>find</command> og lave dette om til
 noget der for <command>tar</command> ligner en fil.
-Med &lt;() "process substitution" bliver det så:
+Med <command>&lt;()</command> "process substitution" bliver det så:
 </para>
 
 <screen>
@@ -2604,7 +2604,7 @@ skrive filnavnet ud på skærmen.
 </screen>
 
 <para>
-Her ses at der bare oprettes en midlertidig fil et eller andet sted,
+Her ses at der bare oprettes noget der ligner en midlertidig fil et eller andet sted,
 som <command>bash</command> selv holder styr på.
 Hvis man så er to gange <command>&lt;()</command> på kommandolinjen,
 kan <command>bash</command> stadig håndterer det:
@@ -2616,11 +2616,30 @@ kan <command>bash</command> stadig håndterer det:
 </screen>
 
 <para>
+<command>&lt;()</command> ser ud som en fil, men er rent faktisk en <emphasis>pipe</emphasis>,
+hvilket er mere effektivt end at bruge en fil.
+Følgende kommandoer giver lidt yderligere information.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><userinput>ls -l &lt;(true)</userinput>
+lr-x------    1 anne  anne      64 Jul 25 20:15 /dev/fd/63 -> pipe:[100342]
+<prompt>[anne@linus ~]$ </prompt><userinput>stat &lt;(true)</userinput>
+  File: "/dev/fd/63" -> "pipe:[100408]"
+  Size: 64              Blocks: 0          IO Block: 0      Symbolic Link
+Device: 3h/3d   Inode: 419070015   Links: 1
+Access: (0500/lr-x------)  Uid: (  506/    anne)   Gid: (  512/    anne)
+Access: Fri Jul 25 20:16:21 2002
+Modify: Fri Jul 25 20:16:21 2002
+Change: Fri Jul 25 20:16:21 2002
+</screen>
+
+<para>
 Ovenstående eksempel med <command>tar</command> kan
 selvfølgelig løses på mange andre måder,
-hvor &lt;() ikke er nødvendigt, til gengæld skulle
-det være nemmere at forstå.
-Et mere drilsk eksempel kan laves med <command>comm</command>
+hvor <command>&lt;()</command> ikke er nødvendigt. Til gengæld skulle
+det lille eksempel være nemmere at forstå.
+Et mere drilsk eksempel kan laves med <command>comm</command>,
 der er et program til at sammenligne filer.
 Ved almindelig brug anvendes det således:
 </para>
