@@ -68,7 +68,7 @@ exit:
 
 billeder:
 	cp ../friheden/images/*.png images
-	cp ../friheden/unix/*.png images
+	cp ../unix/images/*.png images
 	cp ../admin/images/*.png images
 	cp ../web/images/*.png images
 	cp ../program/images/*.png images
