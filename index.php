@@ -482,7 +482,8 @@ eller køb en indbundet udgave hos følgende forretninger:
 <li><a href="http://linuxpusher.dk/docs/linuxboeger.php">SC-Birkerød i samarbejde med www.linuxpusher.dk</a></li>
 </ul>
 <p>
-Bøgerne er udgivet under <a href="opl.shtml">OpenContent License</A>
+Bøgerne er udgivet under 
+<a href="licens.html">Åben dokumentlicens</a>
 hvilket gør at SSLUG ikke er involveret i de trykte udgaver.
 </p>
 
