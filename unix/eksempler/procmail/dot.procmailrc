@@ -262,8 +262,9 @@ SKIDTPOST
 
 
 ############################################################
-# Følgende filter vil markere emails med mulige vira som
-# skidt "i subject-feltet"
+# Følgende filter vil se på attachments
+
+## Markere emails med mulige vira som skidt "i subject-feltet"
 
 #:0
 #* ^Content-type: (multipart/mixed|application/octet-stream)
@@ -280,23 +281,20 @@ SKIDTPOST
 #    }
 #}
 
-:0
-* ^Content-type: (multipart/mixed|application/octet-stream)
-{
-    :0 HB
-    *  ^Content-Disposition: attachment;
-    *filename=.*\.(exe|vbs|shs|com|pif|bat|src|wfs|vbe|wsh|hta)
-    {
-        :0 fhw
-        | formail -i "Subject: Attachments kan indeholde virus !"
-    
-        :0:
-        $DEFAULT
-    }
-}
 
+## Følgende filter vil slette mails med mulige virus-attachments.
 
-
+#:0
+#* ^Content-type: (multipart/mixed|application/octet-stream)
+#{
+#    :0 HB
+#    *  ^Content-Disposition: attachment;
+#    *filename=.*\.(exe|vbs|shs|com|pif|bat|src|wfs|vbe|wsh|hta)
+#    {
+#    :0:
+#      /dev/null
+#    }
+#}
 
 
 #########################################
