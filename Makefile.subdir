@@ -7,8 +7,11 @@
 # Peter Toft <pto@sslug.dk> 
 # $Id$
 
-# Lokalt katalog (fuld sti)
+################################################################################
+# Diverse variable sættes
+################################################################################
 
+# Lokalt katalog (fuld sti)
 locdirname:=$(shell pwd)
 
 # Kort navn
@@ -50,9 +53,16 @@ plucker:=$(wildcard /usr/bin/plucker-build)
 # Har vi tidy installeret?
 tidy:=$(wildcard /usr/bin/tidy)
 
+################################################################################
+# De egentlige targets
+################################################################################
+
+################################################################################
 # her er det der skal laves
 all: start ekstra html pdf sgml eksempelbackup stop
 
+
+################################################################################
 start:
 	@echo "-------------------------------------------"
 	@echo "Starter oversættelser af $(targetshortname)"
@@ -60,18 +70,26 @@ start:
 	@echo Version er $(version)
 	@echo Dato sat til $(dato)
 
+
+################################################################################
 stop:
 	@echo "-------------------------------------------"
 	@echo "Slut på $(targetshortname) $(version)      "
 	@echo "-------------------------------------------"
 	@echo 
 
+
+################################################################################
 version:
 	@echo $(targetshortname) $(version)
 
+
+################################################################################
 ekstra:
 	make -f Makefile_local
 
+
+################################################################################
 # Build the sgml package
 sgml: $(targetname)-sgml-$(version).tar.gz
 $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
@@ -79,6 +97,8 @@ $(targetname)-sgml-$(version).tar.gz: $(sgmlfiler)
 	(cd ..;ln -sf $(targetshortname)/$(targetname)-sgml-$(version).tar.gz $(targetshortname)/$(targetname).sgml.tar.gz)
 	(cd ..;zip $(targetshortname)/$(targetname)-sgml-$(version).zip -r $(targetshortname)/*.{sgml,xml} $(targetshortname)/linuxbog.css $(targetshortname)/Makefile $(targetshortname)/collateindex.pl )
 
+
+################################################################################
 # Build the Palm Pilot Package
 palmpilot: $(targetname)-$(version).palm.zip
 $(targetname)-$(version).palm.zip: $(sgmlfiler)
@@ -96,6 +116,8 @@ else
 	@echo "Du bør installere plucker for at kunne lave palm-udgaven"
 endif
 
+
+################################################################################
 pakhtml: 
 	@echo %define buildname $(targetshortname) > bog/$(targetname).spec
 	@echo Name: linuxbog-$(targetshortname) >> bog/$(targetname).spec
@@ -115,6 +137,8 @@ pakhtml:
 	@echo ""
 	@echo ""
 
+
+################################################################################
 # Build the html
 html: bog/index.html 
 bog/index.html: $(sgmlfiler) 
@@ -149,6 +173,7 @@ endif
 	@echo ""
 
 
+################################################################################
 # Build pdf package.
 pdf: $(targetname)-$(version)_pdf.zip
 $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
@@ -167,9 +192,13 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	@echo "Done PDF (pdf)"
 	@echo ""
 
+
+################################################################################
 test:
 	@echo $(eksfiler)
 
+
+################################################################################
 eksempelbackup:  $(targetname)-eksempler-$(version).tar.gz
 $(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 ifneq    ("$(eksfiler)","")
@@ -185,6 +214,7 @@ else
 endif
 
 
+################################################################################
 clean:
 	@echo clean $(targetshortname)
 	@rm -rf dato.sgml version.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9]
