@@ -172,9 +172,9 @@ function vistype($type) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
-    "kontorplatform" => array(
-      title => "Linux - Friheden til at vælge kontorplatform",
-      comment => "Valg af Linux-baseret kontorplatform",
+    "itplatform" => array(
+      title => "Linux - Friheden til at vælge itplatform",
+      comment => "Valg af Linux-baseret itplatform",
       auth => array(
         "Michael Rasmussen" => "mir@miras.org"
       )

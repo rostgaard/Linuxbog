@@ -13,7 +13,7 @@ Makefiler:
 	cp Makefile.subdir c/Makefile
 	cp Makefile.subdir docbook/Makefile
 	cp Makefile.subdir kontorbruger/Makefile
-	cp Makefile.subdir kontorplatform/Makefile
+	cp Makefile.subdir itplatform/Makefile
 
 filer:  Makefiler
 	$(MAKE) Makefiler
@@ -26,7 +26,7 @@ filer:  Makefiler
 	$(MAKE) -C c
 	$(MAKE) -C docbook
 	$(MAKE) -C kontorbruger
-	$(MAKE) -C kontorplatform
+	$(MAKE) -C itplatform
 	$(MAKE) -C alle 
 
 statusfiler:  Makefiler
@@ -39,7 +39,7 @@ statusfiler:  Makefiler
 	$(MAKE) -C c  statusfiler
 	$(MAKE) -C docbook  statusfiler
 	$(MAKE) -C kontorbruger  statusfiler
-	$(MAKE) -C kontorplatform  statusfiler
+	$(MAKE) -C itplatform  statusfiler
 	$(MAKE) -C alle  statusfiler
 
 version:  Makefiler
@@ -52,7 +52,7 @@ version:  Makefiler
 	@grep -A2 "<listitem>" c/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > c/version.sgml
 	@grep -A2 "<listitem>" docbook/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > docbook/version.sgml
 	@grep -A2 "<listitem>" kontorbruger/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >kontorbruger/version.sgml
-	@grep -A2 "<listitem>" kontorplatform/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >kontorplatform/version.sgml
+	@grep -A2 "<listitem>" itplatform/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 >itplatform/version.sgml
 	cp friheden/version.sgml alle/version.sgml
 	@echo "friheden" `cat friheden/version.sgml`
 	@echo "applikationer" `cat applikationer/version.sgml`
@@ -63,7 +63,7 @@ version:  Makefiler
 	@echo "c" `cat c/version.sgml`
 	@echo "docbook" `cat docbook/version.sgml`
 	@echo "kontorbruger" `cat kontorbruger/version.sgml`
-	@echo "kontorplatform" `cat kontorplatform/version.sgml`
+	@echo "itplatform" `cat itplatform/version.sgml`
 
 eksempelbackup:  statusfiler
 	$(MAKE) -C friheden eksempelbackup
@@ -75,7 +75,7 @@ eksempelbackup:  statusfiler
 	$(MAKE) -C c  eksempelbackup
 	$(MAKE) -C docbook  eksempelbackup
 	$(MAKE) -C kontorbruger  eksempelbackup
-	$(MAKE) -C kontorplatform  eksempelbackup
+	$(MAKE) -C itplatform  eksempelbackup
 
 clean: Makefiler
 	$(MAKE) -C friheden clean
@@ -87,7 +87,7 @@ clean: Makefiler
 	$(MAKE) -C c clean 
 	$(MAKE) -C docbook clean 
 	$(MAKE) -C kontorbruger clean 
-	$(MAKE) -C kontorplatform clean 
+	$(MAKE) -C itplatform clean 
 	$(MAKE) -C alle clean 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
