@@ -19,7 +19,7 @@ af distributionen.
 </para>
 
 <para>
-Der findes kun ét egentligt brænderprogram under Linux; det hedder
+Der findes ét meget anvendt brænderprogram under Linux; det hedder
 <command>cdrecord</command> og følger med stort set alle
 distributioner. <command>cdrecord</command> er et tekstbaseret program
 med en mængde muligheder, så det kan være lidt tungt at danse med.
@@ -66,10 +66,11 @@ maskinen.
 
 <para>
 I det følgende vil der blive gennemgået hvad man kan gøre hvis
-ens brænder ikke umiddelbart bliver genkendt. Der vil derefter blive
-vist et lille udpluk af de nemme grafiske overbygninger til
+ens brænder ikke umiddelbart bliver genkendt. Der vil derefter kort blive
+gennemgået en enkelt af de nemme grafiske overbygninger til
 <command>cdrecord</command>. Endelig bliver det vist hvorledes
-<command>cdrecord</command> benyttes fra kommandolinien, til at lave
+<command>cdrecord</command> (og et par hjælpeprogrammer)
+benyttes fra kommandolinjen, til at lave
 cd'er med enten data, musik eller begge dele.
 </para>
 
@@ -101,7 +102,7 @@ man selv til at rode lidt dybere.
 </para>
 
 <para>
-For <command>cdrecord</command> findes der kun SCSI-brændere. Uanset
+Programmet <command>cdrecord</command> understøtter kun SCSI-brændere. Uanset
 hvad, skal man derfor i indstillingerne til kernen aktivere
 SCSI-understøttelse. Dette gøres ved under "SCSI support" at aktivere
 "SCSI CD-ROM support" og "SCSI generic support". Hvis dette er gjort,
@@ -170,9 +171,15 @@ hdd
 <para>
 I dette tilfælde er der altså to drev i maskinen, og man skal tilføje
 <command>hdc=ide-scsi hdd=ide-scsi</command> som parameter til
-kernen. Bruger man LILO til at starte Linux skal man ind og ændre i
+kernen. Dette vil give IDE-SCSI-emulering både for brænderen og for
+det normale cd-rom-drev, men det er også helt i orden; emuleringen er
+ikke forbeholdt brændere.
+</para>
+
+<para>
+Bruger man LILO til at starte Linux skal man ind og ændre i
 <filename>/etc/lilo.conf</filename>, hvor der skal tilføjes en
-<command>append</command> linie:
+<command>append</command> linje:
 </para>
 
 <programlisting>
@@ -195,8 +202,8 @@ så genstartes for at glemme alt om IDE-drevet.
 </para>
 
 <para>
-Kører du med <command>loadlin</command> (opstart fra DOS/Windows), så 
-kan du lave en linie i <command>autoexec.bat</command> med
+Kører man med <command>loadlin</command> (opstart fra DOS/Windows), så 
+kan man lave en linje i <command>autoexec.bat</command> med
 </para>
 
 <programlisting>
@@ -204,11 +211,12 @@ c:\linux\loadlin c:\linux\vmlinuz.244 root=/dev/hdb5 ro hdc=ide-scsi hdd=ide-scs
 </programlisting>
 
 <para>
-Hvis du har <command>loadlin.exe</command> i
-<filename>c:\linux</filename> og vil bruge en kerne
+Her er <command>loadlin.exe</command> i
+<filename>c:\linux</filename>, der bruges en kerne
 <filename>vmlinuz.244</filename> med system-roden på
-<filename>/dev/hdb5</filename> og du har de to cd-drev
-<filename>hdc</filename> og <filename>hdd</filename>.
+<filename>/dev/hdb5</filename> og til de to cd-drev
+<filename>hdc</filename> og <filename>hdd</filename>
+anvendes IDE-SCSI-emulering.
 </para>
 
 
@@ -230,11 +238,11 @@ via <command>cdrecord -scanbus</command>.
 
 <para>
 Vil man automatisere dette, så man ikke skal skrive
-<command>modprobe</command>-linierne efter hver genstart af maskinen,
+<command>modprobe</command>-linjerne efter hver genstart af maskinen,
 kan man på mange distributioner finde filen
-<filename>/etc/modules</filename>. I denne fil kan man skrive navne på
+<filename>/etc/modules</filename>. I denne fil står navne på
 moduler, som automatisk skal indlæses ved opstart. Man kan altså
-tilføje følgende linier og behøver så ikke tænke på at huske at
+tilføje følgende linjer og behøver så ikke huske at
 indlæse modulerne selv:
 </para>
 
@@ -245,8 +253,9 @@ ide-scsi
 
 <para>
 For at kunne bruge det drev, der er lavet IDE-SCSI-emulering på, som
-almindeligt cd-rom-drev også, skal der lige laves en sidste lille
-ændring. Følgende symlink er sandsynligvis sat.
+almindeligt cd-rom-drev også, skal der laves en sidste
+ændring. <filename>/dev/cdrom</filename> peger sandsynligvis på et
+IDE-cd-drev.
 </para>
 
 <indexterm><primary>cd</primary><secondary>/dev/cdrom</secondary></indexterm>
@@ -259,8 +268,8 @@ lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> hdc
 <para>
 Eftersom der nu er lavet en IDE-SCSI-emulering, så eksisterer
 cd-drevet ikke længere på IDE-bussen på systemet, men på den emulerede
-SCSI-bus. Derfor har den også fået et nyt device, nemlig
-<filename>/dev/scd0</filename> (tallet nul er dog lidt afhængigt af om
+SCSI-bus. Derfor har den også fået et nyt navn, nemlig
+<filename>/dev/scd0</filename> (tallet nul er dog afhængigt af om
 der er andre SCSI-enheder i systemet), og så skal
 <filename>/dev/cdrom</filename> også ændres til at pege det korrekte
 sted hen.
@@ -285,7 +294,7 @@ lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 
 <para>
 På <ulink
-url="http://www.xcdroast.org">http://www.xcdroast.org</ulink> kan du
+url="http://www.xcdroast.org">http://www.xcdroast.org</ulink> kan man
 finde X-CD-Roast. Få fat i den og installér den. Skal man kunne brænde
 cd'er uden at være root bliver man nødt til at sætte suid-bitten på
 <filename>xcdroast</filename>. Dette gøres:
@@ -316,7 +325,7 @@ og speed sættes. Eksisterer brænderen ikke under dette punkt, så
 skyldes det, at brænderen enten ikke er tilsluttet ordentligt (scsi)
 eller at det er en ide-brænder som kræver en
 ide-scsi-emuluering. Dette ses i sidste afsnit.  Under "HD Setup"
-vælges et image-mount-point (der hvor du monterer dit image).  Her kan
+vælges et image-mount-point (der hvor man monterer sit image).  Her kan
 man vælge, hvis man har en hel partition dedikeret til cd-images eller
 lignende, at den skal bruge dette. Det er meget praktisk at der mindst
 er plads til en enkelt hel cd på den valgte placering. Det er på denne
@@ -376,7 +385,7 @@ Skal man nu selv til at lægge et filsystem ud på cd, gøres det under punktet
 den del af filsystemet man ønsker at brænde ud. Følgende valg vil lave
 et master image med <filename>/home</filename> hvor
 <filename>/home/ftp</filename> ikke er på. Vælg "Master Image" og
-derefter "Write Image", så er du i gang.
+derefter "Write Image", så er man i gang.
 </para>
 
 
@@ -386,9 +395,9 @@ derefter "Write Image", så er du i gang.
 </FIGURE>
 
 <para>
-Mere om X-CD-Roast og opsætning af brænder
-<filename>/usr/local/xcdroast-0.96ex/README*</filename> eller hvor du
-nu ellers installerede <command>xcdroast</command>.
+Mere om X-CD-Roast og opsætning af brænder findes i
+<filename>/usr/local/xcdroast-0.96ex/README*</filename> eller hvor
+nu ellers <command>xcdroast</command> er installeret.
 </para>
 </sect1>
 
@@ -397,7 +406,7 @@ nu ellers installerede <command>xcdroast</command>.
 <!-- Skrevet af Gert Holtoft <holtoft@get2net.dk> -->
 <indexterm><primary>cdrecord</primary></indexterm>
 <indexterm><primary>cd</primary><secondary>brændeprogram, cdrecord</secondary></indexterm>
-<indexterm><primary>Brænde cd</primary><secondary>fra kommandolinien</secondary></indexterm>
+<indexterm><primary>Brænde cd</primary><secondary>fra kommandolinjen</secondary></indexterm>
 
 <para>
 Det bliver nu gennemgået, hvorledes man kan brænde en cd udelukkende
@@ -632,7 +641,7 @@ færdige cd.
 </para>
 
 <para>
-Hvis udgangspunktet for cd'en er komprimeret musik i form af mp3-
+Er udgangspunktet for cd'en komprimeret musik i form af mp3-
 eller ogg-filer, skal disse derfor først laves om til wav-filer. De
 fleste programmer til at afspille komprimerede filer har mulighed for
 at lave en wav-fil i stedet for at afspille lyden. Hvis man for
@@ -664,8 +673,8 @@ der skal med på cd'en.
 <indexterm><primary>cdparanoia</primary></indexterm>
 
 <para>
-Hvis musikken, der skal brændes, forefindes på en musik-cd i forvejen
-(og der altså skal laves en kopi) kan programmet
+Ligger musikken, der skal brændes, på en musik-cd i forvejen
+(og der altså skal laves en kopi) kan det selvstændige program
 <command>cdparanoia</command> bruges til at danne de nødvendige
 wav-filer ud fra original cd'en. Med originalen i cd-drevet kan
 man med følgende kommando få de enkelte numre gemt i filerne
@@ -702,22 +711,23 @@ af det hele. Wav-filerne kan brændes til en cd med følgende kommando:
 </screen>
 
 <para>
-Hver enkelt musikfil, som skal med på cd'en, skal angives i denne
+Hver enkelt musikfil, som skal med på cd'en, angives i denne
 kommando. I dette eksempel vil cd'en derfor komme til at bestå af blot
 to numre. På den færdige cd kommer numrene til at ligge i samme
-rækkefølge, som man angiver filnavnene i. Da numrenes rækkefølge ofte
-har betydning er det derfor ofte ikke nok blot at angive filnavnene;
-rækkefølgen af de enkelte filnavne må også overvejes.
+rækkefølge, som man angiver filnavnene i. Ofte er man ikke ligeglad
+med den endelige orden, og derfor må man nøje overveje den rækkefølge,
+man angiver wav-filerne i.
 </para>
 
 <para>
 Normalt bliver der indsat en pause på cirka to sekunder mellem hvert
 nummer på cd'en. Dette er ofte intet problem, men hvis man laver en
 kopi af en cd hvor de enkelte numre glider sammen, kan pausen i kopien
-være meget irriterende. Dette problem gør sig især gældende ved
+være meget irriterende. Problemet gør sig især gældende ved
 live-optagelser. Pausen mellem numrene kan undgås ved at bruge "disk
 at once" brænding, hvor hele cd'en brændes i én køre, modsat normal
-"track at once" brænding, hvor de enkelte numre brændes individuelt.
+"track at once" brænding, hvor de enkelte numre brændes individuelt
+og altså med en lille pause imellem.
 "Disk at once" brænding aktiveres ved hjælp af <command>-dao</command>
 og det tidligere eksempel ser så ud som følger:
 </para>
@@ -755,8 +765,8 @@ ikke bliver lukket, og det er derfor muligt at tilføje mere senere hen:
 
 <para>
 I forlængelse af musikken skal der brændes en iso-fil. Denne iso-fil
-skal laves på en speciel måde, således at den ikke bliver placeret i
-starten af cd'en. Derfor skal man først finde ud af, nøjagtig hvor
+laves på en speciel måde, således at den ikke bliver placeret i
+starten af cd'en. Derfor må man først finde ud af, nøjagtig hvor
 musikken slutter. Det kan <command>cdrecord</command> heldigvis aflæse,
 når man har brændt første del af cd'en. Med cd'en stadig i brænderen
 bruger man <command>-msinfo</command>:
