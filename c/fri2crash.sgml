@@ -214,6 +214,7 @@ struct person_type medlem[10];     /* array af struct */
 int *j;                            /* adressevariabel, pointer */
 </programlisting>
 
+
 <para>
 En variabel, fx <emphasis>int xyzzy</emphasis>, kan erklæres
 udenfor en funktion, så er det et eksternt objekt, eller inde
@@ -381,6 +382,49 @@ main() {
    strcpy(mithus.adr,"Byvej 20";  /* initialisering af string kræver strcpy */
 }
 </programlisting>
+
+<para>
+Desuden findes der en nummereringstype, enumeration, som typisk
+anvendes til en serie symbolske konstanter:
+</para>
+<example id="A-enum"><title>Enumeration</title>
+<programlisting>
+enum farve_t { red, green, blue };
+</programlisting>
+</example>
+<para>
+<emphasis> red </emphasis> vil her svare til værdien 0,
+<emphasis> green </emphasis> til 1 etc. etc... red, green og blue
+vil indgå som identifiers på linie med andre variable. Man kan nu
+erklære en variabel af denne type, og en C++ compiler vil kunne
+kontrollere, at vi ikke tildeler vores variabel ulovlige værdier.
+En C-compiler overlader dette ansvar til programmøren.
+</para>
+
+<para>
+En variant af struct er "union", som svarer til en slags
+forudbestilt typecasting. Den er som skræddersyet til en
+program-generator, der skal generere en oversætter - altså en
+oversætter som oversætter en oversætter. Dette æske system har
+fra tidligt i 70'erne i unix sammenhæng fået det sjove navn YACC,
+Yet Another Compiler Compiler. I Gnu tool-settet er det blevet
+til BISON - fordi bison er en fætter til Yak-oksen.  Ja-ja, læs
+mellem linierne, at denne her union <emphasis> er </emphasis> kun
+til specielle lejligheder :-))
+</para>
+<indexterm><primary>union</primary></indexterm>
+<example id="A-union"><title>Union</title>
+<programlisting>
+union yylval_type {
+    long itype;
+    tree ttype;
+    enum tree_code code;
+    const char *filename;
+    int lineno;
+};
+union yylval_type yylval;
+</programlisting>
+</example>
 
 
 </sect3>

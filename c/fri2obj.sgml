@@ -1,8 +1,7 @@
 <chapter id="c-objekt-orienteret-tankegang">
-<title>Brugerdefinerede datatyper og objekter</title>
+<title>Sammensatte datatyper og hvad man kan med dem i C</title>
 
 <indexterm><primary>brugerdefinerede datatyper</primary></indexterm>
-<indexterm><primary>konkrete datatyper</primary></indexterm>
 
 <para>
 Vis mig dine data, og jeg skal sige dig, hvad dit program vil
@@ -11,6 +10,9 @@ arbejde med, er altid et valg; der vil være flere oplysninger om
 de enkelte ting, som vi repræsenterer i programmerne, end vi
 bryder os om at have med i vores datastrukturer.
 </para>
+
+<sect1>
+<title>Sammensætning af flere oplysninger til en enhed</title>
 
 <para>
 Når man sammensætter forskellige oplysninger i en klump, kalder
@@ -23,12 +25,11 @@ element.
 <para>
 Da sådan en struct som regel forekommer som et element i en
 tabel, er der ifølge Knuth også forfattere, som har brugt
-betegnelsen "perler" om structs. De kan jo så, ligesom perler,
-trækkes på en snor.
+betegnelsen "perler" om structs. De kan jo så trækkes på en snor.
 </para>
 
-<sect1>
-<title>Sammensætning af flere data</title>
+<sect2>
+<title>Tabel, array, liste, sekvens, bunke ...</title>
 
 <para>
 Med et eksempel fra Donald Knuth kunne vi se på, hvordan man kan
@@ -48,9 +49,9 @@ ud:
  */
 
 struct kort_t {
-    int tag:1;             /* bagsiden op = 1 */
-    int farve:2;           /* 0 klør, 1 ruder, 2 hjerter, 3 spar */
-    int rang:4;            /* 1 = es, 2 = toer, 13 = konge */
+    unsigned tag:1;        /* bagsiden op = 1 */
+    unsigned farve:2;      /* 0 klør, 1 ruder, 2 hjerter, 3 spar */
+    unsigned rang:4;       /* 1 = es, 2 = toer, 13 = konge */
     struct kort_t *next;   /* kort nedenunder */
     char titel[11];        /* forkortet navnebetegnelse */
 };
@@ -59,54 +60,354 @@ struct kort_t {
 
 <para>
 Indholdet af et felt i en struct kan være hvad som helst - der
-dog den lille begrænsning, at compileren skal kende alle typerne,
-med mindre der er tale om en pointer til et eller andet ukendt
-objekt.
+dog den lille begrænsning, at compileren skal kende alle typerne.
+Med et berømt citat: "Folk kan få bilen i den farve, de ønsker,
+bare de ønsker den sort." (Henry Ford om Ford-T).
 </para>
 
 <para>
 Vi kan have tal eller tekst i et felt - eller en anden struct,
-hvis det passer ind i vores planer.
+hvis den er erklæret tidligere i programmet.
 </para>
 
 <para>
-Tag (engelsk: mærke) sat lig med 1 betyder, at kortet vender
-bagsiden opad, tag == 0 betyder, at det vender forsiden op.
-Feltet farve er selvfølgelig <emphasis> kortspilsfarve
-</emphasis> d.v.s. klør, ruder, hjerter eller spar. Ved at
-benytte 2 bits får vi værdierne 0, 1, 2 og 3 til rådighed.
+Tag (engelsk: mærke, udtales "tagg") sat lig med 1 betyder, at
+kortet vender bagsiden opad, tag == 0 betyder, at det vender
+forsiden op. Feltet farve er selvfølgelig <emphasis>
+kortspilsfarve </emphasis> d.v.s. klør, ruder, hjerter eller
+spar. Ved at benytte 2 bits får vi værdierne 0, 1, 2 og 3 til
+rådighed. 
+</para>
+
+<programlisting>
+enum farve_t { kloer, ruder, hjerter, spar };
+</programlisting>
+
+<indexterm><primary>enumeration</primary>
+           <secondary>nummereringsliste</secondary></indexterm>
+
+<para>
+For at knytte en betydning mellem 0 til 3 og kortspilsfarverne
+kan vi benytte en enumeration (tælleremse, nummer-system).
+Reglerne for en sådan ses <xref LinkEnd="A-enum">. Klør (kloer)
+bliver en symbolsk betegnelse for 0, ruder for 1 etc. Man kan
+godt tildele et symbol i en enumeration en værdi, fx. <literal>
+enum farve_t { kloer=1, ruder, hjerter, spar }; </literal>
+Imidlertid har jeg ikke gjort det her. Hvis vi anvender
+kulør-værdierne 0-3 kan vi have dem i 2 bit, ellers må vi bruge
+flere. Selv om det ikke er essentielt i dette eksempel at spare
+på bits, så er det en helt almindelig fremgangsmåde.
+</para>
+
+<programlisting>
+struct kort_t {
+    unsigned tag:1;        /* bagsiden op = 1 */
+    unsigned farve:2;      /* 0 klør, 1 ruder, 2 hjerter, 3 spar */
+    unsigned rang:4;       /* 1 = es, 2 = toer, 13 = konge */
+    struct kort_t *next;   /* kort nedenunder */
+    char titel[11];        /* forkortet navnebetegnelse */
+};
+</programlisting>
+
+<para>
 Rang henviser til kortets værdi med es som ener, konge som
-tretten'er.
+tretten'er. Også her kunne vi benytte en enumeration for at få en
+forbindelse mellem "konge" og tallet 13.
+</para>
+
+<para>
+Feltet <literal> struct kort_t *next; </literal> er et felt, som
+kan indeholde adressen på et andet kort, i dette tilfælde kunne
+det være kortet, som ligger nedenunder. I mange tilfælde kunne
+man nøjes med at angive afstanden fra en base adresse, et
+<emphasis> offset </emphasis>.  Hvis der ikke er noget kort
+nedenunder, kan vi give feltet værdien 0 som i denne sammenhæng
+kaldes NULL.
 </para>
 
 <para>
 Adressen på et objekt kaldes også et link eller en pointer
-(vejviser, pegepind) eller reference til dette objekt.
+(vejviser, pegepind) eller reference til dette objekt. I teksten
+her benyttes ordet pointer om en adressevariabel, ikke om
+adressen alene.
 </para>
 
 <para>
-Feltet <literal> struct kort_t *next; </literal> er et
-felt, som kan indeholde adressen på et andet kort, i dette
-tilfælde kunne det være kortet, som ligger nedenunder i en
-kabale. I mange tilfælde kunne man nøjes med en adresse, som var
-relativ i forhold til en base adresse.  Hvis der ikke er noget
-kort nedenunder, kan vi give feltet værdien 0 som i denne
-sammenhæng kaldes NULL.
+Der er en sjov ting i denne struct: Feltet <emphasis> next
+</emphasis> er af samme type, som den selv er, <literal> struct
+kort_t * </literal> . 
 </para>
+
+<indexterm><primary>pointer</primary>
+           <secondary>oplysninger om</secondary></indexterm>
+
+<para>
+I C sproget er der 4 oplysninger om en pointer, de findes i
+oversætterens symboltabel: 
+</para>
+<itemizedlist mark="bullet">
+<listitem><para>
+selve pointerens adresse (som for enhver anden variabel),
+</para></listitem>
+<listitem><para>
+dens størrelse (antallet af bits eller bytes, som er nødvendige
+for at adressere en character variabel),
+</para></listitem>
+<listitem><para>
+størrelsen af det, den peger på; det kaldes også skalering,
+</para></listitem>
+<listitem><para>
+Graden af indirection (om det er en pointer til en pointer til en
+pointer til ... til en dims, antallet af stjerner i deklarationen
+af variabelen)
+</para></listitem>
+</itemizedlist>
+
+<para>
+En pointer er en variabel. Størrelsen af en pointer er altid
+kendt. På en 32 bit maskine er den 32 bit (4 bytes). Det er
+muligt at afsætte plads til en pointer uden at vide, hvad den
+peger på. At afsætte plads er det samme som at definere
+variabelen.
+</para>
+
+<para>
+Det siger sig selv, at når man afrefererer pointeren, d.v.s.
+henter eller kopierer det objekt, som den peger på, så skal
+objektets størrelse være kendt.
+</para>
+
+<indexterm><primary>pointer</primary>
+           <secondary>skalering</secondary></indexterm>
+
+<para>
+Når det er nødvendigt, kan man erklære en pointer til et eller
+andet ukendt objekt. Det er faktisk det, som vi gør med feltet
+next. Mens oversætteren arbejder på opbygningen af struct kort_t,
+er størrelsen på selvsamme struct ikke kendt endnu. Derfor bliver
+next-pointeren først endeligt tildelt sin skalerings-faktor
+(størrelsen af det objekt, den peger på) i det øjeblik, at
+oversætteren er færdig med struct kort_t.
+</para>
+
 <GRAPHIC FILEREF="kort1.&magic;"  SCALE="70"></GRAPHIC>
+
+<para>
+Nu kan vi erklære et "helt kortspil" som et array med 53 kort, 13
+i hver farve plus en joker. Definitionen ser ud som her:
+</para>
+
+<programlisting>
+struct kort_t kort[53];    /* husk: fra 0 til og med 52. */
+</programlisting>
+
+<para>
+Hvis vi erklærer et "helt kortspil" og initialiserer alle
+kortenes felter, vil de 4 farvers kort kunne initialiseres på
+følgende måde (hele kildeteksten i filen kort02.c):
+</para>
+
+<programlisting>
+    for (kuloer = kloer; kuloer <= spar; ++kuloer) {
+        for (j = 0; j < 13; ++j) {
+            kort[kuloer*13+j].tag = 0;
+            kort[kuloer*13+j].farve = kuloer;
+            kort[kuloer*13+j].rang = j+1;
+            sprintf(kort[kuloer*13+j].knavn,"%s %d", farve(kuloer), j+1);
+            kort[kuloer*13+j].next = NULL;
+        }
+    }
+</programlisting>
+
+<para>
+Kortspils-farverne bruges som om de var heltal (det er de jo
+også) og kan endog bruges til at specificere stop og start i
+for-løkken, som styrer initialisering. g++ vil dog klage over
+operationen ++kuloer, men i øvrigt hjælpe med at checke, at vi
+bruger enumerationen uden at tildele den forkerte værdier (som
+fx. kuloer = 17). gcc vil end ikke nævne, at vi tildeler en
+variabel af typen farve_t en værdi, der ligger udenfor grænserne.
+</para>
+
+<para>
+Det er ikke den eneste måde at gøre tingene på. Det er heller
+ikke den mest effektive, som er et initialiseret statisk array.
+For at mindske skrivearbejdet kan man generere det meste af
+C-koden til initialisering af dette statiske array ved hjælp af
+et awk-program.
+</para>
+
+<para>
+Men programmet her er jo ikke et, som kræver ultimativ
+optimering, så derfor er det nok bedre at lægge vægt på
+læsevenligheden.
+</para>
+
+<para>
+For at gøre programmet endnu mere læsevenlig kan analogt med
+de fire farver lave en enumeration for rang og tilhørende
+betegnelse, hvilket vil gøre det muligt at håndtere det korte
+navnefelt for es, knægt, dame og konge på en bedre måde. (Prøv
+at gøre det - det er en god øvelse.)
+</para>
+
+<para>
+Den anden ting, som kunne påkalde sig opmærksomhed er, at vi ikke
+anvender et multi-dimensionalt array og at vi i øvrigt bare
+forlænger i den anden ende for at få plads til en joker. Læg
+mærke til hvor vanskeligt det er at håndtere jokeren i
+kildeteksten kort02.c! Skal den have en rang? Skal den have en
+farve, og i så fald hvilken? Skal vi ændre vores
+farve/rang-system, således at man kan håndtere en ekstra farve,
+nemlig joker-farven? Skal man have flere jokere og skelne mellem
+rød joker og sort joker? I første omgang lader vi jokeren flyde
+udenfor almindelig nummerorden, og hvis vi vil bruge den i et
+kortspil eller en kabale af en slags, så må vi sørge for at
+programkoden tager højde for, at der kan være et ekstra kort.
+</para>
+
+<para>
+Repræsentationen af vort kortspil i hukommelsen ser nu ud
+som følgende illustration antyder; vi går ud fra, at størrelsen
+på en struct kort_t er 20 bytes:
+</para>
+
+<programlisting>
+adresse (offset):
+0            20          40          60          80
++-----------+-----------+-----------+-----------+-----------+...~
+| 0 0 0 NULL| 0 0 1 NULL| 0 0 2 NULL| 0 0 3 NULL| 0 0 4 NULL|
+|"kloer 1  "|"kloer 2  "|"kloer 3  "|"kloer 4  "|"kloer 5  "|
++-----------+-----------+-----------+-----------+-----------+...~
+</programlisting>
+
+<para>
+... og vores lille bunke fra før kan antydes med følgende skitse:
+</para>
+
+<programlisting>
++------+           +------+           +------+
+|next: |           |next: |           |next: |
+|NULL  |           | 820  |           | 180  |
+|      |           |      |           |      |
+|      |           |      |           |      |
+|      |           |      |           |      |
+|      |           |      |           |      |
+|klør  |           |ruder |           |spar  |
+|10    |           | 2    |           | 3    |
+|      |           |      |           |      |
++------+    ....   +------+    ...    +------+
+adresse:
+180                280                820 
+</programlisting>
+
+<para>
+Ovenstående skitse er imidlertid ikke den mest læselige måde at
+beskrive forbindelsen mellem de tre kort, så man benytter som
+regel pile i stedet for; adresserne på hver struct er ikke vist
+i denne illustration, og de er jo også helt irrelevante:
+</para>
+<example id="ex-kort-bunke"><title>Kort-bunke</title>
+<programlisting>
++----------------+     +----------------+     +----------------+
+| 0 1 1       *--+---->| 0 3 2       *--+---->| 0 0 9       *--+----+
+| ruder 2        |     | spar  3        |     | klør 10        |    |
++----------------+     +----------------+     +----------------+    |
+                                                                    |
+                                                                 ___|___
+                                                                  -----
+                                                                    ~ 
+</programlisting>
+</example>
+
+<para>
+Når en pointer ikke peger på en adresse, sætter man den pr.
+konvention til 0 eller NULL, en adresse, som intet normalt
+program nogensinde vil forsøge at røre ved. Det kan tegnes som en
+jordforbindelse (således som det er forsøgt på ascii-tegningen
+ovenfor.)
+</para>
+
+<para>
+Vores kortspilsrepræsentation er lavet som et array af kort. Den
+sidste tegning <xref LinkEnd="ex-kort-bunke"> viser, at arrayet
+ikke er essentielt for "bunke" teknikken med en next-pointer for
+hvert kort.
+</para>
+
+<para>
+Imidlertid er arrayet en udmærket løsning for et kortspil.
+Kortene er jo til stede alle sammen hele tiden, med mindre vi
+skal tage højde for en haj, der har kort i ærmet. Man har
+mulighed for at håndtere kortene som et array, når man fx.  vil
+"blande" dem ved at bruge en random - generator til at plukke
+kortene ud, et efter et, fra arrayet i tilfældig rækkefølge og
+sætte dem øverst i bunken. Prøv det som en programmeringsøvelse
+(eller se eksempel kort04.c).
+</para>
+
+<para>
+Hver gang vi vil lave en bunke, skal vi have et startkort.
+Adressen på dette start - kort må vi gemme <emphasis> uden for
+kort-arrayet. </emphasis> Alternativet er at finde alle de kort,
+der har NULL i next-feltet og så følge deres pointer-kæde. Det er
+noget mere besværligt, rent programmeringsmæssigt, at holde styr
+på kortbunkerne på denne måde. På en moderne, hurtig maskine
+ville man nok ikke kunne opfatte forskellen i hastighed ved de to
+metoder.
+</para>
+
+<para>
+En anden morsom ting ved denne repræsentation er, at kortene kun
+kan indgå i én bunke. Meget realistisk!
+</para>
+
+<para>
+De ting, vi ikke har interesseret os for: Kortenes størrelse,
+vægt, placering på bordpladen (eller andre steder), slitage,
+ejermand, design af bagsiden, temperatur, molekylernes beskaffenhed ...
+</para>
+
+</sect2>
+
+<sect2><title>Operationer på datatypen</title>
+
+<para>
+Ud fra foregående afsnit er det vist tydeligt, at det er
+nødvendigt at gøre sig klart, hvad man vil med sin datamodel.
+Hvilke operationer er vi interesserede i at kunne udføre?
+</para>
+
+<para>
+Hvis vi er interesserede i at vide, hvilket kort, der er øverst i
+en bestemt bunke, så må vi kunne svare på spørgsmålet: Hvilket
+kort er det første. Det er nødvendigt i mange situationer, for
+eksempel ved kortgivning. (Se eksemplet kort04.c).
+</para>
 
 <para>
 Dette afsnit er - sammen med de næste afsnit om konkrete og
 abstrakte datatyper - under omarbejdelse. Hvis du har nogen
 spørgsmål eller ønsker at bidrage skal du være velkommen. Jeg
-regner med at få skrevet en hel del i løbet af dagene 16 - 24
-juni 2001.
+regner med at få skrevet en hel del i løbet af perioden 24. juni -
+31. juli 2001.
 </para>
 
+</sect2>
 </sect1>
 
-<sect1 id="datatyper">
+<sect1 id="sect-oo-metoder">
 <title>C og objekt-orienterede metoder</title>
+
+<para>
+Bemærk at dette afsnit er under omredigering, og at der er
+gentagelser af oplysninger fra forrige afsnit. Hvis du har
+kommentarer, ris eller ros eller forslag, så er du velkommen til
+at kontakte mig (eller andre SSLUG'er). Min email adresse har
+tidligere været vist lidt forkert, derfor en gentagelse:
+donald_j_axel@get2net.dk
+</para>
+
 <para>
 Er C et objektorienteret sprog? Hvorfor er det ikke
 objektorienteret, når et C program er en række definitioner af
