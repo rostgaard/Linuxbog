@@ -554,8 +554,8 @@ den nye disk, så skal du naturligvis erstatte dette i
 <para>
 Hvis du kan se at alt fungerer, kan du slette den gamle
 <filename>/home</filename> som nu endte på
-<filename>/oldhome</filename>. Brug <command>rm -rf /oldhome</command>
-nå du er helt sikker.
+<filename>/oldhome</filename>. Brug <command>rm -rf /oldhome</command>,
+når du er helt sikker.
 </para>
 
 <para>
@@ -1315,209 +1315,6 @@ læse dokumentationen,før du går i gang.
 </sect1>
 
 
-<sect1 id="cdrombraending">
-<title>Opsætning af cdbrænder under linux</title>
-<indexterm><primary>Brænde cdrom</primary></indexterm>
-<indexterm><primary>cdrom</primary><secondary>brænde</secondary></indexterm>
-
-<para>
-Er man så heldig at man har en scsi brænder, så skulle man bare kunne
-installere Xcdroast og få det til at virke direkte. Har man en brænder
-af ide/atapi typen, så bliver man nødt tilat lave en ide-scsi
-emuluering for at få dette til at virke, det er dog ikke så svært som
-det lyder og fungerer ligesågodt. Det første kræver at kernen skal
-bygges op til at have ide-scsi, scsi cdrom, generic scsi og ide-cd
-bygget som moduler. Dette kontrolleres ved at lave
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT> cd /usr/src/linux; make xconfig</USERINPUT>
-</screen>
-
-<para>
-Hvorefter man skal ind i de 2 vinduer med "SCSI support" og "Block
-Devices". De punkter der er interessante er dem der er markeret med
-rødt her:
-</para>
-
-<FIGURE ID="roast1-fig" FLOAT="1">
-<TITLE>Opsætning af kernen</TITLE>
-<GRAPHIC FILEREF="roast1.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
-
-<FIGURE ID="roast2-fig" FLOAT="1">
-<TITLE>Opsætning af kernen</TITLE>
-<GRAPHIC FILEREF="roast2.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
-
-<para>
-Hvorefter kernen skal omkompileres. <!-- som vist i afsnittet om
-omkompilering af kernen xref linkend="kernelcompile" -->.  Inden den nye
-kerne nu bootes skal der lige laves en ændring til lilo. I
-<filename>/etc/lilo.conf</filename> skal der laves følgende ændring
-(se linien med append). Se i øvrigt <xref linkend="lilo">.
-</para>
-
-<screen>
-boot=/dev/hda
-map=/boot/map
-install=/boot/boot.b
-prompt
-timeout=50
-append="hdd=ide-scsi" // hdd = secondary slave device
-image=/boot/vmlinuz-2.2.5-15
-        label=linux
-        root=/dev/hda5
-        read-only
-</screen>
-
-<para>
-I linien append skal skrives hvilken enhed brænderen er på
-ide-controlleren. Bagefter køres <command>/sbin/lilo</command> og den
-nye kerne bootes. Når systemet kommer op igen kan man nu skrive
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-cd ignore=hdd</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe sg</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe cdrom</USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>/sbin/modprobe ide-scsi</USERINPUT>
-</screen>
-
-
-
-<para>
-Så skulle scsi emulueringen være iorden og man kan nu lave en:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>cat /proc/scsi/scsi</USERINPUT> 
-Attached devices: 
-Host: scsi0 Channel: 00 Id: 00 Lun: 00
-  Vendor: HP       Model: CD-Writer+ 7200  Rev: 3.01
-  Type:   CD-ROM                           ANSI SCSI revision: 02
-</screen>
-
-<para>
-Og der skal brænderen være dukket op. Så er det bare at installere
-brændersoftware, så kan du brænde din først linux cd til dine venner.
-</para>
-
-<para>
-Skal man nu automatisere dette lidt så man ikke skal skrive modprobe
-linierne efter hver bootup, så skal de tilføjes i systemets bootup
-script som på min Red Hat er <filename>/etc/rc.d/rc.local</filename>,
-hvor jeg har tilføjet linierne.
-</para>
-
-<sect2 id="X-cdroast">
-<title>X-cdroast</title>
-<indexterm><primary>X-cdroast</primary></indexterm>
-<para>
-Hvor får man nu fat i xcdroast henne ? http://www.xcdroast.org Få fat
-i den og installer den. Skal man kunne brænde cd´er uden at være root
-bliver man nødt til at sætte s-bit på xcdroast, dette gøres:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>which xcdroast</USERINPUT>
-/usr/local/bin/xcdroast
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>chmod +s /usr/local/bin/xcdroast</USERINPUT>
-</screen>
-
-<para>
-Så skulle det være i orden. Derefter startes
-<application>xcdroast</application> hvorefter man lige skal svare på:
-</para>
-
-
-<FIGURE ID="xcdroast1-fig" FLOAT="1">
-<TITLE>xcdroast</TITLE>
-<GRAPHIC FILEREF="xcdroast1.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
-
-<para>
-Det antages nu at cdrom brænderen er sat op til at virke, dette testes
-med "Setup".  Under "CD Setup" Vælges brænderen som CD- Writer-device
-og speed sættes. Eksisterer brænderen ikke under dette punkt, så
-skuldes det at brænderen enten ikke er tilsluttet ordentligt (SCSI)
-eller at det er en ide-brænder som kræver en ide-scsi
-emuluering. Dette ses i sidste afsnit.  Under "HD Setup" vælges et
-image-mount point. Her kan man vælge, hvis man har en hel partition
-dedikeret til cd-images eller lignende at den skal bruge dette. Det
-er meget praktisk at der mindst er plads til en enkelt hel cd på den
-valgte placering. Det er på denne plads i filsystemet at xcdroast
-lægger de rippede images.  Under Misc og Defaults, kan sættes ting som
-lyd, vindues placering, etc. Ikke vigtigt for brændingen. Derefter
-vælges "Save" og "Done". Nu skulle de øvrige knapper ikke være grå
-længere, men alle skulle kunne bruges.  Så afhænger det af hvad man
-skal brænde. Under "Copy Data CD" ligger alle de operationer man skal
-kunne bruge på en hel cd.
-</para>
-
-<FIGURE ID="xcdroast2-fig" FLOAT="1">
-<TITLE>xcdroast</TITLE>
-<GRAPHIC FILEREF="xcdroast2.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
-
-<para>
-Det skal lige bemærkes at xcdroast bruger <filename>.raw</filename> i
-stedet for <filename>.iso</filename> som endelse. Dette ligger kun i
-navnet ikke andet, skal man derfor bruge det rippede image til noget
-hvor denne endelse er vigtig kan man bare lave en symlink med det
-andet navn. De rippede (eller andre) images skal dog have endelse
-<filename>.raw</filename> for at xcdroast vil kendes ved dem. Der er
-heller ikke noget krav til at de faktisk skal ligge i
-<filename>/image</filename> kataloget:
-</para>
-
-<screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>ls -l</USERINPUT>
-total 1
-lrwxrwxrwx 1 root root   38 Jun 14 20:32 Mandrake-7.1-ext.raw -> /home/ftp/pub/iso/Mandrake-7.1-ext.iso
-lrwxrwxrwx 1 root root   39 Jun 14 19:32 Mandrake-7.1inst.raw -> /home/ftp/pub/iso/Mandrake-7.1-inst.iso
-lrwxrwxrwx 1 root root   32 Apr  3 19:19 Redhat61.raw -> /home/ftp/pub/iso/RedHat-6.1.iso
-lrwxrwxrwx 1 root root   32 Apr  3 19:19 Redhat62.raw -> /home/ftp/pub/iso/RedHat-6.2.iso
-drwxr-xr-x 2 root root 1024 Feb 29 20:26 tmp
-</screen>
-
-<para>
-Under "Copy Audio CD" er der samme features som ved data, dette virker
-bare på audio cd´er i stedet:
-</para>
-
-<FIGURE ID="xcdroast3" FLOAT="1">
-<TITLE>xcdroast</TITLE>
-<GRAPHIC FILEREF="xcdroast3.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
-
-<para>
-Skal man nu selv til at lægge et filsystem ud på cd, så er det punktet
-"Master CD", man skal vælge. Under Master from/to, kan man nu vælge
-den del af filsystemet man ønsker at brænde ud. Følgende valg vil lave
-et master image med <filename>/home</filename> på hvor
-<filename>/home/ftp</filename> ikke er på.
-</para>
-
-
-<FIGURE ID="xcdroast4" FLOAT="1">
-<TITLE>xcdroast</TITLE>
-<GRAPHIC FILEREF="xcdroast4.&magic;"  SCALE="50"></GRAPHIC>
-</FIGURE>
-
-<para>
-Så bliver vi nødt til at vælge "Master Image" hvor vi får kan danne et
-image af det vi gerne vil brænde ud, så brænder vi bare det under
-"Write image".
-</para>
-
-<para>
-Mere om Xcdroast og psætning af brænder
-<filename>/usr/local/xcdroast-0.96ex/README*</filename> eller hvor du
-nu ellers installerede <application>xcdroast</application>.
-</para>
-</sect2>
-</sect1>
 
 
 <sect1 id="printere">
@@ -1640,9 +1437,8 @@ sammen med Windows NT's "OS Loader".
 Et alternativ til dette er at benytte "bootpart" programmet - så kan
 man have LILO liggende i din Linux partition i stedet for i master
 boot record (MBR) - se
-<ulink url="http://www.winimage.com and
-http://www.winimage.com/bootpart.htm">http://www.winimage.com and
-http://www.winimage.com/bootpart.htm</ulink>
+<ulink url="http://www.winimage.com">http://www.winimage.com</ulink> og
+<ulink url="http://www.winimage.com/bootpart.htm">http://www.winimage.com/bootpart.htm</ulink>.
 </para>
 
 
@@ -1703,7 +1499,7 @@ mulighed i eksemplet er, at DOS opstartes på den første partition
 <indexterm><primary>Slette LILO</primary></indexterm>
 <indexterm><primary>LILO</primary><secondary>Slette</secondary></indexterm>
 <emphasis>Tip:</emphasis> LILO kan fjernes ved at køre
-<userinput>fdisk /mbr</userinput> i en DOS shell).
+<userinput>fdisk /mbr</userinput> i en DOS vindue under DOS/Windows.
 </para>
 
 <para>
@@ -1763,8 +1559,9 @@ fra din cdrom og din cdrom er tilgængelig via
 <filename>/mnt/etc/lilo.conf</filename>, f.eks. med
 <command>vi</command> eller <command>pico</command>. Derefter kan du
 køre <command>lilo -r /mnt</command>, der læser
-<filename>lilo.conf</filename>-filen fra <filename>/mnt/etc/lilo.conf</filename>, og installerer LILO, somom du havde <filename>/mnt</filename> som dit
-rod-filsystem.
+<filename>lilo.conf</filename>-filen fra
+<filename>/mnt/etc/lilo.conf</filename>, og installerer LILO, som om
+du havde <filename>/mnt</filename> som dit rod-filsystem.
 </para>
 
 <para>
