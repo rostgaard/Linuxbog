@@ -217,6 +217,11 @@ Indholdet af bøgerne diskuteres på
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.
 <p>
 
+Har du fundet fejl i en bog, så send venligst dette til 
+&lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.<br>
+Er du ikke medlem af SSLUG, så skriv til
+&lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
+
 <hr>
 <a name="matrix"></a>
 <h2>Samlet bogoversigt</h2>
