@@ -31,7 +31,7 @@ sgmlfiler=$(allesgmlfiles) \
           ../program/*.sgml
 
 # her er det der skal laves
-all:	html palmpilot sgml billeder pspdf exit
+all:	billeder html palmpilot sgml pspdf exit
 
 sgml: $(targetname)-$(version).sgml.tgz
 
