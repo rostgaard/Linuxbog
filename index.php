@@ -405,17 +405,17 @@ function vistype($type) {
       last => ".zip"
     ),
     */
-    "PalmPilot" => array(
+    "Palm Pilot" => array(
       first => "linuxbog-",
       form => "-palm-",
       last => ".tar.gz"
     ),
-    "eksempler" => array(
+    "Eksempler" => array(
       first => "linuxbog-",
       form => "-eksempler-",
       last => ".tar.gz"
     ),
-    "kildetekst" => array(
+    "Kildetekst" => array(
       first => "linuxbog-",
       form => "-dist-",
       last => ".tar.gz"
