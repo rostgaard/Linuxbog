@@ -102,6 +102,8 @@ man taler om netværkslag, som fx. den forsimplede Department of
 Defence model, DoD 4-lags modellen her: 
 </para>
 
+
+
 <sect3 id="sikkerhed-layer">
 <title>Netværks-lag</title>
 
@@ -117,11 +119,11 @@ netværkslaget, her finder man IP-numre, ping programmet og ICMP;
 </para></listitem>
 
 <listitem><para>
-transportlaget TCP 
+transportlaget, TCP;
 </para></listitem>
 
 <listitem><para>
-applikationslaget, fx. FTP og HTTP.
+applikationslaget, higher level, fx. FTP og HTTP.
 </para></listitem>
 </itemizedlist>
 
@@ -735,9 +737,59 @@ hele lagt i en slags "konvolut". Først sendes applikationens
 information til transportlaget, og her lægges TCP oplysninger ind
 i nogle felter forrest i pakken. Pakken (eller rettere en pointer
 til den) sendes videre til IP-laget, som forsyner den med en IP
-header, "konvolut", foran. Lagene fra den simple DoD model med
-kommentarer ses her:
+header, "konvolut", foran. 
 </para>
+
+<programlisting>
+
++-------------------+-------------+
+|  IP-oplysninger   | IP-pakke    |
+|  IP-modtager      |             |
+|  IP-afsender m.v. | header      |
++-------------------+-------------+------------+
+|  TCP-header       | IP-data     | TCP-pakke  |
+|  med bl.a. portnr.|             |            |
+|  længde, checksum |             | header     |
++-------------------+             +------------+---------+
+|  Interne headere  |             |            |         |
+|  hvis der er nogen|             | TCP-data   | appli-  |
+|                   |             |            | kations |
++-------------------+             |            | pakke   |
+|  Applikationens   |             |            |         |
+|  data             |             |            |         |
+ 
+~                   ~
+|                   |             |            |         |
++-------------------+-------------+------------+---------+
+
+Forsøg på skematisk forklaring af konvolut-princippet.
+
+</programlisting>
+
+
+<para>
+Hver konvolut svarer til et lag i netværksmodellen.
+Lagene fra den simple DoD model med kommentarer ses her:
+</para>
+
+<programlisting>
+
+                           Protocol Layering
+
+                        +---------------------+
+                        |     higher-level    |
+                        | applikations-laget  |
+                        +---------------------+
+                        |        TCP          |
+                        +---------------------+
+                        |  internet protocol  |
+                        +---------------------+
+                        |communication network|
+                        +---------------------+
+
+
+</programlisting>
+
 
 <itemizedlist>
 <listitem><para>
@@ -813,6 +865,23 @@ De omtalte netværks lag svarer i kernen til programafsnit, som
 bearbejder henholdsvis IP-adresse, TCP-oplysninger og, i sidste
 instans, flytter pakken til den applikation, som skal bruge data.
 </para>
+
+<programlisting>
+
+                           Protocol Layering
+
+                        +---------------------+
+                        |     higher-level    |
+                        +---------------------+
+                        |        TCP          |
+                        +---------------------+
+                        |  internet protocol  |
+                        +---------------------+
+                        |communication network|
+                        +---------------------+
+
+
+</programlisting>
 
 
 <sect2 id="sikkerhed-nat">
@@ -1486,8 +1555,21 @@ opsætte NAT for de 4 lokalmaskiner.
 <sect2 id="sikkerhed-start-nat">
 <title>Opsætning af NAT</title>
 
-<para></para>
+<para>
+NAT og Masquerading sker i nat-tabellens FORWARD kæde, når en
+datapakke skal til at forlade maskinen. 
+</para>
 
+
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -t nat -A POSTROUTING --src 192.168.1.0/24  -o eth1 -j SNAT --to x.y.w.z   </userinput>
+</screen>
+
+<para>
+Hvis man bruger en dynamisk IP adresse, skal kommandoen se lidt
+anderledes ud.
+</para>
 
 
 
