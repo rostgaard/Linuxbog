@@ -516,22 +516,25 @@ if (count($notexists))
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
 [<a href="search.php">Søg</a>]
-[<a href="alle/bog/idx.html">Stikord</a>]
+<?php if (file_exists("alle/bog/idx.html") || file_exists("alle/bog/idx.html.php")) { ?>
+	[<a href="alle/bog/idx.html">Stikord</a>]
+<?php } ?>
 </font>
 
-<p>
-Stikord:
 <?php
-	for ($c=65; $c < 91; $c++) {
-		if (file_exists($f = "idx-".chr($c+32).".html")) {
-			echo "<a href=\"$f\">&nbsp;".chr($c)."&nbsp;</a>\n";
+	if (file_exists("idx-a.html")) {
+		echo "<p>Stikord:\n";
+		for ($c=65; $c < 91; $c++) {
+			if (file_exists($f = "idx-".chr($c+32).".html")) {
+				echo "<a href=\"$f\">&nbsp;".chr($c)."&nbsp;</a>\n";
+			}
 		}
-	}
-	if (file_exists($f = "idx-symboler.html")) {
-		echo "<a href=\"$f\">Symboler</a>\n";
+		if (file_exists($f = "idx-symboler.html")) {
+			echo "<a href=\"$f\">Symboler</a>\n";
+		}
+		echo "</p>\n";
 	}
 ?>
-</p>
 
 <h2>Vi har følgende bøger</h2>
 <p>
