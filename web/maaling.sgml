@@ -1,0 +1,209 @@
+<chapter id="netmaaling">
+<title>Måling og webgrafik</title>
+
+<para>
+I dette kapitel ser vi på programmer til måling af 
+systemparametre og efterfølgende grafisk fremstilling 
+af hjemmesider af målingerne. Eksempler på dette kunne
+være nettrafik, blæserhastighed eller temperatur over tid.
+</para>
+
+
+<sect1 id="mrtg">
+<title>MRTG - grafisk overvågning af systemet</title>
+
+<para>
+MRTG er en god måde at overvåge dit system på. MRTG viser i pæne grafer
+den løbende udvikling omkring belastningen på forskellige områder, for det seneste
+døgn, den seneste uge, den seneste måned og det seneste år. 
+</para>
+
+<screen>
+Traffic Analysis for eth0 -- 192.168.1.2
+
+!! pic KELD !!
+
+</screen>
+
+<para>
+MRTG er først og fremmest lavet til netværksovervågning, så du kan bruge 
+det til at fx overvåge din modem-linje, din ADSL-linje eller din fastnet-linje.
+MRTG kan også overvåge andre systemressourcer såsom systembelastning,
+antal processer, cpu-temperatur, antal brugere mv, men dette er ikke standard.
+</para>
+
+<para>
+Graferne vises i et HTML-format, så man kan se det i en browser - men
+man behøver ikke have en webserver installeret for at se dem. 
+Til netværksovervågningen bruges SNMP, og MRTG laves løbende overvågning
+typisk hver 5. minut, hvor data opsamles så de fylder ca. en konstant
+størrelse (der er ikke noget med at data bliver ustyrligt store).
+</para>
+
+<para>
+MRTG står for Multi Router Traffic Grapher og har denne 
+<ulink url="http://ee-staff.ethz.ch/~oetiker/webtools/mrtg/">hjemmeside</ulink>.
+Det er udgivet under GPL og findes med i de fleste Linux-distributioner,
+så man kan blot installere pakken derfra.
+</para>
+
+<para>
+Der er mange konfigureringsmuligheder, så se installationsguiden på
+hjemmesiden, og også brugersiderne er interessante med andre
+anvendelser end netværksovervågning.  SSLUG bruger MRTG til
+overvågning af sslug.dk, man kan se hvordan maskinen har det på <ulink
+url="http://www.sslug.dk/bb/html/www.sslug.dk.larrd.html">denne
+URL</ulink> og en beskrivelse af denne opsætning kan findes på
+<ulink url="http://www.sslug.dk/mrtg/sslug_mrtg.html">denne URL</ulink>.
+</para>
+
+<sect2 id="mrtg-opsaetning">
+<title>Opsætning af MRTG</title>
+<para>
+</para>n skal fx overvåge lokalnettet på sin maskine, skal man gøre følgende, som root:
+
+<orderedlist mark="bullet">
+<listitem>
+ <para>
+Installér en SNMP-dæmon på din maskine, eller aktivér SNMP på de bokse du
+vil overvåge. SNMP er Simple Network Management Protocol.
+Fx findes en beskrivelse af aktivering af SNMP på en Cisco 677 ADSL router på
+<ulink url="http://www.napoleon.dk/snmp/">denne URL</ulink>.
+</para>
+
+<para>
+Til Linux findes fx SNMP-dæmonen i pakken ucd-snmp.
+En simpel konfiguration i <filename>/etc/snmp/snmpd.conf</filename>
+kunne se således ud:
+</para>
+
+<screen>
+com2sec public     localhost        public
+com2sec public     192.168.0.0/16   public
+group     public    v1   public
+group     public    v2c  public
+group     public    usm  public
+view      all  included  .1
+access    public    ""   any  noauth    exact     all  none none
+</screen>
+
+<para>
+Dette tillader maskiner på lokalnetværket 192.168.0.0 at se hvad maskinen
+laver, men udelukker alle andre maskiner fra at kigge på SNMP-oplysninger.
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+For at starte snmp-dæmonen på linux-maskinen kan man gøre følgende:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>service snmpd start</userinput>
+</screen>
+
+<para>
+Dette skal også gøres permanent ved opstart, så du skal aktivere snmpd fx via
+Gnomes kontrolcenters behandling af tjenester.
+</para>
+
+<para>
+Du kan evt se hvilke netværksgrænseflader der er tilgængelige med programmet 
+snmpwalk, fx på maskinen med ip-adressen 'localhost':
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>snmpwalk localhost public 2</userinput>
+</screen>
+</listitem>
+
+<listitem>
+ <para>
+Installér mrtg, enten fra din distribution eller fra kildetekst
+fundet på MRTG-hjemmesiden nævnt ovenfor. Du kan fx lægge din konfiguration i
+<filename>/home/mrtg/cfg/mrtg.cfg</filename> - som kunne se sådan her ud:
+
+<screen>
+WorkDir: /var/www/html/mrtg
+Language: Danish
+Options[_]: bits,growright
+Weekformat[_]: V
+
+Target[localhost_2]: 2:public@localhost
+MaxBytes[localhost_2]: 12500000
+Title[localhost_2]: Traffic Analysis for eth0
+PageTop[localhost_2]: &lt;H1&gt;Traffic Analysis for eth0&lt;/H1&gt;
+
+Target[Cisco]: 2:public@192.168.1.1
+MaxBytes[Cisco]: 32000
+Title[Cisco]: Cisco 677 Gateway
+PageTop[Cisco]: &lt;H1&gt;Traffic Analysis for outside ADSL&lt;/H1&gt;
+</screen>
+
+<para>
+Hermed lægges data fra MRTG i kataloget <filename>/var/www/html/mrtg/</filename>
+</para>
+
+<para>
+Du kan bruge programmet cfgmaker til at automatisk at lave en konfigurationsfil til MRTG.
+Den kigger på en eller flere maskiner eller bokse og finder ud af via SNMP hvilke 
+netværksgrænseflader der er aktive og laver så konfigurationsfilen. Fx for din lokale
+maskine og en ADSL-ruter på 192.168.1.1:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>cfgmaker localhost 192.168.1.1 > /home/mrtg/cfg/mrtg.cfg</userinput>
+</screen>
+</listitem>
+
+<listitem>
+ <para>
+Initiér filen <filename>/var/www/html/mrtg/index.html</filename> med programmet indexmaker:
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>indexmaker  --columns=1 /home/mrtg/cfg/mrtg.cfg >/var/www/html/mrtg/index.html</userinput>
+</screen>
+</listitem>
+
+<listitem>
+ <para>
+Kør MRTG for første gang:
+ </para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>mrtg /home/mrtg/cfg/mrtg.cfg --logfile /var/log/mrtg</userinput>
+</screen>
+</listitem>
+
+<listitem>
+ <para>
+Kør MRTG hvert 5. minut via cron med 
+ </para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>crontab -e -u root</userinput>
+   0/5 * * * * /usr/bin/mrtg /home/mrtg/cfg/mrtg.cfg --logfile /var/log/mrtg
+</screen>
+   
+</listitem>
+
+<listitem>
+ <para>
+Du kan nu se resultatet af din MRTG-overvågning fx med netscape:
+ </para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>netscape /var/www/html/mrtg/index.html</userinput>
+</screen>
+
+</listitem>
+</orderedlist>
+
+</sect2>
+</sect1>
+</chapter>
+
+
+
+
