@@ -34,8 +34,8 @@
   <para>
    Selv i et POSIX Shell-program kan vi bruge Gettext til at håndtere
    oversættelsen af de tekster brugeren skal se.  Vi bruger et
-   program, <command>hej</command>, der bare skriver "Hej Verden." som
-   eksempel:
+   program, `<command>hej</command>`, der bare skriver "Hej Verden."
+   som eksempel:
 <programlisting>
 #! /bin/sh
 echo "Hej Verden."
@@ -46,14 +46,22 @@ echo "Hej Verden."
    Det er gængs praksis at bruge amerikansk engelsk som det
    grundlæggende sprog i programmer der skal kunne oversættes til alle
    mulige sprog, så nu bruger vi i stedet for teksten "Hello World."
-   samtidig med at vi erstatter <command>echo</command> med
-   <command>gettext --domain gettext-example -s</command>:
+   samtidig med at vi erstatter `<command>echo</command>` med
+   `<command>gettext --domain eksempel -s</command>`, hvor "eksempel"
+   er grundnavnet på filen med oversættelserne og "-s" får
+   `<command>gettext</command>` til at efterligne
+   `<command>echo</command>`:
 <programlisting>
 #! /bin/sh
 gettext --domain eksempel -s "Hello World."
 </programlisting>
    Hvis man bare uden videre kører dette program, skulle det gerne
-   skrive "Hello World.".
+   skrive "Hello World.", da `<command>gettext</command>` når den ikke
+   kan finde filen med oversættelserne (her
+   "<filename>/usr/share/locale/da/LC_MESSAGES/eksempel.mo</filename>")
+   eller ikke kan finde teksten der skal oversættes (her "Hello
+   World.") i filen med oversættelserne, bare udskriver teksten på
+   originalsproget (som den står i programmet).
   </para>
 
   <para>
@@ -64,7 +72,7 @@ msgid "Hello World."
 msgstr "Hey Verð."
 </programlisting>
    Den kan vi oversætte til Gettexts interne format med programmet
-   <command>msgfmt</command>:
+   `<command>msgfmt</command>`:
 <screen>
 <prompt>linus% </prompt><userinput>msgfmt --output-file=eksempel.fo.mo eksempel.fo.po</userinput>
 </screen>
