@@ -362,10 +362,11 @@ leveret som normalt.
 <INDEXTERM><PRIMARY>Apache</PRIMARY><SECONDARY>Adgangskode til websider</SECONDARY></INDEXTERM>
 <INDEXTERM><PRIMARY>.htaccess</PRIMARY></INDEXTERM>
 <INDEXTERM><PRIMARY>htaccess</PRIMARY></INDEXTERM>
-<INDEXTERM><PRIMARY>Adgangskode</PRIMARY><SECONDARY>htaccess</SECONDARY</INDEXTERM>
-<INDEXTERM><PRIMARY>Kodeord</PRIMARY><SECONDARY>htaccess</SECONDARY</INDEXTERM>
-<INDEXTERM><PRIMARY>Password</PRIMARY><SECONDARY>htaccess</SECONDARY</INDEXTERM>
-<INDEXTERM><PRIMARY>Adgangskontrol</PRIMARY><SECONDARY>websider</SECONDARY</INDEXTERM>
+<INDEXTERM><PRIMARY>httpd.conf</PRIMARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Adgangskode</PRIMARY><SECONDARY>htaccess</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Kodeord</PRIMARY><SECONDARY>htaccess</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Password</PRIMARY><SECONDARY>htaccess</SECONDARY></INDEXTERM>
+<INDEXTERM><PRIMARY>Adgangskontrol</PRIMARY><SECONDARY>websider</SECONDARY></INDEXTERM>
 
 <PARA>
 Med Apache er det muligt at sætte adgangskode på udvalgte dele af et websted
@@ -381,6 +382,7 @@ Følgende filer indgår i opsætningen af adgangskode.
 <LISTITEM><PARA><FILENAME>.htaccess</FILENAME> - denne fil ligger i det sub-dir der skal beskyttes</PARA></LISTITEM>
 <LISTITEM><PARA><FILENAME>/home/chlor/htuser</FILENAME> - filen med brugernavne</PARA></LISTITEM>
 <LISTITEM><PARA><FILENAME>/home/chlor/htgroup</FILENAME> - eventuelt en fil med grupper</PARA></LISTITEM>
+<LISTITEM><PARA><FILENAME>/etc/httpd/conf/httpd.conf - apache konfigurations file (redhat sti)</PARA></LISTITEM>
 </ITEMIZEDLIST>
 
 <PARA>
@@ -509,27 +511,36 @@ Require user john
 &lt;/LIMIT&gt;
 </PROGRAMLISTING>
 
+
 <PARA>
-Læs mere om adgangskontrol her:
+ For at aktiverer adgangskoder skal apaches konfigurations file /etc/httpd/conf/httpd.conf rettes fra:
 </PARA>
 
-<ITEMIZEDLIST MARK="BULLET">
-<LISTITEM><PARA>
-AuthUserFile <ULINK URL="http://sunsite.dk/apache/docs/mod/mod_auth.html#authuserfile">http://sunsite.dk/apache/docs/mod/mod_auth.html#authuserfile</ULINK>
-</PARA></LISTITEM>
-<LISTITEM><PARA>
-Require <ULINK URL="http://sunsite.dk/apache/docs/mod/core.html#require">http://sunsite.dk/apache/docs/mod/core.html#require</ULINK>
-</PARA></LISTITEM>
-<LISTITEM><PARA>
-Limit <ULINK URL="http://sunsite.dk/apache/docs/mod/core.html#limit">http://sunsite.dk/apache/docs/mod/core.html#limit</ULINK>
-</PARA></LISTITEM>
-<LISTITEM><PARA>
-Apache Week artikel <ULINK URL="http://www.apacheweek.com/features/userauth">http://www.apacheweek.com/features/userauth</ULINK>
-</PARA></LISTITEM>
-<LISTITEM><PARA>
-Mere på dansk <ULINK URL="http://www.php.dk/artikler/htaccess.php">http://www.php.dk/artikler/htaccess.php</ULINK>
-</PARA></LISTITEM>
-</ITEMIZEDLIST>
+<PROGRAMLISTING>
+#
+# This should be changed to whatever you set DocumentRoot to.
+#
+&lt;Directory "/var/www/html"&gt;
+....
+AllowOverride None
+....
+&lt;/Directory&gt;
+</PROGRAMLISTING>
+
+<PARA>
+ Til:
+</PARA>
+
+<PROGRAMLISTING>
+#
+# This should be changed to whatever you set DocumentRoot to.
+#
+&lt;Directory "/var/www/html"&gt;
+....
+AllowOverride All
+....
+&lt;/Directory&gt;
+</PROGRAMLISTING>
 
 </SECT2>
 
