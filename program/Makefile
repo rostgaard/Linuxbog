@@ -9,6 +9,7 @@ statusfiler:
 	@echo Dato sat til `cat dato.sgml`
 
 html:
+	@echo "Target is" $(targetname).html
 	rm -rf tempdir stikord.sgml magic.sgml
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
@@ -22,7 +23,8 @@ html:
 	cp images/*.png bog
 
 pspdf:
-	rm -rf bogps bospdf stikord.sgml tempdir magic.sgml
+	@echo "Target is" $(targetname).ps.gz
+	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
 	echo '<!ENTITY magic "eps">' > magic.sgml
 	perl /usr/local/bin/collateindex.pl  -t Stikordsregister -g -i stikord -N -o stikord.sgml
@@ -37,6 +39,7 @@ pspdf:
 	mv bogps/bog.ps $(targetname).ps
 	rm -f $(targetname).ps.gz
 	gzip -9 $(targetname).ps
+	@echo "Target is" $(targetname).pdf.gz
 	mkdir bogpdf
 	cp *.sgml bogpdf
 	cp images/*.png bogpdf
