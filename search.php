@@ -18,9 +18,8 @@
 
    list($width,$height) = @getimagesize("front.png");
 
-   # \\ skal laves om til \
-   #if (isset($q))
-   #  $q = preg_replace("|\\\\\\\|", "\\", $q);
+   if (isset($q))
+     $q = $q = stripslashes($q);
 
 
 if (!$ml)
@@ -87,6 +86,7 @@ function searchdir( $dir, $ext, $q ) {
 */
 
 if ($q) {
+  set_time_limit(60);
   flush();
   $d = dir(".");
   while ($dir = $d->read())
