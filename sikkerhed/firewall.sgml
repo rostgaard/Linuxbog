@@ -791,13 +791,8 @@ Hvis firewallen imidlertid er nødt til også at udpakke transport
 pakken (d.v.s. se i TCP-konvolutten for at få fat i portnummeret)
 så kræver det selvfølgelig lidt mere tid. Hvis pakken yderligere
 skal om-adresseres og en ny checksum skal beregnes, så bliver det
-rigtig dyrt.
-</para>
-
-<para>
-Som tidligere nævnt, så giver filtrering udelukkende på
-netværksniveauet ikke mulighed for at fange de pakker, som er
-svar på den kommunikation, der kommer fra lokalnettet.
+rigtig dyrt. Som tidligere nævnt er det for primitivt kun at
+filtrere på netværkslaget.
 </para>
 
 <para>
@@ -806,29 +801,6 @@ bearbejder henholdsvis IP-adresse, TCP-oplysninger og, i sidste
 instans, flytter pakken til den applikation, som skal bruge data.
 </para>
 
-<sect2 id="sikkerhed-hvad-kan-linux-pc">
-<title>Linux-PC</title>
-<para>
-En Linux/GNU maskine kan sættes op til at fungere som både
-NATting router og pakkefilter - og yderligere til at måle
-trafikmængder, fordele trafikken ligeligt mellem forskellige
-brugere og/eller protokoller, fordele belastningen over flere
-parallelle opkoblinger og meget, meget mere.
-</para>
-
-<!--dax 2003-10-22 arbejder her HUSK/-->
-
-<para>
-En af de vigtigste ting for en firewall til et privat netværk er,
-at man kan tillade brugerne indenfor at have FTP, web, ssh,
-mail og sågar telnet og så videre udadtil, selv om man lukker for
-alle, der udefra forsøger at komme ind på systemet. Hvis man
-forestiller at hver enkelt maskine på et lokalnet er sikret på
-denne måde, så kan man forstå, hvorfor Linux/GNU/BSD af fagfolk
-anses for at være bedre og sikrere systemer.
-</para>
-
-</sect2>
 
 <sect2 id="sikkerhed-nat">
 <title>NAT-ing giver også mere sikkerhed</title>
@@ -859,6 +831,8 @@ muren. Det er svært, og det sker heldigvis meget sjældent.
 </sect2>
 
 
+<!--dax 2003-10-22 nogenlunde ok hertil, mangler ekstern korrektur/-->
+
 <sect2 id="kontrol-af-forbindelser">
 <title>Kontrol med oprettelse af forbindelser</title>
 
@@ -872,19 +846,18 @@ netværk. Den kan også logge, hvad der sker på disse forbindelser.
 </para>
 
 <para>
-Det kalder man filtrering på session- eller forbindelses - niveau.
-</para>
-
-<para>
-Når det involverer to programmer, som bare kværner løs med
-oprettelse af flere forbindelser, altså programmer, som starter
-nye forbindelser, sådan som FTP protokollen gør, så bliver det
-ganske kompliceret. Læs videre!
+Der er her tale om filtrering på session- eller forbindelses -
+niveau (se <xref linkend="sikkerhed-layer" />). FTP er en protokol
+oven på TCP-laget, og når denne applikation går i gang, opretter
+den mange "forbindelser". Det giver en ekstra vanskelighed for en
+firewall. Man skal huske, at FTP protokollen kom til verden i en
+tid, hvor der ikke var noget, der hed firewalls.
 </para>
 
 </sect2>
 
 
+<!-- dax 2003-10-23 god forklaring, belyser virkemåde, fredet! /-->
 
 <sect2 id="Ftp-problemet">
 <title>Ftp-problemet</title>
@@ -1039,6 +1012,8 @@ snuse lidt til Network Address Translation.
 </para>
 
 
+<!-- dax 2003-10-23 Hertil. Jeg sletter resten og starter forfra HUSK /-->
+
 <sect2 id="pakkefiltrering">
 <title>Pakkefiltrering</title>
 
@@ -1089,10 +1064,6 @@ er oversat med netfilter. Undersøg om kernen er oversat med understøttelse af
 ipchains: 
 </para>
 
-<para>
-PAS PÅ - næste er gammel ipchains text!
-</para>
-
 <screen>
 <prompt>[root@sherwood /root]#</prompt> <userinput>ls /proc/net/ip_conntrack</userinput>
 </screen>
@@ -1139,7 +1110,7 @@ En regel kan f.eks. være:
 </para>
 
 <screen>
-<prompt>[root@sherwood /root]#</prompt> <userinput>iptables -A INPUT -s 127.0.0.1 -p icmp -j DENY</userinput>
+<prompt>[root@hven /root]#</prompt> <userinput>iptables -A INPUT -s 127.0.0.1 -p icmp -j DROP</userinput>
 </screen>
 
 <para>
@@ -1150,21 +1121,39 @@ den er glimrende som eksempel.
 </para>
 
 <para>
-Og så kan det endda være en nyttig teknik, hvis man vil forhindre
-at nogen oversvømmer et lokalnet med ping-pakker. I så fald skal
-man ikke bruge -s 127.0.0.1 - betingelsen.
+<command> -A INPUT </command> betyder at reglen bliver tilføjet som den
+sidste i inputkæden. På en maskine uden regler er det uden
+betydning. <command> -s 127.0.0.1 </command> betyder, at reglen
+gælder for localhost adressen. <command> -p icmp </command>
+betyder, at reglen skal selectere alle pakker der hører til
+protokollen ICMP (Internet Message Protocol) og <command> -j DROP
+</command> betyder, at man stopper pakken (dropper/taber den).
 </para>
 
 <para>
-Vi kommer nærmere ind på de forskellige dele af den ovenstående kommando 
-i resten af dette afsnit.
+Hvis man generelt vil hindre icmp-pakker, herunder ping-pakker,
+som bl.a. kan være del af et belastnings-angreb, så skrives:
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -I INPUT -p icmp -j DROP</userinput>
+</screen>
+
+<para>
+<command> -I </command> betyder, at reglen indsættes som den
+første i input-kæden. Man kan liste sine regler med <command>
+iptables -L </command>. Prøv efter med ping.
 </para>
 
 <para>
-<emphasis>Kæder</emphasis>
+Vi kommer nærmere ind på de forskellige dele af den ovenstående
+kommando i resten af dette afsnit.
+</para>
+
+<para>
+<emphasis>Kæder: </emphasis>
 <indexterm><primary>Kæder</primary></indexterm>
-
-
+<!-- TODO: kan man formatere dette med hanging indent/keyword paras? /-->
 Regler puttes ind i kæder (chains). Pakkerne passerer igennem disse kæder, 
 og checkes imod hver regel, der er i kæden. Der er tre indbyggede kæder:
 </para>
