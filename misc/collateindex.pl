@@ -1,6 +1,5 @@
 # -*- Perl -*-
 #
-# $Id$
 
 use Getopt::Std;
 
