@@ -68,8 +68,10 @@ lister de vigtigste.
 <itemizedlist mark="bullet">
   <listitem><para>Pakkefiltrering</para></listitem>
   <listitem><para>Proxy, en applikation som optræder som
-  mellemmand</para></listitem>
-  <listitem><para>Stateful Multi-Layer Inspection, SMLI, en kombination af pakkefilter, tilstands-betingelser og indholds-filtrering</para></listitem>
+     mellemmand</para></listitem>
+  <listitem><para>Stateful Multi-Layer Inspection, SMLI, en
+     kombination af pakkefilter, tilstands-betingelser og
+     indholds-filtrering</para></listitem>
 </itemizedlist>
 <indexterm><primary>SMLI</primary></indexterm>
 
@@ -319,12 +321,16 @@ Alt andet smides simpelt hen væk! DROP!
 </para>
 
 <para>
-En nærmere forklaring af syntaksen og mulighederne med netfilter
-kommer senere i kapitlet.
+Og de sidste par linier bevirker, som kommentaren siger, at både
+pakker, som er INPUT og pakker og FORWARD pakker kommer igennem
+den regelkæde, som vi har dannet. Dette er, som nævnt, et
+eksempel for den utålmodige, men for den tålmodige er der en
+nærmere forklaring af kommandoen og mulighederne med netfilter
+i <xref linkend="sikkerhed-iptables-ex"/>.
 </para>
 
 
-<!-- dax 2003-10-19 hertil /-->
+<!-- dax 2003-10-19 hertil, næste paragraffer stort set uændrede /-->
 
 
 <para>
@@ -457,6 +463,11 @@ Andet:
 <sect1 id="firewall-funktion">
 <title>Firewallens funktioner</title>
 
+<indexterm><primary>firewall</primary>
+           <secondary>grundlæggende funktioner</secondary>
+</indexterm>
+
+
 <para>
 Linux firewallen vil på et mindre lokalnet som regel have flere
 funktioner. Den skal kontrollere, hvilken trafik, der kan
@@ -464,8 +475,16 @@ tillades, den skal sikre os mod angreb, og endelig kan den
 overvåge trafikmængder og for eksempel fortælle os, om et eller
 andet program begynder at udspy pakker på internettet. Det sker
 somme tider. Og måske er man bare almindeligt nysgerrig og ønsker
-at se, hvad der sker på maskinen.
+at se, hvad der sker på maskinen. Endvidere vil vi også gerne
+kunne servicere maskiner, som ikke har et offentligt IP-nummer.
 </para>
+
+<itemizedlist mark="bullet" id="sikkerhed-fw-funx">
+<listitem><para>Kontrol af trafik-typer</para></listitem>
+<listitem><para>Sikring mod indtrængen</para></listitem>
+<listitem><para>Overvågning, logning</para></listitem>
+<listitem><para>Servicering af maskiner uden offentligt IP nummer</para></listitem>
+</itemizedlist>
 
 <sect2 id="firewall-pakkefiltrering">
 <title>Kontrol af trafik-typer.</title>
@@ -520,11 +539,182 @@ Man bør blokere:
  </indexterm>
 
 <para>
-For mere information om IP, TCP og netværk generelt se 
-f.eks. "Introduktion til Netværk" af Geir Steen-Olsen &
-Arne Stalheim (IDG-bog til 69 kr.) eller "Linux - Friheden til 
-til systemadministration" på <ulink url="http://&linuxbogurl;/">&linuxbogurl;</ulink>.
+Hvis for eksempel Boligforeningen Xyzzy-42 ikke ønsker, at der
+skal være adgang til FTP serveren fra maskiner udefra, men gerne
+vil se, hvor mange, der prøver at komme i forbindelse med
+serveren, så kan nedenstående kommando bruges.
 </para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -A INPUT -p tcp --destination-port 21 -j DROP</userinput>
+</screen>
+
+<para>
+For mere information om IP, TCP og netværk generelt se f.eks.
+"Introduktion til Netværk" af Geir Steen-Olsen & Arne Stalheim
+(IDG-bog til 69 kr.) eller "Linux - Friheden til til
+systemadministration" på <ulink
+url="http://&linuxbogurl;/">&linuxbogurl;</ulink>.  Den grundige
+gennemgang af IPtables begynder <xref linkend="har-jeg-ipchains"/>
+</para>
+</sect2>
+
+
+<sect2 id="sikkerhed-indtraengen">
+<title>Sikring mod indtrængen</title>
+<para>
+Firewallens vigtigste opgave er selvfølgelig at hindre
+uvedkommende at trænge ind på systemet. Det bedste er at spærre
+for alt og åbne for en positivliste, som kan bestå af de tilladte
+brugeres IP-numre. Hvis man derimod vil tillade bruger XYZ at
+komme ind uanset fra hvilken maskine XYZ benytter, ses (let) at 
+det ikke kan lade sig gøre. Man kan ikke på netværksniveau eller
+transportniveau åbne for en bestemt loginkonto, men her kommer
+SSH, secure shell, protokollen heldigvis til undsætning og løser
+problemet elegant og sikkert på session-niveau.
+</para>
+</sect2>
+
+
+<sect2 id="sikkerhed-logning">
+<title>Overvågning og logning</title>
+<para>
+Når man installerer en regel i kernens pakkefilter, holder kernen
+automatisk øje med, hvor mange pakker der falder ind under denne
+regel, og med -L (list) kommandoen få iptables til at vise
+tællerne (counters).
+</para>
+
+<para>
+Et eksempel:
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput>iptables -L INPUT -v</userinput>
+
+</screen>
+
+</sect2>
+
+
+<sect2 id="sikkerhed-NAT">
+<title>Servicering af maskiner uden offentligt IP nummer</title>
+
+<para>
+En router for et lokalnetværk har som regel flere opgaver end at
+sende pakker videre og stoppe uvedkommende pakker. I de fleste
+netværk bruger man adresser, som er reserveret til testformål, de
+såkaldte private adresser. De skal ompakkes til en rigtig
+IP-adresse, og hertil bruger routeren NAT, Network Address
+Translation.
+</para>
+
+<para>
+NAT er en teknik, som minder om en transparent
+proxy. NAT-ing har vist sig at være en halv løsning på mangelen
+på IP-numre. IP-numre er 32 bit.  Hvis man kunne udnytte alle
+4,294,967,295 numre (4 mia), så ville det stadig ikke være nok
+til at dække behovet. Der er ca. 0.5 mia adresser, som bliver
+brugt til specielle formål, men selv hvis man kunne inddrage dem
+til "almindelige" adresser, så ville der ikke være nok numre til
+at dække behovet for at hvert menneske havde et IP nummer, for
+slet ikke at tale om, hvis vi skulle have IP numre til arbejde og
+hjem, køleskab, cykel og fjernsyn.
+</para>
+
+<para>
+Hvis to maskiner på et net udgiver sig for at have samme IP
+nummer, så vil kommunikationen blive upålidelig for begge
+maskiner. <!-- TODO: Illustration /-->
+</para>
+
+<para>
+Da man jo ikke behøver at koble et lokalnet på det globale
+internet, behøver man heller ikke at få en adresse på det
+globale net fra InterNIC eller deres lokale repræsentant.
+Man kunne sådan set godt bruge de numre, man synes så pænest ud.
+Imidlertid viser det sig ofte, at folk alligevel gerne vil
+have deres separate TCP/IP net tilsluttet det globale Internet
+på et eller andet tidspunkt og derfor indskærpes det overfor
+netværksadministratorer, at man skal bruge de "private adresser"
+selv om man ikke lige nu har tænkt sig at slutte maskinerne
+til det offentlige net. De private adresser får ikke lov til
+at passere en router, det er indbygget i routeren.  På den måde
+kan man undgå uskyldige fejltagelser, hvor en maskine har fået
+et IP-nummer, som tilhører en anden.
+</para>
+
+<para>
+De mest benyttede private adresser er intervallet
+192.168.1.0 - 192.168.255.255. Man kan også bruge alle adresser,
+som begynder med 10, og adresser, som begynder med 172.16
+</para>
+
+<para>
+Det er så routerens opgave at foretage en omskrivning af pakkerne
+og sende dem videre som om de kom fra routerens eksterne,
+offentligt synlige IP-adresse. Lige så vigtigt er det, at den kan
+identificere svar-pakkerne, og sende dem til den rigtige maskine.
+Dertil bruges portnumrene som en forlængelse af IP adressen.
+Denne funktion kaldes <emphasis>N</emphasis>etwork
+<emphasis>A</emphasis>ddress <emphasis>T</emphasis>ranslation
+eller NAT. En router, som kan det, kaldes somme tider en NATting
+router.
+</para>
+
+<para>
+Den utålmodige læser kan nu springe frem til 
+<xref linkend="sikkerhed-netfilter"/>
+mens den grundige læser i de næste afsnit kan få meget mere at
+vide om, hvordan Linux fungerer.
+</para>
+
+</sect2>
+</sect1>
+
+
+<sect1 id="sikkerhed-router-marked">
+<title>Linux på router-markedet</title>
+
+<para>
+Som sagt kan en Linux-PC fungere som router, men en router kan
+også være en dedikeret, flad boks, som egentlig er et diskløst
+system, der kan fjernstyres fra en anden computer.  Der fås
+billige routere til mindre virksomheder og private net, og der
+fås også store routere med mange stik, som kan håndtere meget
+store trafikmængder. Der er en Linux-kerne inde i mange af den
+slags dedikerede routere. TODO: eksempler, billede.
+</para>
+
+<sect2 id="sikkerhed-hvad-kan-linux-pc">
+<title>Linux-PC</title>
+<para>
+En Linux/GNU maskine kan sættes op til at fungere som både
+NATting router og pakkefilter - og yderligere til at måle
+trafikmængder, fordele trafikken ligeligt mellem forskellige
+brugere og/eller protokoller, fordele belastningen over flere
+parallelle opkoblinger og meget, meget mere.
+</para>
+
+<!--
+<para>
+En af de vigtigste ting for en firewall til et privat netværk er,
+at man kan tillade brugerne indenfor at have FTP, web, ssh,
+mail og sågar telnet og så videre udadtil, selv om man lukker for
+alle, der udefra forsøger at komme ind på systemet. Hvis man
+forestiller at hver enkelt maskine på et lokalnet var sikret på
+denne måde mod uvedkommende, så kan man forstå, hvorfor
+Linux/GNU/BSD af fagfolk anses for at være bedre og sikrere
+systemer.
+</para>
+/-->
+
+</sect2>
+
+
+<!--dax 2003-10-22 arbejder her HUSK/-->
+<sect2 id="sikkerhed-pakkefiltrering">
+<title>Netværks-niveauer: pakkefiltrering på pakkeniveau</title>
 
 <para>
 Pakkefiltrering kan sættes op på en maskine, som pakkerne skal
@@ -537,8 +727,8 @@ andet til det offentlige net eller noget lignende. Det kan være
 lokalnetværk, eller det kan være større netværk - pakkerne skal
 igennem routeren for at kunne komme videre<footnote><para>Der
 findes bokse med et stik, som leverandøren kalder router. Den
-foretager kun "NATting", men er nødvendig for videresendelse af
-pakker fra et såkaldt "privat netværk".</para></footnote>
+foretager kun "NATting", som jo er nødvendig for videresendelse
+af pakker fra et såkaldt "privat netværk".</para></footnote>
 </para>
 
 <para>
@@ -551,49 +741,19 @@ denne måde kaldes Internet Protokollen (IP).
 
 
 <sect2 id="sikkerhed-nat">
-<title>Netværks Adresse Translation, NAT</title>
+<title>NAT, Netværks Adresse Translation</title>
 
 <para>
 En router for et lokalnetværk har som regel flere opgaver end at
-sende pakker videre og stoppe uvedkommende pakker. Den skal
-omsætte de interne IP adresser til den rigtige IP adresse, som
-man har fået af sin Internet Udbyder, Internet Service Provider, ISP.
-Man kan for eksempel bruge adresserne 192.168.1.1-255 som lokale
-adresser, denne nummerserie er reserveret. Det er en del af de
-såkaldt "private adresser", som ikke bliver sendt rundt på det
-offentlige net. De er reserverede for at gøre det lettere at
-etablere et lokalnet uden at skulle søge og betale for "rigtige
-IP-adresser".
-</para>
-
-<para>
-Det er så routerens opgave at foretage en omskrivning af pakkerne
-og sende dem videre som om de kom fra routerens eksterne,
-offentligt synlige IP-adresse. Lige så vigtigt er det, at den kan
-identificere svar-pakkerne, og sende dem til den rigtige maskine.
-Dertil bruges portnumrene som en forlængelse af IP adressen.
-Denne funktion kaldes <emphasis>N</emphasis>etwork
-<emphasis>A</emphasis>ddress <emphasis>T</emphasis>ranslation
-eller NAT. En router, som kan det, kaldes somme tider en NATting
-router. (se nedenfor<!-- TODO xref linkend="si-NATting" /-->)
-</para>
-
-<para>
-Som sagt kan en Linux-PC fungere som router, men en router kan
-også være en dedikeret, flad boks, som egentlig er et diskløst
-system, der kan fjernstyres fra en anden computer.  Der fås
-billige routere til mindre virksomheder og private net, og der
-fås også store routere med mange stik, som kan håndtere meget
-store trafikmængder. Der er en Linux-kerne inde i mange af den
-slags dedikerede routere.
-</para>
-
-<para>
-En Linux/GNU maskine kan sættes op til at fungere som både
-NATting router og pakkefilter - og yderligere til at måle
-trafikmængder, fordele trafikken ligeligt mellem forskellige
-brugere og/eller protokoller, fordele belastningen over flere
-parallelle opkoblinger og meget, meget mere.
+sende pakker videre og stoppe uvedkommende pakker. Den skal (som
+tidligere nævnt) omsætte de interne IP adresser til den rigtige
+IP adresse, som man har fået af sin Internet Udbyder, Internet
+Service Provider, ISP.  Man kan for eksempel bruge adresserne
+192.168.1.1-255 som lokale adresser, denne nummerserie er
+reserveret. Det er en del af de såkaldt "private adresser", som
+ikke bliver sendt rundt på det offentlige net. De er reserverede
+for at gøre det lettere at etablere et lokalnet uden at skulle
+søge og betale for "rigtige IP-adresser".
 </para>
 
 <para>
@@ -601,18 +761,26 @@ En af de vigtigste ting for en firewall til et privat netværk er,
 at man kan tillade brugerne indenfor at have FTP, web, ssh,
 mail og sågar telnet og så videre udadtil, selv om man lukker for
 alle, der udefra forsøger at komme ind på systemet. Hvis man
-forestiller at hver enkelt maskine på et lokalnet var sikret på
-denne måde mod uvedkommende, så kan man forstå, hvorfor
-Linux/GNU/BSD af fagfolk anses for at være bedre og sikrere
-systemer.
+forestiller at hver enkelt maskine på et lokalnet er sikret på
+denne måde, så kan man forstå, hvorfor Linux/GNU/BSD af fagfolk
+anses for at være bedre og sikrere systemer.
+</para>
+
+<para>
+NAT teknikken er med til at gøre firewallen mere
+uigennemtrængelig, for hvad sker der, hvis man prøver at "snakke"
+med en maskine med et 192.168.x.y - nummer? Pakkerne kommer ingen
+vegne. Hvis nogen prøver at trænge igennem en firewall ved at bryde
+ind i en kommunkations sekvens (tredie-mands princippet,
+spoofing) så skal pakkerne kunne snyde firewallen *og*
+modtagemaskinen indenfor muren. Det er svært, og det sker
+heldigvis meget sjældent.
 </para>
 
 </sect2>
 
-
-<sect2 id="kontrol-af-forbindelser">
-<title>Kontrol med oprettelse af forbindelser</title>
-
+<sect2 id="sikkerhed-pakkefilt-ejnok">
+<title>Filtrering på pakkeniveau</title>
 <para>
 Hvis man lukker for al adgang med den undtagelse, at pakker, som
 skal til port 80 på eksterne computere, skal have lov at passere,
@@ -630,8 +798,30 @@ remote host, og vi må kun få fat i port 80!
 
 <para>
 Vi vil med andre ord gerne åbne for al trafik indefra, men spærre
-for uvedkommende udefra.
+for uvedkommende udefra. Dertil kræves connection tracking
+modulet, som husker en forbindelsen, der identificeres med
+afsenders IP+portnummer og modtagers IP+portnummer. 
 </para>
+
+<programlisting>
+
+Afsender                                Modtager (http-server)
+
+IP-adresse  + portnummer                IP-adresse   + portnummer
+
+201.2.3.4     51001          &lt;----->    193.88.44.22   80
+
+</programlisting>
+
+<para>
+Dertil kommer at NAT routeren skal huske sin egen ændring af
+portnumre og IP adresse.
+</para>
+</sect2>
+
+
+<sect2 id="kontrol-af-forbindelser">
+<title>Kontrol med oprettelse af forbindelser</title>
 
 <para>
 At åbne for alle forbindelser, som startes indefra, kræver, at
@@ -644,6 +834,13 @@ netværk. Den kan også logge, hvad der sker på disse forbindelser.
 
 <para>
 Det kalder man filtrering på session- eller forbindelses - niveau.
+</para>
+
+<para>
+Når det involverer to programmer, som bare kværner løs med
+oprettelse af flere forbindelser, altså programmer, som starter
+nye forbindelser, sådan som FTP protokollen gør, så bliver det
+ganske kompliceret. Læs videre!
 </para>
 
 </sect2>
@@ -861,9 +1058,9 @@ PAS PÅ - næste er gammel ipchains text!
 <prompt>[root@sherwood /root]#</prompt> <userinput>ls /proc/net/ip_conntrack</userinput>
 </screen>
 
-<para>
-Hvis filen eksisterer, er netfilter understøttet i den kerne, der er
-installeret. Hvis den ikke gør, skal der oversættes
+<para id="sikkerhed-iptables-gennemgang">
+Hvis ip_conntrack eksisterer, er netfilter understøttet i den
+kerne, der er installeret. Hvis den ikke gør, skal der oversættes
 en ny kerne. Se f.eks. 
 <ulink url="http://&linuxbogurl;/admin/bog/kerne.html">
 &linuxbogurl;/admin/bog/kerne.html</ulink>. Man skal
@@ -1308,7 +1505,7 @@ masquerading.
 
 <!-- HUSK -->
 
-<para>
+<para id="sikkerhed-hjemmebruger">
 Vores hjemmebruger bag firewallen ønsker adgang til internettet
 igennem firewallen. Derimod vil han gerne skærme sit lokale netværk
 imod de indgående forbindelser fra fremmede maskiner.
@@ -1326,7 +1523,7 @@ ipchains -P forward DENY
 </programlisting>
 </sect4>
 
-<sect4 id="eksempel-for-vores-hjemmebruger">
+<sect4 id="sikkerhed-iptables-ex">
 <title>Regler for vores hjemmebruger</title>
 <para>
 Tillad alt på loopback interfacet
@@ -1575,7 +1772,7 @@ Se i øvrigt en udemærket HOWTO på <ulink url="http://sunsite.dk/ldp/HOWTO/IPCHAI
 </sect4>
 </sect3>
 
-<sect3 id="netfilter">
+<sect3 id="sikkerhed-netfilter">
 <title>Iptables (Netfilter) - kerne 2.4</title>
 <indexterm><primary>Iptables</primary></indexterm>
 <indexterm><primary>Netfilter</primary></indexterm>
