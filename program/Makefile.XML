@@ -19,7 +19,7 @@ ImageMagickconvert:=$(firstword $(wildcard /usr/bin/convert /usr/X11R6/bin/conve
 #-----------------------------------------------------------------------------
 #--  Byggeregler:
 
-all: html pdf postscript pakket_html pakket_sgml
+all: html pdf postscript pakket_html kildetekst
 
 html: stikord dato udgave
 	mkdir -p bog
@@ -50,13 +50,14 @@ pakket_html: html
 	tar czvf $(targetname)-$(version)-html.tar.gz $(targetname)-$(version)-html
 	rm -rf $(targetname)-$(version)-html
 
-pakket_sgml:
-	mkdir -p $(targetname)-$(version)-sgml/images
-	cp -p Makefile.XML $(targetname)-$(version)-sgml/Makefile
-	cp -p *.sgml $(targetname)-$(version)-sgml/
-	cp -p images/*.png $(targetname)-$(version)-sgml/images/
-	tar czvf $(targetname)-$(version)-sgml.tar.gz $(targetname)-$(version)-sgml
-	rm -rf $(targetname)-$(version)-sgml
+kildetekst:
+	mkdir -p $(targetname)-$(version)-source/images
+	cp -p Makefile.XML    $(targetname)-$(version)-source/Makefile
+	cp -p collateindex.pl $(targetname)-$(version)-source/collateindex.pl
+	cp -p *.sgml          $(targetname)-$(version)-source/
+	cp -p images/*.png    $(targetname)-$(version)-source/images/
+	tar czvf $(targetname)-$(version)-source.tar.gz $(targetname)-$(version)-source
+	rm -rf $(targetname)-$(version)-source
 
 stikord:
 	@echo "Laver stikordsregister."
@@ -73,6 +74,6 @@ udgave:
 clean:
 	rm -fr bog pdf postscript
 	rm -f  dato.sgml magic.sgml stikord.sgml version.sgml
-	rm -f  $(targetname)-*-{html,sgml}.tar.gz
+	rm -f  $(targetname)-*-{html,source}.tar.gz
 
 #-----------------------------------------------------------------------------
