@@ -65,7 +65,7 @@ function fsize_text( $filename ) {
       )
     ),
     "sikkerhed" => array(
-      title => "Linux - Friheden til at have sin server i fred",
+      title => "Linux - Friheden til sikkerhed på internettet",
       comment => "Sikkerhed omkring din Linux-boks",
       audt => array(
         "Peter Toft" => "pto@sslug.dk",
