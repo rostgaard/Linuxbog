@@ -1281,6 +1281,111 @@ Her kan der være forskelle alt efter maskin-type.
 
 </sect1>
 
+<sect1 id="cpu-temperatur">
+<title>Måling af CPU-temperatur</title>
+
+<indexterm><primary>Måling af CPU-temperatur</primary></indexterm>
+<indexterm><primary>CPU-temperatur</primary>
+<secondary>Måling af</secondary></indexterm>
+<indexterm><primary>lm_sensors</primary></indexterm>
+<indexterm><primary>LM87</primary></indexterm>
+<indexterm><primary>sensors</primary></indexterm>
+<indexterm><primary></primary></indexterm>
+
+<para>
+Med Pentium II, III, AMD K6 II og lignende nyere processorer kan man direkte
+måle temperatur på CPU'en samt holde styr på blæseren på CPU'en.
+Det er noget som CPU'en skal have indbygget at det virker via en I2C
+kanal.
+</para>
+
+<para>
+Det første der skal gøres er at installere <filename>lm_sensors</filename>.
+På Red Hat 7.2 gøres dette med <command>rpm -ivh lm_sensors*.rpm</command>
+hvis man står i cdrom'ens RPMS-katalog.
+</para>
+
+<para>
+Dernæst skal man detektere maskinen ved at køre 
+<command>/usr/sbin/sensors-detect</command>. 
+Programmet er selvforklarende. Det første der gøres er at indlæse
+de kerne-moduler der skal til at lave målingers f.eks. 
+<filename>i2c-piix4</filename>. Programmet prøver at gætte dette
+selv og man skal oftest bare trykke return et par gange.
+</para>
+
+<screen>
+...
+ I will now generate the commands needed to load the I2C modules.
+ Sometimes, a chip is available both through the ISA bus and an I2C bus.
+ ISA bus access is faster, but you need to load an additional driver module
+ for it. If you have the choice, do you want to use the ISA bus or the
+ I2C/SMBus (ISA/smbus)?
+
+WARNING! If you have some things built into your kernel, the
+below list will contain too many modules. Skip the appropriate ones!
+To load everything that is needed, add this to some /etc/rc* file:
+
+#----cut here----
+# I2C adapter drivers
+modprobe i2c-matroxfb
+modprobe i2c-isa
+# I2C chip drivers
+modprobe eeprom
+modprobe w83781d
+#----cut here----
+
+To make the sensors modules behave correctly, add these lines to either
+/etc/modules.conf or /etc/conf.modules:
+
+#----cut here----
+# I2C module options
+alias char-major-89 i2c-dev
+#----cut here----
+</screen>
+
+<para>
+Som det ses skal giver <command>sensors-detect</command>
+et par linier som skal indsættes i f.eks. <filename>/etc/rc.local</filename> og
+tilsvarende til
+<filename>/etc/modules.conf</filename>
+</para>
+
+<para>
+Når maskinen har været genstartet kan man med kommandoen 
+<command>sensors</command> detektere temperatur osv. Dette kan se således ud.
+</para>
+
+<screen>
+w83781d-i2c-0-2d
+Adapter: SMBus PIIX4 adapter at 5000
+Algorithm: Non-I2C SMBus adapter
+VCore 1:   +1.98 V  (min =  +1.80 V, max =  +2.20 V)
+VCore 2:   +1.47 V  (min =  +1.80 V, max =  +2.20 V)       ALARM
++3.3V:     +3.42 V  (min =  +2.97 V, max =  +3.63 V)
++5V:       +4.97 V  (min =  +4.50 V, max =  +5.48 V)
++12V:     +11.70 V  (min = +10.79 V, max = +13.11 V)
+-12V:     -11.40 V  (min = -10.78 V, max = -13.18 V)
+-5V:       -4.94 V  (min =  -4.50 V, max =  -5.48 V)
+fan1:     4066 RPM  (min = 3000 RPM, div = 2)
+fan2:        0 RPM  (min = 3000 RPM, div = 2)              ALARM
+fan3:        0 RPM  (min = 3000 RPM, div = 2)              ALARM
+temp1:    +31.0°C   (limit = +60°C, hysteresis = +50°C)
+temp2:    +208.0°C   (limit = +60°C, hysteresis = +50°C)
+temp3:    +25.0°C   (limit = +60°C, hysteresis = +50°C)
+vid:      +2.00 V
+alarms:   Chassis intrusion detection
+beep_enable:
+          Sound alarm disabled
+</screen>
+
+<para>
+Man kan således se at CPU-blæseren kører 4066 omdrejninger per
+minut og der er tre CPU-temperaturer.
+</para>
+
+</sect1>
+
 <sect1 id="quota">
 <title>Kontrol af diskforbrug med quota</title>
 
