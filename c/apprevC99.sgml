@@ -4,16 +4,63 @@
 <title>Nyt i C99</title>
 
 <sect1 id="sect-C99-kommentar">
-<title>Uddrag af nyheder i ANSI revisionen fra 1999.</title>
+<title>Uddrag af nyheder i ANSI revisionen fra 1999</title>
 
 <indexterm><primary>C99 standard</primary></indexterm>
 
+<para id="para-C99-url">
+Den følgende 
+<ulink url="http://anubis.dkuug.dk/JTC1/SC22/WG14/www/newinc9x.htm"> 
+liste over nyheder i ANSI C </ulink> omfatter både ændringer i
+selve C grammatiken (syntax-regler, regler for typekonvertering,
+nye datatyper), af præprocessing, af krav til oversætter og
+krav til biblioteker (lib-filer). Desværre er jeg i skrivende
+stund ikke i stand til at kommentere alle punkter. Hvad menes der
+for eksempel med "pointere med begrænsninger"? Formentlig menes
+der, at man skal kunne oprette en variabel af typen pointer men
+med den egenskab, at når den er oprettet, må dens værdi ikke
+ændres, altså svarende til C++ konstruktionen: 
+</para>
+
+<programlisting>
+int xyzzy;
+int& ref2xyzzy = xyzzy;
+
+/* og typisk som funktionsparametre: */
+void swap(int& x, int& y)
+{
+    register int temp;
+    temp = x;
+    x = y;
+    y = temp;
+}
+
+</programlisting>
+
 <para>
-Den følgende liste over nyheder i ANSI C omfatter både ændringer
-af præprocessing, af oversætter-krav og biblioteks-krav. Desværre
-er jeg i skrivende stund ikke i stand til at kommentere alle
-punkter. Hvad menes der for eksempel med "pointere med
-begrænsninger"?
+Man kan købe selve ANSI C 1999 standarden i Adobe-PDF format fra
+<ulink url="http://www.ansi.org"> ANSI Standard Store</ulink>.
+Næsten lige så interessant (måske endda mere interessant) er
+tankerne bag standarden. Dem kan man finde i dokumentet n897.pdf på
+<ulink url="http://anubis.dkuug.dk/JTC1/SC22/WG14">
+anubis.dkuug.dk/JTC1/SC22/WG14, teksten på
+linket er N897, draft rationale available</ulink>.
+</para>
+
+<para>
+Charteret for revisionsgruppen ligger også at hente på
+ovenstående adresse. Det har (selvfølgelig) været en vigtig del
+af charteret, at C sproget skal være så kompatibelt med C++ som
+muligt.
+</para>
+
+<para>
+Der er sikkert nogle, som sammen med mig vil begræde, at man ikke
+blot kan nævne en funktion uden at skrive en prototype for at
+informere compileren om return type og parametertyper. Men det er
+nu ikke så slemt endda, for det betyder jo ikke, at compileren
+pludselig forlanger prototyper. Der vil i mange år endnu være en
+switch som tillader ANSI-89 reglerne.
 </para>
 
 <para>
@@ -24,14 +71,18 @@ De vigtigste ændringer er:
 <indexterm><primary>implicit integer regel</primary></indexterm>
 
 <listitem><para>
-Implicit integer er afskaffet. En variabel skal erklæres med
-angivelse af type.
-</para></listitem>
-
-<listitem><para>
 Funktioner <emphasis> skal </emphasis> erklæres med prototype,
 inden de anvendes. En ukendt funktion antages ikke at have int
 som return type.
+</para></listitem>
+
+<listitem><para>
+Implicit integer er ligeledes afskaffet. Tidligere var det
+tilladt at skrive yxi = 1 øverst i en blok, hvis man ville
+erklære og initialisere en integer. Det må man ikke mere. En
+variabel skal erklæres med angivelse af type. Sammenhold dette
+med, at det nu skal være tilladt at erklære en variabel der, hvor
+man har brug for den, ligesom i C++. 
 </para></listitem>
 
 <listitem><para>
@@ -51,7 +102,7 @@ Kommentarer som i C++ og simula: // dette er en kommentar.
 </itemizedlist>
 
 <para>
-I bedste open source stil efterlyser jeg bidrag til uddybelse af
+I bedste open doc stil efterlyser jeg bidrag til uddybelse af
 disse punkter.
 </para>
 
@@ -66,6 +117,13 @@ www.google.com til at finde nye links til ANSI-C standard.
 <sect1>
 <title>Liste i tilfældig rækkefølge</title>
 
+<para>
+Ok, jeg har tilladt mig at gruppere emnerne på en lidt anden
+måde end 
+<ulink url="http://anubis.dkuug.dk/JTC1/SC22/WG14/www/newinc9x.htm"> 
+det originale paper. </ulink>
+</para>
+
 <itemizedlist mark="bullet"> 
 <listitem><para>
 pointere med begrænsninger
@@ -77,10 +135,13 @@ variabel længde arrays
 fleksible array medlemmer
 </para></listitem>
 <listitem><para>
-support af complex og imaginære tal (header fil &lt;complex.h>)
+udvidede heltals typer og &lt;inttypes.h> og nu &lt;stdint.h>
 </para></listitem>
 <listitem><para>
-type generiske matematik macroer &lt;tgmath.h>
+afskaffelse af regel om implicitte funktions erklæringer.
+</para></listitem>
+<listitem><para>
+afskaffelse af implicit integer reglen
 </para></listitem>
 <listitem><para>
 long long type og library funktioner for denne
@@ -89,19 +150,13 @@ long long type og library funktioner for denne
 forøgelse af grænser for oversættelse
 </para></listitem>
 <listitem><para>
-afskaffelse af implicit integer reglen
-</para></listitem>
-<listitem><para>
-vscanf funktionsfamilien
+længere variabelnavne
 </para></listitem>
 <listitem><para>
 pålidelig integer division
 </para></listitem>
 <listitem><para>
 universelle navne til det anvendte tegnsæt
-</para></listitem>
-<listitem><para>
-længere variabelnavne
 </para></listitem>
 <listitem><para>
 binære floating point literals og printf/scanf specifikation af konvertering
@@ -116,15 +171,6 @@ designated initializers
 // slash-slash kommentarer
 </para></listitem>
 <listitem><para>
-udvidede heltals typer og &lt;inttypes.h> og nu &lt;stdint.h>
-</para></listitem>
-<listitem><para>
-afskaffelse af regel om implicitte funktions erklæringer.
-</para></listitem>
-<listitem><para>
-præprocessor aritmetik kan gøres i signed/unsigned integers.
-</para></listitem>
-<listitem><para>
 blanding af erklæringer og kode (erklæring af variable, hvor man
 har brug for dem)
 </para></listitem>
@@ -133,6 +179,15 @@ heltal (integer) konstant type - regler
 </para></listitem>
 <listitem><para>
 ændringer af type konvertering (integer promotion)
+</para></listitem>
+<listitem><para>
+præprocessor aritmetik kan gøres i signed/unsigned integers.
+</para></listitem>
+<listitem><para>
+support af complex og imaginære tal (header fil &lt;complex.h>)
+</para></listitem>
+<listitem><para>
+type generiske matematik macroer &lt;tgmath.h>
 </para></listitem>
 <listitem><para>
 vararg makro'er
@@ -159,9 +214,6 @@ efterstillet komma tilladt i enum erklæringer
 inline funktioner
 </para></listitem>
 <listitem><para>
-snprintf funktionsfamilien
-</para></listitem>
-<listitem><para>
 boolean type (&lt;stdbool.h>)
 </para></listitem>
 <listitem><para>
@@ -181,6 +233,12 @@ standard pragma'er
 </para></listitem>
 <listitem><para>
 __func__ predefineret nøgle-ord
+</para></listitem>
+<listitem><para>
+vscanf funktionsfamilien
+</para></listitem>
+<listitem><para>
+snprintf funktionsfamilien
 </para></listitem>
 <listitem><para>
 VA_COPY makro

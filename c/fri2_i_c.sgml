@@ -1,5 +1,5 @@
 
-<chapter id="c-programming-start"><title>C Programmering</title>
+<chapter id="c-programmering-start"><title>C Programmering</title>
 <sect1 id="tour"><title>Hello-world programmer</title>
 
 <abstract><para>
@@ -1173,13 +1173,14 @@ forrige eksempel, stadig <emphasis>kun</emphasis> give en warning,
 og endda kun under forudsætning af, at -Wall anvendes! 
 </para>
 
-<programlisting id="wrong-type-coersion">
-gcc -Wall -c dollar3x.c # version uden prototype for kr2dollar():
-pluto:/qf3/attic/don/fri ::gcc -Wall -c dollar3x.c
+<screen id="wrong-type-coersion">
+<PROMPT>$$</PROMPT>\
+<USERINPUT>gcc -Wall -c dollar3x.c # version uden prototype for kr2dollar():
+</USERINPUT>
 dollar3x.c: In function `main':
 dollar3x.c:16: warning: implicit declaration of function `kr2dollar'
 dollar3x.c:16: warning: double format, different type arg (arg 3)
-</programlisting>
+</screen>
 
 <para>
 Og her kommer så den anden fil med funktionen, som foretager
@@ -1217,17 +1218,19 @@ andet modul, og måske endda et modul, som ikke er skrevet endnu.
 </para>
 
 <para>
-Oversætteren "ser", at den returnerede værdi (f.eks. EBX) skal
-afleveres til funktionen printf. Derfor placerer den værdien
-af EBX det sted, hvor man afleverer funktionsparametre (det
-er typisk en stak, applikationens stak). Printf, derimod,
-aner ikke noget om, hvad der faktisk afleveres til den; hvis
-vi skulle personificere printf, så ville den sige: "Jeg skal
+Oversætteren "ser", at den retur værdien fra den funktion, som
+antages at være en integer, skal afleveres (her som argument til
+printf). Hvis returværdien er en integer, ligger den i EAX
+registeret. Derfor skriver compileren en instruktion, som skubber
+værdien af EAX op på applikations-stakken.  Printf er, også i
+denne sammenhæng, lidt speciel, fordi den ikke aner, hvilke
+argumenter den får, før end den har læst format-specifikationen.
+Hvis vi skulle personificere printf, så ville den sige: "Jeg skal
 skrive et double precision floating point tal ud, ergo må der
-ligge sådan et på stakken. Det tager jeg!" Og det gør den så,
-den tager 8 bytes fra stakken uden at kunne kontrollere, om de
-rent faktisk er en double precision floating point talstørrelse
-eller ej!
+ligge sådan et på stakken. Det tager jeg!" Og det gør den så, den
+tager 8 bytes fra stakken uden at <emphasis> kunne </emphasis>
+kontrollere, om de rent faktisk repræsenterer en double eller en
+integer.
 </para>
 
 <para>
@@ -1407,7 +1410,7 @@ int main()
     int c;
     while ( (c=getchar()) != EOF) {
       printf("Decimal-værdi %3d, hexadecimal værdi 0x%2x ", c, c);
-      if (c > 31 && c < 127)
+      if (c > 31 && c &lt; 127)
           printf("%c\n", c);
       else
           printf(".\n");
@@ -3042,7 +3045,7 @@ Hvis vi skal forfine programmet, så er det klogt at skifte taktik.
 Løsningen ovenfor skalerer ikke godt, når antallet af tilstande
 vokser, og input indeholder mange flere kategorier. En
 tilstandstabel kan bedre håndtere opgaven.
-Se <xref LinkEnd="parser-tilstandsmaskine">.
+Se <xref LinkEnd="c-parser-tilstandsmaskine">.
 </para>
 
 </sect2>
@@ -3171,7 +3174,7 @@ int main()
             ++nl;
         if (isspace(c))
             status = HVID;
-        else                           /* <--- SE kommentar!!!*/
+        else                           /* &lt;--- SE kommentar!!!*/
             if (status == HVID) {
                 status = SORT;
                 ++nw;

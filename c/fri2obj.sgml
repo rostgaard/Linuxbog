@@ -1,10 +1,112 @@
-<chapter id="objekt-orienteret-tankegang">
-<title>Konkrete og abstrakte datatyper</title>
-<sect1 id="datatyper"><title>C og objekt-orienterede metoder</title>
+<chapter id="c-objekt-orienteret-tankegang">
+<title>Brugerdefinerede datatyper og objekter</title>
 
-<indexterm><primary>abstrakte datatyper</primary></indexterm>
 <indexterm><primary>brugerdefinerede datatyper</primary></indexterm>
+<indexterm><primary>konkrete datatyper</primary></indexterm>
 
+<para>
+Vis mig dine data, og jeg skal sige dig, hvad dit program vil
+kunne gøre. Repræsentation af det problem, som man ønsker at
+arbejde med, er altid et valg; der vil være flere oplysninger om
+de enkelte ting, som vi repræsenterer i programmerne, end vi
+bryder os om at have med i vores datastrukturer.
+</para>
+
+<para>
+Når man sammensætter forskellige oplysninger i en klump, kalder
+man resultatet en struct (en.: structure, struktur) - men gennem
+tiderne har denne gruppering af oplysninger fået mange
+betegnelser: node, record, entitet, genstand (en.: item),
+element.
+</para>
+
+<para>
+Da sådan en struct som regel forekommer som et element i en
+tabel, er der ifølge Knuth også forfattere, som har brugt
+betegnelsen "perler" om structs. De kan jo så trækkes på en snor
+eller anbringes i en liste.
+</para>
+
+<sect1>
+<title>Sammensætning af flere data</title>
+
+<para>
+Med et eksempel fra Donald Knuth kunne vi se på, hvordan man kan
+programmere et kortspil.
+</para>
+
+<para>
+En struct, som illustrerer et enkelt kort, kunne fx. se således
+ud:
+</para>
+
+<programlisting>
+/* der benyttes <EMPHASIS>bitfields</EMPHASIS> for at vise denne
+ * feature. I stærkt memory kritiske applikationer kan dette
+ * nogen gange betale sig. Kode til manipulation af bitfelterne
+ * vil imidlertid gøre koden langsommere og større.
+ */
+
+struct kort_t {
+    int tag:1;             /* bagsiden op = 1 */
+    int farve:2;           /* 0 klør, 1 ruder, 2 hjerter, 3 spar */
+    int rang:4;            /* 1 = es, 2 = toer, 13 = konge */
+    struct kort_t *next;   /* kort nedenunder */
+    char titel[5];         /* forkortet navnebetegnelse */
+};
+
+</programlisting>
+
+<para>
+Indholdet af et felt i en struct kan være hvad som helst - der
+dog den lille begrænsning, at compileren skal kende alle typerne,
+med mindre der er tale om en pointer til et eller andet ukendt
+objekt.
+</para>
+
+<para>
+Vi kan have tal eller tekst i et felt - eller en anden struct,
+hvis det passer ind i vores planer.
+</para>
+
+<para>
+Tag (engelsk: mærke) sat lig med 1 betyder, at kortet vender
+bagsiden opad, tag == 0 betyder, at det vender forsiden op.
+Feltet farve er selvfølgelig <emphasis> kortspilsfarve
+</emphasis> d.v.s. klør, ruder, hjerter eller spar. Ved at
+benytte 2 bits får vi værdierne 0, 1, 2 og 3 til rådighed.
+Rang henviser til kortets værdi med es som ener, konge som
+tretten'er.
+</para>
+
+<para>
+Adressen på et objekt kaldes også et link eller en pointer
+(vejviser, pegepind) eller reference til dette objekt.
+</para>
+
+<para>
+Feltet <literal> struct kort_t *next; </literal> er et
+felt, som kan indeholde adressen på et andet kort, i dette
+tilfælde kunne det være kortet, som ligger nedenunder i en
+kabale. I mange tilfælde kunne man nøjes med en adresse, som var
+relativ i forhold til en base adresse.  Hvis der ikke er noget
+kort nedenunder, kan vi give feltet værdien 0 som i denne
+sammenhæng kaldes NULL.
+</para>
+<GRAPHIC FILEREF="kort1.&magic;"  SCALE="70"></GRAPHIC>
+
+<para>
+Dette afsnit er - sammen med de næste afsnit om konkrete og
+abstrakte datatyper - under omarbejdelse. Hvis du har nogen
+spørgsmål eller ønsker at bidrage skal du være velkommen. Jeg
+regner med at få skrevet en hel del i løbet af dagene 16 - 24
+juni 2001.
+</para>
+
+</sect1>
+
+<sect1 id="datatyper">
+<title>C og objekt-orienterede metoder</title>
 <para>
 Er C et objektorienteret sprog? Hvorfor er det ikke
 objektorienteret, når et C program er en række definitioner af
