@@ -3,7 +3,7 @@
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
 # version - skal bruges til samlingerne (i øjeblikket kun palm)
-version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml))
+version:=$(shell (cd friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml))
 
 all: cvs2htmlweb filer palmpilot-samling
 
@@ -47,12 +47,13 @@ palmpilot-hver-enkelt: start
 	done;
 
 palmpilot-samling: palmpilot-hver-enkelt
-	mkdir palm-samling
+	mkdir -p samling/palm-samling
 	@for dir in $(SUBDIRS); do \
-		cp $$dir/palm/linuxbog-$$dir.pdb palm-samling/; \
+		cp $$dir/palm/linuxbog-$$dir.pdb samling/palm-samling/; \
 	done;
-	cp misc/*.prc palm-samling/
-	tar vczf linuxbog-samling-palm-$(version).tar.gz palm-samling/
+	cp misc/*.prc samling/palm-samling/
+	(cd samling; tar vczf linuxbog-samling-palm-$(version).tar.gz palm-samling/)
+	(cd samling; zip -r linuxbog-samling-palm-$(version).zip palm-samling/)
 
 eksempelbackup:
 	@for dir in $(SUBDIRS); do \
