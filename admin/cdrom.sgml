@@ -1,22 +1,22 @@
 <chapter id="cdrombraending">
-<title>Opsætning af cdbrænder under Linux</title>
+<title>Opsætning af cd-brænder under Linux</title>
 <indexterm><primary>Brænde cdrom</primary></indexterm>
 <indexterm><primary>cdrom</primary><secondary>brænde</secondary></indexterm>
 
 <para>
 Er man så heldig at man har en scsi brænder, så skulle man bare kunne
-installere Xcdroast og få det til at virke direkte. Har man en brænder
-af ide/atapi typen, så bliver man nødt til at lave en ide-scsi
-emuluering for at få dette til at virke, det er dog ikke så svært som
-det lyder og fungerer ligesågodt. Det første kræver at kernen skal
-bygges til at have ide-scsi, scsi cdrom, generic scsi og ide-cd
-bygget support på den ene eller den anden måde. I dag er de fleste 
-standard distributioner sat op og forberedt på dette. Derfor skal der
-blot loades nogle moduler for at det hele virker. Disse skal findes med:
+installere X-CD-roast og få det til at virke direkte. Har man en brænder
+af ide/atapi-typen, så er man nødt til at lave en ide-scsi-emuluering
+for at få dette til at virke. Det er dog ikke så svært som det lyder
+og fungerer fint. Det første kræver at kernen skal bygges til at
+have ide-scsi, scsi cdrom, generic scsi og ide-cd bygget support på
+den ene eller den anden måde. I dag er de fleste standard
+distributioner sat op og forberedt på dette. Derfor skal der blot
+loades nogle moduler for at det hele virker. Disse skal findes med:
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT> uname -r</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>uname -r</USERINPUT>
 </screen>
 
 <para>
@@ -27,7 +27,7 @@ interessant. For Mandrake 7.2 vil dette f.eks. være
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT> <USERINPUT> cd /lib/modules/2.2.17-21mdk; ls </USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /lib/modules/2.2.17-21mdk; ls </USERINPUT>
 alsa/   fs/    modules.dep             modules.parportmap  net/     usb/
 block/  ipv4/  modules.generic_string  modules.pcimap      pcmcia/
 cdrom/  misc/  modules.isapnpmap       modules.usbmap      scsi/
@@ -44,19 +44,20 @@ scsi/ide-scsi.o
 </screen>
 
 <para>
-Hvis ja, så er kernen allerede klar til scsi emuleringen.
-Eksisterer de ikke så skal kernen omkonfigureres, se afsnittet med kernekompilering. 
-Det man skal være opmærksom på under kerne kompileringen er at menupunkterne under SCSI med
-SCSI generic og SCSI cdrom er med som enten modul eller bygget helt ind i kernen og menupunkterne
-under Block Devices med SCSI - emulation og IDE/ATAPI cdrom support er med som enten modul eller 
-bygget ind i kernen.
+Hvis ja, så er kernen allerede klar til scsi emuleringen.  Eksisterer
+de ikke så skal kernen omkonfigureres, se <xref linkend="kernelcompile">.  
+Det man skal være opmærksom på under kerne-oversættelsen
+er menupunkterne under "SCSI med SCSI generic" og "SCSI
+cdrom" er med som enten modul eller bygget helt ind i kernen og
+menupunkterne under "Block Devices med SCSI-emulation" og "IDE/ATAPI
+cdrom"-support er med som enten modul eller bygget ind i kernen.
 </para>
 
 <para>
-Vælges de som modul så skal der køres en modprobe på modulnavnet når systemet 
-kommer op for at loade modulerne, bygges de ind i kernen virker de bare. Når dette er gjort kan man 
-bare fortsætte her.
-Så  skal der lige laves en lille ændring først. I
+Vælges de som modul så skal der køres en <command>modprobe</command>
+på modulnavnet når systemet kommer op for at loade modulerne, bygges
+de ind i kernen virker de bare. Når dette er gjort kan man bare
+fortsætte her.  Så skal der lige laves en lille ændring først. I
 <filename>/etc/lilo.conf</filename> skal der laves følgende ændring
 (se linien med append).
 </para>
@@ -92,7 +93,7 @@ systemet kommer op igen kan man nu skrive
 </screen>
 
 <para>
-Så skulle scsi emulueringen være iorden og man kan nu lave en:
+Så skulle scsi emulueringen være i orden og man kan nu køre:
 </para>
 
 <screen>
@@ -109,44 +110,51 @@ brændersoftware, så kan du brænde din første Linux-cdrom til dine venner.
 </para>
 
 <para>
-Skal man nu automatisere dette lidt så man ikke skal skrive modprobe
-linierne efter hver bootup, så skal de tilføjes i systemets bootup
-script som på min Red Hat er <filename>/etc/rc.d/rc.local</filename>,
-hvor jeg har tilføjet linierne.
+Skal man nu automatisere dette lidt så man ikke skal skrive
+<command>modprobe</command>-linierne efter hver genstart af maskinen,
+så skal de tilføjes i systemets opstarts-script som på min Red Hat er
+<filename>/etc/rc.d/rc.local</filename>, hvor man kan tilføje
+linierne.
 </para>
 
 <para> 
-For nu at kunne bruge det drev der er lavet scsi- emulering på som almindeligt cddrev også skal der 
-lige laves en lille ændring. Fløgende sym- link er sandsynligvis sat.
+For nu at kunne bruge det drev der er lavet scsi-emulering på
+som almindeligt cdrom-drev også skal der lige laves en lille
+ændring. Fløgende symlink er sandsynligvis sat.
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> ls -l /dev/cdrom </USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
 lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> hdb
 </screen>
 
 <para> 
-Eftersom der nu er lavet en scsi emulering så eksisterer cd drevet ikke længere på ide
-bussen på systemet men på den emulerede scsi bus derfor har den også fået et nyt device
-dette er /dev/scd0 ( lidt afhængigt af om der er andre scsi enheder i systemet ) derfor
-skal dette symlink også ændres til at pege det korrekte sted hen.
+Eftersom der nu er lavet en scsi emulering så eksisterer cd
+drevet ikke længere på ide bussen på systemet men på den emulerede
+scsi bus derfor har den også fået et nyt device dette er
+<filename>/dev/scd0</filename> (lidt afhængigt af om der er andre
+scsi enheder i systemet) derfor skal dette symlink også ændres til at
+pege det korrekte sted hen.
 </para>
 
 <screen>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> rm /dev/cdrom </USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> ln -s /dev/scd0 /dev/cdrom  </USERINPUT>
-<PROMPT>[root@linus /root]# </PROMPT><USERINPUT> ls -l /dev/cdrom </USERINPUT>
-lrwxrwxrwx    1 root     root            4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>rm /dev/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ln -s /dev/scd0 /dev/cdrom</USERINPUT>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>ls -l /dev/cdrom</USERINPUT>
+lrwxrwxrwx  1 root root 4 Dec 30 22:03 /dev/cdrom -> /dev/scd0
 </screen>
 
 <sect1 id="X-cdroast">
-<title>X-cdroast</title>
-<indexterm><primary>X-cdroast</primary></indexterm>
-<indexterm><primary>cdrom</primary><secondary>brændeprogram, X-cdroast</secondary></indexterm>
+<title>X-CD-roast</title>
+<indexterm><primary>X-CD-roast</primary></indexterm>
+<indexterm><primary>cdrom</primary><secondary>brændeprogram, X-CD-roast</secondary></indexterm>
+
 <para>
-Hvor får man nu fat i xcdroast henne? <ulink url="http://www.xcdroast.org">http://www.xcdroast.org</ulink>. Få fat
-i den og installer den. Skal man kunne brænde cdrommer uden at være root
-bliver man nødt til at sætte s-bit på xcdroast, dette gøres:
+På <ulink
+url="http://www.xcdroast.org">http://www.xcdroast.org</ulink> kan du
+fine X-CD-roast. Få fat i den og installér den. Skal man kunne brænde
+cdrommer uden at være root bliver man nødt til at sætte suid-bitten på
+<filename>xcdroast</filename>, dette gøres:
 </para>
 
 <screen>
@@ -157,12 +165,13 @@ bliver man nødt til at sætte s-bit på xcdroast, dette gøres:
 
 <para>
 Så skulle det være i orden. Derefter startes
-<application>xcdroast</application> hvorefter man lige skal svare på:
+<command>xcdroast</command> hvorefter man lige skal svare på en
+en ret morsom "disclaimer".
 </para>
 
 
 <FIGURE ID="xcdroast1-fig" FLOAT="1">
-<TITLE>xcdroast</TITLE>
+<TITLE>X-CD-roast</TITLE>
 <GRAPHIC FILEREF="xcdroast1.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
@@ -187,12 +196,12 @@ kunne bruge på en hel cd.
 </para>
 
 <FIGURE ID="xcdroast2-fig" FLOAT="1">
-<TITLE>xcdroast</TITLE>
+<TITLE>X-CD-roast</TITLE>
 <GRAPHIC FILEREF="xcdroast2.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
 <FIGURE ID="xcdroast0-fig" FLOAT="1">
-<TITLE>xcdroast</TITLE>
+<TITLE>X-CD-roast</TITLE>
 <GRAPHIC FILEREF="xcdroast0.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
@@ -223,7 +232,7 @@ bare på audio cd´er i stedet:
 </para>
 
 <FIGURE ID="xcdroast3" FLOAT="1">
-<TITLE>xcdroast</TITLE>
+<TITLE>X-CD-roast</TITLE>
 <GRAPHIC FILEREF="xcdroast3.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
@@ -237,7 +246,7 @@ et master image med <filename>/home</filename> på hvor
 
 
 <FIGURE ID="xcdroast4" FLOAT="1">
-<TITLE>xcdroast</TITLE>
+<TITLE>X-CD-roast</TITLE>
 <GRAPHIC FILEREF="xcdroast4.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
@@ -248,9 +257,9 @@ image af det, vi gerne vil brænde ud, så brænder vi bare det under
 </para>
 
 <para>
-Mere om Xcdroast og opsætning af brænder
+Mere om X-CD-roast og opsætning af brænder
 <filename>/usr/local/xcdroast-0.96ex/README*</filename> eller hvor du
-nu ellers installerede <application>xcdroast</application>.
+nu ellers installerede <command>xcdroast</command>.
 </para>
 </sect1>
 

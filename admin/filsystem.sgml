@@ -46,10 +46,9 @@ sikring af dine adgangskoder.
 <para>
 Hvis en person ikke skal have lov til at logge ind på maskinen, så kan
 du rette i <filename>/etc/passwd</filename> og indsætte en stjerne
-(dvs. *) foran den krypterede adgangskode. Har du krypterede adgangskoder på
-maskinen, så er det i stedet i <filename>/etc/shadow</filename>, du
-skal indsætte * (efter første kolon).
+(dvs. *) foran den krypterede adgangskode.
 </para>
+
 
 
 </sect1>
@@ -59,8 +58,9 @@ skal indsætte * (efter første kolon).
 <indexterm><primary>/etc/shadow</primary></indexterm>
 
 <para>
-Formatet af
-shadow filen følger passwd-filen, en linje per bruger. Et eksempel er
+Formatet af <filename>/etc/shadow</filename>-filen følger format for
+<filename>/etc/passwd</filename>-filen med en linje per bruger. Et
+eksempel er
 </para>
 
 <screen>
@@ -68,13 +68,15 @@ anne:$1$/hbYueDa$46ggNKFugoDABWOJZ3xvz0:10784:0:99999:7:::
 </screen>
 
 <para>
-For brugeren "anne" står der de krypterede adgangskoder. For Red Hat er
-det længere end for SuSE, idet Red Hat anvender en bedre
+For brugeren "anne" står der de krypterede adgangskoder. For Red Hat
+er det længere end for SuSE, idet Red Hat anvender en bedre
 krypteringsmåde. Derefter vises antal dage siden 1/1-1970 for sidste
-ændring af adgangskoderne. Antal dage siden sidste ændring af
-adgangskode. Antal dage før udløb af adgangskoder skal der sendes en
-advarsel (her 99999). Sidste anvendte felt (7) er antal dage siden 1/1
-1970 til kontoen bliver lukket. Endelig er der et felt som ikke anvendes.
+ændring af adgangskoderne. Næste felt viser antal dage siden sidste
+ændring af adgangskode. Derefter antal dage mellem at der sendes en
+advarsel til brugeren om konto udløb og den faktiske kontoudløb (her
+99999 dage dvs. det anvendes ikke). Sidste anvendte felt (7) er antal
+dage siden 1/1 1970 til kontoen bliver lukket. Endelig er der et felt
+som ikke anvendes.
 </para>
 <para>
 Hvis din maskine ikke kører skygge-adgangskoder, og vil du dette, så kør
@@ -94,7 +96,7 @@ i selve passwd-filen og ikke shadow-filen.
 Hver person er med i en eller flere grupper, og dette bruger man til
 at udskille, hvem der har adgang til hvilke dataområder. Kommandoen
 <command>chmod g+w fil</command> vil f.eks. gøre, at andre brugere, som
-er i sammen gruppe som ejeren af filen, kan skrive i
+er i samme gruppe som ejeren af filen, kan skrive i
 <filename>fil</filename>. 
 </para>
 
@@ -109,9 +111,9 @@ web:x:1000:anne,niels,svend
 
 <para>
 Dvs. gruppen "web" har gruppe ID nummer 1000, og "x" betyder, at en
-eventuelt adgangkode for gruppen (anvendes ved skift til ny gruppe med
+eventuel adgangkode for gruppen (anvendes ved skift til ny gruppe med
 <command>newgrp</command>) findes i shadowfilen
-<filename>/etc/gshadow</filename>. Hvis "x" blev fjernet 
+<filename>/etc/gshadow</filename>. Hvis "x" blev fjernet, 
 anvendes gruppe-adgangskoder ikke. 
 Til sidst på linjen står der de login-navne (fra
 passwd-filen) som er medlemmer af gruppen.
@@ -126,6 +128,8 @@ passwd-filen) som er medlemmer af gruppen.
 <para>
 Filen <filename>/etc/gshadow</filename> følger nøje
 <filename>/etc/group</filename> med en linje per gruppe. 
+Ideen er lige som <filename>/etc/shadow</filename> at gemme
+gruppe-information for brugerne.
 </para>
 </sect1>
 
@@ -161,27 +165,26 @@ none        /dev/pts     devpts  mode=0622       0 0
 
 <para>
 De to sidste linjer er noget, Red Hat automatisk selv har sat op,
-det ser vi bort fra. Dernæst kan vi se, at der er to harddiske i
-maskinen hda og hdb. Den sekundære harddisk på første IDE-kontroller,
-dvs. hdb har tre partitioner. Swap partitionen er sat op på den første
-partition <filename>/dev/hdb1</filename> og de to næste partitioner
+det ser vi bort fra. Dernæst kan vi se, at der mindst er to harddiske i
+maskinen - hda og hdb. Den sekundære harddisk på første IDE-kontroller,
+dvs. hdb har mindst tre partitioner. Swap-partitionen er sat op på den første
+partition <filename>/dev/hdb1</filename>, og de to næste partitioner
 på hdb, dvs. <filename>/dev/hdb2</filename> og
-<filename>/dev/hdb3</filename> er af typen ext2 (Linux-type), og de
+<filename>/dev/hdb3</filename>, er af typen ext2 (Linux-type), og de
 monteres i rækkefølge som vist yderst til højre, dvs
 <filename>/dev/hdb2</filename> (roden) før
 <filename>/dev/hdb3</filename> (brugerens hjemmekatalog i
 <filename>/home</filename>). De to sidste linjer viser, at en
-almindelig bruger (user) kan monterer cdrom'er og disketter, men at det ikke
+almindelig bruger (user) kan montere cdrom'er og disketter, men at det ikke
 gøres automatisk (noauto) under opstart. cdrom'et vil efter
 <command>mount /mnt/cdrom</command> kunne findes under
 <filename>/mnt/cdrom</filename>. 
 Brug i øvrigt <command>man mount</command>.
-<!-- Se i øvrigt xref linkend="Mount" -->
 </para>
 
 <para>
-Det bør nok nævnes, at brugere med scsi diske bør bruge UUID i stedet
-for device navne til at identificere devices. Ellers opfører hele
+Det bør nok nævnes, at brugere med scsi-diske bør bruge UUID i stedet
+for device-navne til at identificere devices. Ellers opfører hele
 filsystemet sig underligt, hvis én af diskene på scsi-controlleren går
 ned. Se <command>man fstab</command>.
 </para>
@@ -195,8 +198,8 @@ ned. Se <command>man fstab</command>.
 
 <para>
 Hosts-filen anvendes ofte på maskiner, som ikke har navneserver
-(eng. DNS server eller name server) til rådighed. Man skriver en
-ip-adressse, det fulde netværknavn og et eventuelt alias. Et eksempel
+(eng. DNS-server eller name server) til rådighed. Man skriver en
+IP-adressse, det fulde netværknavn og et eventuelt alias. Et eksempel
 kan være:
 </para>
 
@@ -249,10 +252,10 @@ nameserver 129.142.6.65
 </screen>
 
 <para>
-Første linje (search) viser domæne navnet for netværket. De to næste
-linjer er to navneservere (danpost-maskiner). Laver du Internet
-opkobling til din egen ISP, skal du have nogle andre ip-adresser
-end de viste. <!--Se også xref linkend="PPP".-->
+Første linje (search) viser domæne-navnet for netværket. De to næste
+linjer er to navneservere (danpost-maskiner). Laver du
+Internet-opkobling til din egen ISP, skal du have nogle andre
+IP-adresser end de viste. <!--Se også xref linkend="PPP".-->
 </para>
 
 <para>
@@ -271,11 +274,17 @@ nameserver 129.142.006.065
 <sect1 id="etc-inetd-conf-filen">
 <title>/etc/inetd.conf</title>
 <indexterm><primary>/etc/inetd.conf</primary></indexterm>
-<indexterm><primary>telnet</primary><secondary>stop server</secondary></indexterm>
-<indexterm><primary>ftp</primary><secondary>stop server</secondary></indexterm>
+<indexterm>
+  <primary>telnet</primary>
+  <secondary>stop server</secondary>
+</indexterm>
+<indexterm>
+  <primary>ftp</primary>
+  <secondary>stop server</secondary>
+</indexterm>
 
 <para>
-Denne fil er vigtig for din netværksikkerhed, idet den viser en stribe
+Denne fil er vigtig for din netværks-sikkerhed, idet den viser en stribe
 af de servicer, som Linux-maskinen tilbyder netværket.
 Du vil f.eks. finde disse linjer:
 </para>
@@ -288,7 +297,7 @@ telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd
 <para>
 som viser, at du modtager ftp og telnet login. Hvis du kan undvære
 disse servicer, så udkommentér dem ved at sætte et # foran dem.  
-Næste gang du genstarter maskinen (eller inet dæmonen), kan man ikke logge
+Næste gang du genstarter maskinen (eller inet-dæmonen), kan man ikke logge
 på via <command>telnet</command>. 
 Prøv <command>man inetd</command> for at læse mere.
 </para>
@@ -302,11 +311,13 @@ Prøv <command>man inetd</command> for at læse mere.
 
 <para>
 <filename>/etc/issue</filename> og <filename>/etc/issue.net</filename>
-kan være en god måde for en cracker at finde ud af hvilket system og
-version af Linux man kører. <filename>/etc/issue</filename> vises på skærmen lige op over
-login prompten og <filename>/etc/issue.net</filename> vises blandt andet når man logger på
-system via telnet. Derfor fjern alt tekst i begge filer og sæt
-havelåger foran dette i <filename>/etc/rc.d/rc.local</filename>:
+kan være en god måde for en cracker at finde ud af hvilket system og hvilken
+version af Linux man kører. <filename>/etc/issue</filename> vises på
+skærmen lige op over login-prompten og
+<filename>/etc/issue.net</filename> vises blandt andet når man logger
+på systemet via <command>telnet</command>. Derfor fjern al tekst i
+begge filer og sæt havelåger foran dette i
+<filename>/etc/rc.d/rc.local</filename>:
 </para>
 
 <screen>
@@ -325,14 +336,14 @@ fi
 <title>/etc/rc.d/</title>
 <indexterm><primary>/etc/rc.d/</primary></indexterm>
 <para>
-I mappen <filename>/etc/rc.d/</filename> findes styringen af,
+I mappen <filename>/etc/rc.d/</filename> findes styringen af
 hvilke programmer, der automatisk startes op, når maskinen startes. Der
 er lidt forskel mellem Red Hat og SuSE, men begge har samme struktur,
 kaldes SysV (udtales system fem), i modsætning til BSD.
 </para>
 
 <sect2 id="RH-etc-rc-d-filen">
-<title>Red Hats opstartsfiler</title>
+<title>Red Hat opstartsfiler</title>
 
 <para>
 Red Hat har følgende indhold af <filename>/etc/rc.d/</filename>
@@ -364,7 +375,7 @@ skal startes efter de almindelige programmer.
 </para>
 
 <para>
-Alle de ovenstående filer kan læses af alle på et Red Hat system,
+Alle de ovenstående filer kan læses af alle på et Red Hat-system,
 mens SuSE har valgt, at kun "root" kan læse de filer.
 </para>
 </sect2>
@@ -449,22 +460,22 @@ Internet, ender du med at skulle rette i filer her.
 <title>/etc/crontab</title>
 <indexterm><primary>/etc/crontab</primary></indexterm>
 <para>
-Crontab systemet og filstyring er forklaret i <xref linkend="crontab">.
+Crontab-systemet og filstyring er forklaret i <xref linkend="crontab">.
 </para>
 </sect1>
 
 <sect1 id="etc-sendmail-cf-filen">
 <title>/etc/sendmail.cf</title>
 <indexterm><primary>/etc/sendmail.cf</primary></indexterm>
+<indexterm><primary>SMTP</primary></indexterm>
+<indexterm><primary>Email opsætning</primary></indexterm>
 <indexterm><primary>Sendmail</primary><secondary>konfigurationsfil</secondary></indexterm>
 
 <para>
-Sendmail er det gode gamle postprogram til Linux, som desværre
-tit viser sig at have sikkerhedsfejl.
-<--Tag et kik på Postfix i XREF LINKEND="postfix". -->
-Konfigurationsfilen til sendmail er notorisk svær, og du bør
-ikke rette ret meget i din. 
-Du kan dog med fordel rette feltet DS til 
+Sendmail er det gode gamle postprogram til Linux, som desværre tit
+viser sig at have sikkerhedsfejl.  Konfigurationsfilen til sendmail er
+notorisk svær, og du bør ikke rette ret meget i din.  Du kan dog med
+fordel rette feltet DS til
 </para>
 
 <screen>
@@ -486,8 +497,8 @@ hvis du sender post til din Internet-udbyder, og denne har en hurtig
 <para>
 Hvis du har brug for at have nem adgang til at lave post-aliaser, så
 e-post til &lt;web@sslug.dk&gt; automatisk bliver videresendt
-(eng. forwarded) til &lt;anne@sslug.dk&gt;, og måske vil du have at
-alle e-breve til "root" skal ende hos "anne", så kan du i
+(eng. forwarded) til &lt;anne@sslug.dk&gt;, mens f.eks. alle e-breve
+til "root" også skal ende hos "anne", så kan du i
 <filename>/etc/aliases</filename> nemt anføre dette.
 </para>
 
@@ -527,8 +538,15 @@ lp:\
 <para>
 Her er "sd" spool-directory. Printeren sidder på
 <filename>/dev/lp0</filename>, og der printes med filter som vist
-med "if". <!-- Der er mere forklaring i xref linkend="printere".-->
+med "if".
 </para>
+
+<para>
+Det skal nævnes at flere Linux-distributioner er ved at gå væk fra
+denne måde at sætte printere op på. Dels er CUPS-projektet i fuld gang
+og LPRng vinder også indpas (bl.a. i Red Hat 7.0).
+</para>
+
 </sect1>
 
 <sect1 id="etc-conf-modules-filen">
@@ -566,7 +584,7 @@ tty8
 </screen>
 
 <para>
-<filename>tty1-tty8</filename> svarer til de terminal vinduer som er
+<filename>tty1-tty8</filename> svarer til de terminal-vinduer som er
 på selve maskinen. Det er således ikke tilladt for root at logge ind
 via telnet på maskinen, og det bør <emphasis>ikke</emphasis> tillades.
 </para>
@@ -582,7 +600,7 @@ via telnet på maskinen, og det bør <emphasis>ikke</emphasis> tillades.
 
 <para>
 Hvis din maskine skal køre NFS, dvs. kunne være diskserver for andre
-UNIX maskiner, skal du i <filename>/etc/exports</filename> skrive,
+UNIX-maskiner, skal du i <filename>/etc/exports</filename> skrive,
 hvilke mapper du vil lade andre montere. For at det virker, skal du
 have "portmap" og "nfs" kørende. 
 </para>
@@ -594,7 +612,7 @@ hvordan du lader alle maskiner læse (ikke skrive) fra dit cdrom-drev, som
 du her har monteret fast på <filename>/mnt/cdrom</filename>. Derudover
 lader vi maskiner i domænet kongeh.dk montere hele
 <filename>/usr/local/</filename> med både læse- og skrive-rettigheder,
-så alle maskinerne kan lægge nyt programmel ind hér og programmellet anvendes
+så alle maskinerne kan lægge nyt programmel ind her, og programmellet anvendes
 så på alle klient-maskinerne. Husk, at du måske også skal tænke over
 sikkerheden, når du distribuerer data over netværket. Giv kun adgang
 til data til de personer, som skal have den adgang.
