@@ -38,10 +38,10 @@ maskine.
 </para>
 
 <para>
-Bemærk, at du ikke bør have mere end én
-DHCP-server på samme netværk. Hvis der er flere, så vil du opleve
-at det kun virker en gang imellem - nemlig når klienten får svaret fra den
-server, der er konfigureret rigtigt.
+Bemærk, at hvis du har mere end én DHCP-server på samme netværks
+segment bør disse være koordineret.
+Hvis de ikke er koordineret vil du kunne opleve at det kun virker en gang imellem - 
+nemlig når klienten får svaret fra den server, der er konfigureret korrekt.
 </para>
 
 <sect2 id="dhcp-virkemaade">
@@ -90,29 +90,38 @@ vil styre netværks-konfigurationen centralt.
 </para>
 </sect2>
 
-<sect2 id="dhcp-een-server">
-<title>Kun én DHCP-server pr. netværk!</title>
+<sect2 id="Valg af DHCP-server / -serverer">
+<title>Valg af DHCP-server / -serverer</title>
 <para>
-Der følger naturligvis en DHCP-server med din Linux-distribution - det
-er en server som er udviklet af ISC (Internet Software Consortium);
-det er også dem, der udvikler navneserveren BIND. I næste afsnit kan du
-se, hvordan man sætter den op.
+Der følger naturligvis en DHCP-server med din Linux-distribution - 
+det er en server som er udviklet af ISC (Internet Software Consortium). 
+De har også udvikler navneserveren BIND. 
+I næste afsnit kan du se, hvordan man sætter den op.
 </para>
 
 <para>
-Hvis du har en eller anden form for router på dit netværk, så kan det
-imidlertid være at du allerede har en DHCP-server på nettet. Selv små
-ISDN- eller ADSL-routere har ofte indbygget en DHCP-server, og den kan
-man sagtens bruge.
+Du kan have mere end en DHCP server på samme netværkssegment. 
+Dette forudsætter at de alle giver korrekte oplysninger til klienterne, 
+og at deres puljer af adresser ikke overlapper hinanden.
 </para>
 
 <para>
-Uanset om du vælger at køre en DHCP-server på din Linux-maskine, eller
-du vælger at bruge den der er indbygget i din router, så skal du passe
-på at der kun er <emphasis>én</emphasis> DHCP-server på dit
-netværk. Hvis der er flere, så vil du opleve at det kun virker en gang
-imellem - nemlig når klienten får svaret fra den server, der er
-konfigureret rigtigt.
+Hvis du har en eller anden form for router på dit netværk, 
+så kan det være at du allerede har en DHCP-server på nettet. 
+Små ISDN- og ADSL-routere har ofte en DHCP-server indbygget, 
+og den kan man sagtens bruge. 
+Man kan endda opleve at printere og anden udstyr med netværks tilslutning 
+har en DHCP-server indbygget.
+</para>
+
+<para>
+Hvis ikke alle DHCP-serverne er konfigureret korrekt og koordineret
+kan du opleve at det kun virker en gang imellem.  Du skal være
+opmærksom på at du kan komme ud for udstyr som kun
+<emphasis>tænder</emphasis> for DHCP-serveren når det ikke kan finde
+en </emphasis>anden</emphasis> DHCP-server.  I praksis betyder det at
+du kan opleve at det kun virker, når du tænder / tilslutter
+netværksenhederne i en bestemt rækkefølge.
 </para>
 </sect2>
 
@@ -229,14 +238,6 @@ option domain-name-servers 192.168.0.1, 192.168.0.2;
 </programlisting>
 
 <para>
-eller
-</para>
-
-<programlisting>
-option domain-name-servers ns1.intranet.foo, ns2.intranet.foo;
-</programlisting>
-
-<para>
 "default-lease-time" er det antal sekunder, et lease er
 gyldigt. Herefter skal klienten forny sit lease hos DHCP-serveren.
 </para>
@@ -300,7 +301,7 @@ tilfælde kan følgende tilføjes til <filename>/etc/dhcpd.conf</filename>.
 
 <programlisting>
         subnet 192.168.36.0 netmask 255.255.255.0 {
-                 not authoritative;
+                  deny booting;
         }
 </programlisting>
 
@@ -377,13 +378,13 @@ servere en fast IP-adresse, selv om de får oplysningerne via DHCP.
 <sect3 id="dhcp-en-statisk">
 <title>Konfigurér en server med DHCP</title>
 <para>
-Hvis man vil have at en bestemt maskine altid skal få den samme 
-IP-adresse fra DHCP-serveren, så kan man give den en statisk tildeling i
-DHCP-server-konfigurationen. Her bruger man den Ethernet-adresse, som
-maskinens netkort har - hvis maskinen tidligere har fået en IP-adresse
-fra DHCP-serveren, så kan man se Ethernet-adressen i log-filen. Man
-kan også se den med <command>/sbin/ifconfig</command>-kommandoen hvis
-det er en Linux-maskine:
+Hvis man ønsker at en bestemt maskine altid får den samme IP-adresse fra DHCP-serveren, 
+så kan man give den en statisk tildeling i DHCP-server-konfigurationen. 
+Her bruger man den maskinens netkorts ethernet-adresse, - 
+hvis maskinen tidligere har fået en IP-adresse fra DHCP-serveren, 
+så kan man se ethernet-adressen i server-maskinens log-filen. 
+På en Linux-maskinen kan du se dens egen ethernet-adressen 
+med kommandoen <command>/sbin/ifconfig:</command>
 </para>
 <indexterm>
  <primary>/sbin/ifconfig eth0, undersøger IP-adresse m.v. for /dev/eth0</primary>
