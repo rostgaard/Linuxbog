@@ -423,33 +423,634 @@ på <ulink url="http://www.rpmfind.net/linux/RPM/">http://www.rpmfind.net/linux/R
 kan man søge efter RPM-pakker, men også efter filnavne og derved
 oftest finde hvilke RPM-pakker du mangler.
 </para>
-
-<para>
-Er du mere interesseret i at kunne bruge RPM-programmet bedre så kan
-vi anbefale at læse 
-<ulink url="http://www.sslug.dk/rpm/">http://www.sslug.dk/rpm/</ulink>. 
-</para>
-
-
-<!--
-<sect3 id="egne-rpmpakker">
-<title>Lave egne RPM-pakker</title>
-
-http://www.rpm.org/RPM-HOWTO/index.html
-
-<para>
-cd
-mkdir rpm
-cd rpm
-mkdir BUILD  RPMS  SOURCES  SPECS  SRPMS
-mkdir RPMS/i386
-cd
-echo "%_topdir    $HOME/rpm"  > .rpmmacros    
-</para>
-
-</sect3>
--->
 </sect2>
+
+<sect2 id="rpm-build">
+<title>RPM for programmøren</title>
+
+<para>
+RPM filer opstår selvfølgelig ikke "af sig selv". Der skal
+bruges et værktøj til at lave dem - nemlig det samme <command>rpm</command>
+program, som man bruger til alle de andre RPM funktioner.
+</para>
+
+<para>
+<command>rpm</command> programmet har en <emphasis>build</emphasis> funktion, som bruges når
+man skal lave sine egne rpm filer. Et 'build' består af flere
+faser
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<emphasis>prep</emphasis> - udpakning af source filer
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>setup</emphasis> - installation af patches og 
+konfiguration af softwaren</para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>build</emphasis> - kompilering af softwaren</para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>install</emphasis> - installation af program-, dokumentations- og konfigurations-filer i de korrekte kataloger.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>packaging</emphasis> - sammenpakning af source og binary rpm filer
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<emphasis>clean</emphasis> - oprydning
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Hver af disse faser kan kontrolleres fuldt ud gennem en konfigurations-fil,
+som rpm-programmet bruger til hele build-processen. Denne konfigurations-fil
+kaldes en <emphasis>spec</emphasis>-fil, og er den vigtigste fil at forstå når
+man skal lave sine rpm-pakker.
+</para>
+
+<sect3 id="rpm-build-katalog-struktur">
+<title>Katalogstruktur</title>
+
+<para>
+Normalt bruger rpm-programmet en katalog-struktur under
+<command>/usr/src/redhat</command> til at generere rpm-filer. Man kan
+bruge et andet top-level katalog, men /usr/src/redhat er default.
+</para>
+
+<para>Herunder er der et antal under-kataloger:</para>
+
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para><command>SOURCES&nbsp;</command> - indeholder alle de kilde-filer 
+og patches, der bruges til build af en rpm-pakke</para>
+</listitem>
+
+  <listitem>
+
+<para><command>SPECS</command> - her ligger spec-filen</para>
+
+</listitem>
+
+  <listitem>
+
+<para><command>BUILD</command> - er et 'arbejdskatalog' hvor 
+kilde-filerne pakkes ud,
+og selve oversættelsen finder sted</para>
+</listitem>
+
+  <listitem> 
+<para><command>RPMS</command> - er der hvor de færdige
+binære rpm-filer placeres.  Dette katalog har mindst to
+underkataloger: <command>i386</command> til rpm-filer, der er rettet
+mod i386 platformen, og <command>noarch</command> til rpm-filer, der
+ikke er platforms-afhængige.</para>
+</listitem>
+
+  <listitem>
+<para><command>SRPMS</command> - er der hvor de færdige source 
+rpm-filer placeres.</para>
+</listitem>
+</itemizedlist>
+
+<para>
+Inden man går i gang med at lave en rpm fil, skal man sørge
+for at have source-filerne lagt ned i SOURCES kataloget, og en spec-fil
+i SPECS kataloget. Det kan man f.eks. gøre ved at installere en
+source rpm-fil.
+</para>
+</sect3>    <!--   Katalog struktur -->
+
+<sect3>
+  <title>En spec-fil til ssh (Secure Shell)</title>
+<para>
+Der har været en del skriveri om <command>ssh</command> på sslug mailing
+listen, og for nylig er der skrevet en god web side om, hvordan man bruger
+dette program. ssh findes ikke i rpm-format, så jeg tænkte
+at det kunne være nyttigt at bruge det som eksempel på, hvordan
+man laver en spec-fil og bruger den til at lave rpm-pakker.
+</para>
+
+<para>Hele spec-filen <filename>ssh.spec</filename> ligger i 
+underkataloget <filename>rpm</filename> til bogens eksempler på <ulink url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>,
+men lad os kigge på den i nogle mindre
+bidder.
+</para>
+
+<screen>
+Summary: Secure Shell - secure network communications
+Name: ssh
+Version: 1.2.25
+Release: 2
+Copyright: GPL
+Group: Utilities/Networking
+Source: ftp://sunsite.auc.dk/pub/security/ssh/ssh-1.2.25.tar.gz
+Patch: ssh-1.2.25-Makefile.patch
+URL: http://www.cs.hut.fi/ssh/
+BuildRoot: /tmp/ssh-build
+
+%description
+Secure Shell enables you to communicate securely across on unsafe
+network such as the Internet. Communication is transparently 
+encrypted, and thus secured against eavesdropping. The package 
+includes drop-in replacements for telnet, rlogin, rsh, rcp and
+other standard networking tools.
+</screen>
+
+<para>
+Starten på sådan en spec-fil er ret standardiseret. Der
+er en stribe <emphasis>tags</emphasis> som man skal angive - 
+det er blandt andet al den
+information om pakken, som <command>rpm -i</command> kommandoen skal levere.
+</para>
+
+<para>
+Rækkefølgen af de enkelte tags er ligegyldig, bare de er
+der.
+</para>
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para><emphasis>Name:</emphasis> Pakkens navn</para>
+
+</listitem>
+
+  <listitem>
+<para><emphasis>Summary:</emphasis> En kort beskrivelse (under en linie) 
+af, hvad pakken indeholder</para>
+
+</listitem>
+
+  <listitem>
+
+<para><emphasis>Version:</emphasis> Programmets versions-nummer.</para>
+
+</listitem>
+
+  <listitem>
+
+<para><emphasis>Release:</emphasis> RPM pakkens 'build nummer'
+- det er uafhængigt
+af selve programmets versionsnummer, og bruges blot til at holde rede på
+forskellige versioner af denne rpm-pakke, med samme udgave af programmet
+i.</para>
+
+</listitem>
+
+  <listitem>
+
+<para><emphasis>Copyright:</emphasis> Hvilken copyright, programmet 
+er underlagt. Det er naturligvis
+vigtigt at skrive, hvis programmet ikke kan distribueres frit.</para>
+</listitem>
+
+<listitem>
+<para><emphasis>URL:</emphasis> Hvis der er en web-side om pakken, 
+kan man skrive dens URL her.</para>
+</listitem>
+
+<listitem>
+
+<para><emphasis>Group:</emphasis> RedHat bruger dette felt til at 
+gruppere pakkerne - f.eks.
+"Games", "Development tools" o.lign.
+</para>
+</listitem>
+
+<listitem>
+
+<para><emphasis>Description:</emphasis> 
+Det er den lange beskrivelse af softwaren, og strækker
+sig derfor over flere linier - faktisk så mange man har lyst til,
+indtil der kommer en linie som begynder med et procent-tegn.</para>
+</listitem>
+</itemizedlist>
+
+<para>
+ <emphasis>Source</emphasis> tag'en er vigtig - her fortæller man, hvor man har
+fundet den oprindelige source fil til programmet, gerne med en URL. Det
+er en dårlig ide kun at skrive filnavnet - så ved man ikke,
+hvor man skal gå hen for at finde eventuelle nyere versioner af programmet.
+Bemærk: Filnavnet der står her, <emphasis>skal</emphasis> matche det filnavn,
+der ligger i <filename>SOURCES</filename>-kataloget. 
+Så med eksemplet, skal <filename>SOURCES</filename>-kataloget indeholde 
+filen <filename>ssh-1.2.25.tar.gz</filename>.
+</para>
+
+<para> <emphasis>Patch</emphasis> 
+tag'en er også vigtig - det er ændringer til
+de oprindelige sources (i form af patches) som skal installeres inden 
+programmet kan oversættes. Disse skal også ligge i 
+<filename>SOURCES</filename>-kataloget.
+I eksemplet er der kun een patch; hvis man har flere, skal de nummereres,
+og så lister man dem et ad gangen (et patch uden nummer er automatisk
+nummer nul):
+</para>
+
+<screen>
+ Patch: foo-Makefile.patch
+ Patch1: foo-glibc.patch
+ Patch2: foo-wtmpfix.patch
+</screen>
+
+<para> 
+<emphasis>BuildRoot</emphasis> tag'en er ikke krævet, men anbefales. Det er
+<emphasis>ikke</emphasis> det katalog, hvori programmerne bliver oversat, men derimod
+det top-level katalog, hvori de oversatte programmer og øvrige
+filer placeres i installations-fasen, inden de pakkes sammen i rpm-filerne.
+Hvis ikke man bruger en BuildRoot tag er default at filerne placeres i
+de "rigtige" kataloger - <filename>/usr/bin</filename>, <filename>/etc</filename>, <filename>/usr/lib</filename> o.s.v. Det gør
+måske ikke noget, men hvis der er konfigurations-filer involveret
+er det en rigtig god ide at bruge BuildRoot tag'en; ellers kan man nemt
+risikere at komme til at overskrive sine egne omhyggeligt tilpassede konfigurations-filer
+undervejs i build-processen, eller (måske endnu værre) komme
+til at inkludere sine egne konfigurations-filer i rpm-pakken, som downloades
+af tusindvis af brugere. (F.eks. havde jeg en overgang password-filerne
+til min ISP liggende på ftp.sslug.dk, i en ppp RPM pakke). BuildRoot
+tag'en er dog ofte lidt besværlig, da man næsten altid skal
+rette i programmets 'Makefile' eller installations-script, for at de kan
+finde ud af at installere pakkerne et andet sted end det normale. Men det
+er ulejligheden værd.
+</para>
+</sect3>    <!--   En spec-fil til ssh (Secure Shell) -->
+
+<sect3 id="prep-fasen">
+  <title>prep fasen</title>
+<para>
+<emphasis>prep</emphasis> (prepare) fasen består almindeligvis blot i udpakning
+af source-filerne til et underkatalog under BUILD. rpm's build-funktion
+kan automatisk håndtere tar arkiver (også komprimerede), så
+normalt kan man blot nøjes med at skrive
+</para>
+
+<screen>
+ %prep
+</screen>
+
+<para>
+i spec-filen, og så går det af sig selv.
+</para>
+</sect3>    <!--   prep fasen -->
+
+<sect3 id="setup-fasen">
+  <title>setup fasen</title>
+<para>
+<emphasis>setup</emphasis> fasen er der hvor der begynder at ske noget.
+</para>
+
+<screen>
+ %setup 
+ %patch -p1 
+ ./configure --prefix=/usr 
+</screen>
+
+<para>
+Denne fase skal gøre programmet klart til at blive oversat. Typisk
+skal der først installeres de forskellige <emphasis>patches</emphasis> som man
+har listet, og dernæst skal programmet måske konfigureres.
+</para>
+
+<para>
+De linier, der står efter <literal>%setup</literal> 
+er i virkeligheden almindelige
+shell kommandoer. Dog er der defineret nogle makroer, som rpm's build funktion
+håndterer, inden de overgives til kommando-fortolkeren - een af makroerne
+er <literal>%patch</literal>. 
+Denne makro kører <command>patch</command> programmet, med
+patch nummer nul som input. For at apply'e patch nummer 1 skriver man <literal>%patch1</literal>,
+patch nummer 2 er <literal>%patch2</literal> o.s.v. Rækkefølgen af de
+forskellige patches er ligegyldig, så længe patch-programmet
+kan finde ud af det. Man kan også sagtens springe patches over, f.eks.
+hvis de ikke er relevante for den platform man builder til.
+</para>
+
+<para>Inden kommandoerne i setup-fasen afvikles, sættes default katalog
+til <filename>/usr/src/redhat/BUILD/</filename><emphasis>pakkenavn-version</emphasis>, d.v.s. <filename>/usr/src/redhat/BUILD/ssh-1.2.25</filename>
+i eksemplet. Hvis source-arkivet ikke er blevet pakket ud til det katalog
+navn (f.eks. bruger nogle source-arkiver en underscore i stedet for en
+bindestreg), så angiver man det rigtige katalog navn på <literal>%setup</literal>
+linien, f.eks.
+</para>
+
+<screen> 
+ %setup -n foobar_1.17
+</screen>
+
+<para>
+hvis source-filerne er havnet i 
+<filename>/usr/src/redhat/BUILD/foobar_1.17</filename>
+</para>
+
+<para>
+Default katalog er også vigtigt at kende, når man vælger
+hvilke options man giver til patch-programmet. I eksemplet kaldes patch
+med <command>-p1</command> option, fordi patch-filen indeholder <literal>ssh_1.2.25</literal> som
+første element i filnavnet. Men da default katalog allerede er
+nede i ssh-1.2.25, bruges -p1 option for at fjerne det første katalog-element
+fra filnavnet, inden patch leder efter de filer den skal ændre.
+</para>
+
+<para> Konfiguration af programmet kan ske på mange måder - her er det
+et configure-script, som kaldes med en option om, at filerne skal
+bruge <command>/usr</command> som prefix (default er ofte
+<filename>/usr/local</filename>, som jeg foretrækker at reservere til
+ikke-rpm styrede programmer). Andre program-pakker konfigureres via en
+headerfil eller ved at ændre i Makefile - så må man lave en patch
+mellem den oprindelige fil og den rettede, og installere den som en
+patch i patch-listen.
+</para>
+
+<para>
+Kommandoen <command>rpm -bp specfile</command>
+vil afvikle prep- og setup-fasen,
+og kan bruges til at "teste" om alle ens patches nu også kan installeres
+uden problemer.
+</para>
+</sect3>    <!--   setup fasen -->
+
+<sect3 id="build-fasen">
+  <title>build fasen</title>
+<para>
+<emphasis>build</emphasis> fasen er der, hvor programmerne oversættes, og ofte
+er det blot at køre make. Ligesom ved setup-fasen, er default katalog
+sat til der hvor source-filerne blev pakket ud - hvis man brugte <command>-n</command>
+optionen til setup fasen, så bliver det "husket" så man ikke
+skal skrive den igen.
+</para>
+
+<screen>
+ %build 
+ make CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" 
+</screen>
+
+<para>
+Her er der dog givet nogle parametre til make kommandoen. 
+CFLAGS bliver
+sat til $RPM_OPT_FLAGS - det er en miljø-variabel som rpm's build-funktion
+giver med til alle kommandoerne i build-fasen, og som indeholder standard
+"optimizer" indstillingerne for programmer, som oversættes med rpm.
+Default er det <literal>-O2 -m486 -fno-strength-reduce</literal> på 
+i386 platformen.
+</para>
+
+<para>
+Kommandoen <command>rpm -bc specfile</command> vil først afvikle prep og
+setup faserne, og dernæst build-fasen. Hvis man har travlt og allerede
+har brugt <command>rpm -bp</command> til at afvikle prep og setup, 
+kan man bruge
+<command>rpm -bc --short-circuit specfile</command> for bare at køre build-fasen.
+</para>
+
+<para>Det er typisk under build-fasen, at man ramler ind i de fleste problemer.
+Her kan det være nyttigt at glemme rpm et øjeblik, og i stedet
+gå ned i build-kataloget og køre build-kommandoerne manuelt,
+indtil man har fået rettet det hele og programmet kan oversættes.
+Så laver man en patch-fil med sine ændringer, tilføjer
+den til spec-filen (husk at få den med i <literal>%setup</literal> fasen!),
+og går så tilbage til at builde med rpm.
+</para>
+</sect3>    <!--   build fasen -->
+
+<sect3 id="install-fasen">
+  <title>install fasen</title>
+<para>
+<emphasis>install</emphasis> 
+fasen sørger for at installere de nu oversatte programmer
+på de rigtige steder i katalog strukturen. Oftest sker det med
+kommandoen 'make install', da de fleste pakker heldigvis selv kan finde
+ud af at installere sig selv. Men ellers må man selv skrive de kommandoer
+der skal til - enten <command>cp</command>, <command>install</command> eller hvad man nu foretrækker.
+</para>
+
+<para>Det er også vigtigt, at man sørger for at de installerede
+filer får korrekt ejer/gruppe attributter, og permissions.
+</para>
+
+<para>
+ssh spec-filen er lidt mere kompliceret end normalt:
+</para>
+
+<screen>
+ %install 
+ rm -rf $RPM_BUILD_ROOT 
+ mkdir -p $RPM_BUILD_ROOT 
+ make install 
+
+ %post 
+ if [ ! -f /etc/ssh_host_key ]; then 
+    echo "Generating ssh host key" 
+    umask 022 
+    /usr/bin/ssh-keygen -b 1024 -f /etc/ssh_host_key -N '' 
+ fi 
+</screen>
+
+<para>
+En del af kompleksiteten skyldes brugen af 
+<literal>BuildRoot</literal> tag'en -
+inden filerne kan installeres, skal det sikres at det katalog vi installerer
+i er tomt. Derfor slettes det først, og oprettes så bagefter
+igen, hvorefter <command>make install</command> klarer resten.
+Det er dog ikke sket uden at jeg måtte ændre i Makefile - men det blev
+gjort med det patch, der blev installeret helt tilbage i setup-fasen.
+</para>
+
+<para> Normalt vil <command>make install</command> til ssh sørge for
+at generere filen <emphasis>/etc/ssh_host_key</emphasis> , som er en
+del af ssh's krypterings-nøglesæt.  Men det vil jo ikke være smart at
+inkludere den fil i rpm-pakken; så ville alle der brugte rpm-pakken jo
+have denne nøgle til fælles. Derfor er denne del af installationen
+fjernet fra Makefile'n, og i stedet lagt ud som et <emphasis>post-install
+script</emphasis> - det står under <literal>%post.</literal>
+</para>
+
+<para>
+Disse kommandoer vil blive afviklet <emphasis>når brugeren installerer den
+færdige rpm-pakke</emphasis>, d.v.s. hver eneste gang ssh-pakken
+bliver installeret på en PC. Derved får hver enkelt PC sin egen
+nøgle-fil.
+</para>
+
+<para><literal>%post</literal> bruges også til andre ting - hvis man laver en
+rpm-pakke med et shared library i, er det en god ide at køre 
+<command>/sbin/ldconfig</command>
+i et post-install script; derved opdaterer man den dynamiske linker's tabel
+over, hvilke biblioteker der er installeret, og det kan så bruges
+med det samme (uden at man skal reboote systemet).
+</para>
+
+<para>
+Der er andre af sådanne scripts, som man kan definere: 
+<literal>%post-un</literal>
+afvikles når man af-installerer en rpm-pakke, og der er også
+pre-install (<literal>%pre</literal>) og pre-uninstall (<literal>%pre-un</literal>) scripts.&nbsp;
+De kan selvfølgelig kombineres.
+</para>
+
+<para>
+Install-fasen køres med kommandoen <command>rpm -bi specfile</command>
+- man kan også her bruge <literal>--short-circuit</literal> 
+for kun at afvikle denne fase.
+</para>
+</sect3>    <!--   install fasen -->
+
+<sect3 id="files-sektionen">
+  <title>files sektionen</title>
+<para>
+Når filerne er blevet installeret, så er det eneste der mangler
+at pakke dem sammen i en binær rpm-fil. For at kunne gøre
+det, er det nødvendigt at opremse alle de filer, der er en del af
+pakken - det sker i <literal>%files</literal> sektionen.
+</para>
+
+<screen>
+ %files 
+ /usr/bin/make-ssh-known-hosts 
+ /usr/bin/ssh 
+ /usr/bin/ssh-add 
+ 
+ %config /etc/ssh_config 
+ %config /etc/sshd_config 
+ 
+ %doc COPYING INSTALL OVERVIEW TODO 
+ %doc README README.CIPHERS README.SECURERPC README.SECURID README.TIS RFC TODO
+</screen>
+
+<para> 
+Filerne listes blot med deres fulde path-navn (man ser bort fra
+evt. <emphasis>BuildRoot</emphasis> her). Hvis en fil er en
+konfigurations-fil, <emphasis>skal</emphasis> man skrive
+<literal>%config</literal> førend fil-navnet; det fortæller
+rpm-programmet, at denne fil ikke må slettes eller overskrives når man
+opdaterer pakken, men skal gemmes som en <filename>.rpmsave</filename>-fil.
+</para>
+
+<para>
+Dokumentations-filer listes med <literal>%doc</literal> - og dem behøver
+man ikke at bekymre sig om at skulle installere, de kopieres automatisk
+fra det katalog, hvor source-arkivet er blevet udpakket. Dokumentations-filer
+placeres i <filename>/usr/doc/</filename><emphasis>pakkenavn-version</emphasis>-kataloget. Hvilke
+filer, man tager med som dokumentations-filer er selvfølgelig et
+skøn, men hellere lidt for mange end for få. (Når man
+installerer en rpm pakke, kan man bede om ikke at få dokumentations-filerne
+med - ved at bruge <literal>--excludedocs</literal> optionen).
+</para>
+
+<para>Bemærk, at man-pages 
+<emphasis>ikke</emphasis> regnes under dokumentation -
+de betragtes som en essentiel del af pakken, på lige fod med selve
+programmet.
+</para>
+
+<para>Det er selvfølgelig vigtigt, at man får alle filerne med,
+som hører til pakken. Det kan være nyttigt at køre
+<command>make -n install</command> 
+for bare at se, hvad pakken foretager sig under installationen,
+og holde øje med hvilke filer der bliver hvorhen.
+</para>
+
+<para>
+Hvis en pakke indeholder så mange filer, at de har deres eget
+subkatalog, kan man nøjes med at specificere katalog'et - så
+følger alle filerne deri automatisk med. Det <emphasis>skal</emphasis> dog være
+et katalog, der kun bruges af den pågældende pakke - ellers
+kan man få sig nogle overraskelser.
+</para>
+
+<para>Det er også muligt at angive, at et tomt katalog er en del af
+pakken - det vil typisk være et katalog til f.eks. log-filer, som
+der jo ikke er nogen af når man laver rpm-filen, men som skal findes
+for at programmet kan køre. Det skal opremses i <literal>%files</literal>
+sektionen som
+</para>
+
+<screen>
+ %dir /var/log/foobar 
+</screen>
+
+</sect3>    <!--   files sektionen -->
+
+<sect3 id="ultimativ-build">
+  <title>Den ultimative build-kommando</title>
+<para>
+Når man har en spec-fil, som er helt på plads, kan man bruge
+een enkelt rpm-kommando til at køre gennem hele build-fasen og generere
+rpm-filerne:
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ssh]$ </PROMPT><USERINPUT>rpm -ba --clean specfile</USERINPUT>
+</SCREEN>
+
+<para>
+Den kommando klarer det hele: Udpakning af sources, installering af
+patches, konfiguration af programmet, oversættelse, installation,
+sammenpakning i rpm-filer, og oprydning bagefter så BUILD katalog'et
+er pænt og ryddeligt.
+</para>    <!--   Den ultimative build-kommando -->
+</sect3>
+
+<sect3 id="rpm-besvaer">
+  <title>Sikken et besvær!</title>
+<para>
+Det er selvfølgelig lidt mere omstændeligt at lave en rpm-fil,
+end bare at hælde et program igennem en compiler og ned i 
+<filename>/usr/local</filename>.
+Nogle gange kan det være frustrerende små detaljer i spec-filen,
+som gør at en build fejler - og det er som regel først efter,
+at din PC har tygget et par timer på at oversætte programmet...
+</para>
+
+<para>
+Men min erfaring er, at den tid man bruger på at nørkle en ordentlig
+spec-fil sammen, er godt givet ud. Det er <emphasis>meget</emphasis>
+nemmere at holde styr på sin software, når man med en enkelt kommando
+kan få en oversigt over, hvad der er installeret, og hvilke filer hver
+pakke indeholder.
+</para>
+
+<para>
+For nogle år siden opgraderede jeg mit system fra RedHat 4.2 til 5.1. Det er
+en større opgradering, blandt andet fordi der skiftes fra de gamle
+libc (version 5) til det nye glibc (version 6). RedHat's installations-program
+klarede det meste af opgraderingen uden problemer, men jeg havde en del
+software pakker, som jeg selv havde lavet i rpm-format. Nu var det nemt
+at finde dem frem - jeg kunne bruge
+</para>
+
+<screen>
+ rpm -qia | grep -v Manhattan
+</screen>
+
+<para>
+til at liste alle pakker på mit system, og filtrere RedHat's nye
+pakker fra. Det blev til en liste på 10-15 pakker, som jeg selv måtte
+stå for at opdatere til glibc - og fordi jeg havde installeret dem
+liggende som RPM pakker, kunne jeg nemt gentage build-processen, og rette
+de småting der skulle til for at de kunne oversættes med glibc.
+Selv programmer, jeg sidst havde haft fat i for 2 år siden kunne
+nemt gen-oversættes - fordi spec-filen indeholdt alle de oplysninger,
+der skulle til at lave programmet. Jeg behøvede ikke at granske
+hukommelsen for at komme i tanke om, hvordan det nu var jeg havde konfigureret
+programmet sidst.
+</para>
+
+<para>
+Så bare klø på - det lønner sig.
+</para>
+</sect3>    <!--   Sikken et besvær! -->
+</sect2>    <!--   RPM for programmøren -->
 
 <sect2 id="chkconfig">
 <title>chkconfig</title>
