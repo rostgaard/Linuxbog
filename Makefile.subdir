@@ -144,7 +144,7 @@ version.sgml.clean:
 # Laver en zip fil, kræver html target
 .PHONY : palmpilot
 if BUILD_PALM
-palmpilot_navn:=$(targetname)-palm-$(version).zip
+palmpilot_navn:=$(targetname)-palm-$(version).tar.gz
 palmpilot:	$(palmpilot_navn)
 $(palmpilot_navn):	html
 	@echo ".........................................."
@@ -156,7 +156,8 @@ $(palmpilot_navn):	html
 	cp palm/* PalmBuildDir || true
 	cp palm-faelles/* PalmBuildDir || true
 	(cd PalmBuildDir && plucker-build -V 0  -P . -f $(targetname) `pwd`/home.html)
-	zip $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*txt
+#	zip $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*txt
+	tar czf $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*.txt
 else !BUILD_PALM
 palmpilot:	
 	@echo "Overspringer palmpilot"
