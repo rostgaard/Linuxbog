@@ -94,7 +94,7 @@ Password:
 </screen>
 
 <para>
-Efter at have skrevet loginnavn og password på bohr maskinen får
+Efter at have skrevet brugernavn og adgangskode på bohr-maskinen får
 du en kommandolinje, og du kan udføre programmer på maskinen, som om du
 var logget ind lokalt. 
 </para>
@@ -174,8 +174,9 @@ display med sig".
 </sect2>
 
 <sect2 id="sende-passwords-over-net">
-<title>Pas på passwords sendt over netværk</title>
+<title>Pas på adgangskoder sendt over netværk</title>
 <indexterm><primary>password</primary><secondary>Sendt over netværk</secondary></indexterm>
+<indexterm><primary>adgangskode</primary><secondary>Sendt over netværk</secondary></indexterm>
 <indexterm><primary>sniffit</primary></indexterm>
 
 <para>
@@ -213,10 +214,10 @@ er større end 1024, dvs. en ikke priviligeret port.
 <para>
 Trykkes return på en linje vil den blive markeret med "*LOGGED*",
 og det mindre vindue mod højre vil vise trafikken på den forbindelse. 
-Først kommer login navn: "tyge", og efter to punktummer kommer passwordet 
+Først kommer login navn: "tyge", og efter to punktummer kommer adgangskoden
 i klar tekst: "qwe123". Der skal ikke stor fantasi til at forestille sig, 
-at dette program nemt kan sættes til at dumpe samhørende loginnavne og 
-passwords ned i en fil over en periode, indtil der er gevinst. 
+at dette program nemt kan sættes til at dumpe samhørende brugernavne og 
+adgangskoder ned i en fil over en periode, indtil der er gevinst. 
 </para>
 
 <figure id="sniffit2-fig" float="1">
@@ -229,7 +230,7 @@ passwords ned i en fil over en periode, indtil der er gevinst.
 Vi har vist, at man ikke skal bruge telnet til at kommunikere mellem
 to maskiner, hvis der er risiko for, at nogen lytter med, og slet ikke
 hvis man skal logge ind som root på maskinen. Det er simpelthen for
-nemt at lede efter loginnavn root og derefter få passwordet. Derfor
+nemt at lede efter loginnavn root og derefter få adgangskoden. Derfor
 har mange Linux-distributioner per default forhindret, at root logger
 ind via netværket. Red Hat 6.0, Debian 1.3 og SuSE 6.2 har filen
 "/etc/securetty", der indeholder de konsoller, hvor root må logge ind.
@@ -277,7 +278,7 @@ Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1299-192.168.0.2.21
 
 <para>
 På den første af de tre data-linjer kan man se login navn (tyge), og som 
-vist på den sidste data-linje, vil man direkte kunne læse passwordet (qwe123). 
+vist på den sidste data-linje, vil man direkte kunne læse adgangskoden (qwe123). 
 Ser man lidt nøjere efter, vises også ftp-porten, port 21. Port 
 1299 er ligesom ved telnet en ledig port, der vælges til denne session.
 </para>
@@ -291,8 +292,8 @@ For en systemadministrator er paranoia ikke en sygdom, men en kvalifikation...
 <para>
 Det skal nævnes, at også resten af den nettrafik, du laver med telnet og
 ftp, kan læses i klar tekst via f.eks. sniffit. Starter du andre
-programmer, kan man se det. Laver du "su - root" og skriver root-passwordet, 
-er sikkerheden på den maskine væk, for root passwordet er ude, hvis du
+programmer, kan man se det. Laver du "su - root" og skriver "root"s adgangskode, 
+er sikkerheden på den maskine væk, for "root"s adgangskode er ude, hvis du
 bliver aflyttet.
 </para>
 </sect2>
@@ -338,7 +339,7 @@ $
 </screen>
 
 <para>
-hvor password'et naturligvis ikke kan ses på skærmen, når man taster det ind.
+hvor adgangskoden naturligvis ikke kan ses på skærmen, når man taster den ind.
 Udklip fra sniffit's output:
 </para>
 
@@ -424,7 +425,7 @@ Packet ID (from_IP.port-to_IP.port): 192.168.0.1.1023-192.168.0.2.513
 </programlisting>
 
 <para>
-Igen ser man tydeligt brugernavn og password blive sendt ukrypteret
+Igen ser man tydeligt brugernavn og adgangskode blive sendt ukrypteret
 over nettet (se sidste tegn på hver linje).  Man kan se, at rlogin på
 bohr bruger port 513, og at der på hven sendes fra port 1023.
 </para>
@@ -449,10 +450,10 @@ artiklen vende tilbage til et fuldt krypteret alternativ til
 
 <para>
 Med rlogin, rsh og rcp kan man vælge, at login kan ske uden
-password. Dette gøres ved at sætte sit hostnavn og evt. brugernavn ind
+adgangskode. Dette gøres ved at sætte sit hostnavn og evt. brugernavn ind
 i filen <filename>~/.rhosts</filename> i sit hjemmekatalog på den
 maskine, der skal logges ind på. Hvis du gerne vil kunne logge ind fra
-hven til bohr uden password, som brugeren tyge, kan
+hven til bohr uden adgangskode, som brugeren tyge, kan
 <filename>.rhosts</filename>-filen i dit hjemmekatalog på bohr se
 sådan ud:
 </para>
@@ -491,28 +492,28 @@ den er "hven".
 
 <para>
 Der kan imidlertid være situationer, hvor det kan virke mere sikkert
-at lade en bruger logge ind uden password fra en kendt host end at
-lade brugeren have et password. Har man tillid til sit interne
+at lade en bruger logge ind uden adgangskode fra en kendt host end at
+lade brugeren have en adgangskode. Har man tillid til sit interne
 netværk, og er det nødvendigt, at nogle brugere kan logge på en udsat
-maskine, kan man vælge, at disse brugere ikke har noget password på
+maskine, kan man vælge, at disse brugere ikke har nogen adgangskode på
 den udsatte maskine.  I stedet får de en stjerne ("*") i
-<filename>/etc/passwd</filename>, der hvor passwordet normalt ville
+<filename>/etc/passwd</filename>, der hvor adgangskoden normalt ville
 stå.  Dette vil forhindre dem i at logge ind fra andre maskiner end
 dem, der er angivet i deres <filename>~/.rhosts</filename> fil i deres
-hjemmekatalog på den udsatte maskine. Når en bruger ikke har et
-password, kan man ikke bryde ind på den udefra ved at gætte eller
-knække passwordet. Men kan kun logge ind som denne bruger, hvis man
+hjemmekatalog på den udsatte maskine. Når en bruger ikke har en
+adgangskode, kan man ikke bryde ind på den udefra ved at gætte eller
+knække adgangskoden. Men kan kun logge ind som denne bruger, hvis man
 kan overbevise maskinen om, at man logger ind fra en betroet
-maskine. Der kan i øvrigt læses mere om passwords beskyttelse og
+maskine. Der kan i øvrigt læses mere om adgangskodebeskyttelse og
 håndtering i <xref linkend="root-access"/>.
 </para>
 
 <para>
 Hvis man ikke tillader <filename>.rhosts</filename>-filer, vil der ved
-hver login sendes passwords i klar tekst over nettet. Hvis der er
+hver login sendes adgangskoder i klar tekst over nettet. Hvis der er
 <filename>.rhosts</filename>-filer, bliver der slet ikke sendt
-passwords over nettet - i stedet for at give sit password skal man
-logge ind fra en betroet host. Ingen kan nu opsnappe passwords - til
+adgangskoder over nettet - i stedet for at give sin adgangskode skal man
+logge ind fra en betroet host. Ingen kan nu opsnappe adgangskoder - til
 gengæld kan de udgive sig for at være den betroede host.  Stoler man
 ikke på sit interne netværk, eller er nogen <emphasis>sluppet
 ind</emphasis>, er begge dele nok lige dårligt.
@@ -565,7 +566,7 @@ equivalence" via filen "/etc/hosts.equiv". Dine brugere har
 ikke adgang til denne fil, og kun root kan rette i den. Root kan
 vælge at sætte en række hostnavne ind i denne fil eller evt. bare et
 plus. Det betyder, at disse hosts (+ betyder alle maskiner)
-har adgang til at udføre rlogin og rsh kommandoer uden password. Dette
+har adgang til at udføre rlogin og rsh kommandoer uden adgangskode. Dette
 gælder alle brugere (dog ikke root) - brugeren skal dog findes på
 begge maskiner. Filen "/etc/hosts.equiv" kan være en bekvem løsning,
 men den er en bombe under systemsikkerheden - find en anden løsning,
@@ -914,17 +915,17 @@ nøgle. Det er derfor, denne privat-nøgle ikke må gå over nettet.
 </para>
 
 <para>
-Brugeren kan selv generere nøgler til login med pass-phrase i
-stedet for anvendelse af almindeligt password login. Det anses
+Brugeren kan selv generere nøgler til login med løsen i
+stedet for at bruge en almindelig adgangskode til at logge ind. Det anses
 for mere sikkert, fordi man ikke kan logge ind på hvilken som
-helst konto selv om man skulle have skaffet sig det tilhørende
-password.
+helst konto selv om man skulle have skaffet sig den tilhørende
+adgangskode.
 </para>
 
 <para>
-Man kører ssh-keygen som generer en identitets-nøgle, og
-undervejs kan man hertil selv vælge en "pass-phrase" - svarende
-til et password, men et, som kan være meget langt.  Lav det
+Man kører <command>ssh-keygen</command> som generer en identitetsnøgle, og
+undervejs kan man hertil selv vælge et løsen &ndash; svarende
+til en adganskode, men et, som kan være meget langt.  Lav det
 tilpas kryptisk, dog på en måde, så du har nemt ved at huske det.
 </para>
 
@@ -977,7 +978,7 @@ source-tar-balls er disse filer default lagt i
 F.eks. kan du ændre "PermitRootLogin yes"
 til "PermitRootLogin no", hvis du mener, at root ikke må logge ind via
 ssh. Det kan være en god ide at forbyde root remote login i det hele taget.
-Tilsvarende kan du forbyde tomme passwords ved at ændre
+Tilsvarende kan du forbyde tomme adgangskoder ved at ændre
 "PermitEmptyPasswords yes" til "PermitEmptyPasswords no" - vent lige
 med at lave disse ændringer til du har fået ssh til at virke.
 </para>
@@ -1011,12 +1012,12 @@ Første gang du kobler til en fremmed maskine, der ligeledes har fået
 installeret ssh, skal ssh acceptere at udveksle nøgler med en
 ukendt maskine. Dette spørgsmål skal du således acceptere, og næste
 gang du anvender samme fremmede maskine, skal du ikke igennem dette
-spørgsmål. Efter at have svaret "yes" skal du aflevere dit
-almindelige password, og du er så logget ind på maskinen. Dette kan du
+spørgsmål. Efter at have svaret "yes" skal du aflevere din
+almindelige adgangskode, og du er så logget ind på maskinen. Dette kan du
 fortsætte med, men hvis du vil højne sikkerheden yderligere, bør du
 gemme din offentlige nøgle på fjernmaskinen. Har du denne nøgle gemt, 
-kan man ikke logge ind med dit password, men kun med din lange og 
-kryptiske passphrase.
+kan man ikke logge ind med din adgangskode, men kun med dit lange og 
+kryptiske løsen.
 </para>
 
 <para>
@@ -1059,7 +1060,7 @@ compression yes
 <para>
 Log ud ved at skrive exit (eller trykke Ctrl-D) for at komme tilbage
 til din egen maskine. Kopier nu din public key fra din egen maskine
-(hven) til fjern maskinen og gem den under
+(hven) til fjernmaskinen og gem den under
 <filename>~/.ssh/authorized_keys</filename> (for SSH1, dvs. RSA
 nøglen) og <filename>~/.ssh/authorized_keys2</filename> (for SSH2,
 dvs. DSA nøglen). Ingen andre end dig skal kunne læse den fil du
@@ -1108,10 +1109,10 @@ Enter passphrase for RSA key 'tyge@bohr': V1 hANDLER me spaghett1
 </screen>
 
 <para>
-Du blev nu mødt af noget nyt igen, idet du skulle skrive din
-passphrase og ikke dit password. Bemærk, at i virkeligheden vises din
-passphrase naturligvis ikke på skærmen.
-xload vil nu køre fra bohr og vises på din egen maskine (hven). 
+Du blev nu mødt af noget nyt igen, idet du skulle skrive dit
+løsen og ikke din adgangskode. Bemærk, at i virkeligheden vises dit
+løsen naturligvis ikke på skærmen.
+<command>xload</command> vil nu køre fra bohr og vises på din egen maskine (hven). 
 Skal du logge ind på bohr, så skriver du blot "ssh bohr", og skal 
 du have udført et program derfra, tilføjer du blot programnavnet til denne
 ordre. 
@@ -1146,7 +1147,7 @@ Tilsvarende erstattes ftp med <command>sftp</command>, og scp erstatter rcp
 <para>
 Hvis du ikke frygter, hvem der kan tilgå din egen maskine, kan du
 få endnu nemmere adgang til de andre maskiner ved, at du en
-gang for alle i den X session, du har igang, giver din passphrase.
+gang for alle i den X session, du har igang, giver dit løsen.
 </para>
 
 <indexterm>
@@ -1185,13 +1186,13 @@ Enter passphrase for /home/pto/.ssh/id_dsa:
 
 <para>
 Derefter kan du med ssh fra den terminal logge ind og ud af "bohr" 
-og andre ssh maskiner uden at skulle bruge passphrase. Vil du
+og andre ssh maskiner uden at skulle bruge løsen. Vil du
 have at alle terminal-vinduer skal kunne dette, skal du rette i din 
 "~/.xsessionrc", "~/.xinitrc" eller
 lignende, hvor din window manager startes op. Er det f.eks. KDE,
 skal du ændre "startkde" til "ssh-agent startkde" og kun en
-enkelt gang køre "ssh-add". Derefter kan du slippe for at indtaste din 
-passphrase i resten af den X session. Brug "ssh-agent" med omtanke.
+enkelt gang køre "ssh-add". Derefter kan du slippe for at indtaste dit 
+løsen i resten af den X session. Brug "ssh-agent" med omtanke.
 </para>
 
 <indexterm><primary>xauth</primary></indexterm>
@@ -1213,9 +1214,9 @@ programmet <command>xauth</command> installeret.
 <para>
 Anvender du ssh, kan andre med sniffit se, at der laves kommunikation
 på port 22, men prøver de at følge netværkstrafikken, kommer der
-ikke login navne, passwords, eller efterfølgende kommandoer i klar
+ikke login navne, adgangskoder, eller efterfølgende kommandoer i klar
 tekst - alt er krypteret. Den lille boks i sniffit, som for telnet
-viste login sekvensen med passwords osv., vil med ssh være fyldt med en
+viste login sekvensen med adgangskoder osv., vil med ssh være fyldt med en
 bunke tilfældige tegn uden sammenhæng - kun ssh selv kan i praksis
 afkode kommunikationen. 
 </para>
@@ -1322,7 +1323,7 @@ mulighed for drag-and-drop kopiering og flytning mv.
 <para>
 Der er mange forskellige smarte features i
 ssh, såsom at maskinerne skal acceptere hinandens identitet, brugeres
-skal accepteres via en passphrase, og en gang hver time vil maskiner
+skal accepteres via et løsen, og en gang hver time vil maskiner
 endda skifte nøgler, så en eventuel ondsindet person, som vil lytte
 med skal begynde forfra i dekodning af krypterings-nøgler.
 </para>
