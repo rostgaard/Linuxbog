@@ -435,7 +435,7 @@ if ($matrix) { ?>
 [<a href="?matrix=1">Samlet bogoversigt</a>]
 [<a href="?all=b">Alle bøger</a>]
 [<a href="?all=t">Alle filtyper</a>]
-[<a href="search.php">Søg i sgml-filer</a>]
+[<a href="search.php">Søg</a>]
 [<a href="alle/bog/stikord.html">Stikord</a>]
 </font>
 
