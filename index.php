@@ -151,7 +151,7 @@ function form_filename( $bookname, $format ) {
     while (list($ftype,$fname) = each($ext_files)) {
       if (file_exists($bookname.$fname)) {
         $num = file($bookname.$fname);
-        $books[$bookname][$ftype] = $num[0];
+        $books[$bookname][$ftype] = trim($num[0]);
       }
     }
   }
