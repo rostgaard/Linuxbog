@@ -1908,7 +1908,8 @@ nu ellers installerede <application>xcdroast</application>.
 <sect1 id="software-raid">
 <title>Software raid</title>
 <indexterm><primary>raid</primary></indexterm>
-
+<!-- Skrevet af peter_frederiksen@danbbs.dk -->
+<!-- sprog rettet lidt til : pto -->
 
 <sect2 id="hvad-er-raid">
 <title>Hvad er raid?</title>
@@ -2076,6 +2077,53 @@ nr-spare-disks      	    0
 </screen>
 </sect2>
 
+
+<sect2 id="raidhotadd-remove">
+<title>raidhotadd og raidhotremove</title>
+<indexterm><primary>raid</primary>
+<secondary>raidhotadd og raidhotremove</secondary></indexterm>
+<para>
+Det er muligt at tilføje og fjerne diske fra raidet medens systemet
+kører. Det kan være en god ting, hvis filsystemet af en eller anden
+grund er gået i stykker på den ene af diskene. Det kan ske
+ske uden, at disken rent fysisk har fejlet.
+</para>
+
+<para> 
+<emphasis>Fjern disk</emphasis>
+</para>
+
+<para>
+eks. fjern disk <filename>/dev/hdd1</filename> fra raidet
+</para>
+
+<screen>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>raidhotremove -a /dev/md0 /dev/hdd1</USERINPUT>
+</screen>
+
+<para>
+Nu kan man arbejde på disken med <command>fdisk</command>
+</para>
+
+<para> 
+<emphasis>Tilføj disk</emphasis>
+</para>
+
+<para>
+Disken som er blevet reparttioneret kan tages i brug således
+</para>
+
+<screen>
+<PROMPT>[root@linus /etc]# </PROMPT><USERINPUT>raidhotadd -a /dev/md0 /dev/hdd1</USERINPUT>
+</screen>
+
+<para>
+Raidet vil automatisk blive opdateret og et evt. spejl vil blive
+genopbygget medens produktionen kører, performancenedgangen er lille
+selv ved IDE diske.
+</para>
+
+</sect2>
 
 </sect1>
 
