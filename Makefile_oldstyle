@@ -3,7 +3,7 @@
 SUBDIRS = friheden unix wm applikationer admin program web sikkerhed c dokumentation forsker kontorbruger itplatform java signatur
 
 
-all: cvs2htmlweb filer
+all: cvs2htmlweb filer palmpilot-samling
 
 start:
 	@for dir in $(SUBDIRS); do \
@@ -44,7 +44,7 @@ palmpilot-hver-enkelt: start
 		$(MAKE) -C $$dir palmpilot; \
 	done;
 
-palm-samling: palmpilot-hver-enkelt
+palmpilot-samling: palmpilot-hver-enkelt
 	@for dir in $(SUBDIRS); do \
 		cp $$dir/palm/linuxbog-$$dir.pdb palm-samling/; \
 	done;
