@@ -3004,6 +3004,229 @@ Det var da ikke så svært vel...?
 
 </sect1>
 
+<sect1 id="installer-debian">
+<title>Debian</title>
+<indexterm><primary>Debian</primary></indexterm>
 
+
+<para>
+En egentlig installationsvejledning i Debian er ikke her, men vi skal
+se nærmere på håndtering af DEB-pakker i Debian.
+</para>
+
+<sect2 id="debian-apt">
+<title>Apt - Package-manageren i Debian</title>
+<indexterm><primary>apt</primary></indexterm>
+
+<para>
+Hvis man bruger Debian, eller overvejer at bruge det, og ikke kender
+dens package-system. Så er denne lille guide en glimrende introduktion
+til emnet.
+</para>
+ 
+<para>
+Apt står for "Advanced Package Tool" og er det værktøj i Debian som
+håndterer installerede software-pakker. Når man bruger Apt, eller
+pakker generelt, så downloader man som regel et præ-oversat stykke
+software og installerer det via sit pakke-håndteringsprogram. Fordelen
+ved dette er så at uerfarne Linux-brugere kan installere en masse
+software uden at skulle igennem en - nogen gange - vanskelig proces
+med at oversætte programmet, som sker ud fra kildekoden. En af
+ulemperne ved kildekode er også at når et stykke software er blevet
+opgraderet så skal man til at gen-oversætte hele programmet igen, og det
+kan hurtigt blive en uoverskuelig opgave hvis man bare bruger XFree86
+og nogle enkelte stykker software udover det. Men med f.eks. Apt kan
+dette gøres rigtigt nemt og hurtigt.
+</para>
+
+<para>
+Med Apt kan man installere/opdatere/fjerne pakker med et
+snuptag, fordi man ikke skal bruge selve pakken, men blot navnet på
+pakken som input, så sørger Apt selv for at hente pakken, om så det er
+fra CD eller en http-server. Men for at få dette til at virke rigtigt,
+bruger Apt en simpel konfigurerings-fil kaldet sources.list og denne
+fil ligger som standard i mappen <filename>/etc/apt</filename>. I
+denne fil er der specifiseret hvorledes Apt skal få pakkerne fra. Som
+standard installerer man fra sit cdrom-device, men dette kan nemt
+ændres hvis man kører følgende kommando i konsollen eller i en
+xterm/wterm/etc., som root:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]# </PROMPT><USERINPUT>apt-setup</USERINPUT>
+</SCREEN>
+
+<para> 
+Så skulle der gerne komme en menu hvori man kan vælge hvordan man vil
+hente sine pakker. Her vælger man så f.eks.: http
+</para>
+
+<para>
+Så spørger den om man vil bruge "Non-free software" -- Det vil jeg
+lade op til brugeren selv at bestemme. Som standard i Debian er dette
+"off", fordi det ikke følger ånden i GPL-licensen. Men man har her
+muligheden for at sætte det til "on", hvis der er noget software som
+man gerne vil have. Under "Non-free software" findes
+bl.a. programpakken, der indeholder mail-klienten PINE og editoren
+PICO.
+</para>
+
+<para>
+Så spørger den om at bruge "Contrib software" -- Dette valg skal man
+nok basere på det valg man lavede ovenfor.
+</para>
+
+<para>
+Resten af spørgsmålene skulle gerne give sig selv. Og når man har
+svaret på dem begynder den at downloade en "package-list", som Apt
+skal bruge fremover når man vil installere pakker.
+</para>
+
+<para>
+Nu er Apt søsat til at hente pakkerne fra internettet af, så nu vil
+jeg introducere dét program som man vil bruge for at håndtere
+pakkerne: <command>apt-get</command>.
+</para>
+
+<para>
+Apt-get fungerer ved at man sætter første parameter efter hvad man
+gerne vil have gjort med pakken, fx. hvis man vil installere noget:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>apt-get install pakkenavn</USERINPUT>
+</SCREEN>
+
+<para>
+Læg her mærke til at jeg skriver "pakkenavn" og ikke "pakkenavn.deb" -
+Dette gør jeg fordi at pakkesystemet er bygget sådan op at man kun
+skal bruge pakkens navn.
+</para>
+
+<para>
+Når jeg udfører denne kommando så søger den i den underliggende
+"Package List" efter en pakke kaldet "pakke", derudover søger den også
+i "Dependency List", og hvis den pakke man vil installere kræver en
+anden pakke så vil Apt også hente den.  Nu vil Apt så begynde at hente
+pakken fra internettet og når dette er gjort vil den installere og
+derefter opsætte pakken.
+</para>
+
+<para>
+Hvis man vil fjerne/afinstallere en pakke fra systemet skriver man så:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>apt-get remove pakkenavn</USERINPUT>
+</SCREEN>
+
+<para>
+Her vil Apt afinstallere "pakkenavn" fra systemet.
+</para>
+
+<para>
+Alt dette er jo også meget godt, men man kan lave mere avancerede ting
+også, fx. kan man opgradere alle pakker på sit system, ved først at
+skrive:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>apt-get update</USERINPUT>
+</SCREEN>
+
+<para>
+Dette vil opdatere "Package Lists" og "Dependency Lists", så man vil
+hente de nyeste pakker fra internettet.
+</para>
+
+<para>
+Herefter kører man:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>apt-get update</USERINPUT>
+</SCREEN>
+
+<para>
+Denne kommando vil sammenligne "Package List" med de installerede
+pakker og så opdatere de pakker på systemet, som er nyere i "Package
+List". Denne kommando er utrolig fiks til at opdatere alle installere
+pakker med. Udover 'apt-get upgrade' findes der også: 'apt-get
+dist-upgrade' og som navnet antyder opgraderer den
+distributionen. Forskellen mellem 'upgrade' og 'dist-upgrade' er at
+'dist-upgrade' vil prøve at opdatere "Dependency List" med nye
+versioner af pakkerne.
+</para>
+
+<para>
+Når Apt har downloadet en pakke bliver den lagt i
+<filename>/var/cache/apt/archives</filename> og der bliver den faktisk
+liggende, også efter at pakken er installeret, for at slette pakkerne
+man har liggende skriver man:
+</para>
+
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>apt-get clean</USERINPUT>
+</SCREEN>
+
+<para>
+Dette var en kort indledning til 'apt-get' - Men tro ikke at de
+funktioner jeg har nævnt her er det eneste den kan. Den kan faktisk en
+masse andet, fx downloade sourcen til et program for derefter at
+kompilere det. Alle disse smarte features kan man finde i Man-siden
+til <filename>apt-get(8)</filename>.
+</para>
+
+<para>
+Nogen gange når man skal installere en pakke kan det være svært at
+gennemskue hvad pakken hedder i Apt fordi der kan være versions-numre
+og lignende i navnet. I sådanne situationer hvor man ønsker at finde
+det præcise navn på en pakke kan man bruge programmet
+<command>apt-cache</command>. Hvis man f.eks. gerne vil vide hvad
+pakkenavnet for IRC-klienten EPIC4 hedder, kan man skrive:
+</para>
+
+<SCREEN>
+<PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>apt-cache search epic</USERINPUT>
+</SCREEN>
+
+<para>
+Programmet vil så svare om der findes nogle pakker med det
+søgekriterium man har skrevet. I dette tilfælde vil den bl.a. komme
+med følgende linie:
+</para>
+
+<screen>
+epic4 - epic irc client, version 4
+</screen>
+
+<para>
+Fra denne oplysning kan jeg se at pakken jeg er interesseret i, hedder
+"epic4", Og får at lette brugen udskriver den også en lille
+beskrivelse af pakken. Hvis man så ønsker at installere kan man bare
+fodre <command>apt-get</command> med pakkens præcise navn og den vil
+så begynde at downloade og installere pakken.
+</para>
+
+<para>
+Dette var en lettere kort introduktion til det efterhånden ret geniale
+værktøj; Apt, som gør brugen af Debian meget god og nem at
+vedligeholde. Hvis man vil kompilere alle sine programmer selv, så er
+debian nok ikke distribution for én.  Hvis man vil have mere info
+omkring de forskellige parametre, som man kan smide på programmerne
+kan Man-siderne godt anbefales: apt-cache(8), apt-get(8), sources.list(5)
+</para>
+
+<para>
+Som en slutreplik kan nævnes at hvis man editerer
+<filename>/etc/apt/sources.list</filename> så kan man opsætte
+forskellige ting i denne fil, bl.a. om man vil have stable-, unstable-
+eller testingpakker installeret. I denne fil kan man også indsætte
+flere entrys til Apt, som man så kan bruge. Man skal blot huske at
+køre en <command>apt-get update</command> efter man har opdateret
+<filename>sources.list</filename>.
+</sect2>
+</sect1>
 </chapter>
 
