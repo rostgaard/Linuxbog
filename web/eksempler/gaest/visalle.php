@@ -10,7 +10,7 @@
 <?php
 
   // Hent password
-  require(".password.inc");
+  require(".password.php");
   // Åben forbindelse til databasen
   $conn = pg_pconnect("dbname=$dbname user=$dbuser");
 
@@ -18,7 +18,7 @@
   $res = pg_exec($conn, $sql );
   for ($n=0; $n <pg_numrows($res); $n++ ) {
     list($opdat,$navn,$email,$hilsen) = pg_fetch_row($res, $n);
-    echo "<h1>$navn &lt;email&gt;</h1>";
+    echo "<h1>$navn &lt;$email&gt;</h1>";
     echo "<i>$opdat</i><br>";
     echo $hilsen;
   }

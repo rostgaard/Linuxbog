@@ -11,7 +11,7 @@
 
 function gem_denne($navn, $email, $hilsen ) {
   // Hent password
-  require(".password.inc");
+  require(".password.php");
   // Åben forbindelse til databasen
   $conn = pg_pconnect("dbname=$dbname user=$dbuser");
 

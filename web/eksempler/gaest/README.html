@@ -1,0 +1,97 @@
+<html>
+<!-- $Id$ -->
+<title>README Gæstebog</title>
+<h1>Gæstebog</h1>
+
+<p>
+Database og web eksempler til bogen "Linux - Friheden til egen webserver"
+<a href="http://www.sslug.dk/linuxbog/web/bog/index.html">http://www.sslug.dk/linuxbog/web/bog/index.html</a>.
+</p>
+
+<p>
+Dette eksempel er en gæstebog hvor brugere af hjemmesiden kan skrive
+en hilsen til dig og dine andre web-brugere.
+</p>
+
+<p>
+Formålet med dette eksempel er, at vise de basale mekanismer der
+bruges i en web-applikation med database.
+For at gøre det overskueligt, er det meget simple
+HTML, PHP og SQL kommandoer der er brugt.
+Det væsentlige er dialogen med web-brugeren og hvordan data gemmes og
+hentes fra databasen.
+</p>
+
+<h2>Filer</h2>
+<ul>
+<li><tt><a href="README.html">README.html</a></tt> - denne fil</li>
+<li><tt>.password.php</tt> - ret brugernavn og password her</li>
+<li><tt><a href="sql-create-gaest.php">sql-create-gaest.php</a></tt> - script til at oprette tabeller</li>
+<li><tt><a href="skriv.html">skriv.html</a></tt> - form brugeren skriver en hilsen i</li>
+<li><tt>gemskriv.php</tt> - script til at gemme data i gæstebogen</li>
+<li><tt><a href="visalle.php">visalle.php</a></tt> - script til at vise alle poster i gæstebogen</li>
+</ul>
+
+<h2>Installation</h2>
+
+<p>
+Før installationen kan begynde, skal PostgreSQL være installeret
+og der skal være oprettet en bruger som vist i
+<a href="http://www.sslug.dk/linuxbog/web/bog/db-pgsql.html">http://www.sslug.dk/linuxbog/web/bog/db-pgsql.html</a>.
+</p>
+
+<p>
+Ret brugernavn og password i filen <tt><a href=".password.php">.password.php</a></tt> til det du er
+blevet oplyst af din databaseadministrator.
+Filen har et punktum forest for ikke at web-bruger kan se filen.
+Apache skulle gerne være sat op til ikke liste filer med punktum foran.
+Har du mulighed for at lægge <tt>.password.php</tt> et sted hvor den ikke vises
+for brugeren, vil dette være en klar fordel, så andre ikke ser dit password til databasen.
+</p>
+
+<p>
+Upload alle filer til din web-server og kør scriptet
+<a href="sql-create-gaest.php">sql-create-gaest.php</a>.
+Scriptet opretter en tabel, et index og en enkelt post i gæstebogen.
+Hvis alt gik som det skulle, kan du se en enkelt hilsen med
+<tt><a href="visalle.php">visalle.php</a></tt> scriptet.
+For ikke at nogen skal ødelægge dine tabeller,
+bør du straks efter <b>slette sql-create-gaest.php</b> fra web-serveren.
+</p>
+
+<h2>Virkemåde</h2>
+
+<p>
+En web-session udføres i to tempi.
+For at gøre det nemmere at forstå, er sessionen delt op i filerne
+<tt><a href="skriv.html">skriv.html</a></tt> og
+<tt>gemskriv.php</tt>,
+selv om det kan lade sig gøre at integrere det hele i en fil.
+Web-brugeren skriv sin hilsen ind i <tt><a href="skriv.html">skriv.html</a></tt>
+og klikker på "Gem"-knappen.
+Brugerens browser sender så de indtastede data til <tt>gemskriv.php</tt>.
+<tt>gemskriv.php</tt> bruges kun til at modtage de indtastede data
+fra <tt><a href="skriv.html">skriv.html</a></tt>, så det giver ingen mening at se denne fil for sig selv.
+</p>
+
+<p>
+I filen <tt>skriv.html</tt> er det angivet indtastningsformens data skal sendes
+videre til <tt>gemskriv.php</tt> med linien:
+<tt>&lt;form action="gemskriv.php" method="post"&gt;</tt>.
+Desuden anvendes metoden <tt>post</tt>.
+</p>
+
+<p>
+I filen <tt>skriv.html</tt> findes variabelnavnene navn, email, hilsen og aktion.
+Når der så klikkes på "Gem" bliver disse variable overført til PHP,
+og kan så findes som $navn, $email, $hilsen og $aktion.
+I <tt>gemskriv.php</tt> vises hvordan de indtastede data fanges og gemmes
+i databasen.
+</p>
+
+<p>
+Filen <tt><a href="visalle.php">visalle.php</a></tt> er et selvstændigt script
+der viser indholdet af alle poster i gæstebogen.
+</p>
+
+</html>
