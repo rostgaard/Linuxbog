@@ -214,6 +214,16 @@ på din disk. Det bør ikke gå galt, hvis du læser videre og går
 forsigtigt frem. Fik vi nævnt, at du bør tage sikkerhedskopi ? :-)
 </para>
 
+<para>
+<emphasis>Tip:</emphasis> Du skal bruge en diskette til installationen.
+På et tidspunkt bliver du spurgt om du vil lave en boot-diskette.
+Erfaring siger at det godt kan betale sig at formattere en diskette
+i forvejen med check for dårlige sektorer. 
+Er disketten i stykker så kan man erfaringsmæssigt blive noget sur den 
+dag man skal bruge disketten :-)
+</para>
+
+
 </sect2>
 
 <sect2 id="fdiskintro">
@@ -2196,6 +2206,224 @@ enheder. Dette gøres via yast. Se mere i
 <xref linkend="systemvedligeholdelse-suse">.
 </para>
 </sect2>
+
+<sect2 id="yast-lvm">
+<title>Installation med LVM (SuSE 7.2/Yast2)</title>
+<para>
+Fra og med version 7.2 understøtter SuSEs grafiske administrationssystem LVM 
+(Logical Volumne Manager).
+</para>
+
+<para>
+Dette afsnit ser på den del af installationen, der specifikt har med
+LVM at gøre, mens resten stort set er uændret, og derfor ikke bliver
+beskrevet her.
+</para>
+
+<sect3 id="Dansk-Yast-2">
+<title>Dansk Yast 2</title>
+<para>
+En enkelt (kommende) nyhed er dog værd at nævne. SuSE er gået i gang
+med at oversætte Yast2 til Dansk. Endnu mangler æøåÆØÅ at blive
+understøttet, ikke alt er endnu oversat, og der er ganske
+meningsforstyrrende (-løse) vendinger som "Omkring installation"
+(skulle være Afbryd installation), men det er alligevel dejligt, at
+den udvikling er sat i gang.
+</para>
+
+<figure  id="Yast2-LVM-2-fig" float="1">
+<title>YAST 2</title>
+<graphic fileref="Yast2_LVM_2.&magic;"  scale="60"></graphic>
+</figure>
+
+
+</sect3>
+
+<sect3 id="om-LVM">
+<title>Lidt om LVM</title>
+<indexterm><primary>LVM</primary></indexterm>
+<indexterm><primary>Logical Volume Management</primary></indexterm>
+
+<para>
+LVM arbejder med hele, primære partitioner. Det vil ikke være
+misvisende, hvis du forestiller dig LVM på samme måde som sekundære
+partitioner på en harddisk. En sekundær partition er ganske enkelt en
+opdeling af en primær partition, og på samme måde giver LVM adgang til
+at opdele en primær partition i flere områder.
+</para>
+
+<para>
+For at vise forløbet, har jeg sat en virtuel VMware-maskine op med 2
+harddiske. hdb og hdc (virtuelle drev på hver 2GB max), mens hda er en
+selvstændig partition på ca 4GB.
+</para>
+
+<figure  id="Yast2-LVM-3-fig" float="1">
+<title>YAST2</title>
+<graphic fileref="Yast2_LVM_3.&magic;"  scale="60"></graphic>
+</figure>
+
+
+</sect3>
+
+<sect3 id="lvm-expert">
+<title>Bliv "expert" på få minutter.</title>
+
+<para>
+Det er en smule misvisende, at LVM er dømt "for experts", det er
+faktisk ganske let og ligetil at bruge det, ikke mindst takket være
+Yast2. Ideen bag LVM er i al sin enkelthed, at man opretter en gruppe,
+som indeholder eksisterende drev eller (primære) partitioner. Gruppen
+fremtræder derefter overfor Linux som een stor harddisk, der kan
+partitioneres efter behov.
+</para>
+
+<para>
+De tre harddiske i eksemplet herover rummer til sammen 8GB, men det er
+alligevel ikke muligt at oprette en partition på 5GB uden brug af LVM
+(eller for den sags skyld to på 3GB hver).
+</para>
+
+<para> 
+Desværre tillader Linux endnu ikke, at <filename>/</filename>
+bliver placeret på en LVM-partition, men til gengæld kan man senere
+ændre på størrelsen af de enkelte partitioner, når det viser sig, at
+man ikke har plads nok.  
+</para>
+
+<para>
+Et helt andet problem er rækkefølgen man skal gøre tingene i. Man kan
+ikke bruge en LVM partition før den er sat sammen i en gruppe, og man
+kan derfor heller ikke blot køre lige igennem, men må få sat sin LVM
+sammen først, vende tilbage til tidligere i forløbet, og få den
+partitioneret.  Det er naturligvis lidt ekspert agtigt, men altså til
+at komme igennem.  Det ville være en fordel, hvis Yast2 ikke blot tog
+LVM delen efter partitioneringsdelen, men gav adgang via en knap til
+at oprette en LVM partition, det er forhåbentlig noget der kommer i en
+fremtidig version.
+</para>
+
+
+<figure  id="Yast2-LVM-4-fig" float="1">
+<title>Der oprettes partitioner</title>
+<graphic fileref="Yast2_LVM_4.&magic;"  scale="60"></graphic>
+</figure>
+
+<para>
+På maskinen her er det ønsket, at der på hda skal være <filename>/boot</filename>, <filename>/</filename> og swap, mens hdb og hdc skal
+indgå  i  LVM gruppen. Partitioneringen af hda er ikke vist, mens oprettelsen af en partition
+til brug for LVM er vist herover. Bemærk, at man ikke kan andet end at bestemme størrelsen og
+reservere den til LVM-brug ved at give den type 89.
+</para>
+
+<figure  id="Yast2-LVM-5-fig" float="1">
+<title>De oprettede partitioner</title>
+<graphic fileref="Yast2_LVM_5.&magic;"  scale="60"></graphic>
+</figure>
+
+<para> 
+Herover ses resultatet af den endelige
+partitionering. <filename>/boot</filename> skal helst være over 12MB
+(der advares hvis den er mindre), swap har jeg ikke meget at bruge til
+og <filename>/</filename> (root) får så resten af hda.  Der er valgt
+ext2 til <filename>/boot</filename> og reiserfs til
+<filename>/</filename>. Det sidste er også noget forholdsvis nyt, SuSE
+7.0 frarådede at lægge <filename>/</filename> ud med reiserfs, mens
+7.2 ikke antyder, at det skule give problemer, hvilket det da heller
+ikke har gjort endnu for mig.
+</para>
+
+<para>
+Her er det så, at konflikten opstår. Man kan ikke benytte LVM
+partitionerne direkte, de skal først ind i en gruppe, og man kan
+derfor heller ikke oprette partitioner til /home /usr osv.  på dem
+endnu.
+</para>
+
+<para>
+Et klik på knappen [Næste] starter LVM delen.
+</para>
+
+<figure  id="Yast2-LVM-6-fig" float="1">
+<title>Opret en Virtuel Gruppe</title>
+<graphic fileref="Yast2_LVM_6.&magic;"  scale="60"></graphic>
+</figure>
+
+
+
+<para>
+Gruppen skal have et navn. Dette navn indgår senere i "drev"
+betegnelsen (<filename>/dev/gruppenavn/</filename>), så jeg vil
+anbefale at det gøres kort. "vg" synes at være et fornuftigt valg af
+betegnelse.  Jeg har ikke planer om at oprette flere grupper, men på
+større systemer med flere maskiner kan det måske give mening at udvide
+navnet lidt.
+</para>
+
+<figure  id="Yast2-LVM-7-fig" float="1">
+<title>Drevene aktiveres</title>
+<graphic fileref="Yast2_LVM_7.&magic;"  scale="60"></graphic>
+</figure>
+
+
+<para>
+Når gruppen er oprettet får man mulighed for at tilknytte de af ens
+partitioner, der er af typen LVM (89). Herover er hdb1 tilknyttet mens
+hdc1 er på vej til at blive det. Det er hele partitionen der
+tilknyttes gruppen, og det er som tidligere nævnt kun de primære
+partitioner, der overhovedet kan tilknyttes.
+</para>
+
+<figure  id="Yast2-LVM-8-fig" float="1">
+<title>Partitioneringen af LVM gruppen</title>
+<graphic fileref="Yast2_LVM_8.&magic;"  scale="60"></graphic>
+</figure>
+
+<para>
+Når gruppen er dannet og de enkelte partitioner er tilknyttet skal der
+partitioneres. Hver partition får sit eget navn, som den herefter
+optræder under (i stil med <filename>/dev/hda1</filename> og
+<filename>/dev/hda2</filename>).  Det giver fin mulighed for at give
+meningsfyldte navne. Når der skal oprettes en partition til /home kan
+den passende komme til at hedde vg_home. Fordelen ved dette viser sig
+i næste skærm, hvor jeg er vendt tilbage i forløbet til skærmen, hvor
+der partitioneres.  
+</para>
+
+<figure  id="Yast2-LVM-9-fig" float="1">
+<title>YAST2</title>
+<graphic fileref="Yast2_LVM_9.&magic;"  scale="60"></graphic>
+</figure>
+
+<para> 
+Her et det nemt og hurtigt at koble <filename>/home</filename>
+og <filename>/dev/vg/vg_home</filename> sammen (altså at mounte
+<filename>/dev/vg/vg_home</filename> som
+<filename>/home</filename>). Specielt hvis noget går galt, har man via
+navnet en mulighed for at redde hvad reddes skal (fx.
+<filename>/home</filename>), ved ikke at reformattere partitionen, men
+blot bestemme, at den igen skal mountes under /home.  
+</para>
+
+<figure  id="Yast2-LVM-10-fig" float="1">
+<title>YAST2</title>
+<graphic fileref="Yast2_LVM_10.&magic;"  scale="60"></graphic>
+</figure>
+
+
+
+<para>
+Indtil  dette  tidspunkt  er  det muligt at gå tilbage og ændre partitionsstørrelserne på LVM
+partitionerne.  Når  først  de  er formatterede og fyldt med rare ting og sager skal der lidt
+mere til for at ændre dem, men det emne falder uden for denne tekst.
+</para>
+
+<para>
+Resten af installationen forløber som tidligere beskrevet, og er derfor ikke omtalt igen her.
+</para>
+</sect3>
+</sect2>
+
 </sect1>
 
 <sect1 id="installcorel">
