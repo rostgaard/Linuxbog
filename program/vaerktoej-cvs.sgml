@@ -17,176 +17,136 @@
  </indexterm>
 
  <para>
-  I dette afsnit ses nærmere på revisions- og konfigurationskontrolsystemer.
-  Emnet er helt nødvendigt for udviklingsprojekter der er spredt rundt omkring
-  i verden - en af grundpillerne i udviklingen af Linux. Antag, at et firma
-  eller universitet har behov for at kunne arbejde med udvikling af programmer
-  på kryds og tværs af geografi, hvor al kommunikation skal ske via
-  internettet. To spørgsmål melder sig hurtigt til systemadministratoren: Hvad
-  med sikkerheden og hvordan kan man styre softwareudviklingsprocessen, når
-  der er mange mennesker involveret, på en sådan måde at man kan lave
-  udgivelser som altid kan genskabes (til serviceformål), mens man samtidigt
-  videreudvikler, og dermed har behov for at kunne bakke tilbage gennem
-  opdateringerne i tilfælde af fejl.
+  <emphasis>Concurrent versioning system</emphasis> (CVS) er et
+  versionsstyringssystem.  Dette er godt nok en programmeringsbog, men
+  i virkeligheden bør man bruge et versionsstyringssystem til alle
+  projekter, der varer længere end et par dage, eller har flere end en
+  enkelt deltagende forfattere.  Versionsstyringssystemets opgave er
+  at holde styr på de forskellige udgaver en fil har eksisteret i,
+  hvilke ændringer der er foretaget, hvorfor, og af hvem.  Der holdes
+  styr på dette i et centralt fælles <emphasis>CVS-arkiv</emphasis>,
+  hvor alle ændringer registreres.  En af de ting, der gør CVS til
+  noget særligt blandt versionsstyringssystemer er at det tillader at
+  flere forfatter samtidig arbejder på de samme filer.  Så længe der
+  ikke er flere, der retter i de samme linier, vil CVS flette de
+  forskellige ændringer sammen, efterhånden som de bliver lagt ind i
+  det fælles arkiv.
+ </para>
+
+ <para>
+  Versionsstyringssystemer som CVS er en nødvendighed for
+  udviklingsprojekter der - som for eksempel Linux - foregår spredt
+  rundt omkring i verden.  Antag, at et firma eller universitet har
+  behov for at kunne arbejde med udvikling af programmer på kryds og
+  tværs af geografi, hvor al kommunikation skal ske via internettet.
+  To spørgsmål melder sig hurtigt til systemadministratoren: Hvad med
+  sikkerheden og hvordan kan man styre softwareudviklingsprocessen,
+  når der er mange mennesker involveret, på en sådan måde at man kan
+  lave udgivelser som altid kan genskabes (til serviceformål), mens
+  man samtidigt videreudvikler, og dermed har behov for at kunne bakke
+  tilbage gennem opdateringerne i tilfælde af fejl.
  </para>
 
  <para>
   De fleste danske og udenlandske softwarefirmaer har foretaget deres
-  udvikling baseret på udvikling i lokale netværk. Med den fortsatte
-  ekspansion af udviklingen af internettet og med den fortsatte udvikling,
-  hvor begreber som "hjemmearbejdsplads" og "distancearbejde" dukker op
-  oftere og oftere, må det forventes at softwareudviklingsfirmaer allerede er
-  igang med og i endnu højere grad vil foretage udviklingen af software
-  baseret på utroligt mange computere bundet sammen af internettet. Dette
-  stiller store krav til de revisions- og konfigurationskontrolsystemer, der
-  benyttes.
+  udvikling baseret på udvikling i lokale netværk.  Med den fortsatte
+  ekspansion af udviklingen af internettet og med den fortsatte
+  udvikling, hvor begreber som "hjemmearbejdsplads" og
+  "distancearbejde" dukker op oftere og oftere, må det forventes at
+  softwareudviklingsfirmaer allerede er igang med og i endnu højere
+  grad vil foretage udviklingen af software baseret på utroligt mange
+  computere bundet sammen af internettet.  Dette stiller store krav
+  til de versionsstyringssystemer, der benyttes.
  </para>
 
  <para>
-  Styring af softwareprojekter er svært! Specielt svært bliver det når mange
-  arbejder på den samme kildetekst, og hvor samtidigt kommunikationen mellem
-  projektdeltagerne er ringe eller besværlig. De krav, der må stilles til
-  revisionskontrolsystemerne i sådanne projekter er, at alle ændringer let
-  skal kunne tilgå andre på projektet, alle ændringer skal kunne hives ud af
-  kildeteksten igen, og man skal kunne se hvem der har lavet hvad på hvilket
-  tidspunkt.
+  Styring af softwareprojekter er svært!  Specielt svært bliver det
+  når mange arbejder på den samme kildetekst, og hvor samtidigt
+  kommunikationen mellem projektdeltagerne er ringe eller besværlig.
+  De krav, der må stilles til versionsstyringssystemerne i sådanne
+  projekter er, at alle ændringer let skal kunne tilgå andre på
+  projektet, alle ændringer skal kunne hives ud af kildeteksten igen,
+  og man skal kunne se hvem der har lavet hvad på hvilket tidspunkt.
  </para>
 
  <para>
-  Når man en gang har prøvet at være to eller flere som fysisk retter i
-  samme kildetekst, uden af man bruger et revisionskontrolsystem, er det
-  indlysende at denne form for samarbejde er uproduktiv. På sådanne præmisser
-  er megen kommunikation og dermed megen uproduktiv tid nødvendig, hvis det
-  skal være muligt at opnå et tilfredsstillende resultat. En
-  mulighed for at øge produktiviteten er at gøre brug af et
-  revisionskontrolsystem.
+  Når man en gang har prøvet at være to eller flere som fysisk retter
+  i samme kildetekst, uden af man bruger et versionsstyringssystem, er
+  det indlysende at denne form for samarbejde er uproduktiv.  På
+  sådanne præmisser er megen kommunikation og dermed megen uproduktiv
+  tid nødvendig, hvis det skal være muligt at opnå et
+  tilfredsstillende resultat.  En mulighed for at øge produktiviteten
+  er at gøre brug af et versionsstyringssystem.
  </para>
 
- <sect2 id="rcs-cvs-og"
-  <title>Baggrund for CVS</title>
+ <para>
+  CVS er et multi-platform versionsstyringssystem som har alt det man
+  kan ønske sig af et sådant system.  Det er frit tilgængeligt under
+  GNU-licensen (GPL).  Det distribueres i køreklar form til de fleste
+  unixsystemer (se <ulink
+  url="http://prep.ai.mit.edu/pub/gnu">http://prep.ai.mit.edu/pub/gnu</ulink>
+  og afspejlinger), såvel som til MS Windows (se <ulink
+  url="http://www.cygnus.com/misc/gnu-win32">http://www.cygnus.com/misc/gnu-win32</ulink>).
+  Du kan læse mere om CVS på <ulink
+  url="http://www.sourcegear.com/CVS">http://www.sourcegear.com/CVS</ulink>.
+ </para>
 
-  <para>
-   Der findes mange forskellige revisionskontrolsystemer i brug idag. I
-   Unix-verden har de mest anvendte været RCS (Revision Control System) og
-   SCCS (Software Configuration Control System) som enten begge eller den ene
-   af disse er del af standard softwaren på kommercielle Unix-systemer.
-   Indenfor Windows 3.11, Windows 95 og Windows NT-verdenen findes der endnu
-   flere, hvor en af de mest kendte er Microsoft Visual Source Safe (VSS).
-   Disse revisionskontrolsystemer opfylder de fleste krav til den ønskede
-   funktionalitet af et revisionskontrolsystem.
-  </para>
-
-  <para>
-   RCS og SCCS er bedst når man gennem flere år har fundet en arbejdsgang og
-   har opbygget et bibliotek af kommandofortolkerprogrammer så den valgte
-   arbejdsgang er implementeret igennem dette bibliotek. RCS og SCCS i sig
-   selv nærmer sig assemblerprogrammering i sammenligning med CVS og nogle af
-   de kommercielle produkter der findes. RCS og SCCS må samtidigt siges at
-   høre Unix-verden til og er beregnet til brug ved udvikling i et lokalt
-   miljø hvor diske kan monteres uden sikkerhedsmæssige problemer. RCS findes
-   også til Windows.
-  </para>
-
-  <para>
-   For VSS er sagen en ganske anden. VSS er et fuldt moderne
-   revisionskontrolsystem og fås også til diverse Unix platforme. VSS kan også
-   benyttes til revisionshåndtering over store netværk (læs internettet). Det
-   bør dog bemærkes, at VSS er rimeligt dyrt til Windows-platformen, og endnu
-   dyrere til Unix-systemerne.
-  </para>
-
-  <para>
-   Et godt alternativ til de ikke tidssvarende Unix-revisionskontrolsystemer
-   og så Windows-systemer er CVS (Concurrent Versions System). CVS er et
-   multi-platform revisionskontrolsystem som har alt det man kan ønske sig af
-   et sådant system.
-   <!--  Også låsning af filer?  -->
-   CVS er et af de systemer der er frit tilgængeligt under GNU-licensen (GPL).
-   CVS findes som oversatte programmer til de mest gængse Unix-systemer på
-   <ulink
-   url="http://prep.ai.mit.edu/pub/gnu">http://prep.ai.mit.edu/pub/gnu</ulink>
-   (og afspejlinger), samt til Windows-platformen (se <ulink
-   url="http://www.cygnus.com/misc/gnu-win32">http://www.cygnus.com/misc/gnu-win32</ulink>).
-   Du kan for eksempel læse mere om CVS på <ulink
-   url="http://www.sourcegear.com/CVS">http://www.sourcegear.com/CVS</ulink>.
-  </para>
-
-  <para>
-   CVS er et nyere revisionskontrolsystem som oprindeligt er opstået som en
-   række kommandofortolkerprogrammer baseret på RCS. Personen der havde
-   denne store samling, Dick Grune, offentliggjorde den på nyhedsgruppen
-   <ulink url="news:comp.sources.unix">comp.sources.unix</ulink> engang
-   tilbage i 1986. Idag er hele CVS bygget op fra bunden i C, men det er
-   stadig Dick Grunes idé omkring konfliktløsning der er en af hjørnestenene i
-   CVS.
-  </para>
-
-  <para>
-   Rygterne vil vide, at Thinking Machine Coorporation (kendt for massivt
-   parallelle supercomputere) benyttede CVS til revisionshåndtering. Thinking
-   Machine Coorporation var aktive i udviklingen af CVS og den FAQ der findes
-   idag er stadig et levn fra den tid.
-  </para>
-
-  <para>
-   Designet og implementeringen af CVS er blev udført af Brian Berliner i
-   nogle tilfælde sammen med andre.
-  </para>
- </sect2>
+ <para>
+  CVS er et forholdsvis nyt versionsstyringssystem og dets håndtering
+  af konflikter mellem forskellige udvikleres arbejde regnes for at
+  være unik.
+ </para>
 
  <sect2 id="cvs-funktionalitet">
-  <title>CVS' funktionaliteten</title>
+  <title>CVS' funktionalitet</title>
 
   <para>
-   Versionskontrolsystemer bruges til at gemme den historie som ens
-   kildetekster (af den ene eller den anden slags) gennemløber. De fleste
-   versionskontrolsystemer giver endvidere mulighed for at pakke (komprimere)
-   kildeteksten i versionskontrolsystemets database (repositorie). Endvidere
-   benytter langt de fleste systemer sig af at kun gemme forskelle mellem
-   versionerne.
+   CVS bruges til at gemme den historie som ens kildetekster (af den
+   ene eller den anden slags) gennemløber.  Grundprincippet i CVS er,
+   at alle brugere har deres egen lokale kopi af kildeteksten, som kan
+   modificeres uafhængigt af andre brugere.  Dette kan ske med brugere
+   på samme maskine eller på maskiner placeret vilkårligt langt fra
+   hinanden.  Når ens personlige kopi af kildeteksten er stabil og
+   fungerende kan alle de opdaterede filer lægges ind i CVS-arkivet
+   igen, eventuelt først efter at være blevet flettet sammen med andre
+   udvikleres ændringer af de samme filer.  På denne måde kan man uden
+   at begrænse andre i deres arbejde, udføre meget arbejde (lang tids
+   arbejde og/eller mange ændringer) på sin lokale kopi af
+   kildeteksten, uden alvorlig risiko for at der opstår problemer, når
+   rettelserne lægges ind i det fælles arkiv.
   </para>
 
   <para>
-   Grundprincippet i CVS er, at alle brugere har deres egen version af
-   kildeteksten, som kan modificeres uafhængigt af andre brugere. Dette kan
-   ske med brugere på samme maskine eller på maskiner placeret vilkårligt
-   langt fra hinanden. Når ens personlige distribution af kildeteksten er
-   stabil kan distributionen med ændringerne lægges ind i CVS-databasen eller
-   sammensmeltes med de ændringer andre har lavet siden man pakkede
-   distributionen af kildeteksten ud. På denne måde kan man uden at begrænse
-   andre i deres arbejde, udføre meget arbejde (lang tids arbejde og/eller
-   mange ændringer) på distributionen af kildeteksten, uden at der opstår
-   problemer med sammensmeltningen af de lokale distributioner af
-   kildeteksten.
+   CVS understøtter at arkivet (samlingen med
+   versionsstyringssystemets information, inklusive kildeteksterne)
+   kan gøres tilgængelig på nettet uden at man behøver at montere
+   diske fra andre maskiner.  Almindeligvis anvendes
+   <command>ssh</command> til at håndtere sikker udveksling af data
+   mellem programmørernes maskiner og der centrale arkiv.
   </para>
 
-  <para>
-   CVS understøtter at databasen (samlingen af revisionskontrolsystemets
-   informationer inklusivt kildetekster) kan lægges på nettet uden at man
-   behøver at montere diske fra andre maskiner. Almindeligvis anvendes
-   <command>rsh</command> eller <command>ssh</command> til udveksling af
-   data mellem maskinerne. (bemærk at det på det kraftigste frarådes at bruge
-   <command>rsh</command> på åbne netværk)
-  </para>
-
+<!--
   <para>
    CVS udmærker sig ved at have et intuitivt let forståeligt sæt af
    kommandoer til at pakke distributionen ud, at opdatere ens egen
    distribution med andres ændringer, at lægge ens egne ændringer i
-   repositoriet, at lave sideløbende grene af udviklingen af produktet, at
-   samle sideløbende grene af udviklingen, at hente information om historien
-   af ændringer osv.
+   repositoriet, at lave sideløbende grene af udviklingen af
+   produktet, at samle sideløbende grene af udviklingen, at hente
+   information om historien af ændringer osv.
   </para>
+-->
 
   <para>
-   Det CVS mangler i forhold til nogle af de kommercielle er en glat grafisk
-   brugergrænseflade der fungerer på tværs af styresystemerne (tjek lige
-   KDE-projektets forslag til CVS-værktøjer). Et stort plus er dog, at
-   tekstbehandlingsprogrammet Emacs automatisk vil bemærke det, hvis du
-   redigerer filer der ligger i et CVS-arkiv og vise en ekstra menu der giver
-   langt de fleste af de daglige CVS-funktioner. Fra Emacs kan man bl.a.
-   lægge filer ind i CVS, hente senere udgaver af de enkelte filer, og få
-   trinvis sammenligning af to udgaver af kildeteksten.
+   <!-- Det CVS mangler i forhold til nogle af de kommercielle er en
+   glat grafisk brugergrænseflade der fungerer på tværs af
+   styresystemerne (tjek lige KDE-projektets forslag til
+   CVS-værktøjer). --> Det er værd at bemærke at
+   tekstbehandlingsprogrammet Emacs automatisk vil bemærke det, hvis
+   du redigerer filer der ligger i et CVS-arkiv. Det vil så vise en
+   ekstra menu, der giver adgang langt de fleste af de daglige
+   CVS-funktioner. Fra Emacs kan man bl.a. lægge filer ind i CVS,
+   hente senere udgaver af de enkelte filer, og få sammenligne
+   forskellige udgaver af samme fil.
   </para>
  </sect2>
 
@@ -194,22 +154,22 @@
   <title>Daglig brug af CVS</title>
 
   <para>
-   Hvis vi går ud fra at andre har taget sig af at lægge filerne fra et
-   projekt du skal til at arbejde på i et CVS-arkiv (se <xref
-   linkend="opsaet-cvs">, hvis du selv skal gøre det) er det forholdsvis
-   enkelt at komme igang. Du skal blot kende CVS-arkivets adresse og
-   projektets navn i arkivet. De første tre af de følgende eksempler viser
-   hvordan du går i gang med at arbejde med filer, der ligger i et CVS-arkiv,
-   afhængigt af hvilken form for adgang du har til det
-   (<xref linkend="cvs-kom-i-gang-lokalt">,
-   <xref linkend="cvs-kom-i-gang-anonym"> og
-   <xref linkend="cvs-kom-i-gang-ssh">). Dernæst følger
-   eksempler, der viser hvordan du opdaterer din personlige kopi af arkivet
-   (<xref linkend="cvs-kom-i-gang-update">),
-   hvordan du lægger rettede filer tilbage i det fælles arkiv
-   (<xref linkend="cvs-kom-i-gang-commit">),
-   hvordan du tilføjer filer (<xref linkend="cvs-kom-i-gang-add">) og
-   hvordan du sletter filer (<xref linkend="cvs-kom-i-gang-rm">).
+   Hvis vi går ud fra at andre har taget sig af at lægge filerne fra
+   et projekt du skal til at arbejde på i et CVS-arkiv (se <xref
+   linkend="opsaet-cvs">, hvis du selv skal gøre det) er det
+   forholdsvis enkelt at komme igang.  Du skal blot kende CVS-arkivets
+   adresse og projektets navn i arkivet.  De første tre af de følgende
+   eksempler viser hvordan du går i gang med at arbejde med filer, der
+   ligger i et CVS-arkiv, afhængigt af hvilken form for adgang du har
+   til det (<xref linkend="cvs-kom-i-gang-lokalt">, <xref
+   linkend="cvs-kom-i-gang-anonym"> og <xref
+   linkend="cvs-kom-i-gang-ssh">).  Dernæst følger eksempler, der
+   viser hvordan du opdaterer din personlige kopi af arkivet (<xref
+   linkend="cvs-kom-i-gang-update">), hvordan du lægger rettede filer
+   tilbage i det fælles arkiv (<xref
+   linkend="cvs-kom-i-gang-commit">), hvordan du tilføjer filer (<xref
+   linkend="cvs-kom-i-gang-add">) og hvordan du sletter filer (<xref
+   linkend="cvs-kom-i-gang-rm">).
   </para>
 
   <example id="cvs-kom-i-gang-lokalt">
@@ -230,22 +190,24 @@
    <itemizedlist>
     <listitem>
      <para>
-      "-d /usr/local/CVSROOT" betyder at det CVS-arkiv projektet skal hentes
-      fra ligger i kataloget <filename>/usr/local/CVSROOT</filename> på den
-      maskine du arbejder på.
+      "-d /usr/local/CVSROOT" betyder at det CVS-arkiv projektet skal
+      hentes fra ligger i kataloget
+      <filename>/usr/local/CVSROOT</filename> på den maskine du
+      arbejder på.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      "checkout" betyder at du vil have oprettet en kopi af et projekt, der
-      ligger i det førnævnte CVS-arkiv.
+      "checkout" betyder at du vil have oprettet en kopi af et
+      projekt, der ligger i det førnævnte CVS-arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Og endelig er "webspell" navnet på det projekt vi vil have en kopi af.
+      Og endelig er "webspell" navnet på det projekt vi vil have en
+      kopi af.
      </para>
     </listitem>
    </itemizedlist>
@@ -266,33 +228,33 @@
 </screen>
 
    <para>
-    Den første kommando sikrer blot at <command>cvs</command> kan forstå
-    KDE-projektets CVS-tjener. Betragt det i denne sammenhæng blot som
-    hvid magi.
+    Den første kommando sikrer blot at <command>cvs</command> kan
+    forstå KDE-projektets CVS-tjener. Betragt det i denne sammenhæng
+    blot som hvid magi.
    </para>
 
    <itemizedlist>
     <listitem>
      <para>
-      "-d :pserver:anonymous@anoncvs.kde.org:/home/kde" betyder at betyder at
-      det CVS-arkiv projektet skal hentes fra ligger i kataloget
-      <filename>/home/kde</filename> på maskinen "anoncvs.kde.org" og at du
-      vil hente det som en anonym bruger.
+      "-d :pserver:anonymous@anoncvs.kde.org:/home/kde" betyder at
+      betyder at det CVS-arkiv projektet skal hentes fra ligger i
+      kataloget <filename>/home/kde</filename> på maskinen
+      "anoncvs.kde.org" og at du vil hente det som en anonym bruger.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      "checkout" betyder at du vil have oprettet en kopi af et projekt, der
-      ligger i det førnævnte CVS-arkiv.
+      "checkout" betyder at du vil have oprettet en kopi af et
+      projekt, der ligger i det førnævnte CVS-arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Og endelig er "kde-i18n" navnet på det projekt vi vil have en kopi af.
-      I dette konkrete tilfælde er det oversættelser af KDE (menutekster og
-      brugsanvisninger) til forskellige sprog.
+      Og endelig er "kde-i18n" navnet på det projekt vi vil have en
+      kopi af.  I dette konkrete tilfælde er det oversættelser af KDE
+      (menutekster og brugsanvisninger) til forskellige sprog.
      </para>
     </listitem>
    </itemizedlist>
@@ -311,13 +273,14 @@
 </screen>
 
    <para>
-    Denne kommando sætter en variabel, der fortæller <command>cvs</command>
-    at kommunikation over nettet skal kunne ske med SSH-protokollen (der er
-    krypteret og dermed sikrer mod aflytning af adgangskoder og data). Bemærk
-    at variablen også skal være sat, når du senere vil opdatere din kopi af
-    projektet eller vil lægge en rettet fil ind i CVS-arkivet. Det kan du
-    hurtigt sikre med kommandoen
-    <command>echo "export CVS_RSH=ssh" &gt;&gt; ~/.zshrc</command>.
+    Denne kommando sætter en variabel, der fortæller
+    <command>cvs</command> at kommunikation over nettet skal kunne ske
+    med SSH-protokollen (der er krypteret og dermed sikrer mod
+    aflytning af adgangskoder og data).  Bemærk at variablen også skal
+    være sat, når du senere vil opdatere din kopi af projektet eller
+    vil lægge en rettet fil ind i CVS-arkivet.  Det kan du hurtigt
+    sikre med kommandoen <command>echo "export CVS_RSH=ssh" &gt;&gt;
+    ~/.zshrc</command>.
    </para>
 
 <screen>
@@ -328,25 +291,25 @@
    <itemizedlist>
     <listitem>
      <para>
-      "-d sparre@cvs.sslug.dk:/usr/local/CVSROOT" betyder at betyder at det
-      CVS-arkiv projektet skal hentes fra ligger i kataloget
-      <filename>/usr/local/CVSROOT</filename> på maskinen "cvs.sslug.dk" og
-      at du vil hente det som brugeren "sparre".
+      "-d sparre@cvs.sslug.dk:/usr/local/CVSROOT" betyder at betyder
+      at det CVS-arkiv projektet skal hentes fra ligger i kataloget
+      <filename>/usr/local/CVSROOT</filename> på maskinen
+      "cvs.sslug.dk" og at du vil hente det som brugeren "sparre".
      </para>
     </listitem>
 
     <listitem>
      <para>
-      "checkout" betyder at du vil have oprettet en kopi af et projekt, der
-      ligger i det førnævnte CVS-arkiv.
+      "checkout" betyder at du vil have oprettet en kopi af et
+      projekt, der ligger i det førnævnte CVS-arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Og endelig er "linuxbog" navnet på det projekt vi vil have en kopi af.
-      I dette konkrete tilfælde er det hele bogserien "Linux - Friheden til
-      ...".
+      Og endelig er "linuxbog" navnet på det projekt vi vil have en
+      kopi af.  I dette konkrete tilfælde er det hele bogserien "Linux
+      - Friheden til ...".
      </para>
     </listitem>
    </itemizedlist>
@@ -368,17 +331,17 @@
    <itemizedlist>
     <listitem>
      <para>
-      Du skal stå <emphasis>i</emphasis> kataloget med din lokale kopi af
-      CVS-arkivet for at kunne opdatere filerne. Herover bliver det gjort
-      med kommandoen <command>cd webspell</command>.
+      Du skal stå <emphasis>i</emphasis> kataloget med din lokale kopi
+      af CVS-arkivet for at kunne opdatere filerne.  Herover bliver
+      det gjort med kommandoen <command>cd webspell</command>.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Argumentet "update" betyder at du vil have <emphasis>opdateret</emphasis>
-      den personlige kopi af et CVS-arkiv, der allerede ligger i det katalog
-      du står i.
+      Argumentet "update" betyder at du vil have
+      <emphasis>opdateret</emphasis> den personlige kopi af et
+      CVS-arkiv, der allerede ligger i det katalog du står i.
      </para>
     </listitem>
    </itemizedlist>
@@ -393,8 +356,8 @@
    </indexterm>
 
    <para>
-    Vi antager nu at vi som efter forrige eksempel står i kataloget med
-    den personlige kopi af CVS-arkivet og at vi har rettet en
+    Vi antager nu at vi som efter forrige eksempel står i kataloget
+    med den personlige kopi af CVS-arkivet og at vi har rettet en
     HTML-syntaksfejl i filen <filename>tjek.php</filename>.
    </para>
 
@@ -406,23 +369,23 @@
    <itemizedlist>
     <listitem>
      <para>
-      "commit" betyder at du vil kopiere din rettede udgave af en fil ind i
-      det fælles CVS-arkiv.
+      "commit" betyder at du vil kopiere din rettede udgave af en fil
+      ind i det fælles CVS-arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
       "-m 'validator.w3.org brokkede sig'" betyder at rettelserne i
-      CVS-arkivets logbog skal have kommentaren "validator.w3.org brokkede
-      sig".
+      CVS-arkivets logbog skal have kommentaren "validator.w3.org
+      brokkede sig".
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Og endelig er "tjek.php" navnet på den fil du har rettet og vil kopiere
-      ind i det fælles arkiv.
+      Og endelig er "tjek.php" navnet på den fil du har rettet og vil
+      kopiere ind i det fælles arkiv.
      </para>
     </listitem>
    </itemizedlist>
@@ -437,8 +400,9 @@
    </indexterm>
 
    <para>
-    Hvis vi nu har skrevet en ny fil ved navn "tak.html" og den ligger sammen
-    med vores personlige kopi af projektet kan vi tilføje den med kommandoerne:
+    Hvis vi nu har skrevet en ny fil ved navn "tak.html" og den ligger
+    sammen med vores personlige kopi af projektet kan vi tilføje den
+    med kommandoerne:
 <screen>
 <prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs add tak.html</userinput>
 <prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs commit -m 'lidt almindelig høflighed' tak.html</userinput>
@@ -455,15 +419,15 @@
 
     <listitem>
      <para>
-      Og endelig er "tak.html" navnet på den fil du har skrevet og vil føje
-      til det fælles arkiv.
+      Og endelig er "tak.html" navnet på den fil du har skrevet og vil
+      føje til det fælles arkiv.
      </para>
     </listitem>
 
     <listitem>
      <para>
-      Efter at "tak.html" er blevet føjet til arkivet bruges "cvs commit" til
-      at aktivere tilføjelsen.
+      Efter at "tak.html" er blevet føjet til arkivet bruges "cvs
+      commit" til at aktivere tilføjelsen.
      </para>
     </listitem>
    </itemizedlist>
@@ -478,11 +442,11 @@
    </indexterm>
 
    <para>
-    Vi har nu eksperimenteret lidt med en fil "tjek-eksp.php" og fundet ud
-    af at der alligevel ikke er brug for den i projektet, så vi vil fjerne
-    den fra den synlige del af CVS-arkivet (arkivet husker alle ændringer, så
-    du vil stadig kunne gå tilbage til en udgave hvor filen fandtes). Det
-    klares med kommandoerne:
+    Vi har nu eksperimenteret lidt med en fil "tjek-eksp.php" og
+    fundet ud af at der alligevel ikke er brug for den i projektet, så
+    vi vil fjerne den fra den synlige del af CVS-arkivet (arkivet
+    husker alle ændringer, så du vil stadig kunne gå tilbage til en
+    udgave hvor filen fandtes).  Det klares med kommandoerne:
 <screen>
 <prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>rm -f tjek-eksp.php</userinput>
 <prompt>[daisy@linus daisy/webspell]$ </prompt><userinput>cvs remove tjek-eksp.php</userinput>
@@ -493,9 +457,10 @@
    <itemizedlist>
     <listitem>
      <para>
-      CVS vil ikke fjerne en fil fra arkivet, hvis du stadig har en kopi af
-      den i din personlige kopi af CVS-arkivet, så vi starter med kommandoen
-      <command>rm -f tjek-eksp.php</command>, der fjerner filen fra kataloget.
+      CVS vil ikke fjerne en fil fra arkivet, hvis du stadig har en
+      kopi af den i din personlige kopi af CVS-arkivet, så vi starter
+      med kommandoen <command>rm -f tjek-eksp.php</command>, der
+      fjerner filen fra kataloget.
      </para>
     </listitem>
 
@@ -507,8 +472,8 @@
 
     <listitem>
      <para>
-      Og endelig er "tjek-eksp.php" navnet på den fil der skal fjernes fra
-      det fælles arkiv.
+      Og endelig er "tjek-eksp.php" navnet på den fil der skal fjernes
+      fra det fælles arkiv.
      </para>
     </listitem>
 
