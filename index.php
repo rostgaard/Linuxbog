@@ -499,6 +499,8 @@ Vil du følge med i hvad der sker med vores kilde-kode (SGML-filerne),
 <a href="http://cvs.sslug.dk/linuxbog/">så se her</a>.
 </p>
 
+<img src="licens/licens.png" alt="ÅDL">
+
 <p>
 Hvis du har noget du søger efter, så skal du nok <a
 href="alle/bog/stikord.html">starte i vores samlede
