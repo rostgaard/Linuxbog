@@ -129,7 +129,7 @@ function form_filename( $bookname, $format ) {
         "Peter Toft" => "pto@sslug.dk"
       )
     ),
-    "kontor" => array(
+    "kontorbruger" => array(
       title => "Linux - Friheden til at vælge kontorprogrammer",
       comment => "Basal anvendelse af Linux-programmer",
       auth => array(
