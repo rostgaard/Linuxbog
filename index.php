@@ -13,7 +13,9 @@
    $bodyarg=" background=\"/grafix/linux-back-1.gif\" ";
    $maintain_name = "Hans Schou";       // Skriv dit navn her
    $maintain_email = "chlor@sslug.dk";  // Skriv din email adresse her
-   include($DOCUMENT_ROOT."includes/top.phtml");
+   if (file_exists($DOCUMENT_ROOT."includes/top.phtml")) {
+     include($DOCUMENT_ROOT."includes/top.phtml");
+   }
 
    list($width,$height) = getimagesize("front.png");
 
@@ -522,5 +524,7 @@ Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
 <!-- Text slut -->
 <!-- Husk din email-adresse: -->
 <?php
-  include($DOCUMENT_ROOT."includes/bottom.phtml");
+  if (file_exists($DOCUMENT_ROOT."includes/bottom.phtml")) {
+    include($DOCUMENT_ROOT."includes/bottom.phtml");
+  }
 ?>
