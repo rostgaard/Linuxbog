@@ -2,12 +2,203 @@
 <title>Opsætning</title>
 <para>
 Her skal der stå hvordan man sætter det op som bogen omhandler.
-<emphasis>skal skrives</emphasis>
+</para>
+
+<sect1 id="StarOffice-config">
+<title>Opsætning af StarOffice</title>
+
+<para>
+Installation af StarOffice kræver at du enten har en cdrom med
+StarOffice eller har hentet den fra Internet.
+Hvis du har version 5.2 sker installationen ved at den bruger, som skal
+benytte kontorpakken, kører kommandoen
+<command>so-5.2-ga-bin-linux-da.bin</command> (her er der tale om den
+danske version (da)). Herefter skal du blot svare på de spørgsmål, der
+stilles under installationen og du er kørende.
 </para>
 
 <para>
-StarOffice 5.2 har en 28.8 Mb patch-fil, der kan hentes fra
-<ulink url="http://supportforum.sun.com/staroffice/patches.html">http://supportforum.sun.com/staroffice/patches.html</ulink>
+Har du derimod version 5.2 som kæmpe tar-fil, så skal du først pakke den ud med
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>tar xvf so52_lnx_01.tar</userinput>
+</screen>
+
+Dette danner automatisk underkataloget <filename>so52inst</filename>,
+hvor alt ligger klar til installationen. Har du StarOffice fra cdrom,
+så montér din cdrom. Du installerer normalt StarOffice til en enkelt
+person - ellers skal du se på en netinstallation. Det er beskrevet i
+SETUP.PDF som følger med StarOffice under
+<filename>/documentation</filename>-kataloget.
 </para>
+
+<para>
+Hvis du vil have flere brugere til at kunne bruge StarOffice på samme
+maskine, så skal man installere med <command>setup /net</command>.
+Derefter skal hver bruger installere
+med <command>setup</command> - hvorefter der bliver installeret ca. 2
+Mb for hver bruger. Man vælger selv hvor StarOffice installeres på
+systemet, et forslag vil være at lave "net"-installationen til f.eks. 
+<filename>/opt/net/StarOffice5.2</filename> og have denne tilgængelig via
+et auto-monteret NFS-drev.
+</para>
+
+<para>
+For den enkelte bruger skal StarOffice også installeres.
+Skift til brugerkontoen og vælg at installere StarOffice.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>cd /opt/net/StarOffice5.2</userinput>
+<prompt>[root@linus /opt/net/StarOffice5.2]$ </prompt> <userinput>./setup</userinput>
+</screen>
+
+<para>
+Nu kommer der en grafisk installationsmenu op, hvor man reelt blot
+skal trykke "Next" et par gange. Derefter udfylder du information om
+brugeren og vælger mellem forskellige installationer. Vælg den variant hvor
+du får gemt få MB for brugeren. På næste skærm
+skal du selv vælge, hvor StarOffice installeres. Vi vælger som det foreslås
+<filename>/home/anne/StarOffice</filename> (hvor "anne" erstattes af det
+aktuelle brugernavn). Du vil så blive spurgt om
+Java-understøttelse - svar bare nej her, hvis du ikke ved noget om dette.
+Til sidst installeres så endelig StarOffice på dit Linux-system.
+StarOffice integreres direkte med KDE, så kører du med KDE laves
+automatisk opsætning så StarOffice kommer med i dine programmenuer.
+</para>
+
+
+<para>
+Prøv evt. allerede nu at starte StarOffice ved at skrive i et teminal-vindue:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt> <userinput>office52/soffice &</userinput>
+</screen>
+
+
+<para>
+Endelig skal det nævnes at 
+StarOffice 5.2 har en 28.8 Mb patch-fil, der kan hentes fra
+<ulink url="http://supportforum.sun.com/staroffice/patches.html">http://supportforum.sun.com/staroffice/patches.html</ulink>, og desuden er StarOffice 6.0 
+i beta-test.
+</para>
+
+
+</sect1>
+
+<sect1 id="KMail-config">
+<title>Opsætning af KDE KMail</title>
+<para>
+Du starter konfigurationsvinduet ved at vælge "Settings,
+Configuration". Under fanen "Identity", som du vælger i venstre side,
+kan du oprette flere forskellige postkonti, hvis du har behov for det,
+men i første omgang skriver du blot dit navn og din email i de
+respektive felter.
+</para>
+
+<figure id="KDE-KMail2-fig" float="1">
+<title>billede af konfiguration, identitet</title>
+<graphic fileref="kmail.config.identity.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>
+Dernæst vælger du fanen "Network", hvor de vigtige oplysninger skal
+skrives. Du kan i første omgang nøjes med at udfylde oplysninger i
+underfanen "Sending Mail".  Øverst skal du vælge, om du vil bruge
+Sendmail eller din udbyders SMTP-server til at sende mail. Jeg vil
+stærkt anbefale, at du vælger at bruge din udbyders SMTP-server.
+</para>
+
+<para>
+<emphasis>Sendmail</emphasis>:
+Du skal kun vælge Sendmail, hvis du ved, hvad du gør. Sendmail er
+notorisk vanskelig at sætte korrekt op. Hvis du vælger Sendmail, skal du først
+konfigurere Sendmail, og du skal i hvert fald holde øje med Sendmails logfil,
+som du kan læse ved som root at skrive 
+<command>cat /var/log/mail | more</command> i et
+terminalvindue. Her kan du se, om udsendelsen af dine mails er gået godt.
+Bemærk, at loggen viser om udsendelsen er gået godt på din lokale maskine,
+localhost. Du skal desuden være opmærksom på, at som udgangspunkt er det
+localhost og altså ikke i din konto i KMail, der får besked om, at emails, der
+bliver afvist af modtagerens mailserver, ikke er kommet frem. Du kan læse email
+sendt til local host ved som root at skrive "mail" i et terminalvindue.
+</para>
+
+<para>
+<emphasis>Netværksopsætning</emphasis>:
+Det er langt enklere at bruge SMTP, idet du blot behøver skrive navnet på den
+SMTP-server, som din udbyder har oplyst dig om. Det kan for eksempel være
+vip.cybercity.dk eller ryle.get2net.dk. Som udganspunkt skal du bare acceptere
+port 25, som er default.
+</para>
+
+<figure id="KDE-KMail3-fig" float="1">
+<title>billede af konfiguration, netværk</title>
+<graphic fileref="kmail.config.network.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>
+Du skal nu oprette en konto for indgående email. Hvis du har behov for at
+oprette flere konti, kan du også gøre det. Klik på "Add" og vælg pop3.
+</para>
+
+<figure id="KDE-KMail4-fig" float="1">
+<title>billede af konfiguration, pop</title>
+<graphic fileref="kmail.config.pop.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>
+I vinduet "Add account" - KMail udfylder du dit navn, brugernavn,
+password og navnet på din udbyders mailserver. Du kan som udgangspunkt
+acceptere port 110, som er default. Hvis du har en adsl-forbindelse,
+vil du typisk også vælge "Enable interval mail checking", så KMail
+automatisk henter email for eksempel hver 15.  minut. Du kan eventuelt
+også vælge fanen "Miscellaneous", hvor du for eksempel kan få KMail
+til at bippe, når du har fået en email.
+</para>
+
+<sect2 id="kmail-send-modtag">
+<title>Send og modtag email</title>
+<para>
+Hvis du har tastet dine oplysninger rigtigt ind, kan du nu sende og
+modtage emails. Du vil sandsynligvis ikke have nogen problemer med at
+bruge KMail, da den almindelige funktionalitet er forholdsvis
+intuitiv. Hvis du løber ind i nogen problemer, kan du som regel finde
+de nødvendige informationer i hjælpen, som i KMail er ret god.
+</para>
+
+</sect2>
+
+<sect2 id="kmail-mailimport">
+<title>Import af gamle email</title>
+<para>
+Nu er KMail nok ikke den første mailklient, som du bruger, og du vil som regel
+gerne have dine gamle mails med over under Linux. Heldigvis er der et fikst
+lille program - KMail Import, der kan hjælpe dig med det. Du kan finde
+programmet under "Start Applications, Utillities, KMail Import".
+</para>
+
+<figure id="KDE-KMail5-fig" float="1">
+<title>billede af import</title>
+<graphic fileref="kmail.import.&magic;"  scale="50"></graphic>
+</figure>
+
+<para>
+Du vælger her hvilken mailklient, du vil importere fra, og dernæst
+vælger du den sti, hvor din gamle email findes. Jeg kunne uden nogen
+problemer importere min gamle email fra Pegasus, som jeg havde brug
+som mailklient under Windows, men du kan selvfølgelig også vælge at
+importere din email og din adressebog fra MS Outlook.  Endelig skal du
+huske, at du i en overgangsfase jo sagtens kan vælge at køre med to
+systemer. Hvis du i vinduet "Modify account" undlader at sætte kryds i
+"Delete mail from server", kan du også hente din post med dit gamle
+postprogram. På den måde behøver du ikke beslutte dig 100% med det
+samme. KMail finder i øvrigt selv ud af, at den ikke skal hente den
+samme post mere end en gang.
+</para>
+</sect2>
+</sect1>
+
 
 </appendix>
