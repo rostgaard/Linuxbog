@@ -6,7 +6,7 @@ int nc;
 
 int main()
 {
-    char c;
+    int c;
     while ( (c=getchar()) != EOF)
       ++nc;
     printf("%d\n", nc);

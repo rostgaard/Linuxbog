@@ -1680,9 +1680,7 @@ C99).
 <para>
 Ud over de grundlæggende typer tekstfiltre, som som vi har
 set på her, ville det være nyttigt at se et par eksempler på
-programmer, som kan filtrere mime-kodede postfiler, og en 
-slags preprocessor filter, som kan
-forstå &lt;tags> og f.eks. udtrække ren ascii fra en sgml fil.
+programmer, som kan filtrere mime-kodede postfiler.
 </para>
 
 <para>
@@ -1781,12 +1779,17 @@ håndterer det på en fornuftig måde!
 <para>
 Derefter prøv at lave en forbedring af programmet, som kan
 benytte kommandolinie parametre i stedet for omdirigering.
+I afsnit <xref LinkEnd="sect-parser-programmer"> udvidedes denne
+programtype, så den kan håndtere lidt længere sekvenser af tegn,
+således at man kan analysere input på et lidt højere
+abstraktionsniveau.
 </para>
 
 </sect2>
 
 <sect2 id="sect-file-adder">
 <title>Summering af tal i en fil.</title>
+
 <para>
 Et program, som ønsker at behandle linier i st.f. characters, kan
 optimere IO ved at benytte fgets(2). Vi kan benytte denne
@@ -1874,8 +1877,8 @@ siger: det skal nok gå alt sammen ...
 </sect1>
 
 
-<sect1 id="parser-filter-programmer">
-<title>Parsere set som filter programmer</title>
+<sect1 id="sect-parser-programmer">
+<title>Parser programmer</title>
 
 <para>
 Er et oversætterprogram et filter? På en måde ja. En bestemt
@@ -2171,7 +2174,8 @@ op af &lt; tegnet.
 </para>
 
 <para>
-Find en metode til at undgå denne fejl (eller se tagbal02.c).
+Find en metode til at undgå denne fejl (eller se
+ <xref LinkEnd="sect-tagtyper">).
 </para>
 
 <para>
@@ -2249,6 +2253,466 @@ Derfor returnerer parse_level1 ikke straks efter have_endtag,
 men prøver lige en gang til at se, om der er flere tags, der i så
 fald jo vil tilhøre samme niveau som de nys afsluttede tag-par.
 (Det krævede et par forsøg at nå frem til den konstruktion!)
+</para>
+</sect2>
+
+<sect2 id="sect-tagtyper">
+<title>Skelnen mellem tagtyper</title>
+
+<para>
+tagbal02.c er bygget op nøjagtigt som tagbal01.c, men kan skelne
+mellem et par grundlæggende typer sgml-tags, nemlig comment,
+programlisting og literal. Den kan også anvende en speciel
+regel for programlisting og literal, tekst data imellem dem
+bliver leveret videre som den er, uden formatering eller
+ombrydning af linier.
+</para>
+
+<para>
+Find funktionen parse_level1() og sammenlign med tagbal01.c. Nu
+er det ikke kun anytag, den kalder. Der er kommet
+special-funktioner til, som håndterer henholdsvis kommentarer,
+programlisting og litteral-tags. De er bygget op som anytag(), de
+returnerer false, hvis de ikke ser den tag type, som de er "sendt
+ud for at lede efter".
+</para>
+
+<para>
+Klart nok må man så vente med at kalde anytag() til efter at de
+andre har fået chancen. Anytag() accepterer jo hvad som helst,
+der er en tag. I en sgml parser kunne anytag() benytte en liste
+over tilladte tag navne.
+</para>
+
+
+<example id="ex-tagbal02">
+<title>Håndtering af forskellige tags</title>
+<programlisting role="C">
+
+/* tagbal02.c Minimalt program til skelnen mellem tags. */
+
+#include &lt;stdio.h>
+#include &lt;string.h>
+#include &lt;strings.h>
+#include &lt;ctype.h>
+#include &lt;errno.h>
+#include &lt;error.h>
+
+#define INTAG  257
+#define OUTTAG 258
+#define EXIT_FAILURE 255
+
+int status;
+int eofile;			/* global end of file */
+
+#define MAXB 8000
+#define SMALLB 800
+
+char buf[MAXB];
+char *bufp;
+int endbuf;
+int lineno;
+int indent;
+int column;
+
+int init();
+int fillbuf();
+int ch();
+int gch();
+int nch();
+int parse_level1();
+int anytag(char *tagbuf);
+int have_endtag(const char *litteral);
+void parse_error(char *erms);
+int comment(void);
+int programlisting(char *t);
+int litt(char *t);
+int match(const char *lit);
+void blanks();
+void margin();
+int getword();
+void putword();
+int do_litteral(char *tok);
+
+
+int main()
+{
+	if (init() == 0)
+		return 1;
+	while (!eofile) {
+		blanks();
+		if (eofile)
+			return 0;
+		if (!parse_level1())
+			parse_error("Misplaced tag, end-tag or text-data\n");
+	}
+	printf("\n");
+	return 0;
+}
+
+
+/************************************************************************
+               int parse_level(void) er hovedfunktionen.
+ ************************************************************************/
+/*
+   parse_level1() er det sted, hvor håndtering af de forskellige
+   tag typer finder sted. Som navnet siger, skulle der være
+   forskellige niveauer her, hvis man vil styre regler om, at der
+   gerne må være sect2 inde i sect1, men ikke omvendt.
+   For eksempel skulle man på level1 foreskrive følgende:
+   "get_chapter() eller dø!"
+
+   I de følgende lag skulle der så være special tag handling for
+   de tilladte tags. Da fx. para kan forekomme både inde i sect1
+   og sect2 etc. vil det betyde, at para-håndteringen skal
+   kaldes fra adskillige niveauer. For eksempel:
+   if (paratag()) do_para();
+   else if (emphasis()) no_margin(); 
+   else if (bold()) no_margin(); etc etc.  
+
+   No_margin skulle forestille, at tekstombrydningen fortsætter
+   uden linieskift og margin.
+
+   Blanks() funktionskaldene er placeret strategisk, idet det
+   også er her at "præprocessoren" kaldes. Hellere et kald for
+   meget end et for lidt.
+ */
+
+#define MAXT 80
+
+int parse_level1()
+{
+	char tagname[MAXT];
+	while (!eofile) {
+		blanks();
+		if (comment()){
+			continue;
+		}
+		if (programlisting(tagname) || litt(tagname))
+			(void) do_litteral(tagname);
+		else if (!anytag(tagname))
+			return 0;
+		while (!eofile) {
+			while (getword())
+				putword();
+			if (have_endtag(tagname))
+				break;
+			(void) parse_level1(); /* nested tags */
+		}
+		blanks();
+	}
+	return 1;
+}
+
+int comment(void)
+{
+	blanks();
+	if (match("&lt;!--")) {
+		margin();
+		printf("&lt;!--");
+		while (!eofile) {
+			if (ch() != '-') {
+				putchar(gch());
+				++column;
+			}
+			else if (match("-->")) {
+				column += printf("-->");
+				blanks();
+				return 1;
+			}
+			else 
+				putchar(gch());
+				++column;
+		}
+	}
+	return 0;
+}
+
+/************************************************
+ * Anytag() accepts any tag and returns the
+ * tags typename in tagbuf (max MAXT).
+ * TODO: handle minor errors by returning 0
+ ************************************************
+ */
+
+int anytag(char *tagbuf)
+{
+	char *tagp;
+
+	blanks();
+	/* earlier version trigged this call when
+	   ch()=='&lt;', so we already knew */
+	if (ch()!='&lt;') 
+		return 0;
+	if (nch()=='/') /* TODO: nicer handling space before '/' */
+		return 0;
+	gch();
+	blanks();
+	if (ch() == '/')
+		return 0;
+	tagp = tagbuf;
+	while (isalnum(ch()))
+		*tagp++ = gch();
+	*tagp = 0;
+	margin();
+	printf("&lt;%s", tagbuf);
+	indent += 2;
+	while (ch() != '>' && !eofile)
+		putchar(gch()); /* TODO: squeeze white and format */
+	if (eofile)
+		parse_error("missing \">\"\n");
+	putchar(gch());         /* copy the ">" */
+	return 1;
+}
+
+
+int have_endtag(const char *lit)
+{
+	char errms[SMALLB];
+	char tagtxt[SMALLB];
+	/* blanks() may be redundant if have_endtag always is called
+	   after getword returns false. */
+	blanks();
+	if (ch()!='&lt;' || nch() != '/') /* could use strcmp()? */
+		return 0;
+	sprintf(tagtxt, "&lt;/%s>", lit);
+	gch(); /* eat '&lt;' */
+	if (ch() != '/') {
+		strcpy(errms, "Unbalance, need ");
+		strcat(errms, tagtxt);
+		parse_error(errms);
+	}
+	gch();			/* eat '/' */
+	if (!match(lit)) {
+		sprintf(errms, "Need endtag for >>%s&lt;&lt;", lit);
+		parse_error(errms);
+	}
+	indent -= 2;
+	margin();
+	printf("%s", tagtxt);
+	blanks();
+	if (ch() != '>')
+		parse_error("end-tag missing '>'");
+	gch();
+	return 1;
+}
+
+
+void parse_error(char *erms)
+{
+	char ebuf[MAXB];
+	fflush(stdout);
+	fprintf(stderr, "\nError parsing line %d: %s\n", lineno, erms);
+	strcpy(ebuf, buf);
+	fprintf(stderr, "%s\n", ebuf);
+	fprintf(stderr, "%*s\n", bufp - buf + 1, "^");
+	exit(EXIT_FAILURE);
+}
+
+
+int programlisting(char *t)
+{
+	int c;
+	blanks();
+	if (!match("&lt;programlisting"))	/*TODO: accept space after '&lt;' */
+		return 0;
+	margin();
+	indent += 2;
+	printf("&lt;programlisting");
+	strcpy(t,"programlisting");
+	while (!eofile) {
+		putchar(c=gch());
+	       	if (c == '>')
+			return 1;
+	}
+	return 0;
+}
+
+
+int litt(char *t)
+{
+	int c;
+	blanks();
+	if (!match("&lt;litteral"))	/* TODO see above */
+		return 0;
+	margin();
+	indent += 2;
+	printf("&lt;litteral");
+	strcpy(t,"litteral");
+	while (!eofile) {
+		putchar(c=gch());
+		if (c=='>')
+			return 1;
+	}
+	return 0;
+}
+
+
+int init()
+{
+	/* initialisering af globvars, - der er ikke andre end
+	 * input bufferen */
+	return fillbuf();
+}
+
+
+int fillbuf()
+{
+	char *rv;
+
+	if (!(rv = fgets(buf, MAXB, stdin))) {
+		strcpy(buf, "");
+	} else
+		++lineno;
+	endbuf = strlen(buf);
+	bufp = buf;
+	return (int) rv;
+}
+
+
+int ch()
+{
+	return *bufp;
+}
+
+
+int nch()
+{
+	return *(bufp + 1);
+}
+
+
+
+/* For længere buffer look ahead har vi brug for at udskifte
+ * gch() og fillbuf() funktionerne, således at de checker, hvor
+ * meget er der i bufferen, og hvis der er for få (mindre end den
+ * maximale ordlængde) skal de efterfylde bufferen og justere
+ * pointere.
+ * Det søde ved denne implementering er imidlertid, at vi altid
+ * har én character lookahead (garanteret), og normalt vil der
+ * altid være en newline før null character som signalerer end of
+ * line. Det er vores garanti for, at hvis vi har et ord i
+ * bufferen, så er det et helt ord (det kan ikke krydse en
+ * liniedeling).
+ */
+
+/* ch() og gch() skal altid returnere nøjagtig samme værdi.
+ * Derfor har vi brug for, i gch(), at kalde nch() next char, som
+ * fortæller os om vi nærmer os linie-slutningen.
+ * gch() returnerer samme som ch() men flytter pointeren en plads
+ * frem.
+ */
+
+int gch()
+{
+	int c;
+	if (nch() == 0) {
+		c = ch();
+		if (!fillbuf()) {
+			eofile = 1;	/* TODO should not take effect for the next char */
+		}
+		return c;
+	}
+	return *bufp++;
+}
+
+
+int match(const char *lit)
+{
+	int slen;
+
+	slen = strlen(lit);
+	if (!slen)
+		return 0;
+	if (strncasecmp(lit, bufp, slen) == 0) {
+		bufp += slen;
+		return slen;
+	}
+	return 0;
+}
+
+
+
+void blanks()
+{
+	register int c;
+	while (isspace(c = ch()))
+		gch();
+}
+
+
+static char wordbuffer[MAXB];
+static char *w;
+
+int getword()
+{
+	w = wordbuffer;
+	blanks();
+	while (!isspace(ch()) && !eofile) {
+		if (ch() == '&lt;') {
+			break;
+		}
+		*w++ = gch();
+	}
+	*w = 0;
+	return (w - wordbuffer);
+}
+
+void outchar(int writeme)
+{
+	putchar(writeme);
+	++column;
+}
+
+
+void putword()
+{
+	char *u;
+	u = wordbuffer;
+	if (column + w - wordbuffer + 1 > 78)
+		margin();
+	else {
+		if (!ispunct(*u))
+		outchar(' ');
+	}
+	while (*u)
+		outchar(*u++);
+}
+
+int last;
+
+void margin()
+{
+	if (indent &lt; 0)
+		indent = -indent;
+	column=indent;
+	if (!last && last != '\n') {
+		printf("\n");
+	}
+	last = 0;
+	if (indent)
+		printf("%*s", indent, " ");
+}
+
+
+int do_litteral(char *tagtok)
+{
+	while (!eofile && ch() != '&lt;')
+		putchar(last = gch());
+	return 1;
+}
+
+
+</programlisting>
+</example>
+
+<para>
+<command>Forslag til øvelse:</command> Dette program kan med få
+modifikationer benyttes til at trække teksten ud af en sgml fil,
+og endda i en læselig formatering. Overvej, hvilke forbedringer,
+som kunne gøre denne tekstudtrækning - ascii formatering -
+endnu mere nyttig. (Jeg har ikke nogen løsning på denne øvelse -
+endnu!)
 </para>
 
 </sect2>
