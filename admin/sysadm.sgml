@@ -427,6 +427,7 @@ oftest finde hvilke RPM-pakker du mangler.
 
 <sect2 id="rpm-build">
 <title>RPM for programmøren</title>
+<indexterm><primary>RPM</primary><secondary>Bygge selv</secondary></indexterm>
 
 <para>
 RPM filer opstår selvfølgelig ikke "af sig selv". Der skal
@@ -435,8 +436,9 @@ program, som man bruger til alle de andre RPM funktioner.
 </para>
 
 <para>
-<command>rpm</command> programmet har en <emphasis>build</emphasis> funktion, som bruges når
-man skal lave sine egne rpm filer. Et 'build' består af flere
+<command>rpm</command>-programmet har en 
+<emphasis>build</emphasis>-funktion, som bruges når
+man skal lave sine egne rpm filer. En 'build' består af flere
 faser
 </para>
 
@@ -1051,6 +1053,60 @@ Så bare klø på - det lønner sig.
 </para>
 </sect3>    <!--   Sikken et besvær! -->
 </sect2>    <!--   RPM for programmøren -->
+
+
+<sect2 id="bygge-rpm-fra-src-rpm">
+<title>Bygge RPM ud fra SRPM</title>
+<indexterm><primary>RPM</primary><secondary>Bygge ud fra .src.rpm</secondary></indexterm>
+<para>
+I dette afsnit ser vi på hvordan man bygger en RPM-pakke ud fra 
+kilde-RPM-filen, dvs. en <filename>.src.rpm</filename>-fil. 
+Man behøver faktisk ikke at være root til at bygge en RPM-fil. 
+Du skal blot gøre følgende
+</para>
+
+<screen>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>cd</USERINPUT>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>mkdir rpm</USERINPUT>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>cd rpm</USERINPUT>
+<PROMPT>[anne@linus rpm]$ </PROMPT><USERINPUT>mkdir BUILD  RPMS  SOURCES  SPECS  SRPMS</USERINPUT>
+<PROMPT>[anne@linus rpm]$ </PROMPT><USERINPUT>mkdir RPMS/i386</USERINPUT>
+<PROMPT>[anne@linus rpm]$ </PROMPT><USERINPUT>cd</USERINPUT>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>cd</USERINPUT>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>echo "%_topdir    $HOME/rpm" > .rpmmacros</USERINPUT>
+</screen>
+
+<para>
+Når du så har hentet en <filename>.src.rpm</filename>-fil, f.eks. 
+<filename>dos2unix-3.1-3.src.rpm</filename>, så kan du skrive
+</para>
+
+<screen>
+<PROMPT>[anne@linus ~]$ </PROMPT><USERINPUT>rpm --rebuild  dos2unix-3.1-3.src.rpm</USERINPUT>
+dos2unix-3.1-3.src.rpm
+Installerer dos2unix-3.1-3.src.rpm
+Udfører(%prep): /bin/sh -e /var/tmp/rpm-tmp.61717
++ umask 022
++ cd /home/pto/rpm/BUILD
++ cd /home/pto/rpm/BUILD
++ rm -rf dos2unix-3.1
++ /bin/gzip -dc /home/pto/rpm/SOURCES/dos2unix-3.1.tar.gz
+/home/pto/rpm/SOURCES/dos2unix-3.1.tar.gz:      + tar -xvvf -
+...
+</screen>
+
+<para>
+og en masse flere linier.
+</para>
+
+<para>
+Hvis alt går godt ender din 
+<filename>din-nyligt-downloadede.i386.rpm</filename> i
+<filename>$HOME/rpmRPMS/i386/</filename>, og du kan nu installere 
+(som root) med <command>rpm -Uvh 
+$HOME/rpmRPMS/i386/din-nyligt-downloadede.i386.rpm</command>.
+</para>
+</sect2>
 
 <sect2 id="chkconfig">
 <title>chkconfig</title>
