@@ -632,6 +632,7 @@ Dette gør, at kildeteksten lægges ind i <filename>/usr/src/linux</filename>.
 <para>
 I øvrigt kan det tilrådes at lade <filename>/usr/src/linux</filename> være et
 symbolsk link til et versionsafhængigt underkatalog:
+</para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ls -l /usr/src/linux</USERINPUT>
@@ -640,11 +641,15 @@ drwxr-xr-x  17 root root 1024 Jan 25 21:22 linux-2.0.36
 drwxr-xr-x  15 root root 1024 Jan 31 20:45 linux-2.2.5
 </screen>
 
+<para>
 På denne måde er det nemt at teste forskellige versioner af
 Linux-kernen. Antag, at du vil opgradere til kerne 2.3.1, som du
-henter hjem fra Internettet, dvs. nu vil du installere kildeteksten
-selv (uden RPM). Start med at lave en ny mappe og et symbolsk link
-til den nye mappe (du skal være root).
+henter hjem fra <ulink
+url="http://www.kernel.org">http://www.kernel.org</ulink> (eller et
+mirror - f.eks. <ulink url="ftp://ftp.sunsite.dk"></ulink>), dvs. nu
+vil du installere kildeteksten selv (uden RPM). Start med at lave en
+ny mappe og et symbolsk link til den nye mappe (du skal være root).
+</para>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>rm /usr/src/linux</USERINPUT>
@@ -652,6 +657,7 @@ til den nye mappe (du skal være root).
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>ln -s /usr/src/linux-2.3.1 /usr/src/linux</USERINPUT>
 </screen>
 
+<para>
 Gå (brug <command>cd</command>) ned til
 <filename>/usr/src/linux</filename> og læs <filename>README</filename>
 (med <command>less README</command>). I denne fil er forklaret, hvordan du
@@ -692,12 +698,14 @@ kernen, trykker du på "Save and exit".
 <GRAPHIC FILEREF="kerne-general-setup.&magic;"  SCALE="50"></GRAPHIC>
 </FIGURE>
 
-<PARA>Du er nu klar til at generere en ny kerne. Der er en række
-skridt, som du bare skal følge. Den fjerde kommando antager, at du
-bruger LILO som opstartsindlæser (eng. boot-loader). Selve oversættelsen af kernen (tredje
-kommando) og moduler (femte kommando) kan godt tage en rum tid
-afhængigt af, hvor meget du har taget med, og hvor hurtig din maskine
-er.</PARA>
+<PARA>
+Du er nu klar til at generere en ny kerne. Der er en række skridt, som
+du bare skal følge. Først gennemgås alle afhængigheder i kernen
+(<command>make dep</command>).  Selve oversættelsen af kernen
+(<command>make bzImage</command>) og moduler (<command>make
+modules</command>) kan godt tage en rum tid afhængigt af, hvor meget
+du har taget med, og hvor hurtig din maskine er.
+</PARA>
 
 <SCREEN>
 <PROMPT>[root@linus /root]# </PROMPT> <USERINPUT>cd /usr/src/linux</USERINPUT>
@@ -715,7 +723,9 @@ teste den nye kerne ved at kopiere den til en diskette og så starte
 fra denne. Brug <command>dd if=/usr/src/linux/arch/i386/boot/bzImage
 of=/dev/fd0</command> for at teste på denne måde. Er du tilfreds med
 den nye kerne, kan du kopiere kernen til <filename>/boot</filename> og
-rette i LILO's konfigurationsfil.
+rette i LILO's konfigurationsfil (<filename>/etc/lilo.conf</filename>)
+og køre <command>/sbin/lilo</command>, hvis du anvender LILO til at
+starte maskinen.
 </para>
 
 <para>
@@ -938,12 +948,12 @@ indsætte følgende linier
 
 <screen>
 alias eth0 3c90x
-option eth0 media_select=1
+option 3c90x media_select=1
 </screen>
 
 
 <para>
-Et andet nøgleord er "options" (alternativer). Her kan systemadministratoren
+Et andet nøgleord er "options" (parametre). Her kan systemadministratoren
 angive en række parametre til en driver/modul. I det ovenstående
 eksempel på <filename>conf.modules</filename> står der
 f.eks. <userinput>options sb io=0x220 irq=5 dma=1 dma16=5
