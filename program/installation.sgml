@@ -6,8 +6,90 @@
  </indexterm>
 
  <para>
-  ...
+  Hvis du arbejder på en pakkebaseret Linux-installation (for eksempel
+  Debian, Mandrake, Red Hat eller SuSE) bør du så vidt muligt bruge
+  systemets pakkehåndtering til at installere programmerne.
  </para>
+
+ <example id="installation-deb">
+  <title>Installation af pakker på et Debian-baseret system</title>
+
+  <para>
+   Hvis du kører et Debian-baseret system og der i en
+   installationsvejledning her i bogen står at du på Debian-systemer
+   har brug for en pakke ved navn "<filename>eksempel</filename>"
+   skulle de følgende to kommandoer installere pakken på dit system.
+  </para>
+<screen>
+<prompt>[root@linus /root]$ </prompt><userinput>apt-get update</userinput>
+<prompt>[root@linus /root]$ </prompt><userinput>apt-get install eksempel</userinput>
+</screen>
+ </example>
+
+ <example id="installation-rpm">
+  <title>Installation af pakker på et RPM-baseret system</title>
+
+  <para>
+   Hvis du kører et RPM-baseret system med en 32-bit Intel-kompatibel
+   processor og der i en installationsvejledning
+   her i bogen står at du på RPM-baserede systemer har brug for en pakke
+   ved navn "<filename>eksempel</filename>" skal du ud og lede efter en
+   fil ved navn "<filename>eksempel-&lt;tal&gt;.i386.rpm</filename>"
+   (hvis du kører på en anden processortype erstattes "i386" med en
+   tilsvarende streng for den processor). Hvis du er heldig findes filen
+   på en af dine Linux-cd-rom'er og ellers må du ud på nettet og lede.
+   Når du har fundet filen, så skulle den følgende kommando installere
+   pakken på dit system.
+  </para>
+<screen>
+<prompt>[root@linus /root]$ </prompt><userinput>rpm --upgrade eksempel-&lt;tal&gt;.i386.rpm</userinput>
+</screen>
+  <para>
+   Det kan her ske at systemet brokker sig over at der mangler nogle pakker,
+   som denne pakke har brug for. Dem bliver du i så fald nødt til at
+   installere først.
+  </para>
+ </example>
+
+ <example id="installation-tar-gz">
+  <title>Installation af ".tar.gz"-filer</title>
+
+  <para>
+   Hvis du kun kan finde en pakke med et program i form af en ".tar.gz"-fil
+   bør du strengt taget pakke det om til en pakke af den type dit system
+   bygger på. Du kan se hvordan det gøres i afsnit ... (Debian-pakker) eller
+   afsnit ... (RPM-pakker). Hvis vi vil springe den ideelle løsning over
+   og bare installere programmet i en fart kan det normalt klares med den
+   følgende række kommandoer (vi antager at pakken hedder
+   "<filename>eksempel-0.3.1.tar.gz</filename>").
+  </para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>tar xzvf eksempel-0.3.1.tar.gz</userinput>
+eksempel-0.3.1/COPYRIGHT
+eksempel-0.3.1/configure
+...
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cd eksempel-0.3.1/</userinput>
+<prompt>[daisy@linus eksempel-0.3.1]$ </prompt><userinput>./configure &amp;&amp; make &amp;&amp; echo O.k.</userinput>
+...
+O.k.
+<prompt>[daisy@linus eksempel-0.3.1]$ </prompt><userinput>su root -c 'make install &amp;&amp; echo O.k.'</userinput>
+<prompt>Password: </prompt>
+...
+O.k.
+<prompt>[daisy@linus eksempel-0.3.1]$ </prompt><userinput>make clean</userinput>
+...
+<prompt>[daisy@linus eksempel-0.3.1]$ </prompt><userinput>cd ../</userinput>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>rm -rf eksempel-0.3.1/</userinput>
+</screen>
+
+  <para>
+   Kort fortalt sker der følgende; pakken pakkes ud
+   (<command>tar</command>), sættes op (<command>./configure</command>),
+   oversættes (<command>make</command>), installeres
+   (<command>make install</command>) og til sidst ryddes der op.
+  </para>
+ </example>
 
  &program-installation-ada;
  &program-installation-basic;
