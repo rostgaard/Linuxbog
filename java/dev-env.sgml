@@ -3,6 +3,9 @@
 <title>Udviklingsmiljø</title>
 <indexterm><primary>Udviklingsmiljø</primary></indexterm>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  INDLEDNING                                       -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-indledning">
 <title>Indledning</title>
 
@@ -48,6 +51,9 @@ værktøjer, der er nyttige i den sammenhæng.
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  EDITOR                                           -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-editor">
 <title>Redigering af kildekode</title>
 
@@ -61,6 +67,9 @@ Emacs, VI, IDE værktøjer, ...
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  COMPILER                                         -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-compiler">
 <title>Oversættelse af kildekode</title>
 
@@ -74,6 +83,9 @@ javac
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  CONFIGURATION                                    -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-configuration">
 <title>Konfigurationsstyring</title>
 
@@ -102,7 +114,7 @@ konfigurering af Java-softwaresystemer.
 <title>Ant</title>
 
 <para>
-TODO...generelt om ant
+Ant er et Java-baseret værktøj.
 </para>
 
 <sect3 id="java-dev-env-configuration-dir-layout">
@@ -114,15 +126,16 @@ TODO...skriv om motivationen for nedenstående layout /jk
 
 <screen>
 projektnavn              Al projektrelateret data
-projektnavn/src          Kildetekst, ressourcefiler og billeder
-projektnavn/log          Logfiler
-projektnavn/docs         Al dokumentation
-projektnavn/docs/api     JavaDoc-genereret HTML af din kode
 projektnavn/build        Oversatte class-filer, ressourcefiler og billeder
 projektnavn/dist         Binær distribution af softwaresystemet inkl. manualer osv.
+projektnavn/docs         Al dokumentation
+projektnavn/docs/api     JavaDoc-genereret HTML af din kode
 projektnavn/lib          Eksterne jar-filer, som anvendes i projektet
-projektnavn/test/src     Kildetekst relateret til test af softwaresystemet
+projektnavn/log          Logfiler
+projektnavn/src          Kildetekst, ressourcefiler og billeder
+projektnavn/test/lib     Eksterne jar-filer, som anvendes til test
 projektnavn/test/report  Testrapporter
+projektnavn/test/src     Kildetekst relateret til test af softwaresystemet
 </screen>
 
 </sect3>
@@ -140,6 +153,9 @@ TODO...lav build.xml der matcher ovenstående biblioteksstruktur i funktionalitet
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  DEBUGGING                                        -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-debugging">
 <title>Debugging</title>
 
@@ -153,6 +169,9 @@ jdb
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  LOGGING                                          -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-logging">
 <title>Logning</title>
 
@@ -170,6 +189,9 @@ JSR47 vs. log4j (take two). http://jakarta.apache.org/log4j/docs/critique2.html
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  PROFILING                                        -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-profiling">
 <title>Profilering</title>
 
@@ -183,19 +205,391 @@ java -Xprof JavaProgram
 
 </sect1>
 
-<sect1 id="java-dev-env-documentation">
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  DOC                                              -->
+<!-- ####################################################################### -->
+<sect1 id="java-dev-env-doc">
 <title>Dokumentation</title>
 
 <para>
-TODO
+Dokumentation er et vigtigt aspekt af ethvert softwareudviklingsprojekt.
+I dette afsnit fokuserer vi på et værktøj, der kan hjælpe dig med at
+udarbejde API-dokumentation.
 </para>
 
 <para>
-javadoc, uml værktøjer, ...
+API-dokumentation består af en API-specifikation samt en
+vejledning i at bruge API'en. API-specifikationen skal ses som en kontrakt
+mellem den som bruger API'en (klienten) og den som implementerer API'en
+(leverandøren). Hvis leverandøren f.eks. lover at metoden
+<constant>double sqr(int number)</constant>
+returnerer kvadratroden af <constant>number</constant> når tallet ikke
+er negativt så ved klienten at uanset, hvordan metoden er implementeret
+så vil den altid returnere kvadratroden med så stor præcision, som returtypen
+tillader. Hvis returværdien viser sig at være forkert i nogle tilfælde så har
+leverandøren brudt kontrakten og metoden er implementeret forkert. Hvis klienten
+kalder metoden med et negativt tal så er der også tale om kontraktbrud.
+Kontraktbrud kan enten resultere i en exception eller også er resultatet ikke
+veldefineret.
 </para>
+
+<sect2 id="java-dev-env-doc-javadoc">
+<title>Javadoc</title>
+
+<para>
+Javadoc er en dokumentationsværktøj, der genererer API-dokumentation ud fra
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>
+Specielle <emphasis>Javadoc-kommentarer</emphasis> indeholdt kildeteksten.
+Disse udgør API-specifikationen, men kan også indeholde brugsvejledninger.
+</para></listitem>
+<listitem><para>
+<emphasis>Pakkedokumentationsfiler</emphasis>, der indeholder overordnet
+dokumentation for pakkerne.
+</para></listitem>
+<listitem><para>
+<emphasis>Overbliksfiler</emphasis>, der indeholder overordnet dokumentation
+om en mængde af pakker.
+</para></listitem>
+</itemizedlist>
+
+<para>
+Denne sektion er ment som en hjælp til at få dig i gang med at bruge Javadoc så
+der er flere aspekter, som vi vil springe over.
+Når du har fået blod på tanden så kan du læse JDK's <emphasis>Tool
+documentation</emphasis> eller besøge nedenstående hjemmesider.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>
+Javadoc Tool Home Page,
+<ulink url="http://java.sun.com/j2se/javadoc/">http://java.sun.com/j2se/javadoc/</ulink>
+</para></listitem>
+<listitem><para>
+How to Write Doc Comments for Javadoc,
+<ulink url="http://java.sun.com/j2se/javadoc/writingdoccomments/">http://java.sun.com/j2se/javadoc/writingdoccomments/</ulink>
+</para></listitem>
+</itemizedlist>
+
+<sect3 id="java-dev-env-doc-javadoc-source">
+<title>Javadoc-kommentarer</title>
+
+<para>
+Javadoc-kommentarerne er på formen
+</para>
+
+<screen>
+/** et-eller-andet */
+</screen>
+
+<para>
+og kan knytte sig til klasser, interfaces, konstruktører, metoder og klassevariable.
+Alt afhængigt af hvad de knytter sig til så kan/skal man også angive en række
+beskrivende <emphasis>Javadoc-tags</emphasis> som er på formen.
+</para>
+
+<screen>
+@tagnavn et-eller-andet
+</screen>
+
+<para>
+Følgende eksempel illustrerer brugen af Javadoc-kommentarer og Javadoc-tags.
+</para>
+
+<screen>
+package dk.sslug;
+
+/**
+ * Denne klasse repræsenterer en simpel stak, der
+ * lagrer heltal.
+ *
+ * @author Jonas Kongslund (jonas@kongslund.dk)
+ * @version 1.1
+ */
+public class IntStack
+{
+  /** Antal elementer i stakken */
+  protected int count;
+
+  /**
+   * Indeholder stakkens elementer. Elementerne er placeret
+   * i &lt;code>elements[0...count-1]&lt;/code>.
+   * &lt;p>
+   * Toppen af stakken er &lt;code>count-1&lt;/code>
+   * når &lt;code>count>0&lt;/code> og ellers udefineret.
+   *
+   * @see #pop()
+   * @see #push(int)
+   */
+  protected int[] elements;
+
+  /**
+   * Standardkonstruktør for denne klasse.
+   */
+  public IntStack()
+  {
+    /* Øvelse: implementer metoden sådan at
+       elements og count initialiseres til
+       nogle fornuftige værdier */
+  }
+
+  /**
+   * Fjerner og returnerer det øverste tal på stakken.
+   *
+   * @return int Det øverste tal på stakken
+   * @exception java.util.EmptyStackException
+   *            hvis stakken er tom
+   */
+  public int pop() throws java.util.EmptyStackException
+  {
+    /* Øvelse: implementer metoden */
+    return -1;
+  }
+
+  /**
+   * Placerer det angivne tal øverst på stakken.
+   *
+   * @param element Tallet der skal lægges på stakken
+   */
+  public void push(int element)
+  {
+    /* Øvelse: implementer metoden så stakken
+       udvides såfremt den er fyldt */
+  }
+
+  /**
+   * Placerer det angivne tal øverst på stakken.
+   *
+   * @param element Tallet der skal lægges på stakken
+   * @deprecated Siden version 1.1; Metoden er
+   *   erstattet af &lt;code>push(int)&lt;/code>.
+   * @see #push(int)
+   */
+  public void skub(int element)
+  {
+    push(element);
+  }
+}
+
+</screen>
+
+<para>
+Bemærk at vi i eksemplet bruger HTML-tags til at fremhæve
+blandt andet metodenavne. Dette er både tilladt og anbefalelsesværdigt
+pga. øget læsevenlighed i API-dokumentationen.
+</para>
+
+<para>
+Det er desuden anbefalelsesværdigt at lade den første sætning i hver
+kommentar være beskrivende nok til at man hurtigt får en ide om, hvad
+eksempelvis en metode gør. Javadoc-værktøjet forventer faktisk dette
+da den bruger den første sætning til at generere oversigtslister med.
+</para>
+
+<para>
+Prøv at kalde Javadoc-værktøjet med følgende argumenter
+</para>
+
+<programlisting>
+<prompt>[jonas@zeta eksempler/dev-env]$ </prompt> <userinput>javadoc -author -version dk.sslug</userinput>
+</programlisting>
+
+<para>
+Værktøjet genererer som standard HTML-filer. Åbn
+<filename>index.html</filename> med en browser
+for at se resultatet.
+</para>
+
+<note><para>
+Hvis du har brugt Javadoc på <constant>eksempler/dev-env/</constant>-kataloget så
+følger der også pakkedokumentation med i købet, selvom den ikke er medtaget i
+eksemplet foroven. Hvordan du laver pakkedokumentation beskrives senere i
+denne sektion.
+</para></note>
+
+<para>
+I eksemplet er der knyttet Javadoc-kommentarer til metoder og klassevariable samt klassen selv. I de fleste af kommentarerne anvendes der Javadoc-tags.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>
+  <emphasis>@author</emphasis>, der er obligatorisk, angiver ophavsmanden
+  er for Javadoc-kommentarernes vedkommende beregnet til klasser og interfaces
+  . Det er muligt at angive flere @author-tags på separate linjer såfremt der
+  er flere ophavsmænd.
+</para></listitem>
+<listitem><para>
+  <emphasis>@version</emphasis>, der er obligatorisk, angiver versionsnummeret
+  og er for Javadoc-kommentarernes vedkommende beregnet til klasser og interfaces.
+  Versionsnummeret har ikke nogen speciel betydning og kan derfor være hvad som helst.
+</para></listitem>
+<listitem><para>
+  <emphasis>@since</emphasis>, angiver i hvilken version af API'en som
+  tilføjelsen fandt sted og kan bruges overalt. Versionsnummeret har ikke nogen
+  speciel betydning og kan derfor være hvad som helst.
+</para></listitem>
+<listitem><para>
+  <emphasis>@param</emphasis> beskriver et argument og er beregnet til metoder
+  og konstruktører. Først angives argumentets navn og dernæst beskrivelsen.
+</para></listitem>
+<listitem><para>
+  <emphasis>@return</emphasis> beskriver returværdien og er beregnet til metoder.
+  Først angives returtypen og dernæst beskrivelsen.
+</para></listitem>
+<listitem><para>
+  <emphasis>@exception</emphasis> beskriver en exception og er beregnet til
+  metoder og konstruktører. Der kan naturligvis være flere @exception-tags og hvis du
+  synes <emphasis>@throws</emphasis> virker mere logisk så kan du også anvende
+  denne.
+</para></listitem>
+<listitem><para>
+  <emphasis>@see</emphasis> henviser til en pakke, klasse, klassevariabel,
+  interface, konstruktør eller metode. En af de mulige henvisningsformer er
+  <constant>pakkenavn.klassenavn#medlem</constant>, hvor medlem kan være et
+  metodenavn på formen <constant>flaf(type1,type2,...)</constant> eller et
+  variabelnavn. Pakkenavn og klassenavn kan udlades, hvis der henvises til en
+  metode eller klassevariabel indenfor samme klasse. Dette Javadoc-tag kan anvendes i
+  alle Javadoc-kommentarer.
+</para></listitem>
+<listitem><para>
+  <emphasis>@deprecated</emphasis> kan bruges overalt og indikerer f.eks. at en
+  metode ikke længere bør anvendes fordi den vil udgå i en senere version. Det er
+  anbefalelsesværdigt at henvise til et alternativ ved hjælp af @see.
+</para></listitem>
+</itemizedlist>
+
+</sect3>
+
+<sect3 id="java-dev-env-doc-javadoc-package">
+<title>Pakkekommentarer</title>
+
+<para>
+En pakkekommentar laves ved at oprette en HTML-fil kaldet
+<filename>package.html</filename>, der placeres i pakkens mappen.
+Hvis pakken f.eks. hedder <constant>dk.sslug</constant> så placeres
+filen i <filename>dk/sslug</filename>. Javadoc-værktøjet sørger
+automatisk for at medtage filen.
+</para>
+
+<para>
+Forneden har vi et eksempel på en pakkekommentar.
+</para>
+
+<screen>
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+&lt;html>
+  &lt;head>
+    &lt;title>dk.sslug&lt;/title>
+  &lt;/head>
+  &lt;body>
+    Tilbyder containerklasser, som kan lagre forskellige typer
+    data. Indtil videre er der kun én klasse, IntStack, men
+    dette bliver der ændret på i næste version.
+
+    @see dk.sslug.IntStack
+    @since 1.0
+  &lt;/body>
+&lt;/html>
+</screen>
+
+<para>
+Javadoc-værktøjet bruger kun det der står mellem &lt;body> og &lt;/body>, så
+titlen kan være hvad som helst.
+</para>
+
+<para>
+Ligesom med Javadoc-kommentarer er det muligt at anvende
+Javadoc-tags i pakkekommentarer. Blandt dem der er nævnt
+tidligere kan du anvende
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>@author (ikke obligatorisk som hos Javadoc-kommentarer)</para></listitem>
+<listitem><para>@version (ikke obligatorisk som hos Javadoc-kommentarer)</para></listitem>
+<listitem><para>@since</para></listitem>
+<listitem><para>@deprecated</para></listitem>
+<listitem><para>@see</para></listitem>
+</itemizedlist>
+
+<para>
+Bemærk at pakkekommentarer må ikke indeholde <constant>/** ... */</constant>
+og en linje må ikke starte med <constant>*</constant>.
+</para>
+
+</sect3>
+
+<sect3 id="java-dev-env-doc-javadoc-linking">
+<title>Linke til andre API-dokumenter</title>
+
+<para>
+I eksemplet foroven kan <constant>pop()</constant>-metoden smide en
+<constant>java.util.EmptyStackException</constant>, men denne har vi
+ikke selv lavet og derfor linker API-dokumentationen ikke til den.
+Dette kunne dog godt være ønskværdigt såfremt man ikke lige kan huske hvad
+EmptyStackException dækker over (hvilket i dette tilfælde dog nok er ret
+usandsynligt).
+</para>
+
+<para>
+Javadoc-værktøjet er så smart at det kan linke din API-dokumentation til
+klasser og interfaces, der er indeholdt i andre API-dokumenter. Det eneste
+man skal gøre er at fortælle Javadoc, hvor den eksterne dokumentation
+befinder sig.
+</para>
+
+<para>
+Her er et eksempel, der forudsætter at JDK's API-dokumentation er indeholdt i
+<filename>$JAVA_HOME/docs/api</filename>.
+</para>
+
+<programlisting>
+<prompt>[jonas@zeta eksempler/dev-env]$ </prompt> <userinput>javadoc -link $JAVA_HOME/docs/api dk.sslug</userinput>
+</programlisting>
+
+<para>
+Du kan også angive en URL.
+</para>
+
+<programlisting>
+<prompt>[jonas@zeta eksempler/dev-env]$ </prompt> <userinput>javadoc -link \
+http://java.sun.com/products/jdk/1.3/docs/api/ dk.sslug</userinput>
+</programlisting>
+
+<para>
+I begge tilfælde bliver der kun lavet links til dokumentationen for en
+ekstern klasse eller interface såfremt følgende er opfyldt
+</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>
+Den er eksplict angivet i en import-sætning, f.eks. 
+<constant>import java.util.EmptyStackException;</constant>. Det er ikke nok at
+der står <constant>import java.util.*;</constant>.
+</para></listitem>
+<listitem><para>
+Den er angivet som returtype eller argumenttype i en metode eller konstruktør.
+</para></listitem>
+<listitem><para>
+Den anvendes i en implements-, extends- eller throws-sætning, f.eks.
+<constant>public int pop() throws java.util.EmptyStackException</constant>
+</para></listitem>
+</itemizedlist>
+
+<para>
+I eksemplet er det tilfælde tre som gør sig gældende.
+</para>
+
+</sect3>
+
+</sect2>
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  VERSION CONTROL                                  -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-version-control">
 <title>Versionsstyring</title>
 
@@ -209,6 +603,9 @@ CVS. http://www.sslug.dk/linuxbog/program/bog/vaerktoej.html
 
 </sect1>
 
+<!-- ####################################################################### -->
+<!-- JAVA  ->  DEV-ENV  ->  TEST                                             -->
+<!-- ####################################################################### -->
 <sect1 id="java-dev-env-test">
 <title>Test</title>
 
