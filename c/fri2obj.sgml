@@ -1,0 +1,427 @@
+<chapter id="object-orienteret-tankegang">
+<title>Tankegang bag objektorienteret programmering</title>
+<sect1 id="datatyper"><title>Konkrete og abstrakte datatyper</title>
+<para>
+Er C et objektorienteret sprog? Hvorfor er det ikke
+objektorienteret, når et C program er en række definitioner af
+eksterne objekter? (external objects?)
+</para>
+
+<para>
+Det korte svar er, at almindelig C ikke har virtuelle
+funktioner. Desuden er der ikke support for generisk algoritme
+programmering. Det er imidlertid interessant at vide, at C
+sproget som sådan ikke forhindrer programmøren i at tænke
+objektorienteret. I dette afsnit vil vi sammenligne to udgaver af
+en linked liste, den ene skrevet i C og den anden i C++.
+</para>
+
+<para>
+I øvrigt har de fleste sprog nogle mekanismer, som er
+rigtigt objektorienterede, nemlig håndteringen af forskellige
+numeriske typer.
+</para>
+
+<para>
+Vi kan have en integer i en variabel og gange den med en
+float og lægge resultatet i en double uden at compileren gider
+fortælle, at der skal konverteres. Taber vi præcision ved at
+konvertere fra double til integer, vil de fleste compilere give
+en warning, men de konverterer dog.
+</para>
+
+<para>
+Det er egentlig objektorientering i en nøddeskal. Definer
+din algoritme (fx. addition) og sørg for, at den kan håndtere
+forskellige data, d.v.s. objekter, på en passende måde.  Det
+vanskelige ved objektorientering kommer, når man definerer nye
+klasser eller objekttyper og så skal til at skrive regler for,
+hvordan operatorer skal fungere etc. Som en øvelse i
+objekt-orienteret tankegang kan man prøve at definere en struct,
+som skal repræsentere brøker, som fx. 2/3, der jo ikke er det
+samme som 0.6667.
+</para>
+
+<para>
+I C++ bliver det muligt at erklære en variabel af typen
+broek (eller reference til broek) som fx. nedenstående eksempel
+</para>
+
+<programlisting role="C">
+broek andel(2,3);
+int bogpris = 350;
+afgift = bogpris * andel;
+</programlisting>
+
+<para>
+Forudsat, selvfølgelig, at man har defineret typen broek og
+tilhørende operationer på en passende måde!
+</para>
+
+</sect1>
+
+<sect1 id="abstract-datatypes">
+<title>Abstrakte data typer</title>
+<para>
+Her kommer til at stå et eksempel i C++ og en C version af
+samme tankemåde for implementering af linked liste.
+</para>
+</sect1>
+</chapter>
+
+<chapter id="parser-filter-tilstandsmaskine">
+<title>Filter-programmer, parsere, tilstandsmaskiner</title>
+
+<sect1 id="declaration-parser">
+<title>En declaration parser</title>
+<para>
+Erklæringer, declarations.
+</para>
+</sect1>
+
+<sect1 id="expression-parser">
+<title>En expression parser</title>
+<para>
+Et program, som kan fodres med beregningsudtryk og levere
+resultatet. Eksempel på input:
+</para>
+<programlisting>
+calcu '200 * sin(0.444)'
+85.911
+
+calcu &lt;&lt;SLUT
+2 + 3
+5 * X
+SLUT
+
+Calc:      5.0000
+Calc:     25.0000
+Calc:
+
+calcu
+Calc: 32/square(2)
+         ^Error
+</programlisting>
+
+<para>
+Programmet benytter en særlig slem variant af printf format
+specification, som skriver et antal spaces ud styret af en
+variabel:
+<literal>
+printf("En padded string: %*s\n",lengde,string);
+</literal>
+Meget smart - men første gang lidt vanskeligt at læse og forstå.
+Det styrer angivelsen af error positionen.
+</para>
+
+<para>
+Programmet er i sin nuværende form ganske anvendeligt, fordi det
+kan fungere som erstatning for expr programmet, der stiller alt
+for mange krav til spaces og anden formatering til de
+expressions, som skal evalueres. Men programmet kan simpelt hen
+også anvendes til beregning af prislister (det har det faktisk
+været!)
+</para>
+
+<example>
+<title>Calculator, recursive descent expression parsing </title>
+<programlisting>
+
+
+/* file calcu.c */
+/* ANSI - C program demonstration, command line calculator */
+/* Recursive descent parser */
+/* Improve: Make a HELP command. Add more variables.       */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;string.h>
+#include &lt;math.h>
+
+
+
+#define MAXL 8196
+char gs[MAXL];
+char *cp;
+char *errorp;
+double oldval;
+
+/* local prototypes: */
+int calcu();
+int evaluate(char *line, double *prev_result);
+int stricmp(const char *s1, const char *s2);
+int strnicmp(const char *s1, const char *s2, int len);
+
+
+int main(int argc, char *argv[])
+{
+    int rv, jj;
+
+    jj = 0;
+    while (++jj &lt; argc) {
+        strcat(gs, argv[jj]);
+    }
+    if (argc == 1)
+        return calcu();
+    strcat(gs, "\n");
+    rv = evaluate(gs, &amp;oldval);
+    if (!rv)
+        printf("%g\n", oldval);
+    else
+        printf("Calcu:%s\n%*s\n", gs, rv, "^Error");
+    return rv;
+}
+
+
+/* Description: */
+/* calcu() sets up a string which is then evaluated as an expression  */
+/* If (argc>1) main sets up string for evaluate() and prints result.  */
+/* stricmp does not stop at '\n' - so we have to compare with "xx\n"  */
+/* gettok() could solve that problem. TRY to use gettok().            */
+
+
+
+int nextchar()
+{
+    ++cp;
+    while (*cp == ' ')
+        ++cp;
+    return *cp;
+}
+
+
+int eatspace()
+{
+    while (*cp == ' ')
+        ++cp;
+    return *cp;
+}
+
+
+int calcu()
+{
+    FILE *ifil;
+    char line[MAXL];
+    int rpos;
+    double r;
+
+    ifil = stdin;
+    while (1) {
+        errorp = NULL;
+        printf("Calc:");
+        if (!fgets(line, MAXL, ifil))
+            break;
+        if (strlen(line) &amp;&amp; strnicmp(line,"QUIT",4)
+&amp;&amp; stricmp(line,"Q\n"))
+            rpos = evaluate(line, &amp;r);
+        else
+            break;
+        if (!rpos) {
+            printf("%-18g\n", r);
+            oldval = r;
+        } else {                /* prints Error in field min. 12 wide */
+            printf("%*s\n", rpos, "^Error");
+        }
+    }
+    return rpos;                /* if interactive rpos should always be 0 */
+}
+
+
+/* More local prototypes. This could, of course, be a separate file. */
+double expression();
+double product();
+double potens();
+double signedfactor();
+double factor();
+double stdfunc();
+
+
+int evaluate(char *s, double *r)
+{
+    cp = s;
+    eatspace();
+    *r = expression();
+    eatspace();
+    if (*cp == '\n' &amp;&amp; !errorp)
+        return (0);
+    else
+        return (cp - s) + 11;
+}
+
+
+double expression()
+{
+    double e;
+    int opera2;
+
+    /* printf("test arg:%s\n",cp); */
+
+    e = product();
+    while ((opera2 = *cp) == '+' || opera2 == '-') {
+        nextchar();
+        if (opera2 == '+')
+            e += product();
+        else
+            e -= product();
+    }
+    eatspace();
+    return e;
+}
+
+
+double product()
+{
+    double dp;
+    int ope;
+
+    dp = potens();
+    while ((ope = *cp) == '*' || ope == '/') {
+        nextchar();
+        if (ope == '*')
+            dp *= potens();
+        else
+            dp /= potens();
+    }
+    eatspace();
+    return dp;
+}
+
+
+double potens()
+{
+    double dpo;
+
+    dpo = signedfactor();
+    while (*cp == '^') {
+        nextchar();
+        dpo = exp(log(dpo) * signedfactor());
+    }
+    eatspace();
+    return dpo;
+}
+
+
+double signedfactor()
+{
+    double ds;
+    if (*cp == '-') {
+        nextchar();
+        ds = -factor();
+    } else
+        ds = factor();
+    eatspace();
+    return ds;
+}
+
+
+double factor()
+{
+    double df;
+
+    /* while (*cp!='\n') {
+       putchar(*cp++);
+       } 
+     */
+
+    switch (*cp) {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        df = strtod(cp, &amp;cp);
+        break;
+    case '(':
+        nextchar();
+        df = expression();
+        if (*cp == ')')
+            nextchar();
+        else
+            errorp = cp;
+        break;
+    case 'X':
+        nextchar();
+        df = oldval;
+        break;
+
+    default:
+        df = stdfunc();
+    }
+    /* printf("ddt: df = %lf, *cp = %c\n",df,*cp); */
+
+    eatspace();
+    return df;
+}
+
+
+char *functionname[] =
+{
+    "abs", "sqrt", "sin", "cos", "atan", "log", "exp", "\0"
+};
+
+double stdfunc()
+{
+    double dsf;
+    char **fnptr;
+    int jj;
+
+    eatspace();
+    jj = 0;
+    fnptr = functionname;
+    while (**fnptr) {
+        /* printf("%s\n",*fnptr); */
+        if (strncmp(*fnptr, cp, strlen(*fnptr)) == 0)
+            break;
+
+        ++fnptr;
+        ++jj;
+    }
+    if (!**fnptr) {
+        errorp = cp;
+        return 1;
+    }
+    cp += (strlen(*fnptr) - 1);
+    nextchar();
+    dsf = factor();
+    switch (jj) {
+    case 0: dsf = abs(dsf);  break;
+    case 1: dsf = sqrt(dsf); break;
+    case 2: dsf = sin(dsf);  break;
+    case 3: dsf = cos(dsf);  break;
+    case 4: dsf = atan(dsf); break;
+    case 5: dsf = log(dsf);  break;
+    case 6: dsf = exp(dsf);  break;
+    default:{
+            errorp = cp;
+            return 4;
+        }
+    }
+    eatspace();
+    return dsf;
+}
+
+
+/* end calcu.c */
+
+
+</programlisting>
+</example>
+</sect1>
+
+
+<sect1 id="Tilstandsmaskiner">
+<title>Tilstandsmaskiner</title>
+<para>
+Tilstandsmaskiner er betegnelse for 2 ting. Alle programmer
+er tilstands-maskiner. En speciel teknik, som anvendes i parsere,
+indeholder en tilstandstabel.
+</para>
+
+</sect1>
+</chapter>
+
