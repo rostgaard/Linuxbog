@@ -127,6 +127,10 @@ function form_filename( $bookname, $format ) {
       first => "linux-",
       last => ".html.tgz"
     ),
+    "HTML zip" => array(
+      first => "linux-",
+      last => "_html.zip"
+    ),
     "PNG billeder" => array(
       first => "linux-",
       last => ".png.tgz"
@@ -142,7 +146,7 @@ function form_filename( $bookname, $format ) {
     // Eks: linux-frihed-pdf.gz
     "PDF" => array(
       first => "linux-",
-      last => ".pdf.gz"
+      last => ".pdf"
     ),
     "PalmPilot" => array(
       first => "linux-",
@@ -220,8 +224,10 @@ Indholdet af bøgerne diskuteres på
 Har du fundet fejl i en bog, så send venligst dette til 
 &lt;<a href="mailto:sslug-bog@sslug.dk">sslug-bog@sslug.dk</a>&gt;.<br>
 Er du ikke medlem af SSLUG, så skriv til
-&lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
-
+&lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.<br>
+Vi foretrækker direkte rettelser foretaget i SGML-kildeteksten, men
+kan også rette ud fra præcise angivelser for hvor rettelserne skal
+foretages.
 <hr>
 <a name="matrix"></a>
 <h2>Samlet bogoversigt</h2>
