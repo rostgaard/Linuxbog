@@ -1841,6 +1841,99 @@ om problemer med Suid.
 
 </SECT1>
 
+<sect1 id="miljoevar">
+<title>$variable, export og env</title>
+<indexterm><primary>env</primary></indexterm>
+<indexterm><primary>export</primary></indexterm>
+<indexterm><primary>miljø-variable</primary></indexterm>
+<indexterm><primary>environment-variable</primary></indexterm>
+<indexterm><primary>variable</primary></indexterm>
+<indexterm><primary>$</primary></indexterm>
+<indexterm><primary>$PATH</primary></indexterm>
+<indexterm><primary>$HOME</primary></indexterm>
+<indexterm><primary>$SHELL</primary></indexterm>
+<indexterm><primary>$DISPLAY</primary></indexterm>
+<indexterm><primary>PATH</primary></indexterm>
+<indexterm><primary>HOME</primary></indexterm>
+<indexterm><primary>SHELL</primary></indexterm>
+<indexterm><primary>DISPLAY</primary></indexterm>
+
+<para>
+I UNIX (og dermed Linux) anvendes ofte miljø-variable
+(eng. environment-variable) til at gemme vigtig information for de
+enkelt programmer eller for hele systemets virkemåde. Prøv f.eks. at
+skrive 
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>env</USERINPUT>
+PWD=/home/pto/linuxbog
+VENDOR=intel
+PAGER=less
+.
+.
+.
+</SCREEN>
+
+<para>
+Der kom mange linier, som alle er formatteret "VARIABEL=VÆRDI".
+Linien "PWD" betyder f.eks. at jeg nu står i kataloget
+<filename>/home/pto/linuxbog</filename>. De fleste er sat af
+systemet, mens brugeren kan vælge at tilføje nye eller overskrive de
+eksisterende. Typisk vil dette ske i <filename>~/.profile</filename>
+hvis brugeren anvender <command>bash</command>-shellen. Lad os se om
+dette er tilfældet:
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>env | grep SHELL</USERINPUT>
+SHELL=/bin/bash
+</SCREEN>
+
+<para>
+Skal man så bruge den variabel i en udprintning f.eks. på skærmen
+anvendes $VARIABEL til at tilgå værdien.
+</para>
+
+<SCREEN>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>echo "Jeg bruger $SHELL"</USERINPUT>
+Jeg bruger /bin/bash
+</SCREEN>
+
+<para>
+Vil du sætte systemvariable (ligesom <command>set</command> i
+DOS), så er syntaksen <command>export VARIABEL=VÆRDI</command>.
+</para>
+
+<para>
+Lad os se på et par af de meget anvendte variable.
+$HOME (eller $USER) Beskriver stien til en brugers hjemme katalog. Ofte
+er denne sat til <filename>/home/BRUGERNAVN</filename>
+</para>
+
+<para>
+$PATH Beskriver hvilke stier som søges efter et program hvis man ikke
+angiver den fulde sti selv.  Ofte har en normal bruger ikke "/sbin" i
+sin $PATH, men root har.
+</para>
+
+<para>
+For at rette i $PATH se <filename>/etc/profile</filename> hvis
+ændringerne skal gælde alle brugere. Man kan også skrive "export
+PATH=$PATH:/home/mig/bin" Hvis man gerne vil have at ens shell også
+skal søge efter de programmer man har lagt i
+<filename>/home/mig/bin</filename>.
+</para>
+
+<para>
+$DISPLAY Angiver hvilken X server man vil at et program skal vises
+på. Når du starter X ,binder skærmen sig til 0:0 normalt på Ctrl + Alt
++ F7, man kan starte en ny x server på 0:1 (F8) med <command>startx --
+:1</command> hvis man har lyst til det.
+</para>
+
+</sect1>
+
 <SECT1 id="vi">
 <TITLE>Den klassiske UNIX editor vi</TITLE>
 <indexterm><primary>vi editoren</primary></indexterm>
@@ -2631,10 +2724,6 @@ Forklaring
 <row><entry>echo</entry> <entry> Kommandoen <command>echo "TEKST"</command>
       skriver teksten på skærmen.</entry></row>
 <row><entry>chown</entry> <entry> ændrer ejerskabet af filer.</entry></row>
-<row><entry>export</entry> <entry>
-      Anvendes i <command>bash</command>-skallen (default i Linux) til at
-      sætte systemvariable (ligesom <command>set</command> i
-      DOS). Syntaksen er: <command>export VARIABEL=VÆRDI</command>.</entry></row>
 <row><entry>date</entry> <entry> Viser dato og tid.</entry></row>
 <row><entry>xhost</entry> <entry> Anvendes til at tillade/begrænse andre maskiner at
       koble til maskinens X server, dvs. om de må vise grafik
