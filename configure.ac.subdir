@@ -1,0 +1,166 @@
+dnl Linuxbog.dk - autoconf script til at lave lækre makefiler med (krydser fingre).
+dnl Version 0.01 - Mads Bondo Dydensborg, mads@dydensborg.dk
+
+AC_INIT(ophavsret.sgml)
+AM_INIT_AUTOMAKE(linuxbog,1)
+
+dnl ======================================================================
+dnl Check for programmer, mv, der skal bruges
+dnl ======================================================================
+
+dnl ======================================================================
+dnl
+dnl ======================================================================
+
+
+dnl Vi skal lede efter de programmer og filer, vi skal bruge under oversættelsen
+AC_MSG_NOTICE([checker helt nødvendige programmer og filer])
+
+dnl Vi har brug for perl
+AC_CHECK_PROG(PERL, perl, ja, AC_ERROR(Du skal have perl i din path, simpelthen))
+
+dnl Vi har i den grad brug for jade
+AC_CHECK_PROG(JADE, jade, ja, AC_ERROR(jade eller openjade er krævet for at lave bøgerne))
+
+dnl Vi bruger jw til at kalde jade
+AC_CHECK_PROG(JW, jw, ja, AC_ERROR(jw er krævet for at lave bøgerne))
+
+dnl find også
+AC_CHECK_PROG(FIND, find, ja, AC_ERROR(find er krævet for at lave bøgerne))
+dnl ======================================================================
+dnl Check stien til "cygnus" filerne
+dnl ======================================================================
+
+
+dnl ======================================================================
+dnl Check generelle programmer der betyder noget for de enkelte pakker.
+dnl Faktisk er de krævet pt, men det kan vi jo håbe ændrer sig
+dnl ======================================================================
+
+AC_MSG_NOTICE([checker for generelle programmer])
+AC_CHECK_PROG(TAR, tar, ja, nej - det er ikke muligt at lave tarrede udgaver)
+AC_CHECK_PROG(ZIP, zip, ja, nej - det er ikke muligt at lave zippede udgaver)
+
+dnl ======================================================================
+dnl Check specifikke krav til de enkelte måder at lave bogen på
+dnl ======================================================================
+AC_MSG_NOTICE([checker specifikke krav til de enkelte måder at lave bogen på])
+dnl Til at starte med antager vi at alt kan laves. Hep, man er vel optimist.
+TARGET_SGML=ja
+TARGET_PALM=ja
+TARGET_PDF=ja
+TARGET_HTML=ja
+TARGET_PAKHTML=ja
+
+dnl ======================================================================
+dnl Check krav til SGML udgaven
+dnl ======================================================================
+if test "xnej" == "x$TAR" ; then 
+  TARGET_SGML=nej
+  AC_MSG_WARN(tar ikke fundet - det er ikke muligt at lave SGML udgaven)
+fi
+if test "xnej" == "x$ZIP" ; then 
+  TARGET_SGML=nej
+  AC_MSG_WARN(zip ikke fundet - det er ikke muligt at lave SGML udgaven)
+fi
+
+dnl ======================================================================
+dnl Check krav til HTML udgaven
+dnl ======================================================================
+AC_CHECK_PROG(DB2HTML, db2html, ja, nej - det er ikke muligt at lave HTML udgaven)
+if test "xja" != "x$DB2HTML"; then
+  TARGET_HTML=nej
+else
+  dnl Har vi tidy installeret?
+  AC_CHECK_PROG(TIDY, tidy, ja, nej - du bør installere tidy for at få en pænere HTML udgave)
+  dnl Check for imagesize
+  AC_MSG_CHECKING(om perl modulet Image::Size er installeret)
+  if perl -e "use Image::Size;" 2> /dev/null ; then 
+    HAVE_PERL_IMAGE_SIZE=ja
+    AC_MSG_RESULT(ja)
+  else
+    HAVE_PERL_IMAGE_SIZE=nej
+    AC_MSG_RESULT(nej - overvej at installer det for pænere HTML udgave)
+  fi
+fi
+
+dnl ======================================================================
+dnl Check krav til PAKHTML udgaven
+dnl ======================================================================
+if test "xja" != "x$TARGET_HTML" ; then
+  TARGET_PAKHTML=nej
+  AC_MSG_WARN(HTML ikke muligt - det er ikke muligt at lave PAKHTML udgaven)
+fi
+if test "xja" != "x$TAR" ; then 
+  TARGET_PAKHTML=nej
+  AC_MSG_WARN(tar ikke fundet - det er ikke muligt at lave PAKHTML udgaven)
+fi
+if test "xja" != "x$ZIP" ; then 
+  TARGET_PAKHTML=nej
+  AC_MSG_WARN(zip ikke fundet - det er ikke muligt at lave PAKHTML udgaven)
+fi
+
+dnl ======================================================================
+dnl Check krav til pspdf udgaven
+dnl ======================================================================
+AC_CHECK_PROG(DB2PDF, db2pdf, ja, nej - det er ikke muligt at lave PDF udgaven)
+if test "xja" != "x$DB2PDF"; then
+  TARGET_PDF=nej
+fi
+AC_CHECK_PROG(PDFINFO, pdfinfo, ja, nej - det er ikke muligt at lave PDF udgaven)
+if test "xja" != "x$PDFINFO"; then
+  TARGET_PDF=nej
+fi
+AC_CHECK_PROG(DB2PS, db2ps, ja, nej - det er ikke muligt at lave PDF udgaven)
+if test "xja" != "x$DB2PS"; then
+  TARGET_PDF=nej
+fi
+dnl Image Magick Convert
+AC_CHECK_PROG(CONVERT, convert, ja, nej - det er ikke muligt at lave PDF udgaven)
+if test "xja" != "x$CONVERT"; then
+  TARGET_PDF=nej
+fi
+if test "xnej" == "x$ZIP" ; then 
+  TARGET_PDF=nej
+  AC_MSG_WARN(zip ikke fundet - det er ikke muligt at lave PDF udgaven)
+fi
+dnl ======================================================================
+dnl Check krav til Palm udgaven
+dnl ======================================================================
+if test "xja" != "x$TARGET_HTML" ; then
+  TARGET_PALM=nej
+  AC_MSG_WARN(HTML ikke muligt - det er ikke muligt at lave PALM udgaven)
+fi
+AC_CHECK_PROG(PLUCKER, plucker-build, ja, nej - det er ikke muligt at lave PALM udgaven)
+if test "xja" != "x$PLUCKER"; then
+  TARGET_PALM=nej
+fi
+
+
+dnl ======================================================================
+dnl Lad brugeren vide lidt om hvad der foregår
+dnl ======================================================================
+AC_MSG_NOTICE([Oversigt over hvilke moduler der kan laves])
+
+AC_MSG_NOTICE([ Kan SGML bygges    : $TARGET_SGML ])
+AC_MSG_NOTICE([ Kan PALM bygges    : $TARGET_PALM ])
+AC_MSG_NOTICE([ Kan PDF bygges     : $TARGET_PDF ])
+AC_MSG_NOTICE([ Kan HTML bygges    : $TARGET_HTML ])
+AC_MSG_NOTICE([ Kan PAKHTML bygges : $TARGET_PAKHTML ])
+
+dnl Sæt nogen conditionals der bestemmer hvilke muligheder vi har for at bygge 
+dnl de forskellige typer af bogen.
+AM_CONDITIONAL(BUILD_SGML,    test "x$TARGET_SGML"    = "xja")
+AM_CONDITIONAL(BUILD_PALM,    test "x$TARGET_PALM"    = "xja")
+AM_CONDITIONAL(BUILD_PDF,     test "x$TARGET_PDF"     = "xja")
+AM_CONDITIONAL(BUILD_HTML,    test "x$TARGET_HTML"    = "xja")
+AM_CONDITIONAL(BUILD_PAKHTML, test "x$TARGET_PAKHTML" = "xja")
+
+AM_CONDITIONAL(HAVE_TIDY,     test "x$TIDY" = "xja")
+AM_CONDITIONAL(HAVE_PERL_IMAGE_SIZE, test "x$HAVE_PERL_IMAGE_SIZE" = "xja")
+
+
+AC_MSG_NOTICE([Danner Makefiler]) 
+
+AC_CONFIG_FILES(Makefile)
+AC_OUTPUT

@@ -1,0 +1,129 @@
+######################################################################
+# @Makefile.in@
+
+# FTAV toplevel Makefile.in.
+
+# Af Mads Bondo Dydensborg, <madsdyd@challenge.dk>. 
+# Dele af Peter Toft, mfl.
+
+# bootstrap forventer at følgende linier er til stede:
+SUBDIRS=@SUBDIRS@
+ALLE=@ALLE@
+
+# TODO: Det med fælles filer og bootstrap er stadig ikke helt godt...
+
+
+################################################################################
+#
+# Default target er "Usage" :-)
+default:
+	if test "x$(ALLE)" != "xalle" ; then \
+		@echo "Følgende targets er tilgængelige: bootstrap, clean, dist, all" ; \
+	else \
+		@echo "Følgende targets er tilgængelige: bootstrap, clean, dist, all alle" ; \
+	fi
+################################################################################
+#
+# Faelles - opsætning af de fælles filer
+# Det her er ikke helt godt nok, men bedre end ingenting...
+# Tanken er at der skelnes lidt imellem bootstrap - som er en slags "tvang" target, og
+# faelles, som forsøger at være en anelse smartere.
+# NB: Det her target skal laves om, sort of... måske...
+#faelles: faelles-filer/*.css faelles-filer/*.sgml
+faelles:	
+	@for dir in $(SUBDIRS) ; do \
+		echo "*** Installerer fælles filer i $$dir" && \
+                cp --update faelles-filer/*.sgml $$dir && \
+                cp --update faelles-filer/*.css $$dir && \
+		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
+		      > $$dir/linuxbogurl.sgml || exit; \
+	done
+	@if test "x$(ALLE)" != "x" ; then \
+		echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' \
+		      > alle/linuxbogurl.sgml || exit; \
+	endif
+
+
+################################################################################
+#
+# bootstrap
+# Kopierer en række nødvendige filer, kører dernæst bootstrap i de
+# relevante biblioteker.
+.PHONY: bootstrap
+bootstrap:	faelles
+	@echo "TODO: Ville være rart om det kunne afhænge af tidsstempler, noget"
+	@for dir in $(SUBDIRS) $(ALLE); do \
+		echo "*** Kører bootstrap i $$dir" && \
+		cp --update bootstrap.subdir $$dir/bootstrap && \
+		cp --update Makefile.subdir $$dir/Makefile.am && \
+		cp --update configure.ac.subdir $$dir/configure.ac && \
+		cp --update linuxbog.spec $$dir/linuxbog.spec && \
+		mkdir -p $$dir/misc && \
+		cp --update misc/insertimagesize $$dir/misc/ && \
+		cd $$dir && ./bootstrap && cd .. || exit ;\
+	done ;
+#		cp --update faelles-filer/*.sgml $$dir && \
+#		cp --update faelles-filer/*.css $$dir && \
+
+
+################################################################################
+#
+# configure target
+# Det er lidt omstændigt det her. Forudsætningen for en dist er en distclean.
+# Men, for at køre en distclean skal der være en makefile
+# For at have en makefile, skal der være en configure
+# For at køre en configure skal der være en bootstrap... suk
+configure:	bootstrap
+	@for dir in $(SUBDIRS) $(ALLE) ; do \
+		echo "*** Kører ./configure i $$dir" && \
+		cd $$dir && ./configure && cd .. || exit ;\
+	done ;
+
+
+
+################################################################################
+#
+# distclean
+# Cleaner i alle subdirs, så det passer til en dist
+distclean:	configure 
+	@for dir in $(SUBDIRS) $(ALLE) ; do \
+		echo "*** Kører make distclean i $$dir" && \
+		cd $$dir && make distclean && cd .. || exit ;\
+	done ;
+
+
+################################################################################
+#
+# clean
+# cleaner i alle subdirs == tilbage til før bootstrap, stort set.
+clean:	configure
+	rm -f *.tar.gz *~
+	@for dir in $(SUBDIRS) $(ALLE) ; do \
+		echo "*** Kører make clean i $$dir" && \
+		cd $$dir && make clean && cd .. || exit ;\
+	done ;
+
+
+################################################################################
+#
+# all
+# All i alle underkataloger
+all:	configure
+	@for dir in $(SUBDIRS) $(ALLE) ; do \
+		echo "*** Kører make all i $$dir" && \
+		cd $$dir && make all && cd .. || exit ;\
+	done ;
+
+
+################################################################################
+#
+# dist
+# Laver en tar fil med indholdet i hvert katalog. Laver først en clean...
+DATE=`date +"%F"`
+dist:	distclean
+	@for dir in $(SUBDIRS) ; do \
+		echo "*** Laver distributionspakke: $$dir.$(DATE).tar.gz" && \
+		tar -zcf $$dir.$(DATE).tar.gz $$dir || exit ; \
+	done ;
+
+
