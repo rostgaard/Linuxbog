@@ -14,21 +14,21 @@ statusfiler:
 	make -C web statusfiler 
 	make -C sikkerhed statusfiler 
 
-sgml:
+sgml: Makefiles
 	make -C friheden sgml
 	make -C admin sgml 
 	make -C program sgml
 	make -C web sgml 
 	make -C sikkerhed sgml 
 
-html:
+html: Makefiles
 	make -C friheden html
 	make -C admin html 
 	make -C program html
 	make -C web html 
 	make -C sikkerhed html 
 
-palmpilot:
+palmpilot: Makefiles
 	make -C friheden palmpilot
 	make -C admin palmpilot 
 	make -C program palmpilot
@@ -36,7 +36,7 @@ palmpilot:
 	make -C sikkerhed palmpilot 
 	       
 	       
-pspdf:	       
+pspdf:  Makefiles	       
 	make -C friheden pspdf
 	make -C admin pspdf 
 	make -C program pspdf
@@ -56,7 +56,6 @@ clean: Makefiles
 	make -C web clean 
 	make -C sikkerhed clean 
 	rm -rf cvs2html
-	make Makefiles
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
