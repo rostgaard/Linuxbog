@@ -1,0 +1,682 @@
+<chapter>
+  <title>Interfaces - grænseflader
+til objekter</title>
+
+<para>
+Indhold:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+
+Forstå og definere interfaces
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Polymorfi og anvendelse af interfaces
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Standardbibliotekets brug af interfaces
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Forudsættes af kapitel 12, Hændelser, kapitel 16, Flertrådet programmering,
+kapitel 17, Serialisering, kapitel 18, RMI og kapitel 21, Indre klasser.
+</para>
+
+<para>
+Forudsætter kapitel 5, Nedarvning (og 9, Appletter og grafik
+for at forstå et eksempel).
+</para>
+
+<para>
+I generel sprogbrug er et interface (da.: grænseflade,
+snitflade) en form for grænseflade, som man gør noget
+gennem. F.eks. er en grafisk brugergrænseflade (eng.: Graphical
+User Interface - GUI) de vinduer med knapper, indtastningsfelter og
+kontroller, som brugeren har til interaktion med programmet.
+</para>
+
+<para>
+Vi minder om, at en klasse er definitionen af en type objekter.
+Her kunne man opdele i
+</para>
+
+<orderedlist mark="arabic">
+  <listitem>
+
+<para>
+
+<emphasis>Grænsefladen</emphasis> - hvordan objekterne kan bruges
+  udefra.Dette udgøres af navnene<xref linkend="sdfootnote1sym">
+  på metoderne, der kan ses udefra.
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+<emphasis>Implementationen</emphasis> - hvordan objekterne virker
+  indeni.Dette udgøres af variabler og programkoden i
+  metodekroppene.
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Et 'interface' svarer til punkt 1): En definition af, hvordan
+objekter bruges udefra. Man kan sige, at et interface er en &quot;halv&quot;
+klasse.
+</para>
+
+<blockquote class="definition">Et interface er en samling navne på
+metoder (uden krop)</blockquote>
+
+<para>
+Et interface kan implementeres af en klasse - det vil sige, at
+klassen definerer alle interfacets metoder sammen med
+programkoden, der beskriver, hvad der skal ske, når metoderne
+kaldes.
+</para>
+
+<sect2>
+  <title>Definere et interface</title>
+
+<para>
+Lad os definere et interface kaldet Tegnbar, der beskriver nogle
+metoder på objekter, der kan tegnes.
+</para>
+
+<screen>
+import java.awt.*;
+
+public <emphasis>interface Tegnbar</emphasis>
+{
+  public void sætPosition(int x, int y);
+
+  public void tegn(Graphics g);
+}
+</screen>
+
+
+<para>
+I stedet for &quot;class&quot; erklæres et interface med
+&quot;interface&quot;.
+</para>
+
+<para>
+Metoder i et interface har ingen krop, alle metodeerklæringerne
+følges af et semikolon. Der kan ikke oprettes objekter ud fra
+et interface. Det kan opfattes som en &quot;tom skal&quot;, der skal
+&quot;fyldes ud&quot; af en rigtig klasse, der implementerer
+metoderne (dvs. definerer kroppene).
+</para>
+
+<figure>
+<graphic fileref="Nordfalk1315441.&magic;" scale="60"></graphic>
+</figure>
+
+<para>
+Man ser, at tegnbare objekter:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+
+har en metode til at sætte positionen på skærmen
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+har en metode til at tegne objektet.
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+I UML-notation (tegningen til højre) er Tegnbar-interfacet
+tegnet med kursiv. Alle metoderne er abstrakte (= ikke
+implementerede) og er derfor også tegnet kursivt.
+</para>
+</sect2>    <!--   Definere et interface -->
+
+<sect2>
+  <title>Implementere et interface</title>
+
+<para>
+Lad os nu definere en klasse, der implementerer
+Tegnbar-interfacet.
+</para>
+
+<blockquote class="definition">En klasse kan erklære, at den
+<emphasis>implementerer et interface</emphasis>, og så <u>skal</u> den
+definere alle metoderne i interfacet og give dem en metodekrop</blockquote>
+
+<para>
+Vi skal altså definere alle interfacets metoder sammen med
+programkoden, der beskriver hvad der skal ske, når metoderne
+kaldes.
+</para>
+
+<screen>
+import java.awt.*;
+
+public class Stjerne <emphasis>implements Tegnbar</emphasis>
+{
+  private int posX, posY;
+
+  public void sætPosition(int x, int y)  <emphasis>// kræves af Tegnbar</emphasis>
+  {
+    posX = x;
+    posY = y;
+  }
+
+  public void tegn(Graphics g)          <emphasis>// kræves af Tegnbar</emphasis>
+  {
+    g.drawString(&quot;*&quot;,posX,posY);
+  }
+}
+</screen>
+
+
+<para>
+Her har klassen Stjerne &quot;udfyldt skallen&quot; for Tegnbar
+ved at skrive &quot;implements Tegnbar&quot; og definere
+sætPosition()- og tegn()-metoderne (vi har også variabler
+til at huske x og y).
+</para>
+
+<sect3>
+  <title>Variabler af type Tegnbar</title>
+
+<para>
+Man kan erklære variabler af en interface-type. Disse kan
+referere til alle slags objekter, der implementerer interfacet<xref linkend="sdfootnote2sym">.
+Herunder erklærer vi en variabel af type Tegnbar og sætter
+den til at referere til et Stjerne-objekt.
+</para>
+
+<screen>
+    Tegnbar t;
+    t = new Stjerne();       <emphasis>// Lovligt, Stjerne implementerer Tegnbar</emphasis>
+</screen>
+
+
+<para>
+Stjerne-objekter er også af type Tegnbar. Ligesom ved
+nedarvning siger man, at der er relationen Stjerne er-en
+Tegnbar, og at t er polymorf, da den kan referere til alle slags
+Tegnbare objekter.
+</para>
+
+<para>
+Man kan ikke oprette objekter ud fra et interface (der bare er en
+&quot;skal&quot; og intet siger om, hvordan metoderne er
+implementerede så hvordan skulle objektet reagere, hvis
+metoderne blev kaldt?).
+</para>
+
+<screen>
+    t = new Tegnbar();       <emphasis>// FEJL! Tegnbar er ikke en klasse</emphasis>
+</screen>
+</sect3>    <!--   Variabler af type Tegnbar -->
+</sect2>    <!--   Implementere et interface -->
+
+<sect2>
+  <title>Eksempler med interfacet Tegnbar</title>
+
+<para>
+Lad os udvide (arve fra) Terning til at implementere
+Tegnbar-interfacet. For at gøre koden kort har metoden
+tegn() en hjælpemetode ci(), der tegner en cirkel for et øje.
+</para>
+
+<screen>
+import java.awt.*;
+public class GrafiskTerning <emphasis>extends Terning implements Tegnbar</emphasis>
+{
+  int x, y;
+
+  public void sætPosition(int x, int y)
+  {
+    this.x = x;
+    this.y = y;
+  }
+
+  private void ci(Graphics g, int i, int j)
+  {
+    g.fillOval(x+1+10*i,y+1+10*j,8,8);             <emphasis>// Tegn fyldt cirkel</emphasis>
+  }
+
+  public void tegn(Graphics g)
+  {
+    int ø = værdi;
+    g.drawRect(x,y,30,30);                         <emphasis>// Tegn kant</emphasis>
+
+    if (ø==1) ci(g,1,1);                           <emphasis>// Tegn 1-6 øjne</emphasis>
+    else if (ø==2) { ci(g,0,0); ci(g,2,2); }
+    else if (ø==3) { ci(g,0,0); ci(g,1,1); ci(g,2,2); }
+    else if (ø==4) { ci(g,0,0); ci(g,0,2); ci(g,2,0); ci(g,2,2); }
+    else if (ø==5) { ci(g,0,0); ci(g,0,2); ci(g,1,1); ci(g,2,0); ci(g,2,2); }
+    else { ci(g,0,0); ci(g,0,1); ci(g,0,2); ci(g,2,0); ci(g,2,1); ci(g,2,2); }
+  }
+}
+</screen>
+
+
+<para>
+Bemærk:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+
+Man kan godt have flere metoder end specificeret i interfacet
+  (i dette tilfælde ci()).
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+GrafiskTerning er-en Tegnbar og samtidig en Terning. Der kan
+  kun arves fra &eacute;n klasse, men samtidigt kan der godt
+  implementeres et interface (faktisk også flere).
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Lad os gøre det samme med et raflebæger. For
+variationens skyld lader vi bægeret altid have den samme
+position, ved at lade sætPosition()'s krop være tom.
+</para>
+
+<screen>
+import java.awt.*;
+public class GrafiskRaflebaeger extends Raflebaeger implements Tegnbar
+{
+  public GrafiskRaflebaeger()
+  {
+    super(0);
+  }
+
+  public void sætPosition(int x, int y) {  } <emphasis>// tom metodekrop</emphasis>
+
+  public void tegn(Graphics g)
+  {
+    g.drawOval(80,20,90,54);
+    g.drawLine(150,115,170,50);
+    g.drawLine(100,115,80,50);
+    g.drawArc(100,100,50,30,180,180);
+  }
+}
+</screen>
+
+
+<para>
+Kunne vi have udeladt sætPosition()-metoden, der alligevel
+ikke gør noget? Nej, vi har lovet at implementere begge
+metoder, om det så blot er med en tom krop, idet vi skrev
+&quot;implements Tegnbar&quot;.
+</para>
+
+<para>
+<emphasis>En hvilken som helst klasse kan gøres til at være
+Tegnbar</emphasis>. Her er et tegnbart rektangel:
+</para>
+
+<screen>
+import java.awt.*;
+public class Rektangel extends Rectangle implements Tegnbar
+{
+  public Rektangel(int x1, int y1, int width1, int height1)
+  {
+    super(y1,x1,width1,height1);
+  }
+
+  public void sætPosition(int x1, int y1)
+  {
+    x = x1;
+    y = y1;
+  }
+
+  public void tegn(Graphics g)
+  {
+    g.drawRect(x,y,width,height);
+  }
+}
+</screen>
+
+<sect3>
+  <title>En applet af Tegnbare objekter</title>
+
+<para>
+Lad os nu lave en applet, der viser nogle tegnbare objekter:
+</para>
+
+<screen>
+import java.applet.*;
+import java.awt.*;
+import java.util.*;
+
+public class TegnbareObjekter extends Applet
+{
+<emphasis>  Vector tegnbare = new Vector();</emphasis>
+  GrafiskRaflebaeger bæger = new GrafiskRaflebaeger();
+
+  public void paint(Graphics g)
+  {
+    super.paint(g);
+<emphasis>    for (int n=0; n&lt;tegnbare.size(); n++) {</emphasis>
+<emphasis>      Tegnbar t = (Tegnbar) tegnbare.elementAt(n);</emphasis>
+<emphasis>      t.tegn(g);</emphasis>
+<emphasis>    }</emphasis>
+  }
+
+  public void sætPositioner()
+  {
+    for (int n=0; n&lt;tegnbare.size(); n++) {
+      Tegnbar t = (Tegnbar) tegnbare.elementAt(n);
+      int x = (int) (Math.random()*200);
+      int y = (int) (Math.random()*200);
+      t.sætPosition(x,y);
+    }
+  }
+
+  public void init() {
+    Stjerne <emphasis>s = new Stjerne()</emphasis>;
+    <emphasis>tegnbare.addElement(s)</emphasis>;
+    
+<emphasis>    tegnbare.addElement( new Rektangel(10,10,30,30) );</emphasis>
+
+<emphasis>    tegnbare.addElement( new Rektangel(15,15,20,20) );</emphasis>
+
+    GrafiskTerning t;
+
+    <emphasis>t = new GrafiskTerning()</emphasis>;
+    bæger.tilføj(t);
+<emphasis>    tegnbare.addElement(t);</emphasis>
+
+<emphasis>    t = new GrafiskTerning();</emphasis>
+    bæger.tilføj(t);
+<emphasis>    tegnbare.addElement(t);</emphasis>
+
+    tegnbare.addElement(bæger);
+
+    sætPositioner();
+
+<emphasis>    // mere kode her</emphasis>
+<emphasis>    // ... </emphasis>
+  }
+
+<emphasis>  // flere metoder her</emphasis>
+<emphasis>  // ... </emphasis>
+}
+</screen>
+
+
+<para>
+Programmet holder styr på objekterne i tegnbare-vektoren. Da
+stjerner, rektangler, terningerne og raflebægeret alle er
+Tegnbare kan de behandles ens hvad angår tegning og
+positionering.
+</para>
+</sect3>    <!--   En applet af Tegnbare objekter -->
+</sect2>    <!--   Eksempler med interfacet Tegnbar -->
+
+<sect2>
+  <title>Polymorfi</title>
+
+<para>
+Det er meget kraftfuldt, at man kan erklære variabler af en
+interface-type. Disse kan referere til alle mulige slags
+objekter, der implementerer interfacet. Herefter kan vi f.eks. løbe
+en vektor igennem og arbejde på objekterne i den, selvom de er
+af vidt forskellig type.
+</para>
+
+<para>
+Dette så vi i TegnbareObjekter-appletten:
+</para>
+
+<screen>
+    for (int n=0; n&lt;tegnbare.size(); n++)
+    {
+      Tegnbar t = (Tegnbar) tegnbare.elementAt(n);
+      t.tegn(g);
+    }
+</screen>
+
+
+<para>
+Et interface som Tegnbar kan bruges til at etablere en
+fællesnævner mellem vidt forskellige objekter, som
+derefter kan behandles ens. Dette kaldes polymorfi. (græsk:
+&quot;mange former&quot;).
+</para>
+
+<para>
+Fællesnævneren - nemlig at de alle implementerer det
+samme interface - tillader os at arbejde med objekter <emphasis>uden
+at kende deres præcise type</emphasis>.
+Dette kan i mange tilfælde være en fordel, når
+vi arbejder med objekter, hvor vi ikke kender (eller ikke
+interesserer os for) den eksakte type.
+</para>
+</sect2>    <!--   Polymorfi -->
+
+<sect2>
+  <title>Interfaces i standardbibliotekerne</title>
+
+<para>
+Interfaces bliver brugt i vid udstrækning i
+standardbibliotekerne, og mange steder benyttes polymorfi til at
+gøre det muligt at lade systemet arbejde på
+programmørens egne klasser.
+</para>
+
+<para>
+I det følgende vil vi se nogle eksempler på at
+implementationen af et interface fra standardbiblioteket gør,
+at vores klasser passer ind i systemet på forskellig måde.
+</para>
+
+<sect3>
+  <title>Sortering med Comparable</title>
+
+<para>
+Hvis et objekt implementerer Comparable-interfacet skal det
+definere metoden:
+</para>
+
+<screen>
+  public int compareTo(Object obj)
+</screen>
+
+
+<para>
+For eksempel:
+</para>
+
+<screen>
+public class Element <emphasis>implements Comparable</emphasis>
+{ 
+  int x;
+
+  public Element(int x1)
+  {
+    x = x1;
+  }
+
+  public String toString()
+  {
+    return &quot;element&quot;+x;
+  }
+
+<emphasis>  public int compareTo(Object obj)</emphasis>      <emphasis>// kræves af Comparable</emphasis>
+  {
+    Element andetElement = (Element) obj;<emphasis>// typekonverter først til Element</emphasis>
+
+    if (x == andetElement.x) return 0;  <emphasis>// dette elem. og obj har samme plads</emphasis>
+    if (x  &gt; andetElement.x) return 1;  <emphasis>// dette element kommer efter obj</emphasis>
+    else return -1;                <emphasis>// dette element kommer før obj</emphasis>
+  }
+}
+</screen>
+
+
+<para>
+Interfacet giver standardbibliotekerne mulighed for at sammenligne
+objekter og sortere dem i forhold til hinanden.
+</para>
+
+<para>
+Sortering kan bl.a. ske ved at kalde metoden Collections.sort()
+med en vektor af objekter, der implementerer Comparable.
+</para>
+
+<screen>
+import java.util.*;
+public class BrugElementer
+{
+  public static void main(String args[])
+  {
+    Vector liste = new Vector();
+    liste.addElement( new Element(5));
+    liste.addElement( new Element(3));
+    liste.addElement( new Element(13));
+    liste.addElement( new Element(1));
+
+    System.out.println(&quot;før: &quot;+liste);
+<emphasis>    Collections.sort(v);    </emphasis>
+    System.out.println(&quot;efter: &quot;+liste);
+  }
+}
+</screen>
+
+
+<screen>
+før: [element5, element3, element13, element1]
+efter: [element1, element3, element5, element13]
+</screen>
+
+
+<para>
+sort() vil kalde compareTo() på vores objekter for at ordne
+dem i rækkefølge. Havde vores objekter ikke
+implementeret Comparable, ville der opstå en køretidsfejl,
+da systemet så ikke havde nogen grænseflade, hvorigennem
+det kunne undersøge, hvordan elementerne skal ordnes.
+</para>
+</sect3>    <!--   Sortering med Comparable -->
+
+<sect3>
+  <title>Flere tråde med Runnable</title>
+
+<para>
+Hvis man vil bruge flere tråde (processer, der kører
+samtidigt i baggrunden) i sit program, kan dette opnås ved at
+implementere interfacet Runnable og definere metoden run(). Derefter
+opretter man et tråd-objekt med new
+Thread(objektDerImplementererRunnable). Når tråden
+startes (med trådobjekt.start()), vil det begynde en parallel
+udførelse af run()-metoden i objektDerImplementererRunnable.
+</para>
+
+<para>
+Dette vil blive behandlet i kapitel 16, Flertrådet programmering.
+</para>
+</sect3>    <!--   Flere tråde med Runnable -->
+
+<sect3>
+  <title>Lytte til musen med MouseListener</title>
+
+<para>
+Når man programmerer grafiske brugergrænseflader, kan
+det være nyttigt at kunne få at vide, når der er
+sket en hændelse, f.eks. at musen er klikket et sted.
+</para>
+
+<para>
+Dette sker ved, at man definerer et objekt (lytteren), der
+implementerer MouseListener-interfacet. Den har forskellige
+metoder, f.eks. mouseClicked(), der er beregnet på et
+museklik.
+</para>
+
+<para>
+Lytteren skal registreres i en grafisk komponent, f.eks. en knap
+eller en applet. Det gøres ved at kalde komponentens
+addMouseListener()-metode med en reference til lytteren. Derefter
+vil, hver gang brugeren klikker på komponenten, lytterens
+mouseClicked() blive kaldt.
+</para>
+
+<para>
+Analogt findes lyttere til tastatur, musebevægelser,
+tekstfelter, kontroller osv. I kapitel 12 om grafiske
+brugergrænseflader og hændelser er disse ting beskrevet
+nærmere.
+</para>
+</sect3>    <!--   Lytte til musen med MouseListener -->
+</sect2>    <!--   Interfaces i standardbibliotekerne -->
+
+<sect2>
+  <title>Opgaver</title>
+<orderedlist mark="arabic">
+  <listitem>
+
+<para>
+
+Lav klassen Hus, der skal implementere Tegnbar, føj
+  den til TegnbareObjekter og prøv om det virker.
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+<xref linkend="sdfootnote1anc">Egentlig
+  signaturen, dvs. metodenavn og antal og type af parametre
+</para>
+
+<para>
+<xref linkend="sdfootnote2anc">Det
+  vil sige alle objekter, hvis klasse implementerer interfacet.
+</para>
+
+<para>
+<xref linkend="sdfootnote3anc">public=tilgængelig
+  for alle, static=klassevariabel, final=konstant; umulig at ændre.
+</para>
+</sect2>    <!--   Opgaver -->
+</chapter>    <!--   Interfaces - grænseflader
+til objekter -->
+

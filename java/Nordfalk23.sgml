@@ -1,0 +1,556 @@
+<chapter>
+  <title>Indre klasser</title>
+
+<para>
+Indhold:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+
+Indre klasser, herunder lokale klasser og anonyme klasser
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Brug af indre klasser og anonyme klasser til at lytte efter
+  hændelser
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Brug af anonyme klasser til at oprette bl.a. tråde i en
+  håndevending
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Kapitlet er en forudsætning for at forstå den måde,
+mange værktøjer laver kode til at håndtere
+hændelser.
+</para>
+
+<para>
+Forudsætter kapitel 11, Interfaces, afsnittet om final i
+kapitel 20, Avancerede klasser (og 12, Hændelser og 16, Flertrådet programmering
+for at forstå nogle af eksemplerne).
+</para>
+
+<para>
+Indre klasser er mindre &quot;hjælpeklasser&quot; defineret
+inde i en anden klasse. Dette kapitel handler om de forskellige måder
+at definere indre klasser på, og de forhold, der her gør
+sig gældende.
+</para>
+
+<para>
+Siden Java version 1.1 har der eksisteret 3 slags indre klasser:
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+
+(Almindelige) indre klasser
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Lokale klasser
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Anonyme klasser
+</para>
+
+</listitem>
+</itemizedlist>
+
+<para>
+Der er flere fordele ved at benytte indre klasser (visse
+undtagelser bliver forklaret sidst i kapitlet):
+</para>
+
+<itemizedlist mark="bullet">
+  <listitem>
+
+<para>
+
+Den indre klasse er knyttet til den ydre klasse og kan kun
+  anvendes i denne.Man behøves derfor ikke bekymre sig for
+  sammenhængen med resten af programmet. Det kan give et mere
+  overskueligt program at lægge klasser, der alligevel har meget
+  stærk binding (er meget afhængige af hinanden) inden i
+  hinanden.
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Den indre klasse kan arbejde direkte på den ydre
+  klasses variabler og metoder, også de private. Det
+  skyldes, at et objekt af en indre klasse altid hører til et
+  objekt af den ydre klasse.
+</para>
+
+</listitem>
+</itemizedlist>
+
+
+
+<sect2>
+  <title>Almindelige indre klasser</title>
+
+<para>
+En almindelig indre klasse er en klasse, der erklæres på
+linie med objektvariabler og metoder:
+</para>
+
+<screen>
+public class YdreKlasse
+{
+<emphasis>  class IndreKlasse</emphasis>
+<emphasis>  {</emphasis>
+<emphasis>  }</emphasis>
+}
+</screen>
+
+
+<para>
+Programkoden i den indre klasse kan anvende alle den ydre klasses
+variabler og metoder - også de private. Den indre klasse er
+knyttet til et objekt af den ydre klasse.
+</para>
+
+<sect3>
+  <title>Eksempel - Linietegning</title>
+
+<para>
+Man benytter ofte indre klasser i forbindelse med at lytte efter
+hændelser. Her kommer Linietegning-eksemplet fra kapitel 12
+igen, men hvor vi lader en indre klasse lytte efter museklik.
+</para>
+
+<screen>
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class LinietegningIndre extends Applet
+{
+<emphasis>  // Selv private variabler er synlig for den indre klasse</emphasis>
+  private Point trykpunkt = null;
+  private Point slippunkt = null;
+
+  public void init()
+  {
+    Linielytter lytter = new Linielytter();
+<emphasis>    this.addMouseListener(lytter);</emphasis>
+  }
+
+<emphasis>  // En indre klasse</emphasis>
+  <emphasis>class Linielytter implements MouseListener</emphasis>
+<emphasis>  {</emphasis>
+    public void mousePressed (MouseEvent event)
+    {
+      trykpunkt = event.getPoint();           <emphasis>// sæt variablen i det ydre objekt</emphasis>
+    }
+
+    public void mouseReleased (MouseEvent event)
+    {
+      slippunkt = event.getPoint();
+      repaint();                              <emphasis>// kald det ydre objekts metode</emphasis>
+    }
+
+    public void mouseClicked (MouseEvent event) {} <emphasis>// kræves af MouseListener</emphasis>
+    public void mouseEntered (MouseEvent event) {} <emphasis>// kræves af MouseListener</emphasis>
+    public void mouseExited (MouseEvent event) {}  <emphasis>// kræves af MouseListener</emphasis>
+  <emphasis>}</emphasis>
+<emphasis>  // slut på indre klasse</emphasis>
+
+<emphasis>  // en metode i den ydre klasse</emphasis>
+  public void paint (Graphics g)
+  {
+    if (trykpunkt != null &amp;&amp; slippunkt != null)
+      g.drawLine (trykpunkt.x, trykpunkt.y, slippunkt.x, slippunkt.y);
+  }
+}
+</screen>
+
+
+<para>
+Læg mærke til, at den indre klasse uden videre har
+adgang til den ydre klasses variabler og metoder.
+</para>
+</sect3>    <!--   Eksempel - Linietegning -->
+</sect2>    <!--   Almindelige indre klasser -->
+
+<sect2>
+  <title>Lokale klasser</title>
+
+<para>
+En lokal klasse er defineret i en blok programkode ligesom en
+lokal variabel.
+</para>
+
+<screen>
+public class YdreKlasse
+{
+
+  public void metode()
+  {
+<emphasis>    // ...</emphasis>
+
+<emphasis>    class LokalKlasse</emphasis>
+<emphasis>    {</emphasis>
+<emphasis>      // metoder og variabler her ...</emphasis>
+<emphasis>    }</emphasis>
+    
+    LokalKlasse objektAfLokalKlasse = new LokalKlasse();
+
+<emphasis>    // ...</emphasis>
+
+  }
+}
+</screen>
+
+
+<para>
+Lokale klasser er kun synlige og anvendelige i den blok, hvor de
+er defineret. Ligesom lokale variabler er de ikke synlige uden
+for metoden (og nøgleordene public, private, protected og
+static foran klassen har derfor ingen mening).
+</para>
+
+<para>
+Lokale klasser kan benytte alle variabler og metoder, der er
+synlige inden for blokken. Dog skal lokale variabler i den omgivende
+metode være erklæret final, dvs. være konstante,
+før de kan bruges i den lokale klasse.
+</para>
+
+<para>
+Lokale klasser bruges ret sjældent (men de er gode at
+forstå, før man går videre til anonyme
+klasser)
+</para>
+
+<para>
+Nedenstående er et eksempel på en lokal klasse, der
+benytter variabler defineret i den ydre klasse:
+</para>
+
+<screen>
+public class YdreKlasseMedLokalKlasse
+{
+  private int a1 = 1;          <emphasis>// Objektvariabler behøver ikke være final</emphasis>
+
+  public void prøvLokaltObjekt(<emphasis>final int a2</emphasis>) <emphasis>// Bemærk: final</emphasis>
+  {
+    <emphasis>final int a3</emphasis> = 3;                        <emphasis>// Bemærk: final</emphasis>
+
+    <emphasis>class LokalKlasse {                      </emphasis><emphasis>// defin&eacute;r lokal klasse</emphasis>
+      int a4 = 4;
+      public void udskriv()
+      {
+        System.out.println( a4 );
+        System.out.println( a3 );
+        System.out.println( a2 );
+        System.out.println( a1 );
+      }
+    <emphasis>}</emphasis> <emphasis>// slut på lokal klasse</emphasis>
+
+    LokalKlasse lokal = new LokalKlasse(); <emphasis>// opret lokalt objekt fra klassen</emphasis>
+    lokal.udskriv();
+  }
+
+  public static void main(String args[]){
+    YdreKlasseMedLokalKlasse ydre = new YdreKlasseMedLokalKlasse();
+    ydre.prøvLokaltObjekt(2);
+  }
+}
+</screen>
+
+
+<screen>
+4
+3
+2
+1
+</screen>
+</sect2>    <!--   Lokale klasser -->
+
+<sect2>
+  <title>Anonyme klasser</title>
+
+<para>
+En anonym klasse er en klasse uden navn, som der oprettes et
+objekt ud fra der, hvor den defineres.
+</para>
+
+<screen>
+public class YdreKlasse
+{
+  public void metode()
+  {
+
+<emphasis>    // ... programkode for metode()</emphasis>
+
+    X objektAfAnonymKlasse <emphasis>= new X()</emphasis>
+<emphasis>    {</emphasis>
+      void metodeIAnonymKlasse()
+      {
+<emphasis>        // programkode</emphasis>
+      }
+<emphasis>      // flere metoder og variabler i anonym klasse</emphasis>
+<emphasis>    };</emphasis>
+
+<emphasis>    // mere programkode for metode()</emphasis>
+
+  }
+}
+</screen>
+
+
+<para>
+Lige efter new angives det, hvad den anonyme klasse arver fra,
+eller et interface, der implementeres (i dette tilfælde
+X).
+</para>
+
+<para>
+Fordelen ved anonyme klasser er, at det tillades på en nem
+måde at definere et specialiseret objekt præcis,
+hvor det er nødvendigt - det kan være meget
+arbejdsbesparende.
+</para>
+
+<para>
+Man kan ikke definere en konstruktør til en anonym klasse
+(den har altid standardkonstruktøren). Angiver man nogen
+parametre ved new X(), er det parametre til superklassens
+konstruktør.
+</para>
+
+<sect3>
+  <title>Eksempel - filtrering af filnavne</title>
+
+<para>
+Følgende program udskriver alle javafiler i det aktuelle
+katalog. Det sker ved at kalde list()-metoden på et File-objekt
+og give det et FilenameFilter-objekt som parameter.
+</para>
+
+<para>
+Interfacet FilenameFilter har metoden accept(File dir, String
+filnavn), som afgører, om en fil skal tages med i listningen
+(se evt. Javadokumentationen).
+</para>
+
+<screen>
+import java.io.*;
+public class FilnavnfiltreringMedAnonymKlasse
+{
+  public static void main(String arg[])
+  {
+    File f = new File( &quot;.&quot; );      <emphasis>// det aktuelle katalog</emphasis>
+
+    FilenameFilter filter;
+
+    <emphasis>filter = new FilenameFilter() </emphasis>
+<emphasis>        {</emphasis> <emphasis>// En anonym klasse</emphasis>
+          public boolean accept( File f, String s) <emphasis>// En metode</emphasis>
+          {
+            return s.endsWith( &quot;.java&quot;);  <emphasis>// svar true hvis fil ender på .java</emphasis>
+          }
+        <emphasis>}</emphasis> <emphasis>// slut på klassen</emphasis>
+      <emphasis>;</emphasis> <emphasis>// slut på tildelingen filter = new ...</emphasis>
+
+<emphasis>    // brug objektet som filter i en liste af et antal filer</emphasis>
+    String[] list = <emphasis>f.list( filter )</emphasis>; 
+
+    for (int i=0; i&lt;list.length; i=i+1) System.out.println( list[i] );  
+  }
+}
+</screen>
+
+
+<screen>
+YdreKlasseMedLokalKlasse.java
+FilnavnfiltreringMedAnonymKlasse.java
+LinietegningAnonym.java
+AnonymeTraade.java
+A.java
+BenytIndreKlasser.java
+</screen>
+</sect3>    <!--   Eksempel - filtrering af filnavne -->
+
+<sect3>
+  <title>Eksempel - Linietegning</title>
+
+<para>
+Udviklingsværktøjer benytter ofte anonyme klasser i
+forbindelse med at lytte efter hændelser. Her er
+Linietegning-eksemplet igen, hvor vi bruger en anonym klasse som
+lytter (sml. eksemplet i 21.1.1).
+</para>
+
+<screen>
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class LinietegningAnonym extends Applet
+{  
+  private Point trykpunkt = null;
+  private Point slippunkt = null;
+
+  public void init()
+  {    
+<emphasis>    this.addMouseListener(</emphasis>
+<emphasis>      new MouseListener() </emphasis>
+<emphasis>      {</emphasis>
+        public void mousePressed (MouseEvent event)
+        {
+          trykpunkt = event.getPoint();
+        }
+
+        public void mouseReleased (MouseEvent event)
+        {
+          slippunkt = event.getPoint();
+          repaint();  
+        }
+
+        public void mouseClicked (MouseEvent event) {}
+        public void mouseEntered (MouseEvent event) {}
+        public void mouseExited (MouseEvent event) {}
+<emphasis>      }</emphasis> <emphasis>// slut på anonym klasse</emphasis>
+<emphasis>    );</emphasis> <emphasis>// slut på kald til addMouseListener()</emphasis>
+
+    System.out.println(&quot;Anonymt lytter-objekt oprettet&quot;);    
+  }
+
+  public void paint (Graphics g)
+  {
+    if (trykpunkt != null &amp;&amp; slippunkt != null)
+      g.drawLine (trykpunkt.x, trykpunkt.y, slippunkt.x, slippunkt.y);
+  }
+}
+</screen>
+</sect3>    <!--   Eksempel - Linietegning -->
+
+<sect3>
+  <title>Eksempel - tråde</title>
+
+<para>
+Her gennemløber vi en løkke, der i hvert gennemløb
+opretter et Runnable-objekt fra en anonym klasse og en tråd,
+der kører på det. Objekterne får hvert sit nummer
+fra 1 til 5, som de udskriver 20, gange før de slutter. For at
+få trådene til at kæmpe lidt om processortiden
+løber de i en anden løkke 1.000.000 gange mellem hver
+udskrivning.
+</para>
+
+<screen>
+public class AnonymeTraade
+{
+  public static void main(String arg[])
+  {
+
+    for (int i=1; i&lt;=5; i=i+1)
+    {
+<emphasis>      // n bruges i den anonyme klasse</emphasis>
+      <emphasis>final</emphasis> int n = i;
+
+      Runnable r = <emphasis>new Runnable()</emphasis>
+<emphasis>      {</emphasis>
+        public void run()
+        {
+          for (int j=0; j&lt;20; j=j+1) 
+          {
+            System.out.print(n);
+
+            // Lav noget der tager tid
+            int x = 0;
+            for (int k=0; k&lt;1000000; k=k+1) x=x+k;
+          }
+          System.out.println(&quot;Færdig med &quot;+n+&quot;.&quot;);
+        }
+      <emphasis>};</emphasis>
+
+<emphasis>      Thread t = new Thread(r);</emphasis>
+<emphasis>      t.start(); </emphasis>
+    }
+  }
+}
+</screen>
+
+
+<screen>
+111122221223311332441114433221144332211442255115544332115544332211Færdig med 1.
+54442233332233Færdig med 2.
+544335544Færdig med 3.
+54Færdig med 4.
+555555555Færdig med 5.
+</screen>
+
+
+<para>
+Man ser, hvordan objekt nummer 1, der blev startet først,
+også er det første, der afslutter.
+</para>
+</sect3>    <!--   Eksempel - tråde -->
+</sect2>    <!--   Anonyme klasser -->
+
+<sect2>
+  <title>Opgaver</title>
+<orderedlist mark="arabic">
+  <listitem>
+
+<para>
+
+Tag TegnbareObjekter.java fra kapitel 11 og lav (i
+  init()-metoden) fem forskellige objekter, der implementerer
+  Tegnbar-interfacet (brug anonyme klasser). De fem objekter skal have
+  forskellig måde at reagere på tegn() og sætPosition().
+</para>
+
+</listitem>
+
+  <listitem>
+
+<para>
+Kig på javadokumentationen til interfacet Comparator i
+  pakken java.util. Lav tre Comparator-objekter (vha. anonyme
+  klasser), der sorterer strenge hhv. alfabetisk, omvendt alfabetisk
+  og alfabetisk efter andet tegn i strengene. Lav en liste (Vector)
+  med ti strenge, og test din sortering med Collections.sort(liste,
+  Comparator-objekt).
+</para>
+
+</listitem>
+</itemizedlist>
+</sect2>    <!--   Opgaver -->
+</chapter>    <!--   Indre klasser -->
+
