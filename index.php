@@ -596,7 +596,8 @@ hvilket gør at forfatterne ikke er involveret i de trykte udgaver.
 
 <p>
 Bøgerne redigeres af Peter Toft, Jacob Sparre Andersen, Hans Schou,
-Donald Axel og flere andre - 
+Gitte Wange, Peter Makholm, Mads Dydensborg og
+Donald Axel - 
 &lt;<a href="mailto:linuxbog@sslug.dk">linuxbog@sslug.dk</a>&gt;.
 <br>
 Indholdet af bøgerne diskuteres på
