@@ -1,4 +1,3 @@
-
 # Lokalt katalog (fuld sti)
 locdirname:=$(shell pwd)
 
