@@ -1,0 +1,279 @@
+<sect1 id="vaerktoej-diff">
+<title>diff og patch</title>
+<indexterm><primary>diff</primary></indexterm>
+<indexterm><primary>forskelle mellem filer, finde</primary></indexterm>
+<para>
+Ofte vil programmøren skulle se hvad der er ændret mellem to udgaver
+af en fil. Er der måske 2000 linier kode er dette ofte umuligt at gøre
+manuelt, og derfor bør du se nærmere på et par værktøjer, der kan
+hjælpe dig meget. Lad os tage et eksempel på hvordan dette gøres:
+</para>
+
+<example id="ex-diff">
+<title>Anvendelse af diff</title>
+
+<para>
+Først ser vi på en program-stump, vi kan kalde <filename>A_org.c</filename>.
+</para>
+
+<programlisting>
+typedef struct {
+  unsigned int R;
+  unsigned int G;
+  unsigned int B;
+} RGB_Image;
+
+typedef struct {
+  int *m,*n;
+  int No;
+} pixar;
+</programlisting>
+
+<para>
+Denne skal vi sammenligne med <filename>A.c</filename>, der ser
+således ud:
+</para>
+
+<programlisting>
+typedef struct {
+  unsigned int R;
+  unsigned int G;
+  unsigned int B;
+} RGB_Image;
+
+typedef struct {
+  int *m,*p;
+  int No;
+} pixar;
+
+int a,b,c;
+</programlisting>
+
+<para>
+De ser jo meget ens ud, de to stumper kode. For at se forskelle kører vi
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$  </prompt><userinput>diff A_org.c A.c</userinput>
+8c8
+&lt;   int *m,*n;
+---
+&gt;   int *m,*p;       
+10a11,13
+&gt;
+&gt; int a,b,c;
+</screen>
+
+<para>
+Vi kan se at linie 8 er ændret (8c8 betyder at linie 8 i
+<filename>A_org.c</filename>er ændret i forhold til linie 8 i
+<filename>A.c</filename>). Næste information (10a11,13) er at linie 11
+til 13 i <filename>A.c</filename> er appended, dvs. tilføjet, i
+forhold til linie 10 i <filename>A_org.c</filename>.
+</para>
+
+<para>
+En lille huske-regel mht. &gt; og &lt;, så er &lt; filen til venste i
+argumentlisten til <command>diff</command> og tilsvarende er &gt; filen
+til højre (2. argument).
+</para>
+
+<para>
+Det skal også nævnes, at man ofte laver en "unified diff", med
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$  </prompt><userinput>diff -u A_org.c A.c</userinput>
+--- A_org.c     Tue Dec 19 21:56:30 2000
++++ A.c Tue Dec 19 21:56:43 2000
+@@ -5,6 +5,8 @@
+ } RGB_Image;
+ 
+ typedef struct {
+-  int *m,*n;
++  int *m,*p;
+   int No;
+ } pixar;
++
++int a,b,c;      
+</screen>
+
+<para>
+Her er samme information gemt, men med en anden syntaks. Med - og +
+vises hvilke linier som er ændret men også et par af de foregående og
+efterfølgende linier kommer også med. Det gør det lidt nemmere at
+finde stedet for ændringer efterfølgende.
+</para>
+</example>
+
+<para>
+ <indexterm><primary>lapper</primary></indexterm>
+ <indexterm><primary>patches</primary></indexterm>
+
+ Ofte er der kun små ændringer mellem to udgaver af en fil, og derfor ses det
+ ofte, at man distribuerer kildetekst til en basisudgave og derefter en eller
+ flere "lapper" til programmet. Lapperne er filer lavet ved at finde
+ forskellen mellem basisudgaven og den nye udgave af filen med
+ <command>diff</command>. Lad os se dette i et eksempel.
+</para>
+
+<example id="ex-patch">
+<title>Anvendelse af patch</title>
+
+<para>
+Normalt anvendes patches til at sende
+ændringer/opdateringer fra programmøren til andre der programmerer på samme
+fil(er). Derfor er filnavne 
+<filename>A_org.c</filename> og <filename>A.c</filename>, som var
+anvendt i eksemplet ovenfor normalt anvendt som den originale fil i
+forhold til den nye. Ofte har programmøren to fil-strukturer liggende
+- den originale og den nye med ændringer.
+</para>
+
+<para>
+Først lader vi programmøren af programmet danne en patch mellem
+filerne <filename>A_org.c</filename> og <filename>A.c</filename>, hvor
+de to filer er nævnt ovenfor:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$  </prompt><userinput>diff -u A_org.c A.c &gt; A_patch</userinput>
+</screen>
+
+<para>
+Bemærk at jeg her vender de to filer, som den nye er sidst!
+</para>
+
+<para>
+Nu kan programmøreren sende patch-filen <filename>A_patch</filename>
+til andre programmører, som kan opdatere deres
+<filename>A.c</filename>.  Lad os prøve dette. Vi antager nu, at vi er
+brugeren "tyge", som har en fil <filename>A.c</filename>, som er lig med
+programmørens fil <filename>A_org.c</filename>
+</para>
+
+<screen>
+<prompt>[tyge@linus ~]$  </prompt><userinput>patch < A_patch</userinput>
+patching file A.c  
+</screen>
+
+<para>
+Så nemt er det at opgrade til den opdaterede udgave. Ofte kan en
+patch-fil indeholde rettelser til mange filer, som så automatisk opdateres.
+</para>
+</example>
+</sect1>
+
+<sect1 id="emacs-diff">
+<title>Emacs og forskellige udgaver af filer</title>
+<indexterm>
+ <primary>Emacs</primary>
+ <secondary>forskellige udgaver af filer</secondary>
+</indexterm>
+
+<para>
+Som programmør (eller
+skribent af Linux-bøger), sker det ofte at en person sender en ny og
+opdateret udgave af en eller flere filer og det er så programmøren,
+der skal læse rettelserne igennem og vurdere hvilke, som skal
+accepteres til næste udgivelse af kildekoden.
+</para>
+
+<para>
+Hvis man skal sammenligne forskellige udgaver af filer, så er
+tekst-editoren <command>emacs</command> eller
+<command>xemacs</command> et program som virkelig er godt. Det er bare
+svært at forstå som en nybegynder. Men hæng i - det betaler sig. Lad
+os tage et eksempel. Start <command>emacs A_org.c A.c</command> - som
+er de to filer, som blev vist ovenfor. Resultatet er vist på 
+<xref linkend="emacsdiff-fig">.
+</para>
+
+<para>
+Vælg nu menuen <command>Tools-&gt;Compare-&gt;Two Buffers...</command>
+og accepter at buffer A er <filename>A_org.c</filename> og buffer B er
+<filename>A.c</filename>. Der kommer nu en lille menu-boks frem. Prøv
+at trykke <command>?</command> i denne (før musen hen til boksen -
+tryk venstre mus, hvis boksen ikke er valgt - derefter
+<command>?</command>). Her er alle kommandoer man kan anvende - se
+dette på <xref linkend="emacsdiff2-fig">. Tryk <command>?</command>
+igen for at komme tilbage til den lille ramme.  Vi skal nu blive her i
+den lille ramme og kun anvende det store emacs-vindue til at se hvad
+der sker.
+</para>
+
+<FIGURE ID="emacsdiff-fig" FLOAT="1">
+<TITLE>Emacs med to filer indlæst</TITLE>
+<GRAPHIC FILEREF="emacsdiff.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<FIGURE ID="emacsdiff2-fig" FLOAT="1">
+<TITLE>Emacs diff kommandoer</TITLE>
+<GRAPHIC FILEREF="emacsdiff2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Lad os komme igang med at se hvordan vores
+<filename>A_org.c</filename> kan opdateres med rettelserne i
+<filename>A.c</filename>. Tryk <command>n</command> for at gå til
+første rettelse. Som det kan ses på <xref linkend="emacsdiff3-fig">,
+så er der et "n" fra <filename>A_org.c</filename> som er ændret til 
+et "p" i <filename>A.c</filename>. Hvis man nu vil acceptere denne
+rettelse og føre den fra <filename>A.c</filename> til
+<filename>A_org.c</filename> så trykker vi "<command>b</command>" for at
+føre rettelsen fra buffer B til buffer A. (Modsat så anvendes
+"<command>a</command>" for at kopiere fra A til B). Tryk
+"<command>n</command>" for næste rettelse og "<command>p</command>" for
+forrige (previous). Man kan også trykke "<command>!</command>" løbende
+for at opdatere tælleren i den lille boks med antal forskelle. Skriv
+til sidst "<command>q</command>" for at slutte denne
+sammenlignings-session. Svar dernæst "<command>y</command>" i bunden
+af det store Emacs vindue. Gem filerne passende og du er færdig.
+</para>
+
+<FIGURE ID="emacsdiff3-fig" FLOAT="1">
+<TITLE>Emacs viser første rettelse</TITLE>
+<GRAPHIC FILEREF="emacsdiff3.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</sect1>
+
+<sect1 id="xxdiff">
+<title>xxdiff</title>
+
+<para>
+Hvis man ikke bruger emacs, kan man få samme funktionalitet ved at at bruge
+programmet <command>xxdiff</command>	<ulink url="http://xxdiff.sourceforge.net/">http://xxdiff.sourceforge.net/</ulink>.
+</para>
+
+<para>
+Programmet startes med <command>xxdiff A_org.c A.c</command>.
+</para>
+
+<FIGURE ID="xxdiff1-fig" FLOAT="1">
+<TITLE>xxdiff med to filer indlæst</TITLE>
+<GRAPHIC FILEREF="xxdiff1.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+For at gå til den første forskel trykkes <command>"n"</command>.
+Hvis man vil bruge udgaven til venstre trykker man 
+<command>"h"</command>, og hvis man vil bruge den til højre trykker
+man <command>"k"</command>. Bemærk at man har en grafisk oversigt
+over sine valg i hele filen ude i højre margen.
+</para>
+
+<FIGURE ID="xxdiff2-fig" FLOAT="1">
+<TITLE>Den venstre udgave er valgt ved første forskel</TITLE>
+<GRAPHIC FILEREF="xxdiff2.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+For at komme til næste forskel trykkes <command>"n"</command>, og
+for den forrige <command>"p"</command>.
+</para>
+
+<para>
+Når man er færdig med at vælge, skal man huske at gemme filen.
+</para>
+</sect1>

@@ -1,0 +1,175 @@
+<sect1 id="sprog-tcltk">
+ <title>Tcl/Tk</title>
+
+ <indexterm>
+  <primary>Tcl/Tk</primary>
+ </indexterm>
+ <indexterm>
+  <primary>imperative sprog</primary><secondary>Tcl/Tk</secondary>
+ </indexterm>
+ <indexterm>
+  <primary>fortolkede sprog</primary><secondary>Tcl/Tk</secondary>
+ </indexterm>
+
+<para>
+Hvis du gerne vil programmere grafik under Linux, er Tcl/Tk et godt
+sprog. Det er et forholdsvist nemt sprog at lære. Tcl er et makrosprog,
+som har fået en søster Tk, der er en grafisk del med samme nemme
+syntaks. Det er et meget velegnet sprog til hurtigt at få en grafisk
+brugergrænseflade til et (tekstbaseret) program.
+</para>
+
+<!--
+<para>
+Prøv at indtaste følgende program (kald det
+<filename>editor.tcl</filename>) efter at have
+installeret Tcl og Tk (<command>rpm -i tcl-8.0.4-29.rpm; rpm -i
+tk-8.0.4-29.i386.rpm</command> - eller måske lidt anderledes, alt efter
+hvilke versioner du netop har fået). Den øverste linje svarer til, at
+du kører Red Hat, SuSE har installeret <command>wish</command> i
+<filename>/usr/X11R6/bin</filename>.
+</para>
+
+<screen>
+#!/usr/bin/wish -f
+
+  label .l -text "Filename:"
+  label .l2 -text "Editor:"
+
+  set fname testfil
+  set editor emacs
+  button .b -text "OK" -command "exec $editor $fname"
+  entry .e -relief sunken -width 30 -textvariable fname
+  entry .e2 -relief sunken -width 30 -textvariable editor
+  pack .l -side left
+  pack .e -side left -padx 1m -pady 1m
+  bind .e &lt;Return&gt; {
+    exec  $editor $fname
+  }
+
+  pack .l2 -side left
+  pack .e2 -side left -padx 1m -pady 1m
+  pack .b -side left -padx 1m -pady 1m
+  bind .e2 &lt;Return&gt; {
+    exec $editor  $fname
+  }
+</screen>
+
+<para>
+Gør programmet kørbar ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>chmod +x editor.tcl</userinput>
+</screen>
+
+<para>
+og kør det ved at skrive <command>./editor.tcl</command>. Ret i
+tekstfelterne, og se, hvad der sker, når du trykker return i hvert af
+tekstfelterne. Programmet er vist på <xref linkend="tk1-fig">.
+</para>
+
+<FIGURE ID="tk1-fig" FLOAT="1">
+<TITLE>Tcl/Tk programmer tcl1.tcl
+</TITLE>
+<GRAPHIC FILEREF="tk1.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+
+<para>
+Et andet Tcl/Tk eksempel, der laver et simpelt stopur med start og stop
+funktion. Programmet bliver ikke forklaret, men skal illustrere, hvor lidt
+kode der skal til at lave et program, som med andre programmeringssprog
+ville være meget længere.  Programmet er vist på <xref linkend="tk2-fig">.
+</para>
+
+<FIGURE ID="tk2-fig" FLOAT="1">
+<TITLE>Et stopur i Tcl/Tk
+</TITLE>
+<GRAPHIC FILEREF="tk2.&magic;"  SCALE="50"></GRAPHIC>
+</FIGURE>
+
+<screen>
+#!/usr/bin/wish -f
+
+label .counter -text 0.00 -relief raised -width 20
+button .start -text Start -command {
+    if $stopped {
+	set stopped 0
+	tick
+    }
+}
+button .stop -text Stop -command {set stopped 1}
+pack .counter -side bottom -fill both
+pack .start -side left -fill both -expand yes
+pack .stop -side right -fill both -expand yes
+
+set seconds 0
+set hundredths 0
+set stopped 1
+
+proc tick {} {
+    global seconds hundredths stopped
+    if $stopped return
+    after 50 tick
+    set hundredths [expr $hundredths+5]
+    if {$hundredths >= 100} {
+	set hundredths 0
+	set seconds [expr $seconds+1]
+    }
+    .counter config -text [format "%d.%02d" $seconds $hundredths]
+}
+
+bind . &lt;Control-c&gt; {destroy .}
+bind . &lt;Control-q&gt; {destroy .}
+focus .
+</screen>
+
+
+<para>
+En variant af stopur programmet er et nyttigt program, som viser
+status på batteriet på en bærbar. I dette eksempel har vi erstattet den
+første linje, svarende til SuSE 6.1 placering af
+<command>wish</command>, og der kræves, at kommandoen
+<command>apm</command> er installeret,
+dvs. <filename>apmd-2.4-57.rpm</filename> eller lignende.
+</para>
+
+<screen>
+#!/usr/X11R6/bin/wish -f
+
+ label .counter -text 0 -relief raised -width 50
+ button .start -text Start -command {
+         tick
+ }
+ button .stop -text Stop -command { destroy .}
+ pack .counter -side left -fill both
+ pack .stop -side right -fill both 
+
+ proc tick {} {
+     after 1000 tick
+     set tot [eval exec apm]
+     .counter config -text [format "%s" $tot]
+ }
+
+ tick
+
+bind . &lt;Control-c&gt; {destroy .}
+bind . &lt;Control-q&gt; {destroy .}
+ focus .
+
+</screen>
+
+<para>
+Hvis du har lyst til at stifte nærmere bekendtskab med Tcl/Tk, er dette
+en god og meget omfattende bog:
+</para>
+
+<para>
+Brent B. Welch: <emphasis>Practical Programming in Tcl and Tk</emphasis>,
+Prentice Hall, ISBN 0-13-616830-2, 630 sider + cdrom.
+</para>
+-->
+
+</SECT1>
+

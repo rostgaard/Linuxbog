@@ -1,0 +1,902 @@
+<sect1 id="vaerktoej-cvs">
+ <title>Concurrent versioning system (CVS)</title>
+
+ <indexterm>
+  <primary>revisionskontrolsystemer</primary>
+  <secondary>CVS</secondary>
+ </indexterm>
+ <indexterm>
+  <primary>CVS</primary>
+ </indexterm>
+ <indexterm>
+  <primary>Concurrent versioning system</primary>
+ </indexterm>
+ <indexterm>
+  <primary>versionsstyring</primary>
+  <secondary>med CVS</secondary>
+ </indexterm>
+
+ <para>
+  I dette afsnit ses nærmere på revisions- og konfigurationskontrolsystemer.
+  Emnet er helt nødvendigt for udviklingsprojekter der er spredt rundt omkring
+  i verden - en af grundpillerne i udviklingen af Linux. Antag, at et firma
+  eller universitet har behov for at kunne arbejde med udvikling af programmer
+  på kryds og tværs af geografi, hvor al kommunikation skal ske via
+  internettet. To spørgsmål melder sig hurtigt til systemadministratoren: Hvad
+  med sikkerheden og hvordan kan man styre softwareudviklingsprocessen, når
+  der er mange mennesker involveret, på en sådan måde at man kan lave
+  udgivelser som altid kan genskabes (til serviceformål), mens man samtidigt
+  videreudvikler, og dermed har behov for at kunne bakke tilbage gennem
+  opdateringerne i tilfælde af fejl.
+ </para>
+
+ <para>
+  De fleste danske og udenlandske softwarefirmaer har foretaget deres
+  udvikling baseret på udvikling i lokale netværk. Med den fortsatte
+  ekspansion af udviklingen af internettet og med den fortsatte udvikling,
+  hvor begreber som "hjemmearbejdsplads" og "distancearbejde" dukker op
+  oftere og oftere, må det forventes at softwareudviklingsfirmaer allerede er
+  igang med og i endnu højere grad vil foretage udviklingen af software
+  baseret på utroligt mange computere bundet sammen af internettet. Dette
+  stiller store krav til de revisions- og konfigurationskontrolsystemer, der
+  benyttes.
+ </para>
+
+ <para>
+  Styring af softwareprojekter er svært! Specielt svært bliver det når mange
+  arbejder på den samme kildetekst, og hvor samtidigt kommunikationen mellem
+  projektdeltagerne er ringe eller besværlig. De krav, der må stilles til
+  revisionskontrolsystemerne i sådanne projekter er, at alle ændringer let
+  skal kunne tilgå andre på projektet, alle ændringer skal kunne hives ud af
+  kildeteksten igen, og man skal kunne se hvem der har lavet hvad på hvilket
+  tidspunkt.
+ </para>
+
+ <para>
+  Når man en gang har prøvet at være to eller flere som fysisk retter i
+  samme kildetekst, uden af man bruger et revisionskontrolsystem, er det
+  indlysende at denne form for samarbejde er uproduktiv. På sådanne præmisser
+  er megen kommunikation og dermed megen uproduktiv tid nødvendig, hvis det
+  skal være muligt at opnå et tilfredsstillende resultat. En
+  mulighed for at øge produktiviteten er at gøre brug af et
+  revisionskontrolsystem.
+ </para>
+
+ <sect2 id="rcs-cvs-og"
+  <title>Baggrund for CVS</title>
+
+  <para>
+   Der findes mange forskellige revisionskontrolsystemer i brug idag. I
+   Unix-verden har de mest anvendte været RCS (Revision Control System) og
+   SCCS (Software Configuration Control System) som enten begge eller den ene
+   af disse er del af standard softwaren på kommercielle Unix-systemer.
+   Indenfor Windows 3.11, Windows 95 og Windows NT-verdenen findes der endnu
+   flere, hvor en af de mest kendte er Microsoft Visual Source Safe (VSS).
+   Disse revisionskontrolsystemer opfylder de fleste krav til den ønskede
+   funktionalitet af et revisionskontrolsystem.
+  </para>
+
+  <para>
+   RCS og SCCS er bedst når man gennem flere år har fundet en arbejdsgang og
+   har opbygget et bibliotek af kommandofortolkerprogrammer så den valgte
+   arbejdsgang er implementeret igennem dette bibliotek. RCS og SCCS i sig
+   selv nærmer sig assemblerprogrammering i sammenligning med CVS og nogle af
+   de kommercielle produkter der findes. RCS og SCCS må samtidigt siges at
+   høre Unix-verden til og er beregnet til brug ved udvikling i et lokalt
+   miljø hvor diske kan monteres uden sikkerhedsmæssige problemer. RCS findes
+   vist også til Windows.
+  </para>
+
+  <para>
+   For VSS er sagen en ganske anden. VSS er et fuldt moderne
+   revisionskontrolsystem og fås også til diverse Unix platforme. VSS kan også
+   benyttes til revisionshåndtering over store netværk (læs internettet). Det
+   bør dog bemærkes, at VSS er rimeligt dyrt til Windows-platformen, og endnu
+   dyrere til Unix-systemerne.
+  </para>
+
+  <para>
+   Et godt alternativ til de ikke tidssvarende Unix-revisionskontrolsystemer
+   og så Windows-systemer er CVS (Concurrent Versions System). CVS er et
+   multi-platform revisionskontrolsystem som har alt det man kan ønske sig af
+   et sådant system.
+   <!--  Også låsning af filer?  -->
+   CVS er et af de systemer der er frit tilgængeligt under GNU-licensen (GPL).
+   CVS findes som oversatte programmer til de mest gængse Unix-systemer på 
+   <ulink
+   url="http://prep.ai.mit.edu/pub/gnu">http://prep.ai.mit.edu/pub/gnu</ulink>
+   (og afspejlinger), samt til Windows-platformen (se <ulink
+   url="http://www.cygnus.com/misc/gnu-win32">http://www.cygnus.com/misc/gnu-win32</ulink>).
+   Du kan for eksempel læse mere om CVS på <ulink
+   url="http://www.sourcegear.com/CVS">http://www.sourcegear.com/CVS</ulink>.
+  </para>
+
+  <para>
+   CVS er et nyere revisionskontrolsystem som oprindeligt er opstået som en
+   række kommandofortolkerprogrammer baseret på RCS. Personen der havde
+   denne store samling, Dick Grune, offentliggjorde den på nyhedsgruppen
+   <ulink url="news:comp.sources.unix">comp.sources.unix</ulink> engang
+   tilbage i 1986. Idag er hele CVS bygget op fra bunden i C, men det er
+   stadig Dick Grunes idé omkring konfliktløsning der er en af hjørnestenene i
+   CVS.
+  </para>
+
+  <para>
+   Rygterne vil vide, at Thinking Machine Coorporation (kendt for massivt
+   parallelle supercomputere) benyttede CVS til revisionshåndtering. Thinking
+   Machine Coorporation var aktive i udviklingen af CVS og den FAQ der findes
+   idag er stadig et levn fra den tid.
+  </para>
+
+  <para>
+   Designet og implementeringen af CVS er blev udført af Brian Berliner i
+   nogle tilfælde sammen med andre.
+  </para>
+ </sect2>
+
+ <sect2 id="cvs-funktionalitet">
+  <title>Funktionaliteten af CVS</title>
+
+  <para>
+   Versionskontrolsystemer bruges til at gemme den historie som ens
+   kildetekster (af den ene eller den anden slags) gennemløber. De fleste
+   versionskontrolsystemer giver endvidere mulighed for at pakke (komprimere)
+   kildeteksten i versionskontrolsystemets database (repositorie). Endvidere
+   benytter langt de fleste systemer sig af at kun gemme forskelle mellem
+   versionerne.
+  </para>
+
+  <para>
+   Grundprincippet i CVS er, at alle brugere har deres egen version af
+   kildeteksten, som kan modificeres uafhængigt af andre brugere. Dette kan
+   ske med brugere på samme maskine eller på maskiner placeret vilkårligt
+   langt fra hinanden. Når ens personlige distribution af kildeteksten er
+   stabil kan distributionen med ændringerne lægges ind i CVS-databasen eller
+   sammensmeltes med de ændringer andre har lavet siden man pakkede
+   distributionen af kildeteksten ud. På denne måde kan man uden at begrænse
+   andre i deres arbejde, udføre meget arbejde (lang tids arbejde og/eller
+   mange ændringer) på distributionen af kildeteksten, uden at der opstår
+   problemer med sammensmeltningen af de lokale distributioner af
+   kildeteksten.
+  </para>
+
+  <para>
+   CVS understøtter at databasen (samlingen af revisionskontrolsystemets
+   informationer inklusivt kildetekster) kan lægges på nettet uden at man
+   behøver at montere diske fra andre maskiner. Almindeligvis anvendes
+   <command>rsh</command> eller <command>ssh</command> til udveksling af
+   data mellem maskinerne. (bemærk at det på det kraftigste frarådes at bruge
+   <command>rsh</command> på åbne netværk)
+  </para>
+
+  <para>
+   CVS udmærker sig ved at have et intuitivt let forståeligt sæt af
+   kommandoer til at pakke distributionen ud, at opdatere ens egen
+   distribution med andres ændringer, at lægge ens egne ændringer i
+   repositoriet, at lave sideløbende grene af udviklingen af produktet, at
+   samle sideløbende grene af udviklingen, at hente information om historien
+   af ændringer osv.
+  </para>
+
+  <para>
+   Det CVS mangler i forhold til nogle af de kommercielle er en glat grafisk
+   brugergrænseflade der fungerer på tværs af styresystemerne (tjek lige
+   KDE-projektets forslag til CVS-værktøjer). Et stort plus er dog, at
+   tekstbehandlingsprogrammet Emacs automatisk vil bemærke det, hvis du
+   redigerer filer der ligger i et CVS-arkiv og vise en ekstra menu der giver
+   langt de fleste af de daglige CVS-funktioner. Fra Emacs kan man bl.a.
+   lægge filer ind i CVS, hente senere udgaver af de enkelte filer, og få
+   trinvis sammenligning af to udgaver af kildeteksten.
+  </para>
+ </sect2>
+
+ <sect2 id="brug-af-cvs">
+  <title>Daglig brug af CVS</title>
+
+  <para>
+   Hvis vi går ud fra at andre har taget sig af at lægge filerne fra et
+   projekt du skal til at arbejde på i et CVS-arkiv (se <xref
+   linkend="opsaet-cvs">, hvis du selv skal gøre det) er det forholdsvis
+   enkelt at komme igang. Du skal blot kende CVS-arkivets adresse og
+   projektets navn i arkivet.
+  </para>
+
+  <example id="cvs-kom-i-gang-lokalt">
+   <title>Brug af et lokalt CVS-arkiv</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>kom igang med at bruge et lokalt arkiv</secondary>
+   </indexterm>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cvs -d /usr/local/CVSROOT checkout webspell</userinput>
+</screen>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      "-d /usr/local/CVSROOT" betyder at det CVS-arkiv projektet skal hentes
+      fra ligger i kataloget <filename>/usr/local/CVSROOT</filename> på den
+      maskine du arbejder på.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "checkout" betyder at du vil have oprettet en kopi af et projekt, der
+      ligger i det førnævnte CVS-arkiv.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Og endelig er "webspell" navnet på det projekt vi vil have en kopi af.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+  <example id="cvs-kom-i-gang-anonym">
+   <title>Anonym brug af et CVS-arkiv på nettet</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>kom igang med at bruge et arkiv på nettet</secondary>
+   </indexterm>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>echo "update -dP" &gt;&gt; ~/.cvsrc</userinput>
+</screen>
+
+   <para>
+    Denne kommando sikrer blot at <command>cvs</command> kan forstå
+    KDE-projektets CVS-tjener. Betragt det blot som hvid magi.
+   </para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cvs -d :pserver:anonymous@anoncvs.kde.org:/home/kde checkout kde-i18n</userinput>
+</screen>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      "-d :pserver:anonymous@anoncvs.kde.org:/home/kde" betyder at betyder at
+      det CVS-arkiv projektet skal hentes fra ligger i kataloget
+      <filename>/home/kde</filename> på maskinen "anoncvs.kde.org" og at du
+      vil hente det som en anonym bruger.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "checkout" betyder at du vil have oprettet en kopi af et projekt, der
+      ligger i det førnævnte CVS-arkiv.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Og endelig er "kde-i18n" navnet på det projekt vi vil have en kopi af.
+      I dette konkrete tilfælde er det oversættelser af KDE (menutekster og
+      brugsanvisninger) til forskellige sprog.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+  <example id="cvs-kom-i-gang-ssh">
+   <title>Brug af et CVS-arkiv på nettet over SSH</title>
+
+   <indexterm>
+    <primary>cvs</primary>
+    <secondary>kom igang med at bruge et lokalt på nettet over SSH</secondary>
+   </indexterm>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>export CVS_RSH=ssh</userinput>
+</screen>
+
+   <para>
+    Denne kommando sætter en variabel, der fortæller <command>cvs</command>
+    at kommunikation over nettet skal ske med SSH-protokollen (der er
+    krypteret og dermed sikrer mod aflytning af adgangskoder og data). Bemærk
+    at variablen også skal være sat, når du senere vil opdatere din kopi af
+    projektet eller vil lægge en rettet fil ind i CVS-arkivet. Det kan du
+    hurtigt sikre med kommandoen
+    <command>echo "export CVS_RSH=ssh" &gt;&gt; ~/.zshrc</command>.
+   </para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt><userinput>cvs -d sparre@cvs.sslug.dk:/usr/local/CVSROOT checkout linuxbog</userinput>
+</screen>
+
+   <itemizedlist>
+    <listitem>
+     <para>
+      "-d sparre@cvs.sslug.dk:/usr/local/CVSROOT" betyder at betyder at det
+      CVS-arkiv projektet skal hentes fra ligger i kataloget
+      <filename>/usr/local/CVSROOT</filename> på maskinen "cvs.sslug.dk" og
+      at du vil hente det som brugeren "sparre".
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      "checkout" betyder at du vil have oprettet en kopi af et projekt, der
+      ligger i det førnævnte CVS-arkiv.
+     </para>
+    </listitem>
+
+    <listitem>
+     <para>
+      Og endelig er "linuxbog" navnet på det projekt vi vil have en kopi af.
+      I dette konkrete tilfælde er det hele bogserien "Linux - Friheden til
+      ...".
+     </para>
+    </listitem>
+   </itemizedlist>
+  </example>
+
+<para>
+Antag at man laver en ændring af kildeteksten som så skal kunne tilgå de andre på
+projektet. Dette gøres ved at skrive
+</para>
+
+<indexterm><primary>cvs</primary><secondary>commit</secondary></indexterm>
+
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit FILNAVN</userinput>
+</screen>
+
+<para>
+hvor "FILNAVN" er den fil man har rettet i. Dette starter automatisk
+brugerens default teksteditor, hvor man kort skriver, hvad der er blevet
+ændret, og denne log information gemmes med filen. Hvis filnavnet undlades
+vil CVS lægge alle ændrede filer ind i CVS. Nu kan de andre på projektet få
+den nye kildetekst ved at skrive
+</para>
+
+<indexterm><primary>cvs</primary><secondary>update</secondary></indexterm>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs update FILNAVN</userinput>
+</screen>
+
+<para>
+Og igen kan FILNAVN udelades og de filer som ikke er ajour, vil blive
+opdateret. Bemærk, at dette ikke sker automatisk, men først når man selv vil
+det. På denne måde gøres det til en særskilt operation at få opgraderes
+kildeteksten, hvor man må lægge mærke til hvilke ændringer som er foretaget.
+CVS kan også automatisk sende en email ud til projekt gruppen når filer
+bliver opdateret, så man ved hvornår dette sker (brug
+<command>cvs watch</command>). Se også <xref linkend="logmails-cvs">.
+</para>
+
+<para>
+Hvis der er konflikter mellem den lokale kildetekst og den kildetekst som er senest
+i CVS-databasen, må den som har konflikten løse den (måske med hjælp fra
+den som lavede ændringen) og lægge endnu en version ind hvor problemet er
+løst. Faktisk foregår denne proces langt mere smidigt end man skulle tro,
+og med en smule styring af hvem der laver hvad, så vil man finde meget få
+problemer med projektstyringen. Hvis kildeteksten er blevet meget ødelagt ved
+f.eks. en helt forkert kildetekstændring, så er der mulighed for at bakke tilbage
+til en ældre version af kildeteksten (cvs update -r REVISIONNUMBER FILNAVN),
+hvorfra der arbejdes videre.
+</para>
+
+<para>
+Enhver kan og bør checke status for den enkelte fil før kildeteksten skal
+lægges ind i CVS-databasen. Dete gøres med
+</para>
+
+<indexterm><primary>cvs</primary><secondary>status</secondary></indexterm>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs status FILNAVN</userinput>
+</screen>
+
+<para>
+Dette vil vise versionsnummer på egen fil og det versionsnummer som
+ CVS har. Et felt for hver fil vil vise om andre har committet kildetekst, eller om
+filen lokalt er ændret i forhold til CVS-databasen.
+Nye filer lægges ind i CVS med to operationer, først
+</para>
+
+<indexterm><primary>cvs</primary><secondary>add</secondary></indexterm>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs add FILNAVN</userinput>
+</screen>
+
+<para>
+efterfulgt af
+</para>
+
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit FILNAVN</userinput>
+</screen>
+
+<para>
+På denne måde er der en ekstra sikring imod at forkerte filer kommer i
+CVS-databasen. Tilsvarende kan filer fjernes fra CVS-databasen med
+</para>
+
+<indexterm><primary>cvs</primary><secondary>remove</secondary></indexterm>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs remove FILNAVN</userinput>
+</screen>
+
+<para>
+efterfulgt af
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit FILNAVN</userinput>
+</screen>
+
+<para>
+Hver af disse "cvs commit" ordrer vil starte en editor op, hvor brugeren
+skal skrive (kortfattet) hvilke ændringer der er lavet siden sidst. Dette
+skaber en log historie for hver fil som er guld værd, hvis man er lidt væk
+fra kildeteksten og skal arbejde videre senere. Du kan også angive disse
+log-beskeder direkte
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit -m "log-besked skrives her" FILNAVN</userinput>
+</screen>
+
+<indexterm><primary>cvs</primary><secondary>commit -m</secondary></indexterm>
+
+  <para>
+   For at se alle beskeder for en fil i loggen anvendes
+
+   <indexterm><primary>cvs</primary><secondary>log</secondary></indexterm>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs log FILNAVN</userinput>
+</screen>
+   hvilket vil vise, hvem der har lavet de enkelte versioner og hvad der i
+   korte træk er sket. Selve ændringerne i kildeteksten vises ikke her. Disse
+   fås ved at skrive
+
+   <indexterm><primary>cvs</primary><secondary>diff</secondary></indexterm>
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs diff FILNAVN</userinput>
+</screen>
+   og her kan et revisionsnummer tilføjes, så man kan se, hvordan den lokale
+   kildetekst afviger fra kildeteksten med den valgte revision. 
+  </para>
+ </sect2>
+
+ <sect2 id="cvs-forgreninger">
+  <title>Forgreninger i udviklingen</title>
+
+  <para>
+   Det kan ske at man vil arbejde med parallel udvikling på to eller flere
+   udgaver af samme projekt. Det kan for eksempel være i forbindelse med at
+   man udgiver programmet (eller bogen) og dernæst både vil kunne håndtere
+   fejlrettelser - men ikke tilføjelser - i den udgivne udgave og vil kunne
+   videreudvikler programmet. Denne bog bliver rent faktisk til på den måde;
+   mens den officielle udgave af bogen kun bliver rørt, hvis der bliver fundet
+   deciderede fejl i den, bliver der parallelt foretaget store
+   omstruktureringer og ændringer i bogen.
+  </para>
+
+  <example id="cvs-opret-gren">
+   <title>Opret en ny gren på udviklingstræet</title>
+
+   <para>
+    Sådan opretter man en ny gren på sit udviklingstræ...
+   </para>
+  </example>
+ </sect2>
+
+ <sect2 id="opsaet-cvs">
+  <title>Opsætning af CVS</title>
+
+  <indexterm><primary>cvs</primary><secondary>opsætning</secondary></indexterm>
+
+  <para>
+   Endelig skal nævnes hvordan man lægger et kildeteksttræ ind i CVS-databasen
+   og hvordan man initialiserer databasen.
+</para>
+
+<para>
+Er det dig som skal starte CVS-databasen op for første gang, så find
+et katalog (kaldet <literal>CVSROOT</literal>) som du vil anvende til CVS,
+f.eks. <filename>/usr/local/CVSROOT</filename>. Sørg for at du og de
+andre som skal bruge det katalog har læse og skriverettighed til det.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>export CVSROOT=/usr/local/CVSROOT</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs init</userinput>
+</screen>
+
+<para>
+og tilsvarende for tcsh/csh:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>setenv CVSROOT /usr/local/CVSROOT</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs init</userinput>
+</screen>
+
+
+<para>
+ Hver af brugerne skal selv føje variablen <literal>CVSROOT</literal> til
+ deres <filename>~/.bashrc</filename> eller <filename>~/.profile</filename>
+med syntaksen <filename>BRUGER@CVS-SERVER:KATALOG</filename>. Variablen
+<literal>CVSROOT</literal> er sat når man starter en ny
+kommandofortolker. Check dette ved at skrive
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>bash</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>env | grep CVS</userinput>
+CVS_RSH=ssh
+CVSROOT=anne@cvs.sslug.dk:/usr/local/CVSROOT
+</screen>
+</para>
+
+<para>
+tilsvarende skal <command>tcsh</command>-brugere åbne en nyt terminal-vindue eller
+skrive <command>tcsh</command> for at checke.
+</para>
+
+<para>
+I eksemplet kan man se at maskinen <filename>cvs.sslug.dk</filename>
+er CVS-server og CVS-databasen (repositoriet) ligger på den maskine i
+<filename>/usr/local/CVSROOT</filename>. Brugernavnet
+<filename>anne@</filename> svarer til det bruger-navn, som man har på
+den CVS-server (ikke nødvendigvis det samme på på egen maskine).
+</para>
+
+<para>
+Da vi anvendte <command>grep</command> på alt der startede med "CVS",
+fik vi også en anden variabel med <filename>CVS_RSH</filename>, som
+angiver hvordan man kommunikerer med CVS-serveren. Er det en og samme
+maskine udelades den variabel, og er det en anden maskine anvendes
+enten secure shell (<command>ssh</command>) eller remote shell
+(<command>rsh</command>). Se mere om <command>ssh</command> i bogen
+"Linux - friheden til sikkerhed på internettet").
+</para>
+
+<para>
+Lad os komme videre. For at du kan lægge dine filer i CVS for første
+gang skal du flytte dig til hovedbiblioteket for kildeteksten. Derfra laves
+</para>
+
+<indexterm><primary>cvs</primary><secondary>import</secondary></indexterm>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd mitsoftwareprojekt</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs import mitsoftwareprojekt VENDORTAG RELEASETAG</userinput>
+</screen>
+
+<para>
+hvor <filename>mitsoftwareprojekt</filename> (se checkout) er et
+beskrivende navn for kildetekstsamlingen. VENDORTAG er en streng som
+beskriver den som kildeteksten kom fra og RELEASETAG er en streng som
+beskriver kildeteksten status nu. Tit har disse ikke stor betydning og kan
+begge sættes til f.eks. "start".
+</para>
+
+<para>
+Når kildeteksten er lagt ind i CVS-databasen skal den fjernes (ja fjernes) og
+der laves en <command>cvs checkout</command> for at få gendannet
+kildeteksttræet incl. de ekstra CVS-biblioteker som skal være der.
+</para>
+
+<para>
+Det kan også nævnes at en række ekstra værktøjer fås til CVS, se
+<ulink url="http://freshmeat.net">http://freshmeat.net</ulink> under
+CVS. Et af disse er cvs2html, der findes fra <ulink
+url="http://cvs.sslug.dk/cvs2html">http://cvs.sslug.dk/cvs2html</ulink>.
+cvs2html anvendes til at reformattere den log information, der er
+skrevet ind for hver fil ved "cvs commit", til HTML-filer. For
+internetbaserede samarbejdsprojekter er dette virkeligt smart.
+</para>
+
+  <para>
+   Det tager et par timer at komme ind i denne måde at arbejde på, men alle
+   programmerings- eller skriveprojekter i øvrigt med mere end en person vil
+   CVS tjene dette overhead ind i hundredefold.
+  </para>
+
+  <sect3 id="logmails-cvs">
+   <title>Få emails med log-meddelelser ved cvs commit</title>
+
+   <para>
+    Når flere folk arbejder sammen på et software-projekt er det nødvendigt
+    at man nemt kan se hvad andre personer har ændret i filerne. Med
+    <command>cvs watch add FILNAVN</command> vil du modtage
+emails når andre laver <command>cvs commit FILNAVN</command>, men her
+vil du ikke se hvad de har ændret. Du kan få en bedre føling med
+ændringerne ved at bruge en lille program <filename>log</filename>,
+der følger med cvs. Med det program kan du få en email med hvilke
+filer, som er ændret og du få også i emailen besked om den
+log-meddelelse som brugeren skrev. Hvis man indenfor projektet holder
+en god stil med at skrive ordentlige log-meddelelser, så er dette super.
+</para>
+
+<para>
+Lad os se på opsætningen af dette. Først skal du 
+lave en fil i $CVSROOT, som dit projekt kan læse og skrive. 
+</para>
+
+<para>
+<emphasis>I det følgende skal du erstatte STIL_TIL_CVS_RODEN med den fulde sti
+til dit CVSROOT-katalog.</emphasis>.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>touch STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>chgrp MINFÆLLESGRUPPE STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>chmod g+rw STIL_TIL_CVS_RODEN/CVSROOT/commitlog</userinput>
+</screen>
+
+<para>
+Dernæst skal vi rode i noget af de "helligste" af cvs-opsætningen.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout CVSROOT</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>vi CVSROOT/loginfo</userinput>
+</screen>
+
+<para>
+Indsæt følgende linie til sidst hvis <filename>pto@sslug.dk</filename>
+skal modtage emails. Er der flere som skal modtage emails så tilføj
+gerne flere <filename>-m modtager@email-adresse</filename> efter hinanden.
+</para>
+
+<screen>
+DEFAULT /usr/lib/cvs/contrib/log -m pto@sslug.dk -f STIL_TIL_CVS_RODEN/CVSROOT/commitlog
+</screen>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs commit -m "Jubi - det virker med log-mails" CVSROOT/loginfo</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs release -d CVSROOT</userinput>
+</screen>
+
+<para>
+De sidste linier vil regenerere CVSROOT (sted hvor CVS-opsætningen er
+gemt), og derefter sletter man den CVSROOT-kopi man har checket ud.
+</para>
+
+  </sect3>
+
+<sect3 id="cvs-branch">
+<title>CVS og afgreninger (branches)</title>
+<para>
+Lad os se lidt mere på starten, da vi lavede projektet
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd MODUL_DIR</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs import MODUL
+VENDOR_TAG RELEASE_TAG</userinput>
+</screen>
+
+<para>
+Dette genererer med det samme to grene (branches), som man altid kan
+komme tilbage til.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+1.1.1 - VENDOR_TAG
+ </para>
+</listitem>
+<listitem> 
+ <para>
+1.1.1.1 - RELEASE_TAG
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Går man igang med at checke filerne ud, rette og lave <command>cvs
+commit</command>, så kommer de enkelte versioner til at hedde version
+1.1, 1.2, 1.3 osv.
+</para>
+
+<para>
+Ofte vil alle bruge samme gren af filerne, men hvad gør man hvis man
+nu har brug for at kode et stykke tid på noget som lammer resten af
+udviklerne på samme projekt. I dette tilfælde kan man oprette en gren
+til dette - de andre udviklere kommer ikke til at se noget anderledes
+og to afskilte udviklingsgrene kan køre.
+</para>
+
+
+<para>
+Lad os antage at vi arbejder med et modul i CVS med navn "sslugkode"
+som er importeret i CVS ved at skrive <command>cvs import sslugkode
+start version0</command>. Da der ikke er nogen naturlig "vendor"
+sættes leverandør-tag blot til "start" og start-version til "version0".
+</para>
+
+<para>
+For at skabe "afgrening1" ud fra hoved-branchen "version0" skriver man
+(uden at man nødvendigvis har koden checket ud)
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 afgrening1 sslugkode</userinput>
+</screen>
+
+<para>
+Tilsvarende kunne man måske have en anden udvikler, som
+skal arbejde samtidig på en anden gren "afgrening2"
+</para>
+
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs rtag -b -r version0 afgrening2 sslugkode</userinput>
+</screen>
+
+<para>
+For at isolere sig selv i grenen "afgrening1" skrives
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout sslugkode</userinput>
+<prompt>[anne@linus ~]$</prompt> <userinput>cd sslugkode</userinput>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r afgrening1</userinput>
+</screen>
+
+<para>
+eller direkte
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout -r afgrening1 sslugkode</userinput>
+</screen>
+
+<para>
+Det normale er derefter at udvikleren retter, laver <command>cvs
+commit</command> som vanligt. Fordelen er at de andre udviklere ikke
+ser dette. Grenene er totalt afkoblede indtil der laves en "merge"
+</para>
+
+<para>
+Hvis det skulle ske at vores udvikler fra "afgrening1" skal hjælpe han
+som arbejder i "afgrening2"-grenen, så kan han lave <command>cvs
+commit</command> på egne filer og derfter skifte direkte over til "afgrening2"
+</para>
+
+
+<screen>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r afgrening2</userinput>
+</screen>
+
+<para>
+Endelig kan man skifte ud til hoved-sporet (komme ud af "afgrening1" hhv
+"afgrening2" ved at skrive
+</para>
+
+<screen>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -A</userinput>
+</screen>
+
+<sect4 id="cvs-join">
+<title>Flette grene (cvs join)</title>
+<para>
+Antag at to udviklingsgrene som hver for sig har udviklet 
+sig, og de at de på et tidspunkt skal flettes sammen.
+</para>
+
+<para>
+I "afgrening2"-branchen kan du opdatere med nyeste ting fra
+"afgrening1"-branchen ved at skrive
+</para>
+
+<screen>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j afgrening1</userinput>
+</screen>
+
+<para>
+Hvis man ikke var i "afgrening2" skal man først sikre at du er i
+"afgrening1"-grenen.
+</para>
+
+
+<screen>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -r afgrening2</userinput>
+<prompt>[anne@linus sslugkode]$</prompt> <userinput>cvs update -j afgrening1</userinput>
+</screen>
+</sect4>
+
+</sect3>
+
+  <sect3 id="misc-med-cvs">
+<title>Diverse med CVS</title>
+
+<para>
+Det kan nævnes, at hvis Emacs indlæser en fil, der er koblet
+ind i CVS, vil Emacs automatisk genkende dette og indsætte en ekstra
+menu, hvorfra du på enkel vis kan sende tilføjelser til den fælles
+database (selve ændringerne skal du ikke selv styre - det klarer Emacs
+og CVS).
+</para>
+
+
+<para>
+Skal man anvende en "export" version til distribution, eller blot ikke
+ønsker at lave en "checkout", så er <command>cvs export
+PROJEKT</command> også en mulighed. Den henter kun filerne, men ikke
+CVS-informationsfilerne. Meget praktisk til at skelne mellem
+udgivelse af filer ("export") i forhold til udvikler-version med fuld
+CVS-information ("checkout").
+</para>
+
+<para>
+Vi har tidligere vist, at projekt/kildetekst hentes med:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs checkout projektnavn</userinput>
+</screen>
+ 
+<para>
+Men for folk, der deltager i mange projekter er det interessant at man
+faktisk også kan angive variablen <literal>CVSROOT</literal> som argument på
+kommandolinien:
+  
+<screen>
+<prompt>[anne@linus ~]$</prompt> <userinput>cvs -d USER@tux.hjemme:/usr/local/CVSROOT checkout projektnavn</userinput>
+</screen>
+</para>
+
+<para>
+og det skal bemærkes at man faktisk ikke anvender <literal>CVSROOT</literal>
+efter at man har kørt <command>cvs checkout</command>. Hvis man ser
+efter i <filename>projekt-katalog/CVS</filename>, så finder man der
+tre filer, som tilhører CVS.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+ <filename>Repository</filename> indeholder projekt-navn på CVS-serveren.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<filename>Root</filename> indeholder <literal>CVSROOT</literal> for det
+pågældende projekt.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<filename>Entries</filename> indeholder listen over de filer og
+kataloger som er registreret i CVS.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Næste trick er for dem som anvender SSH til at kommunikere med CVS.
+Man kan få ssh til at understøtte komprimering i
+<filename>~/.ssh/config</filename> :
+</para>
+
+<screen> 
+Compression yes
+CompressionLevel 6
+</screen>
+
+   <para>
+    Men vær opmærksom på at visse servere ikke kan finde ud af at anvende
+    kompression, så er der uforklarlige problemer med at få forbindelse, så
+    slå det fra. 
+   </para>
+  </sect3>
+ </sect2>
+</sect1>

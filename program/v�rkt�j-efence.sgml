@@ -1,0 +1,70 @@
+<!-- $Id$ -->
+<sect1 id="vaerktoej-efence">
+ <title>Electric Fence</title>
+
+ <indexterm>
+  <primary>Electric Fence</primary>
+ </indexterm>
+ <indexterm>
+  <primary>bufferoverløb</primary>
+  <secondary>find</secondary>
+ </indexterm>
+
+ <para>
+  Electric Fence er et bibliotek, der er uvurderligt til hurtigt
+finde bufferoverløb eller -underløb. Et typisk problem i C er
+man allokerer en tabel, men forsøger at skrive efter tabellens
+slut eller før dens start. En anden typisk fejl er at allokere
+en streng, der er for lille, som i det følgende eksempel
+</para>
+
+<programlisting>
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void)
+{
+   char* p=(char*)malloc(16*sizeof(char)); 
+   char* q=(char*)malloc(16*sizeof(char)); 
+
+// test for NULL
+
+   strcpy(q,"efence test");
+   strcpy(p,"efence test buffer overflow");  // 27 tegn lang!!
+
+   printf("q:%s\n",q);
+   printf("p:%s\n",p);
+}
+</programlisting>
+
+<para>
+Oversættes dette program med <command>gcc -o test test.c</command>,
+så kan der ske alt muligt, når det køres, men typisk vil det udskrive
+</para>
+
+<screen>
+q:low
+p:efence test buffer overflow
+</screen>
+
+<para>
+En streng kopieres til strengpegeren p, men strengen er længere end
+den hukommelsesblok, der er allokeret. Strcpy overskriver derfor
+delvist strengen q "efence test". Et program kan sagtens køre videre
+efter et bufferoverløb, men måske er dette bufferoverløb årsagen
+til at programmet fejler katastofalt en halv time senere. Det kan derfor
+være uhyre svært at finde denne type fejl, da de to ting tilsyneladende vil
+være helt urelaterede.
+</para>
+
+<para>
+Oversættes programmet istedet med <command>gcc -o test test.c -ggdb -lefence</command>
+vil programmet fejle, og gemme en <filename>core</filename> fil, når 
+det udfører den anden strcpy() linie.
+Køres <command>ddd test core</command> så vil debuggeren fortælle i
+hvilken linie bufferoverløbet skete. <command>man efence</command>
+giver en masse information om hvordan efence virker, og hvordan
+det kan bruges til at teste for bufferunderløb og meget andet.
+</para>
+
+</sect1>

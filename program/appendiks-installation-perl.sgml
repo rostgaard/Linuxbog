@@ -1,0 +1,145 @@
+<SECT1 id="installation-perl">
+<title>Perl</title>
+<indexterm><primary>Perl</primary><secondary>installation af</secondary></indexterm>
+
+<para>
+Perl er et spændende og meget anvendeligt sprog. C og C++ er i mange
+tekniske sammenhænge en de facto standard, men disse programmeringssprog er
+ikke ret velegnede til tekst-manipulationer. Der skal allokeres den rette
+mængde hukommelse, og det er ofte svært at kunne beregne, hvor meget man
+skal bruge. Perl er som skabt til at behandle tekst. Perl er et
+fortolket sprog, som BASIC er det.
+</para>
+
+<para>
+Check, om du har installeret Perl, ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>perl -v</userinput>
+</screen>
+
+<para>
+eller
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$</prompt> <userinput>which perl</userinput>
+</screen>
+
+<para>
+Ordren <command>which perl</command> bliver her udført og checker, om
+programmet <command>perl</command> kan findes i den nuværende søgesti
+(Se dette med <command>echo $PATH</command>). Ordren <command>rpm -q
+FILNAVN</command> viser dig, hvilken RPM-pakke filen
+<filename>FILNAVN</filename>findes i. Kommer der en tom streng frem,
+er Perl ikke installeret.
+</para>
+
+<para>
+Indtast følgende program, og gem det som <filename>leg_med_perl.pl</filename>
+</para>
+
+<screen>
+#!/usr/bin/perl
+
+@a="hej";
+@b=(@a,"igen");
+
+print "Arrayet \@b har værdierne : @b\n";
+printf "Der er %i elementer i \@b\n",$#b+1;
+
+foreach $indeks (@b)
+{
+  print "Ud kommer $indeks fra arrayet\n";
+}
+
+$c = "hvad med at ";
+$d = "sætte strenge sammen";
+$e = $c.$d;
+
+print "Variablen \$e har værdien : $e\n";
+</screen>
+
+<para>
+Programmet skal gøres kørbart ved at skrive
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>chmod +x leg_med_perl.pl</userinput>
+</screen>
+
+<para>
+Udføres programmet ved at skrive <command>./leg_med_perl.pl</command>,
+får man følgende
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>./leg_med_perl.pl</userinput>
+Arrayet @b har værdierne : hej igen
+Der er 2 elementer i @b
+Ud kommer hej fra arrayet
+Ud kommer igen fra arrayet
+Variablen $e har værdien : hvad med at sætte strenge sammen
+</screen>
+
+<para>
+Der er selvfølgelig et par små tricks i dette lille program, men det
+væsentlige at lægge mærke til er, at der ikke reserveres hukommelse til
+nye variable, og det er legende let at arbejde videre med.
+</para>
+
+<para>
+Hvad med følgende lille søde program, som tager et filnavn som input og
+erstatter samtlige forekomster af Microsoft med navnet Linux? Det er et
+program, som slet ikke kan laves så elegant og kort som i Perl.
+</para>
+
+<screen>
+#!/usr/bin/perl -i.bak -p
+s/Microsoft/Linux/g;
+</screen>
+
+<para>
+Vi kan også nævne, at du kan gøre dine Perl-programmer uafhængig af
+Perl-placeringen (om det er <filename>/usr/bin/perl</filename> eller
+<filename>/usr/local/bin/perl</filename>) ved at starte følgende tre
+liner før selve programmet. Det erstatter så den første "magiske" linje.
+</para>
+
+<screen>
+: # Use perl
+eval 'exec perl -S $0 "$@"'
+    if $running_under_some_shell;
+
+print "Det virker\n";
+</screen>
+
+<para>
+Hvis du nu har fået blod på tanden og vil i gang med at lære Perl, er
+disse to bøger standardværkerne, den ene til at komme i gang på, den
+anden for viderekomne:
+</para>
+
+<para>
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem>
+<para>
+Randal L. Schwartz &amp; Tom Christiansen: <emphasis>Learning Perl (2nd Edition)</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-284-0, 271 sider.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Larry Wall, Tom Christiansen &amp; Randal L. Schwartz: <emphasis>Programming Perl (2nd Edition)</emphasis>,
+O'Reilly &amp; Associates, Inc., ISBN 1-56592-149-6, 645 sider.
+</para>
+</listitem>
+
+</itemizedlist>
+</para>
+</SECT1><!-- perl -->
+
+

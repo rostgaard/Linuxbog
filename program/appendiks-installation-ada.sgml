@@ -1,0 +1,310 @@
+<sect1 id="installation-ada">
+ <title>Ada</title>
+
+ <indexterm>
+  <primary>Ada</primary>
+  <secondary>installation</secondary>
+ </indexterm>
+
+ <para>
+  For at komme igang med at programmere i Ada på Linux skal du blot installere
+  GNU Ada oversætteren (GNAT), men der er et bredt udvalg af andre pakker man
+  med fordel kan installere til forskellige specielle formål. Tabel
+  <xref linkend="ada-pakker"> indeholder en oversigt over de vigtigste pakker
+  fordelt på de opgaver de er relevante til. Hvis du kører Debian bør du
+  kunne installere pakkerne med kommandosekvensen
+  <command>apt-get update && apt-get install &lt;pakkenavn&gt;</command>.
+  Hvis du kører SuSE, Red Hat eller en lignende RPM-baseret distribution bør
+  du kunne finde alle de relevante pakker på <ulink
+  url="http://dk.gnuada.org/alt">http://dk.gnuada.org/alt</ulink>.
+ </para>
+
+ <table id="ada-pakker">
+  <title>Pakker til programmering i Ada</title>
+
+  <tgroup cols="3">
+   <thead>
+    <row>
+     <entry>Opgave</entry>
+     <entry>Debian-pakker</entry>
+     <entry>RPM-pakker</entry>
+    </row>
+   </thead>
+
+   <tbody>
+    <row>
+     <entry>Generel Ada-programmering.</entry>
+     <entry>gnat, gnat-runtime</entry>
+     <entry>gnat, gnat-runtime</entry>
+    </row>
+
+    <row>
+     <entry>Distribuerede programmer.</entry>
+     <entry>gnat-glade</entry>
+     <entry>gnat-glade</entry>
+    </row>
+
+    <row>
+     <entry>Programmer der kan køre på en "Java Virtual Machine" (JVM). For
+            eksempel småprogrammer (engelsk: "applets") der skal køre i en
+            webside.</entry>
+     <entry>jgnat (samt en JVM, se afsnit ...)</entry>
+     <entry>jgnat (samt en JVM, se afsnit ...)</entry>
+    </row>
+
+    <row>
+     <entry>Grafiske programmer, der også umiddelbart kan oversættes til
+            andre styresystemer.</entry>
+     <entry>GtkAda, GtkAda-runtime (samt GLADE, se afsnit ...)</entry>
+     <entry>GtkAda, GtkAda-runtime (samt GLADE, se afsnit ...)</entry>
+    </row>
+   </tbody>
+  </tgroup>
+ </table>
+
+ <sect2 id="installation-ada-rpm">
+  <title>På RPM-baserede systemer</title>
+
+  <para>
+   Hentes på <ulink
+   url="http://dk.gnuada.org/alt.html">http://dk.gnuada.org/alt.html</ulink>.
+  </para>
+ </sect2>
+
+ <sect2 id="installation-ada-deb">
+  <title>På Debian-baserede systemer</title>
+
+  <para>
+   <command>apt-get install gnat</command> skulle klare det.
+  </para>
+ </sect2>
+
+<!--
+<para>
+ <indexterm><primary>flytbarhed</primary></indexterm>
+ <indexterm><primary>arkitekturuafhængighed</primary></indexterm>
+
+  I det omfang man ikke direkte gør sig umage med at skrive et Ada-program til
+  en bestemt arkitektur (processor, andet isenkram og eventuelt styresystem),
+  kan man regne med at det fungerer ens på alle systemer. Dele af Ada er 
+  selvfølgelig nødt til at være systemspecifikke - det gælder for eksempel
+  hvor store heltal man kan regne med - men enhver Ada-oversætter skal komme
+  med dokumentation af hvordan de systemspecifikke dele er lavet i den.
+</para>
+
+<para>
+ <indexterm><primary>C</primary><secondary>kalde fra Ada</secondary></indexterm>
+ <indexterm><primary>Cobol</primary><secondary>kalde fra Ada</secondary></indexterm>
+ <indexterm><primary>Fortran</primary><secondary>kalde fra Ada</secondary></indexterm>
+ <indexterm><primary>C++</primary><secondary>kalde fra Ada</secondary></indexterm>
+ <indexterm><primary>Java</primary><secondary>kalde fra Ada</secondary></indexterm>
+
+  Ada har indbygget adgang til biblioteker skrevet i andre sprog.
+  <ulink url="http://www.adaic.com/standards/ada95.html">Standarden</ulink>
+  beskriver grænsesnittet til Cobol, C og Fortran, men GNU Ada kommer også med
+  grænsesnit til Java og C++. Du har således let adgang til at genbruge gammel
+  kode skrevet i andre sprog.
+</para>
+
+<para>
+  <indexterm><primary>GNU Ada</primary></indexterm>
+  <indexterm><primary>GNAT</primary></indexterm>
+
+  GNU Ada oversætteren (også kendt som GNAT) blev udviklet parallelt med den
+  seneste ISO-standard for Ada og var allerede da standarden udkom i februar
+  1995 overordentlig brugbar. I dag er det en oversætter i en kvalitet, der
+  gør at mange store firmaer vælger GNU Ada, når de har brug for en
+  Ada-oversætter. GNU Ada fås blandt andet til Linux, DOS, Digital Unix, AIX,
+  OS/2 og Windows. Udviklerne bag GNU Ada gør meget ud af at oversætteren
+  følger ISO-standarden for Ada. - Det at følge standarderne er i det hele
+  taget noget man går meget op i i Ada-miljøet.
+</para>
+
+<para>
+  <indexterm>
+   <primary>hente på 'nettet</primary>
+   <secondary>Ada-oversætter</secondary>
+  </indexterm>
+
+  Du kan hente GNU Ada til Linux på 
+  <ulink URL="http://dk.gnuada.org/">http://dk.gnuada.org/</ulink>.
+</para>
+
+<sect2 ID="hello-ada">
+ <title>Hej verden!</title>
+
+ <indexterm>
+  <primary>Hello, world!</primary>
+  <secondary>Ada</secondary>
+ </indexterm>
+ <indexterm>
+  <primary>Hej verden!</primary>
+  <secondary>Ada</secondary>
+ </indexterm>
+
+ <para>
+  Vi følger traditionen og begynder med "Hello World"-programmet, der ofte er
+  det eksempel man bruger, når man skal præsentere et programmeringssprog.
+  Programmet skriver en kort tekst, Hej SSLUG, ud på skærmen og afslutter.
+  Indtast følgende tekst (brug <command>emacs</command>,
+  <command>pico</command> eller <command>vi</command>), og gem det som
+  <filename>hej_sslug.adb</filename>.
+ </para>
+
+<programlisting>
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Hej_SSLUG is
+begin
+   Put_Line ("Hej SSLUG");
+end Hej_SSLUG;
+</programlisting>
+
+ <para>
+  <indexterm>
+   <primary>oversætte</primary>
+   <secondary>Ada-programmer</secondary>
+  </indexterm>
+  I kataloget, hvor filen er gemt, kan programmet nu oversættes ved at skrive
+<screen>
+<prompt>[daisy@linus ada]$ </prompt><userinput>gnatmake hej_sslug</userinput>
+</screen>
+ </para>
+
+ <para>
+  <indexterm><primary>gnatmake</primary></indexterm>
+  Ada-oversætteren kaldes med kommandoen <command>gnatmake</command>.
+ </para>
+
+ <para>
+  Det oversatte Ada-program, <filename>hej_sslug</filename>, køres ved at
+  skrive navnet i en <command>xterm</command> eller lignende:
+ </para>
+
+<screen>
+<prompt>[daisy@linus ada]$ </prompt><userinput>./hej_sslug</userinput>
+Hej SSLUG
+<prompt>[daisy@linux ada]$ </prompt>
+</screen>
+
+ <para>
+  Punktummet og skråstregen foran programmets navn bruges til at fortælle
+  systemet at programmet ligger i det aktuelle katalog og ikke et af de steder,
+  hvor systemet forventer at finde programmer.
+ </para>
+</sect2>
+
+<sect2 id="hello-ada-parallel">
+ <title>Hej verden! - Parallelprogrammering</title>
+ <indexterm>
+  <primary>Hello, world!</primary>
+  <secondary>Parallelprogrammering i Ada</secondary>
+ </indexterm>
+ <indexterm>
+  <primary>Hej verden!</primary>
+  <secondary>Parallelprogrammering i Ada</secondary>
+ </indexterm>
+ <indexterm>
+  <primary>parallelprogrammering</primary>
+ </indexterm>
+
+ <para>
+  Ada har, i modsætning til de fleste andre programmeringssprog, indbygget
+  mulighed for at skrive programmer, hvor forskellige dele af programmet kører
+  parallelt med hinanden. Som et enkelt eksempel kan du indtaste teksten
+  nedenfor og gemme den i en fil med navnet
+  <filename>hej_sslug_og_verden.adb</filename>.
+ </para>
+
+<programlisting>
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Hej_SSLUG_Og_Verden is
+
+   task Hils_På_Verden;
+
+   task body Hils_På_Verden is
+   begin
+      Put_Line ("Hej Verden");
+   end;
+
+begin
+   Put_Line ("Hej SSLUG");
+end Hej_SSLUG_Og_Verden;
+</programlisting>
+
+ <para>
+  Programmet kan oversættes og køres på samme måde som "Hej SSLUG"-programmet.
+  Med dette program kan man - principielt - ikke vide om det først vil skrive
+  "Hej SSLUG" eller "Hej Verden". Parallelprogrammering, der af C-programmører
+  typisk bliver kaldt trådprogrammering, benyttes normalt til lidt mere
+  komplicerede ting end ovenstående. Man kan for eksempel benytte
+  parallelprogrammering, hvis man vil lade sit program fordele sig på alle
+  computerens processorer eller hvis forskellige dele af programmet skal køre
+  på forskellige maskiner.
+ </para>
+</sect2>
+-->
+<!-- "Hej internet" - Applet -->
+
+<!-- "Hej X"        - Gtkada og gettext -->
+<!--
+<sect2 id="Ada-boeger">
+ <title>Bøger om Ada-programmering</title>
+
+ <para>
+  Der findes mange bøger om Ada-programmering. Jeg nøjes her med at nævne et
+  par stykker, der står på min egen bogreol:
+
+  <itemizedlist mark="bullet" spacing="compact">
+   <listitem>
+    <para>
+     David J. Naiditch:
+     <emphasis>Rendezvous With Ada 95</emphasis> (second edition),
+     John Wiley &amp; Sons, Inc., ISBN 0-471-01276-9, 598 sider.
+    </para>
+    <para>
+     En grundig introduktion til Ada 95, men ikke nødvendigvis sagen for folk
+     der ikke har programmeret før.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     Michael A. Smith: <emphasis>Object-Oriented Software in Ada 95</emphasis>,
+     Thomson Computer Press, ISBN 1-85032-185-X, 460 sider.
+    </para>
+    <para>
+     Bogen er skrevet som en introduktion for studerende og programmører, der
+     ønsker at lære om objektorienteret programmering.
+    </para>
+   </listitem>
+-->
+   <!-- Wheelers bog, Ada for C-programmører -->
+
+   <!--
+   <listitem>
+    <para>
+     forfatter &amp; forfatter: <emphasis>titel</emphasis>,
+     forlag, ISBN ..., # sider.
+    </para>
+    <para>
+     omtale
+    </para>
+   </listitem>
+   -->
+<!--
+  </itemizedlist>
+
+  Du kan finde anmeldelser af bøger om Ada på <ulink
+  url="http://www.seas.gwu.edu/faculty/mfeldman/ada95books.html">http://www.seas.gwu.edu/faculty/mfeldman/ada95books.html</ulink>.
+ </para>
+
+ <para>
+  Hvis du har brug for Ada-referencemanualen, kan du hente den på internettet:
+  <ulink url="http://www.adaic.com/standards/ada95.html">http://www.adaic.com/standards/ada95.html</ulink>
+ </para>
+</sect2>
+-->
+
+</sect1>
