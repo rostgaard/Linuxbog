@@ -221,13 +221,13 @@ Programmet sudo følger ikke med alle Linux distributioner, men kan
 downloades fra 
 <ulink url="http://www.courtesan.com/sudo">http://www.courtesan.com/sudo</ulink>.
 Programmet er nemt at oversætte og installere - gør følgende som root:
-</para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput>tar xvzf cu-sudo.v1.5.9p2.tar.gz</userinput>  
-<prompt>[root@sherwood robin]#</prompt> <userinput>cd cu-sudo.v1.5.9p2</userinput>
-<prompt>[root@sherwood sudo.v1.5.9p2]#</prompt> <userinput>./configure; make; make install</userinput>
+<prompt>[root@linus anne]# </prompt><userinput>tar xzvf cu-sudo.v1.5.9p2.tar.gz</userinput>  
+<prompt>[root@linus anne]# </prompt><userinput>cd cu-sudo.v1.5.9p2</userinput>
+<prompt>[root@linus sudo.v1.5.9p2]# </prompt><userinput>./configure; make; make install</userinput>
 </SCREEN>
+</para>
 
 <para>
 Derefter skal du lære at konfigurere sudo rigtigt. Dette afgør,
@@ -248,12 +248,12 @@ Konfigurationen startes som root ved at skrive
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput> /usr/local/sbin/visudo</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput> /usr/local/sbin/visudo</userinput>
 </SCREEN>
 
 <para>
 Nu kommer editoren vi frem med den konfigurationsfil, du skal udfylde.
-Som et eksempel lader vi brugeren robin kunne genstarte
+Som et eksempel lader vi brugeren "anne" kunne genstarte
 NFS-serveren.
 Find linien med 
 </para>
@@ -263,22 +263,22 @@ root    ALL=(ALL) ALL
 </programlisting>
 
 <para>
-Under denne tilføjer du, at brugeren robin på maskinen sherwood må køre
+Under denne tilføjer du, at brugeren "anne" på maskinen "linus" må køre
 kommandoen <command>/etc/rc.d/init.d/nfs restart</command>.
 </para>
 
 <programlisting>
-robin     sherwood=/etc/rc.d/init.d/nfs restart
+anne      linus=/etc/rc.d/init.d/nfs restart
 </programlisting>
 
 <para>
-Gem filen og prøv nu som brugeren robin at genstarte nfs.
+Gem filen og prøv nu som brugeren "anne" at genstarte nfs.
 </para>
 
 <para>
 Det eneste trick er, at du, som almindelig bruger, skal skrive sudo
 foran den kommando, du skal kunne køre med root-rettigheder. Efter en
-lille formaning om at passe på skal robin som almindelig bruger skrive
+lille formaning om at passe på skal "anne" som almindelig bruger skrive
 sit <emphasis>eget</emphasis> passsword. Derefter udføres kommandoen,
 som om det var root, der gjorde det. Man skal skrive sit password
 som en sikkerhedsforanstaltning, der beskytter imod, at andre brugere
@@ -288,7 +288,7 @@ kommandoer fra din maskine, da han stadig ikke kender dit password.
 </para>
 
 <SCREEN>
-<prompt>[robin@ sherwood]$</prompt> <userinput> sudo /etc/rc.d/init.d/sendmail restart</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>sudo /etc/rc.d/init.d/sendmail restart</userinput>
 
 We trust you have received the usual lecture from the local System
 Administrator. It usually boils down to these two things:
@@ -341,7 +341,7 @@ klogere, at personen også har root-password og et tilsvarende ansvar.
 Det er vigtigt at hemmeligholde sine passwords - især sit root password.
 
 På en Linux-maskine logger man ind med et bruger-id såsom 
-"robin" og et tilhørende password. Vi vil se på, hvorfor det 
+"anne" og et tilhørende password. Vi vil se på, hvorfor det 
 er vigtigt, at du beskytter dit password, og hvordan du kan beskytte 
 det. Vi vil se nærmere på, hvad der sker med dit password på Linux-maskinen,
 og på nogle af de værktøjer, du kan bruge til at højne 
@@ -384,7 +384,7 @@ i passwd-filen ligne følgende:
 </para>
 
 <programlisting>
-robin:A1$HN1r2zxs$A2rmawluybzv8hkf4Hpzz0:501:501::/home/robin:/bin/bash
+anne:A1$HN1r2zxs$A2rmawluybzv8hkf4Hpzz0:501:501::/home/anne:/bin/bash
 </programlisting>
 
 <para>
@@ -495,7 +495,7 @@ der kan findes på
 <ulink url="http://www.openwall.com/john/">http://www.false.com/security/john/</ulink>.
 Man kan finde programmer, som er en del hurtigere til blindt at knække 
 passwords fra en ende af, men John the Ripper har nogle spændende aspekter. 
-Nedenfor er vist, hvordan programmet knækker passwords for brugeren robin i
+Nedenfor er vist, hvordan programmet knækker passwords for brugeren "anne" i
 med tre forskellige passwords, hhv. "a", "ab" og "qsw". Udskriften stammer fra
 en 300 MHz PII, og det viser, at et bogstav knækkes på få sekunder,
 mens to og tre tilfældige bogstaver kan knækkes på 5 hhv. 8 minutter.
@@ -506,15 +506,15 @@ vælge passwords med mere end syv tegn.
 
 <programlisting>
 Loaded 1 password (FreeBSD MD5 [32/32])
-a                (robin)
+a                (anne)
 guesses: 1  time: 0:00:00:06 100% (2)  c/s: 746  trying: a
 
 Loaded 1 password (FreeBSD MD5 [32/32])
-ab               (robin)
+ab               (anne)
 guesses: 1  time: 0:00:05:12 (3)  c/s: 665  trying: ab
 
 Loaded 1 password (FreeBSD MD5 [32/32])
-qsw              (robin)
+qsw              (anne)
 guesses: 1  time: 0:00:08:08 (3)  c/s: 669  trying: qsw
 </programlisting>
 
@@ -524,7 +524,7 @@ fordi det er programmeret ud fra, hvordan mange brugere i praksis
 vælger password. Man vælger ofte kærestens navn, måske koblet med en
 fødselsdag, et sted man er glad for, eller andre ting man kan
 huske. Det er ikke klogt, fordi det er for nemt at gætte, hvilket
-følgende viser. Først har vi ladet brugeren robin have password "abc"
+følgende viser. Først har vi ladet brugeren "anne" have password "abc"
 som står i alle ordbøger. Det koster kun 4 sekunder, før det er
 fundet. Dernæst er vist, at fem bogstaver som i ordet "apple" findes
 på 3 sekunder, og endelig gentagelsen "appleapple" med 10 bogstaver
@@ -546,15 +546,15 @@ eller via en krypteret adgang til maskinen såsom ssh (secure shell).
 
 <programlisting>
 Loaded 1 password (FreeBSD MD5 [32/32])
-abc              (robin)
+abc              (anne)
 guesses: 1  time: 0:00:00:04 100% (2)  c/s: 837  trying: abc
 
 Loaded 1 password (FreeBSD MD5 [32/32])
-apple            (robin)
+apple            (anne)
 guesses: 1  time: 0:00:00:03 100% (2)  c/s: 891  trying: apple
 
 Loaded 1 password (FreeBSD MD5 [32/32])
-appleapple       (robin)
+appleapple       (anne)
 guesses: 1  time: 0:00:00:19 100% (2)  c/s: 710  trying: appleapple
 </programlisting>
 </sect2>
@@ -581,7 +581,7 @@ ville have stået:
 </para>
 
 <programlisting>
-robin:x:501:501::/home/robin:/bin/bash
+anne:x:501:501::/home/anne:/bin/bash
 </programlisting>
 
 <para>
@@ -619,8 +619,8 @@ disse huller - hold derfor altid din maskine opdateret.
 <para>
 SUID betyder, at et program kører "som sin ejer", og ikke "som" den
 bruger, der udfører det. Dvs. at det kører med ejerens rettigheder.
-Et program, som robin ejer, og som er SUID, har f.eks. ret til at
-skrive i robins hjemmekatalog, selvom det er en anden bruger, der
+Et program, som "anne" ejer, og som er SUID, har f.eks. ret til at
+skrive i "anne"s hjemmekatalog, selvom det er en anden bruger, der
 eksekverer det. Et SGID program er det samme bare med gruppe
 rettigheder i stedet.
 </para>
@@ -643,8 +643,8 @@ Lad os nu se på hvilke programmer, der på en normal Linux maskine er
 SUID programmer.
 
 <SCREEN>
-<prompt>[robin@sherwood robin]$</prompt> <userinput>su - root</userinput>
-<prompt>[root@sherwood root]$</prompt> <userinput>find / -perm +4000</userinput>
+<prompt>[anne@linus ~]$ </prompt><userinput>su - root</userinput>
+<prompt>[root@linus /root]# </prompt><userinput>find / -perm +4000</userinput>
 </SCREEN>
 
 Sådan finder du alle SUID programmer. Men det er kun SUID root 
@@ -656,9 +656,9 @@ parametrene "-user root" med til find kommandoen:
 </para>
 
 <SCREEN>
-<prompt>[robin@sherwood robin]$</prompt> <userinput>su - root</userinput>
+<prompt>[anne@linus anne]$</prompt> <userinput>su - root</userinput>
 Password:
-<prompt>[root@sherwood robin]#</prompt> <userinput> find / -perm +4000 -user root</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput> find / -perm +4000 -user root</userinput>
 /bin/ping
 /bin/mount
 /bin/umount
@@ -736,7 +736,7 @@ ikke så almindeligt at anvende SGID
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput> find / -perm +2000 -group root</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput> find / -perm +2000 -group root</userinput>
 /sbin/netreport
 /usr/sbin/sendmail
 find: /proc/1144/fd: Permission denied
@@ -750,16 +750,16 @@ Der var ikke så mange, men dem skal man også være opmærksom på.
 
 <para>
 Lad os som et eksperiment prøve at lade <COMMAND>/bin/ping</COMMAND> være ejet 
-af robin i stedet for root, og lad os se om den stadig virker:
+af "anne" i stedet for "root", og lad os se om den stadig virker:
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput>ls -l /bin/ping</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput>ls -l /bin/ping</userinput>
 -rwsr-xr-x   1 root     root        14116 Jun 18  1998 /bin/ping
-<prompt>[root@sherwood robin]#</prompt> <userinput>chown robin /bin/ping</userinput>
-<prompt>[root@sherwood robin]#</prompt> <userinput>ls -l /bin/ping</userinput>
--rwsr-xr-x   1 robin     root        14116 Jun 18  1998 /bin/ping
-<prompt>[root@sherwood robin]#</prompt> <userinput>ping 10.10.10.3</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput>chown anne /bin/ping</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput>ls -l /bin/ping</userinput>
+-rwsr-xr-x   1 anne      root        14116 Jun 18  1998 /bin/ping
+<prompt>[root@linus anne]#</prompt> <userinput>ping 10.10.10.3</userinput>
 ping: ping must run as root
 </SCREEN>
 
@@ -768,7 +768,7 @@ Ups, det kunne man ikke. Vi må hellere skifte tilbage:
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood robin]#</prompt> <userinput>chown root /bin/ping</userinput>
+<prompt>[root@linus anne]#</prompt> <userinput>chown root /bin/ping</userinput>
 </SCREEN> 
 
 <para>
@@ -787,7 +787,7 @@ fra.
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood root]#</prompt> <userinput>rpm -qf /sbin/cardctl</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>rpm -qf /sbin/cardctl</userinput>
 kernel-pcmcia-cs-2.2.5-15
 </SCREEN>
 
@@ -797,9 +797,9 @@ at pakken ikke bruges, så afinstaller den:
 </para>
 
 <SCREEN>
-<prompt>[root@sherwood root]#</prompt> <userinput>rpm -ql kernel-pcmcia-cs-2.2.5-15</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>rpm -ql kernel-pcmcia-cs-2.2.5-15</userinput>
 ...klip mange linier
-<prompt>[root@sherwood root]#</prompt> <userinput>rpm -e kernel-pcmcia-cs-2.2.5-15</userinput>
+<prompt>[root@linus root]#</prompt> <userinput>rpm -e kernel-pcmcia-cs-2.2.5-15</userinput>
 </SCREEN>
 
 <para>
