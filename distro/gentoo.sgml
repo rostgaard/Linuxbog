@@ -42,6 +42,51 @@
    url="http://www.linuxbog.dk/applikationer/bog/">»Linux - Friheden
    til at vælge programmer«</ulink>).
   </para>
+
+  <para>
+   Man starter installationen ved at starte sin maskine direkte fra Gentoo-cd-rom'en og følger i øvrigt <ulink url="http://www.gentoo.org/doc/en/gentoo-x86-install.xml">installationsvejledningen</ulink>.
+  </para>
+
+  <note>
+   <para>
+    På grund af dørvogteren eller HTTP-stedfortræderen på vores netværk,
+    kunne min maskine ikke komme ordentligt på nettet, før jeg havde udført
+    kommandoen:
+<screen>
+<prompt>cdimage / # </prompt><userinput>echo 0 &gt; /proc/sys/net/ipv4/tcp_timestamps</userinput>
+</screen>
+   </para>
+  </note>
+
+  <note>
+   <para>
+    Gentoo er afhængig af at udviklere ikke pludselig rydder op på deres
+    websteder og sletter, omdøber eller flytter filer.  Da jeg &ndash; som
+    installationsvejledningen forslår &ndash; forsøgte at installere
+    PCMCIA-understøttelse fik jeg for eksempel at vide at
+    <command>emerge</command> ikke kunne få fat i
+    <filename>pcmcia-cs-3.2.4-orinoco-patch.diff</filename>.
+   </para>
+  </note>
+
+  <note>
+   <para>
+    Hvis man har fulgt installationsvejledningens råd om opdelingen af
+    harddisken, bør GRUB's opsætningsfil,
+    <filename>/boot/grub/grub.conf</filename>, <emphasis>ikke</emphasis>
+    være som de foreslår, men snarere se sådan ud:
+<programlisting>
+default 0
+timeout 30
+splashimage=(hd0,0)/boot/grub/splash.xpm.gz
+
+title=Gentoo Linux (genkernel)
+root (hd0,0)
+kernel (hd0,0)/kernel-2.4.20-gentoo-r8 root=/dev/hda3
+initrd (hd0,0)/initrd-2.4.20-gentoo-r8
+</programlisting>
+   </para>
+  </note>
  </sect1>
 
  <sect1 id="distro-gentoo-udvidelse">
