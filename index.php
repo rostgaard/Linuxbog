@@ -271,7 +271,7 @@ function vistype($type) {
       if (file_exists($bookname.$fname)) {
         $num = file($bookname.$fname);
         $books[$bookname][$ftype] = trim($num[0]);
-        if ($ftype == "sideantal" && $books != "alle")
+        if ($ftype == "sideantal" && $bookname != "alle")
           $totalsideantal += trim($num[0]);
       }
     }
