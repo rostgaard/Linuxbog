@@ -1,4 +1,4 @@
-all: clean Makefiler filer
+all: Makefiler filer
 
 release : all cvs2html mail
 
@@ -15,6 +15,7 @@ Makefiler:
 	cp misc/collateindex.pl program
 	cp misc/collateindex.pl web
 	cp misc/collateindex.pl sikkerhed
+	cp misc/collateindex.pl alle
 
 filer:  Makefiler
 	make Makefiler
