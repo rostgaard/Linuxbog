@@ -44,7 +44,7 @@ disse eksempler kan hentes i et fuldt fungerende eksempel. Står der
 f.eks. <FILENAME>debug.cgi</FILENAME> i Perl-koden betyder det, at
 kode eksempel kan hentes på <ulink
 url="http://www.sslug.dk/linuxbog/web/eksempler/debug.cgi">http://www.sslug.dk/linuxbog/web/eksempler/debug.cgi</ulink>,
-eller via den pakke af eksempler, som hører til web-bogen og ligger under 
+eller via den pakke af eksempler, som hører til webbogen og ligger under 
 <ulink
 url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
 </para>
@@ -55,7 +55,7 @@ url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
 <para>
 Hvis du selv bestyrer en webserver skal den først sættes op til at
 udføre filer af typen <filename>.cgi</filename> som CGI-programmer, hvis
-du bruger et web-hotel så vil du sikkert have adgang til noget
+du bruger et webhotel så vil du sikkert have adgang til noget
 information om hvor og hvordan programmer kan udføres. Følgende ændringer
 skal udføres i Apaches opsætningsfiler, der ligger normalt i
 <filename>/etc/httpd/conf/</filename> kataloget:
@@ -316,10 +316,10 @@ formater.
 
 <para>
 Hvis man returnere et svar med et CGI-program kan det ske at browseren
-cacher det, og en reload vil derfor ikke køre programmet igen, men kun vise det
-resultat der ligger i cachen. 
-Følgende stump kode fortæller browseren og web-caches (såsom Squid), at
-programmets output ikke må caches:
+gemmer en lokal kopi af det, og en genindlæsning vil derfor ikke køre
+programmet igen, men kun vise den lokale kopi. Følgende stump kode
+fortæller browseren og stråmænd (som for eksempel Squid), at siden ikke
+må gemmes:
 </para>
 
 <screen>
@@ -337,10 +337,9 @@ print "\r\n";
 </screen>
 
 <para>
-Hvis output kan gemmes i en cache, men man ønsker at kontrollere levetiden,
-så kan dette gøres med Expires-feltet. Følgende kodestump viser hvordan
-dette gøres:
-</para>
+Hvis siden må gemmes, men man ønsker at bestemme hvor længe, kan det
+gøres med <command>Expires</command>-feltet. Følgende stump kode viser
+hvordan:
 
 <screen>
 # Indsættes: Udskriv hoved
@@ -359,6 +358,7 @@ print "\r\n";
 
 #Her udføres resten af programmet
 </screen>
+</para>
 
 <para>
 Programmet vil f.eks. udskrive en "Expires: Sat, 29 Jul 2000 16:45:27
@@ -1325,12 +1325,12 @@ print "Content-Type: text/plain\r\n\r\n";
 system("ps aux | grep $user");
 </screen>
 
-<para>En bruger kan nu indtaste root og se alle de services der kører på
-serveren, det giver en ide om hvilke sikkerhedshuller der kan anvendes på
-serveren. Men som om det ikke var nok så kan enhver indtaste "<command>daisy ; r,
--rf /</command>" i webformularen.</para>
+<para>En bruger kan nu taste "root" og se alle de tjenester der kører på
+maskinen. Det giver en ide om hvilke sikkerhedshuller der kan være i systemet.
+Men som om det ikke var nok så kan enhver taste "<command>daisy ; rm -rf /</command>"
+i webformularen.</para>
 
-<para>Sker dette vil programmet udfører "<command>ps aux | grep daisy ; rm -rf
+<para>Sker dette vil programmet udføre "<command>ps aux | grep daisy ; rm -rf
 /</command>", hviket betyder at programmet efter at havde udskrivet alle daisy's
 processer vil fortsætter med at rekursivt slette alle filer på filsystemet.
 Typisk vil webdeamonen kun have adgang til at slette alle webfiler, og de data
@@ -1349,7 +1349,7 @@ en terminal server (f.eks. netcat), oversætte den og køre den, således at han
 kunne logge ind på webserveren med samme rettigheder som webserveren og uden
 noget password. Og når en hacker har adgang til at køre vilkårlige kommandoer
 kunne han checker versionsnumre på alle deamons og sammenligne disse med
-kendte sikkerhedsfejl indtil han finder en bagdør til root kontoen.</para>
+kendte sikkerhedsfejl indtil han finder en bagdør til systemoperatørkontoen (root).</para>
 
 <para>Derfor bør man i et CGI-program altid undgå exec og system kommandoer. Med
 eval kan ethvert perl udtryk udføres, dvs. ethvert perl udtryk der åbner

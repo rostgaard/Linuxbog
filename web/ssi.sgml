@@ -55,7 +55,7 @@ Options Includes
 <para>
 Bruges <command>IncludesNOEXEC</command> istedet for Includes, så kan
 dynamisk genereret output ikke inkluderes, dvs. alle inkludes der
-anvender CGI-scripts eller udfører shell-scripts negligeres.
+anvender CGI-programmer eller udfører kommandofortolker negligeres.
 </para>
 
 
@@ -158,11 +158,11 @@ til en fil.
 
 </sect1>
 <sect1 id="ssi-shellCGI-script">
-<title>Inkludering af CGI-script og shell-kommando-output</title>
+<title>Inkludering af uddata fra CGI-programmer og andre programmer</title>
 
 
 <para>
-Outputtet fra et CGI-script kan også inkluders f.eks. 
+Uddata fra et CGI-program kan også inkluderes f.eks. 
 </para>
 
 <screen>
@@ -171,15 +171,16 @@ Outputtet fra et CGI-script kan også inkluders f.eks.
 
 <para>
 Alt imellem <command>&lt;..&gt;</command> vil blive erstattet af de
-data som <filename>hoved.cgi</filename> scriptet udskriver. Hvis cgi
-scriptet udskrive en redirektion af formen 
-"Location: <literal>URL</literal>\r\n\r\n"
-linie indsættes <literal>URL</literal> som et link istedet.
+data som <filename>hoved.cgi</filename> programmet udskriver. Hvis CGI-programmet udskriver en omdirigering af formen 
+<screen>
+Location: <literal>URL</literal>\r\n\r\n
+</screen>
+indsættes <literal>URL</literal> som et link istedet.
 </para>
 
 
 <para>
-Den følgende eksempel bruger et cgi script til at generere <command>&lt;body
+Det følgende eksempel bruger et CGI-program til at generere <command>&lt;body
 bgcolor="#farve"&gt;</command>, hvor farven afhænger af tiden.
 </para>
 
@@ -191,7 +192,7 @@ bgcolor="#farve"&gt;</command>, hvor farven afhænger af tiden.
 
 
 <para>
-Og koden til <filename>colorbody.cgi</filename> er et lille Perl-script
+Og koden til <filename>colorbody.cgi</filename> er et lille Perl-program
 </para>
 
 <screen>
@@ -207,12 +208,12 @@ print "&lt;body bgcolor=\"#$color\"&gt;\n";
 </screen>
 
 <para>
-Scriptet fungere ved at time er antallet af sekunder siden 1 jan. 1970.
+Programmet fungerer ved at <literal>time</literal> er antallet af sekunder siden 1 jan. 1970.
 Dette ganges med 25 der er 'hastigheden' hvormed farven ændres og modulus
 0x1000000 tages, det giver et resultat mellem 0x000000 og 0xffffff, dvs. alle
-mulige farver. Blå nivauet cykler med en periode på 10 sekunder, grøn nivauet
-cykler med en periode på 43 minutter og det tager ca. en uge før at cyklusen
-af farver starter forfra.
+mulige farver. Intensiteten af den blå komponent cykler med en periode på
+10 sekunder, den grønne komponent med en periode på 43 minutter og den røde
+komponent varierer med en periode på omkring en uge.
 </para>
 
 <para>
@@ -227,8 +228,8 @@ Browseren modtager HTML-kode som:
 
 <para>
 Reloades siden så vil baggrundfarven ændre sig fra gang til gang. NB. dette
-kunne gøres smartere med Javascript, men det kræver at browseren vil køre
-Javascript programmer.
+kunne gøres smartere med Javascript, men det kræver at  browseren kan køre
+Javascript-programmer og at brugeren ikke har slået det fra.
 </para>
 
 
@@ -457,7 +458,7 @@ Hvis man ønsker at tilrette denne fejlmeddelelse kan det gøres med
 <para>
 Enhver tekststreng kan bruges som fejlmeddelelse. Fejlmeddelelser vil for eksempel
 blive udskrevet hvis man forsøger at indsætte kodestumper der ikke findes,
-hvis man forsøger at indsætte CGI-script output med #include og ikke #exec,
+hvis man forsøger at indsætte uddata fra et CGI-program med #include og ikke #exec,
 eller hvis man forsøger at indsætte en fil i sig selv.
 </para>
 </sect1>
@@ -498,7 +499,7 @@ DOCUMENT_URI=/cgibog/test.shtml
 
 
 <para>
-Mange er disse variable er de samme som et CGI-script modtager,
+Mange er disse variable er de samme som et CGI-program modtager,
 normalt modtager man ikke DNS navnet på den server der ønsker data
 (REMOTE_HOST), men kun dens IP adresse, slå <command>HostNameLookups
 On</command> for et katalog definition i
@@ -685,8 +686,8 @@ Now did you reboot windows 5 or 6 times?
 </screen>
 
 <para>
-Scriptet vil returnere en side til alle folk der surfer på servere i
-Microsoft og en anden side til resten af verden.
+Programmet vil returnere én side til alle folk der surfer fra maskiner
+på Microsofts net og én anden side til resten af verden.
 </para>
 </sect1>
 
