@@ -1,0 +1,126 @@
+Dette katalog indeholder eksempler svarende til 
+bogen, hvis vi har ment dette er relevant.
+
+Seneste bøger kan findes på 
+http://www.sslug.dk/linuxbog
+
+Udviklingen foregår på
+http://cvs.sslug.dk/linuxbog
+
+---------------------------------------
+Vedledning i at få fat i bøgerne via CVS
+
+Vis at du vil være aktiv med bøgerne og
+kan arbejde ansvarligt med bøgerne :)
+Få login på tyge.sslug.dk ved at skrive til
+Peter Toft <pto@sslug.dk> og gør følgende.
+
+Installer OpenSSH på din maskine og følg 
+vejledningen på 
+http://cvs.sslug.dk/linuxbog/sikkerhed/bog/sikker-net-trafik.html
+http://cvs.sslug.dk/linuxbog/sikkerhed/bog/opsaetning-af-openssh.html
+
+Gør følgende (Linier med * udføres kun første gang)
+
+  ssh DITLOGIN@tyge.sslug.dk
+* mkdir public_html   
+* chmod a+rx ~ ~/public_html
+  cd public_html
+* cvs -d /usr/local/CVSROOT checkout linuxbog
+  cd linuxbog
+  make Makefiler
+  cd BOGNAVN
+  make html
+
+Så kan du køre
+Netscape http://cvs.sslug.dk/~DITLOGIN/linuxbog/java/bog
+
+Og teksten kommer på web hver morgen
+http://cvs.sslug.dk/linuxbog/
+
+Hvis du gerne vil have filerne hjem, så kan du sætte
+følgende miljø-variabel (environment-variable)
+
+export CVS_RSH=ssh
+
+og skrive 
+cvs -d DITLOGIN@tyge.sslug.dk:/usr/local/CVSROOT checkout linuxbog
+
+hvorefter du bør få bogen checket ud.
+
+Læs http://cvs.sslug.dk/linuxbog/program/bog/vaerktoej.html#VAERKTOEJ-CVS
+
+-----------------------------------------
+
+Hvis nogen af jer har lyst til at få email hver gang 
+der ryger en fil ind i CVS-arkivet (cvs commit), så kan 
+I tilmelde jer <linuxbog-commit@tyge.sslug.dk> ved 
+at skrive til <linuxbog-commit-subscribe@tyge.sslug.dk>
+
+I som har konto på tyge kan bruge 
+cd katalog
+cvs watch add 
+til at følge de filer I vil følge - eller denne nye 
+mulighed
+
+Hvordan ser de mails så ud man kan modtage på den nye 
+liste? De vil indeholde info om hvem som lavede 
+ændringen (pto), hvilket projekt der er 
+ændret (linuxbog) og hvilke filer som er ændret (her 
+kun hjaelpe.html) og man få den log-besked vi skriver 
+hver gang (kan ses i 
+http://cvs.sslug.dk/linuxbog/cvs2html/ ->
+http://cvs.sslug.dk/linuxbog/cvs2html/cvs_crono.html)
+Man får således ikke selve ændringen at se kun 
+log-beskeden og hvad der er ændret - og af hvem.
+
+--------------------------------------------
+
+Vejledning i at skrive
+
+Læs http://cvs.sslug.dk/linuxbog/dokumentation/bog/docbook.html
+
+Hver bog er organiseret gennem bog.sgml og indhold.sgml
+pga. integration med "alle-upgaven" (alle bøgerne 
+samlet) så er det smart at jeg i bog.sgml anfører 
+filernes kobling til et SGML-tag - eksempler
+
+ <!entity java-indledning SYSTEM "indledning.sgml">
+ <!entity java-indhold SYSTEM "indhold.sgml">
+ <!entity java-appendixRevHist SYSTEM "apprevhist.sgml">
+ <!entity java-forord SYSTEM "forord.sgml">
+
+og at jeg sidst i filen bog.sgml siger at NU kommer 
+java-indhold - i praksis skriver du &java-indhold;
+og dermed kopieres filen indhold.sgml ind (jfr. 
+ovenstående).
+
+Hvis du så kigger i indhold.sgml så vil jeg i bunden 
+bruge din indhold.sgml ved at skrive
+
+ &java-forord;      <---- defineret i bog.sgml
+ &java-indledning;  <---- do.
+ &java-appendixRevHist; <---- do. versionshistorien.
+ 
+Dermed kommer de tre filer ind i følgende rækkefølge
+
+ forord.sgml
+ indledning.sgml
+ apprevhist.sgml
+
+
+Når I har indført en ny fil VM.sgml og den skal med i 
+f.eks. java bogen, så skal I indføje en linie i bog.sgml
+
+ <!entity java-VM SYSTEM "VM.sgml">
+
+og i indhold.sgml skal I på passende sted referere 
+ 
+ &java-VM;
+
+Dernæst skal I tilføje en linie under den rette bog i 
+linuxbog/alle/bog.sgml - samme som i bog.sgml for den 
+enkelte bog - men med ../../../ sat foran stien. På den
+måde vil alle-bogen også være opdateret.
+
+ <!entity java-VM SYSTEM "../../../VM.sgml">
