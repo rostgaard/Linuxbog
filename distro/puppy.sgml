@@ -1,9 +1,9 @@
 <chapter id="distro-puppy">
 <title>Om Puppy Linux</title>
 <para>
-Ideen med Puppy Linux er at have en lille men lækker Linux incl.
-grafisk brugergrænseflade, som man nemt kan have med sig, f.eks. på en
-CD eller et flash-kort, og bruge hvor man er. I øjeblikket kan man få
+Puppy Linux er en lille, men lækker Linux incl.  grafisk
+brugergrænseflade, som man nemt kan have med sig på en CD eller
+et flash-kort, og bruge hvor man er. I øjeblikket kan man få
 Puppy til cdrom (live-Puppy), til flash kort (flash-Puppy) samt en puppy
 til at installere på harddisken (hard-Puppy). Desuden har forfatteren
 Barry Kauler planer om en floppy-Puppy og en zippy-Puppy, men disse
@@ -15,7 +15,7 @@ findes ikke endnu. Vi tester her live-cd'en.
 
  Puppys hjemmeside er
 <ulink
-url="http://www.goosee.com/puppy/index.shtml">http://www.goosee.com/puppy/index.shtml</ulink>. Puppy er tilsyneladende aktivt under udvikling.
+url="http://www.goosee.com/puppy/index.shtml">http://www.goosee.com/puppy/index.shtml</ulink>. Puppy ser ud til at være under aktiv udvikling.
 
 </para>
 
@@ -43,21 +43,17 @@ Hvis man vil gemme sin konfiguration fra gang til gang, kræves der
 desuden en ext2, ext3, vfat eller resierfs partition med min. 128 MB fri. 
 </para>
 <para>
-Man downloader og brænder et iso image til en CD. PuppyLinux downloades
-fra <ulink url="
+For at køre live-Puppy skal man downloade og brænde et CD image.
+PuppyLinux downloades fra <ulink url="
 ftp://ftp.ibiblio.org/pub/linux/distributions/puppylinux/">
 ftp://ftp.ibiblio.org/pub/linux/distributions/puppylinux/</ulink> -
-version 0.7.8 under ligger under puppy-0.7.8/ og hedder cd-puppy.iso.
-Version 0.7.6 ligger under puppy-0.7.6 og hedder også cd-puppy.iso, men
-til den ligger der moduler under modules-0.7.6/modules.tgz. Dette vender
-vi tilbage til senere.
 
 Man kan downloade og brænde et image med kommandoerne
 <screen>
 wget --passive-ftp ftp.ibiblio.org/pub/linux/distributions/puppylinux/puppy-0.7.8/cd-puppy.iso
 cdrecord -v speed=8 dev=0,0,0 -data cd-puppy.iso
 </screen>
-Iso imaget til version 0.7.8 fylder 42 MB, version 0.7.6 fylder 35 MB.
+Iso imaget til version 0.7.8 fylder 42 MB.
 </para>
 
 <para>
@@ -74,8 +70,7 @@ root fil. Mere herom senere.
 Efter lidt tid bliver man spurgt om keyboard (us er default) og om mus
 (ps/2 er default). Så starter X op i en lav opløsning, og man kan vælge
 x opløsning ved et klik med musen. Nu startes X op i den nye opløsning,
-og man er kørende. Hvis du blot ønsker at fortsætte herfra med at bruge
-systemet, kan du gå videre til <xref linkend="distro-puppy-brug"/>. 
+og man er kørende.
 </para>
 
 <sect2 id="distro-puppy-root">
@@ -84,38 +79,44 @@ systemet, kan du gå videre til <xref linkend="distro-puppy-brug"/>.
 Puppy vil gerne gemme din konfiguration, enten på en floppy, på
 harddisken, eller på flash-kortet i tilfælde af flash-Puppy. Så hvis det
 er muligt, opretter den en fil på et fast medie, og mounter det som
-/root. Hvis ikke det er muligt, er /root en RAMDISK, og konfigurationen
-går således tabt ved reboot.
-/etc er et symbolsk link til /root/.etc. Så hvis /root er en rigtig fil
-i stedet for en RAMdisk gemmes konfiguration i /etc på denne måde.
+<filename>/root</filename>. Hvis ikke det er muligt, er
+<filename>/root</filename> en RAMDISK, og konfigurationen går således
+tabt ved reboot.
+Konfiguration i <filename>/etc</filename> gemmes ved at
+<filename>/etc</filename> er et symbolsk link til
+<filename>/root/.etc</filename>. Så hvis <filename>/root</filename> er
+en rigtig fil i stedet for en RAMdisk gemmes konfiguration i
+<filename>/etc</filename> på denne måde.
 </para>
 
 <para>
-Live-Puppy vil under første boot forsøge at lægge en 128 MB fil på
-harddisken, som den så vil mounte som root, og hvor al konfiguration
-bliver gemt.
+Under første boot forsøger live-Puppy at lægge en 128 MB fil på
+harddisken den kan mounte som <filename>/root</filename>, og hvor al
+konfiguration bliver gemt.
+</para>
+
 Den første brugbare partition på mit system er tilfældigvis en ext3
-partition på 50 MB (/boot fra en Red Hat installation)
-Puppy laver så vidt jeg kan se en fil på den første egnede partition den
-kan finde, og kalder den pup078. Det lykkes så ikke i mit tilfælde,
-selvom der er masser af fri plads på den næste partition - den checker
-åbenbart ikke om der er plads nok, før den vælger hvilken partition den
-vil bruge. Det hjælper heller ikke at sætte en tom floppy i drevet.
+partition på 50 MB. Puppy forsøger at lave en 128MB fil
+<filename>pup078</filename> på denne partition, fejler, og forsøger sig
+ikke med andre partitioner.  
+</para>
+</sect2>
+
+
+<sect2 id="distro-puppy-probs">
+<title>Problemer</title>
+<para>
+Det er svært at få lov at omkonfigurere puppy, hvis standard udgaven
+ikke virker. Emulate3buttons virker ikke, mit netkort er ikke
+understøttet, og som sagt finder puppy ikke en partition den kan lave
+sin <filename>/root</filename> fil på. For at rette op på disse ting er
+det nødvendigt at lave en nyt cd image. Det er muligt at de to andre
+problemer kunne løses ved at rette under <filename>/etc</filename>, hvis
+det ikke var for <filename>/root</filename> problemet.
 </para>
 
 
 <para>
-Problemer:
-Emulate3buttons virker ikke, og jeg har ikke fået mulighed for at vælge det.
-Mit netkort er ikke understøttet. Dette kan løses ved at køre
-0.7.6 og loade modules fra modules.tgz, mere om dette senere. Jeg kan
-ikke få lov at køre "Remaster live-Puppy CD" fordi den ikke har fået lov
-at lave sin 128 MB fil på /dev/hda1. Jeg lavede een på /dev/hda2 i
-stedet og mountede den, men det kan Puppy ikke rigtig finde ud af :(
-Og hvis jeg ikke kan køre remaster programmet ved jeg ikke hvordan jeg
-skal ændre konfigurationen. Man kan muligvis lave imaget i hånden - så
-noget på websiden - prøver i morgen.
-
 Dokumentationen er ikke ret opdateret - i version 0.7.4 brugte den en
 floppy til at gemme /root på, og det er stadig den besked cd remaster
 programmet giver, men det hjælper ikke at sætte en floppy i og reboote
