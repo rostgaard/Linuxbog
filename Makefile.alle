@@ -217,11 +217,35 @@ $(targetname)-pdf-$(version).zip: $(sgmlfiler) bog.sgml
 endif BUILD_PDF
 
 ################################################################################
-# clean
+# CLEAN targets
 ################################################################################
 
-.PHONY: clean
-clean:
-	rm -rf bog.sgml version.sgml dato.sgml magic.sgml bog DBTOHTML_OUTPUT_DIR* bog.junk html stikord.sgml tempdir bogps bogpdf $(targetname)* $(targetshortname) palm/*.prc palm/*.pdb sideantal.txt images 	*~*~  .#*[0-9]
+# Vi har tre forskellige slags clean targets.
+# clean: targets fjernes, men autogenererede bliver ikke fjernet.
+# distclean: clean til distribution, dvs. filer kopieret af toplevel configure
+# må ikke fjernes, men autogenererede sgml filer må godt.
+# reallyclean: Alt fjernes, helt ned til cvs nærmest
 
+# TODO: dato.sgml, version.sgml, stikord.sgml, magic.sgml
+
+################################################################################
+# Target og diverse filer fjernes. Autogenererede filer beholdes
+.PHONY : clean
+clean:
+	@echo clean $(targetshortname)
+	rm -rf bog.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9] $(targetshortname)
+
+################################################################################
+#
+# distclean-local - hook til automake.
+# Cleaner så det passer til en dist
+# TODO: Fixme
+distclean-local:	clean
+	rm -rf magic.sgml stikord.sgml autom4te.cache 
+
+################################################################################
+# Alt fjernes, stort set ned til cvs
+.PHONY : reallyclean
+reallyclean:	clean distclean
+	rm -Rf dato.sgml version.sgml bogoversigt.sgml ophavsret.sgml linuxbog.css linuxbog.spec misc aclocal.m4 bootstrap configure configure.ac install-sh Makefile.am Makefile.in missing mkinstalldirs
 

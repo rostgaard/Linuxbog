@@ -266,16 +266,34 @@ $(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
 
 
 ################################################################################
+# CLEAN targets
+################################################################################
+
+# Vi har tre forskellige slags clean targets.
+# clean: targets fjernes, men autogenererede bliver ikke fjernet.
+# distclean: clean til distribution, dvs. filer kopieret af toplevel configure
+# må ikke fjernes, men autogenererede sgml filer må godt.
+# reallyclean: Alt fjernes, helt ned til cvs nærmest
+
+# TODO: dato.sgml, version.sgml, stikord.sgml, magic.sgml
+
+################################################################################
+# Target og diverse filer fjernes. Autogenererede filer beholdes
+.PHONY : clean
+clean:
+	@echo clean $(targetshortname)
+	rm -rf DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9] $(targetshortname)
+
+################################################################################
 #
 # distclean-local - hook til automake.
 # Cleaner så det passer til en dist
 # TODO: Fixme
-distclean-local:	
-	rm -rf autom4te.cache magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)* palm/*.prc palm/*.pdb sideantal.txt *~ .#*[0-9]
-
+distclean-local:	clean
+	rm -rf magic.sgml stikord.sgml autom4te.cache $(auto_sgml_filer) config.log config.status 
 
 ################################################################################
-# TODO: Fixme
-clean:
-	@echo clean $(targetshortname)
-	rm -rf dato.sgml version.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml PdfBuildDir bogps bogpdf $(targetname)*  palm/*.prc palm/*.pdb sideantal.txt *~*~ .#*[0-9] $(auto_sgml_filer)
+# Alt fjernes, stort set ned til cvs
+.PHONY : reallyclean
+reallyclean:	clean distclean
+	rm -Rf dato.sgml version.sgml bogoversigt.sgml ophavsret.sgml linuxbog.css linuxbog.spec linuxbogurl.sgml misc aclocal.m4 bootstrap configure configure.ac install-sh Makefile.am Makefile.in missing mkinstalldirs
