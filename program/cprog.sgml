@@ -297,20 +297,22 @@ filen med kildeteksten kaldes. C++-programmer hedder altid .C .C++ eller
 
 </sect2><!-- foerstecppprogram -->
 
-<sect2 id="makefiles">
-<title>Oversættelse af flere C-filer med makefiler</title>
+<sect2 id="oversættelsesfiler">
+ <title>Brug af oversættelsesfiler ("makefiles")</title>
 
-<indexterm><primary>make</primary></indexterm>
-<indexterm><primary>Makefile</primary></indexterm>
-<para>
-Næste eksempel er to filer, hvor den ene kalder funktioner i den anden. I
-eksemplet, der er C-kildetekst, er det igen det største af to tal, der skal
-findes og skrives ud.
-</para>
+ <indexterm><primary>oversættelsesfiler</primary></indexterm>
+ <indexterm><primary>make</primary></indexterm>
+ <indexterm><primary>Makefile</primary></indexterm>
 
-<para>
-Følgende fil kan gemmes som <filename>ceks2.c</filename>.
-</para>
+ <para>
+  Næste eksempel er to filer, hvor den ene kalder funktioner i den anden. I
+  eksemplet, der er skrevet i C, er det igen det største af to tal, der skal
+  findes og skrives ud.
+ </para>
+
+ <para>
+  Følgende fil kan gemmes som <filename>ceks2.c</filename>.
+ </para>
 
 <screen>
 #include &lt;stdio.h&gt;
@@ -332,9 +334,9 @@ int main(void)
 }
 </screen>
 
-<para>
-Følgende fil kan gemmes som <filename>cfkt.c</filename>.
-</para>
+ <para>
+  Følgende fil kan gemmes som <filename>cfkt.c</filename>.
+ </para>
 
 <screen>
 float max(float f1,float f2)
@@ -353,13 +355,14 @@ float max(float f1,float f2)
 
 <screen><prompt>[daisy@linus daisy]$ </prompt> <userinput>gcc -o ceks2 ceks2.c cfkt.c -lm</userinput></screen>
 
-<para>
-En langt mere elegant metode er at lave en makefile. Herefter skrives blot
-<command>make</command>, og C-oversætteren vil kun oversætte de filer, der
-er nye i forhold til objektfilerne. Makefiles kan også anvendes til at
-styre oversættelse generelt såsom af LaTeX-kode. En makefile (med navnet
-<filename>Makefile</filename>) kunne være følgende.
-</para>
+ <para>
+  En langt mere elegant metode er at lave en oversættelsesfil. Herefter
+  skrives blot <command>make</command>, og C-oversætteren vil kun oversætte de
+  filer, der er nyere end de oversatte filer. Oversættelsesfiler kan også
+  bruges til at styre oversættelse af andet end regulære programmer. For
+  eksempel LaTeX-kode. En oversættelsesfil (med navnet
+  <filename>Makefile</filename>) kunne være følgende.
+ </para>
 
 <screen>
 # Makefile til GNU C-oversætteren - dette er en kommentar
@@ -391,34 +394,35 @@ $(OUTPUT): $(OBJS)
         $(CC) $(CFLAGS) -o $(OUTPUT) $(OBJS) $(LDFLAGS)
 </screen>
 
-<para>
-Makefilen består af en masse definitioner af variable og en 
-eller flere opskrifter. Opskriften fortæller at $(OUTPUT)
-(ceks2) afhænger af objekt kode filerne $(OBJS)
-(ceks2.o og cfkt.o), og at at ceks2 programmet kan laves
-med opskriften <command>cc -O2 -g -o ceks2 ceks2.o cfkt.o -lm</command>. 
-Bemærk, at der skal stå en tabulator foran alle opskrifter.
-Der må ikke anvendes mellemrum. Make programmet gætter selv hvordan
-.c filer skal oversættes for at danne objekt filer .o.
-</para>
+ <para>
+  Bemærk at indrykninger i oversættelsesfiler skal være tabulatortegn! Det
+  fungerer ikke med mellemrum.
+ </para>
 
-<para>
-Når makefilen er skrevet, kan programmet bare oversættes ved at skrive
-</para>
+ <para>
+  Oversættelsesfilen består af en masse definitioner af variable og en eller
+  flere opskrifter. Opskriften fortæller at $(OUTPUT) (ceks2) afhænger af
+  objekt kode filerne $(OBJS) (ceks2.o og cfkt.o), og at at ceks2-programmet
+  kan laves med opskriften
+  <command>cc -O2 -g -o ceks2 ceks2.o cfkt.o -lm</command>. 
+  Make-programmet gætter selv hvordan .c filer skal oversættes for at danne
+  objekt filer .o.
+ </para>
 
-<screen>
-<prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
-</screen>
-
-<para>
-i det katalog, hvor makefilen findes. En makefile kan være meget lang og
-indeholde mange opskrifter, der indbyrdes kan afhænge af hinanden. Make
-programmet undersøger datoen på alle filer, og hvis datoen på kildeteksten
-er nyere end datoen på den tilsvarende objekt fil, så er objekt filen
-forældet, og make oversætter automatisk kildeteksten igen og linker 
-programmet med den nye objekt fil.
-</para>
-</sect2><!-- makefiles -->
+ <para>
+  Når oversættelsesfilen er skrevet, kan programmet bare oversættes ved at
+  skrive
+  <screen>
+   <prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
+  </screen>
+  i det katalog, hvor oversættelsesfilen findes. En oversættelsesfil kan være
+  meget lang og indeholde mange opskrifter, der indbyrdes kan afhænge af
+  hinanden. Make-programmet undersøger datoen på alle filer, og hvis datoen på
+  kildeteksten er nyere end datoen på den tilsvarende objektfil, så er
+  objektfilen forældet, og make oversætter automatisk kildeteksten igen og
+  samler programmet med den nye objektfil.
+ </para>
+</sect2><!-- oversættelsesfiler -->
 
 <sect2 id="GDB">
 <title>GNU debuggeren og DDD</title>
@@ -463,36 +467,44 @@ indholdet af strukturer, tabeller og simple variabler. DDD kan hentes fra
 
 
 <sect2 id="kdevelop">
-<title>KDevelop</title>
-<indexterm><primary>KDevelop</primary></indexterm>
-<indexterm><primary>Visuelt programmeringsmiljø</primary><secondary>KDevelop</secondary></indexterm>
-<para>
-Der er ved at komme integrerede udviklingsmiljøer til Linux, som det
-kendes fra f.eks. Visual C++ til Windows. Man kan købe Code Warrior
-til Linux, Code Crusader og Delphi er også godt på vej 
-(Code Crusader er ikke så godt designet).
-</para>
-<para>
-Et spændende helt nyt program er KDevelop til KDE.
-</para>
+ <title>KDevelop</title>
 
+ <indexterm><primary>KDevelop</primary></indexterm>
+ <indexterm>
+  <primary>Visuelt programmeringsmiljø</primary>
+  <secondary>KDevelop</secondary>
+ </indexterm>
+
+ <para>
+  Der er ved at komme integrerede udviklingsmiljøer til Linux, som det kendes
+  fra f.eks. Visual C++ til Windows. Man kan købe Code Warrior til Linux, Code
+  Crusader og Delphi er også godt på vej. Lige nu ser Code Warrior og Delphi
+  mest lovende ud.
+ </para>
+
+ <para>
+  Et spændende helt nyt program er KDevelop til KDE.
+ </para>
+
+<!--
 <figure ID="kdevelop1-fig" FLOAT="1">
 <title>Opstartsbillede til KDevelop
 </title>
 <graphic FILEREF="kdevelop1.&magic;"  SCALE="50"></graphic>
 </figure>
+-->
 
-<para>
-Ambitionsniveauet er meget højt, og til trods for at det er den første
-beta-version, som er blevet testet her, så ser det positivt ud.
-</para>
+ <para>
+  Ambitionsniveauet er meget højt, og til trods for at det er den første
+  beta-udgave, som er blevet afprøvet her, så ser det positivt ud.
+ </para>
 
 <para>
 Som det ses på <xref linkend="kdevelop2-fig"/>, så er der der ligheder
 med Visual C++ fra Microsoft. Man kan nemt overskue alle filer,
 klasser, strukturer og variable i projektet. Der er god understøttelse for at
-oversætte, debugge (ser det ud til), og revisionskontrol er direkte
-integreret. Dette er baseret på CVS. Der er mulighed for integreret
+oversætte og søge fejl (ser det ud til), og revisionskontrol er direkte
+integreret. Det er baseret på CVS. Der er mulighed for integreret
 dokumentation baseret på SGML. 
 </para>
 
@@ -504,10 +516,10 @@ dokumentation baseret på SGML.
 
 <para>
 En ting, som er et meget stort plus ved KDevelop i forhold til Visual
-C++ er at alle projekt-filer er tekstbaserede, dvs. man kan se alt
+C++ er at alle projektfiler er tekstbaserede, dvs. man kan se alt
 med en almindelig teksteditor og rette hvis man har noget specielt,
-der skal ind.  KDevelop laver i øvrigt selv standard-makefiler, så man
-kan oversætte programmerne udenfor det grafiske miljø. Med andre ord, så er
+der skal ind.  KDevelop laver i øvrigt selv standard-oversættelsesfiler, så man
+kan oversætte programmerne uden for det grafiske miljø. Med andre ord, så er
 KDevelop en naturlig overbygning på GNU-værktøjerne, uden at disse
 erstattes.  KDevelop følger med f.eks. Red Hat 7.0 og kan
 hentes fra projektets websted
@@ -524,37 +536,37 @@ lave grafiske programmer
 </sect2><!-- kdevelop -->
 
 <sect2 id="Glade">
-<title>Glade</title>
-<indexterm><primary>Glade</primary></indexterm>
+ <title>Glade</title>
 
-<para>
-Glade er et program, der kan bruges til at designe grafiske
-brugergrænseflader, der bruger GTK og Gnome biblioteketerne.
-Glade kan generere grafiske brugergrænseflader og gemme dem
-som C-, C++-, Perl-, Eiffel- og Ada-kildetekst. Glade genererer
-automatisk makefiler til at oversætte programmet.
-</para>
+ <indexterm><primary>Glade</primary></indexterm>
+ <indexterm><primary>brugergrænsefladebygger</primary></indexterm>
 
-<para>
-Glade er ikke et integreret udviklingsmiljø, men er kan kun
-lave grafiske grænseflader. I glade kan man for eksempel definere at
-der skal kaldes en bestemt funktion, når der, for eksempel,
-trykkes på en knap. Glade gemmer så kildeteksten med en tom
-funktionsdefinition. Det er op til programmøren at indsætte kode i
-denne funktion, så programmet rent faktisk gør noget.
-</para>
+ <para>
+  Glade er et program, der kan bruges til at designe grafiske
+  brugergrænseflader, der bruger GTK- og Gnome-biblioteketerne. Glade kan
+  generere grafiske brugergrænseflader og gemme dem som C-, C++-, Perl-,
+  Eiffel- og Ada-kildetekst. Glade genererer automatisk oversættelsesfiler til
+  at oversætte programmet.
+ </para>
+
+ <para>
+  I Glade kan man for eksempel definere at der skal kaldes en bestemt
+  funktion, når der, for eksempel, trykkes på en knap. Glade gemmer så
+  kildeteksten med en tom funktionsdefinition. Det er så op til programmøren
+  at indsætte kode i denne funktion, så programmet rent faktisk gør noget.
+ </para>
 
 <figure ID="glade-fig" FLOAT="1">
-<title>Design af grafisk brugergrænseflade i Glade (her vist med Aqua themaet).
+<title>Design af grafisk brugergrænseflade i Glade (her vist med Aqua-temaet).
 </title>
 <graphic FILEREF="glade1.&magic;" SCALE="50"></graphic>
 </figure>
 
 <para>
 En specielt smart egenskab ved Glade er at den kan gemme hele
-definition af et grafisk brugergrænseflade i en fil, vha. libglade
-funktionsbiblioteket kan et C-program automatisk genskabe det
-grafiske brugergrænseflade igen og på den måde lave et fungerende
+definitionen af en grafisk brugergrænseflade i en fil, vha. libglade
+funktionsbiblioteket kan et C-program automatisk genskabe den
+grafiske brugergrænseflade igen og på den måde lave en fungerende
 grafisk brugergrænseflade. 
 </para>
 
@@ -567,8 +579,8 @@ grafisk brugergrænseflade.
 
 <para>
 Electric Fence er et bibliotek, der er uvurderligt til hurtigt
-finde buffer overløb eller underløb. Et typisk problem i C er
-man allokere en tabel, men forsøger at skrive efter tabellens
+finde bufferoverløb eller -underløb. Et typisk problem i C er
+man allokerer en tabel, men forsøger at skrive efter tabellens
 slut eller før dens start. En anden typisk fejl er at allokere
 en streng, der er for lille, som i det følgende eksempel
 </para>
@@ -603,14 +615,13 @@ p:efence test buffer overflow
 </screen>
 
 <para>
-En streng kopieres til streng pointeren p, men strengen er længrer end
+En streng kopieres til strengpegeren p, men strengen er længere end
 den hukommelsesblok, der er allokeret. Strcpy overskriver derfor
-delvist q strengen "efence test". Et program kan sagtens køre viderer
-efter at et buffer overløb, men måske er dette buffer overløb årsagen
+delvist strengen q "efence test". Et program kan sagtens køre videre
+efter et bufferoverløb, men måske er dette bufferoverløb årsagen
 til at programmet fejler katastofalt en halv time senere. Det kan derfor
-være uhyre svært at finde denne type fejl, da programmet bare fejler et
-mystisk sted, mens årsagen til fejlen blev introduceret et helt andet
-sted i kildeteksten.
+være uhyre svært at finde denne type fejl, da de to ting tilsyneladende vil
+være helt urelaterede.
 </para>
 
 <para>
@@ -618,9 +629,9 @@ Oversættes programmet istedet med <command>gcc -o test test.c -ggdb -lefence</co
 vil programmet fejle, og gemme en <filename>core</filename> fil, når 
 det udfører den anden strcpy() linie.
 Køres <command>ddd test core</command> så vil debuggeren fortælle i
-hvilen linie buffer overløbet skete. <command>man efence</command>
+hvilken linie bufferoverløbet skete. <command>man efence</command>
 giver en masse information om hvordan efence virker, og hvordan
-det kan bruges til at teste for buffer underløb og meget andet.
+det kan bruges til at teste for bufferunderløb og meget andet.
 </para>
 
 </sect2>  <!-- efence -->
