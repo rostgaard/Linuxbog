@@ -185,6 +185,10 @@ $proglang = array(
     navn => "TCL",
     link => "tcl.html"
   ),
+  "tex-dvi" => array(
+    navn => "TeX med uddata i DVI-fil",
+    link => tex.html"
+  ),
   "tk" => array(
     navn => "TK",
     link => "tk.html"
