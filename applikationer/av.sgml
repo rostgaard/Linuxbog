@@ -430,23 +430,24 @@ som f.eks. Windows Media Player (deriblandt DiVX;-) og AVI).
 
 <para>
 Først skal du hente selve programmet fra <ulink url="http://mplayer.sourceforge.net">http://mplayer.sourceforge.net</ulink>. I
-skrivende stund er den nyeste version 0.50pre3. For at afspille mange af
-formaterne skal du også have fat i en zip-fil som indeholder en række Win32
+skrivende stund er den nyeste version MPlayer 0.60pre2. For at afspille mange af
+formaterne skal du også have fat i en tar.bz2-fil som indeholder en række Win32
 codecs (filer der beskriver hvordan et filmformat afspilles). Til sidst skal
 du hente en fil som indeholder en række fonte, der benyttes til bl.a. at vise
 hvor langt henne i en fil man er (i sekunder/minutter).
 I skrivende stund kan de nødvendige filer hentes her:
-<ulink url="http://mp.dev.hu/MPlayer/releases/MPlayer-0.50pre3.tgz">http://mp.dev.hu/MPlayer/releases/MPlayer-0.18pre.tgz</ulink>,
-<ulink url="http://mp.dev.hu/MPlayer/releases/w32codec-0.18.zip">http://mp.dev.hu/MPlayer/releases/w32codec-0.18.zip</ulink> og
-<ulink url="http://mp.dev.hu/MPlayer/releases/mp_font3.zip">http://mp.dev.hu/MPlayer/releases/mp_font3.zip</ulink>
+<ulink url="http://mplayerhq.hu/MPlayer/releases/MPlayer-0.60pre2.tar.bz2">http://mplayerhq.hu/MPlayer/releases/MPlayer-0.60pre2.tar.bz2</ulink>,
+<ulink url="http://mplayerhq.hu/MPlayer/releases/w32codec-0.60.tar.bz2">http://mplayerhq.hu/MPlayer/releases/w32codec-0.60.tar.bz2</ulink> og
+<ulink url="http://mplayerhq.hu/MPlayer/releases/mp-arial-iso-8859-1.zip">http://mplayerhq.hu/MPlayer/releases/mp-arial-iso-8859-1.zip</ulink>
 </para>
 
 <para>
 Det første du skal gøre er at sikre dig at du har de værktøjer
 og programmer der skal bruges for at få kompileret MPlayer korrekt.
-Du skal bruge en så ny som mulig version af GCC (Gnu's C Compiler)
-samt GCC-CPP (C Pre Processor) og programmet Nasm (Net-Wide Assembler).  Du
-skal desuden bruge libSDL (Simple DirectMedia Layer) af mindst version
+Du skal bruge versioner mellem 2.95.2 og 2.95.4 af GCC (Gnu's C Compiler)
+samt GCC-CPP (C Pre Processor) og programmet Nasm (Net-Wide Assembler).
+Man kan dog bruge andre nyere version af GCC men det er ikke anbefalet.
+Du skal desuden bruge libSDL (Simple DirectMedia Layer) af mindst version
 1.1 for at få det bedste output fra MPlayer.
 </para>
 
@@ -480,7 +481,7 @@ Sun Audio
 <para>
 Hvis du benytter en RPM-baseret distribution af Linux er der store chancer for
 at alle disse programmer allerede findes som RPM-pakker der nemt kan
-installeres. Det gælder ihvertfald for Mandrake 8. Hvis du har en ikke-RPM-baseret
+installeres. Det gælder ihvertfald for Mandrake 7.2 til 8.1. Hvis du har en ikke-RPM-baseret
 distribution såsom Slackware skal du ud på de forskellige programmers
 hjemmesider for at hente dem og selv sørge for at kompilere og installere dem.
 </para>
@@ -527,7 +528,8 @@ udpakke zip-filen med Win32 codecs (som root):
 <screen>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>mkdir /usr/lib/win32</USERINPUT>
 <PROMPT>[root@linus /root]#</PROMPT> <USERINPUT>cd /usr/lib/win32</USERINPUT>
-<PROMPT>[root@linus /usr/lib/win32]#</PROMPT> <USERINPUT>unzip -a /path/to/w32codec-0.18.zip</USERINPUT>
+<PROMPT>[root@linus /usr/lib/win32]#</PROMPT> <USERINPUT>tar -xjf /path/to/w32codec-0.60.tar.bz2</USERINPUT>
+<PROMPT>[root@linus /usr/lib/win32]#</PROMPT> <USERINPUT>mv w32codec/* .</USERINPUT>
 </screen>
 
 <para>
@@ -535,14 +537,17 @@ Dernæst udpakker du MPlayer, f.eks. hjemme som dig selv (ikke root):
 </para>
 
 <screen>
-<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>tar -zxvf MPlayer-0.18pre.tgz</USERINPUT>
-<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd MPlayer-0.18pre5</USERINPUT>
-<PROMPT>[anne@linus MPlayer-0.18pre5]$</PROMPT> <USERINPUT>./configure</USERINPUT>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>tar -zxvf MPlayer-0.60pre2.tgz</USERINPUT>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd MPlayer-0.60pre2</USERINPUT>
+<PROMPT>[anne@linus MPlayer-0.60pre2]$</PROMPT> <USERINPUT>./configure</USERINPUT>
 </screen>
 
 <para>
 Hvis du benytter et system som har GCC 2.96 skal du tilføje
-<literal>--disable-gcc-checking</literal> til <command>./configure</command>
+<literal>--disable-gcc-checking</literal> til <command>./configure</command>.
+Du skal dog være klar over at nogen ting ikke virker, så som ".wvm" filer,
+hvis dit system som post Mandrake 8.0 har en kgcc kan jeg anbefale at bruge den istedet
+dog med samme flag: <command>./configure --cc=kgcc --disable-gcc-checking</command>
 (Du skal altså IKKE køre <command>./configure</command> uden denne parameter
 hvis du har 2.96):
 </para>
@@ -597,7 +602,7 @@ Når <command>./configure</command> er færdig køres en <command>make</command>.
 </para>
 
 <screen>
-<PROMPT>[anne@linus MPlayer-0.18pre5]$</PROMPT> <USERINPUT>make</USERINPUT>
+<PROMPT>[anne@linus MPlayer-0.60pre2]$</PROMPT> <USERINPUT>make</USERINPUT>
 </screen>
 
 <para>
@@ -610,7 +615,7 @@ som root, men som dig selv:
 <PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd</USERINPUT>
 <PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>mkdir .mplayer</USERINPUT>
 <PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd .mplayer</USERINPUT>
-<PROMPT>[anne@linus cd .mplayer]$</PROMPT> <USERINPUT>cp ~/MPlayer-0.18pre5/DOCS/codecs.conf .</USERINPUT>
+<PROMPT>[anne@linus cd .mplayer]$</PROMPT> <USERINPUT>cp ~/MPlayer-0.60pre2/etc/codecs.conf .</USERINPUT>
 <PROMPT>[anne@linus cd .mplayer]$</PROMPT> <USERINPUT>echo "vo=sdl" > config</USERINPUT>
 </screen>
 
@@ -650,7 +655,9 @@ Så skal fontfilen udpakkes til <filename>~/.mplayer/font</filename>:
 <screen>
 <PROMPT>[anne@linus .mplayer]$</PROMPT> <USERINPUT>mkdir font</USERINPUT>
 <PROMPT>[anne@linus .mplayer]$</PROMPT> <USERINPUT>cd font</USERINPUT>
-<PROMPT>[anne@linus font]$</PROMPT> <USERINPUT>unzip -a /path/to/mp_font3.zip</USERINPUT>
+<PROMPT>[anne@linus font]$</PROMPT> <USERINPUT>unzip -a /path/to/mp-arial-iso-8859-1.zip</USERINPUT>
+<PROMPT>[anne@linus font]$</PROMPT> <USERINPUT>cp iso-8859-1/arial-14/*</USERINPUT>
+<PROMPT>[anne@linus font]$</PROMPT> <USERINPUT>chmod 644 *</USERINPUT>
 </screen>
 
 <para>
@@ -677,9 +684,9 @@ i MPlayer-kataloget.
 </para>
 
 <screen>
-<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd MPlayer-0.18pre5</USERINPUT>
-<PROMPT>[anne@linus MPlayer-0.18pre5]$</PROMPT> <USERINPUT>su</USERINPUT>
-<PROMPT>[root@linus MPlayer-0.18pre5]#</PROMPT> <USERINPUT>make install</USERINPUT>
+<PROMPT>[anne@linus ~]$</PROMPT> <USERINPUT>cd MPlayer-0.60pre2</USERINPUT>
+<PROMPT>[anne@linus MPlayer-0.60pre2]$</PROMPT> <USERINPUT>su</USERINPUT>
+<PROMPT>[root@linus MPlayer-0.60pre2]#</PROMPT> <USERINPUT>make install</USERINPUT>
 </screen>
 
 <para>
@@ -687,7 +694,7 @@ Hvis du ikke har /usr/local/bin i din path, er det en god ide at linke mplayer i
 </para>
 
 <screen>
-<PROMPT>[root@linus MPlayer-0.18pre5]#</PROMPT> <USERINPUT>cd /usr/bin</USERINPUT>
+<PROMPT>[root@linus MPlayer-0.60pre2]#</PROMPT> <USERINPUT>cd /usr/bin</USERINPUT>
 <PROMPT>[root@linus bin]#</PROMPT> <USERINPUT>ln -s /usr/local/bin/mplayer</USERINPUT>
 </screen>
 
