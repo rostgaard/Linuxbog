@@ -447,6 +447,8 @@ Section "InputDevice"
 EndSection
 </programlisting>
 
+<indexterm><primary>mus</primary><secondary>opløsning</secondary></indexterm>
+
 <para>
 Den sidste mus her er en Razor Boomslang 2000 USB mouse (også med
 scroolknap). Musen har en opløsning på 2000 DPI (MEGET følsom
@@ -491,15 +493,14 @@ anstrenge hånden eller håndledet.
 <title>Mus med hjul</title>
 <para>
 Det kan nævnes, at med Microsoft IntelliMouse, Logitech pilot+, og
-Logitech MouseMan+ med hjul på kan der være problemer med at få
-den midterste knap (hjulet) til at virke.  Men som altid, er der
-nogen, som har arbejdet på sagen, og der er hjælp at hente på <ulink
+Logitech MouseMan+ med hjul normalt virker direkte. Skulle der være problemer med at få
+den midterste knap (hjulet) til at virke er der hjælp at hente på <ulink
 url="http://www.inria.fr/koala/colas/mouse-wheel-scroll">http://www.inria.fr/koala/colas/mouse-wheel-scroll</ulink>
 </para>
 
 <para>
 For at gøre X i stand til at benytte hjulet som midterknap, skal man
-rette i filen <filename>/etc/X11/XF86Config</filename>. 
+rette i filen <filename>/etc/X11/XF86Config-4</filename>. 
 Protokollen skal ændres, og hjulfunktionen skal aktiveres.
 </para>
 <para>
@@ -621,58 +622,6 @@ Med Alt svarer scrollning til "forward" hhv. "back".
 
 </sect4>
 
-<sect4 id="XhjulEmacs">
-<title>Mus med hjul og Emacs</title>
-<para>
-For at benytte hjulet til at rulle op og ned i Emacs laves en Emacs
-Lisp-fil (en el-fil).  Som root kan den placeres sammen med de andre
-el-filer i <filename>/usr/share/emacs/20.2/lisp</filename>. Dette
-muliggør lettere adgang, idet Emacs' "library-path" umiddelbart finder
-filen, når den skal indlæses.  Man kan f.eks. kalde filen
-<filename>mwheel.el</filename>, og den kan se ud som følger:
-</para>
-
-<programlisting>
-;;; No copyright
-
-;; Maintainer: Jan Eggert Kofoed  mailto:jan.kofoed@person.dk
-;; Keywords: intellimouse
-
-;; This file can be used with GNU Emacs.
-
-;; The code was taken from
-;;   www.inria.fr/koala/colas/mouse-wheel-scroll
-;; which is maintained by Colas Nahaboo, but the code is put there
-;; with courtesy of
-;;    Sylvia Knight, Sylvia.Knight@cl.cam.ac.uk
-
-;;; Code:
-
-(defun up-slightly () (interactive) (scroll-up 5))
-(defun down-slightly () (interactive) (scroll-down 5))
-(global-set-key [mouse-4] 'down-slightly)
-(global-set-key [mouse-5] 'up-slightly)
-(defun up-one () (interactive) (scroll-up 1))
-(defun down-one () (interactive) (scroll-down 1))
-(global-set-key [S-mouse-4] 'down-one)
-(global-set-key [S-mouse-5] 'up-one)
-
-(defun up-a-lot () (interactive) (scroll-up))
-(defun down-a-lot () (interactive) (scroll-down))
-(global-set-key [C-mouse-4] 'down-a-lot)
-(global-set-key [C-mouse-5] 'up-a-lot)
-</programlisting>
-
-<para>
-Filen kan også byte-oversættes med Emacs.
-Emacs kan så læse filen, når du skriver følgende linie ind i 
-<filename>~/.emacs</filename>:
-</para>
-
-<programlisting>
-(load-library "mwheel")
-</programlisting>
-</sect4>
 </sect3>
 </sect2>
 
