@@ -1281,6 +1281,416 @@ Her kan der være forskelle alt efter maskin-type.
 
 </sect1>
 
+<sect1 id="quota">
+<title>Kontrol af diskforbrug med quota</title>
+
+<indexterm>
+ <primary>diskforbrug</primary>
+</indexterm>
+<indexterm>
+ <primary>quota</primary>
+</indexterm>
+
+<para>
+Hvis man driver en server med mange brugere, sker det fra tid til
+anden at en bruger bevidst eller ubevidst kommer til at fylde disken
+op med filer. For at et sådant uheld ikke skal kunne påvirke de andre
+brugere på systemet, så kan man installere quota. Quota gør det muligt
+at sætte en disk forbrugs-grænse for den enkelte bruger eller evt. for
+en gruppe. 
+</para>
+
+<para>
+Systemet er så fleksibelt, så man yderligere kan sætte en ekstra-pulje
+op, så brugeren i en fast tidsperiode (kaldet grace-perioden) godt må
+"svine" med pladsen bare der ryddes op igen; f.eks. kan man have 10 MB
+diskplads, men kan få lov til i en periode på to timer ekstra at bruge
+yderligere 5 MB.
+</para>
+
+<para>
+Både den almindelige kvote og den ekstra diskkvote virker ved at man
+pludselig ikke kan gemme filer, når man er oppe på maksimum. Brugeren
+må derefter selv slette filer.
+</para>
+
+<para>
+Derfor er det vigtigt at systemadministratoren forklarer brugeren
+hvilke grænser, der er sat og hvad man gør for at følge eget forbrug -
+og endelig hvordan man rydder op.
+</para>
+
+<para>
+Installation: Der skal være quota-understøttelse i Linux-kernen. 
+Normalt vil en Linuxdistribution have quota understøttet, ellers må 
+du oversætte kernen på ny og da svare ja til "Quota Support" under 
+"Filesystems" (CONFIG_QUOTA=y).
+</para>
+
+<para>
+I quota-tools pakken findes værktøjerne være installeret for at du kan 
+benytte diskkvoterne. Enten kan du benytte hvad der hører til din distribution, (fx. quota-3.01pre9-3.i386.rpm hos Red Hat 7.2) eller også hente og installere 
+pakken <ulink url="http://prdownloads.sourceforge.net/linuxquota/quota-3.03.tar.gz">http://prdownloads.sourceforge.net/linuxquota/quota-3.03.tar.gz</ulink>
+</para>
+
+<para>
+Quota sættes på de enkelte partitioner,
+dvs. <filename>/etc/fstab</filename> skal redigeres, så man i
+<literal>options</literal>-feltet tilføjer <literal>usrquota</literal>
+til hver partition man ønsker at køre quota på.
+</para>
+
+<para>
+F.eks. ændres linien i <filename>/etc/fstab</filename> fra
+</para>
+
+<screen>
+/dev/hda2   /home   ext2    defaults 1 1
+</screen>
+<para>
+til
+</para>
+<screen>
+/dev/hda2   /home   ext2    defaults,usrquota 1 1
+</screen>
+
+<para>
+Til at starte quota skal der nu indekseres og quota-programmet skal startes. 
+Kør følgende som root
+</para>
+
+<indexterm>
+ <primary>mount</primary>
+ <secondary>remount</secondary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt </primary>
+ <secondary>mount -o remount</secondary>
+</indexterm>
+
+<indexterm>
+ <primary>/sbin/quotacheck -a -m </primary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt </primary>
+ <secondary>/sbin/quotacheck -a -m </secondary>
+</indexterm>
+
+<indexterm>
+ <primary>/sbin/quotaon -uv </primary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt </primary>
+ <secondary>/sbin/quotaon -uv </secondary>
+</indexterm>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/bin/mount -v -o remount /home </userinput> <-- for at gen-montere den ændrede partition
+<prompt>[root@linus /root]#</prompt> <userinput>/sbin/quotacheck -a -m</userinput> <--- for at lave et index over brugernes forbrug
+<prompt>[root@linus /root]#</prompt> <userinput>/sbin/quotaon -uv</userinput> <--- start quota
+</screen>
+
+<para>
+mount køres kun en gang for alle, for at få systemet til at genindlæse <filename>/etc/fstab</filename>.
+</para>
+
+<para>
+quotacheck køres for at danne et index over brugernes diskforbrug.
+Indexet gemmes på ældre systemer i <filename>/home/quota.user</filename> og i 
+<filename>/home/aquota.user</filename>
+på nyere.  <command>quotacheck</command> skal køres igen hvis man har rettet fejl i 
+filsystemet med fsck - typisk under opstart efter strømudfald. Det klares da 
+ofte automatisk af ens initscripts ellers kan følgende indsættes, 
+inden quotaon kaldes, i <filename>rc.sysinit</filename>:
+</para>
+
+<screen>
+if [ -x /sbin/quotacheck ]; then
+  echo "Undersøger kvoter på lokale filsystemer"  /sbin/quotacheck -v -a
+fi
+</screen>
+
+<para>
+<command>quotaon</command> skal køres hver gang maskinen startes op,
+og kan automatiseres i med et par linier i <filename>rc.sysinit</filename> 
+eller <filename>rc.local</filename>:
+</para>
+
+<screen>
+  if [ -x /sbin/quotaon ]; then
+    echo "Starter kvotestyring for lokale filsystemer"
+    /sbin/quotaon  -a
+  fi
+</screen>
+
+<para>
+Nu kan man redigere grænsen for en bruger - hvis man har mange
+brugere, så opret en test-bruger "quotauser" og lave følgende som
+skabelon og sidenhen kan man kopiere test-brugerens quota-opsætning
+til alle andre brugere.
+</para>
+
+<para>
+Grænser redigeres ved at køre edquota for brugeren. Grænser
+for diskforbrug anføres i kbytes, dvs. 10000 er 10MB.
+Hvis quota ikke sættes op er standard-indstillingen 
+at der ingen grænse er (dette anføres som et nul i opsætningsfilen). 
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/usr/sbin/edquota -u quotauser</userinput>
+Disk quotas for user anne (uid 500):
+Filesystem      blocks       soft       hard     inodes     soft   hard       
+/dev/hda2       695879         0          0       6741        0      0
+</screen>
+
+<para>
+Vi ser at brugeren anne med uid 500 på filsystemet /dev/hda2, (hvor
+<filename>/home</filename> mountes ifølge
+<filename>/etc/fstab</filename>), i øjeblikket benytter 695879
+filblokke (679MB) og 6741 filer, samt at der ikke er sat grænser for
+hvor meget brugeren må benytte.
+</para>
+
+<para>
+Ret nu tallene til det brugeren må. Det er vi-editoren som kommer frem, hvis 
+du ikke har sat EDITOR variablen.
+</para>
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+"soft" betyder grænse, som brugeren normalt forventes at holde sig under. 
+Systemet tillader dog at denne grænse overstiges i kortere tid 
+("grace"-perioden).
+ </para>
+</listitem>
+<listitem> 
+ <para>
+"hard" betyder grænse, som brugeren aldrig kan overstige.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Til højre for de første soft/hard står der inodes og igen soft/hard - 
+dette er antal filer man kan lave. Dette bruges kun sjældent. Hvis man 
+ønsker at brugeren fast kan bruge 10 MB og 5 MB ekstra i grace-perioden,
+samt et ubegrænset antal filer, skrives
+</para>
+
+<screen>
+Disk quotas for user anne (uid 500):
+Filesystem      blocks       soft       hard     inodes     soft   hard       
+/dev/hda2       695879       10000      15000     6741        0      0
+</screen>
+
+<indexterm>
+ <primary>wq </primary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt</primary>
+ <secondary>wq </secondary>
+</indexterm>
+
+<indexterm>
+ <primary>edquota -t </primary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt</primary>
+ <secondary>edquota -t </secondary>
+</indexterm>
+
+<para>
+Afslut med at skrive <command>:wq!</command>
+</para>
+
+<para>
+Hvis man derefter vil sætte "grace"-perioden hvor ekstra diskforbrug
+tolereres, så kan dette indstilles ved at skrive
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>/usr/sbin/edquota -t</userinput> 
+Grace period before enforcing soft limits for users:
+Time units may be: days, hours, minutes, or seconds
+Filesystem      Block grace period      Inode grace period
+/dev/hda2        7 days                    7days
+</screen>
+
+<para>
+For illustrations skyld kan vi sætte en grace-periode helt ned til 
+to timer ved at rette teksten til
+</para>
+
+<screen>
+Grace period before enforcing soft limits for users:
+Time units may be: days, hours, minutes, or seconds
+Filesystem      Block grace period      Inode grace period
+/dev/hda2        2hours                     2hours
+</screen>
+
+<para>
+Afslut med at skrive <command>:wq!</command>
+</para>
+
+<para>
+Tanken med at tildele en test-bruger "quotauser" er at man relativt 
+nemt kan tildele samme quota til alle almindelige brugere ved at køre
+</para>
+
+<screen>
+<prompt>[root@linus /root]#</prompt> <userinput>edquota -p quotauser `awk -F: '$3 &gt; 499 {print $1} /etc/passwd`</userinput> 
+</screen>
+
+<para>
+Tricket er her at man finder alle almindelige brugere ved
+bruger-nummer på 500 eller større.
+</para>
+
+<indexterm>
+ <primary>repquota -a </primary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt</primary>
+ <secondary>repquota -a </secondary>
+</indexterm>
+
+<indexterm>
+ <primary>warnquota </primary>
+</indexterm>
+<indexterm>
+ <primary>Kommando oversigt</primary>
+ <secondary>warnquota </secondary>
+</indexterm>
+
+<para>
+Andre interessante kommandoer:
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<command>repquota -a</command> <-- viser status på diskforbrug
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<command>warnquota</command> <-- bruges til at alarmere brugere som er over kvote
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Til warnquota, der sender mail til brugere over kvota,  hører 
+konfigurationsfilerne /etc/quotatab og /etc/warnquota.conf. Disse benyttes 
+især til at gøre meddeleserne til brugerne mere læse venlige. quota-tools
+understøtter iøvrigt også GNU gettekst, så der er mulighed for at oversætte
+værktøjerne til brugernes eget sprog (make pot && kbabel pot.po).
+</para>
+
+<para>
+I /proc/sys/fs systemet findes dquot-nr og dquot-max, som viser antallet af 
+cachede kvota forekomster, antallet af frie disk kvota forekoster samt øvre
+grænse for antallet af disk kvota forekomster.
+</para>
+
+<para>
+Med quota er det alså muligt at begrænse antallet af filer og deres
+samlede størrelse pr. bruger. Systemet kan dessuden konfigureres til at 
+begrænse antallet af filer og deres samlede størrelse pr. gruppe.
+</para>
+
+<para>
+Med quotastats kan man få lidt information om hvorledes selve kvota systemet
+har det.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ </prompt><USERINPUT>/usr/sbin/quotastats</USERINPUT>
+Number of dquot lookups: 101289
+Number of dquot drops: 101271
+Number of still active inodes with quota : 18
+Number of dquot reads: 93
+Number of dquot writes: 2077
+Number of quotafile syncs: 134518740
+Number of dquot cache hits: 7391
+Number of allocated dquots: 90
+Number of free dquots: 2036
+Number of in use dquot entries (user/group): -1946
+</screen>
+
+<para>
+Flere informationer om quota kan findes på 
+</para>
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+<ulink url="http://www.linuxdoc.org/HOWTO/mini/Quota.html">http://www.linuxdoc.org/HOWTO/mini/Quota.html</ulink>
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<ulink url="http://www.gnuskole.dk/bog/quota.html">http://www.gnuskole.dk/bog/quota.html</ulink>
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<ulink url="http://www.mvw.cistron.nl/quota.html">http://www.mvw.cistron.nl/quota.html</ulink>
+ </para>
+</listitem>
+<listitem> 
+ <para>
+<ulink url="http://www.sf.net/projects/linuxquota/">http://www.sf.net/projects/linuxquota/</ulink>
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Den medfølgende dokumentation er lidt spredt, men kan samles til som html og
+postscript med følgende liner:
+</para>
+
+<screen>
+for f in $(file *|grep troff|cut -d: -f-1)
+do
+  man2html $f >doc/$f.html
+done
+cd doc
+sgml2html quotadoc.sgml
+groff -Thtml -ms quotas.ms >quotas.html
+ln -s quotas-1.eps quotas-1.ps
+</screen>
+
+</sect1>
+
+<sect1 id="kickstart">
+<title>Kickstart</title>
+<indexterm><primary>Kickstart</primary></indexterm>
+<para>
+Kickstart er en smart måde at installere mange maskiner ens. Man kan ud fra 
+en maskine gemme opsætningen i en fil og få kick-start systemet under Red Hat
+og Mandrake til at installere den næste maskine med samme opsætning. Her er 
+et steder hvor man kan finde mere dokumentation om det.
+</para>
+
+<para>
+Mark's Kickstart Examples
+<ulink url="http://www.linuxgazette.com/issue43/nielsen.kickstart.html">http://www.linuxgazette.com/issue43/nielsen.kickstart.html</ulink>
+</para>
+
+<para>
+Red Hat Linux 7.1: The Official Red Hat Linux
+Customization Guide
+<ulink url="http://ftp.linux.cz/pub/linux/redhat-cz/7.1/disks/disk2/doc/RH-DOC/rhl-cg-en-7.1/s1-kickstart2-options.html">http://ftp.linux.cz/pub/linux/redhat-cz/7.1/disks/disk2/doc/RH-DOC/rhl-cg-en-7.1/s1-kickstart2-options.html</ulink>
+</para>
+
+<para>
+RedHat Linux KickStart HOWTO
+<ulink url="http://mirrors.sunsite.dk/ldp/HOWTO/KickStart-HOWTO.html">http://mirrors.sunsite.dk/ldp/HOWTO/KickStart-HOWTO.html</ulink>
+</para>
+</sect1>
+
 
 <SECT1 ID="sysadm-afslutning">
 <TITLE>Tips og tricks</TITLE>
@@ -1306,7 +1716,6 @@ under Linux, så kig i
 "The Linux System Administrators' Guide":
 <ulink url="http://www.linuxdoc.org/LDP/sag/index.html">http://www.linuxdoc.org/LDP/sag/index.html</ulink>. 
 </para>
-
 
 </SECT1>
 </chapter>
