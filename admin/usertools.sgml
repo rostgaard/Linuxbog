@@ -7,6 +7,41 @@ I dette kapitel ser vi nærmere på nogle af de værktøjer og opgaver som
 systemadministratoren kommer ud for.
 </para>
 
+<sect1 id="tilfoeje-brugere">
+<title>Tilføje brugere</title>
+<indexterm><primary>Tilføje brugere</primary></indexterm>
+<indexterm><primary>useradd</primary></indexterm>
+
+<para>
+Ud over de grafiske programmer til at håndtere brugere, så kan det
+være praktisk at kunne addere brugere til systemet via en konsol. Skal
+man lave en konto til brugeren Peter Toft med bruger-navn "pto", hjemmekatalog
+<filename>/home/pto</filename> og denne bruger skal være medlem af 
+gruppen <literal>linuxbog</literal>, så køres følgende:
+</para>
+
+<screen>
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>/usr/sbin/useradd -c 'Peter Toft \
+ pto@sslug.dk' -d /home/pto -g linuxbog -m -n pto</userinput>
+</screen>
+
+<para>
+Her er tegnet <command>\</command> anvendt til at kunne fortsætte
+kommandoen på næste linie.
+</para>
+
+<para>
+Peter Toft's email-adresse også tilføjet for at have flere
+informationer gemt i <filename>/etc/passwd</filename>. Man kunne også
+have tilføjet telefon-nummer. <emphasis>HUSK</emphasis> at tilføje
+password til brugeren 
+</para>
+
+<screen>
+<PROMPT>[root@linus ~]#</PROMPT> <userinput>passwd pto</userinput>
+</screen>
+</sect1>
+
 <sect1 id="Erstatning-af-tekst">
 <title>Erstatning af tekst i flere filer</title>
 <para>
@@ -63,6 +98,7 @@ shell som proces nr. 1. Herefter køres
 <indexterm>
  <primary>exec</primary>
 </indexterm>
+
 <screen>
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>mount -n -o remount,rw /</userinput>     # re-mount / read-write
 <PROMPT>[root@linus ~]#</PROMPT> <userinput>passwd</userinput>                       # skift adgangskode
@@ -1224,12 +1260,17 @@ Du skal også have oversat din kerne, så den understøtter "Power Management".
 <*>   Advanced Power Management BIOS support
 [ ]     Ignore USER SUSPEND
 [*]     Enable PM at boot time
-[*]     Make CPU Idle calls when idle
+[ ]     Make CPU Idle calls when idle
 [*]     Enable console blanking using APM
 [*]     RTC stores time in GMT
 [ ]     Allow interrupts during APM BIOS calls
-[ ]     Use real mode APM BIOS call to power off
+[*]     Use real mode APM BIOS call to power off
 </screen>
+
+<para>
+Her kan der være forskelle alt efter maskin-type.
+</para>
+
 </sect1>
 
 
