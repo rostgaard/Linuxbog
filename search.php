@@ -47,7 +47,7 @@ Søg efter:
 <input type="text" name="q" value="<?php echo $q ?>" size="40">
 <input type="submit" name="s" value="Submit">
 <br>
-<font size="-1">Der søges med <a href="http://www.linuxbog.dk/unix/bog/regexp.html">regulære udtryk</a> - case insentive</font>
+<font size="-1">Der søges med <a href="http://www.linuxbog.dk/unix/bog/joker-redir-pipe.html#regexp">regulære udtryk</a> - case insentive</font>
 </form>
 
 <?php
