@@ -1,0 +1,444 @@
+<!-- $Id$ -->
+
+<sect2 id="autoconf">
+<title>Autoconf og automake</title>
+<indexterm><primary>autoconf</primary></indexterm>
+<indexterm><primary>automake</primary></indexterm>
+
+<para>
+Makefiles er en stor hjælp til selv små projekter.
+Et problem der hurtigt opstår er at projektet begynder at udvide sig og blive mere og mere komplekst.
+Det får så din <filename>Makefile</filename> til at blive voldsomt stor, fyldt med fejl og uoverskuelig.
+Mange af de operationer der er i en <filename>Makefile</filename> er trivielle gentagelser fra
+projekt til projekt. Når der skal ske det samme så mange gange, ville det være en
+fordel at indbygge dette i <command>make</command> eller lave noget udenom <command>make</command>
+der kan håndtere dette. Resultatet blev <command>autoconf</command>.
+</para>
+
+<para>
+Formålet med <command>autoconf</command> er få oprettet en <filename>Makefile</filename>
+der passer til slutbrugerens Linux/UNIX version og eventuelt med brugerens specielle ønsker.
+Hele <command>autoconf</command>-systemet er lidt af en rodebunke og ret komplekst.
+Der findes flere mindre gode intruktioner til <command>autoconf</command> og dette
+er nok endnu et eksempel - vi forsøger alligevel.
+</para>
+
+<para>
+Følgende programpakker skal være installeret inden man kan gå igang:
+<filename>make</filename>
+<filename>autoconf</filename>
+<filename>automake</filename>
+.
+</para>
+
+<para>
+For at gøre det hele så simpelt som muligt, laver vi det klassiske
+"Hello, world!" eksempel og bygger videre på dette.
+I et tomt subdir har vi så det lille simple program 
+<filename>hello.c</filename> med følgende indhold.
+</para>
+
+<programlisting>
+/* Filnavn: hello.c */
+#include &lt;stdio.h&gt;
+int main(void)
+{
+  printf("Hello, world!\n");
+  return 0;
+}
+</programlisting>
+
+<para>
+For at komme igang med selve <command>autoconf</command> mangler vi
+<filename>configure.in</filename> og <filename>Makefile.am</filename>.
+<filename>Makefile.am</filename> er en fil til programmet <command>automake</command>
+og den vil så oprette <filename>Makefile.in</filename>.
+<filename>Makefile.am</filename> er ofte en lille fil og ser således ud
+i en minimal udgave for et C-program.
+</para>
+
+<programlisting>
+## Filnavn: Makefile.am
+AUTOMAKE_OPTIONS = foreign
+bin_PROGRAMS = hello
+hello_SOURCES = hello.c
+</programlisting>
+
+<para>
+Næste fil er <filename>configure.in</filename>, hvilket er en
+fil der kan gå hen og blive ret stor. 
+I sin minimale udgave ser den således ud:
+</para>
+
+<programlisting>
+# Filnavn: configure.in
+AC_INIT(hello.c)
+AM_INIT_AUTOMAKE( demo-hello, 1.0 )
+AC_PROG_CC
+AC_STDC_HEADERS
+AC_OUTPUT(Makefile)
+</programlisting>
+
+<para>
+Med filerne <filename>hello.c</filename>, <filename>Makefile.am</filename>
+og <filename>configure.in</filename> kan vi gå igang med at oprette de filer
+vi senere skal have distribueret til brugeren.
+</para>
+
+<para>
+Første fil vi kommer til at mangle når <command>configure</command>
+kører er <filename>aclocal.m4</filename>. Vi skal have den fil
+liggende og den fås nemmest med <command>aclocal</command>.
+<command>aclocal</command> skal kun køres en gang, så lad
+os starte med den.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>aclocal</userinput>
+</screen>
+
+<para>
+For at få oprettet <filename>Makefile.in</filename> - det er den
+der senere skal læses af <command>configure</command> - køres 
+kommandoen <command>automake -a</command>.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>automake -a</userinput>
+</screen>
+
+<para>
+Der manglede nogle filer til <command>automake</command> hvilket vi
+automatisk får med, med option '-a' (--add-missing).
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoconf</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
+</screen>
+
+<para>
+Ved kompilering ses at der er brugt flaget '-g' til 'gcc' og betyder at der
+kommer debug information med i programmet.
+Dette kan slås fra ved at sætte CFLAGS i configure.in til
+fx. "-O2".
+Dertil kommer at der er to kompilerdirektiver, PACKAGE og VERSION, er
+med på kommandolinien. Der kan komme flere direktiver, så det vil være
+smart hvis disse blev lagt i en fil for sig, så kommandolinien ikke
+bliver for lang. Dette kan gøres ved at tilføje
+AM_CONFIG_HEADER(config.h) i configure.in.
+</para>
+
+<programlisting>
+# Filnavn: configure.in
+AC_INIT(hello.c)
+AM_INIT_AUTOMAKE( demo-hello, 1.0 )
+<emphasis>AM_CONFIG_HEADER(config.h)
+CFLAGS="-O2"</emphasis>
+AC_PROG_CC
+AC_STDC_HEADERS
+AC_OUTPUT(Makefile)
+</programlisting>
+
+<para>
+Efter tilføjelse af AM_CONFIG_HEADER kan systemet drille lidt ved at komme
+med nogle sære fejlmeddelelser. Dette skyldes at der er nogle afhængigheder
+i <filename>aclocal.m4</filename>, så denne fil skal opdateres med
+kommandoen <command>aclocal</command>.
+For at få oprettet header-filen <filename>config.h.in</filename> køres <command>autoheader</command>.
+<command>./configure</command> vil så oprette filen <filename>config.h</filename>
+som evt. kan tilføjes i <filename>hello.c</filename>.
+Dernæst kan <command>./configure</command> køres igen og der oprettes en
+<filename>Makefile</filename>.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>aclocal</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoheader ; autoconf</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make clean ; make</userinput>
+</screen>
+
+<para>
+Bemærk at der nu under kompilering tilføjes <emphasis>-DHAVE_CONFIG_H</emphasis>
+på kommandolinien. 
+Vi kan nu teste i <filename>hello.c</filename> om der er en 
+<filename>config.h</filename> og inkludere denne.
+Dernæst cheker vi om PACKAGE og VERSION er defineret og udskriver
+disse værdier.
+Tag et kig på <filename>config.h</filename> og se hvad den indeholder.
+</para>
+
+<programlisting>
+/* Filnavn: hello.c */
+<emphasis>#ifdef HAVE_CONFIG_H
+#include &lt;config.h&gt;
+#endif</emphasis>
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+<emphasis>#ifdef PACKAGE
+#ifdef VERSION
+  printf("Bygget med pakken: %s-%s\n\n", PACKAGE, VERSION);
+#endif
+#endif</emphasis>
+  printf("Hello, world!\n");
+  return 0;
+}
+</programlisting>
+
+<para>
+Du har nu fået oprettet de to mest basale filer
+<filename>Makefile.am</filename> og <filename>configure.in</filename>
+som fint kan danne basis for et projekt.
+Lad os lige stoppe op og kikke på hvad der er oprettet af filer og hvorfor.
+<filename>Makefile.am</filename> er den mest overordnede fil
+og også den mest avancerede m.h.t. til brug af makroer.
+Heldigvis for forståelsen er der ikke så mange kommandoer i denne fil, de er
+bare ret avancerede.
+<filename>Makefile.am</filename> indeholder informationer om hvordan
+projektet overordnet ser ud. Hvilke filer er selve programmerne,
+hvor skal disse installeres, hvilke kildefiler kræver disse programmer o.s.v.
+En <filename>Makefile.am</filename> skal oprettes i hvert subdir, så dem
+kan man nemt få nogle stykker af.
+</para>
+
+<para>
+Den <filename>Makefile.am</filename> der ligger i roden af projektet
+har kommandoen <command>AUTOMAKE_OPTIONS</command> som overordnet
+bestemmer hvilken type af project man køre. En option man kan bruge
+til fri software programmer er fx. <command>gnu</command> som er default.
+Med gnu-optionen opretter <command>automake</command> en del ekstra
+filer såsom COPYING og INSTALL. Dertil forventer <command>automake</command>
+at der er oprettet fire ekstra filer (NEWS README AUTHORS ChangeLog).
+Den nye <filename>Makefile.am</filename> ser således ud:
+</para>
+
+<programlisting>
+## Filnavn: Makefile.am
+AUTOMAKE_OPTIONS = <emphasis>gnu</emphasis>
+bin_PROGRAMS = hello
+hello_SOURCES = hello.c
+</programlisting>
+
+<para>
+Inden <command>automake</command> køres igen, skal vi lige
+have tilføjet de ekstra filer som en gnu-installation kræver,
+og så kan <command>automake</command> køres.
+En ny <filename>Makefile.in</filename> oprettes og den indeholder
+ny oplysninger om flere filer der skal med i en distribution,
+når man senere kører kommandoen <command>make dist</command>.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>touch NEWS README AUTHORS ChangeLog</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>automake</userinput>
+</screen>
+
+<para>
+Kommandoen <command>bin_PROGRAMS</command> er en noget mere
+avanceret makro der fortæller hvilke binære filer der skal
+kompileres og hvor disse skal installeres.
+Flere programmer kan indeholdes i en pakke og de skrives
+på samme linie med mellemrum i mellem.
+<emphasis>bin</emphasis> betyder at programmerne installers
+i det subdir der er defineret i variablen <command>bindir</command>.
+Slutbrugeren kan så senere under installation bestemme hvor binære
+filer skal installeres. Default vil programmer blive installeret
+i <filename>/usr/local/bin/</filename>, men for nogle programmer
+gælder at disse skal installeres i <filename>/bin/</filename>.
+Vi kan på forhånd selv bestemme hvor <command>bindir</command>, hvilket
+vi kommer tilbage til.
+<command>bin_PROGRAMS</command> har en fætter der hedder 
+<command>sbin_PROGRAMS</command> og den har default <filename>/usr/local/sbin/</filename>.
+</para>
+
+<para>
+<command>hello_SOURCES</command> er en noget speciel variable der fortæller
+hvilke kildefiler der anvendes til et enkelt program.
+<command>automake</command> tager hvert program der er listet i fx.
+<command>bin_PROGRAMS</command> og leder efter variablen
+<command>???_SOURCES</command>.
+<command>automake</command> forventer altså at denne variabel er oprettet,
+og der kommer selvfølgelig en fejl hvis den ikke er.
+</para>
+
+<para>
+<filename>configure.in</filename> er filen der fortæller hvordan
+en konfiguration skal foregå. Her kikkes der ikke på kildetekster
+etc., men alene hvordan konfigurationen skal forløbe for slutbrugeren.
+Til et projekt er der kun een <filename>configure.in</filename>
+og denne er placeret i roden af projektet.
+</para>
+
+<para>
+aclocal opretter aclocal.m4 på basis af <filename>configure.in</filename>,
+og bliver senere læst af <command>autoconf</command> for at
+danne <filename>configure</filename>.
+</para>
+
+<para>
+............
+automake -a opretter Makefile.in på basis af Makefile.am og configure.in
+Ændres noget i Makefile.am skal automake køres igen.
+Hvis visse ting ændres i configure.in skal automake køres igen.
+
+autoconf læser configure.in og opretter configure.
+
+configure læser Makefile.in og aclocal.m4 og opretter Makefile.
+..........
+</para>
+
+<para>
+Læs mere:
+<ULINK URL="http://sources.redhat.com/automake/automake.html">http://sources.redhat.com/automake/automake.html</ULINK>
+</para>
+
+<sect3 id="autoconf-ceks2">
+<title>Autoconf/automake eksempel</title>
+
+<para>
+I eksemplet i <xref linkend="vaerktoej-make">
+er vist hvordan manuelt opbygger en <filename>Makefile</filename>.
+Skal samme eksempel laves med autoconf/automake skal der 
+skrives to filer:
+</para>
+
+<programlisting>
+## Filnavn: Makefile.am
+AUTOMAKE_OPTIONS = foreign
+bin_PROGRAMS = ceks2
+ceks2_SOURCES = ceks2.c cfkt.c
+</programlisting>
+
+<programlisting>
+# Filnavn: configure.in
+AC_INIT(ceks2.c)
+AM_INIT_AUTOMAKE( demo-ceks , 1.0 )
+AC_PROG_CC
+AC_STDC_HEADERS
+AC_OUTPUT(Makefile)
+</programlisting>
+
+<para>
+De to filer kan se meget anderledes ud, men dette er noget af
+det simpleste man kan have til et c-program.
+Herefter er det blot at køre nogle kommandoer:
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>automake -a</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>aclocal</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoconf</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>./configure</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make install</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make uninstall</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>make dist # o.s.v...</userinput>
+</screen>
+
+<para>
+Det er lidt mere besværligt end det oprindelige eksempel,
+men fik også en <command>make install</command> plus et par andre
+ting for besværet.
+</para>
+
+</sect3> <!-- autoconf-ceks2 -->
+
+<sect3 id="autoconf-chkfunc">
+<title>Check at en funktion er til stede</title>
+
+<para>
+En god ting at have med i sin <filename>configure.in</filename>
+er at checke om de funktioner man bruger i c-programmerne er til stede
+i det pågældende system hvor <command>./configure</command> køres.
+I <filename>hello.c</filename> bruges kun <command>printf()</command>
+og den checkes således:
+</para>
+
+<programlisting>
+# Filnavn: configure.in
+...
+AC_CHECK_FUNCS(printf)
+...
+</programlisting>
+
+<para>
+Kør <command>autoconf</command> og <command>./configure</command>
+for at se resultatet.
+Flere funktioner kan skrives som parameter med mellemrum i mellem.
+Eksemplet er fundet i Sambas <filename>configure.in</filename>.
+</para>
+</sect3> <!-- autoconf-chkfunc -->
+
+<sect3 id="autoconf-def">
+<title>Variable i config.h</title>
+
+<para>
+En spændende ting man kan lave med <filename>configure.in</filename>
+er tilføje variable til <filename>config.h</filename> med dynamisk
+input på det tidspunkt <command>./configure</command> køres.
+For ikke at kommandolinien skal blive for lang, er det bedst at
+have AM_CONFIG_HEADER sat i <filename>confgiure.in</filename>.
+I følgende eksempel hentes den aktuelle dato og tid når 
+<command>./configure</command> køres. Den kan herefter findes
+i <filename>config.h</filename> og bruges i fx. <filename>hello.c</filename>.
+</para>
+
+<programlisting>
+# Filnavn: configure.in
+...
+CONFDATO=`date "+%Y-%m-%d %H:%M:%S"`
+AC_DEFINE_UNQUOTED(CONFDATO,"$CONFDATO",[Dato for kørsel af ./configure])
+...
+</programlisting>
+
+<para>
+For at få hele systemet opdateret, kræves at <command>autoheader</command>
+køres for at få opdateret <filename>config.h.in</filename>, 
+<command>autoconf</command> skal køres for at få opdateret <filename>configure</filename>
+og <command>./configure</command> skal køres for at opdatere <filename>config.h</filename>.
+Herefter kan man se resultatet i <filename>config.h</filename>.
+</para>
+
+<screen>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>autoheader ; autoconf ; ./configure</userinput>
+<prompt>[daisy@linus daisy]$ </prompt> <userinput>cat config.h</userinput>
+</screen>
+
+<para>
+Kompilerdirektivet kan nu ses i <filename>config.h</filename>
+og det kan så bruges i <filename>hello.c</filename>.
+</para>
+
+<programlisting>
+/* Filnavn: hello.c */
+#ifdef HAVE_CONFIG_H
+#include &lt;config.h&gt;
+#endif
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+#ifdef CONFDATO
+  printf("./configure er kørt d.: %s\n", CONFDATO );
+#endif
+  printf("Hello, world!\n");
+  return 0;
+}
+</programlisting>
+
+<para>
+Herefter er det blot at køre <command>make</command> og <command>./hello</command>
+så vises dato og tid for hvornår <command>./configure</command> er kørt.
+Alternativt til dato kunne være kommandoen <command>uname -a</command> for at
+oplysninger om det system programmet blev kompileret på, eller en option
+som brugeren der kører <command>./configure</command> selv definere.
+Eksemplet er fundet i PHPs <filename>configure.in</filename>.
+</para>
+
+</sect3> <!-- autoconf-def -->
+
+</sect2>
