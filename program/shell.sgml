@@ -1,54 +1,56 @@
 <!-- $Id$ -->
 <SECT1 id="program-shell">
-<title>Shell-programmering</title>
-<indexterm><primary>Shell programmering</primary></indexterm>
-<indexterm><primary>/bin/sh</primary></indexterm>
-<indexterm><primary>sh</primary></indexterm>
-<indexterm><primary>bash</primary></indexterm>
-<para>
-Hvis du ofte har brug for at køre nogle bestemte programmer for at
-håndtere en tilbagevendende opgave, bør du sætte dig ind i hvordan man
-skrive et <emphasis>shell-skript</emphasis>. Kender du til
-batch-filer under DOS, har du en ide om, hvad det går ud på. Et
-shell-skript er i bund og grund blot en tekstfil, der indeholder en
-række kommandoer og måske nogle ekstra linjer til at vælge hvilke dele
-af scriptet, der skal udføres.
-</para>
-<para>
-Til forskel fra DOS' batchfiler er shell-sproget dog langt mere fuldt
-- det kan, sammen med alle standard-UNIX-kommandoerne, næsten det
-samme som et 'rigtigt' programmeringssprog. Ligesom alle andre sprog
-har det sine styrker og sine svagheder. Et shell-skript er generelt
-bedst til de store linjer -  de er gode til at fortælle andre
-programmer, hvad der skal gøres, men ikke så gode til at gøre det
-detaljerede arbejde selv.
-</para>
+ <title>Kommandofortolker-programmering</title>
 
-<para>
-Det første eksempel på et shell-skript bør være "Hello World", som
-skriver en tekst på skærmen.
-</para>
+ <indexterm><primary>kommandofortolker-programmering</primary></indexterm>
+ <indexterm><primary>shell-programmering</primary></indexterm>
+ <indexterm><primary>/bin/sh</primary></indexterm>
+ <indexterm><primary>sh</primary></indexterm>
+ <indexterm><primary>bash</primary></indexterm>
+
+ <para>
+  Hvis du ofte har brug for at køre nogle bestemte programmer for at håndtere
+  en tilbagevendende opgave, bør du sætte dig ind i hvordan man skrive et
+  program i en kommandofortolker. Kender du til "batch-filer" under DOS, har
+  du en idé om, hvad det går ud på. Et kommandofortolkerprogram er i bund og
+  grund blot en tekstfil, der indeholder en række kommandoer og måske nogle
+  ekstra linjer til at vælge hvilke dele af programmet, der skal udføres.
+ </para>
+
+ <para>
+  Til forskel fra DOS' "batch-filer" er kommandofortolkerne du finder på dit
+  Linux-system noget mere fleksible. Du råder over et komplet og ganske
+  anvendeligt programmeringssprog.
+  <!-- Gør man ikke også det i DOS? -->
+  Ligesom andre programmeringssprog har det sine styrker og sine svagheder.
+  Kommandofortolkeren er generelt bedst til de store linjer - til at fortælle
+  andre programmer hvad der skal gøres, men ikke så gode til at gøre det
+  detaljerede arbejde.
+ </para>
+
+ <para>
+  Det første eksempel på et kommandofortolkerprogram bør være "Hello World"
+  der blot skriver en tekst på skærmen.
+ </para>
 
 <screen>
 #!/bin/sh
 echo "Hello World"
 </screen>
 
-<para>
-Dette gemmes under navnet <filename>HelloWorld</filename> eller
-lignende, og derefter gøres filen kørbar med <command>chmod +x
-HelloWorld</command>. Du kan nu teste eksemplet ved at skrive
-<command>./HelloWorld</command> på en kommando linje (f.eks. i en
-xterm). Du skal skrive punktum og skråstreg foran programnavnet, hvis
-du ikke har ændret din søgesti ($PATH) i
-<filename>~/.profile</filename>.
-</para>
+ <para>
+  Dette gemmes under navnet <filename>HelloWorld</filename> eller lignende, og
+  derefter gøres filen kørbar med <command>chmod +x HelloWorld</command>. Du
+  kan nu afprøve programmet ved at skrive <command>./HelloWorld</command> på
+  en kommandolinje (for eksempel i en xterm). Du skal skrive punktum og
+  skråstreg foran programnavnet for at fortælle kommandofortolkeren at
+  programmet ligger i det katalog du står i.
+ </para>
 
-<para>
-Et eksempel kunne være, at du fandt ud af, at du ofte havde brug for en
-nem metode til at tage en hurtig kopi af tekstfilerne i
-arbejdskataloget.
-</para>
+ <para>
+  Et andet eksempel kunne være, at du fandt ud af, at du ofte havde brug for
+  en nem metode til at tage en hurtig kopi af tekstfilerne i arbejdskataloget.
+ </para>
 
 <screen>
 #!/bin/sh
@@ -58,27 +60,28 @@ cp *.txt backup
 echo "Sikkerhedskopiering slut"
 </screen>
 
-<para>
-Gem denne tekst i en fil med navnet <filename>bu</filename> (for "back
-up"), og gør den kørbar med kommandoen <userinput>chmod +x
-bu</userinput>. Nu kan du køre <filename>bu</filename> fra kommandolinjen:
-</para>
+ <para>
+  Gem denne tekst i en fil med navnet <filename>sk</filename> (for
+  "sikkerhedskopi"), og gør den kørbar med kommandoen
+  <command>chmod +x sk</command>. Nu kan du køre <filename>sk</filename> fra
+  kommandolinjen:
 
 <screen>
-<prompt>$</prompt> <userinput>./bu</userinput>
+<prompt>$ </prompt><userinput>./sk</userinput>
 Starter sikkerhedskopiering...
 Sikkerhedskopiering slut
 </screen>
+ </para>
 
-<para>
-Første linje i scriptet er egentlig en kommentar, men giver
-samtidig systemet besked om, at dette er et shell-skript og ikke f.eks. et
-perl-skript.
-</para>
+ <para>
+  Første linje i scriptet er egentlig en kommentar, men giver samtidig
+  systemet besked om, at dette er et fortolket program og at det skal
+  fortolkes af <filename>/bin/sh</filename> og ikke af for eksempel Perl.
+ </para>
 
 <para>
 Hvis du er lidt forsigtig anlagt og gerne vil undgå at komme til at
-overskrive en eksisterende backup, kan du udvide skriptet en smule:
+overskrive en eksisterende sikkerhedskopi, kan du udvide skriptet en smule:
 </para>
 
 <screen>
@@ -97,10 +100,10 @@ cp -v *.txt backup
 echo "bu slut"
 </screen>
 
-<indexterm><primary>Shell variable</primary></indexterm>
+<indexterm><primary>Kommandofortolkervariable</primary></indexterm>
 <para>
-I linje 4 i skriptet støder vi på en såkaldt shell-variabel, nemlig
-<filename>$?</filename>, der betyder "resultatet af sidst udførte
+På linje 4 i programmet støder vi på en lidt speciel variabel, nemlig
+<variable>$?</variable>, der betyder "resultatet af sidst udførte
 kommando". Her bruges den til at vise, om <filename>mkdir</filename>
 lykkedes eller ej.
 </para>
@@ -140,26 +143,24 @@ cp -v *.txt backup
 echo "bu slut"
 </screen>
 
-<para>
-Du kan faktisk nå temmelig langt ved hjælp af shell-skript, men det kan
-hurtigt blive lidt kryptisk at læse. Kunsten er nok i virkeligheden at
-stoppe, mens legen er god, og vælge et "rigtigt" programmeringssprog, når
-opgaven kræver det. Alligevel bør du lære at skrive shell-programmer, dels
-for at lave dine egne små praktiske løsninger på dagligdagens problemer,
-dels for at kunne forstå andres shell-programmer.
-</para>
+ <para>
+  Du kan faktisk nå temmelig langt i kommandofortolkeren, men det kan hurtigt
+  blive lidt kryptisk at læse. Kunsten er nok i virkeligheden at stoppe, mens
+  legen er god, og vælge et "rigtigt" programmeringssprog, når opgaven kræver
+  det. Alligevel bør du lære at skrive programmer i kommandofortolkeren, dels
+  for at lave dine egne små praktiske løsninger på dagligdagens problemer,
+  dels for at kunne forstå andres kommandofortolkerprogrammer.
+ </para>
 
-<para>
-Endelig kan det nævnes at der findes en del bøger om
-shell-programmering, bl.a. fra <ulink
-url="http://www.oreilly.com">O'Reilly</ulink>, bl.a. "Learning the
-Bash Shell". Eksemplerne fra denne bog er interessante og de kan
-hentes fra 
-<ulink url="http://www.oreilly.com/catalog/bash/">http://www.oreilly.com/catalog/bash/</ulink>.
-En anden god introduktion til Bash-Prog-Intro-HOWTO, som kan findes på 
-<ulink url="http://sunsite.auc.dk/ldp">http://sunsite.auc.dk/ldp</ulink>.
-</para>
-
+ <para>
+  Endelig kan det nævnes at der findes en del bøger om programmering af
+  kommandofortolkere, blandt andet "Learning the Bash Shell" fra <ulink url=
+  "http://www.oreilly.com/">O'Reilly</ulink>. Eksemplerne i denne bog er
+  interessante og de kan hentes fra <ulink url=
+  "http://www.oreilly.com/catalog/bash/">http://www.oreilly.com/catalog/bash/</ulink>.
+  En anden god introduktion er Bash-Prog-Intro-HOWTO der kan findes på <ulink
+  url="http://sunsite.auc.dk/ldp">http://sunsite.auc.dk/ldp</ulink>.
+ </para>
 
 <SECT2 ID="sed">
 <title>sed</title>
@@ -173,12 +174,12 @@ Fordelen med <command>sed</command> i forhold til Perl (som kan meget
 mere) er at sed er et lille program, og derfor hurtigere at udføre.
 </para>
 
-<para>
-Lad os tage et eksempel med anvendelse af sed.  I shell-skript kan man
-ofte være interesseret i at finde stinavne (eng. pathname), basefilename 
-og extension udfra den fulde sti i $0 for shell-skript.  Så for at manipulere med
-fuld sti kan man gøre følgende:
-</para>
+ <para>
+  Lad os tage et eksempel med anvendelse af <command>sed</command>. I
+  kommandofortolkeren kan man ofte være interesseret i at dele et komplet
+  filnavn op i katalogets navn og filens navn. Hvis vi ser på programmets
+  eget navn, <variable>$0</variable>, kan vi lave disse manipulationer:
+ </para>
 
 <SCREEN>
   pathname=`echo $0 | sed 's#[^/]*$##'`
@@ -245,19 +246,19 @@ mere på <ulink url="http://2dos.homepage.dk/batutil/help/SED.HTM">http://2dos.ho
 
 <para>
 På de fleste UNIX-kompatible maskiner, såsom Linux, findes flere forskellige
-kommando-shells (kommandofortolkere).
-Nogle ad de mest kendte er <filename>ksh</filename> (Korn-shellen),
-<filename>sh</filename> (Bourne-shellen) og
-<filename>csh</filename>. De er meget udbredte, men til daglig anvendelse
+kommandofortolkere.
+Nogle ad de mest kendte er <filename>ksh</filename> (Korn Shell),
+<filename>sh</filename> (Bourne Shell) og
+<filename>csh</filename> (C Shell). De er meget udbredte, men til daglig anvendelse
 mangler flere af dem visse nyttige funktioner, såsom vis forrige
 kommando, kommando- og filnavn-udfyldning (tryk på tabulator). Derfor
-er <filename>Bash</filename> (Bourne Again-shellen) og
+er <filename>Bash</filename> (Bourne Again Shell) og
 <filename>tcsh</filename> bedre alternativer.
 </para>
 <para>
 I Linux er sh blot et link til bash. Dette går godt, fordi bash er
 bagud-kompatibel med sh (deraf navnet og ordspillet 'Bourne Again
-shell'), og afsnittet om shellprogrammering tidligere i dette kapitel
+Shell'), og afsnittet om kommandofortolkerprogrammering tidligere i dette kapitel
 gælder altså også for Bash.
 Her skal vi nævne lidt om tcsh, som er en videreudvikling af csh.
 </para>
@@ -265,15 +266,15 @@ Her skal vi nævne lidt om tcsh, som er en videreudvikling af csh.
 <para>
 <!-- dette kan med fordel flyttes et andet sted hen i kapitlet: -->
 Når man logger ind via kommandolinje, havner man normalt i en
-shell. For at finde ud  af, hvilken shell der skal startes, ser
+kommandofortolker. For at finde ud  af, hvilken kommandofortolker der skal startes, ser
 login-programmet i filen <filename>/etc/passwd</filename>, som indeholder en
 liste over alle brugernavne samt nogle oplysninger om hver, en linje
 pr. bruger. Det sidste felt på hver linje angiver hvilket program, den
-pågældende bruger har som standardshell
+pågældende bruger har som standardkommandofortolker
 (dette kan være et hvilket som helst program - det behøver ikke at
-være en shell, men kunne også være f.eks. 
+være en kommandofortolker, men kunne også være f.eks. 
 <filename>vi</filename> eller <filename>emacs</filename>).
-Hvis du har bestemt dig for at bruge tcsh som shell, skal dette felt
+Hvis du har bestemt dig for at bruge tcsh som kommandofortolker, skal dette felt
 altså ændres
 (typisk fra <filename>/bin/bash</filename>)
 til <filename>/bin/tcsh</filename>,
@@ -283,7 +284,7 @@ afhængigt af hvor kommandofortolkeren ligger.
 <para>
 Når tcsh startes, udfører den først kommandoerne skrevet i filerne
 <filename>/etc/csh.login</filename> (ved login) og
-<filename>/etc/csh.cshrc</filename> (ved hver shell, der startes). De
+<filename>/etc/csh.cshrc</filename> (ved hver kommandofortolker, der startes). De
 bliver altså udført for alle brugere, der bruger tcsh.
 Derefter udføres tilsvarende kommandoer, der er angiver i
 <filename>~/.login</filename> og <filename>~/.tcshrc</filename> - disse
@@ -375,7 +376,7 @@ if ( -e ~/.alias ) source ~/.alias
 </screen>
 
 <para>
-Der er øvrigt en del eksempler og tips vedrørende opsætning af shells mv. på
+Der er øvrigt en del eksempler og tips vedrørende opsætning af kommandofortolkere med vider på
 <ulink url="http://www.sslug.dk/artikler/begyndertips">http://www.sslug.dk/artikler/begyndertips</ulink>
 </para>
 
