@@ -4358,6 +4358,27 @@ echo "Hello, " \
  "world!"
 </programlisting>
 
+<para>
+I de følgende afsnit vil blive brugt lidt mere besværlige
+funktioner. Når det scriptet ikke vil som du vil, kan det
+ofte hjælpe lidt ved at få skrevet ud hvad der sker undervejs.
+Indsæt <command>set -x</command> for at se hvilke kommandoer
+der bliver udført.
+</para>
+
+<programlisting>
+#! /bin/sh
+set -x
+echo "Hello, world!"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
++ echo 'Hello, world!'
+Hello, world!
+</screen>
+
+
 </sect2><!-- shell-flere-kom -->
 
 <sect2 id="shell-var">
@@ -4413,8 +4434,21 @@ echo "Data skrives til ${FLOPPY:-/dev/fd0}"
 echo "\$FLOPPY er stadig tom: '$FLOPPY'"
 echo "Hvis \$FLOPPY er tom, så tilskriv: '${FLOPPY:=/dev/fd0}'"
 echo "Nu har \$FLOPPY en værdi: '$FLOPPY'"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Data skrives til /dev/fd0
+$FLOPPY er stadig tom: ''
+Hvis $FLOPPY er tom, så tilskriv: '/dev/fd0'
+Nu har $FLOPPY en værdi: '/dev/fd0'
+</screen>
+
+<programlisting>
+#! /bin/sh
 # Et mere praktisk eksempel hvor der enten bruges
 # kommando-parameter eller default:
+# (Du skal selvfølgelig selv slette 'echo')
 echo mount ${1:-/dev/fd0} /mnt/floppy
 </programlisting>
 
@@ -4424,16 +4458,8 @@ Scriptet skal afprøves med og uden parameter:
 
 <screen>
 <prompt>[anne@linus ~]$ ./hello</prompt>
-Data skrives til /dev/fd0
-$FLOPPY er stadig tom: ''
-Hvis $FLOPPY er tom, så tilskriv: '/dev/fd0'
-Nu har $FLOPPY en værdi: '/dev/fd0'
 mount /dev/fd0 /mnt/floppy
 <prompt>[anne@linus ~]$ ./hello /dev/fd1</prompt>
-Data skrives til /dev/fd0
-$FLOPPY er stadig tom: ''
-Hvis $FLOPPY er tom, så tilskriv: '/dev/fd0'
-Nu har $FLOPPY en værdi: '/dev/fd0'
 mount /dev/fd1 /mnt/floppy
 </screen>
 
@@ -4445,25 +4471,159 @@ Nogle foretrækker de eksterne programmer såsom
 men de indbyggede kommandoer kan ofte klare opgaven.
 Skal man have fat i en del af en tekststreng,
 kan dette gøres med ${VAR:&lt;start&gt;:&lt;antal&gt;},
-første tegn starter med 0:
+første tegn starter ved 0 (nul):
 </para>
 
 <programlisting>
 #! /bin/sh
 TEKST=abcdef
 echo "Skriv kun 'bcd': ${TEKST:1:3}"
+echo "Man kan også regne: ${TEKST:1:10-7}"
 </programlisting>
 
 <para>
 Skal en del af en variabel udskiftes med noget andet,
-bruges en substituering:
+bruges en substituering.
+Herunder er det de først forekommende 3 tegn 'bcd' der udskiftes med 1 tegn 'X':
 </para>
 
 <programlisting>
 #! /bin/sh
-TEKST=abcdef
+TEKST=abcdefabcdef
 echo "Udskift 'bcd' med 'X': ${TEKST/bcd/X}"
 </programlisting>
+
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Udskift 'bcd' med 'X': aXefabcdef
+</screen>
+
+<para>
+Skal alle forekomster af et eller flere tegn udskiftes bruges '//':
+</para>
+
+<programlisting>
+#! /bin/sh
+TEKST=abcdefabcdef
+echo "Udskift alle 'bcd' med 'X': ${TEKST//bcd/X}"
+</programlisting>
+
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Udskift alle 'bcd' med 'X': aXefaXef
+</screen>
+
+<para>
+Den første del af en tekst-streng kan slettes
+ved brug af '#'.
+Den tekst der skal fjernes, kan evt. matches
+ved brug af globbing, på samme måde som man kan
+liste filer med <command>ls</command>: *?[].
+Dette kan fx bruges til at slette den første
+del af hostname.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Fuldt hostname: ${HOSTNAME}"
+echo "Uden maskinnavn: ${HOSTNAME#hven.}"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Fuldt hostname: hven.sslug.dk
+Uden maskinnavn: sslug.dk
+</screen>
+
+<para>
+Rigtig smart bliver det ved brug af globbing,
+hvor man kan fjerne alt frem til det første punktum.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Fuldt hostname: ${HOSTNAME}"
+echo "Uden maskinnavn: ${HOSTNAME#*.}"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Fuldt hostname: hven.sslug.dk
+Uden maskinnavn: sslug.dk
+</screen>
+
+<para>
+En mere 'grådig' variant kan fjerne frem til
+den sidste forekomst af punktum.
+Her er det så '##' der skal bruges.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Fuldt hostname: ${HOSTNAME}"
+echo "Uden maskinnavn: ${HOSTNAME##*.}"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Fuldt hostname: hven.sslug.dk
+Uden maskinnavn: dk
+</screen>
+
+<para>
+På samme måde som den første del af en tekst-streng
+kan fjernes, kan den sidste del fjernes med %.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Fuldt hostname: ${HOSTNAME}"
+echo "Uden TLD: ${HOSTNAME%.*}"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Fuldt hostname: hven.sslug.dk
+Uden TLD: hven.sslug
+</screen>
+
+<para>
+Og den mere 'grådige' variant,
+hvor kun maskinnavn er tilbage ved brug af %%.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "Fuldt hostname: ${HOSTNAME}"
+echo "Uden TLD: ${HOSTNAME%%.*}"
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Fuldt hostname: hven.sslug.dk
+Kun maskinnavn: hven
+</screen>
+
+<para>
+Et andet praktisk eksempel hvor den sidste del
+af tekst-streng skal fjernes, er ved filnavne.
+Har man en bunke filer der skal konverteres fra
+fx 'gif' til 'jpg', men beholde det samme filnavn,
+kan en lille løkke klare det.
+</para>
+
+<programlisting>
+#! /bin/sh
+for FIL in *.gif
+do
+	echo "Konverterer ${FIL} til ${FIL%.*}.jpg"
+	convert ${FIL} ${FIL%.*}.jpg
+done
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Konverterer hven.gif til hven.jpg
+Konverterer otto.gif til otto.jpg
+</screen>
 
 <para>
 Læs mere om streng-manipulering med
@@ -4584,14 +4744,6 @@ se da <command>man bash</command> og søg efter
 </para>
 
 </sect2><!-- shell-parametre -->
-
-<sect2 id="shell-shift">
-<title>Parametre, tricks</title>
-<indexterm><primary>Shell script</primary><secondary>parametre, tricks</secondary></indexterm>
-<para>
-Mumle shift -- skal efter noget med while
-</para>
-</sect2>
 
 <sect2 id="shell-if">
 <title>if</title>
@@ -4758,7 +4910,7 @@ hvis det kun er en enkelt kommando der efterfølgende
 skal udføres.
 Ved at sætte &amp;&amp; ind, køres den anden kommando,
 hvis første kommando var sand.
-Læs mere om &amp;&amp; i <xref linkend="shell-flere-kom"/>.
+Læs mere om &amp;&amp; i <xref linkend="koerflere"/>.
 </para>
 
 <programlisting>
@@ -4786,16 +4938,169 @@ Mumle case $1; hej*); echo dav; ;; esac
 <title>Process erstatning</title>
 <indexterm><primary>Shell script</primary><secondary>process erstatning</secondary></indexterm>
 <para>
-Mumle noget om `date` el. $(date)
+Man kan komme ud for at skulle bruge output fra et program
+til et andet program.
+Dette kan gøres enten ved bruge af <command>`kommando`</command>
+eller <command>$(kommando)</command>.
+De to måder at gøre det på, udfører det samme.
+En simpel forklaring på hvornår process erstatning med fordel
+kan bruges, er hvis man først skal finde en fil og dernæst
+vil vide hvor stor filen er.
 </para>
+
+<screen>
+<prompt>[anne@linus ~]$ which mount</prompt>
+/bin/mount
+<prompt>[anne@linus ~]$ ls -ho /bin/mount</prompt>
+-rwsr-xr-x    1 root          67K Feb 26  2002 /bin/mount*
+</screen>
+
+<para>
+Nu gør vi det samme, men denne gang 'gribes' output
+fra which, og bruges som parameter til ls.
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ls -ho `which mount`</prompt>
+-rwsr-xr-x    1 root          67K Feb 26  2002 /bin/mount*
+</screen>
+
+<para>
+Og sidder du ved et fremmed tastatur hvor det ikke lige
+er til at finde tegnet `, så brug $().
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ls -ho $(which mount)</prompt>
+-rwsr-xr-x    1 root          67K Feb 26  2002 /bin/mount*
+</screen>
+
+<para>
+I shell scripts ser man ofte at output fra et andet 
+program bliver gemt i en variabel.
+Det kunne være et filnavn der er dannet ud fra dags dato.
+</para>
+
+<programlisting>
+#! /bin/sh
+DATO=$(date -I)
+FIL="backup-$DATO.tar.gz"
+echo "Dagens backup gemmes i: $FIL"
+tar czvf $FIL /home
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Dagens backup gemmes i: backup-2002-12-31.tar.gz
+</screen>
+
+<para>
+Mere information om kommando erstatning findes i
+<command>man bash</command> under
+<emphasis>Command Substitution</emphasis>.
+</para>
+
 </sect2><!-- shell-psubst -->
 
 <sect2 id="shell-for">
 <title>For-løkker</title>
 <indexterm><primary>Shell script</primary><secondary>for-løkker</secondary></indexterm>
 <para>
-Mumle
+For-løkker kan udføres på flere måder i shell scripts.
+Det kan være en liste af ord, liste af filnavne eller et 
+matematisk udtryk.
+Den simpleste måde er en liste af ord.
 </para>
+
+<programlisting>
+#! /bin/sh
+for NAVN in Tyge Otto Axel; do
+	echo "Han hedder $NAVN"
+done
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Han hedder Tyge
+Han hedder Otto
+Han hedder Axel
+</screen>
+
+<para>
+En liste af ord kan også stamme fra et andet program,
+hvor hvert ord så behandles for sig.
+Kommandoen <command>date</command> giver som udganspunkt
+en liste af ord og tal.
+</para>
+
+<programlisting>
+#! /bin/sh
+date
+for TEKST in $(date); do
+	echo "Del-streng: $TEKST"
+done
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Tue Dec 31 23:59:59 CET 2002
+Del-streng: Tue
+Del-streng: Dec
+Del-streng: 31
+...
+</screen>
+
+<para>
+For-løkker kan også bruges med fil-navne.
+Har man en masse filer der skal gøres noget med,
+skal man stå i katalog hvor filerne er, og så
+lave en globbing med fx <emphasis>*.html</emphasis>.
+</para>
+
+<programlisting>
+#! /bin/sh
+for FIL in *.html; do
+	echo "Filnavn er: $FIL"
+	# Her gøres noget med filen.
+	lynx -dump $FIL | lpr -o page-left=36
+done
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Filnavn er: index.html
+Filnavn er: tyge.html
+</screen>
+
+<para>
+Er det udvalgt liste af filer der skal gøres noget med,
+fx kopieres eller installeres, kan man skrive det pænt
+og organiseret.
+</para>
+
+<programlisting>
+#! /bin/sh
+# Husk: \ til sidst på linjen, betyder at teksten
+# fortsætter på næste linje.
+FILER="\
+index.html \
+tyge.html \
+otto.html \
+"
+for FIL in $FILER; do
+	if [ -e $FIL ]; then
+		echo "Filen $FIL eksisterer"
+	fi
+done
+</programlisting>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Filnavn er: index.html
+Filnavn er: tyge.html
+Filnavn er: otto.html
+</screen>
+
 </sect2><!-- shell-for -->
 
 <sect2 id="shell-while">
