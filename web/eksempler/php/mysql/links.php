@@ -1,4 +1,5 @@
 <html>
+<!-- $Id$ -->
 <head>
 <title>Side med links...</title>
 </head>

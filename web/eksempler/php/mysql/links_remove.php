@@ -1,4 +1,5 @@
 <?php
+	# $Id$
 	# Sletter en besked fra tabellen, beskedens ID overføres via URL'en
 
 	# Inkluderer filen config.php der indeholder databasens navn, brugernavn og

@@ -1,4 +1,5 @@
 <html>
+<!-- $Id$ -->
 <head>
 <title>PHP sammen med MySQL</title>
 </head>
