@@ -15,12 +15,12 @@ er så bare lavet en symbolic link til "smart.php".
  Der er følgende scripts:
   index.php - Denne fil
   proglang.inc - Listen med alle programmeringssprog
-  show.php - Hvis kildetekst til et prog-sprog
+  show.php - Hvis kildetekst til et prog-sprog eksisterer
   list.php - List samlet en type eksempler, fx "hello"
-  all.php - Hvis alle eksempler for et programmeringssprog
+  all.php - Hvis alle eksempler for et programmeringssprog eksisterer
 
  Ovenstående filer kan ses i din browser med kommandoen:
-  http://www.sslug.dk/linuxbog/progex/udskriv.php?filnavn=show.php
+  http://www.sslug.dk/linuxbog/program/eksempler/udskriv.php?filnavn=show.php
 */
 
 /* Tilføj nye program-sprog i filen herunder */
@@ -100,6 +100,7 @@ eksempler samlet.
   }
 ?>
 </table>
+<br>
 
 Siden vedligeholdes af Hans Schou 
 &lt;<a href="mailto:chlor@sslug.dk">chlor@sslug.dk</a>&gt;.
