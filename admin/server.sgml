@@ -200,16 +200,6 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
 </screen>
 
 <para>
-DHCP-serveren kan håndtere flere "subnet" - f.eks. hvis serveren også
-fungerer som router, så der er flere netkort installeret i
-maskinen. Så kan man konfigurere én DHCP-server, som deler adresser
-ud til forskellige netværk. Almindeligvis har man dog kun eet netværk,
-der får adresser fra sin DHCP-server - men derfor skal der være en
-"subnet" erklæring, der fortæller hvad det er for et fysisk netværk,
-denne DHCP-pulje handler om.
-</para>
-
-<para>
 "range" fortæller så, hvilke IP-adresser serveren kan tildele klienter
 på dette netværk - det er her, vi skriver at adresserne skal være i
 intervallet 192.168.0.100 til 192.168.0.250.
@@ -289,6 +279,28 @@ DNS-server - for at det skal ske hurtigt, skal default-lease-time
 sættes ned, så klienterne får friske oplysninger fra serveren noget
 oftere. Det er en afvejning, man må gøre.
 </para>
+
+<para>
+DHCP-serveren kan håndtere flere "subnet" - f.eks. hvis serveren også
+fungerer som router, så der er flere netkort installeret i
+maskinen. Så kan man konfigurere én DHCP-server, som deler adresser
+ud til forskellige netværk. Almindeligvis har man dog kun eet netværk,
+der får adresser fra sin DHCP-server - men derfor skal der være en
+"subnet" erklæring, der fortæller hvad det er for et fysisk netværk,
+denne DHCP-pulje handler om. Har man f.eks. to netkort hvor man kun ønsker 
+være DHCP-server for det ene net - skal man alligevel definere DHCP-serveren
+for begge net, men vise at DHCP-serveren ikke til tildele IP-adresser
+i det ene net, f.eks. for et klasse C-netværk 192.168.36.X. I det tilfælde 
+kan følgende tilføjes til <filename>/etc/dhcpd.conf</filename>.
+</para>
+
+<screen>
+        subnet 192.168.36.0 netmask 255.255.255.0 {
+                 not authoritative;
+        }
+</screen>
+
+
 </sect3>
 
 <sect3 id="dhcp-start">
