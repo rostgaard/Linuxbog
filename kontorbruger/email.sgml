@@ -253,4 +253,254 @@ som du vil forvente fra for eksempel MS Outlook.
 
 </sect1>
 
+<sect1 id="krypteret-email">
+<title>Kryptering af email</title>
+<para>
+Alle de oplysninger, som du sender via Internet, er som udgangspunkt
+usikre. Derfor bør du kryptere dine email, så det kun er den rigtige
+modtager, der kan læse dem, og så modtageren kan være sikker på, at
+det rent faktisk også er dig, der har sendt en bestemt email. Hvis du
+er i tvivl om, hvorfor du bør kryptere dine email, bør du læse Phil
+Zimmermanns "Hvorfor har du brug for PGP?", som du kan finde her:
+<ulink url="http://www.fys.ku.dk/~omic/why_pgp.html">http://www.fys.ku.dk/~omic/why_pgp.html</ulink>.
+</para>
+
+<sect2 id="pgp">
+<title>PGP</title>
+<indexterm><primary>PGP</primary></indexterm>
+<para>
+PGP, der står for Pretty Good Privacy, er nok det mest udbredte
+krypteringsprogram, men du kan også vælge at bruge GPG. GPG står for
+GNU Privacy Guard og er en del af GNU-projektet.  Hvis du ikke
+allerede har installeret PGP, kan du downloade PGP fra The
+International PGP Home Page, som du kan finde her:
+<ulink url="http://www.pgpi.org/">http://www.pgpi.org/</ulink>. Der
+kan du også finde en række FAQ om kryptering.
+</para>
+</sect2>
+
+
+<sect2 id="installation-pgp">
+<title>Installering af PGP</title>
+
+<para>Da jeg bruger SuSE’s Linux-distribution, henter jeg PGP en
+rpm-installationsfil fra The International PGP Homepage. Jeg
+downloader filen <filename>PGPcmdln_6.5.8.Lnx_FW.rpm.tar</filename>, 
+der viser sig at være en gzip-fil i stedet for en tar-fil, 
+hvilket jeg konstaterer ved at
+skrive <command>file PGPcmdln_6.5.8.Lnx_FW.rpm.tar</command>. 
+Jeg omdøber derfor
+programmet først filen med <command>mv PGPcmdln_6.5.8.Lnx_FW.rpm.tar
+PGPcmdln_6.5.8.Lnx_FW.rpm.gz</command>. Dernæst pakker jeg den ud. Først med
+<command>gunzip PGPcmdln_6.5.8.Lnx_FW.rpm.gz</command> og så med <command>tar
+PGPcmdln_6.5.8.Lnx_FW.rpm</command>. Til sidst kan jeg installere PGP med
+<command>rpm -Uvh PGPcmdln_6.5.8.Lnx_FW.rpm</command>.
+</para>
+</sect2>
+
+<sect2 id="om-kryptering">
+<title>Kryptering kort fortalt</title>
+
+<para>
+Krypteringen foregår kort fortalt ved brug af en privat og en
+offentlig nøgle. Når du vil sende en krypteret email, krypterer du den
+med modtagerens offentlige nøgle, som modtageren har gjort tilgængelig
+for alle. Modtageren bruger så sin private nøgle, som kun han har, til
+at dekryptere emailen. Der er tale om en envejskryptering, så det er
+ikke muligt for andre at dekryptere en email med den offentlige
+nøgle. Det kan kun lade sig gøre, hvis man har den private nøgle (og
+passwordet selvfølgelig).
+</para>
+
+<para>
+Ud over krypteringen af selve emailen, signerer du din email, så
+modtageren ved, at den rent faktisk kommer fra dig. Alle og enhver har
+jo adgang til modtagerens offentlige nøgle, og de har derfor mulighed
+for at sende krypterede email modtageren. Du er imidlertid den eneste,
+som har din egen private nøgle, så når du vedlægger en signatur, som
+er krypteret med din private nøgle (som jo betyder, at den kun kan
+dekrypteres med din offentlige nøgle), kan modtageren være sikker på,
+at en email rent faktisk også kommer fra dig.
+</para>
+</sect2>
+
+<sect2 id="sikkerheds-niveau">
+<title>Niveauet af sikkerhed</title>
+<para>
+Alle nøgler kan i princippet crackes, hvis man har tid nok og en
+computer, der er stor nok. Men da du næppe er terrorist, og da CIA
+derfor formentlig ikke interesserer sig for dine krypterede email,
+behøver du ikke gå så højt op i det.  Kryptering handler i bund og
+grund om at gøre dine data vanskeligt tilgængelig. Hvis CIA virkelig
+var interesseret i dine data, vil du næppe kunne undgå, at de får
+adgang til dem. Der er en lang række praktiske og teoretiske angreb,
+som du som almindelig borger næppe vil kunne forsvare dig imod. Men du
+har jo blot brug for, at dine data ikke er tilgængelig for hvem som
+helst.
+</para>
+</sect2>
+
+<sect2 id="noegle-generering">
+<title>Generering af nøgler</title>
+<para>
+Det første du skal gøre, er altså at generere et sæt af nøgler. Det
+gør du ved at skrive <command>pgp -kg</command> i en
+kommandolinie. PGP spørger nu om størrelsen på den RSA-nøgle, som du
+vil generere. Det er tilstrækkeligt, hvis du vælger en 2048 bit nøgle,
+men du kan for eksempel vælge 4096 bit, hvis du synes. Du vælger 3,
+som er en 2048 bit nøgle.
+</para>
+
+<para>
+Du bliver nu spurgt om et user ID til din offentlige nøgle. Du kan
+nøjes med at skrive dit navn efterfulgt af din emailadresse i vinklede
+parenteser: "Jesper Laisen <post@laisen.dk>". Du kan dog også skrive
+en kommentar efter dit navn eller en udløbsdato, men du skal sørge for
+at overholde syntaksen.
+</para>
+
+<FIGURE ID="kmail-pgp-key-fig" FLOAT="1">
+<TITLE>PGP nøgle</TITLE>
+<GRAPHIC FILEREF="../images/kmail_pgp_key.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Når du vælger dit password, er det vigtigt, at det er et godt
+password. Der er ikke nogen grund til at kryptere dine email, hvis dit
+password er et almindelige ord på 3 bogstaver. Det vil sige, at du
+skal vælge et langt password, der indeholder store og små bogstaver,
+specialtegn, og som ikke kan slås op i en ordbog. Du skal dog også
+kunne huske det.
+</para>
+
+<para>
+Du bliver nu bedt om at taste noget tilfældigt på tastaturet,
+hvorefter PGP genererer dine nøgle ud fra randomiserede bits, som PGP
+får ved at måle tidsintervallerne mellem dine tasteanslag.
+</para>
+</sect2>
+
+<sect2 id="kmail-pgp-opsaetning">
+<title>Opsætning af KMail</title>
+
+<para>
+Du sætter KMail op til at bruge PGP til at kryptere emails under
+"Settings, Configuration", hvor du skal vælge fanen "Security" i
+vinduet "Configure - KMail". Du skal nu i feltet "PGP User Identity"
+skrive det user ID, som du valgte, da du genererede dine nøgler. Du
+skal også vælge hvilken version af PGP, som du bruger under
+"Encryption tool". Du bør nok også vælge optionen "Always encrypt to
+self". Du skal sætte kryds her, hvis du vil kunne læse den udgående
+mail, da den jo ellers bliver krypteret med modtagerens offentlige
+nøgle.
+</para>
+
+<FIGURE ID="kmail-pgp-setting-fig" FLOAT="1">
+<TITLE>billede af konfiguration, pgp</TITLE>
+<GRAPHIC FILEREF="../images/kmail_pgp_setting.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</sect2>
+
+<sect2 id="offentlig-noegle">
+<title>Fordeling af din offentlige nøgle</title>
+<para>
+Du vil formentlig blot sende en kopi af din offentlig nøgle til dem,
+som du vil kommunikere krypteret med. Det gør du ved, når du har
+klikket på "New Message", at vælge "Attach, Attach My Public Key". Af
+sikkerhedsmæssige grund skal du ikke signere en email, hvor du
+vedhæfter din offentlige nøgle. Der findes desuden en række offentlige
+nøgleservere, hvor du kan opbevare din offentlige nøgle. Det kunne for
+eksempel være: <ulink url="http://www.cam.ac.uk.pgp.net/pgpnet/">http://www.cam.ac.uk.pgp.net/pgpnet/</ulink>
+</para>
+</sect2>
+
+<sect2 id="pgp-noegle-modtagelse">
+<title>Modtagelse af en offentlig nøgle</title>
+<para>
+Hvis du skal kryptere en email, kræver det selvfølgelig, at du har
+afsenderens offentlige nøgle. Når du modtager en offentlig nøgle som
+en vedhæftet fil i en email eller på en diskette, skal du tilføje den
+til din offentlige nøglering. Det gør du ved i et terminalvindue at
+skrive <command>pgp -ka filnavnet</command>, hvor filnavnet er navnet
+på den fil, som indeholder den offentlige nøgle.  Hvis den offentlige
+nøgle ikke kommer med en "trusted signature", kan det blive
+nødvendigt, at du selv siger god for nøglen ved at skrive <command>pgp
+-ks nøglens identitet</command>. Så skal du selvfølgelig være sikker
+på, at nøglen rent faktisk også kommer fra den, som du tror, den
+kommer fra. Det kan du gøre ved telefonisk at verificere nøglens
+fingeraftryk med den, som har sendt den til dig.
+</para>
+</sect2>
+
+<sect2 id="krypterede-emails">
+<title>Krypterede emails</title>
+<para>
+Når du modtager en krypteret email, vil du blive spurgt, om dit
+PGP-password, hvorefter PGP dekrypterer emailen. PGP gemmer altid
+krypterede email i det krypterede format, så du vil altid blive spurgt
+om dit password, når du vil læse en krypteret email. Du kan dog vælge,
+at KMail skal gemme passwordet i hukommelsen, så du kun bliver spurgt,
+første gang, du vil dekryptere en mail. Hvis du lukker KMail, vil du
+naturligvis blive spurgt igen.
+</para>
+
+<para>
+Du krypterer dine udgående email ved at klikke på ikonet med
+hængelåsen, når du skriver en mail. Hvis du også vil signere din
+email, skal du klikke på ikonet ved siden af.  Du kan også vælge, at
+alle dine email automatisk bliver signeret.
+</para>
+
+
+<FIGURE ID="kmail-pgp-mail-fig" FLOAT="1">
+<TITLE>billede af emailudkast</TITLE>
+<GRAPHIC FILEREF="../images/kmail_pgp_mail.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+<para>
+Hvis KMail ikke af sig selv, kan identificere modtagerens offentlige
+nøgle, skal du vælge den rigtige nøgle fra en liste.
+</para>
+
+<FIGURE ID="kmail-pgp-list-fig" FLOAT="1">
+<TITLE>billede af pgp-liste</TITLE>
+<GRAPHIC FILEREF="../images/kmail_pgp_list.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</sect2>
+
+<sect2 id="attachments">
+<title>Vedhæftede filer</title>
+
+<para>
+Du skal være opmærksom på, at KMail kun krypterer selve emailen, så
+hvis du også sender vedhæftede filer, skal du kryptere de vedhæftede
+filer manuelt med PGP, inden du vedhæfter dem. Du bør også være
+opmærksom på, at selve emnefeltet heller ikke bliver krypteret, så lad
+endelig være med at afsløre noget der.
+</para>
+</sect2>
+
+<sect2 id="test-pgp">
+<title>Test før brug</title>
+<para>
+Det er vigtigt, at du tester krypteringen af dine email grundigt, før
+du begynder at kryptere regelmnæssigt. KMail er afhængig af det
+output, som kommer fra PGP, og desværre kan dette output variere
+afhængigt af hvilken version af PGP, der bruges. Du kan kan teste dine
+egne nøgler ved at sende en email til dig selv, som du så krypterer
+med din offentlige nøgle. Men du er også nødt til at teste med andre,
+som du kommunikerer krypteret med. Der er jo ikke meget sjov ved at
+forsøge at læse en krypteret mail, hvis du ikke kan dekryptere den.
+</para>
+
+<FIGURE ID="kmail-pgp-encrypt-fig" FLOAT="1">
+<TITLE>billede af krypteret tekst</TITLE>
+<GRAPHIC FILEREF="../images/kmail_pgp_encrypt.&magic;"  SCALE="60"></GRAPHIC>
+</FIGURE>
+
+</sect2>
+
+
+</sect1>
+
 </chapter>
