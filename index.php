@@ -28,7 +28,7 @@ $Id$
 -->
 
 <p align="center">
-<img src="pingo.png" alt="Friheden til at skrive bøger">
+<img src="front.png" alt="Friheden til at skrive bøger">
 </p>
 
 
