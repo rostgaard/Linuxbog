@@ -2057,5 +2057,552 @@ sat password for root og dig selv.
 </sect2>
 
 </sect1>
+
+<sect1 id="installslackware">
+<title>Installation af Slackware 7.1</title>
+<indexterm><primary>Slackware</primary></indexterm>
+
+
+<sect2 id="slackwarehistorie">
+<title>Historie og baggrund</title>
+<para>
+Filosofien bag Slackware er KISS, <emphasis>Keep It Simple
+Stupid</emphasis>. Oversat til dansk bliver det noget i retning af
+'Hold det simplet og enkelt - dumme'.  Det vil sige intet overflødigt
+fyld, jo enklere det er, desto mindre er risikoen for fejl.
+</para>
+
+<para>
+Siden april 1992 har Patrick Volkerding manden bag Slackware, stræbt
+efter at lave den mest 'UNIX-lignende' distribution med fokus på
+enkelhed, sikkerhed og stabilitet. Styringen af Slackware forgår
+stort set på samme måde som man ser med Linux-kernen. Patrick har
+ligesom Linus det sidste ord, godt hjulpet af 'The Slackware Team',
+som kan sammenlignes med Linus's højre hånd, Alan Cox med flere, og
+til sidst resten af Linux-samfundet.
+</para>
+
+<para>
+Slackware sammenlignes ofte med Debian på grund af distributionens
+grundighed og høje tekniske niveau. Det er dog en myte at Slackware
+skulle være så meget svære at installere end f.eks. Red Hat eller SuSE
+(SuSe er faktisk baseret på Slackware). Men præcis som med Debian
+kræver det at du har styr på hvad du har i maskinen, med hensyn til
+harddisk, netkort, lydkort osv.
+</para>
+</sect2>
+
+
+<sect2 id="slackwarekrav">
+<title>Hardwarekrav</title>
+
+<para>
+Slackware Linux 7.1 stiller følgende krav til hardware:
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>
+En Intel 32 bit-kompatibel CPU (80386 eller senere). Der er
+efterhånden god understøttelse af andre mærker end Intel, f.eks. AMD og 
+MCA. 
+</para></listitem>
+
+<listitem><para>
+Mindst 16 MB RAM anbefales.
+</para></listitem>
+
+<listitem><para>
+50 MB fri diskplads, men vil du bruge det til noget reelt, bør du
+regne med 150 til 250 MB - mindst! Det koster at installere alle de
+mange programmer som medfølger, så 500 MB - 1 GB er ikke et dårligt
+udgangspunkt.
+</para></listitem>
+</itemizedlist>
+</sect2>
+
+
+<sect2 id="slackwareopvarmning">
+<title>Opwarmning</title>
+
+<para>
+Inden enhver form for fysisk aktivitet kan det anbefales at man
+varmer op. Lettere hjerne-gymnastik følger. Hele familien er
+velkommen til at deltage ;-)
+</para>
+
+<para>
+Nå lad os så komme igang!
+</para>
+
+<para>
+Installationen af Slackware sker via et DOS-lignende opsætningsprogram.
+Programmet kræver ikke X og tager ikke megen plads, hvilket kan være
+af stor betydning i visse situationer. Det hele styres via pile-tasterne, 
+&lt;RETUR&gt; samt &lt;mellemrum&gt;.
+(Installationen forgår på
+engelsk).
+</para>
+
+<para>
+Den gratis version af Slackware 7.1 består af 3 cdrom'er. Den første
+er installations-cdrommen, nummer to er ekstra pakker og nummer tre er
+kildeteksten. De kan alle hentes fra http://www.slackware.com det er
+dog kun den første som er strengt nødvendig.
+</para>
+
+<para>
+Mens du downloader eller evt. pakker cd-rommen ud af æsken, tager vi
+lige et kik på hvad slags hardware vi har og gør os nogle tanker om,
+hvordan vi har tænkt at installere Slackware. Det er en god ide, at tage
+noter, der vil nemlig være en quiz senere ;-)
+</para>
+
+<itemizedlist mark="bullet" spacing="compact">
+
+<listitem><para>
+IDE eller SCSI? Hvis du ikke er sikker, er det med stor
+sikkerhed IDE.
+</para></listitem>
+
+<listitem><para>
+Skal vi installere fra disketter, cdrom eller over et
+lokalnet? Vi fokuserer i denne vejledning på cdrom-installation.
+</para></listitem>
+
+<listitem><para>
+Kan min maskine boote fra cdrom? Hvis ikke skal vi lave en
+boot- og en root-diskette - se mere om det senere.
+</para></listitem>
+
+<listitem><para>
+Er der et andet styresystem på maskinen, og vil vi beholde det? Hvis
+ja, skal vi evt. lave plads til Linux.
+</para></listitem>
+
+<listitem><para>
+Er min backup inden for rækkevide, og er den dugfrisk? Hvis
+nej, så er installationen på eget ansvar.
+</para></listitem>
+</itemizedlist>
+
+<para>
+(Denne guide udgår fra installation via bootable cdrom. Der er i
+slutningen en kort gennemgang af andre installationsmuligheder.)
+</para>
+
+
+</sect2>
+
+
+<sect2 id="slackwarefracdrom">
+<title>Installation fra cdrom</title>
+
+<para>
+Vi stopper cd-rommen i maskinen og starter. Vi vil efter et stykke tid
+blive mødt af en besked som siger at hvis vi ved, at vores maskine
+behøver ekstra startparametre, så er det nu, man skal sige til.
+Dette er kun i tilfælde af skummelt hardware.
+</para>
+
+<para>
+Vi trykker &lt;RETUR&gt; og bliver efter lidt ventetid bedt om at
+logge ind som root.
+</para>
+
+<para>
+Linux er nu indlæst i hukommelsen (RAM'en), og vi skal nu forsøge at
+smække det ned på harddisken.
+</para>
+
+<para>
+Det første vi skal gøre er, at partitionere harddisken med et
+program som hedder fdisk. Bare rolig, det er ikke så voldsomt, som
+det lyder.
+</para>
+
+<para>
+Pop quiz!
+Er dit system IDE eller SCSI?
+</para>
+
+<para>
+(Det betragtes som snyd at spørge den 12-årige som står vid siden af)
+</para>
+
+<sect3 id="slackwarefdisk">
+<title>Partitionering med fdisk</title>
+
+<para>
+Sig højt efter mig, "Jeg har backup, fdisk kan ikke skade mig"
+</para>
+
+<para>
+Læs hele stykket før du går igang.
+</para>
+
+<para>
+Hvis du bruger IDE, er syntaksen <command>fdisk /dev/hda</command> og 
+for SCSI fdisk
+<command>/dev/sda</command>.
+</para>
+
+<para>
+Vi trykker <command>p</command> for at se vores nuværende partitionstabel.
+</para>
+
+<screen>
+Command (m for help): p
+
+Disk /dev/sda: 64 heads, 32 sectors, 8748 cylinders
+Units = cylinders of 2048 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/sda1   *         1       800    819184    b  Win95 FAT32
+/dev/sda2           801       820     20480   83  Linux native
+/dev/sda3           821      8600   7966720    5  Extended
+/dev/sda4          8601      8748    151552   82  Linux swap
+/dev/sda5           821      1900   1105904   83  Linux native
+/dev/sda6          1901      8600   6860784   83  Linux native
+</screen>
+
+<para>
+Her ses en SCSI-harddisk, med en Windows-partition (<filename>sda1</filename>)
+En lille partition (<filename>sda2</filename>) og udvidet 
+(<filename>sda3</filename>) som indeholder (<filename>sda5</filename>) og
+(<filename>sda6</filename>). Min swap-partition er her 
+(<filename>sda4</filename>) som man kan se under System.
+</para>
+
+<para>
+Jeg har her valgt at lave en lille boot-partition 
+(<filename>sda2</filename>) under block
+1024 for at undgå evt. LILO-problemer (LInux LOader) senere.
+Jag har ydderligere valgt at lave en ekstra partition 
+(<filename>sda6</filename>) så jeg
+evt. kan have brugerkataloger eller programmer seperat.
+</para>
+
+<para>
+Man skal minimum have en root (<filename>/</filename>) og en swap partition.
+</para>
+
+<para>
+Efter at have lavet de partitioner som vi vil have med <command>n</command>, 
+tager vi
+lige og laver vores swap ved at trykke <command>t</command> og 
+derefter rette dens
+system id til 82 (Linux swap).
+</para>
+
+<para>
+Til sidst trykker vi <command>w</command>, når vi er tilfredse med resultatet.
+</para>
+
+<para>
+Skulle du få panik under opsætningen af nye partitioner er det bare
+når som helst, at trykke <command>q</command>. 
+Dine rettelser bliver først skrevet til
+disken når du trykker <command>w</command>.
+</para>
+</sect3>
+
+<sect3 id="videre-slackwareinstalltion">
+<title>Lad os komme videre med installation</title>
+<!--      [En lille fodnote om dk tastatur]* -->
+
+<para>
+Slackware bruger som default amerikansk tastatur-udlægning, det kan
+godt være lidt forvirende at:
+</para>
+
+<screen>
+                / sidder på -
+                - sidder på ?
+                = sidder på ´
+</screen>
+
+<para>
+Hvis man ikke kan leve med det under brugen af fdisk, kan man skrive
+<command>/bin/loadkeys dk-latin1.map</command> (eller
+<filename>fi-latin1.map</filename> hvis man har svensk/finsk
+tastatur). Dette kan ændres senere under installationen.
+</para>
+
+
+<para>
+Vi er nu tilbage ved Linux-prompten, og skriver så: <command>setup</command>
+</para>
+
+<para>
+Der vil nu dukke følgende enkle menu frem.
+</para>
+
+<screen>
+FIGUR KOMMER
+</screen>
+
+<!--    <figure id="slackware7.1-setup1-fig" float="1">
+      <title>Slackware 7.1 Installation - Installationsmenu</title>
+      <graphic fileref="slackware7.1-setup1.&magic;" SCALE="60"></graphic>
+    </figure>
+-->
+
+<para>
+Det er bare at tage punkterne fra en ende af. Hvis du starter med
+Keymap, vil du automatisk blive guided gennem hele installationen.
+</para>
+
+<para>
+[ Vil du se, hvad der sker bag fasaden? Tryk, Alt + F4  (Alt + F1
+for at komme tilbage.) ]
+</para>
+
+<screen>
+FIGUR KOMMER
+</screen>
+
+<!--
+    <figure id="slackware7.1-setup2-fig" float="1">
+      <title>Slackware 7.1 Installation - Fortsat</title>
+      <graphic fileref="slackware7.1-setup2.&magic;" SCALE="60"></graphic>
+    </figure>
+-->
+
+<para>
+Efter at vi har valgt tastatur, skal vi nu til at formatere 
+Linux-partitionerne som vi lige har lavet.
+</para>
+
+<para>
+Slackware finder selv swap-partitionen og Linux-native-partitionerne.
+Har vi en DOS-partition kan vi også vælge om den skal være synlig
+under Linux. (Den bliver IKKE formateret).
+</para>
+
+<para>
+Næste menu spørger, hvorledes vi har tænkt os at installere Slackware.
+</para>
+
+<screen>
+FIGUR KOMMER
+</screen>
+
+<!--
+    <figure id="slackware7.1-setup3-fig" float="1">
+      <title>Slackware 7.1 Installation - Installationskilde</title>
+      <graphic fileref="slackware7.1-setup3.&magic;" SCALE="60"></graphic>
+    </figure>
+-->
+
+<para>
+Nu kommer vi til det sjove, hvad skal vi installere for pakker.
+</para>
+
+<para>
+Slackware er opdelt i serier. A og N er et 'must', Er du i tvivl så
+bare gør som der er foreslået. Jeg tar normalt A, AP, D, N, X og XAP
+samt (GNOME/KDE).
+</para>
+
+<para>
+Vælger man Newbie, kommer der en beskrivelse af alle pakker, og man
+kan så sige Ja/Nej til om den skal installeres. Igen er du i tvivel
+sige Ja til alt. Du kan dog fra vælge den 'forkerte' kerne. Altså
+hvis du har et IDE system har du jo ikke brug for SCSI kernen og
+omvendt.
+</para>
+
+<para>
+Nå alle pakker ligger trygt på harddisken, er det tid til
+opsætningen at evt. netkort og LILO (LInux LOader).
+</para>
+
+
+<para>
+Hvis LILO brokker sig over, at den ikke kan installeres i MBR så
+bare slå koldt vand i blodet, 'Det skal vi nok klare sammen os to'.
+</para>
+
+<para>
+Vi slutter installationen med at genstarte maskinen, med Windows
+varemærke nemlig kommande: 'Ctrl + Alt + Delete' (Vi husker lige, at
+pille cd ud, inden vi genstarter).
+</para>
+
+</sect3>
+<!-- Her kan det tænkes at der er lidt LILO problem-løsning -->
+</sect2>
+
+
+<sect2 id="slackware-boot-root-disketter">
+<title>Boot- og root-disketter</title>
+        
+<para>
+Hvis din computer ikke kan boote fra cdrom-drevet, eller du vælger
+at installere via lokalnet eller disketter, skal du først lave en
+Boot- og en root-diskette.
+</para>
+
+<para>
+Dette gøres under DOS/Windows med programmet rawrite.exe. Disketten
+<filename>bare.i</filename> er til IDE systemer og <filename>scsi.s</filename> 
+ er til SCSI systemmer. De bruger
+begge <filename>color.tgz</filename> eller <filename>text.tgz</filename> 
+som Root-disk. Du kan læse mere om
+hvilken diskette, du skal bruge i <filename>WHICH.ONE</filename>-filen, 
+som findes i
+kataloget <filename>bootdsk.144</filename> på din cd.
+</para>
+</sect2>
+
+
+<sect2 id="hvadkanslackware">
+<title>Hvad kan Slackware som de andre ikke kan</title>
+
+<para>
+Slackware tilbyder mere end bare den 'sædvanlige' Linux-distribution, 
+der findes nemlig optil flere sideprojekter nemlig
+ZipSlack, BigSlack og ZipSpeak.
+</para>
+
+</sect2>
+
+
+<sect2 id="slackwareunderwindows">
+<title>Slackware under Windows</title>
+
+<para>
+ZipSlack er en special version af Slackware, som kan installeres på
+et FAT- eller FAT32-filsystem (Det er nørdsprog for filsystemet til 
+DOS og Windows 9x).
+Man behøver altså ikke at dele harddisken op i flere partitioner, men
+kan installere det direkte på en DOS- eller Windows-disk. Tanken med
+ZipSlack er, at tilbyde en lille, men kraftful version af Slackware
+distributionen som man kan installere på et Zip-drev (eks. Iomega's
+100MB) og tage med sig i lommen. ZipSlack fylder ca. 90MB.
+</para>
+
+<para>
+BigSlack er det samme som ZipSlack, dog med den forskel, at den
+kommer med en for-konfigureret grafisk X-windowopsætning med GNOME. Da
+X tager en del plads fylder BigSlack ca 900MB, men så får man også
+GNOME, Gimp og en masse andre lækre X-programmer med i købet. Dette
+kan sammenlignes med en standard Slackware-installation men
+hastigheden og anti-crash sikkerheden er ikke den samme, som en på en
+rigtig Linux-installation.
+</para>
+
+<para>
+ZipSpeak er et spin off af ZipSlack. ZipSpeak er beregnet for blinde
+eller svagtseende, som så på en nem måde kan køre Linux på sin
+DOS/Windows-maskine uden nødvendigvis at behøve assistance fra en
+seende person.
+</para>
+</sect2>
+
+
+<sect2 id="slackwaremyter">
+<title>Myter om Slackware</title>
+
+<para>
+Myte:  Slackware er rigtig svært at installere!
+</para>
+<para>
+Fakta: Slackware er ikke sværere at installere end andre
+       distributioner, men det kræver, at man ved hvad slags hardware
+       man har, da installationen ikke er fuldt ud "plug'n'play".
+</para>
+
+<para>
+Myte:  Slackware er død og ikke op til nutidens standard!
+</para>
+<para>
+Fakta: Slackware lever skam i bedste velgående. Seneste version (7.1)
+       kommer med kerne 2.2.16, GNU C Library 2.1.2 (libc6)
+       XFree86 3.3.6 (og 4.0) GNOME 1.2 KDE 1.1.2 (og 1.90/1.91) bla. 
+</para>
+
+<para>
+Myte:  Slackware har intet pakkesystem!
+</para>
+<para>
+Fakta  Slackware har dels sit eget pakkesystem,
+       Installpkg Upgradepkg og Removepkg, som kan installere
+       Slackwares .tgz-pakker.
+</para>
+
+<para>
+         Man kan også installere et ekstra program kaldet rpm. Så kan
+         man bruge Red Hat Packet Manager-pakker (RPM-pakker).
+</para>
+
+<para>
+         Følgende er dog den bedste måde at installere programmer under
+         Linux Slackware:
+</para>
+
+<screen>
+<PROMPT>[daisy@linus daisy]$ </PROMPT> <USERINPUT>tar -zxvf software-1.0.tar.gz</USERINPUT>
+<PROMPT>[daisy@linus daisy]$ </PROMPT> <USERINPUT>cd software-1.0</USERINPUT>
+<PROMPT>[daisy@linus software-1.0]$ </PROMPT> <USERINPUT>less INSTALL (og less README)</USERINPUT>
+<PROMPT>[daisy@linus software-1.0]$ </PROMPT> <USERINPUT>./configure</USERINPUT>
+<PROMPT>[daisy@linus software-1.0]$ </PROMPT> <USERINPUT>make</USERINPUT>
+<PROMPT>[daisy@linus software-1.0]$ </PROMPT> <USERINPUT>make install</USERINPUT>
+</screen>
+
+<screen>
+FIGUR KOMMER
+</screen>
+
+<!--
+<img src="slackware7.1-setup-pkg.jpg">
+    <figure id="mandrake71bootload-fig" float="1">
+      <title>Mandrake 7.1 Installation - boot loader</title>
+      <graphic fileref="mdk71bootload.&magic;" SCALE="60"></graphic>
+    </figure>
+-->
+</sect2>
+
+<sect2 id="hvorslackware">
+<title>Hvor finder jeg Slackware?</title>
+
+<para>
+Den officielle Slackware-side findes på 
+<ulink url="http://www.slackware.com">http://www.slackware.com</ulink>
+For ydderligere hjælp kan 
+<ulink url="http://www.slackware/forum">http://www.slackware/forum</ulink> og
+<ulink url="news://alt.os.linux.slackware">news://alt.os.linux.slackware</ulink> 
+anbefales, nå ja, og så
+<ulink url="http://www.sslug.dk">http://www.sslug.dk</ulink> 
+"sæ'følig" ;-)
+</para>
+
+<para>
+Slackware kan hentes hos:
+</para>
+
+<para>
+<ulink url="ftp://ftp.slackware.com">ftp://ftp.slackware.com</ulink> (USA), 
+<ulink url="ftp://ftp.sunet.se">ftp://ftp.sunet.se</ulink> 
+(svensk mirror) eller
+<ulink url="ftp://ftp.funet.fi">ftp://ftp.funet.fi</ulink> (finsk mirror).
+</para>
+
+<para>
+Færdige Slackware-pakker kan også findes på den uofficielle side
+<ulink url="http://www.linuxmafia.org">http://www.linuxmafia.org</ulink>
+</para>
+
+<para>
+Det var da ikke så svært vel...?
+</para>
+
+
+</sect2>
+
+</sect1>
+
+
 </chapter>
 
