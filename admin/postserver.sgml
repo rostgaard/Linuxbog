@@ -501,6 +501,41 @@ mailman         0:off   1:off   2:off   3:on    4:off   5:on   6:off
 Dette starter mailman (kun nødvendigt på Red Hat) i runlevel 3 og 5 (se <xref linkend="runlevel">).
 </para>
 
+<para>
+Det smarte med Mailman er at man kan administere systemet via en
+web-browser. Derfor skal man nu tilføje <filename>/mailman/</filename>
+(webadministration) og <filename>/pipermail/</filename> (postarkiv)
+til Apache webserveren. Der er en fil
+<filename>/etc/httpd/conf/mailman.conf</filename>, som følger ned
+Mailman i RPM-form, som nu skal tilføjes i Apaches <filename>Vhosts.conf</filename> eller 
+<filename>httpd.conf</filename> under den webserver man anvender i forvejen.
+Erstat <filename>/var/mailman/</filename> med den korrekte sti hvis du ikke
+anvender Red Hat RPM-pakker.
+</para>
+
+<screen>
+ScriptAlias /mailman/ /var/mailman/cgi-bin/
+&lt;Directory /var/lib/mailman/cgi-bin>
+  Options -Indexes -FollowSymLinks -Includes ExecCgi
+  AllowOverride None
+  order allow,deny
+  allow from all
+&lt;/Directory>
+
+#
+# Configure the public archives
+#
+Alias /pipermail/ /var/mailman/archives/public/
+&lt;Directory /var/lib/mailman/archives/public>
+  Options -Indexes FollowSymlinks -Includes
+  AllowOverride None
+  order allow,deny
+  allow from all
+&lt;/Directory>
+</screen>
+
+
+
 </sect2>
 <sect2 id="mailman-liste-opret">
 <title>Oprette postlister i Mailman</title>
@@ -554,8 +589,13 @@ admin@hven.dk med systemadministratorernes post-konto.
 <prompt>[root@linus /root]#</prompt> <userinput>/var/mailman/bin/newlist mailman admin@hven.dk MIT_HEMMELIGE_PASSWORD_FOR_DENNE_LISTE</userinput>
 </screen>
 
+</sect2>
 
-
+<sect2 id="mailman-webadmin">
+<title>Administration af postlister via webbrowser</title>
+<para>
+xx
+</para>
 </sect2>
 </sect1>
 
