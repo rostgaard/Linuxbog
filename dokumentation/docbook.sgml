@@ -66,16 +66,6 @@ openjade-*, sgml-tools* og tetex*.
 </para>
 
 <para>
-Inden du går igang med installationen, er det (i Red Hat 7.2)
-vigtigt, at alle pakker, der har med SGML/Docbook at gøre, bliver
-afinstalleret <emphasis>inden</emphasis> du går i gang med at
-installere pakkerne fra Red Hat 6.2. Alle pakker med navne, der starter
-med jadetex, tetex, dialog, docbook, stylesheets, openjade og sgml
-skal afinstalleres. For at checke om pakkerne er (af)installeret, kan
-du køre:
-</para>
-
-<para>
 Nu er vi ved at være klar til at få installeret de hentede
 pakker. Stil dig i den mappe, hvor pakkerne ligger (typisk din cdrom) og kør:
 </para>
@@ -1436,8 +1426,8 @@ Du skal selvfølgelig sørge for, at der er et stylesheet på den angivne placering
 
 <para>
 For PDF og Postscript-generering (kaldes "print" i Docbook) vil du nok
-ændre i
-<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/print/dbparam.dsl</filename>.
+ændre i <filename>/usr/share/sgml/docbook/dsssl-stylesheets/print/dbparam.dsl</filename>
+(Red Hat 6.2 <filename>/usr/lib/sgml/stylesheets/nwalsh-modular/print/dbparam.dsl</filename>).
 En ting du nok skal se på er "%paper-type%" som sættes til
 </para>
 
@@ -1461,16 +1451,54 @@ En ting du nok skal se på er "%paper-type%" som sættes til
 </programlisting>
 
 <para>
+Vil du have to kolonner tekst i PS og PDF-udskrift rettes
+tilsvarende 
+</para>
+
+<programlisting>
+(define %page-n-columns%
+  ;; REFENTRY page-n-columns
+  ;; PURP Sets the number of columns on each page
+  ;; DESC
+  ;; Sets the number of columns on each page
+  ;; /DESC
+  ;; AUTHOR N/A
+  ;; /REFENTRY
+  1)
+</programlisting>
+
+<para>
+til
+</para>
+
+<programlisting>
+(define %page-n-columns%
+  ;; REFENTRY page-n-columns
+  ;; PURP Sets the number of columns on each page
+  ;; DESC
+  ;; Sets the number of columns on each page
+  ;; /DESC
+  ;; AUTHOR N/A
+  ;; /REFENTRY
+  2)
+</programlisting>
+
+
+<para>
 Tilsvarende kan man lede efter margin og finde de marginer, som anvendes i 
 PDF-dokumentet, ligesom "%section-autolabel%" og "$generate-book-lot-list$" 
 kan ændres på samme vis som i 
-<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/html/dbparam.dsl</filename>.
+<filename>/usr/share/sgml/docbook/dsssl-stylesheets/html/dbparam.dsl</filename>.
 </para>
 
+
 <para>
-For at kunne oversætte til PDF er det nødvendigt at ændre nogle værdier i 
-<filename>/usr/share/texmf/web2c/texmf.cnf</filename>. Sæt nedenstående variabler til 
+Hvis du har problemer med at oversætte store bøger til PS eller PDF 
+er det nødvendigt at ændre nogle værdier i 
+<filename>/usr/share/texmf/web2c/texmf.cnf</filename>. 
+Sæt nedenstående variabler til 
 de viste værdier for at få PDF-genereringen til at virke.
+Med Red Hat 7.2 pakkerne skulle dette ikke være nødvendigt.
 </para>
 
 <programlisting>
