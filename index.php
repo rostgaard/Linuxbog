@@ -345,7 +345,7 @@ function vistype($type) {
     "TODO" => array(
       first => "todo-",
       last => ".html"
-    
+    )
   );
 
   $bgcolor = array("#FFFFFF","#E8E8E8");
