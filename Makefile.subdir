@@ -164,8 +164,9 @@ $(targetname)-$(version)_pdf.zip: $(sgmlfiler)
 	mkdir tempdir
 	cp *.{sgml,xml} tempdir
 	cp images/*png tempdir
-	(cd tempdir; db2pdf bog.sgml)
-
+	(cd tempdir;jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml)
+	(cd tempdir;/usr/bin/collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index)
+	(cd tempdir; db2pdf bog.sgml; db2pdf bog.sgml)
 	mv tempdir/bog.pdf $(targetname)-$(version).pdf
 	rm -rf tempdir
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
