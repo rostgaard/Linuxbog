@@ -60,6 +60,11 @@ int fillbuf()
     return (int) rv;
 }
 
+/* ch() returnerer den næste character i input stream *men* læser
+ * ikke, og ændrer ikke noget i den eksisterende buffer. Det
+ * svarer til at spørge "Hvad er det næste input tegn, hvis vi nu
+ * gad gå videre?!"
+ */
 
 int ch()
 {
@@ -73,24 +78,21 @@ int nch()
 
 
 
-/* For longer buffer lookahead we will need to change the gch()
- * and fillbuf() functions so they will work like getc(fp) macro,
- * that is: 
- * 1) check for number of characters left in buffer
- * 2) if near end of buffer, move unfetched chars to beginning of
- *    buffer, reset bufpointer and
- * 3) append newly read chars to string in buffer.
- * the cute thing about this implementation is that we always
- * have one character lookahead (guaranteed) but normally we will
- * have a newline char as the last before zero, which will be our
- * guarantee that if we have a word in the buffer it is the whole
- * word.
+/* Hvis vi altid vil kunne se mere end én character fremefter, må
+ * vi udskifte gch() og fillbuf() funktionerne, således at de
+ * checker, hvor meget er der i bufferen, og hvis der er for få
+ * (mindre end ønsket) skal de efterfylde bufferen og justere
+ * pointere.
+ * Det søde ved denne implementering er imidlertid, at vi altid
+ * har én character lookahead (garanteret), men hvis vi ser på et
+ * ord, kan vi se hele resten af ordet, fordi et ord ikke kan
+ * krydse en liniedeling.
  */
 
-/* ch() and gch() must always return same thing, so here we need
- * the nch() function to tell us if we are getting near end of
- * line. Otherwise, gch() simply returns same as ch but advances
- * the buffer index (could have been a pointer).
+/* gch() returnerer samme som ch() men flytter pointeren en plads
+ * frem. Hvis vi ved fremadrykning rammer end of line (en
+ * nul-byte) må vi fylde bufferen, så ch() næste gang har et tegn
+ * at kigge på.
  */
 
 int gch()

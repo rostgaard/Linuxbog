@@ -1,4 +1,4 @@
-<chapter id="object-orienteret-tankegang">
+<chapter id="objekt-orienteret-tankegang">
 <title>Konkrete og abstrakte datatyper</title>
 <sect1 id="datatyper"><title>C og objekt-orienterede metoder</title>
 
@@ -8,7 +8,7 @@
 <para>
 Er C et objektorienteret sprog? Hvorfor er det ikke
 objektorienteret, når et C program er en række definitioner af
-eksterne objekter? (external objects?)
+eksterne objekter?
 </para>
 
 <para>
@@ -124,16 +124,15 @@ f()
 {
     struct broek andel;
     struct broek afgift;
-    struct mk_broek(int,int); /* prototype for konverteringsfcn */
-    int bogpris = 360;
+    struct broek *b_bogpris;
+
     andel.t = 1;
     andel.d = 3;
-    afgift = broek_multiply(mk_broek(bogpris,1), andel); 
-    /* som regel vil man undgå struct-assignments ved at bruge en
-     * pointer:
-     * brk_multiply(&amp;afgift, brk_ptr(bogpris,1), &amp;andel); 
-     * se filerne bogpris1.c bogpris2.cxx for hele source.
-     */
+    b_bogpris = new_broek(360,1);
+    broek_multiply(&amp;afgift,b_bogpris,&amp;andel); /* ikke kønt */
+    free(b_bogpris);
+
+    /* se filerne bogpris1.c bogpris2.cxx for hele source.  */
 }
 </programlisting>
 
@@ -144,9 +143,9 @@ operationer udtrykt ved de i forvejen kendte operatorer:
 </para>
 
 <programlisting role="C">
-broek andel(1,3),afgift;
+broek andel(1,3);
 int bogpris = 360;
-afgift = bogpris * andel;
+broek afgift = bogpris * andel;  /* ret nemt at læse */
 </programlisting>
 
 <para>

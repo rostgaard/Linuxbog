@@ -39,17 +39,18 @@
 <title>C i få ord</title>
 <para>
  Programmeringssproget C blev oprindeligt lavet for at kunne skrive
- styresystemet Unix i et højniveausprog. C er derfor et effektivt sprog, som
- har nemt ved at snakke med maskinkode (eng. assembly language).
+ styresystemet Unix i et højniveausprog. C er derfor et effektivt sprog,
+ det vil sige, at koden bliver oversat til så få maskininstruktioner
+ som muligt, og derfor kører programmerne hurtigt.
 </para>
 
 <para>
  C er også et lille sprog, hvis man måler det i antallet af reserverede ord
- (kun 32). Det gør det nemt at lære syntaksen.
+ (kun 32). Det gør det nemt at lære.
 </para>
 
 <sidebar>
-<programlisting>
+<programlisting id="tab-reserverede-ord">
 Reserverede ord:
 
 auto              double            int               struct
@@ -63,10 +64,16 @@ do                if                static            while
 </programlisting>
 </sidebar>
 
+<indexterm><primary>C99 standard</primary></indexterm>
+<indexterm><primary>keywords</primary></indexterm>
+<indexterm><primary>nøgleord</primary></indexterm>
+
 <para>
 C99 standarden tilføjer flg. reserverede ord:
 <literal>inline, restrict, _Bool, _Complex, _Imaginary.
 </literal>
+Desuden bør man have in mente, at C++ nøgleord også bør undgås,
+d.v.s. class, private, public, virtual etc.
 </para>
 
 <para>
@@ -78,9 +85,8 @@ hardware-niveau til højniveauopgaver.
 <para>
  C++ er en udvidelse af C. C++ er tænkt som et bedre C. Det understøtter
  objektorienteret programmering, dataabstraktion og generiske algoritmer. Der
- er dog et par forskelle mellem C og den grundlæggende C-lignende syntaks i
- C++. Det beror på det oprindelige C sprog's manglende typecheck
- af funktioners returværdier.
+ er dog et par forskelle mellem ANSI-C og den grundlæggende C syntaks i
+ C++. 
 </para>
 
 <para>
@@ -93,7 +99,8 @@ hardware-niveau til højniveauopgaver.
 <programlisting>
 /* Dette program skriver Hello, world! i et terminalvindue. */
 
-main(){
+main()
+{
      printf("Hello, world!\n");
 }
 </programlisting>
@@ -110,37 +117,64 @@ ordet main fortæller, at det er en funktion.
 Koden, det, som bliver til maskininstruktioner, står mellem to
 krøllede parenteser (eng. braces). Koden består af et
 kald til en anden funktion, printf, som får til opgave at skrive vores
-tekst mellem double quotes på skærmen. "\n" er måden at skrive
-linieskift mellem doublequotes.
+tekst på skærmen. Vores tekst står mellem dobbelt-quotes 
+(gåseøjne, citationstegn). "\n" er måden at skrive et
+linieskift, som indgår i en tekst streng. '\' - tegnet, kaldet
+backslash, signalerer, at nu kommer et bogstav, der skal opfattes
+på en anden måde. '\n' kaldes derfor et meta-tegn, og backslash
+anvendes som <emphasis>escape kode</emphasis>.
 </para>
 
 <para>
- Ovenstående kildetekst bør kunne oversættes (eng. compile) til et
- kørbart program. De fleste moderne oversættere vil dog klage over
- udeladelser. En helt korrekt version (også C++) ser ud som følger:
+I kildeteksten kan man skifte linie stort set hvor man har lyst.
+</para>
+
+<para>
+ Ovenstående kildetekst bør kunne oversættes (compileres) til et
+ kørbart program. 
+</para>
+
+<screen>
+<PROMPT>don@pluto $</PROMPT> <USERINPUT>gcc hallo.c -o hallo </USERINPUT>
+<PROMPT>don@pluto $</PROMPT>
+</screen>
+
+<para>
+<command> -o </command> optionen fortæller compileren, at det
+færdige program skal skrives til en fil, der skal hedde hallo.
+Ellers vil compileren lægge det oversatte program i en fil ved
+navn a.out.  Nogle moderne oversættere vil klage over
+udeladelser. GNU-C vil kun klage, hvis vi anvender kommandolinie
+option -Wall, som betyder: "Giv mig alle advarsler mod uheldige
+eller mangelfulde konstruktioner!" En helt korrekt version (også
+C++) ser ud som følger:
 </para>
 
 <example id="ex-hello-types">
 <title>Hello, World! med type-specifikationer.</title>
 <programlisting>
 /* Dette program skriver Hello, world! i et terminalvindue og er
- * meget omhyggeligt med consistent anvendelse af typer. */
+ * meget omhyggeligt med anvendelse af typer. */
 
 #include &lt;stdio.h&gt;
 
-int main(){
+int main()
+{
      (void) printf("Hello, world!\n");
      return 0;
 }
 </programlisting>
 </example>
 
+<indexterm><primary>return</primary></indexterm>
+
 <para>
-Ovenstående eksempel erklærer, at main er en funktion, som
-returnerer en integer. Derfor returnerer den jo så altså netop
-også et heltal, nemlig 0! <literal>return 0;</literal> betyder
-aflever et 0 til den, som satte funktionen i gang. Man siger, at
-caller får returneret en værdi.
+Eksemplet her erklærer, at main er en funktion, som returnerer en
+int (integer, heltal). Med sætningen <literal>return 0;</literal>
+returnerer den jo så altså netop også et heltal, nemlig 0.
+<literal>return 0;</literal> betyder aflever et 0 til den, som
+satte funktionen i gang. Man siger, at caller får returneret en
+værdi.
 </para>
 
 <para>
@@ -148,7 +182,7 @@ printf er ligeledes en funktion, som returnerer en integer til
 caller; det er antallet af bogstaver, den har skrevet ud. Da vi ikke har
 brug for denne integer, fortæller vi oversætteren, at det er "med vilje",
 at vi ignorer return value ved at skrive <emphasis> (void) </emphasis>.
-Det kaldes et cast - støbeform, vi omstøber funktionens type!
+Det kaldes et cast, støbeform: vi omstøber funktionens type!
 </para>
 
 <sect2 id="crash-datatyper">
@@ -158,7 +192,7 @@ C sprogets indbyggede datatyper er:
 </para>
 
 <programlisting>
-int x;        /* integer, heltal, maskinens hurtigste type, native type */
+int h;        /* integer, heltal, maskinens hurtigste type, native type */
 
 char b;       /* velegnet til bogstaver, men i virkeligheden bare en lille */
               /* integer, 8 bits (eller 9 ...) */
@@ -181,8 +215,9 @@ int *j;                            /* adressevariabel, pointer */
 </programlisting>
 
 <para>
-Datatyperne kan erklæres udenfor en funktion, så er det globale objekter,
-eller som lokale variable, indenfor funktionsbraces.
+En variabel, fx <emphasis>int xyzzy</emphasis>, kan erklæres
+udenfor en funktion, så er det et eksternt objekt, eller inde
+mellem krøllede parenteser, braces, så er det en lokal variabel.
 </para>
 
 <sidebar>
@@ -196,7 +231,7 @@ af det udeladte:
 En long integer er lige så stor - måske større - end en int. I gcc i386
 er de begge 32 bit. Nye standarder vil indeholde forskrift om at
 oversættere skal understøtte _int8, _int16, _int32, _int64 etc. hvilket vil
-være praktisk for mange opgaver. Man kan i dag definere sådanne typer
+være praktisk for mange opgaver. Man kan definere sådanne typer
 selv v.hj.a. typedef, fx. 
 </para>
 
@@ -205,11 +240,12 @@ typedef long long int _int64;
 </programlisting>
 
 <para>
-Integer typerne (char, int, short int, long int, _int64 eller long long)
-kan foranstilles signed (det er default) eller unsigned. Erklærer man en
-unsigned integer vil man i mange oversættere alligevel kunne tilskrive den
-en negativ value. Unsigned vinder overfor signed i type coercion i
-expression evaluering.
+Integer typerne (char, int, short int, long int, _int64 eller
+long long) kan foranstilles <emphasis>signed</emphasis> (det er
+default) eller <emphasis>unsigned</emphasis>. Erklærer man en
+unsigned integer vil man i mange oversættere alligevel kunne
+tilskrive den en negativ value. Unsigned vinder overfor signed i
+type coercion i expression evaluering. (Coercion: tvang).
 </para>
 </sidebar>
 
@@ -237,11 +273,13 @@ main()
 </programlisting>
 
 <para>
-px er en pointer. Det ses af, at erklæringen har en stjerne foran
-px. Man må gerne stille stjernen lige bagefter int, men
-syntaktisk binder den til px. Derfor kan man fx. erklære en
-integer pointer og en integer indenfor samme semikolon, <literal>
-int tal, *ptr2tal;</literal> (men kønt er det ikke!)
+px er en adressevariabel, d.v.s en variabel, som kan indeholde en
+adresse. Det kaldes også en pointer. Det ses af, at erklæringen
+har en stjerne foran px. Man må gerne stille stjernen lige
+bagefter int, men syntaktisk binder den til px. Derfor kan man
+fx. erklære en integer pointer og en integer indenfor samme
+semikolon, <literal> int* ptr2tal, tal;</literal> (kønt er
+det ikke! Det bør virkelig undgås, dette her!)
 </para>
 
 <para>
@@ -253,7 +291,7 @@ læg den over i variablen px.
 
 <para>
 Adresser på en 32-bit CPU ligger mellem 1 og 4 milliarder eller 4
-Giga.
+Giga. Altså 2<superscript>32 </superscript>.
 </para>
 
 <sect3 id="crash-struct">
@@ -262,15 +300,19 @@ Giga.
 <para>
 Med struct konstruktionen kan vi selv definere de datatyper, vi har brug
 for, deraf betegnelse <emphasis> brugerdefinerede typer. </emphasis>
-Notationen kræver lidt øvelse. Først bygger man en type op, man
-<emphasis> erklærer en type </emphasis>, derefter defineres objekter,
-dvs. der reserveres hukommelse til objekter af den oprettede struct-type.
+Notationen kræver lidt øvelse. Først bygger man en type op, det
+kaldes, at man <emphasis> erklærer en type </emphasis>. Derefter
+kan man definere objekter af denne type. Når man definerer et objekt,
+reserveres der hukommelse i det færdige program til objektet.
 </para>
 
 <para>
-Navnet efter ordet struct kaldes en tag. Det kan sammen med ordet struct
-bruges som type-specifikation. I eksemplerne anvendes angles til meta
-ord - der skal indsættes et unikt navn på de pågældende positioner.
+Navnet efter ordet struct kaldes en tag (eller type tag; det
+betyder et mærke eller en mærkat, udtales med g som i væg). Det
+kan sammen med ordet struct bruges som type-specifikation. I
+eksemplerne anvendes vinkler (større/mindre tegn, eller på
+engelsk: angles) til meta ord - der skal indsættes et
+unikt navn på de pågældende positioner.
 </para>
 
 <programlisting>
@@ -282,22 +324,48 @@ struct &lt;type_tag> new_var;
 </programlisting>
 
 <para>
-Alternativt kan man definere en struct type ved hjælp af typedef. Denne
+Konkret eksempel:
+</para>
+
+<programlisting>
+struct hus_t {
+   int grundareal;
+   int bebygget_areal;
+   int pris;
+};
+
+struct hus_t madsensvej_20;
+</programlisting>
+
+<para>
+Alternativt kan man opbygge en struct type ved hjælp af typedef. Denne
 metode foretrækkes af mange, fordi man så ikke behøver at anvende ordet
-struct.
+struct når man definerer nye objekter.
 </para>
 
 <programlisting>
 typedef struct &lt;type_tag> {
    &lt;data-definitions> ...
-} &lt;type-specifier>;           /* <--- her er den nye types navn */
+} &lt;type-specifier>;           /* &lt;--- her er den nye types navn */
 
 &lt;type-specifier> min_variabel;
 </programlisting>
 
+<para>Et konkret eksempel på anvendelse af typedef-metoden: </para>
+
+<programlisting>
+typedef struct {
+   int medlems_nr;
+   char navn[800];
+} medlems_type;                /* &lt;--- her er den nye types navn */
+
+medlems_type medlem[200000];
+</programlisting>
+
 <para>
-Min opfattelse er den, at ordet struct gør programmerne lettere at læse.
-Og oversætteren kan lettere finde fejl.
+Somme tider gør ordet struct programmerne lettere at læse. Og
+ordet struct, gør det lettere for oversætteren at give
+forståelige fejlmeddelelser.
 </para>
 
 <programlisting>
@@ -350,10 +418,14 @@ Op.   ex.          Beskrivelse
 
 --    --c       :  træk 1 fra c, decrement operator.
 -------------------------------------------------------------------------------
+</programlisting>
 
+<para>
 Desuden kan lighedstegnet kombineres med de 
 forskellige aritmetiske operatorer:
+</para>
 
+<programlisting>
 x += kaxi; /* tael x op med vaerdien af variablen kaxi */
 </programlisting>
 
@@ -374,11 +446,19 @@ OBS!  ==    test for lighed
             den logiske operator NOT er et udråbstegn.
       !     not (tager kun én operand, hvis logiske værdi inverteres)
 
+</programlisting>
+<para>
 Et expression er sandt, når det er forskelligt fra 0.
+</para>
+<para>
 Et expression er falsk, når det er lig med 0.
+</para>
 
+<para>
 Eksempler:
+</para>
 
+<programlisting>
   if (a > b) 
       printf("a er for stor\n");
 
@@ -453,7 +533,7 @@ foretager et shift, fx.
         char numstr[35];                    /* 2 + 32 + end of string */
         strcpy(numstr,"b: ");               /* "b:" for binaert format */
         numstr[34] = 0;                     /* End of string mærke */
-        while (i++ < 32) {
+        while (i++ &lt; 32) {
             numstr[34-i] = (x & 1) + '0';
             x >> 1;
         }
@@ -480,31 +560,38 @@ main()
 }
 </programlisting>
 
+<!-- TODO: Pseudo overskrift, fremhævelse: -->
+<para><command>Spørgsmålstegns-operatoren</command></para>
+
 <para>
-Conditional operator
+Specielt for C sproget er betingelses-operatoren (conditional
+operator) spørgsmålstegnet:
 </para>
 
 <programlisting>
-Specielt for C sproget er betingelses-operatoren:
-
   yxi = (a>b)? a: b;
+</programlisting>
 
+<para>
 Svarer til:
+</para>
 
+<programlisting>
   if (a > b)
      yxi = a;
   else
      yxi = b;
 </programlisting>
 
+<!-- TODO: Pseudo overskrift, fremhævelse: -->
+<para> <command>Andre operatorer</command> </para>
+
 <para>
-Andre operatorer
+Ud over ovenstående findes der adskillige specielle operatorer, der kun
+må anvendes efter forudgående aftale med type checking systemet. ;-)
 </para>
 
 <programlisting>
-Ud over ovenstående findes der adskillige specielle operatorer, der kun
-må anvendes efter forudgående aftale med type checking systemet. ;-)
-
  &   adresse operator, tager adressen af et objekt.
 
  *   asterisk operator, tag indholdet på den adresse, som specificeres
@@ -527,7 +614,8 @@ må anvendes efter forudgående aftale med type checking systemet. ;-)
 </programlisting>
 
 <para>
-Her er et enkelt eksempel - men lav selv flere!
+Her er et simpelt eksempel - lav selv flere, bare for at afprøve
+de enkelte operationer!
 </para>
 
 <programlisting>
@@ -549,47 +637,195 @@ main()
 
 }
 </programlisting>
+<example id="ex-operator-precedence">
+<title>Operator Præcedens</title>
+<para>
+<informaltable frame="all">
+<tgroup cols="4">
+<thead>
+<row>
+<entry>operatorer</entry>
+<entry>niveau</entry>
+<entry>associativitet</entry>
+<entry>kommentarer</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><literal>() [] ->  . </literal></entry>
+<entry>1</entry>
+<entry>v-h</entry>
+<entry>Funktions-parenteser, array-index, struct-element. 
+Dette niveau er det, der binder mest. Grupperings-parenteser er ikke en 
+operator, men anvendes til at ændre rækkefølge af evaluering.</entry>
+</row>
+<row>
+<entry><literal> ! ~ ++ --  -  (cast) * &amp; sizeof </literal></entry>
+<entry>2</entry>
+<entry>h-v</entry>
+<entry>not, bit not, increment, fortegns-minus, cast, 
+pointer afreferering, adressen på, objekt-størrelse</entry>
+</row>
+<row>
+<entry><literal>*  /  %</literal></entry>
+<entry>3</entry>
+<entry>v-h</entry>
+<entry>multiplikation, division, modulus</entry>
+</row>
+<row>
+<entry><literal>+ -</literal></entry>
+<entry>4</entry>
+<entry>v-h</entry>
+<entry>addition, subtraktion</entry>
+</row>
+<row>
+<entry><literal>&lt;&lt; >></literal></entry>
+<entry>5</entry>
+<entry>v-h</entry>
+<entry>shift</entry>
+</row>
+<row>
+<entry><literal>&lt; &lt;= > >=</literal></entry>
+<entry>6</entry>
+<entry>v-h</entry>
+<entry>sammenligning, relationsoperatorer </entry>
+</row>
+<row>
+<entry><literal>== !=</literal></entry>
+<entry>7</entry>
+<entry>v-h</entry>
+<entry>relationelle, test for lighed/forskel</entry>
+</row>
+<row>
+<entry><literal>&amp;</literal></entry>
+<entry>8</entry>
+<entry>v-h</entry>
+<entry>bitvis AND</entry>
+</row>
+<row>
+<entry><literal>^</literal></entry>
+<entry>9</entry>
+<entry>v-h</entry>
+<entry>bitvis XOR</entry>
+</row>
+<row>
+<entry><literal>|</literal></entry>
+<entry>10</entry>
+<entry>v-h</entry>
+<entry>bitvis OR</entry>
+</row>
+<row>
+<entry><literal>&amp;&amp;</literal></entry>
+<entry>11</entry>
+<entry>v-h</entry>
+<entry>logisk AND</entry>
+</row>
+<row>
+<entry><literal>||</literal></entry>
+<entry>12</entry>
+<entry>v-h</entry>
+<entry>logisk OR</entry>
+</row>
+<row>
+<entry><literal>?:</literal></entry>
+<entry>13</entry>
+<entry>v-h</entry>
+<entry>betingelses-operator</entry>
+</row>
+<row>
+<entry><literal>= += -= *= /= %= &amp;= ^= |= &lt;&lt;= >>= </literal></entry>
+<entry>14</entry>
+<entry>h-v</entry>
+<entry>tildeling (assignment)</entry>
+</row>
+<row>
+<entry><literal>,</literal></entry>
+<entry>15</entry>
+<entry>v-h</entry>
+<entry>komma, listeoperator; den mest adskillende operator; 
+dette niveau skiller næsten lige så meget som semikolon</entry>
+</row>
+</tbody>
+
+</tgroup>
+</informaltable>
+</para>
+</example>
 
 </sect2>
 
 <sect2 id="flow-kontrol">
 <title>Flow kontrol</title>
 <para>
-Flow kontrol er maskinens måde at reagere på data. Ikke alle er nødvendige.
+Flow kontrol er maskinens måde at reagere på data. Man kan klare
+sig glimrende med færre, fx. med if, while og goto! Men C sproget
+er kendt for sine gode flow-konstruktioner.
 </para>
+
 <programlisting>
     if (betingelse_opfyldt)
         do_dyt();
+</programlisting>
 
+<para>
 Test inden udførelse:
+</para>
 
+<programlisting>
     while (betingelse_opfyldt)
         do_looping();
+</programlisting>
 
+<para>
 Kør loop-body mindst en gang:
+</para>
 
-    do
+<programlisting>
+    do {
         mindst_en_gang()
-    while (betingelse_opfyldt);
+    } while (betingelse_opfyldt);
+</programlisting>
 
+<para>
+Bemærk at man altid bør bruge braces her for at undgå forveksling
+med en ordinær while-løkke.
+</para>
+
+<para>
 Behagelig kontrol med tæller variable:
+</para>
 
+<programlisting>
     for (initialisering; betingelse; optælling) {
        loop_body ...
     }
+</programlisting>
 
+<para>
     fx. 
+</para>
+<programlisting>
     for (i = 0; i &lt; 10 ; ++i)
         printf("i er nu %d\n", i);
+</programlisting>
 
+<para>
 Inde i loops kan man:
+</para>
 
+<programlisting>
     break:      Goto lige efter loop-end.
 
     continue:   Begynd forfra med test af betingelse.
+</programlisting>
 
-Jumptabel:
+<para>
+En switch realiseres om muligt som en jumptabel. En jumptabel er
+en <emphasis>meget</emphasis> effektiv måde at teste på
+størrelsen af en int:
+</para>
 
+<programlisting>
     switch (integer_variabel) {
     case 17:
              do_beep();
@@ -600,9 +836,13 @@ Jumptabel:
     default:
              do_whine();
     }
+</programlisting>
 
+<para>
 For at komme ud af en masse loop-kontrol statements:
+</para>
 
+<programlisting>
    goto label;
 
    /* kode ... */
@@ -758,15 +998,16 @@ int krypter(int inpchar)
 Virker kun for ren ASCII tekst.
 <footnote>
 <para>
-I parentes bemærket, hvis du vil gøre krypteringen ovenfor ubrydelig
-skal du forbedre den lidt. Længere keystring (helst længere en
-gennemsnitsmeddelelsen), formater output i linier, som er lige lange,
-og bemærk, at hvis input består af lutter samme tegn, så kan denne
-version ikke rigtigt skjule sin keystring. Ikke at den kommer i
-klartekst, men det er muligt at regne baglæns og finde keystringen.
-Man kan behandle sekvenser af samme char som et antal og en specielle
-koder. Algoritmen er en tilpasning af Kejser Augustus' og Livia's
-kode, som beskrevet i Robert Graves' "I, Claudius".
+I parentes bemærket, hvis du vil gøre krypteringen ovenfor rigtig
+ubrydelig skal du forbedre den lidt. Anvend længere keystring
+(altid længere end meddelelsen), formatér output i linier, som er
+lige lange.  Bemærk, at hvis input består af lutter samme tegn,
+så kan denne version ikke rigtigt skjule sin keystring. Ikke at
+den kommer i klartekst, men det er muligt at regne baglæns og
+finde keystringen.  Man skal behandle sekvenser af samme tegn på
+en speciel måde, hvor man angiver antal og tegn.  Algoritmen er
+en tilpasning af Kejser Augustus' og Livia's kode, som beskrevet
+i Robert Graves' "I, Claudius".
 </para>
 <para>
 Endelig er der ikke support for såkaldte offentlige keys, der kan
@@ -972,6 +1213,8 @@ På dansk ser man ofte ordet erklæring i stedet for deklaration.
 </para>
 
 <indexterm><primary>extern (nøgleord)</primary></indexterm>
+<indexterm><primary>deklaration</primary></indexterm>
+<indexterm><primary>erklæring</primary></indexterm>
 
 <para>
 Hvis vi ønsker at anvende en variabel, som allerede er defineret
@@ -1274,10 +1517,10 @@ overskrives. Fx. streng-konstanten "Hello, world!\n" i eks.
 til at gøre det i netop det eksempel. Men se lige her:
 </para>
 
-<example id="ex-konst">
+<example id="ex-const-violation">
 <title>Konstant streng</title>
 <programlisting>
-/* constviol.c, at aendre en konstant ... */
+/* constviol.c, kørselsfejl når man ændrer en konstant. */
 #include &lt;stdio.h>
 
 char * ms1 = "Hello, ever changing world!\n";
@@ -1705,6 +1948,77 @@ hver gang man skriver en start-brace (klamme).
 
 
 </sect2>
+</sect1>
+
+
+
+<sect1 id="sect-GNU-tools">
+<title>GNU programmerings værktøjer</title>
+
+<para>
+GNU står for Gnu is Not Unix. Det skyldes, at man ikke må bruge
+navnet Unix uden at betale for det, det var et registreret
+varemærke i 80'erne, da Richard M. Stallman begyndte arbejdet med
+open source tools.
+</para>
+
+<para>
+Heldigvis er Unix i vore dage ikke mere et varemærke, men en
+betegnelse for et operativ system, som overholder standarder. Se
+<ulink url="http://www.opengroup.org">www.opengroup.org</ulink>
+</para>
+
+<para>
+De vigtigste værktøjer er: Compileren, gcc, assembleren as eller
+gas, linkeren ld, og object librarian ar, samt objdump,
+programmet, som kan vise indholdet af objektfiler. Den kan også
+disassemblere maskininstruktioner i objektmoduler.
+</para>
+
+<para>
+Desuden er der den kendte debugger, gdb.
+</para>
+
+<para>
+Dette afsnit er lige nu meget kort og ikke færdigt!
+De vigtigste options til GNU-C compileren er:
+</para>
+
+<programlisting> <!--TODO: Formatering -->
+-c              compile kun, skriver en &lt;navn>.o fil (dot-o fil, .o)
+-d              output list af define, forudsætter -E
+-g              inkluder debug information i resultat fil
+-pedantic       check code after ANSI C code check spec-s.
+-save-temps     save intermediate files, ufn.i ufn.s (hvorfor ikke ufn.o?)
+-o xxx          send output til fil ved navn xxx. Hvis xxx ender
+                   på .o, vil compileren *kun* gå til det step,
+                   der generer .o filer.
+
+-s              strip efter linkage 
+-v              verbose, vis kommandoer fra gcc "administrator" program.
+
+-I xxxx         path til ekstra include directory, vil blive søgt først.
+-I-             Path(s) specificeret før denne option søges kun
+                for "xxx" files i double quotes. Der er meget mere om
+                -I option(s) in cpp.1 and cpp.doc
+
+-E              send preproces output til ?
+-MM             skriv MAKE regler for hvordan program er opbygget, bevirker,
+                   at også -E switchen bliver sat.
+-N? stack_check?
+
+-O              Optimer. Skriver bedre kode, men pas på, kan ændre sekvens.
+-P              Præproces uden linier m/# info
+-C              Lad kommentarer komme med
+-trigraphs      Process ANSI standard trigraph sequences
+
+-D"str"         Definér macro eller hvad du nu vil definere.
+-u"str"         AF-definer en macro! (d.v.s. annuller virkningen
+                   af en #define)
+
+
+
+</programlisting>
 </sect1>
 
 </appendix>

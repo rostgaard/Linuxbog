@@ -106,10 +106,7 @@ problem her.
 </para>
 
 <para>
-Løsningen er, uden de store anstrengelser, at lære sig
-"højre-venstre" teknikken. Vi kan også implementere en lille kopi
-af cdecl programmet, som om ikke andet så kan håndtere de
-simpleste deklarationer med funktions-pointere.
+Løsningen er at lære sig "højre-venstre" teknikken.
 </para>
 
 <para>
@@ -149,8 +146,8 @@ nævnt ovenfor), at meningen med signal er, at den returnerer den
 tidligere handler, så man kan reinstallere den senere.
 </para>
 
-
 </sect1>
+
 
 <sect1 id="expression-parser">
 <title>En expression parser</title>
@@ -483,6 +480,523 @@ double stdfunc()
 
 </programlisting>
 </example>
+</sect1>
+
+
+<sect1 id="sect-uCc">
+<title>En komplet compiler</title>
+<para>
+Nu har vi haft mulighed for at se nærmere på en tag-parser og en
+expression parser. Hvor langt er der så til at skrive en komplet
+compiler? Ikke så langt. Vi får brug for en kode-generator,
+d.v.s. den del, som ved, hvordan maskin instruktioner for
+addition, subtraktion, kopiering og funktionskald etc. ser ud.
+Desuden vil det være klogt at lave en præprocessor, som kan
+håndtere #include of #define.
+</para>
+
+<para>
+Når man kan skrive en expression parser som <xref
+LinkEnd="expression-parser"> og -- i stil med tag-parseren <xref
+LinkEnd="ex-tagbal-sammenligning"> -- kan behandle forskellige
+typer input efter forskellige regler, så har man teknikken til
+det meste af en C compiler. Kodegeneratoren hæftes på
+parser-delen, således at hver gang man har analyseret sig til en
+basis-operation (tildeling, aritmetik, funktionskald osv) så
+skrives de tilsvarende assembler instruktioner til outputfilen.
+</para>
+
+<para>
+Preprocessor er derimod det aller første behandlings-trin
+i C-compileren. Alle linier med havelåge tegn (hash
+character, eller nummer-tegn <emphasis> # </emphasis>) bliver
+behandlet af præprocessoren. Det er #include, #define, #ifdef mv.
+De kaldes direktiver eller præprocessor kommandoer.
+</para>
+
+<para>
+En compiler kan somme tider indgyde ærefrygt. Hvordan får man et
+stykke software til at forandre programsætninger til maskinkode,
+oven i købet lange, komplicerede programsætninger, med iffer og
+while, med komplicerede beregningsudtryk og så videre. Og
+maskin-instruktioner, er det noget for hvide mennesker? Er det et
+mirakel, at compileren kan finde ud af at oversætte <literal> if
+(a > b) duut(); </literal> til maskininstruktioner, eller kender
+den måske maskin-instruktionerne i forvejen? Ja - selvfølgelig
+kender compileren maskinen og dens instruktionssæt i forvejen!
+</para>
+
+<para>
+Det er efter min erfaring et vigtigt skridt, måske det vigtigste,
+for forståelse af computeren, at man forstår, hvordan CPU og
+adressebus fungerer. <!--TODO appendix D--> En CPU kan bedst
+sammenlignes med en regnemaskine, som har flere små
+resultat-display, eller celler til at gemme
+kalkulationsresultater. En sådan celle kaldes et register, og
+CPU'er kan anvende disse direkte i deres instruktioner. Til
+gengæld er der begrænsninger på, hvordan man kan anvende tal
+(data) fra RAM modulerne. Nogle CPU typer insisterer på kun at
+lave aritmetik med register-indhold. Andre, som Intel-x86 er mere
+alsidige og derfor også mere komplicerede.
+</para>
+
+<para>
+Intel 386 familien har til almindelig afbenyttelse for alle slags
+programmer registrene %eax, %ebx, %ecx og %edx. Desuden er der
+nogle ekstra registre, %esi og %edi, som er specielt gode til
+index-operationer, samt et base-pointer register %ebx og et
+stack-pointer register %esp. Desuden er der selvfølgelig en
+instruktions pointer %eip og mange specielle registre, bl.a. til
+administration af hukommelsen. De er ikke interessante i denne
+sammenhæng.
+</para>
+
+<para>
+Et typisk lille assembler program i GNU assembler til at lægge to
+tal sammen med kunne skrives sådan her:
+</para>
+
+<example id="ex-gas-programmering">
+<title>Assembler programmering</title>
+<programlisting>
+# dette er en kommentar
+        .comm tal1,4,4
+        .comm tal2,4,4
+        movl tal1, %eax
+        addl tal2, %eax   # nu lægges tal2 til tal1,
+                          # resultatet ligger i %eax
+        ret
+</programlisting>
+<blockquote><sidebar><para>
+GNU assembleren benytter traditionelt sin egen syntax. Man
+skal huske, at Intel assembler er forskellig på væsentlige
+punkter (og er copyrighted!).
+</para><para>
+Der findes en "nasm" netwide portable 80x86 assembler, som
+benytter en mere Intel-agtig syntax, hvis man foretrækker det.
+</para></sidebar></blockquote>
+</example>
+
+<example id="ex-oversat">
+<title>Output fra GNU-C oversætter</title>
+<screen>
+<PROMPT>ax@pluto:fri$</PROMPT><USERINPUT>cat xyzzy.c</USERINPUT>
+xyzzy()
+{
+    return 42;
+}
+<PROMPT>ax@pluto:fri$</PROMPT><USERINPUT>cc -O2 -fomit-frame-pointer -S xyzzy.c</USERINPUT>
+<PROMPT>ax@pluto:fri$</PROMPT><USERINPUT>cat xyzzy.s</USERINPUT>
+	.file	"xyzzy.c"
+	.version	"01.01"
+gcc2_compiled.:
+.text
+	.align 4
+.globl xyzzy
+	.type	 xyzzy,@function
+xyzzy:
+	movl $42,%eax  # <<=== OBS! HER ER OVERSÆTTELSEN!!!
+	ret
+.Lfe1:
+	.size	 xyzzy,.Lfe1-xyzzy
+	.ident	"GCC: (GNU) 2.95.2 19991024 (release)"
+<PROMPT>ax@pluto:fri$</PROMPT>
+</screen>
+</example>
+
+<para>
+Den linie, som interesserer os mest, er <literal> movl $42,%eax
+</literal>. Det er oversættelsen af <literal> return 42
+</literal>. movl betyder move long, altså flyt en integer, som er
+lang. På intel x86 kaldes 32 bit integers for long. Andre
+assembler sprog ville kalde det for en load operation.
+$42 betyder en konstant med værdien 42 (Dollar = værdi). %eax er
+en snedig måde at betegne 386 multi purpose registrene, procent
+tegnet gør, at dette symbol ikke kan være en variabel, så
+programmøren kan altså godt have en variabel eax i programmet,
+uden at den støder sammen med %eax.
+</para>
+
+<para>
+Når jeg i en funktion skriver <literal> return 42; </literal> --
+så sker der åbenbart det, at værdien, som skal returneres, lægges
+i det CPU-register, som er det almindeligst anvendte (og - check
+Intel manualer - også det hurtigste). Når computerprogrammet
+vender tilbage til de instruktioner, som kaldte vores funktion,
+så har den altså resultatet i %eax. I gamle dage kaldte man %eax
+for kalkulator registeret. I dag kan flere registre bruges som
+kalkulatorregistre.
+</para>
+
+<para>
+Ellers er det meste af ovenstående output er fileheader og functions
+type-erklæringer, som jo blot kan genereres som en ramme, hvori
+man indsætter funktionsnavnet.
+</para>
+
+<example id="ex-uC-oversaettelse">
+<title>uC oversættelse</title>
+<screen>
+<PROMPT>ax@pluto:fri$</PROMPT><USERINPUT>uC -A xyzzy.c</USERINPUT>
+<PROMPT>ax@pluto:fri$</PROMPT><USERINPUT>cat xyzzy.y86</USERINPUT>
+#* * * * uCC Small-c Compiler v3.01,  Feb. 2001 * * * *
+#Linux version 0.9 beta; 32 bit 80386 code, Serial#0018
+#
+	.text
+	.align 4
+#xyzzy()
+	.globl xyzzy
+	.type	xyzzy,@function
+xyzzy:
+	pushl %ebp
+	movl %esp,%ebp
+#{
+#    return 42;
+	movl $42,%eax     # <<=== OBS! HER ER OVERSÆTTELSEN!!!
+	movl %ebp,%esp
+	popl %ebp
+	ret
+#}
+	.extern 
+# const strings: 
+.section 	.rodata
+.LC0:
+# end of constant strings
+
+
+	.ident "uC 0.9e. 2001-06-02"
+<PROMPT>ax@pluto:fri$</PROMPT>
+</screen>
+<blockquote><sidebar>
+<para>
+Det er meget tekst, der kommer ud af uC oversættelsen, men igen
+er det vigtigste linien med <literal> movl $42,%eax </literal>.
+</para>
+</sidebar>
+</blockquote>
+</example>
+
+<para>
+I foregående gcc oversættelse var der færre instruktioner. Det
+skyldes, at vi anvendte en option -fomit-frame-pointer, som
+betyder, at compileren (om muligt) ikke skal udspy
+instruktionerne, som saver base-pointer registeret %ebx.
+</para>
+
+<para>
+En compiler oversætter de enkelte statements til symbolsk
+assembler, det vil sige maskin instruktioner i tekst form.
+Oversætterens output er en fil med symbolske
+maskin-instruktioner, kaldet assembler source.
+</para>
+
+<para>
+Man behøver ikke at kunne <emphasis> så forfærdelig </emphasis>
+meget assembler for at få noget ud af dette afsnit. De
+nødvendigste ting bliver forklaret undervejs.
+</para>
+
+<para>
+Måske det bedste ved uC er, at der er masser af opgaver, som man
+kan gå i gang med. Man kan pynte lidt hist og her på
+hjælpetekster, banner tekster osv. Man kan også lave ganske små
+ændringer, som gør den nemmere at bruge.  Men man kan også
+forbedre den <emphasis> væsentligt </emphasis> på kodekvaliteten
+ved at tilføje nyttige funktioner i kodegeneratoren.
+</para>
+
+<para>
+Når man ser, hvordan et program bliver "nedbrudt" under
+oversættelsen, så kan man få den helt store aha-oplevelse.
+P.J. Plauger har på et tidspunkt <!--TODO, C Journal -->
+skrevet, at han for at lære et nyt programmeringssprog skrev
+en (lille) compiler til det pågældende sprog. Det er derfor,
+at dette eksempel er taget med.
+</para>
+
+
+<sect2>
+<title> uC - en mikroskopisk C compiler </title>
+
+<para>
+I dette afsnit præsenteres en lille C compiler, som man selv kan
+skrive - eller skrive videre på, nemlig Small-C, som jeg i denne
+version har kaldt Micro-C, eller uC.
+</para>
+
+<para>
+Small-C compileren er legendarisk. I microcomputerens barndom
+skrev Ron Cain en artikel (eller en artikelserie?) om en lille
+C compiler, som kunne kompilere sig selv, og som faktisk var/er
+et nyttigt sub-set af C sproget. Small-C var skrevet til Intel
+8080 CPUen, en 8/16 bit CPU og det udbredte styresystem CP/M
+(Control Program for Microcomputers) fra Digital Research inc.
+</para>
+
+<para>
+Den oprindelige source til Small-C har jeg aldrig kunnet finde.
+Der findes imidlertid mange varianter. En af de bedste er James
+E. Hendrix's Small-C 2.2, men den er på den anden side også mere
+kompliceret.  En anden version for MS-DOS hed Caprock System PC
+eller CPC, og det er den, som jeg har arbejdet videre på. Den
+vigtigste ændring er, at den kører 32 bit under linux og at den i
+øvrigt benytter samme call-sequence som GNU-C.
+</para>
+
+<para>
+Kildetekst og nogle primitive make filer m.v. finder man i et
+gzippet tar arkiv i eksempel directoryet, uC09e-3.tgz hedder det
+pr. 2. juni 2001.
+</para>
+
+<para>
+Eksempel på udpakning og installation:
+</para>
+<screen id="sc-install">
+mkdir -p /hjem/src/compiler/ucc
+cd /hjem/src/compiler/ucc
+tar -xzf /tmp/uC09e-3.tgz # OBS! Nyeste version kan hedde noget andet
+make
+make install
+</screen>
+
+<para>
+Hvis man kører <command> make install </command>, vil
+programmerne lave et symbolsk link fra /usr/local/uC til det
+sted, hvor man installerer fra. Derfor skal man ikke flytte
+installations-dir. Man kan let selv lave om på disse ting. Hvis
+man i forvejen har et directory /usr/local/uC vil man blive bedt
+om at fjerne det manuelt, så installationen er altså ikke destruktiv.
+</para>
+
+
+<para>
+Leder man på nettet kan man sagtens finde source
+til andre C compilere, og som bekendt er GNU C "fri software",
+der distribueres med kildetekst og dokumentation, så
+den kan man jo også begynde at læse på. 
+</para>
+
+<para>
+Inden jeg valgte at det skulle være uC, som skulle med som
+eksempel i denne bog, havde jeg Dennis Ritchies oprindelige
+"pre-struct" C, LCC, cc68 og cc386 i kikkerten, før end jeg
+valgte denne. Den er lille og kunne nemt tilpasses til GNU/Linux
+miljøet. Og -- indrømmet -- jeg kendte den godt i forvejen!
+</para>
+
+<para>
+Den nuværende version nummerering indeholder to oplysninger.
+Linux-porteringen (32 bit versionen) er version 0.9, og den
+centrale del, parseren, har jeg ladet hedde version 3.01 fordi
+den jo er baseret på tidligere versioner.
+</para>
+
+<para>
+  Uddrag fra uCannoncering - filen:
+</para>
+
+<para>
+  Revision: Version 09 (næsten poleret ...) pr. 6-apr-2001.
+</para>
+<para>
+  Parser-delen er version 3.01
+</para>
+
+<para>
+  Med tilføjelse af options for extended stackframe og
+for saving %ebx. (brug -h for at se options).
+</para>
+
+<para>
+Assembler output oversættes af GNU "as" og linkes med
+ld via en gcc kommando.
+</para>
+
+<para>
+Den kan bootstrappes på en RedHat 5.2, 6.0 og RedHat 7.0 (benyt
+--bx option til kompilering af main, se Changelog.dk); jeg
+formoder, at der også er andre distributioner, som lader sig
+anvende.
+</para>
+
+<para>
+Koden er "acceptabelt ineffektiv", idet den performer ca 1/3
+langsommere end gcc genereret kode. Det er egentlig ret
+forbløffende, idet compileren er meget simpel og har nogle
+indlysende skavanker, når der skal anvendes array indexering og
+pointere. Forklaringen er, at de simplere instruktioner, der
+anvendes, er hurtigere end de komplicerede instruktioner til
+adressering, som gcc kan generere.
+</para>
+
+<para>
+uC er instruktiv i 2 henseender:
+</para>
+
+<para>
+1. Dels viser den hvordan man laver en minimal C -
+compiler med en SUBSET af C, som alligevel er så
+kompatibelt med (old-style) C at den kan kompileres
+med en "stor" C compiler
+</para>
+
+<para>
+2. Den kan oversætte sig selv. 
+</para>
+
+<para>
+Hønen og ægget! Hvad nu, hvis man ikke lige har en C compiler ved
+hånden. Kan man så få denne compiler til at fungere? Ja, det kan
+man.  Den er lille nok til, at den kan hånd-oversættes.
+</para>
+
+<programlisting>
+
+EN SPECIFIKATION AF uC
+
+-----------------------------------------------------
+Preprocessor direktiver:
+-----------------------------------------------------
+
+#include &lt;stdio.h>  /* leder i /usr/local/uC/include */
+
+#include "fil.h"    /* current dir */
+
+#define YXI 1       /* ikke parameter-macroer */
+
+#ifdef              /* Betinget compilering */
+
+#ifndef
+#else
+#endif
+#asm                /* for hånd - optimering! */
+#endasm
+
+-----------------------------------------------------
+Datatyper:
+----------------------------------------------------
+int x;
+char w;
+int array[n]
+char arr[n];
+int *ip;
+char *cp;
+
+eller
+
+char s[];
+
+extern int y;
+&amp;function();
+
+-----------------------------------------------------
+Operatorer:
+-----------------------------------------------------
+Assignment: =  ++ --
+Aritmetik:  + - * / % 
+Bit:        ~ ^ | &amp;
++shift:     &lt;&lt; >>
+Logiske:    INGEN (sic)
+Dereference *
+Address     &amp;
+
+Pointer aritmetik er tilladt (er unsigned)
+Struct klares som char[n] med #define offsets
+
+-----------------------------------------------------
+Flow
+-----------------------------------------------------
+
+if (x) {}
+else   {}
+
+while(x) {
+break;
+continue;
+}
+
+return x;
+
+-----------------------------------------------------
+Modularitet
+-----------------------------------------------------
+extern int x;   /* static mangler */
+
+/* extern f(); automatisk hvis ukendt fcn-navn optræder. */
+
+functions returnerer en int. Altid!
+function type må ikke specificeres, men den er jo også
+redundant, da funktioner altid returnere en int.
+prototyper er forbudt! Hu!
+
+separat kompilering og linkning med gnu as og ld.
+
+-----------------------------------------------------
+Slut på specifikation af uC
+-----------------------------------------------------
+
+</programlisting>
+
+<para>
+Det er meningen her at give en ganske kort beskrivelse af denne
+compiler. En forsmag kan være den centrale funktion, som parser
+eksterne objekter:
+</para>
+
+<example id="ex-parser-externe-obj">
+<title>C oversætter, parsning på øverste niveau</title>
+<programlisting>
+/*                                              */
+/*      Behandling af alt input                 */
+/*                                              */
+/* På dette niveau er kun statiske erklæringer  */
+/*      defines, includes, og function          */
+/*      definitions legale                      */
+/* Input kaldes fra (a)match                    */
+
+parse()
+{
+    while (eof == 0) {
+        if (amatch("extern", 6)) {
+            cextern = 1;
+            if (amatch("char", 4)) {
+                declglb(cchar); /* declare global */
+                ns();
+            } else if (amatch("int", 3)) {
+                declglb(cint);
+                ns();
+            } else {
+                declglb(cint);
+                ns();
+            }
+            cextern = 0;
+        } else if (amatch("char", 4)) {
+            declglb(cchar);
+            ns();
+        } else if (amatch("int", 3)) {  /* cannot handle function type! */
+            declglb(cint);
+            ns();
+        } else if (match("#asm"))
+            doasm();
+        else if (match("#include"))
+            doinclude();
+        else if (match("#define"))
+            addmac();
+        else
+            newfunc();
+        blanks();               /* preprocess, force eof if pending */
+    }
+}
+
+</programlisting>
+</example>
+
+<para>
+Mere i næste version af "Friheden til at programmere i C" ...
+</para>
+
+</sect2>
 </sect1>
 
 

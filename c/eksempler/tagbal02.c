@@ -1,4 +1,4 @@
-/* tagpars.c Minimalt program til genkendelse af tags. */
+/* tagbal02.c Minimalt program til skelnen mellem tags. */
 
 #include <stdio.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 #define OUTTAG 258
 #define EXIT_FAILURE 255
 
-int status;
+int nesting;                    /* hvilket tag niveau er vi på */
 int eofile;			/* global end of file */
 
 #define MAXB 8000
@@ -55,6 +55,8 @@ int main()
 		if (!parse_level1())
 			parse_error("Misplaced tag, end-tag or text-data\n");
 	}
+	if (nesting)
+		parse_error("Missing end-tag\n");
 	printf("\n");
 	return 0;
 }
@@ -64,18 +66,22 @@ int main()
                int parse_level(void) is the main loop
  ************************************************************************/
 /*
-   parse_level1() is the main loop for handling tags. As the name 
-   indicates there could be more levels here, allowing for rules
-   for which tags must come before others. For example, in level1:
-   get_chapter(); // or die! 
+   parse_level1() er over-løkken for programmet. Som navnet
+   antyder kunne der være flere levels. Det ville muliggøre
+   regler for, hvilke tags der må komme inde mellem andre tags.
+   Fx. i level1: Get_Chapter(); // eller dø!
 
-   Then, in subsequent layers, there could be special tag-handling: 
-   if (paratag()) do_para();
-   else if (emphasis()) no_margin(); 
-   else if (bold()) no_margin(); etc etc.  
+   Speciel tag-handling foregår i fx. comment(), som blot
+   formaterer output og fortsætter indtil kommentar - slut tegnet.
+   Kommentarer optræder jo ikke parvis som <tag> </tag>.
    
-   The blanks() call are strategically placed, but at present I
-   am not sure whether the logic could be more stringent.
+   blanks() call er placeret strategisk - jeg tror der er et par
+   af dem, som er overflødige. Det er defensiv programmering! De
+   skader ikke, hvis der er for mange, men det er fatalt, hvis
+   der mangler et kald til blanks()!
+   nesting værdien styres her (og *kun* her). Den er desværre
+   nødvendig, fordi vi ellers ikke fanger manglende tags ved 
+   end-of-file.
  */
 
 #define MAXT 80
@@ -85,18 +91,20 @@ int parse_level1()
 	char tagname[MAXT];
 	while (!eofile) {
 		blanks();
-		if (comment()){
+		if (comment())
 			continue;
-		}
 		if (programlisting(tagname) || litt(tagname))
 			(void) do_litteral(tagname);
 		else if (!anytag(tagname))
 			return 0;
+		++ nesting;
 		while (!eofile) {
 			while (getword())
 				putword();
-			if (have_endtag(tagname))
+			if (have_endtag(tagname)){
+				--nesting;
 				break;
+			}
 			(void) parse_level1(); /* nested tags */
 		}
 		blanks();
@@ -129,39 +137,39 @@ int comment(void)
 }
 
 /************************************************
- * Anytag() accepts any tag and returns the
- * tags typename in tagbuf (max MAXT).
- * TODO: handle minor errors by returning 0
+ * Anytag() accepterer hvilken som helst tag og 
+ * returnerer typenavnet i en buffer, max MAXT.
  ************************************************
  */
 
 int anytag(char *tagbuf)
 {
 	char *tagp;
+        int i;
 
 	blanks();
-	/* earlier version trigged this call when
-	   ch()=='<', so we already knew */
 	if (ch()!='<') 
 		return 0;
-	if (nch()=='/') /* TODO: nicer handling space before '/' */
+	if (nch()=='/')         /* TODO: hvad hvis der er space før '/' */
 		return 0;
 	gch();
 	blanks();
 	if (ch() == '/')
 		return 0;
 	tagp = tagbuf;
-	while (isalnum(ch()))
+        i = 0;
+	while (isalnum(ch()) && ++i < MAXT)
 		*tagp++ = gch();
 	*tagp = 0;
 	margin();
-	printf("<%s", tagbuf);
+	column += printf("<%s", tagbuf);
 	indent += 2;
 	while (ch() != '>' && !eofile)
-		putchar(gch()); /* TODO: squeeze white and format */
+		putchar(gch()); /* TODO: squeeze mellemrums-tegn,formatering */
 	if (eofile)
 		parse_error("missing \">\"\n");
 	putchar(gch());         /* copy the ">" */
+	++column;               /* TODO: count tag-attribut len */
 	return 1;
 }
 
@@ -274,33 +282,10 @@ int ch()
 	return *bufp;
 }
 
-
 int nch()
 {
 	return *(bufp + 1);
 }
-
-
-
-/* For longer buffer lookahead we will need to change the gch()
- * and fillbuf() functions so they will work like getc(fp) macro,
- * that is: 
- * 1) check for number of characters left in buffer
- * 2) if near end of buffer, move unfetched chars to beginning of
- *    buffer, reset bufpointer and
- * 3) append newly read chars to string in buffer.
- * the cute thing about this implementation is that we always
- * have one character lookahead (guaranteed) but normally we will
- * have a newline char as the last before zero, which will be our
- * guarantee that if we have a word in the buffer it is the whole
- * word.
- */
-
-/* ch() and gch() must always return same thing, so here we need
- * the nch() function to tell us if we are getting near end of
- * line. Otherwise, gch() simply returns same as ch but advances
- * the buffer index (could have been a pointer).
- */
 
 int gch()
 {
@@ -308,7 +293,8 @@ int gch()
 	if (nch() == 0) {
 		c = ch();
 		if (!fillbuf()) {
-			eofile = 1;	/* TODO should not take effect for the next char */
+			eofile = 1;	/* TODO burde ikke være synlig førend
+					   brugeren læser næste gang */
 		}
 		return c;
 	}
@@ -364,16 +350,21 @@ void outchar(int writeme)
 }
 
 
+/* putword formaterer tekst-data, ganske primitivt, ved at
+ * checke, om ordet vil gå ud over kolonne 78, når vi skriver
+ * det. TODO: Hvis et ord er længere end maxkol tegn, så skal det
+ * skrives alligevel!
+ */
+
 void putword()
 {
 	char *u;
 	u = wordbuffer;
-	if (column + w - wordbuffer + 1 > 78)
+	if (column + w - wordbuffer + 1 > 78)   /* plads nok? */
 		margin();
-	else {
-		if (!ispunct(*u))
-		outchar(' ');
-	}
+	else 
+		if (!ispunct(*u))               /* skriv mellemrum og så ordet */
+			outchar(' ');
 	while (*u)
 		outchar(*u++);
 }

@@ -280,7 +280,7 @@ int getword()
 	blanks();
 	while (!isspace(ch()) && !eofile) {
 		if (ch() == '<') {
-			return 0;
+			break;
 		}
 		*w++ = gch();
 	}
