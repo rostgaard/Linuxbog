@@ -60,7 +60,7 @@ function form_filename( $bookname, $format ) {
       return "$bookname/$format[first]/$bookname-$format[last]";
       break;
     default:
-      // Eks: admin/linux-admin-1.0.ps.gz
+      // Eks: admin/linuxbog-admin-1.0.ps.gz
       return "$bookname/$format[first]$bookname-".$books[$bookname][version]."$format[last]";
   }
 }
@@ -281,46 +281,46 @@ function vistype($type) {
       last => "apprevhist.html",
       online => 2  // "Ændringer" har bognavn med to gange
     ),
-    // Eks: frihed/linux-frihed-4.0.tgz
+    // Eks: frihed/linuxbog-friheden-4.0.tgz
     "HTML" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".html.tar.gz"
     ),
     "HTML zip" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => "_html.zip"
     ),
     "PNG billeder" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".png.tar.gz"
     ),
     "HTML u/billeder" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".html-ub.tar.gz"
     ),
     "PostScript" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".ps.gz"
     ),
-    // Eks: linux-frihed-pdf.zip
+    // Eks: linuxbog-frihed-pdf.zip
     "PDF" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => "_pdf.zip"
     ),
     "PalmPilot" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".palm.zip"
     ),
     "eksempler" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => "_eksempler.tar.gz"
     ),
     "SGML" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".sgml.tar.gz"
     ),
     "SGMLzip" => array(
-      first => "linux-",
+      first => "linuxbog-",
       last => ".sgml.zip"
     )
   );
