@@ -69,11 +69,12 @@ clean: start
 
 	$(MAKE) -C alle -f Makefile clean
 
+	$(MAKE) -C samling -f Makefile clean
+
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz
 	rm -f dato.sgml version.sgml
 	rm -f *~*~  .#*[0-9]
-	rm -rf palm-samling
 
 cvs2htmlweb:
 ifeq	($(shell if which cvs2html >/dev/null 2>&1; then echo -n 1; fi;), 1)
