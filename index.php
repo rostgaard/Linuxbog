@@ -499,7 +499,6 @@ Vil du følge med i hvad der sker med vores kilde-kode (SGML-filerne),
 <a href="http://cvs.sslug.dk/linuxbog/">så se her</a>.
 </p>
 
-<img src="licens/licens.png" alt="ÅDL">
 
 <p>
 Hvis du har noget du søger efter, så skal du nok <a
@@ -515,6 +514,9 @@ Se også vores konkurrenters bog ;-) "Linux i skolen" på
 <p>
 Vil du hjælpe med, så læs <a href="hjaelpe.html">mere her</a>.
 </p>
+
+<a href="licens.html"><img src="licens/licens.png" alt="ÅDL"></a>
+
 
 <p>
 <!-- Text slut -->
