@@ -3,8 +3,22 @@
 # Lokal makefile for signaturbogen
 
 # Definer lokale SGML filer, samt hvordan de kan laves
-auto_sgml_filer:=$(auto_sgml_filer) req-kmd-ca.sgml
+signatur_auto_sgml_filer:=req-kmd-ca.sgml
+auto_sgml_filer:=$(auto_sgml_filer) $(signatur_auto_sgml_filer)
 
 # Regel for at lave sgml filer
 req-kmd-ca.sgml:	eksempler/req-kmd-ca.pl
 	eksempler/perl2sgml.pl < eksempler/req-kmd-ca.pl > req-kmd-ca.sgml
+
+################################################################################
+#
+# Alle bogens regler. Det er lidt sort det her - bemærk at vi hardcoder 
+# katalognavnet.... Jeg er ikke helt tilfreds...
+
+# Regler som alle bogen skal bruge
+signatur_local_path:=../signatur/
+
+alle_auto_sgml_filer:=$(alle_auto_sgml_filer) $(addprefix $(signatur_local_path),$(signatur_auto_sgml_filer))
+
+$(addprefix $(signatur_local_path),$(signatur_auto_sgml_filer)):	$(addprefix $(signatur_local_path),eksempler/req-kmd-ca.pl)
+	(cd $(signatur_local_path) && make -f Makefile.local $(signatur_auto_sgml_filer))	

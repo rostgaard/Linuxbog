@@ -1,16 +1,11 @@
-#
-# Vi kræver SGML DocBook 3.1
-# ImageMagick skal installeres
-# tidy og Perl modulet Image::Size er ønskelige
-##
-#
+# Makefile for underkataloger.
+# $Id$
 # Peter Toft <pto@sslug.dk> 
 # Mads Bondo Dydensborg <madsdyd@challenge.dk>
-# $Id$
 
 
 ################################################################################
-# Includer Makefile.local, hvis den findes
+# Inkluder Makefile.local hvis den findes
 ################################################################################
 -include Makefile.local
 
@@ -30,6 +25,9 @@ targetname:=linuxbog-$(notdir $(locdirname))
 # version
 # TODO: Skal det laves om til make depend?
 version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml)
+
+# Base navnet for pakker, mv
+basenavn:=$(targetname)-$(version)
 
 # dato
 dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)
@@ -119,19 +117,19 @@ endif !BUILD_SGML
 # Laver en zip fil, kræver html target
 .PHONY : palmpilot
 if BUILD_PALM
-palmpilot: $(targetname)-$(version).palm.zip
-$(targetname)-$(version).palm.zip: html
+palmpilot_name:=$(basenavn).palm.zip
+palmpilot:	$(palmpilot_navn)
+$(palmpilot_navn):	html
 	@echo ".........................................."
 	@echo "Target $(targetshortname):palmpilot"
 	@echo ".........................................."
-	rm -f $(targetname)-$(version).palm.zip $(targetname)-$(version).palm.tar.gz
-	rm -f palm/*.prc palm/*.pdb
-	(cd palm;plucker-build -V 0  -P . -f $(targetname) `pwd`/home.html)
-	cp ../misc/*.prc palm
-	cp ../misc/*.pdb palm
-	cp ../misc/gpl.txt palm
-	cp ../misc/plucker.txt palm
-	(zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb palm/*txt )
+	rm -f $(palmpilot_navn)
+	rm -f PalmBuildDir/*.prc PalmBuildDir/*.pdb
+	mkdir -p PalmBuildDir
+	(cd PalmBuildDir && plucker-build -V 0  -P . -f $(targetname) `pwd`/home.html)
+	@echo Advarsel: Palm target afhænger af toplevel....
+	cp ../misc/*.prc ../misc/*.pdb ../misc/gpl.txt ../misc/plucker.txt PalmBuildDir
+	zip $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*txt
 else !BUILD_PALM
 palmpilot:	
 	@echo "Overspringer palmpilot"
@@ -156,12 +154,12 @@ $(targetshortname)/$(targetname)-html-$(version).tar.gz: html
 	@echo Release: 1mdk >>  bog/$(targetname).spec
 	cat linuxbog.spec >> bog/$(targetname).spec
 	mv bog $(targetshortname)
-	(cd ..;tar czf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
+	(cd ..;tar hczf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
 	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
-	(cd ..;tar czf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+	(cd ..;tar hczf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
-	(cd ..;tar czf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
+	(cd ..;tar hczf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
 	mv $(targetshortname)_images images 
 	@@echo "Done HTML pakning (pakhtml)"
 	@echo ""

@@ -3,9 +3,22 @@
 # Lokal makefile for dokumentationsbogen
 
 # Definer lokale SGML filer, samt hvordan de kan laves
-auto_sgml_filer:=$(auto_sgml_filer) usedtags_now.sgml
+dokumentation_auto_sgml_filer:=usedtags_now.sgml
+auto_sgml_filer:=$(auto_sgml_filer) $(dokumentation_auto_sgml_filer)
 
 # Regel for at lave sgml filer
-# TODO: Ikke medtage usedtags_now.sgml, hvis den findes! :-)
-usedtags_now.sgml:	*.sgml
-	cat *.sgml | ./usedtags.pl | sort -nr > usedtags_now.sgml
+usedtags_now.sgml:	$(filter-out $(dokumentation_auto_sgml_filer),$(wildcard *.sgml))
+	cat $(filter-out $(dokumentation_auto_sgml_filer),$(wildcard *.sgml)) | ./usedtags.pl | sort -nr > usedtags_now.sgml
+
+################################################################################
+#
+# Alle bogens regler. Det er lidt sort det her - bemærk at vi hardcoder 
+# katalognavnet.... Jeg er ikke helt tilfreds...
+
+# Regler som alle bogen skal bruge
+dokumentation_local_path:=../dokumentation/
+
+alle_auto_sgml_filer:=$(alle_auto_sgml_filer) $(addprefix $(dokumentation_local_path),$(dokumentation_auto_sgml_filer))
+
+$(addprefix $(dokumentation_local_path),$(dokumentation_auto_sgml_filer)):	$(filter-out $(addprefix $(dokumentation_local_path),$(dokumentation_auto_sgml_filer)) $(badfiles),$(wildcard $(addprefix $(dokumentation_local_path),*.sgml)))
+	(cd $(dokumentation_local_path) && make -f Makefile.local $(dokumentation_auto_sgml_filer))	

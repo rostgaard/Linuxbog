@@ -1,3 +1,19 @@
+# Makefile for "alle" bogen.
+# $Id$
+# Peter Toft <pto@sslug.dk> 
+# Mads Bondo Dydensborg <madsdyd@challenge.dk>
+
+
+################################################################################
+# Inkluder alle Makefile.local der findes
+################################################################################
+-include $(wildcard $(addprefix ../,$(addsuffix /Makefile.local,$(SUBDIRSALLE))))
+
+
+################################################################################
+# Diverse variable sættes
+################################################################################
+
 #  Lokalt katalog (fuld sti)
 locdirname=$(shell pwd)
 
@@ -10,6 +26,9 @@ targetname=linuxbog-$(notdir $(locdirname))
 
 # version
 version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > version.sgml; cat version.sgml))
+
+# Base navnet for pakker, mv
+basenavn:=$(targetname)-$(version)
 
 # dato
 dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)	
@@ -28,20 +47,35 @@ totalsgmlfiler = $(wildcard $(addprefix ../,$(addsuffix /*.sgml,$(SUBDIRSALLE)))
 # Og, så en liste over dem der skal checkes for om de er ændret
 sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 
+# Og her sætter vi up til at inkludere auto. Bemærk =, ikke :=
+dep_sgml_filer=$(alle_auto_sgml_filer) $(sgmlfiler)
+
 ################################################################################
 # De egentlige targets
 ################################################################################
 
+################################################################################
+.PHONY : test
+test:
+	@echo alle_auto_sgml_filer = $(alle_auto_sgml_filer)
+	@echo sgmlfiler            = $(sgmlfiler)
+	@echo dep_sgml_filer       = $(dep_sgml_filer)
+
+################################################################################
 # her er det der skal laves
+.PHONY : all
 all: html  pakhtml sgml palmpilot
 
+################################################################################
 
+.PHONY : versionfil
 versionfil:
 	@cp ../friheden/version.sgml .
 	@cp ../friheden/dato.sgml .
 
 # Hmm. Jeg har ingen ide om hvad det her laver... Ser ud som om det
 # bare skriver noget ud?
+.PHONY : statusfiles
 statusfiles:
 	@for dir in $(SUBDIRSALLE); do \
 		echo -n "$$dir "; \
@@ -53,7 +87,6 @@ statusfiles:
 ################################################################################
 # Autobyg bog.sgml
 ################################################################################
-.PHONY: bog.sgml
 bog.sgml:
 	./make.bog.sgml.pl $(SUBDIRSALLE) > bog.sgml
 
@@ -61,23 +94,29 @@ bog.sgml:
 # Pak SGML_filerne sammen
 ################################################################################
 # Det her target giver ikke rigtigt nogen mening.
+.PHONY : sgml
 sgml:
 	@echo "Overspringer sgml"
 
 ################################################################################
 # Byg Palm Pilot udgaven
 ################################################################################
-
 # Laver en zip fil, kræver alle/index.html
+.PHONY : palmpilot
 if BUILD_PALM
-palmpilot: $(targetname)-palm-$(version).zip
-
-$(targetname)-palm-$(version).zip: alle/index.html
-	rm -f palm/*.prc palm/*.pdb
-	(cd palm;plucker-build -v -P . -f $(targetname) `pwd`/home.html)
-	cp ../misc/*.prc palm
-	zip $(targetname)-palm-$(version).zip palm/*.prc palm/*.pdb
-	rm -f  palm/*.prc palm/*.pdb
+palmpilot_name:=$(basenavn).palm.zip
+palmpilot:	$(palmpilot_navn)
+$(palmpilot_navn):	html
+	@echo ".........................................."
+	@echo "Target $(targetshortname):palmpilot"
+	@echo ".........................................."
+	rm -f $(palmpilot_navn)
+	rm -f PalmBuildDir/*.prc PalmBuildDir/*.pdb
+	mkdir -p PalmBuildDir
+	(cd PalmBuildDir && plucker-build -V 0  -P . -f $(targetname) `pwd`/home.html)
+	@echo Advarsel: Palm target afhænger af toplevel....
+	cp ../misc/*.prc ../misc/*.pdb ../misc/gpl.txt ../misc/plucker.txt PalmBuildDir
+	zip $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*txt
 else !BUILD_PALM
 palmpilot:
 	@echo "Overspringer palmpilot"
@@ -88,19 +127,19 @@ endif !BUILD_PALM
 # Pak HTML-filer ned
 ################################################################################
 if BUILD_PAKHTML
-pakhtml: $(targetname)-html-$(version).tar.gz $(targetname)-htmlub-$(version).tar.gz $(targetname)-png-$(version).tar.gz $(targetname)-html-$(version).zip
+pakhtml:	$(basenavn)-html.tar.gz $(basenavn)-htmlub.tar.gz $(basenavn)-png.tar.gz $(basenavn)-html.zip 
 
-$(targetname)-html-$(version).tar.gz: alle/index.html 
-	tar czf $(targetname)-html-$(version).tar.gz $(targetshortname)/*
+$(basenavn)-html.tar.gz :	html
+	tar hczf $(basenavn)-html.tar.gz $(targetshortname)/*
 
-$(targetname)-htmlub-$(version).tar.gz: alle/index.html 
-	tar czf $(targetname)-htmlub-$(version).tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
+$(basenavn)-htmlub.tar.gz :	html
+	tar hczf $(basenavn)-htmlub.tar.gz $(targetshortname)/*.html $(targetshortname)/*.css
 
-$(targetname)-png-$(version).tar.gz: alle/index.html 
-	tar czf $(targetname)-png-$(version).tar.gz $(targetshortname)/*.png
+$(basenavn)-png.tar.gz :	html
+	tar hczf $(basenavn)-png.tar.gz $(targetshortname)/*.png
 
-$(targetname)-html-$(version).zip: alle/index.html 
-	zip $(targetname)-html-$(version).zip $(targetshortname)/*
+$(basenavn)-html.zip :	html
+	zip $(basenavn)-html.zip $(targetshortname)/*
 else !BUILD_PAKHTML
 	@echo "Overspringer pakhtml"
 endif !BUILD_PAKHTML
@@ -109,12 +148,13 @@ endif !BUILD_PAKHTML
 ################################################################################
 # Byg HTML-filerne
 ################################################################################
+.PHONY : html
 if BUILD_HTML
 html: statusfiles versionfil $(targetshortname)
 
 $(targetshortname): alle/index.html
 
-alle/index.html: $(sgmlfiler) bog.sgml
+alle/index.html: $(dep_sgml_filer) bog.sgml
 #	echo $(sgmlfiler)
 	@echo "Target er HTML i" $(targetshortname)/$targetshortname
 	rm -rf stikord.sgml magic.sgml bog alle
