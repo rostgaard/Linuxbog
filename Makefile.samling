@@ -5,9 +5,9 @@ SUBDIRSSAMLING = @SUBDIRSSAMLING@
 # version - skal bruges til samlingerne (i øjeblikket kun palm)
 version:=$(shell (cd ../friheden; grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > ../samling/version.sgml; cat ../samling/version.sgml))
 
-all: palmpilot ps pdf
+all: kun-fra-toplevel palmpilot ps pdf
 
-ps:
+ps: kun-fra-toplevel
 	echo "Vi bygger desværre ikke PostScript-bøger for tiden - ØV!"
 #	mkdir ps-samling
 #	@for dir in $(SUBDIRSSAMLING); do \
@@ -15,14 +15,14 @@ ps:
 #	done;
 #	tar vczf linuxbog-samling-ps-$(version).tar.gz ps-samling/
 
-pdf:
+pdf: kun-fra-toplevel
 	mkdir pdf-samling
 	@for dir in $(SUBDIRSSAMLING); do \
 		cp ../$$dir/linuxbog-$$dir-pdf-`cat ../$$dir/version.sgml`.pdf pdf-samling/ || /bin/true; \
 	done;
 	tar vczf linuxbog-samling-pdf-$(version).tar.gz pdf-samling/
 
-palmpilot:
+palmpilot: kun-fra-toplevel
 	mkdir -p palm-samling
 	cp palm-faelles/* palm-samling/
 	@for dir in $(SUBDIRSSAMLING); do \
@@ -52,6 +52,14 @@ eksempler-sgml-PDF:
 	@echo 'eksempler-sgml-PDF target for samling-"bogen" er endnu ikke implementeret.'
 	@echo 'men giver det overhovedet mening?'
 
+.PHONY: kun-fra-toplevel
+kun-fra-toplevel:
+	@if [ ! -e toplevel-kald ]; then \
+		echo 'For at sikre at de individuelle bøger bliver bygget først,'; \
+		echo 'kan du ikke køre make med et bygge-target i samling/.'; \
+		echo 'Kør `make all/ps/pdf/palmpilot` fra toplevel.'; \
+		exit 1; \
+	fi
 
 # Jeg er ikke sikker på at jeg har fanget forskellen mellem distclean,
 # clean og reallyclean.

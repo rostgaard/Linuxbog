@@ -109,9 +109,15 @@ reallyclean:	$(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
 # være i orden.
 .PHONY : all html pdf pakhtml palmpilot eksempelbackup
 all html pdf pakhtml palmpilot eksempelbackup :	Makefile $(addsuffix /Makefile,$(SUBDIRS) $(ALLE) $(SAMLING))
-	@for dir in $(SUBDIRS) $(ALLE) $(SAMLING); do \
+	@for dir in $(SUBDIRS) $(ALLE); do \
 		echo "*** Kører make $@ i $$dir" && \
 		cd $$dir && $(MAKE) eksempler-sgml-HTML eksempler-sgml-PDF $@ ; cd .. ;\
+	done ;
+	@for dir in $(SAMLING); do \
+		echo "*** Kører make $@ i samling" && \
+		cd samling && touch toplevel-kald && \
+		$(MAKE) eksempler-sgml-HTML eksempler-sgml-PDF $@ ; \
+		rm toplevel-kald ; cd .. ; \
 	done ;
 
 
