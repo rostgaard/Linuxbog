@@ -4217,6 +4217,12 @@ eller der er 20 kommandoer, så vil et shell script med
 fordel kunne bruges.
 </para>
 
+<para>
+I dette kapitel har vi medtaget nogle få almindelige kommandoer.
+En mere udførlig gennemgang findes på:
+<ulink url="http://www.tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html">http://www.tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html</ulink> .
+</para>
+
 <sect2 id="shell-hello">
 <title>Simpelt shell-script</title>
 <indexterm><primary>Shell script</primary><secondary>simpelt</secondary></indexterm>
@@ -4239,7 +4245,6 @@ I shell-scriptet skal der så blot stå det samme.
 </para>
 
 <programlisting>
-# Filnavn: hello (denne linje er en kommentar)
 echo "Hello, world!"
 </programlisting>
 
@@ -4264,7 +4269,7 @@ Fortolkeren <emphasis>skal</emphasis> skrives på første linje i filen.
 
 <programlisting>
 #! /bin/sh
-# Filnavn: hello
+# Filnavn: hello (denne linje er en kommentar)
 echo "Hello, world!"
 </programlisting>
 
@@ -4295,7 +4300,7 @@ filnavnet når scriptet skal køres.
 Hello, world!
 </screen>
 
-</sect2>
+</sect2><!-- shell-hello -->
 
 <sect2 id="shell-flere-kom">
 <title>Flere kommandoer</title>
@@ -4353,7 +4358,7 @@ echo "Hello, " \
  "world!"
 </programlisting>
 
-</sect2>
+</sect2><!-- shell-flere-kom -->
 
 <sect2 id="shell-var">
 <title>Variabler</title>
@@ -4384,6 +4389,53 @@ tider ikke lade sig gøre.
 VERSION="0.1.2"
 echo "Dette er version ${VERSION}beta af programmet."
 </programlisting>
+
+<para>
+Længden af en streng fås med <emphasis>${#NAVN}</emphasis>.
+</para>
+
+<programlisting>
+#! /bin/sh
+echo "\$PATH indeholder ${#PATH} tegn"
+</programlisting>
+
+<para>
+Har en variabel ikke nogen start-værdi (default),
+kan en start-værdi bruges i stedet, eller den kan
+tildeles variablen.
+I det følgende er både vist ${:-} og ${:=} .
+</para>
+
+<programlisting>
+#! /bin/sh
+# $FLOPPY har ingen værdi nu.
+echo "Data skrives til ${FLOPPY:-/dev/fd0}"
+echo "\$FLOPPY er stadig tom: '$FLOPPY'"
+echo "Hvis \$FLOPPY er tom, så tilskriv: '${FLOPPY:=/dev/fd0}'"
+echo "Nu har \$FLOPPY en værdi: '$FLOPPY'"
+# Et mere praktisk eksempel hvor der enten bruges
+# kommando-parameter eller default:
+echo mount ${1:-/dev/fd0} /mnt/floppy
+</programlisting>
+
+<para>
+Scriptet skal afprøves med og uden parameter:
+</para>
+
+<screen>
+<prompt>[anne@linus ~]$ ./hello</prompt>
+Data skrives til /dev/fd0
+$FLOPPY er stadig tom: ''
+Hvis $FLOPPY er tom, så tilskriv: '/dev/fd0'
+Nu har $FLOPPY en værdi: '/dev/fd0'
+mount /dev/fd0 /mnt/floppy
+<prompt>[anne@linus ~]$ ./hello /dev/fd1</prompt>
+Data skrives til /dev/fd0
+$FLOPPY er stadig tom: ''
+Hvis $FLOPPY er tom, så tilskriv: '/dev/fd0'
+Nu har $FLOPPY en værdi: '/dev/fd0'
+mount /dev/fd1 /mnt/floppy
+</screen>
 
 <para>
 Variable kan splittes og manipuleres på forskellige
@@ -4417,7 +4469,7 @@ Læs mere om streng-manipulering med
 <command>man bash</command> under "Parameter Expansion".
 </para>
 
-</sect2>
+</sect2><!-- shell-var -->
 
 <sect2 id="shell-parametre">
 <title>Parametre til script</title>
@@ -4530,7 +4582,7 @@ se da <command>man bash</command> og søg efter
 "<emphasis>Special Parameters</emphasis>" .
 </para>
 
-</sect2>
+</sect2><!-- shell-parametre -->
 
 <sect2 id="shell-shift">
 <title>Parametre, tricks</title>
@@ -4598,7 +4650,7 @@ Ofte er det kommandoen <command>[</command> eller <command>test</command>
 hvilket er beskrevet i <xref linkend="shell-test"/>.
 </para>
 
-</sect2>
+</sect2><!-- shell-if -->
 
 <sect2 id="shell-test">
 <title>Test [</title>
@@ -4719,7 +4771,7 @@ Læs mere om ovenstående parametre til [ i
 under "CONDITIONAL EXPRESSIONS".
 </para>
 
-</sect2>
+</sect2><!-- shell-test -->
 
 <sect2 id="shell-case">
 <title>Case</title>
@@ -4727,7 +4779,7 @@ under "CONDITIONAL EXPRESSIONS".
 <para>
 Mumle case $1; hej*); echo dav; ;; esac
 </para>
-</sect2>
+</sect2><!-- shell-case -->
 
 <sect2 id="shell-psubst">
 <title>Process erstatning</title>
@@ -4735,7 +4787,7 @@ Mumle case $1; hej*); echo dav; ;; esac
 <para>
 Mumle noget om `date` el. $(date)
 </para>
-</sect2>
+</sect2><!-- shell-psubst -->
 
 <sect2 id="shell-for">
 <title>For-løkker</title>
@@ -4743,7 +4795,7 @@ Mumle noget om `date` el. $(date)
 <para>
 Mumle
 </para>
-</sect2>
+</sect2><!-- shell-for -->
 
 <sect2 id="shell-while">
 <title>Løkke, while</title>
@@ -4751,7 +4803,15 @@ Mumle
 <para>
 Mumle while .. do done
 </para>
-</sect2>
+</sect2><!-- shell-while -->
+
+<sect2 id="shell-read">
+<title>read, input fra bruger</title>
+<indexterm><primary>Shell script</primary><secondary>read</secondary></indexterm>
+<para>
+Mumle read VAR
+</para>
+</sect2><!-- shell-read -->
 
 <sect2 id="shell-sleep">
 <title>Vent, sleep</title>
@@ -4759,23 +4819,23 @@ Mumle while .. do done
 <para>
 Mumle egentlig blot kommandoen sleep og lidt om at bruge den
 </para>
-</sect2>
+</sect2><!-- shell-sleep -->
 
 <sect2 id="shell-let">
-<title>Regne</title>
+<title>Regne, heltal</title>
 <indexterm><primary>Shell script</primary><secondary>regne</secondary></indexterm>
 <para>
 Mumle let N=1+$NUM
 </para>
-</sect2>
+</sect2><!-- shell-let -->
 
 <sect2 id="shell-dc">
-<title>Regne, avanceret</title>
-<indexterm><primary>Shell script</primary><secondary>regne, avanceret</secondary></indexterm>
+<title>Regne, dc</title>
+<indexterm><primary>Shell script</primary><secondary>regne, dc</secondary></indexterm>
 <para>
 Mumle N=`dc -e "2 $N * p"`
 </para>
-</sect2>
+</sect2><!-- shell-dc -->
 
 <sect2 id="shell-function">
 <title>Funktioner</title>
@@ -4783,9 +4843,9 @@ Mumle N=`dc -e "2 $N * p"`
 <para>
 Mumle function x{}
 </para>
-</sect2>
+</sect2><!-- shell-function -->
 
-</sect1>
+</sect1><!-- shell-script -->
 
 <sect1 id="videre-med-Unix">
 <title>Videre med Linux</title>
