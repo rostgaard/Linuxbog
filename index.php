@@ -183,7 +183,7 @@ function vistype($type) {
 }
 
 if (!file_exists("titleabstract.php")) {
-	echo "<h1>Panic! 'titleabstract.php' does not exist.</h1>";
+	echo "<h1>Panic! 'titleabstract.php' does not exist.</h1>"; /* $books mangler */
 } else {
 	require("titleabstract.php");
 	if (count($books) < 1) {

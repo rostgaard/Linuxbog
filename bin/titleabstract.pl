@@ -15,6 +15,11 @@
 #   titleabstract.pl */indhold.sgml > titleabstract.php
 
 $php = q{<?php
+/*
+ * Denne fil er genereret af http://cvs.sslug.dk/bin/titleabstract.pl
+ * Ret ikke i denne fil. Den overskrives.
+ * Rækkefølge af bøger styres af 'configure', variabel SUBDIRS.
+ */
 	$books = array(
 	     };
 
