@@ -11,6 +11,7 @@ Makefiler:
 	cp Makefile.subdir web/Makefile
 	cp Makefile.subdir sikkerhed/Makefile
 	cp Makefile.subdir c/Makefile
+	cp Makefile.subdir docbook/Makefile
 
 filer:  Makefiler
 	make Makefiler
@@ -21,6 +22,7 @@ filer:  Makefiler
 	make -C web
 	make -C sikkerhed
 	make -C c
+	make -C docbook
 	make -C alle 
 
 statusfiler:  Makefiler
@@ -31,6 +33,7 @@ statusfiler:  Makefiler
 	make -C web  statusfiler
 	make -C sikkerhed  statusfiler
 	make -C c  statusfiler
+	make -C docbook  statusfiler
 	make -C alle  statusfiler
 
 eksempelbackup:  statusfiler
@@ -41,6 +44,7 @@ eksempelbackup:  statusfiler
 	make -C web  eksempelbackup
 	make -C sikkerhed  eksempelbackup
 	make -C c  eksempelbackup
+	make -C docbook  eksempelbackup
 
 clean: Makefiler
 	make -C friheden clean
@@ -50,6 +54,7 @@ clean: Makefiler
 	make -C web clean 
 	make -C sikkerhed clean 
 	make -C c clean 
+	make -C docbook clean 
 	make -C alle clean 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 

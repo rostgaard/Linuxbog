@@ -1,0 +1,1345 @@
+<chapter id="docbook-Installation">
+<title>Installation af Docbook værktøjer</title>
+<indexterm><primary>installation</primary></indexterm>
+
+<para>
+For at bruge DocBook skal der installeres en del pakker,
+og de skal installeres i den rigtige rækkefølge.
+Herunder er et script, der installerer alle de nødvendige pakker.
+Det skal lige nævnes at de tilsammen fylder 114MB.
+Installerer du Red Hat 6.2, kan du nemt installere alle værktøjer
+til at skrive i DocBook:
+</para>
+
+<SCREEN>
+<prompt>[root@MinMaskine /root]# </prompt> <userinput>cd /mnt/cdrom/RedHat/RPMS</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh sgml-common-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh docbook-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh stylesheets-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh jade-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh sgml-tools-*</userinput>
+</SCREEN>
+
+<para>
+Skal du kunne oversætte SGML til Postscript eller PDF skal du også
+installere LaTeX værktøjerne:
+</para>
+
+<SCREEN>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh dialog-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-fonts*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-[1-9]*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-xdvi-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-latex*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh tetex-dvips-*</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh jadetex-*</userinput>
+</SCREEN>
+
+<para>
+Dog skal du vide at der er kommet tre nye RPM-pakker i forhold til den
+originale Red Hat 6.2. Disse pakker skal du opgradere til.
+</para>
+
+<screen>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh ftp://ftp.redhat.com/6.2/noarch/docbook-3.1-4.noarch.rpm</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh ftp://ftp.redhat.com/6.2/noarch/sgml-common-0.1-8.noarch.rpm</userinput>
+<prompt>[root@MinMaskine RPMS]# </prompt> <userinput>rpm -Uvh ftp://ftp.redhat.com/6.2/noarch/stylesheets-1.54.13rh-1.noarch.rpm</userinput>
+</screen>
+
+
+</chapter>
+
+
+
+<chapter id="Igang">
+<title>Igang med Docbook</title>
+
+<para>
+Skal du igang med Docbook, så kan du finde dokumentationen 
+på <ulink url="http://www.oasis-open.org/docbook/">http://www.oasis-open.org/docbook/</ulink>. 
+Her kan du finde information om alle de tags, som kan anvendes. Desværre
+må man sige, at det er en ringe hjælp for dem som skal igang med at
+skrive for første gang.  Det skal denne artikel rode bod på. Først ser
+vi på et par af de vigtigste SGML-tags og senere hvordan man bruger
+dem til at lave et helt dokument.
+</para>
+
+<para>
+Det første vi skal vide er at alle tags starter med &lt; derefter
+kommer tag'et og dette afsluttes med &gt;. Tag'et kan være skrevet med
+små bogstaver eller store - det er ligegyldigt.
+Et eksempel er <command>&lt;command&gt;</command> som viser en kommando
+starter. Tilsvarende skal næsten alle tags afsluttes med det samme tag
+med en skråstreg foran tag'et. Til <command>&lt;command&gt;</command>
+skal du efter kommandoen er vist skrive
+<command>&lt;/command&gt;</command>.
+</para>
+
+<indexterm><primary>&gt;</primary></indexterm>
+<indexterm><primary>&lt;</primary></indexterm>
+
+<para>
+Ud over at &lt; har speciel betydning, så har &amp; også speciel betydning.
+Dette betyder også, at du <emphasis>ikke</emphasis> kan skrive
+&gt; og &amp; i din tekst, men skal skrive &amp;gt; og &amp;amp;
+(Du kan så vælge også at skrive &gt; som &amp;gt; - men det er ikke tvungent).
+</para>
+
+
+
+<sect1 id="para">
+<title>Tekstblokke - para</title>
+<indexterm><primary>para</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>para</secondary></indexterm>
+<para>
+Alle tekst blokke skal indkapsles med <command>&lt;para&gt;</command>
+og <command>&lt;/para&gt;</command>. Man kan kun få linie deling ved at
+lade SGML gøre dette automatisk eller stoppe blokken og starte en ny.
+</para>
+
+<para>
+Man må ikke have andre strukturer inden i
+<command>&lt;para&gt;</command> blokken såsom lister,
+eller tabeller. <command>&lt;para&gt;</command> blokken
+skal i så fald afsluttes først.
+</para>
+
+<example>
+<title>para</title>
+<screen>
+&lt;para&gt;
+Dette er en tekstblok.
+&lt;/para&gt;
+
+&lt;para&gt;
+Dette er en anden tekstblok, som starter på ny linie.
+&lt;/para&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som: 
+</para>
+
+<para>
+Dette er en tekstblok.
+</para>
+
+<para>
+Dette er en anden tekstblok, som starter på ny linie.
+</para>
+</example>
+
+<sect2 id="command">
+<title>Kommandoer - command</title>
+<indexterm><primary>SGML-tags</primary><secondary>command</secondary></indexterm>
+<indexterm><primary>command</primary></indexterm>
+<para>
+I en <command>&lt;para&gt;</command> block skal man
+måske indikere at nu kommer der en kommando, som kan
+køres. 
+</para>
+
+<example>
+<title>command</title>
+<screen>
+I Linux kan man skrive &lt;command&gt;find / -name
+"*.htm?"&lt;/command&gt; for at finde HTML-filer.
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<para>
+I Linux kan man skrive <command>find / -name
+"*.htm?"</command> for at finde HTML-filer.
+</para>
+</example>
+
+</sect2>
+
+<sect2 id="filename">
+<indexterm><primary>filename</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>filename</secondary></indexterm>
+
+<title>Filer - filename</title>
+<para>
+For at indikere et filnavn i en
+<command>&lt;para&gt;</command> kan man bruge
+<command>&lt;filename&gt;</command>
+</para>
+
+<example>
+<title>filename</title>
+
+<screen>
+Linux har altid filen &lt;filename&gt;/etc/password&lt;/filename&gt;.
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<para>
+Linux har altid filen <filename>/etc/password</filename>.
+</para>
+</example>
+</sect2>
+
+<sect2 id="emphasis">
+<title>Skråskrift - emphasis</title>
+<indexterm><primary>emphasis</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>emphasis</secondary></indexterm>
+
+<para>
+For at markere en del af sætningen med kursiv skrift i en
+<command>&lt;para&gt;</command> kan man bruge
+<command>&lt;emphasis&gt;</command>
+</para>
+
+<example>
+<title>emphasis</title>
+
+<screen>
+Linux giver &lt;emphasis&gt;mange&lt;/emphasis&gt; muligheder.
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<para>
+Linux giver <emphasis>mange</emphasis> muligheder.
+</para>
+</example>
+
+</sect2>
+
+<sect2 id="ulink">
+<indexterm><primary>ulink</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>ulink</secondary></indexterm>
+
+<title>URL - ulink</title>
+<para>
+For at markere en URL i en
+<command>&lt;para&gt;</command> kan man bruge
+<command>&lt;ulink&gt;</command>
+</para>
+
+<example>
+<title>ulink</title>
+
+<screen>
+Læs om SSLUG på
+&lt;ulink url="http://www.sslug.dk"&gt;SSLUG's hjemmeside http://www.sslug.dk&lt;/ulink&gt;. Der er
+mange aktiviteter.
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<para>
+Læs om SSLUG på
+<ulink url="http://www.sslug.dk">SSLUG's hjemmeside http://www.sslug.dk</ulink>. Der er
+mange aktiviteter.
+</para>
+</example>
+
+</sect2>
+
+</sect1>
+
+
+
+<sect1 id="screen">
+<title>Vise kildekode - screen</title>
+<indexterm><primary>screen</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>screen</secondary></indexterm>
+
+<para>
+Har man brug for at vise en f.eks. programmeringskode,
+som skal vises med courier non-proportional skrift, så
+er der flere muligheder.  Jeg har altid valgt at
+anvende <command>&lt;screen&gt;</command> til dette.
+Bemærk at dette ikke må komme i en
+<command>&lt;para&gt;</command> blok.
+</para>
+
+<para>
+Bemærk at liniedeling i en
+<command>&lt;screen&gt;</command> blok følger det du
+skriver. Du skal således passe på ikke at lave unødige
+linieskift.
+</para>
+
+<example>
+<title>screen</title>
+
+<screen>
+&lt;para&gt;
+Nu vil jeg vise lidt Perl-kode
+&lt;/para&gt;
+
+&lt;screen&gt;
+#!/usr/bin/perl -i.bak -p
+s/Microsoft/Linux/g;
+&lt;/screen&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<para>
+Nu vil jeg vise lidt Perl-kode
+</para>
+
+<screen>
+#!/usr/bin/perl -i.bak -p
+s/Microsoft/Linux/g;
+</screen>
+
+</example>
+
+
+<sect2 id="Yderligere-screen">
+<title>Yderligere tags i screen</title>
+<indexterm><primary>prompt</primary></indexterm>
+<indexterm><primary>userinput</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>prompt</secondary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>userinput</secondary></indexterm>
+
+
+<para>
+For at kunne skelne hvad der er en prompt i
+programmeringskode eksempler og hvad som brugeren
+taster, så anvender jeg et par Docbook kommandoer
+indenfor en <command>&lt;screen&gt;</command>
+</para>
+
+<example>
+<title>prompt og userinput i en screen</title>
+
+<screen>
+&lt;screen&gt;
+&lt;prompt&gt;[root@daisy /root]# &lt;/prompt&gt; &lt;userinput&gt;ls -al /etc/passwd&lt;/userinput&gt;
+-rw-r--r-- 1 root root 649 jun 16 21:54 /etc/passwd 
+&lt;/screen&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<screen>
+<prompt>[root@daisy /root]# </prompt> <userinput>ls -al /etc/passwd</userinput>
+-rw-r--r-- 1 root root 649 jun 16 21:54 /etc/passwd 
+</screen>
+</example>
+
+</sect2>
+</sect1>
+
+<sect1 id="tabeller-etc">
+<title>Tabeller, figurer, kommentarer og lister</title>
+
+<sect2 id="tabeller">
+<indexterm><primary>table</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>table</secondary></indexterm>
+
+<title>Tabeller - tabel</title>
+<para>
+Tabeller laves med
+<command>&lt;table&gt;</command>. Bemærk, at denne må
+ikke være inden i en <command>&lt;para&gt;</command>. I
+eksemplet skal med med <command>cols=</command> angives
+antal søjler. Indrykningen har ingen betydning for
+resultatet, og anvendes alene til at man selv har
+overblik over koderne. Igen bemærkes, at det er
+ligegyldigt om man anvender store eller små bogstaver.
+</para>
+
+<example>
+<title>table</title>
+
+<screen>
+&lt;TABLE ID="db-firma"&gt;
+&lt;TITLE&gt;Firma-tabel&lt;/TITLE&gt;
+&lt;TGROUP cols=3 align="char"&gt;
+&lt;THEAD&gt;
+  &lt;ROW&gt;
+   &lt;ENTRY&gt;FirmaNavn&lt;/ENTRY&gt;
+   &lt;ENTRY&gt;Vej&lt;/ENTRY&gt;
+   &lt;ENTRY&gt;PostNr&lt;/ENTRY&gt;
+  &lt;/ROW&gt;
+&lt;/THEAD&gt;
+&lt;TBODY&gt;
+&lt;ROW&gt;
+ &lt;ENTRY&gt;Vagabondos&lt;/ENTRY&gt;
+ &lt;ENTRY&gt;Tagensvej 100&lt;/ENTRY&gt;
+ &lt;ENTRY&gt;2200&lt;/ENTRY&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+ &lt;ENTRY&gt;DKUUG&lt;/ENTRY&gt;
+ &lt;ENTRY&gt;Fruebjergvej 3&lt;/ENTRY&gt;
+ &lt;ENTRY&gt;2100&lt;/ENTRY&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+ &lt;ENTRY&gt;Niels Bohr Institutet&lt;/ENTRY&gt;
+ &lt;ENTRY&gt;Blegdamsvej 17-21&lt;/ENTRY&gt;
+ &lt;ENTRY&gt;2100&lt;/ENTRY&gt;
+&lt;/ROW&gt;
+&lt;/TBODY&gt;
+&lt;/TGROUP&gt;
+&lt;/TABLE&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+</example>
+
+<TABLE ID="db-firma">
+<TITLE>Firma-tabel</TITLE>
+<TGROUP cols=3 align="char">
+<THEAD>
+ <ROW>
+  <ENTRY>FirmaNavn</ENTRY>
+  <ENTRY>Vej</ENTRY>
+  <ENTRY>PostNr</ENTRY>
+ </ROW>
+</THEAD>
+<TBODY>
+<ROW>
+ <ENTRY>Vagabondos</ENTRY>
+ <ENTRY>Tagensvej 100</ENTRY>
+ <ENTRY>2200</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>DKUUG</ENTRY>
+ <ENTRY>Fruebjergvej 3</ENTRY>
+ <ENTRY>2100</ENTRY>
+</ROW>
+<ROW>
+ <ENTRY>Niels Bohr Institutet</ENTRY>
+ <ENTRY>Blegdamsvej 17-21</ENTRY>
+ <ENTRY>2100</ENTRY>
+</ROW>
+</TBODY>
+</TGROUP>
+</TABLE>
+
+<para>
+Bemærk at vi har anført <filename>ID="label"</filename> sammen
+med <command>&lt;table&gt;</command>. Det er for at
+kunne krydsreferere til tabellen fra et sted i teksten.
+</para>
+
+</sect2>
+
+<sect2 id="figure">
+<indexterm><primary>figure</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>figure</secondary></indexterm>
+
+<title>Figurer - figure</title>
+<para>
+Figurer er en smule værre i Docbook, fordi man ikke har
+så store muligheder (under Linux i hvertfald). Selvom
+det anføres at en lang række grafik formater er
+understøttet, så gælder det i praksis ikke, hvis man
+skal kunne oversætte både til HTML, PDF og Postscript.
+</para>
+
+<example>
+<title>figure</title>
+
+<screen>
+&lt;FIGURE ID="linus-fig" FLOAT="1"&gt;
+&lt;TITLE&gt;Linus Torvalds&lt;/TITLE&gt;
+&lt;GRAPHIC FILEREF="linus.png"  SCALE="60"&gt;&lt;/GRAPHIC&gt;
+&lt;/FIGURE&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+</example>
+
+<para>
+<FIGURE ID="linus-fig" FLOAT="1">
+<TITLE>Linus Torvalds</TITLE>
+<GRAPHIC FILEREF="linus.png"  SCALE="60"></GRAPHIC>
+</FIGURE>
+</para>
+
+<para>
+Bemærk at vi igen her har sat <command>ID="label"</command> ind under
+<command>&lt;FIGURE ID="linus-fig" FLOAT="1"&gt;</command> for at
+kunne krydsreferere til figuren. Du skal se skalere billedet (i PDF og
+Postscript udskrift via <command>SCALE</command>-parameteren.
+</para>
+
+
+</sect2>
+
+<sect2 id="kommentarer">
+<title>Kommentarer</title>
+<para>
+Skal du lige lave en kommentar i din SGML-fil som ikke kommer med ud i
+HTML, PDF og Postscript-filerne, så kan du anvende.
+</para>
+
+<screen>
+&lt;!-- Dette er en kommentar --&gt;
+</screen>
+
+<para>
+Bemærk at der er to minus-tegn efter hinanden. I udprintning vil de se
+ud som ét langt minustegn.
+</para>
+</sect2>
+
+<sect2 id="xref">
+<indexterm><primary>id</primary></indexterm>
+<indexterm><primary>xref</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>id</secondary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>xref</secondary></indexterm>
+
+<title>Referencer - id og xref </title>
+<para>
+Vi har allerede set at vi kan give en tabel og en figur en
+label. Dette gjorde vi med <command>ID="label"</command>. Tilsvarende
+kan vi referere til den label i en tekst blok et andet sted ved at
+bruge <command>&lt;xref&gt;</command>. Bemærk at denne kommando
+<emphasis>ikke</emphasis> har en tilsvarende
+<command>&lt;/xref&gt;</command>. Lad i øvrigt være med at bruge
+danske bogstaver, mellemrum og understregning
+(eng. underscore). Grunden er at værdien af "ID" bruges til at
+filnavne - og her kan man ikke tillade de nævnte tegn.
+</para>
+
+<example>
+<title>id og xref</title>
+
+<screen>
+Vi kan referere til den forrige figur, altså 
+&lt;xref linkend="linus-fig"&gt; eller tabellen 
+&lt;xref linkend="db-firma"&gt; uden at tænke på hvilket
+nummer de har. Vi anvender blot deres label.
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+<para>
+Vi kan referere til den forrige figur, altså 
+<xref linkend="linus-fig"> eller tabellen 
+<xref linkend="db-firma"> uden at tænke på hvilket
+nummer de har. Vi anvender blot deres label.
+</para>
+</example>
+
+</sect2>
+
+<sect2 id="lister">
+<title>Lister - itemizedlist</title>
+<indexterm><primary>lister</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>itemizedlist</secondary></indexterm>
+
+
+<para>
+Ofte har man brug for at lave en liste. I Docbook er der
+flere muligheder, jeg bruger dog kun en type med enkle
+punkter
+</para>
+
+<example>
+<title>itemizedlist</title>
+
+<screen>
+&lt;itemizedlist mark="bullet"&gt;
+&lt;listitem&gt;
+ &lt;para&gt;
+  Første punkt i listen skriver jeg her.
+ &lt;/para&gt;
+&lt;/listitem&gt;
+&lt;listitem&gt; 
+ &lt;para&gt;
+  Andet punkt i listen skriver jeg derefter her.
+ &lt;/para&gt;
+&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+
+
+<itemizedlist mark="bullet">
+<listitem>
+ <para>
+  Første punkt i listen skriver jeg her.
+ </para>
+</listitem>
+<listitem> 
+ <para>
+  Andet punkt i listen skriver jeg derefter her.
+ </para>
+</listitem>
+</itemizedlist>
+
+<para>
+Bemærk at <command>&lt;itemizedlist&gt;</command> ikke er inde i en 
+<command>&lt;para&gt;</command>, men hver er de tekstblokke som nævnes
+er det (samt en <command>&lt;listitem&gt;</command>. 
+</para>
+</example>
+</sect2>
+</sect1>
+
+
+
+<sect1 id="Opdeling-af-dokument">
+<indexterm><primary>sect</primary></indexterm>
+<indexterm><primary>chapter</primary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>sect</secondary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>chapter</secondary></indexterm>
+
+<title>Opdeling af dokument</title>
+<para>
+En bog inddeles i kapitelniveauer med
+<command>&lt;chapter&gt;</command>, og tilsvarende lavere niveauer
+<command>&lt;sect1&gt;</command>, <command>&lt;sect2&gt;</command>, og
+<command>&lt;sect3&gt;</command>. Opdelingen afspejler ikke
+nødvendigvis de filer man skriver. For hver ny inddeling
+<emphasis>skal</emphasis> man have et <command>&lt;title&gt;&lt;/title&gt;</command>
+til at anføre titel.
+</para>
+
+<para>
+En artikel har samme inddelinger, pånær
+<command>&lt;chapter&gt;</command>, og første inddelingsniveau er 
+<command>&lt;sect1&gt;</command>.
+</para>
+
+<para>
+Hver af de tags kan tage en <command>ID="label"</command>, som man kan
+bruge til at referere til.
+</para>
+
+<example>
+<title>Opdeling</title>
+
+<screen>
+&lt;sect2 id="introduktion"&gt;
+&lt;title&gt;Dette er en introduktion&lt;/title&gt;
+ &lt;para&gt;
+  Tekst kommer her i en para-blok og bemærkede du at afsnittet har
+  label "introduktion"?
+ &lt;/para&gt;
+ &lt;para&gt;
+  Havde det været en bog, skulle vi starte med chapter og sect1, men
+  men det er jo et eksempel :-)
+ &lt;/para&gt;
+ &lt;para&gt;
+  Læs mit næste afsnit i &lt;xref linkend="naeste-inddeling"&gt;.
+ &lt;/para&gt;
+
+ &lt;sect3 id="naeste-inddeling"&gt;
+ &lt;title&gt;Dette er næste inddeling&lt;/title&gt;
+   &lt;para&gt;
+    Her er et underafsnit. Du skal bemærke, at jeg ikke bruger æ, ø og
+    å i labels. Det giver ellers problemer med HTML-filnavne.
+   &lt;/para&gt;
+   &lt;para&gt;
+   Bemærk at &lt;command&gt;&amp;lt;!-- Dette er en kommentar --&amp;gt;&lt;/command&gt; kan 
+   bruges til at angive en kommentar som ikke vises
+   &lt;/para&gt;
+ &lt;/sect3&gt;
+&lt;/sect2&gt; &lt;!-- Denne afslutning skal man huske --&gt;
+</screen>
+
+<para>
+Dette kommer til at se ud som:
+</para>
+</example>
+
+<sect2 id="introduktion">
+<title>Dette er en introduktion</title>
+ <para>
+  Tekst kommer her i en para-blok og bemærkede du at afsnittet har
+  label "introduktion"?
+ </para>
+ <para>
+  Havde det været en bog, skulle vi starte med chapter og sect1, men
+  det er jo et eksempel :-)
+ </para>
+ <para>
+  Læs mit næste afsnit i <xref linkend="naeste-inddeling">.
+ </para>
+
+ <sect3 id="naeste-inddeling">
+ <title>Dette er næste inddeling</title>
+   <para>
+    Her er et underafsnit. Du skal bemærke, at jeg ikke bruger æ, ø og
+    å i labels. Det giver ellers problemer med HTML-filnavne.
+   </para>
+   <para>
+   Bemærk at <command>&lt;!-- Dette er en kommentar --&gt;</command> kan 
+   bruges til at angive en kommentar som ikke vises
+   </para>
+ </sect3>
+</sect2> <!-- Denne afslutning skal man huske -->
+
+<sect2 id="Startfilen">
+<title>Start filen</title>
+<para>
+Nu har vi set på inddelinger af dokumentet of hvordan man laver
+tabeller, figurer, viser kildekode og URL'er.
+</para>
+
+<para>
+Lad os antage at man har lavet tre kapitler med hver deres
+<command>&lt;chapter id="label-for-kapitel"&gt;</command>, som er gemt
+i tre filer <filename>introduktion.sgml</filename>,
+<filename>linux.sgml</filename> og
+<filename>konklusion.sgml</filename>. Her er så en opskrift på at lave
+hoved-filen som binder det hele sammen. 
+</para>
+
+<para>
+Forfattere angives i <command>&lt;AUTHORGROUP&gt;</command> og titler
+som tidligere vist i <command>&lt;title&gt;</command>.
+</para>
+
+<screen>
+&lt;!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+ &lt;!entity intro SYSTEM "introduktion.sgml"&gt; &lt;!-- Filnavn ej lig id --&gt;
+ &lt;!entity Linux SYSTEM "linux.sgml"&gt; &lt;!-- Filnavn ej lig id --&gt;
+ &lt;!entity konklusion SYSTEM "konklusion.sgml"&gt; &lt;!-- Filnavn her lig id --&gt;
+]&gt;
+
+&lt;book id="index" lang="da"&gt;
+&lt;bookinfo&gt;
+ &lt;title&gt;Bog titel kommer her&lt;/title&gt;
+ &lt;subtitle&gt;Her er en undertitel&lt;/subtitle&gt;
+
+ &lt;AUTHORGROUP&gt;
+
+ &lt;AUTHOR&gt;
+   &lt;FIRSTNAME&gt;Peter&lt;/FIRSTNAME&gt;
+   &lt;SURNAME&gt;Toft&lt;/SURNAME&gt;
+ &lt;/AUTHOR&gt;
+
+ &lt;AUTHOR&gt;
+   &lt;FIRSTNAME&gt;Hans&lt;/FIRSTNAME&gt;
+   &lt;SURNAME&gt;Schou&lt;/SURNAME&gt;
+ &lt;/AUTHOR&gt;
+
+ &lt;/AUTHORGROUP&gt;
+ &lt;COPYRIGHT&gt;
+   &lt;YEAR&gt;1998, 1999, 2000&lt;/YEAR&gt;
+   &lt;HOLDER&gt;Peter Toft og mange andre under
+   "OpenContent" licensen&lt;/HOLDER&gt;
+ &lt;/COPYRIGHT&gt;
+
+ &lt;ABSTRACT&gt;
+  &lt;PARA&gt;
+   Her skriver vi et kort abstract.
+  &lt;/PARA&gt;
+ &lt;/ABSTRACT&gt;
+&lt;/bookinfo&gt;
+
+&lt;!-- Følgende linie skaber automatisk en indholdsfortegnelse --&gt;
+&lt;toc id="toc"&gt;&lt;/toc&gt; 
+&amp;intro;
+&amp;Linux;
+&amp;konklusion;
+&lt;/book&gt;
+</screen>
+
+<para>
+I hovedet af filen erklærer hvilke eksterne filer, vil skal læse
+ind. Hver af disse får en label (intro, Linux og konklusion) som vi
+anvender til sidst i filen med et &amp; foran. Der er her til sidst vi
+angiver den rækkefølge filerne indsættes i.
+</para>
+
+<para>
+Bemærk at kommandoerne <command>&lt;toc&gt;&lt;/toc&gt;</command>
+bruges til at få genereret en indholdsfortegnelse. Dette kræver intet
+andet end den linie.
+</para>
+
+</sect2>
+
+
+<sect2 id="entity">
+<title>Entities</title>
+<para>
+Vi har i <xref linkend="Startfilen"> allerede set ordet
+<command>entity</command> anvendt. Denne bruges til at definere enten
+en forkortelse eller at inkludere en anden fil. Vi så tidligere at tre
+filer blev defineret og her er vist samme definitioner samt at en
+forkortelse "pto" er sat til "Peter Toft". 
+</para>
+
+<screen>
+ &lt;!entity intro SYSTEM "introduktion.sgml"&gt; &lt;!-- Filnavn ej lig id --&gt;
+ &lt;!entity Linux SYSTEM "linux.sgml"&gt; &lt;!-- Filnavn ej lig id --&gt;
+ &lt;!entity konklusion SYSTEM "konklusion.sgml"&gt; &lt;!-- Filnavn her lig id --&gt;
+ &lt;!entity pto "Peter Toft"&gt; &lt;!-- Filnavn ej lig id --&gt;
+</screen>
+
+
+<para>
+Når man ønsker indholdet af <filename>introduktion.sgml</filename>, så
+skriver man blot <command>&amp;intro;</command>, tilsvarende 
+<command>&amp;Linux;</command> og
+<command>&amp;konklusion;</command>. Skal man bruge teksten "Peter
+Toft", så er det nemmere at bruge <command>&amp;pto;</command>.
+</para>
+
+</sect2>
+
+</sect1>
+</chapter>
+
+<chapter id="Compile">
+<title>Oversætte SGML til andre formater</title>
+<indexterm><primary>oversætte SGML</primary></indexterm>
+<indexterm><primary>db2html</primary></indexterm>
+<indexterm><primary>db2pdf</primary></indexterm>
+<indexterm><primary>db2ps</primary></indexterm>
+<indexterm><primary>db2rtf</primary></indexterm>
+
+<para>
+Du kan oversætte SGML filerne til HTML, PDF, Postscript og RTF.  Der
+er også mulighed for at vælge at oversætte SGML til én HTML-fil og
+ikke til mange, opdelt for hver
+<command>&lt;sect1&gt;</command>. Oftest har én stor HTML fil ikke
+megen interesse, idet den ofte bliver meget stor.
+</para>
+
+<para>
+Du oversætter din hoved SGML fil
+(f.eks. <filename>bog.sgml</filename>) til HTML ved at skrive
+<command>db2html bog.sgml</command>. Dine HTML filer gemmes i
+<filename>bog</filename> under dit nuværende katalog, fordi SGML-filen
+hedder <filename>bog.sgml</filename>.
+</para>
+
+<para>
+Du skal selv sørge for at kopiere dine billed-filer (f.eks. PNG) til
+kataloget <filename>bog</filename>. Typisk kan dette gøres med en
+<filename>Makefile</filename>.
+</para>
+
+<para>
+Tilsvarende kan man oversætte <filename>bog.sgml</filename> til PDF
+ved at skrive <command>db2pdf bog.sgml</command>. Igen skal alle
+billed-filer (typisk PNG) være placeret der hvor SGML-filerne
+oversættes. Jeg kopierer normalt alle de filer til et midlertidigt
+katalog og oversætter der.
+</para>
+
+<para>
+Skal man oversætte til Postscript hedder kommandoen
+<command>db2ps</command> og RTF laves med <command>db2rtf</command>.
+</para>
+
+<sect1 id="fejl-i-sgml">
+<title>Fejl i SGML-teksten</title>
+<para>
+Har du lavet fejl i din SGML-tekst, så er den oversætter man har i
+<command>db2html</command> faktisk til stor hjælp. Vi skal så på et
+par eksempler.
+</para>
+
+<example>
+<title>Manglende /para</title>
+<para>
+Lad os prøve at oversætte følgende tekst
+</para>
+
+<programlisting>
+&lt;!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+]&gt;
+
+&lt;book id="index" lang="da"&gt;
+  &lt;bookinfo&gt;
+    &lt;title&gt;Min første Docbook-bog&lt;/title&gt;
+  &lt;/bookinfo&gt;
+
+&lt;chapter id="forord"&gt;
+&lt;title&gt;Mit første kapitel&lt;/title&gt;
+
+&lt;para&gt;
+Vil du skrive i Docbook ?
+&lt;/para&gt;
+
+&lt;para&gt;
+Ja - men jeg kan ikke huske at slutte mine para-blokke.
+
+&lt;/chapter&gt;
+&lt;/book&gt;
+</programlisting>
+
+<para>
+Filen <filename>eks1.sgml</filename> oversættes nu 
+</para>
+
+<screen>
+<prompt>[root@MinMaskine /root]# </prompt> <userinput> db2html eks1.sgml</userinput>
+TMPDIR is DBTOHTML_OUTPUT_DIR3088
+ 
+input file was called eks1.sgml -- output will be in eks1
+ 
+working on ../eks1.sgml
+jade:../eks1.sgml:24:9:E: end tag for "PARA" omitted, but OMITTAG NO was specified
+jade:../eks1.sgml:19:0: start tag was here
+about to copy cascading stylesheet and admon graphics to temp dir
+about to rename temporary directory to eks1
+</screen>
+
+<para>
+For det første laves et temporært katalog
+<filename>DBTOHTML_OUTPUT_DIR3088</filename>, og resultatet vil ende i
+<filename>eks1/</filename> idet filen hedder <filename>eks1.sgml</filename>.
+Man får to ret klare fejlbeskeder. I linie 24 (næstsidste linie) må
+der ikke komme en <command>&lt;/chapter&gt;</command>, når der bør
+komme en slut PARA, dvs. <command>&lt;/para&gt;</command>. Den
+følgende linie fortæller dernæst at i linie 19 var den
+<command>&lt;para&gt;</command>, som ikke kunne matches.
+</para>
+
+<para>
+Tilføj en <command>&lt;/para&gt;</command> før næst-sidste linie og 
+teksten oversætter fejlfrit.
+</para>
+
+</example>
+
+<example>
+<title>To ens ID</title>
+<para>
+Lad os prøve at oversætte følgende tekst
+</para>
+
+<programlisting>
+&lt;!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+]&gt;
+
+&lt;book id="index" lang="da"&gt;
+  &lt;bookinfo&gt;
+    &lt;title&gt;Eksempel&lt;/title&gt;
+  &lt;/bookinfo&gt;
+
+&lt;toc id="toc"&gt;&lt;/toc&gt;
+
+
+&lt;chapter id="id1"&gt;
+&lt;title&gt;Mit første kapitel&lt;/title&gt;
+
+&lt;para&gt;
+Vil du skrive i Docbook ?
+&lt;/para&gt;
+
+&lt;sect1 id="id1"&gt;
+&lt;title&gt;Mit første underkapitel&lt;/title&gt;
+&lt;para&gt;
+tekst1
+&lt;/para&gt;
+
+&lt;/sect1&gt;
+&lt;/chapter&gt;
+&lt;/book&gt;
+</programlisting>
+
+<para>
+Filen <filename>eks2.sgml</filename> oversættes nu 
+</para>
+
+<screen>
+<prompt>[root@MinMaskine /root]# </prompt> <userinput> db2html eks2.sgml</userinput>
+TMPDIR is DBTOHTML_OUTPUT_DIR3110
+ 
+input file was called eks2.sgml -- output will be in eks2
+ 
+working on ../eks2.sgml
+jade:../eks2.sgml:19:11:E: ID "ID1" already defined
+jade:../eks2.sgml:12:13: ID "ID1" first defined here
+about to copy cascading stylesheet and admon graphics to temp dir
+about to rename temporary directory to eks2                  
+</screen>
+
+<para>
+Her ses at ID1 er erklæret to gange - og der oplyses hvilke steder der
+sker. Omdefiner den ene og oversæt igen.
+</para>
+</example>
+
+
+</sect1>
+
+<sect1 id="grimme-ting">
+<title>"Alle" de grimme detaljer</title>
+
+<sect2 id="Stikordsregister">
+<title>Stikordsregister</title>
+<para>
+At få lavet et stikordsregister er ikke så integreret i Docbook som
+man kunne ønske sig, men modsat så kan det nemt indføres, når bare man
+har en vejledning. Det første er at man skal hente et Perl-program,
+<command>collateindex.pl</command>, som f.eks. kan findes fra 
+<ulink
+url="http://www.sslug.dk/linuxbog/misc/collateindex.pl">http://www.sslug.dk/linuxbog/misc/collateindex.pl</ulink>.
+Filen skal gøres eksekverbar og f.eks. placeres i <filename>/usr/local/bin</filename>.
+</para>
+
+
+<sect3 id="indexterm">
+<title>Markere til stikordsregisteret - indexterm</title>
+<indexterm><primary>indexterm</primary></indexterm>
+<indexterm><primary>indexterm</primary><secondary>primary</secondary></indexterm>
+<indexterm><primary>indexterm</primary><secondary>secondary</secondary></indexterm>
+<indexterm><primary>SGML-tags</primary><secondary>indexterm</secondary></indexterm>
+<para>
+Før man får en stikordsliste skal man igennem hele ens dokument og
+markere de steder, man ønsker et link til. Det er manuelt arbejde.
+Hvert sted man ønsker et link til skal man tilføje
+</para>
+
+<screen>
+&lt;indexterm&gt;&lt;primary&gt;Søgeord&lt;/primary&gt;&lt;/indexterm&gt;
+</screen>
+
+<para>
+I stikordsregisteret vil man så kunne se at "Søgeord" kan man læse om
+det pågælende afsnit. Man kan godt lave henvisning til flere
+forskellige steder med samme søgeord. Indføj blot flere linier som den
+ovenstående og man får et tilsvarende antal referencer i stikordsregisteret.
+</para>
+
+<para>
+Samme markeringsteknik kan laves med underinddelinger, så man under
+"Søgeord" kan have f.eks. "At lave søgeord" og et andet sted "At finde
+søgeord". For at lave det første eksempel skrives følgende, og det kan
+bemærkes, at liniedelingen og indrykningen nedenfor alene tjener til
+at gøre SGML-koden nemmere at læse.
+</para>
+
+<screen>
+&lt;indexterm&gt;
+ &lt;primary&gt;Søgeord&lt;/primary&gt;
+ &lt;secondary&gt;At lave søgeord&lt;/secondary&gt;
+&lt;/indexterm&gt;
+</screen>
+</sect3>
+
+<sect3 id="collateindex.pl">
+<title>Generere indholdsfortegnelsen - collateindex.pl</title>
+<indexterm><primary>collateindex.pl</primary></indexterm>
+
+<para>
+Når man har sat alle sine stikordshenvisninger ind i dokumentet kommer
+turen til at at få genereret dokumentet med <command>collateindex.pl</command>.
+Tricket er at man skal oversætte sit dokument en gang før man kører
+<command>db2html</command> (eller hvad man nu har som mål-format).
+</para>
+
+<para>
+Jeg plejer typisk at have en <filename>Makefile</filename>, hvor jeg
+oversætter min hoved SGML-fil <filename>bog.sgml</filename> på
+følgende måde. Jeg har kommenteret Makefilen med kommentarer før kommandoen
+</para>
+
+<screen>
+# Slet mit midlertidige katalog "tempdir" og "stikord.sgml"
+    rm -rf tempdir stikord.sgml
+# Skab et  midlertidige katalog "tempdir"
+    mkdir tempdir
+# Initialiser "stikord.sgml" til at være tom
+    perl /usr/local/bin/collateindex.pl \
+        -s Symboler  -t Stikordsregister -g \
+        -i stikord -N -o stikord.sgml
+# Kopier alle SGML filer til "tempdir"
+    cp *.sgml tempdir
+# Gå ned i "tempdir" og oversæt SGML-filerne hvor HTML.index dannes
+    (cd tempdir; jade -t sgml -ihtml \
+        -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html \
+        -V html-index bog.sgml)
+# Kør nu "collateindex.pl" som oversætter "HTML.index" til indholdet
+# af SGML-filen "stikord.sgml". -s er at symboler optræder under
+# navnet "symboler". -t angiver overskrift for "stikord.sgml"
+    perl /usr/local/bin/collateindex.pl -s Symboler \
+        -t Stikordsregister  -g -i stikord \
+        -o stikord.sgml tempdir/HTML.index
+# Nu er "stikord.sgml" fuld af referencer som kan oversættes
+    db2html bog.sgml
+# Kopier alle PNG-filer fra "images/" til "bog/"
+    cp images/*.png bog
+</screen>
+
+<para>
+Skal du tilsvarende oversætte til PDF kan du have en del af en
+<filename>Makefile</filename> med et lidt andet indhold. Ideen er den
+samme, men <command>jade</command>, som anvendes til at lave
+stikordsregisteret får "print" overført ikke "html". Dette gør, at man
+få sidenumre og ikke afsnitsnavne i stikordsregisteret. Bemærk også at
+<command>-V nochunks</command> gør at filen oversættes til en stor fil
+(svarende til den endelige PDF-fil).
+</para>
+
+<screen>
+# Slet "stikord.sgml" min midlertidige kataloger 
+#  "tempdir" og "bogpdf"
+    rm -rf tempdir stikord.sgml bogpdf
+# Skab et  midlertidige katalog "tempdir"
+    mkdir tempdir
+# Initialiser "stikord.sgml" til at være tom
+    perl /usr/local/bin/collateindex.pl \
+        -s Symboler  -t Stikordsregister -g \
+        -i stikord -N -o stikord.sgml
+# Kopier alle SGML filer til "tempdir"
+    cp *.sgml tempdir
+# Gå ned i "tempdir" og oversæt SGML-filerne hvor HTML.index dannes
+    (cd tempdir; jade -t sgml -ihtml \
+        -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print 
+        -V html-index -V nochunks bog.sgml > slet_fil.html)
+# Kør nu "collateindex.pl" som oversætter "HTML.index" til indholdet
+# af SGML-filen "stikord.sgml". -s er at symboler optræder under
+# navnet "symboler". -t angiver overskrift for "stikord.sgml"
+    perl /usr/local/bin/collateindex.pl -s Symboler \
+        -t Stikordsregister  -g -i stikord \
+        -o stikord.sgml tempdir/HTML.index
+# Nu er "stikord.sgml" fuld af referencer som kan oversættes
+    mkdir bogpdf
+# Kopier alle SGML-filer til "bogpdf/"
+    cp *.sgml bogpdf
+# Kopier alle PNG-filer fra "images/" til "bog/"
+    cp images/*.png bogpdf
+# Kør "db2pdf" i "bogpdf/" 
+    (cd bogpdf; db2pdf bog.sgml)
+# Flytter PDF-filen til nuværende katalog
+    mv bogpdf/bog.pdf .
+</screen>
+</sect3>
+
+<sect3 id="Postscript">
+<title>Postscript er et problem</title>
+<para>
+Som vist i forrige afsnit kopieres PNG-filer blot til det katalog hvor
+man oversætter. Skal man oversætte Docbook dokumentet til Postscript
+opstår dog problemet; Man kan ikke oversætte dokumentet med
+PNG-billeder, men godt med EPS-billeder.  Det problem kan også løses,
+men det er bøvlet og kræver at alle billeder oversættes til EPS,
+f.eks. ved at bruge <command>convert</command>fra
+ImageMagick-programmet.
+</para>
+
+</sect3>
+</sect2>
+
+<sect2 id="texconfig">
+<title>Ændring af opsætning</title>
+
+<para>
+Er du utilfreds med hvordan marginer i PDF-filen er eller hvordan dine
+HTML style-filer anvendes, så har Docbook et hav af muligheder for at
+skrue på format.
+</para>
+
+<para>
+I <filename>/usr/lib/sgml</filename> ligger alle de opsætningsfiler
+Docbook bruger. Oftest vil man ændre i ganske få filer, såsom
+<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/common/dbl1da.ent</filename>.
+I denne fil står alle de oversættelser man har til dansk for
+referencer og afsnit. Mener du at en "Section" (på engelsk) hedder
+"Sektion" og ikke "Afsnit" så kan du ændre linien
+</para>
+
+<screen>
+&lt;!ENTITY Section        "Afsnit"&gt; 
+</screen>
+
+<para>
+til
+</para>
+
+<screen>
+&lt;!ENTITY Section        "Sektion"&gt; 
+</screen>
+
+<para>
+Tilsvarende finder du mange opsætningsparametre fælles for HTML og
+PDF/Postscript i
+<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/common/dbcommon.dsl</filename>.
+Filen er skrevet i LISP (ligesom Emacs opsætningsfiler) og har mange
+kommentarer. Oftest er det ikke denne fil man vil ændre i.
+</para>
+
+<para>
+For HTML-generering vil du nok ændre i 
+<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/html/dbparam.dsl</filename>.
+Du vil se at filen har mange kommentarer og vil du ændre en parameter
+fra sand til falsk er det <command>#t</command> som ændres til <command>#f</command>.
+</para>
+
+<para>
+For PDF og Postscript-generering (kaldes "print" i Docbook) vil du nok
+ændre i
+<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/print/dbparam.dsl</filename>.
+En ting du nok skal se på er "%paper-type%" som sættes til
+</para>
+
+<screen>
+(define %paper-type%
+  ;; REFENTRY paper-type
+  ;; PURP Name of paper type
+  ;; DESC
+  ;; The paper type value identifies the sort of paper in use, for example,
+  ;; 'A4' or 'USletter'. Setting the paper type is an
+  ;; easy shortcut for setting the correct paper height and width.
+  ;;
+  ;; As distributed, only 'A4' and 'USletter' are supported.  You can add
+  ;; additional paper types by updating 'page-width' and 'page-height'.
+  ;; If you do, please pass along your updates.
+  ;; /DESC
+  ;; AUTHOR N/A
+  ;; /REFENTRY
+  ;; "USletter"
+  "A4")                 
+</screen>
+
+<para>
+Tilsvarende kan man lede efter margin og finde de marginer, som
+anvendes i PDF-dokumentet.
+</para>
+
+</sect2>
+</sect1>
+</chapter>   
+
+<chapter id="epilog">
+<title>Epilog</title>
+<para>
+Denne artikel kan findes på 
+<ulink url="&sslugweb;/artikler/docbook">&sslugweb;/artikler/docbook</ulink>.
+Kildeteksten <filename>docbook.sgml</filename> kan hentes sammen med 
+Makefile og HTML-filerne på 
+<ulink url="&sslugweb;/artikler/docbook/docbook.tgz">&sslugweb;/artikler/docbook/docbook.tgz</ulink>.
+Tilsvarende kan den hentes i PDF format på 
+<ulink url="&sslugweb;/artikler/docbook/docbook.pdf.gz">&sslugweb;/artikler/docbook/docbook.pdf.gz</ulink>.
+</para>
+
+<para>
+Har du brug for at se flere SGML eksempler, så se f.eks. 
+<ulink url="&sslugweb;/linuxbog/friheden">&sslugweb;/linuxbog/friheden</ulink>.
+Tilsvarende er der en del eksempler i 
+<filename>/usr/lib/sgml/stylesheets/nwalsh-modular/doc</filename>.
+</para>
+
+<para>
+Har du brug for hjælp til Docbook, så er der en god diskussionsgruppe
+at finde på <ulink
+url="mailto:docbook-tools-discuss@sourceware.cygnus.com">docbook-tools-discuss@sourceware.cygnus.com</ulink>.
+Man tilmelder sig via at skrive til <ulink
+url="mailto:docbook-tools-discuss-subscribe@sourceware.cygnus.com">docbook-tools-discuss-subscribe@sourceware.cygnus.com</ulink>.
+</para>
+
+<itemizedlist mark="bullet">
+<listitem> 
+ <para>
+  Mark Galassi "kom i gang"
+  <ulink url="http://nis-www.lanl.gov/~rosalia/mydocs/docbook-intro.html">http://nis-www.lanl.gov/~rosalia/mydocs/docbook-intro.html</ulink>
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+Du kan også have glæde af den fulde Docbook dokumentation, der kan
+hentes fra <ulink url="http://www.oasis-open.org/docbook/">http://www.oasis-open.org/docbook/</ulink>.
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  Bogen "DocBook - The Definitive Guide" af Norman Walsh &amp; Leonard
+  Muellner - O'Reilly. Den er måske ikke "The Definitive Guide" i praksis...
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+ A Practical Introduction to DocBook
+ <ulink url="http://www.oswg.org/oswg-nightly/oswg/en_US.ISO_8859-1/articles/DocBook-Intro/docbook-intro/index.html">http://www.oswg.org/oswg-nightly/oswg/en_US.ISO_8859-1/articles/DocBook-Intro/docbook-intro/index.html</ulink>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+ DocBook HOWTO
+ <ulink url="http://metalab.unc.edu/godoy/using-docbook/using-docbook.html">http://metalab.unc.edu/godoy/using-docbook/using-docbook.html</ulink>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+ Practical information about the use of SGML/XML and DocBook on Debian
+ <ulink url="http://www.debian.org/~bortz/SGML-HOWTO/potato/howto.html">http://www.debian.org/~bortz/SGML-HOWTO/potato/howto.html</ulink>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  Praktisk guide i brug af SGML/XML og Docbook på Windows NT
+ <ulink url="http://ourworld.compuserve.com/homepages/hoenicka_markus/ntsgml.html">http://ourworld.compuserve.com/homepages/hoenicka_markus/ntsgml.html</ulink>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  Ret komplet guide om O'Reilly's DocBook baserede produktions systemer
+ <ulink url="http://www.oreilly.com/people/staff/crism/dsssl/orastyle/index.html">http://www.oreilly.com/people/staff/crism/dsssl/orastyle/index.html</ulink>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  FreeBSD tutorial
+ <ulink url="http://www.freebsd.org/tutorials/docproj-primer">http://www.freebsd.org/tutorials/docproj-primer</ulink> 
+</para>
+</listitem>
+
+<listitem>
+ <para>
+  OASIS links
+  <ulink url="http://www.oasis-open.org/docbook/documentation/other.html
+">http://www.oasis-open.org/docbook/documentation/other.html</ulink>
+ </para>
+</listitem>
+
+<listitem>
+ <para>
+  Integration mellem Emacs og Docbook <ulink url="http://www.lst.de/~eric/crash-course/HTML/emacs-psgml-mode-tips.html">http://www.lst.de/~eric/crash-course/HTML/emacs-psgml-mode-tips.html</ulink>
+ </para>
+</listitem>
+
+<listitem> 
+ <para>
+  Helt ny "Crash-Course to DocBook" <ulink url="http://public.lst.de/~eric">http://public.lst.de/~eric</ulink>
+ </para>
+</listitem>
+
+
+</itemizedlist>
+
+
+
+</chapter>
+

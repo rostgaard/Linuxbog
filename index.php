@@ -123,6 +123,13 @@ function form_filename( $bookname, $format ) {
         "Hans Schou" => "chlor@sslug.dk"
       )
     ),
+    "docbook" => array(
+      title => "Linux - Friheden til at skrive i SGML/DocBook",
+      comment => "Skrive bøger i DocBook",
+      auth => array(
+        "Peter Toft" => "pto@sslug.dk"
+      )
+    ),
   "alle" => array(
      title => "Linux - Friheden til at skrive bøger",
      comment => "Samling af alle bøgerne",

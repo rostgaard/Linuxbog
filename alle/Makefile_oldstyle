@@ -27,6 +27,7 @@ sgmlfiler=$(allesgmlfiles) \
           ../web/*.sgml \
           ../applikationer/*.sgml \
           ../c/*.sgml \
+          ../docbook/*.sgml \
           ../program/*.sgml
 
 # her er det der skal laves
@@ -64,6 +65,7 @@ billeder:
 	cp ../web/images/*.png images
 	cp ../program/images/*.png images
 	cp ../c/images/*.png images
+	cp ../docbook/images/*.png images
 	cp ../applikationer/images/*.png images
 	cp ../sikkerhed/images/*.png images
 
@@ -89,6 +91,7 @@ htmlfiler:
 	cp ../program/images/*.png bog
 	cp ../applikationer/images/*.png bog
 	cp ../c/images/*.png bog
+	cp ../docbook/images/*.png bog
 	cp ../sikkerhed/images/*.png bog
 	rm -rf tempdir
 	@echo "Done HTML (html)"
