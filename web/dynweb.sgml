@@ -8,28 +8,29 @@ webserveren ikke kun kan afsende statiske sider, men kan fortolke kode
 indlejret i websider så som Server-Side Includes, Mod_Perl og PHP,  men også
 at webserveren kan udføre selvstændige programmer, programmets output kan være
 tekst, billeder eller lyd, og dette bliver af webserveren returneret til
-browseren. Denne sidste mulighed kaldes for CGI-scripts (Common Gateway
-Interface). CGI-scripts bruges typisk til at fortolke svaret fra
+browseren. Denne sidste mulighed kaldes for CGI-programmer (Common Gateway
+Interface). CGI-programmer bruges typisk til at fortolke svaret fra
 webformularer, tællere af besøgende på en webside og til søgemaskiner.
 </para>
 
 <sect1 id="CGI-scripts">
-<title>CGI-scripts</title>
+ <title>CGI-programmer</title>
 
-<para>
-Til at programmere CGI-scripts kan man vælge et vilkårligt
-programmeringssprog. Til små programmer der udskriver server information kan
-et shell-script være passende. Til sider hvor svartiden er kritisk kan C
-eller C++ anvendes, eller hvor der skal udføres komplekse matematiske
-operationer. Men normalt skal kun tekst indlæses og udskrives, og det er en
-opgave som programmeringssproget Perl er designet til at løse. Perl er et
+ <para>
+  Til at programmere CGI-programmer kan man vælge et vilkårligt
+  programmeringssprog. Til små programmer der udskriver server information kan
+  et kommandofortolkerprogram være passende. Til sider hvor svartiden er
+  kritisk eller hvor der skal udføres komplekse matematiske operationer, kan
+  oversatte sprog som Ada, C eller C++ med fordel anvendes. Men normalt skal
+  kun tekst indlæses og udskrives, og det er en opgave som
+  programmeringssproget Perl er designet til at løse. Perl er et
 fortolket sprog, der er beregnet til at behandle tekst med. Fordi det er et
-fortolket sprog, skal Perl-koden fortolkes hver gang et script udføres,
+fortolket sprog, skal Perl-koden fortolkes hver gang et program udføres,
 (hvilket tager en del tid). Til gengæld behøver man ikke at bekymre sig
 om buffer overløb (eng. buffer
-overflows) i Perl, hvilket er den hyppigste fejl i C programmer der anvender
-strenge. Hvis man skal udføre mange CGI-scripts kan det være nødvendigt at
-anvende Fast_CGI eller Mod_Perl modulet. Mod_Perl er et modul til
+overflows) i Perl, hvilket er den hyppigste fejl i C-programmer der anvender
+strenge. Hvis man skal udføre mange CGI-programmer kan det være nødvendigt at
+anvende Fast_CGI- eller Mod_Perl-modulet. Mod_Perl er et modul til
 Apache, som gør at du kan have inline Perl i HTML uden at det koster
 mange ressourcer per CGI-kald.
 </para>
@@ -49,13 +50,13 @@ url="http://www.sslug.dk/linuxbog">http://www.sslug.dk/linuxbog</ulink>.
 </para>
 
 <sect2 id="cgi-konf">
-<title>Opsætning af Apache til at udføre scripts.</title>
+<title>Opsætning af Apache til at udføre programmer.</title>
 
 <para>
 Hvis du selv bestyrer en webserver skal den først sættes op til at
-udføre filer af typen <filename>.cgi</filename> som CGI-scripts, hvis
+udføre filer af typen <filename>.cgi</filename> som CGI-programmer, hvis
 du bruger et web-hotel så vil du sikkert have adgang til noget
-information om hvor og hvordan scripts kan udføres. Følgende ændringer
+information om hvor og hvordan programmer kan udføres. Følgende ændringer
 skal udføres i Apaches opsætningsfiler, der ligger normalt i
 <filename>/etc/httpd/conf/</filename> kataloget:
 </para>
@@ -71,9 +72,9 @@ ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
 <para>
 Filen <filename>access.conf</filename> definere web browseres rettigheder til
 at hente sider i kataloger, og  'Options ExecCGI' skal være slået til i alle 
-kataloger hvor webserveren skal udføre scripts. Typisk er der i forvejen et
+kataloger hvor webserveren skal udføre programmer. Typisk er der i forvejen et
 <filename>/home/httpd/cgi-bin</filename> katalog hvor webserveren har rettigheder
-til at udføre scripts:
+til at udføre programmer:
 </para>
 
 <screen>
@@ -102,7 +103,7 @@ AddModule mod_cgi.c
 Mange af disse ændringer består i at fjerne udkommenteringen af '#' i
 starten af eksisterende linjer. Når disse ændringer er udført og
 webserveren genstartet med <command>/etc/rc.d/init.d/httpd
-restart</command>, så vil et script <filename>runme.cgi</filename>,
+restart</command>, så vil et program, <filename>runme.cgi</filename>,
 der ligger i <filename>/home/httpd/cgi-bin/</filename> kataloget, kunne
 udføres ved at man i en browser beder om
 <filename>http://localhost/cgi-bin/runme.cgi</filename>.
@@ -111,35 +112,35 @@ udføres ved at man i en browser beder om
 </sect2>
 
 <sect2 id="cgi-komweb">
-<title>Kommunikation mellem webserver og CGI-script</title>
+<title>Kommunikation mellem webserver og CGI-programmer</title>
 
 <para>
 Et program har altid tre datastrømme: stdin (standard input) der er input
 fra keyboard, stdout (standard output) der er output til skærmen, og stderr
-(standard error) der er fejl meddelelser og også udskrives til skærmen.
+(standard error) der er fejlmeddelelser og også udskrives til skærmen.
 Dog skal det bemærkes at alle tre standard-datastrømme være omdirigerede.
 </para>
 
 <para>
-Når webserveren udfører et CGI-script, vil alle data der udskrives til
+Når webserveren udfører et CGI-program, vil alle data der udskrives til
 stdout blive returneret til browseren. Data der skrives til stderr vil
-blive gemt i webserverens error log
-<filename>/var/log/httpd/error_log</filename>.  Scriptet kan også
+blive gemt i webserverens fejllog
+<filename>/var/log/httpd/error_log</filename>.  Programmet kan også
 modtage data på stdin fra webserveren, dette vil typisk være data der
 er indtastet i en webformular eller filer, der skal uploades.
-CGI-scripts modtager også en række data igennem miljø-variable
+CGI-programmer modtager også en række data igennem miljø-variable
 (eng. environment variable).
 </para>
 
 <para>
-I det følgende afsnit vil vi introducere CGI-scripts der returnerer et
-simpelt svar og ikke modtager data, forklare hvordan scripts kan
-returnere forskellige typer data, og gå igennem hvordan scripts kan
+I det følgende afsnit vil vi introducere CGI-programmer der returnerer et
+simpelt svar og ikke modtager data, forklare hvordan programmer kan
+returnere forskellige typer data, og gå igennem hvordan programmer kan
 modtage data fra webformularer og anvende environment variable til at
 bestemme f.eks. IP addressen på den webbrowser som ønsker
 data. 
 Desuden vil vi forklare, hvilke sikkerhedsproblemer, der er
-omkring scripts, og hvordan man debugger scripts.'
+omkring programmer, og hvordan man debugger programmer.'
 </para>
 
 </sect2><!-- cgi-komm -->
@@ -149,8 +150,8 @@ omkring scripts, og hvordan man debugger scripts.'
 
 
 <para>
-Det simpleste eksempel på et CGI-script er et, der bare returnerer en
-enkel oplysning, f.eks. hvad klokken er. Gem følgende script i
+Det simpleste eksempel på et CGI-program er et, der bare returnerer en
+enkel oplysning, f.eks. hvad klokken er. Gem følgende program i
 <filename>/home/httpd/cgi-bin/</filename> som <filename>klokken.cgi</filename>:
 </para>
 
@@ -158,11 +159,11 @@ enkel oplysning, f.eks. hvad klokken er. Gem følgende script i
 #!/usr/bin/perl -w
 #Filnavn: klokken.cgi
 
-#Udskriv header
+#Udskriv hoved
 print "Content-Type: text/plain\r\n";
 print "\r\n";
 
-#Udskriv tekst indhold
+#Udskriv indhold
 print "Datoen er ".scalar(localtime);
 </screen>
 
@@ -185,17 +186,17 @@ om 'Typiske Fejl'.
 </para>
 
 <para>
-Først udskriver scriptet en linie med en "Content-Type", der fortæller
+Først udskriver programmet en linie med en "Content-Type", der fortæller
 webbrowseren, hvad den skal gøre med hvad de data der følger, feltet
 kaldes for medietypen. Her betyder text/plain det at indholdet er
 ascii tekst formatteret, ligesom når man loader en .txt fil i
-browseren. Der kan være flere headere og de afsluttes med en tom
+browseren. Der kan være flere linier i hovedet og de afsluttes med en tom
 linie, alt under den tomme linie er data der vises i browseren.
 </para>
 
 <para>
-Tekst er lidt kedeligt, så vi kunne istedet ønske at returnere html
-formateret tekst. Dette kan let gøres ved at modificere scriptet som
+Tekst er lidt kedeligt, så vi kunne istedet ønske at returnere HTML-formateret
+tekst. Dette kan let gøres ved at modificere programmet som
 følger:
 </para>
 
@@ -204,7 +205,7 @@ følger:
 
 #Filnavn: klokken2.cgi
 
-#Udskriv header
+#Udskriv hoved
 print "Content-Type: text/html\r\n";
 print "\r\n";
 
@@ -219,7 +220,7 @@ print "&lt;/H1>";
 
 <para>
 Programmet vil nu udskrive datoen med store bogstaver og med en tilfældig
-farve, der ændrer sig hver gang scriptet reloades.
+farve, der ændrer sig hver gang programmet reloades.
 </para>
 
 </sect2><!-- cgi-svar -->
@@ -229,7 +230,7 @@ farve, der ændrer sig hver gang scriptet reloades.
 
 <para>
 
-Et CGI-script kan ikke kun returnere ren tekst og HTML-formatteret
+Et CGI-program kan ikke kun returnere ren tekst og HTML-formatteret
 tekst, men også en lang række andre medieformater.  I Netscape kan man
 i <literal>Edit/Preferences/Navigator/Applications</literal> se hvilke
 programmer, der udføres når browseren modtager en fil med en bestemt
@@ -311,18 +312,18 @@ formater.
 </sect2><!-- cgi-mtyper -->
 
 <sect2 id="cgi-headere">
-<title>Headere</title>
+<title>HTTP-hovedet</title>
 
 <para>
-Hvis man returnere et svar med et CGI-script kan det ske at browseren
-cacher det, og en reload vil derfor ikke køre scriptet igen, men kun vise det
+Hvis man returnere et svar med et CGI-program kan det ske at browseren
+cacher det, og en reload vil derfor ikke køre programmet igen, men kun vise det
 resultat der ligger i cachen. 
-Følgende kode stump fortæller browseren og web-caches (såsom Squid), at
-scriptets output ikke må caches:
+Følgende stump kode fortæller browseren og web-caches (såsom Squid), at
+programmets output ikke må caches:
 </para>
 
 <screen>
-#Udskriv header
+#Udskriv hoved
 print "Content-Type: text/html\r\n";
 
 #HTTP 1.1
@@ -332,17 +333,17 @@ print "Cache-Control: no-cache\r\n";
 print "Pragma: no-cache\r\n";
 print "\r\n";
 
-#Resten af scriptet
+#Resten af programmet
 </screen>
 
 <para>
 Hvis output kan gemmes i en cache, men man ønsker at kontrollere levetiden,
-så kan dette gøres med Expires headeren. Følgende kodestump viser hvordan
+så kan dette gøres med Expires-feltet. Følgende kodestump viser hvordan
 dette gøres:
 </para>
 
 <screen>
-# Indsættes: Udskriv header
+# Indsættes: Udskriv hoved
 
 use POSIX qw(strftime);
 
@@ -356,7 +357,7 @@ print "Content-Type: text/html\r\n";
 print "Expires: ",$date,"\r\n";
 print "\r\n";
 
-#Her udføres resten af scriptet
+#Her udføres resten af programmet
 </screen>
 
 <para>
@@ -371,8 +372,8 @@ det, HTTP standarden forskriver.
 </para>
 
 <para>
-Mere information om headere kan findes i RFC 1945 og RFC 2068 dokumenterne,
-der definerer HTTP 1.0 og HTTP 1.1 protokollerne.
+Mere information om HTTP-hovedet kan findes i dokumenterne RFC 1945 og RFC 2068,
+der definerer HTTP 1.0- og HTTP 1.1-protokollerne.
 </para>
 
 </sect2><!-- cgi-headere -->
@@ -381,8 +382,8 @@ der definerer HTTP 1.0 og HTTP 1.1 protokollerne.
 <title>Omdirigering</title>
 
 <para>
-I mange situationer bruges et script til at sende browsereren en side
-som er dynamisk genereret. F.eks. kunne et script returnere
+I mange situationer bruges et program til at sende browsereren en side
+som er dynamisk genereret. F.eks. kunne et program returnere
 forskellige sider afhængig af hvilken browser, man bruger, hvilket
 tidspunkt af døgnet det er, bruger et tilfældigt baggrundsbillede
 og/eller varierer indhold alt efter hvilken IP-addresse, man har.
@@ -390,7 +391,7 @@ og/eller varierer indhold alt efter hvilken IP-addresse, man har.
 
 <para>
 Istedet for at returnere indholdet af filen eller outputtet af
-scriptet til browseren kan et script returnere en redirektion, der
+programmet til browseren kan et program returnere en redirektion, der
 fortæller browseren, at den skal finde indholdet på en anden URL. 
 </para>
 
@@ -409,7 +410,7 @@ DirectoryIndex index.htm index.html index.shtml index.cgi
 
 <para>
 Dvs. at <filename>index.cgi</filename> køres hvis ikke nogen af de
-andre indeks-filer kan findes i kataloget. Så gem følgende script som
+andre indeks-filer kan findes i kataloget. Så gem følgende program som
 <filename>index.cgi</filename> i et katalog med en masse HTML-filer,
 og hvor der ikke er nogen anden indeks-fil.
 </para>
@@ -422,7 +423,7 @@ og hvor der ikke er nogen anden indeks-fil.
 #dvs. samme katalog som index.cgi selv
 opendir DIR, "./" or die "Can't list directory /.!\n";
 
-#filtrer listen så den kun indeholder .html filer
+#filtrér listen så den kun indeholder <filename>.html</filename>-filer
 my @files = grep /\.html$/, readdir(DIR);
 
 #vælg tilfældigt index i listen
@@ -432,14 +433,14 @@ my $no=int rand($#files+1);
 print 'Location: ', $files[$no] ,"\r\n\r\n"; 
 </screen>
 
-<para>Scriptet vil finde alle <filename>.html</filename>-filer i samme
+<para>Programmet vil finde alle <filename>.html</filename>-filer i samme
 katalog, og udskrive en redirektion til en filfældig
 <filename>.html</filename>-fil.</para>
 
 <para>Den samme metode kan bruges til at returnere et tilfældigt
 baggrundbillede, hver gang en person besøger en side. Hvis der ligger
 en masse JPEG billeder i <filename>/baggrund</filename>-kataloget, kan
-ovenstående script gemmes i <filename>/baggrund</filename>-kataloget,
+ovenstående program gemmes i <filename>/baggrund</filename>-kataloget,
 og modificeres så '.html' ændres til '.jpeg', og HTML-koden for
 sider, der skal have en tilfældig baggrund er nu:</para>
 
@@ -450,7 +451,7 @@ sider, der skal have en tilfældig baggrund er nu:</para>
 <sect2 id="cgi-wf-get">
 <title>Webformularer (Get-metoden)</title>
 
-<para>CGI-scripts bruges også til at fortolke data, der bliver
+<para>CGI-programmer bruges også til at fortolke data, der bliver
 indtastet i webformularer på nettet. Følgende eksempel er en simpel
 HTML-formular, hvor man kan indtaste et navn og email adresse:
 </para>
@@ -477,13 +478,13 @@ I browseren vil det se ud som:
 <para>
 Når et navn og en email addresse er indtastet, og der trykkes på Submit
 knappen,  så vil browseren sende de indtastede data til webserveren, der
-starter get_metoden.cgi scriptet. Dataene overfører webserveren igennem
-environment variablen ved navn QUERY_STRING. (C/C++ scripts vil også modtage
+starter <command>get_metoden.cgi</command>. Dataene overfører webserveren igennem
+environment variablen ved navn QUERY_STRING. (C/C++ programmer vil også modtage
 dem igennem argv-tabellen).
 </para>
 
 <para>
-Gem følgende script som <filename>get_metoden.cgi</filename> i
+Gem følgende program som <filename>get_metoden.cgi</filename> i
 <filename>/home/httpd/cgi-bin</filename>:
 </para>
 
@@ -496,7 +497,7 @@ print $ENV{'QUERY_STRING'};
 
 <para>
 I eksemplet vist vil get_data.cgi udskrive
-"navn=Tux+Penguin&amp;email=Tux%40linux.org". Scriptet modtager altså data fra
+"navn=Tux+Penguin&amp;email=Tux%40linux.org". Programmet modtager altså data fra
 webformularen, men de ser lidt mystiske ud! Formattet af data er
 "variabel1=indtastning1&amp;variabel2=indtastning2&amp;..". Hvor variabel1 og
 variabel2 svarer til indeholdet af name feltet i HTML-koden (altså "navn" og
@@ -528,7 +529,7 @@ til mellemrum.
 </para>
 
 <para>
-Følgende Perl-script laver en URL-kodet streng om til en hashtabel
+Følgende Perl-program laver en URL-kodet streng om til en hashtabel
 <literal>%data</literal> af (variabelnavn->værdi)-par.
 </para>
 
@@ -607,7 +608,7 @@ Jeg modtog følgende data:
 </screen>
 
 <para>
-Istedet for at udskrive disse i browseren kunne scriptet tilføjes navn og
+Istedet for at udskrive disse i browseren kunne programmet tilføjes navn og
 email-addresse til en database eller en besøgsbog, sende en email til
 addressen, eller hvad nu man kan finde på.
 </para>
@@ -620,20 +621,20 @@ addressen, eller hvad nu man kan finde på.
 
 <para>
 Rent praktisk returnere get metoden data ved at konkatenere dem til URL'en
-til cgi scriptet afskildt af et spørgsmålstegn (se i browserens titel vindue).
+til CGI-programmet afskildt af et spørgsmålstegn (se i browserens titel vindue).
 Browseren sender så hele denne URL til webserveren. Get metoden har den fordel
-at man kan lave bogmærker med den side, som scriptet returnere på basis af de
+at man kan lave bogmærker med den side, som programmet returnere på basis af de
 indtastet data, dette bruges typisk til at bogmærker af søge resulteter når
 man bruger en søgemaskine. Hvis denne streng er meget lang risikere man at få
 et bufferoverflow i browseren eller visse webservere, der så vil crashe. En
 overgang kunne enhver Microsoft Internet Server version 4.0 hackes på den
-måde. Get metoden kan altså kun bruges til scripts hvor mindre end ca. 200
+måde. Get metoden kan altså kun bruges til programmer hvor mindre end ca. 200
 bytes skal returneres.
 </para>
 
 <para>
 Alternativt findes post metoden for at sende data tilbage til webserveren.
-Når et data Post'es så modtager CGI scriptet data på standard input, ligesom
+Når et data Post'es så modtager CGI-programmet data på standard input, ligesom
 data var indtastet på tastaturet, men de er stadig URLenkrypterede, og
 environment variablen CONTENT_LENGTH indeholder antallet af bytes der kan
 indlæses. Det har fordelen at meget store datamængder kan returneres uden
@@ -698,30 +699,30 @@ foreach (sort keys %data)
 
 <para>
 Post metoden kan modtage lige så store datamænger som man ønsker. Men
-antallet af scripts der kan kører parallelt og mængden af hukommelse på den
+antallet af programmer der kan kører parallelt og mængden af hukommelse på den
 computer de køre på sætter en grænse. I ovenstående eksempel er grænsen sat
-ved 10kb. Hvis en browser forsøger at sende flere data vil CGI-scriptet
-returnere en fejl til browseren, scriptet vil så dø efter at havde gemt en
-diagnostisk tekst i webserverens error log, den diagnostiske tekst indeholder
+ved 10kb. Hvis en browser forsøger at sende flere data vil CGI-programmet
+returnere en fejl til browseren, programmet vil så dø efter at havde gemt en
+diagnostisk tekst i webserverens fejllog, den diagnostiske tekst indeholder
 $ENV{'REMOTE_ADDR'}, hvilket er IP addressen på den computer der har submittet
 et for stort svar. Det følgende afsnit forklarer hvilke andre data et
-CGI-script modtager.
+CGI-program modtager.
 </para>
 
 </sect2>
 
 <sect2 id="cgi-info">
-<title>Information tilgængelig for et CGI-script</title>
+<title>Information tilgængelig for et CGI-program</title>
 
 <para>
-Når et script udføres, så modtager det information om browserens IP address
-(typisk ikke dens DNS navn), og browserens navn og version. Kun hvis scripte
-befinder sig i et password beskyttet katalog kan man få information om
+Når et program udføres, så modtager det information om browserens IP address
+(typisk ikke dens DNS navn), og browserens navn og version. Kun hvis programet
+befinder sig i et adgangskodebeskyttet katalog kan man få information om
 brugeren, der har indtastet data.
 </para>
 
 <para>
-I HTML-koden der kalder scriptet kan der også indlejres information
+I HTML-koden der kalder programmet kan der også indlejres information
 f.eks.:
 </para>
 
@@ -730,34 +731,34 @@ f.eks.:
 </screen>
 
 <para>
-Hvis HTML-koden til en webformular udskrives af et script, og det script
-ønsker at overføre information til det script der modtager de indtastede data,
+Hvis HTML-koden til en webformular udskrives af et program, og det program
+ønsker at overføre information til det program der modtager de indtastede data,
 så kan skjulte felter anvendes. Webbrowseren viser ikke disse felter for
-brugeren, og deres indhold returneres uændret til scriptet, der modtager de
-indtastede data. I det ovenstående eksempel vil scriptet modtage en variabel
+brugeren, og deres indhold returneres uændret til programmet, der modtager de
+indtastede data. I det ovenstående eksempel vil programmet modtage en variabel
 med navnet "hemmelig", der har indholdet "Jeg er en hemmelig streng".
 </para>
 
 <para>
-CGI-scripts kan også modtage en sti i environment variablen PATH_INFO, og
+CGI-programmer kan også modtage en sti i environment variablen PATH_INFO, og
 argumenter i QUERY_STRING. Disse kommer fra action=".." linien i HTML-koden
-for webformularen. Følgende er en rækker eksempler på hvordan et script kan
+for webformularen. Følgende er en rækker eksempler på hvordan et program kan
 kaldes fra HTML-koden i en webformular:
 </para>
 
 <table>
-  <title>URL til CGI-script</title>
+  <title>URL til CGI-program</title>
 <tgroup cols="2" align="char">
   <thead>
     <row>
-      <entry>URL til CGI-script</entry>
+      <entry>URL til CGI-program</entry>
       <entry>Forklaring</entry>
     </row>
   </thead>
   <tbody>
     <row>
       <entry>/cgi-bin/debug.cgi</entry>
-      <entry>Scriptet modtager ikke nogen kommando linie argumenter.</entry>
+      <entry>Programmet modtager ikke nogen kommandolinieargumenter.</entry>
     </row>
     <row>
       <entry>/cgi-bin/debug.cgi?arg1&amp;arg2&amp;arg3</entry>
@@ -778,8 +779,7 @@ kaldes fra HTML-koden i en webformular:
 </table>
 
 <para>
-Et eksempel på HTML-koden til en webformular der anvender kommando linie
-argumenter og skjulte variable:
+Et eksempel på HTML-koden til en webformular der anvender kommandolinieargumenter og skjulte variable:
 </para>
 
 <screen>
@@ -793,7 +793,7 @@ argumenter og skjulte variable:
 
 <para>
 Følgende er en liste af de mest interessante environment variable som
-CGI-scripts har til rådighed:
+CGI-programmer har til rådighed:
 </para>
 
 <table>
@@ -812,7 +812,7 @@ CGI-scripts har til rådighed:
     </row>
     <row>
       <entry>PATH_INFO</entry>
-      <entry>Indeholder stien script URLen i webformularens HTML-kode. I
+      <entry>Indeholder stien program URLen i webformularens HTML-kode. I
         eksemplet ovenover indeholder den "/foo/bar".</entry>
     </row>
     <row>
@@ -824,8 +824,8 @@ CGI-scripts har til rådighed:
     <row>
       <entry>QUERY_STRING</entry>
       <entry><para>Get metode: Indeholder URLenkrypted indtastningsdata.
-        Post metode: Indeholder argumenter efter '?' i URL'en til CGI
-        scriptet. I eksemplet ovenover indeholder den "Arg1&amp;Arg2"
+        Post metode: Indeholder argumenter efter '?' i URL'en til
+        CGI-programmet. I eksemplet ovenover indeholder den "Arg1&amp;Arg2"
       </para></entry>
     </row>
     <row>
@@ -876,7 +876,7 @@ CGI-scripts har til rådighed:
     </row>
     <row>
       <entry>REMOTE_USER</entry>
-      <entry>Hvis scriptet ligger i et kodeordsbeskyttet katalog, så indeholder
+      <entry>Hvis programmet ligger i et kodeordsbeskyttet katalog, så indeholder
         REMOTE_USER navnet som brugeren har indtastet sammen med sit kodeord.
         Det er ikke nok at kodeordsbeskytte den html side, der indeholder
         webformularen!</entry>
@@ -891,8 +891,9 @@ CGI-scripts har til rådighed:
 <title>Et udgangspunkt for CGI-programmer</title>
 
 <para>
-Det følgende echo.cgi script kan bruges som udgangspunkt for egne
-CGI-scripts og for at debugge webformularer. Det kan modtage både Get og Post
+Det følgende program, <command>echo.cgi</command>, kan bruges som
+udgangspunkt for egne
+CGI-programmer og for at debugge webformularer. Det kan modtage både Get og Post
 data, udskriver alle de data det modtager.
 </para>
 
@@ -963,54 +964,54 @@ Apache returnerer "Not Found":
 </para>
 
 <para>
-Årsagen er at Apache ikke kan finde CGI-scriptet.
+Årsagen er at Apache ikke kan finde CGI-programmet.
 </para>
 
 <para>
 Hvis URL'en indeholder <filename>/cgi-bin/</filename> kan fejlen være
-at du ikke har tilladt cgi-scripts i
+at du ikke har tilladt cgi-programmer i
 <filename>/etc/httpd/conf/httpd.conf</filename>.</para>
 
 <para>Apache returnerer "Forbidden":</para>
 
-<para>Årsagen er, at Apache ikke kan udføre scriptet.</para>
+<para>Årsagen er, at Apache ikke kan udføre programmet.</para>
 
 <para>Problemet skyldes "Option ExecCGI"  ikke er slået til for det katalog som
-CGI-scriptet ligger i, dette gøres i access.conf. Alternativt kan fejlen
-skyldes at Apache ikke har lov til at udføre scriptet, det kan typisk kan det
-løses ved "chmod o+rx script.cgi".</para>
+CGI-programmet ligger i, dette gøres i access.conf. Alternativt kan fejlen
+skyldes at Apache ikke har lov til at udføre programmet, det kan typisk kan det
+løses ved "chmod o+rx program.cgi".</para>
 
 <para>Apache returnere "Internal Server Error"</para>
 
-<para>Denne fejl betyder at det første der udskrives ikke er en
-korrekt formateret header. Fejlen kan jo også have andre
+<para>Denne fejl betyder at det første der udskrives ikke er et
+korrekt formateret HTTP-hoved. Fejlen kan jo også have andre
 årsager. 
 </para>
 
-<para>Stderr og stdout output fra Perl-scripts kan findes i
-webserverens error log ofte lokaliseret i
+<para>Stderr og stdout output fra Perl-programmer kan findes i
+webserverens fejllog ofte lokaliseret i
 <filename>/var/log/httpd/error_log</filename>, og det gør det let at
-løse denne type fejl. Et hurtigt syntaks check er at køre cgi-scriptet
-på kommando linien og se om der kommer syntaks fejl.</para>
+løse denne type fejl. Et hurtigt syntakscheck er at køre CGI-programmet
+på kommandolinien og se om der kommer syntaks fejl.</para>
 
-<para>En anden mulighed er at Apache ikke har rettigheder til at læse scriptet,
-det kan typisk kan løses med "chmod o+r script.cgi", denne type fejl bliver
-også logged i error_log. Tager Perl scriptet for lang tid at udføre vil en
+<para>En anden mulighed er at Apache ikke har rettigheder til at læse programmet,
+det kan typisk kan løses med "chmod o+r program.cgi", denne type fejl bliver
+også logged i error_log. Tager Perl-programmet for lang tid at udføre vil en
 timeout af webserveren også returnere denne fejl.</para>
 
-<para>Fejlen kan også opstå hvis Perl fortolkeren ikke ligger i
+<para>Fejlen kan også opstå hvis Perl-fortolkeren ikke ligger i
 <filename>#!/usr/bin/perl</filename>, hvilket er en meget lumsk fejl
-fordi når man kører scriptet vil den svare <literal>script.cgi:
-command not found</literal> (tcsh) eller <literal>bash: script.cgi: No
-such file or directory</literal>, scriptet findes og udføres, fejlen
+fordi når man kører programmet vil den svare <literal>program.cgi:
+command not found</literal> (tcsh) eller <literal>bash: program.cgi: No
+such file or directory</literal>, programmet findes og udføres, fejlen
 skyldes at den ikke kan finde fortolkeren.</para>
 
 <para>Browseren viser en <literal>The document contained no
-data.</literal>.  Denne fejl kommer hvis scriptet kun udskriver
-headers, typisk sker der en fejl i scriptet så det dør, og udskriver
-en fejl i Apache's error log, men undlader at printer en fejl først
-der kan vises i browseren. Istedet for die kan følgende kode stump
-bruges hvis man i forvejen har udskrevet headers ($!  er fejl teksten
+data.</literal>.  Denne fejl kommer hvis programmet kun udskriver
+HTTP-hovedet. Typisk sker der en fejl i programmet så det dør, og udskriver
+en fejl i Apaches fejllog, men undlader at printer en fejl først
+der kan vises i browseren. Istedet for die kan følgende stump kode
+bruges hvis man i forvejen har udskrevet HTTP-hovedet ($!  er fejlteksten
 svarende til sidste fejl):</para>
 
 <screen>
@@ -1022,77 +1023,77 @@ sub Fejl
 }
 </screen>
 
-<para>CGI-script situationer, der typisk giver fejl:</para>
+<para>CGI-program situationer, der typisk giver fejl:</para>
 
-<para>Scripts køres af webserveren og ikke af dig. Typisk er webserver
+<para>Programmer køres af webserveren og ikke af dig. Typisk er webserver
 processen eget af bruger 'nobody' og group 'nobody', hvilket betyder at
-scriptet skal have være udførbart og læsbart hvilket gøres med
-<command>chmod o+rx script.cgi</command>.</para>
+programmet skal have være udførbart og læsbart hvilket gøres med
+<command>chmod o+rx program.cgi</command>.</para>
 
-<para>Hvis scriptet skal gemme en fil i et katalog som du ejer, så
+<para>Hvis programmet skal gemme en fil i et katalog som du ejer, så
 skal det kataloget være skrivebart af webserveren, det betyder at
 katalogets mode skal være executable, readable og writable for at
-CGI-scriptet kan gemme en fil i det. (<command>chmod o+rwx
+CGI-programmet kan gemme en fil i det. (<command>chmod o+rwx
 katalog</command>). Hvis man ikke vil give alle og enhver adgang til
 at gemme filer i det katalog kan man bruge suExec som forklaret i
 afsnittet om sikkerhedsaspekter.</para>
 </sect2>
 
 <sect2 id="cgi-debug">
-<title>Debugging af CGI-scripts</title>
+<title>Debugging af CGI-programmer</title>
 
-<para>Der opstår fejl i alle programmer. CGI-scripts er dog mere besværlige at
+<para>Der opstår fejl i alle programmer. CGI-programmer er dog mere besværlige at
 debugge fordi de typisk skal køres fra en browser med et korrekt form input
 for at generere en bestemt fejl, der typisk viser sig som en "Internal Server
 Error" eller "The document contained no data."  i browseren. Og problemet er
 nu at finde fejlen.</para>
 
 <para>
-Alt tekst der udskrives til stderr vil udskrives i Apache's error log. Dvs.
+Alt tekst der udskrives til stderr vil udskrives i Apaches fejllog. Dvs.
 opstår der en fejl i programmet og det udføre en die "Fatal error occured!",
 så vil der ikke udskrives nogen information til browseren men "tail 
-/var/log/httpd/error_log" vil udskrive fejl meddelelsen. Det er derfor
+/var/log/httpd/error_log" vil udskrive fejlmeddelelsen. Det er derfor
 praktisk at udskrive en fejl med print før at die kaldes, så fejlen kan ses i
 browseren.
 </para>
 
 <para>
-Den hurtigste måde at debugge et lille script på er at indsætte
+Den hurtigste måde at debugge et lille program på er at indsætte
 print-linjer på passende steder i koden, gerne med en informativ
 besked om, hvad koden skal til at udføre ('Åbner forbindelse til
 databasen...'), eller hvad den netop har konstateret ('Der blev
 angivet en email-adresse, sender nu mail...'). (Det hænder dog, at et 
-script er blevet debugget med kortere og knap så informative beskeder,
+program er blevet debugget med kortere og knap så informative beskeder,
 så som 'A' og 'ghjk'.)
 </para>
 
 <para>
-Men er Perl-scriptet meget stort eller komplekst kan det tage en
-del tid at finde fejlen ved at genstarte scriptet gang på gang. Det er
+Men er Perl-programmet meget stort eller komplekst kan det tage en
+del tid at finde fejlen ved at genstarte programmet gang på gang. Det er
 istedet mulig at fange input data og gemme dem i på harddisken, og så
-senere hente %data og %ENV hashes fra harddisken. CGI-scriptet kan så
+senere hente %data og %ENV hashes fra harddisken. CGI-programmet kan så
 køres i en debugger men med de samme data og environment variable, som
 hvis det blev kørt af en webserver.  Bemærk at det ikke køres med
 samme bruger og gruppe id!
 </para>
 
 <para>
-Den følgende stump Perl-kode kan bruges til at debugge CGI-scripts med. Den
-anvender de funktioner der er erklæret i "Et udgangspunkt for et CGI-script"
-afsnittet. Køres scriptet med $debug=0 vil det indlæse webformular data fra
+Den følgende stump Perl-kode kan bruges til at debugge CGI-programmer med. Den
+anvender de funktioner der er erklæret i "Et udgangspunkt for et CGI-program"
+afsnittet. Køres programmet med $debug=0 vil det indlæse webformular data fra
 get eller post metoden og fortsætte, altså uden at der sker noget.
 </para>
 
 <para> 
-Køres scriptet med $debug=1 og $gemdata=1 vil det indlæse
+Køres programmet med $debug=1 og $gemdata=1 vil det indlæse
 webformular data og gemme dem i to filer. %data gemmes i en fil ved
 navn "grab.var", og environment variabler %ENV i en fil med navn
-"grab.env", scriptet vil så stoppe.
+"grab.env", programmet vil så stoppe.
 </para>
 
 <para>
-Køres scriptet bagefter med $debug=1 og $gemdata=0 vil programmet
-genoprette %data og %ENV, som da scriptet kørte første gang og det vil så på
+Køres programmet bagefter med $debug=1 og $gemdata=0 vil programmet
+genoprette %data og %ENV, som da programmet kørte første gang og det vil så på
 en reproducibel måde behandle data, men med den fordel at dette kan ske på
 kommandolinien eller i en debugger. De to filer er formateret i en syntaks, der
 ligner XML så det er også let at lave ændringer i datafilerne.
@@ -1204,10 +1205,10 @@ if ($isDebug)
         GemHash(\%ENV, ">".$filename.".env");
         GemHash(\%data,">".$filename.".var");
 
-#udskriv og stop scriptet når data er gemt.
+#udskriv og stop programmet når data er gemt.
         print "Content-Type: text/plain\r\n\r\n";
         print "Data er opsamlet og gemt i \"$filename.*\".";
-        print "Sæt \$grabdata=0 og kør scriptet i en debugger\n";
+        print "Sæt \$grabdata=0 og kør programmet i en debugger\n";
         die;
      }
   else
@@ -1219,7 +1220,7 @@ if ($isDebug)
         HentHash(\%ENV,  $filename.".env");
         HentHash(\%data, $filename.".var");
 
-#fortsæt cgi programmet.
+#fortsæt CGI-programmet.
      }
 }
 
@@ -1227,17 +1228,17 @@ if ($isDebug)
 #Her behandles webformular data.
 </screen>
 
-<para>Hvis scriptet er skrevet i C eller C++ har man den mulighed at man kan
-debugge script processen mens det kører. Dette gøres ved at oversætte
+<para>Hvis programmet er skrevet i C eller C++ har man den mulighed at man kan
+debugge program processen mens det kører. Dette gøres ved at oversætte
 programmet med en option "-ggdb" for inkludere debug information, og indsætte
 en sleep(30) i starten af programmet (kræver unistd.h). Før programmet kører
 su'er man til webserver brugeren. Når man trykker Submit vil programmet pause
-i 30 sekunder, i den tid kan man udføre "ps aux | grep script.cgi" her kan man
-se scriptets process nummer og så udføre "ddd script.cgi &lt;pid>" hvor
-&lt;pid> er process nummeret man fik fra ps kommandoen. Man kan så single
-steppe scriptet som det modtager, bearbejder og udskriver data. Dette trick
-virker desværre ikke med Java, Pyton og Perl programmer da disse jdb, pydb og
-perl debuggere ikke kan debugge en kørende process. Og det kræver at man har
+i 30 sekunder, i den tid kan man udføre "ps aux | grep program.cgi" her kan man
+se programmets procesnummer og så udføre "ddd program.cgi &lt;pid>" hvor
+&lt;pid> er procesnummeret man fik fra <command>ps</command>-kommandoen. Man kan så single
+steppe programmet som det modtager, bearbejder og udskriver data. Dette trick
+virker desværre ikke med Java-, Pyton- og Perl-programmer da disse jdb, pydb og
+Perl-debuggere ikke kan debugge en kørende process. Og det kræver at man har
 nok rettigheder til at kunne attache til webserverens process.</para>
 
 </sect2>
@@ -1245,13 +1246,13 @@ nok rettigheder til at kunne attache til webserverens process.</para>
 <sect2 id="cgi-sikkerhed">
 <title>Sikkerhedsaspekter</title>
 
-<para>CGI-scripts modtager data fra en tvivelsom kilde, og kan bruge disse data
+<para>CGI-programmer modtager data fra en tvivelsom kilde, og kan bruge disse data
 som basis for hvilken som helst operation. I eksemplet der modtog data vha.
 post metoden blev problematikken omkring meget store datamængder omtalt, og
-koden der blev vist kan automatisk begrænse mængden af data scriptet vil
+koden der blev vist kan automatisk begrænse mængden af data programmet vil
 acceptere.</para>
 
-<para>Og i afsnittet de data der var tilgængelig til et script blev skjulte
+<para>Og i afsnittet de data der var tilgængelig til et program blev skjulte
 variable præsenteret som en sikker måde at overføre skjult information i en
 webformular, men enhver kan i HTML-koden se at der er skjulte variable, og det
 er en let sag at ændre de skjulte variable (gem HTML-koden, ret i de skjulte
@@ -1267,14 +1268,14 @@ problem.</para>
 <para>En typisk problem kan være at data fra en webformular kan bruges som
 filnavn til at gemme information, og derfor overskrive filer der ikke burde
 overskrives, det bør derfor altid checkes om filen findes i forvejen, og hvad
-der så skal ske. Istedet for et filnavn kan scriptet måske snydes til at
+der så skal ske. Istedet for et filnavn kan programmet måske snydes til at
 anvende en pipe istedet "|program", det betyder at det programmet tror at det
 gemmer i en fil bliver brugt som input i en pipe til at udføre en arbitrær
 kommando.</para>
 
 <para>Det kan også være farligt at udskrive for meget information om den server
-som scriptet kører på, siden at den type information kan misbruges af hackere.
-Det følgende kode stump indeholder to sikkerhedsfejl:</para>
+som programmet kører på, siden at den type information kan misbruges af hackere.
+Det følgende stump kode indeholder to sikkerhedsfejl:</para>
 
 <screen>
 #$filnavn er navnet på en fil og er indtastet i en webformular.
@@ -1286,14 +1287,14 @@ my $fil = "/www/filer/$filnavn";
 
 <para>
 Indtastes nu <filename>../../etc/passwd</filename> som filnavn i webformularen,
-så vil scriptet vise alle brugere på serveren og deres deres enkrypterede
+så vil programmet vise alle brugere på serveren og deres deres enkrypterede
 passwords (med mindre shadow password bruges), og den information er
 tilgængelig for enhver på nettet. En hacker kunne så på sin egen computer lave
 et brute force angreb ved at  prøve en masse passwords igennem, indtil at han
 rammer et password der giver det enkrypteret password, som det i password
-filen. Han kan så logge ind på serveren hvor CGI-scriptet udføres. Moralen er
+filen. Han kan så logge ind på serveren hvor CGI-programmet udføres. Moralen er
 at alle filnavne skal checkes for at sikre sig at de ikke indeholder katalog
-information. En anden fejl er at scriptet selv udskriver siden, det betyder at
+information. En anden fejl er at programmet selv udskriver siden, det betyder at
 webserverens adgangskontrol til sider bliver tilside sat. Den følgende kode
 stump checker om filnavnet indeholder '/' og istedet for at udskrive filen
 udskrives en Location til filen. På den måde virker Apaches adgangskontrol og
@@ -1313,7 +1314,7 @@ my $fil = "/filer/$filnavn";
 Specielt farlige er de tre perl kommandoer eval, exec og system der gør det
 muligt at udføre programmer, der kører med samme rettigheder som Apache
 webserveren. System ved at der startes en shell (/bin/sh) og at denne modtager
-en streng af kommandoer, der skal udføres. Følgende script udskriver hvilke
+en streng af kommandoer, der skal udføres. Følgende program udskriver hvilke
 processer en bestemt bruger køre og indeholder en bagdør til webserver
 kontoen.</para>
 
@@ -1329,11 +1330,11 @@ serveren, det giver en ide om hvilke sikkerhedshuller der kan anvendes på
 serveren. Men som om det ikke var nok så kan enhver indtaste "<command>daisy ; r,
 -rf /</command>" i webformularen.</para>
 
-<para>Sker dette vil scriptet udfører "<command>ps aux | grep daisy ; rm -rf
-/</command>", hviket betyder at scriptet efter at havde udskrivet alle daisy's
+<para>Sker dette vil programmet udfører "<command>ps aux | grep daisy ; rm -rf
+/</command>", hviket betyder at programmet efter at havde udskrivet alle daisy's
 processer vil fortsætter med at rekursivt slette alle filer på filsystemet.
 Typisk vil webdeamonen kun have adgang til at slette alle webfiler, og de data
-som andre CGI-scripts har gemt. Men det kan være slemt nok hvis serveren er en
+som andre CGI-programmer har gemt. Men det kan være slemt nok hvis serveren er en
 dedikeret webserver for et firma. Alternativt kunne en indtastning
 "<command>daisy ; ls -la /home/</command>" udskrive alle hjemmekataloger og deres
 adgangsrettigheder. Hvis der er et hjemmekatalog, der er læsbart for
@@ -1343,14 +1344,14 @@ fil og hackeren kan skrive til den, vil han kunne logge ind som den bruger
 uden password fra en vilkårlig server i verden. Hackeren ville også kunne
 udsende emails, der tilsyneladende kommer fra webserveren.</para>
 
-<para>Men det er stadig kun småting en hacker kan med dette simple script oploade
+<para>Men det er stadig kun småting en hacker kan med dette simple program oploade
 en terminal server (f.eks. netcat), oversætte den og køre den, således at han
 kunne logge ind på webserveren med samme rettigheder som webserveren og uden
 noget password. Og når en hacker har adgang til at køre vilkårlige kommandoer
 kunne han checker versionsnumre på alle deamons og sammenligne disse med
 kendte sikkerhedsfejl indtil han finder en bagdør til root kontoen.</para>
 
-<para>Derfor bør man i et CGI-script altid undgå exec og system kommandoer. Med
+<para>Derfor bør man i et CGI-program altid undgå exec og system kommandoer. Med
 eval kan ethvert perl udtryk udføres, dvs. ethvert perl udtryk der åbner
 filer, sletter filer, udfører system eller exec. Det er derfor umuligt at
 checke at et eval udtryk ikke indeholder farlige kommandoer.</para>
@@ -1362,10 +1363,11 @@ checke at et eval udtryk ikke indeholder farlige kommandoer.</para>
 der kommer fra farlige kilder (en farlig variabel kaldes "tainted" der betyder
 noget i retning af mærket/beskidt/usikker), en environment strenge, input, og
 output som andre programmer laver er automatisk tainted. Bruges en tainted
-variabel som filnavn eller som argument i exec eller system kald, vil perl
-automatisk stoppe med en fejl. Tainted variable slås til ved at kalde perl som
-"#/usr/bin/perl -T" og de slås automatisk til hvis scriptet er setuid dvs.
-"<command>chmod ug+s script.cgi</command>", således at scriptet kan køres af
+variabel som filnavn eller som argument i exec eller system kald, vil
+Perl automatisk stoppe med en fejl. Tainted variable slås til ved at kalde
+Perl som
+"#/usr/bin/perl -T" og de slås automatisk til hvis programmet er setuid dvs.
+"<command>chmod ug+s program.cgi</command>", således at programmet kan køres af
 webserveren med dine rettigheder.</para>
 
 <para>Hvis man tager en delstreng ud af en tainted streng vil delstrengen også
@@ -1405,34 +1407,36 @@ system("ps aux | grep $user");
 #da $user er untainted generere dette ikke en fejl.
 </screen>
 
-<para>Hvis flere bruger skal have adgang til at køre scripts på den samme
+<para>Hvis flere bruger skal have adgang til at køre programmer på den samme
 webserver, så kan det være praktisk at anvende suEXEC (Swich User for Exec).
-suEXEC er et add-on til Apache, der tillader CGI-scripts at køre med samme
-rettigheder som den individuelle bruger, der har lavet scriptet istedet for
-som webserveren. Det er langt sikrere end at setuid'e scriptet med
-"<command>chmod ug+s script.cgi</command>", men kræver også at det bliver korrekt
+suEXEC er et add-on til Apache, der tillader CGI-programmer at køre med samme
+rettigheder som den individuelle bruger, der har lavet programmet istedet for
+som webserveren. Det er langt sikrere end at setuid'e programmet med
+"<command>chmod ug+s program.cgi</command>", men kræver også at det bliver korrekt
 sat op for at undgå sikkerhedshuller og Apache genoversættes, det er
 derfor ikke inkluderet i den Apache version der normalt distribueres.
 Dokumentation hvordan Apache genoversættes med suEXEC indbygget er inkluderet i
 Apache dokumentationen og kan findes i /home/httpd/html/manual/suexec.html.
 suEXEC giver også mulighed for at hver bruger har sin egen error_log fil
-hvilket letter debugging af scripts.</para>
+hvilket letter debugging af programmer.</para>
 
 </sect3>
 </sect2>
 
-<sect2 id="cgi-fast">
-<title>FastCGI</title>
+ <sect2 id="cgi-fast">
+  <title>FastCGI</title>
 
-<para>En ulempe ved perl CGI-scripts er at hver gang de køres så skal perl
-fortolkeren starte og den skal fortolke den samme perl kode igen og igen, og
-det tager en del tid hvilket kan være upraktisk hvis skriptet skal køres mange
-gange i sekunded.</para>
+  <para>
+   En ulempe ved at skriver CGI-programmer i Perl er at hver gang de køres
+   skal Perl-fortolkeren starte og den skal fortolke den samme Perl-kode igen
+   og igen, og det tager en del tid hvilket kan være upraktisk hvis programmet
+   skal køres mange gange i sekunded.
+  </para>
 
-<para>Bedre ville det være hvis CGI-scriptet kørte hele tiden, og kunne modtage
+<para>Bedre ville det være hvis CGI-programmet kørte hele tiden, og kunne modtage
 mange data uden at skulle genstartes. Dette er hvad fastCGI gør muligt ved at
 definere en protokol for hvordan en process kan kommunikere med webserveren's
-cgi modul.</para>
+CGI-modul.</para>
 
 <sect3 id="cgi-fast-inst">
 <title>Installation af FastCGI</title>
@@ -1468,8 +1472,8 @@ dynamiske bibliotek er korrekt.</para>
 <para>Apache webserveren understøtter nu fastCGI protokollen.</para>
 
 <para>På <ulink url="http://www.cpan.org">http://www.cpan.org</ulink> kan man hente
-et FCGI modul der tillader perl programmer at anvende fastCGI modulet. Perl
-modulet som andre perl moduler med:</para>
+et FCGI-modul der tillader Perl-programmer at anvende fastCGI-modulet.
+Perl-modulet som andre Perl-moduler med:</para>
 
 <screen>
 tar -zxvf FCGI-0.53.tar.gz
@@ -1484,7 +1488,7 @@ make install
 <sect3 id="cgi-fast-use">
 <title>Brug af FastCGI</title>
 
-<para>Gem følgende script som fastcgi_test.fcgi og kør det flere gange i
+<para>Gem følgende program som fastcgi_test.fcgi og kør det flere gange i
 browseren.</para>
 
 <screen>
@@ -1500,23 +1504,23 @@ while($request::accept() >= 0)
 {
    print "Content-Type: text/html\r\n\r\n";
    print "&lt;h1&gt;FastCGI test&lt;/h1&gt;\n";
-   print "&lt;p&gt;Antal af forbindelser for dette script: ++$count&lt;/p&gt;\n";
+   print "&lt;p&gt;Antal af forbindelser for dette program: ++$count&lt;/p&gt;\n";
 
-#her kan resten af cgi scriptet udføres.
+#her kan resten af CGI-programmet udføres.
 }
 </screen>
 
-<para>Det specielle ved FastCGI scripts er at de kan huske tidligere
-forbindelser. $count i eksemplet tælles op for hver gang scriptet modtager en
-forbindelse. Efter at fcgi scriptet er udført kan man med "ps aux | grep perl"
+<para>Det specielle ved FastCGI-programmer er at de kan huske tidligere
+forbindelser. $count i eksemplet tælles op for hver gang programmet modtager en
+forbindelse. Efter at fcgi-programmet er udført kan man med "ps aux | grep perl"
 se at det venter på næste gang det skal modtage data. En forskel på FastCGI og
-normale perl scripts er at perl scripts løbende udskriver print bufferen til
-webserveren, mens FastCGI scripts kun returnere data når de afsluttes, eller
+normale Perl-programmer er at Perl-programmer løbende udskriver print bufferen til
+webserveren, mens FastCGI-programmer kun returnere data når de afsluttes, eller
 hvis bufferen flushes med $request->Flush().</para>
 
-<para>Hvis man ændrer Perl-koden, og prøver scriptet igen skal man være opmærksom
-på at man kan fælde et antal af gamle fcgi scripts, der må dræbes manuelt med
-"kill &lt;pid>". FastCGI scripts kan også laves i C og Tcl se <ulink url="http://www.fastcgi.com">http://www.fastcgi.com</ulink> for mere
+<para>Hvis man ændrer Perl-koden, og prøver programmet igen skal man være opmærksom
+på at man kan fælde et antal af gamle fcgi-programmer, der må dræbes manuelt med
+"kill &lt;pid>". FastCGI-programmer kan også laves i C og Tcl se <ulink url="http://www.fastcgi.com">http://www.fastcgi.com</ulink> for mere
 dokumentation om protokollen og hvordan den anvendes.</para>
 
 </sect3>
