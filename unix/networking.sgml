@@ -1131,6 +1131,165 @@ de smides ud.
 </para>
 </sect2>
 
+<sect2 id="procmail">
+<title>Sortering af e-breve med procmail</title>
+<indexterm><primary>procmail</primary></indexterm>
+<para>
+Hvis du får mange e-breve ind pr. dag, så vil du nok hurtigt lave
+forskellige foldere til forskellige emner. F.eks. kan du lave en
+folder til hver af de diskussionslister på SSLUG, som du deltager i.
+Et program, som du kan have meget glæde af, er
+<command>procmail</command>, der kan sortere e-breve automatisk ned
+til de e-post-foldere, du har oprettet. Henter du breve med fetchmail,
+så kan procmail lave sorteringen ud fra konfigurationsfilen
+<filename>~/.procmailrc</filename>.  I eksemplet har vi post liggende
+i <filename>~/mail</filename>-kataloget, og herunder har vi
+forskellige filer som er brevfoldere.
+</para>
+
+<programlisting>
+PATH=$HOME/bin:/usr/bin:/bin:/usr/local/bin:.
+MAILDIR=$HOME/mail      # Her _skal_ procmail kunne aflevere din mail.
+DEFAULT=$MAILDIR/mbox   # Forvalgt folder til af aflevere e-breve i
+LOGFILE=$MAILDIR/.from   # Her gemmer vi en log over hvilke e-breve der kom
+LOCKFILE=$HOME/.lockmail  # Fil til at lave lås med.
+
+# REJECT: sikkert spam e-post
+# Filen ~/.procmailrc.spam indeholder da regexps der 
+# matches på brevets headere.
+# I ~/.procmailrc.spam kan således indsættes linjer
+# ^Subject: .*(\$\$|sex|adult|offer)
+# som matcher det du vil slippe for. E-post, der
+# fanges af reglen gemmes i spam post-mappen
+:0
+* ? egrep -q -f $HOME/.procmailrc.spam
+spam
+
+# Første liste er mgp-listen for Magic Point programmet
+# Vi tjekker efter To eller Cc feltet er til listen mgp-users@mew.org
+# og gemmer i ~/mail/mgp
+:0
+*^(To:|Cc:).*mgp-users@mew.org
+mgp 
+
+# Dernæst har vi sslug-teknik som altid sætter "Reply-To" feltet
+:0
+*^Reply-To:.sslug-teknik@sslug.dk
+sslug-teknik
+
+# Alle breve fra brugere @imm.dtu.dk gemmer vi i IMM-folderen
+:0
+*^From:.*@imm.dtu.dk
+IMM
+
+# Vi kan også gemme en ekstra kopi af breve - dvs. brevet bliver 
+# også processeret af de efterfølgende regler.
+# Kommer der et e-brev fra statsministeren stm@stm.dk så gemmer vi lige
+# en ekstra kopi i stats-folderen
+:0c
+*^From:.*stm@stm.dk
+stats
+
+# Endelig kan vi faktisk også udføre kommandoer via mail
+# Her lader vi e-breve med emnet EJECT udføre kommandoen eject
+# og da det kun er en kopi vi udtager, så vil brevet også gå til 
+# det forvalgte brevfolder.
+
+:0c
+*^Subject:.eject
+|/usr/bin/eject      
+
+# Alle andre mails ender i default mail folderen. 
+</programlisting>
+
+<para>
+En langt mere restriktiv <filename>.procmailrc</filename>-fil kan være 
+</para>
+
+<programlisting>
+PATH=$HOME/bin:/usr/bin:/bin:/usr/local/bin:.
+MAILDIR=$HOME/mail      # Her _skal_ procmail kunne aflevere din e-post.
+DEFAULT=$MAILDIR/mbox   # Default folder til at aflevere ebreve i
+LOGFILE=$MAILDIR/.from   # Her gemmer vi en log over hvilke ebreve der kom
+LOCKFILE=$HOME/.lockmail  # Fil til at lave lås med.
+
+:0
+* ? egrep -q -f $HOME/.procmailrc.allow
+$DEFAULT
+
+:0
+spam
+</programlisting>
+
+<para>
+Alt gemmes i spam-folderen medmindre det er tilladt ved tjek i
+forhold til filen <filename>~/.procmailrc.allow</filename>. Denne fil 
+indeholder f.eks.
+</para>
+
+<programlisting>
+^((Resent-)?(To|Cc|Bcc|From)): .*(anne|root|.*master)@sslug\.dk
+^From: freshmeat daemon &lt;freshd@freshmeat\.net&gt;$
+^Sender: Security Portal Mailing List
+^Mailing-List: contact sslug-.*@sslug.dk
+^To: apacheweek@apacheweek\.com$
+^Delivered-To: mailing list announce@apache\.org
+</programlisting>
+
+<para>
+I dette tilfælde er det kun e-post til anne@sslug.dk (tilsvarende
+også root og postmaster), og de e-post-lister, som brugeren anne kender, der
+ender i <filename>$MAILDIR/mbox</filename> - alt andet ender i
+spam-folderen. Det kan anbefales at checke sin spam-folder fra tid til
+anden for at være sikker på at e-post ikke er gået galt i
+procmail-reglerne. Er du helt sikker på dine spam-regler, så kan du
+sende mail direkte til <filename>/dev/null</filename> i stedet for
+spam-folderen.
+</para>
+
+<para>
+Procmail er guld værd, og <command>man procmail</command>, 
+<command>man procmailex</command> og
+<command>man procmailrc</command> er værd at
+læse. Du kan også være glad for at lave et alias <command>alias ms
+"mailstat ~/mail/.from"</command>, idet du så kan skrive
+<command>ms</command> efter at have kørt fetchmail, og du vil så få
+vist hvor mange breve og størrelsen af disse som er blevet fordelt til
+de forskellige foldere. 
+</para>
+
+<para>
+Et smart procmail-filter er følgende, som retter subject af
+brevet til en advarsel om et potentielt virus-angreb hvis attachment
+kan indeholde en virus.
+</para>
+
+<programlisting>
+:0
+* ^Content-type: (multipart/mixed|application/octet-stream)
+{
+    :0 HB
+    *  ^Content-Disposition: attachment;
+    *filename=.*\.(exe|vbs|shs|com|pif|bat|src|wfs|vbe|wsh|hta)
+    {
+        :0 fhw
+        | formail -i "Subject: Attachments kan indeholde virus !"
+    
+        :0:
+        $DEFAULT
+    }
+}
+</programlisting>
+
+<para>
+Der er under bogens eksempler på <ulink url="http://www.sslug.dk/linuxbog/unix/eksempler/procmail">http://www.sslug.dk/linuxbog/unix/eksempler/procmail</ulink> et meget stort eksempel på hvordan en <filename>.procmailrc</filename>-fil kan
+se ud hvis den skal filtrere en masse spam fra og samtidig sortere
+SSLUGs lister fornuftigt.
+</para>
+
+</sect2>
+
+
 <sect2 id="kryptopost">
 <title>Kryptering af post</title>
 <indexterm><primary>Kryptering</primary></indexterm>
