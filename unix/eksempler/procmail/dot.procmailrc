@@ -9,6 +9,54 @@ DEFAULT=$MAILDIR/mbox
 LOGFILE=$MAILDIR/.from
 LOCKFILE=$HOME/.lockmail
 
+########################################
+# Offentlige lukkede SSLUG postlister der er 
+# sikrede mod spam kommer først
+
+## Gemmer alt til sslug-LISTE@sslug.dk
+## i sslug/LISTE
+
+:0
+* Reply-To:.*sslug-\/.+@sslug\.dk
+{
+    LISTNAVN=$MATCH
+    :0:
+    * LISTNAVN ?? ^\/[^@]+
+    sslug/$MATCH
+}
+
+## To specielle lister
+
+:0
+*To:.sslug-announce@sslug.dk
+sslug/announce
+
+:0
+* ^(To|Cc):.*sslug-job@sslug.dk
+sslug/job
+
+######################################
+# Andre lister der er spam-sikrede
+
+:0
+*(To:|Cc:).*announce@openoffice.org  
+openoffice
+
+:0
+*(To|Cc).*linuxdk@sslug.dk
+linuxdk
+
+:0
+*To:.announce@opensource.dk
+opensource/announce
+
+:0
+*(To|Cc).misc@opensource.dk
+opensource/misc
+
+######################################
+# Spam-filtre
+
 :0
 * ^From:.*<_
 SKIDTPOST
@@ -68,20 +116,12 @@ SKIDTPOST
 *  (porn site|www.miscrosoft.com)
 SKIDTPOST
 
-:0 B
-* ^Content-type: .*ks_c_5601-1987
-SKIDTPOST
-
-:0
-* ^Content-type: .*charset=euc-kr
-SKIDTPOST
-
 :0
 * ^From:.+\<_.+\>
 SKIDTPOST
 
 :0
-* ^Subject:.*(waiting for your reply|INTERNET MARKETING|(sparre|jacob|andersen), (look at this|You never see this)|Laser Products|save [0-9]+[%]|now only \$|ks_c_5601-1987|Wall Street|Price Buster Clearance|no-spam|your sales|foreign residents|investment alert|earn money|naked girls|Security for your PC|Mortgage|green card|AFFORDABLE|Purchase Manager|FREE TEEN|TEEN HARDCORE|Feel Young|Fortune 500|urgent assistance|Financial Freedom|Maritime Newsletter|Exclusive offer|with.*better price|spam mail|foreign citizen|stockbroker|Just What Your Pet Asked For|Invest tip|health improvement formula|Are You Paying Too Much|CONGRATULATIONS|Stock market|Gov Grants Info|Boost The Reliability Of Windows|are.*you.*tired.*of|limited.*offer|Printer.*Cartridge|stock.*alert|An.*online.*greeting|double.*money|save \$|\$100|Offshore.*Free|get paid to|your number is|foreign investors|Receive Your Blessing|BlackJack|Reach Millions|Free Samples|mail.*Million|We've spent the last two years thinki|SPAM FREE|make.*\$|Windows Reliability|Nude teens|Stop Searching Start Earning|Stop begging lenders|Boost Your Cell|This Really Works|Incredible Pictures|Start Making MONEY Online Today|This is working for me|company profile|adult.*material|I Thought You Would Like To Know)
+* ^Subject:.*(waiting for your reply|INTERNET MARKETING|(sparre|jacob|andersen), (look at this|You never see this)|Laser Products|save [0-9]+[%]|now only \$|Wall Street|Price Buster Clearance|no-spam|your sales|foreign residents|investment alert|earn money|naked girls|Security for your PC|Mortgage|green card|AFFORDABLE|Purchase Manager|FREE TEEN|TEEN HARDCORE|Feel Young|Fortune 500|urgent assistance|Financial Freedom|Maritime Newsletter|Exclusive offer|with.*better price|spam mail|foreign citizen|stockbroker|Just What Your Pet Asked For|Invest tip|health improvement formula|Are You Paying Too Much|CONGRATULATIONS|Stock market|Gov Grants Info|Boost The Reliability Of Windows|are.*you.*tired.*of|limited.*offer|Printer.*Cartridge|stock.*alert|An.*online.*greeting|double.*money|save \$|\$100|Offshore.*Free|get paid to|your number is|foreign investors|Receive Your Blessing|BlackJack|Reach Millions|Free Samples|mail.*Million|We've spent the last two years thinki|SPAM FREE|make.*\$|Windows Reliability|Nude teens|Stop Searching Start Earning|Stop begging lenders|Boost Your Cell|This Really Works|Incredible Pictures|Start Making MONEY Online Today|This is working for me|company profile|adult.*material|I Thought You Would Like To Know)
 SKIDTPOST
 
 :0
@@ -145,22 +185,13 @@ SKIDTPOST
 :0
 *  ^(From|Sender):.*@aol[.]com
 * !^From:.*(LJKpublish|LJKnews|edboxer|thebliss.*)@aol[.]com
-* !^Delivered-To: mailing list sslug-(doc|prog|presse-dk|presse-se)@sslug.dk$
-* !^Delivered-To: mailing list sslug-(misc|pr|sikkerhed|teknik)@sslug[.]dk$
-* !^Delivered-To: mailing list sslug-(forening|perl|alpha|konference)@sslug.dk$
 * !^List-Post: <mailto:kde-i18n-doc@(master|mail)[.]kde[.]org>$
-* !^Sender: news-gateway@lugnet[.]com$
-* !^Subject: Re: (Space LEGO|Space Ship Ryu)$
-* !^X-BeenThere: leocad@gerf[.]org$
 * !^Mailing-List: list semanticweb@yahoogroups.com
 SKIDTPOST
 
 :0
 *  ^(From|Sender):.*@compuserve[.]com
 * !^From:.*(en-jeg-kender)@compuserve[.]com
-* !^Delivered-To: mailing list sslug-(doc|prog|presse-dk|presse-se)@sslug.dk$
-* !^Delivered-To: mailing list sslug-(misc|pr|sikkerhed|teknik)@sslug[.]dk$
-* !^Delivered-To: mailing list sslug-(forening|perl|alpha|konference)@sslug.dk$
 * !^List-Post: <mailto:kde-i18n-doc@(master|mail)[.]kde[.]org>$
 * !^Sender: news-gateway@lugnet[.]com$
 * !^Subject: Re: (Space LEGO|Space Ship Ryu)$
@@ -170,31 +201,18 @@ SKIDTPOST
 
 :0
 *  ^(From|Sender):.*@hotmail[.]com
-* !^From:.*(bgavnholt|bop|lotte_kristiansen_dkuug|gdemont|cc_bnf)@hotmail[.]com
-* !^From:.*(malcolm_hunter,malthe_j|mikkelmastrup2|shirid)@hotmail[.]com
-* !^From:.*(chris_w_dee|alex_farlie|legoverse|hhd9912|gyug)@hotmail[.]com
-* !^From:.*(thezimmermans|ninatange|pukaatiq|kees_merkx|dheyse)@hotmail[.]com
-* !^From:.*(ipp_kallenberg|anders_gerloeff|zac_soden)@hotmail[.]com
-* !^From:.*(williamsmartinez|kristiansenrie)@hotmail[.]com
-* !^Delivered-To: mailing list sslug-(doc|prog|presse-dk|presse-se)@sslug.dk$
-* !^Delivered-To: mailing list sslug-(misc|pr|sikkerhed|teknik)@sslug[.]dk$
-* !^Delivered-To: mailing list sslug-(forening|perl|alpha|konference)@sslug.dk$
 * !^List-Post: <mailto:kde-i18n-doc@(master|mail).kde.org>$
 * !^Sender: news-gateway@lugnet.com$
-* !^Subject: Re: (Space LEGO|Space Ship Ryu)$
 * !^X-BeenThere: leocad@gerf.org$
-* !^Mailing-List: list semanticweb@yahoogroups.com
 SKIDTPOST
 
+## Kvæler alt fra @mail.com - dog ikke 
+## EMAIL-ADRESSE-FRA-MAIL-DOT-COM-SOM-ER-OK@mail.com
 :0
 *  ^(From|Sender):.*@mail[.]com
-* !^From:.*(carolinesparre)@mail[.]com
-* !^Delivered-To: mailing list sslug-(doc|prog|presse-dk|presse-se)@sslug.dk$
-* !^Delivered-To: mailing list sslug-(misc|pr|sikkerhed|teknik)@sslug[.]dk$
-* !^Delivered-To: mailing list sslug-(forening|perl|alpha|konference)@sslug.dk$
+* !^From:.*(EMAIL-ADRESSE-FRA-MAIL-DOT-COM-SOM-ER-OK)@mail[.]com
 * !^List-Post: <mailto:kde-i18n-doc@(master|mail).kde.org>$
 * !^Sender: news-gateway@lugnet.com$
-* !^Subject: Re: (Space LEGO|Space Ship Ryu)$
 * !^X-BeenThere: leocad@gerf.org$
 * !^Mailing-List: list semanticweb@yahoogroups.com
 SKIDTPOST
@@ -203,10 +221,10 @@ SKIDTPOST
 * ^Received:.*krline.net
 SKIDTPOST
 
+## Alt med business er skidt - dog ikke hvis det handler også om lego 
 :0
 *  ^Subject:.*business
 * !^Subject:.*lego
-* !^From: tracerlock@tracerlock.com
 SKIDTPOST
 
 :0
@@ -225,126 +243,10 @@ SKIDTPOST
 * ^Subject:.*(MUST READ|IMPORTANT INFORMATION|FREE.*LEGALLY)
 SKIDTPOST
 
-
-:0
-* ^From: .*MAILER-DAEMON@sslug.dk
-SKIDTPOST
-
-########################################
-# Offentlige lukkede SSLUG postlister der er 
-# sikrede mod spam
-
-:0
-*To:.sslug-announce@sslug.dk
-sslug/announce
-
-:0
-*Reply-To:.*sslug-alpha@sslug.dk
-sslug/alpha
-
-:0
-*Reply-To:.*sslug-bog@sslug.dk
-sslug/bog
-
-:0
-*Reply-To:.*sslug-cvs2html@sslug.dk
-sslug/cvs
-
-:0
-*Reply-To:.sslug-demoday@sslug.dk
-sslug/demoday
-
-:0
-*Reply-To:.sslug-dok@sslug.dk
-sslug/dok
-
-:0
-*Reply-To:.*sslug-emacs@sslug.dk
-sslug/emacs
-
-:0
-*Reply-To:.*sslug-forening@sslug.dk
-sslug/forening
-
-:0
-*Reply-To:.sslug-grafik@sslug.dk
-sslug/grafik
-
-:0
-*Reply-To:.sslug-itpolitik@sslug.dk
-sslug/itpolitik
-
-:0
-* ^(To|Cc):.*sslug-job@sslug.dk
-sslug/job
-
-:0
-*Reply-To:.*sslug-konference@sslug.dk
-sslug/konference
-
-:0
-*Reply-To:.sslug-locale@sslug.dk
-sslug/locale
-
-:0
-*Reply-To:.*sslug-lokalt@sslug.dk
-sslug/lokalt
-
-:0
-*Reply-To:.sslug-misc@sslug.dk
-sslug/misc
-
-:0
-*Reply-To:.sslug-moede@sslug.dk
-sslug/moede
-
-:0
-*Reply-To:.sslug-netvaerk@sslug.dk
-sslug/netvaerk
-
-:0
-*Reply-To:.*sslug-novice@sslug.dk
-sslug/novice
-
-:0
-*Reply-To:.*sslug-perl@sslug.dk
-sslug/perl
-
-:0
-*Reply-To:.sslug-pr@sslug.dk
-sslug/pr
-
-:0
-*Reply-To:.*sslug-prog@sslug.dk
-sslug/prog
-
-:0
-*Reply-To:.*sslug-scicomp@sslug.dk
-sslug/scicomp
-
-:0
-*Reply-To:.*sslug-signatur@sslug.dk
-sslug/signatur
-
-:0
-*Reply-To:.sslug-sikkerhed@sslug.dk
-sslug/sikkerhed
-
-:0
-*Reply-To:.sslug-teknik@sslug.dk
-sslug/teknik
-
-:0
-*Reply-To:.*sslug-uddannelse@sslug.dk
-sslug/uddannelse
-
-:0
-*Reply-To:.*sslug-vi@sslug.dk
-sslug/vi
-
-
 ##############################
-# Spamassasin
+# Spamassasin - udkommenter
+# følgende fem linier for at 
+# anvende dette - se http://linux.dk/artikler/artikel-12.php
 
 #:0fw
 #| spamassassin -P
@@ -352,6 +254,7 @@ sslug/vi
 #:0:
 #* ^X-Spam-Status: Yes
 #SKIDTPOST
+
 
 ############################################################
 # Følgende filter vil markere emails med mulige vira som
@@ -373,8 +276,8 @@ sslug/vi
 #}
 
 
-#######################################
-# Diverse post-lister
+#########################################
+# Diverse post-lister uden spam-filtre på
 
 :0
 *(To|Cc).*mgp-users@mew.org
@@ -389,28 +292,9 @@ bugzilla
 autofs
 
 :0
-*(To:|Cc:).*announce@openoffice.org  
-openoffice
-
-:0
-*(To:|Cc:).*eurolinux.org
-eurolinux
-
-:0
 *(To:|Cc:).*docbook-tools-discuss@sources.redhat.com
 docbook
 
-:0
-*(To|Cc).*linuxdk@sslug.dk
-linuxdk
-
-:0
-*To:.announce@opensource.dk
-opensource/announce
-
-:0
-*(To|Cc).misc@opensource.dk
-opensource/misc
 
 
 # Anything that has not been delivered by now will go to $DEFAULT
