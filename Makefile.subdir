@@ -146,7 +146,7 @@ ifeq	($(shell if which tidy >/dev/null 2>&1; then echo -n 1; fi;), 1)
 else
 	@echo "Du bør installere HTML Tidy"
 endif
-	perl -i -pe 'use locale; BEGIN { $$file=`cat ../../bottom.incl` } s:^ </BODY>$$:$$file:g' *.html
+	if [ -e ../../bottom.incl ];then perl -i -pe 'use locale; BEGIN { $$file=`cat ../../bottom.incl` } s:^\s*</body>\s*$$:$$file:gi' *.html; fi
 	(cd bog;rm -f apprevhist.html;ln -sf *apprevhist.html apprevhist.html)
 	make pakhtml
 	rm -rf tempdir 
