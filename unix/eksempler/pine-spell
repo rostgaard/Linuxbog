@@ -104,14 +104,37 @@ dicts=`echo "${all_dicts}" | egrep -v '^('"${ignore_dict_pattern}"')$' | tr '\n'
 #-----------------------------------------------------------------------------
 #--  Chose dictionary:
 
-if [ "${default_dict}" = "" ]; then
-   default_dict=dansk
-fi
+if [ -x /usr/bin/dialog -a -x /bin/mktemp ]; then
+   res=`mktemp /tmp/dialog-result-XXXXXX`
 
-echo "Vælg ordbog (enter for ${default_dict}): ${dicts}"
-read dictionary
-if [ "${dictionary}" = "" ]; then
-   dictionary=${default_dict}
+   outer_height=`( echo ${dicts}; echo '       ' ) | tr ' ' '\n' | wc -l`
+   outer_width=70
+   inner_height=`( echo ${dicts}; echo ''        ) | tr ' ' '\n' | wc -l`
+
+   dialog --menu "Vælg sprog:" \
+                 ${outer_height} ${outer_width} ${inner_height} \
+                 `echo ${dicts} | tr ' ' '\n' | cat -n - | tr '\n' ' '` \
+                 "A" "Afslut" \
+     2> ${res}
+
+   key=`cat ${res}`
+   rm -f ${res}
+    
+   if [ "${key}" = "A" ]; then
+      exit 0
+   else
+      dictionary=`echo ${dicts} | tr ' ' '\n' | head -n ${key} | tail -n 1`
+   fi
+else
+   if [ "${default_dict}" = "" ]; then
+      default_dict=dansk
+   fi
+
+   echo "Vælg ordbog (enter for ${default_dict}): ${dicts}"
+   read dictionary
+   if [ "${dictionary}" = "" ]; then
+      dictionary=${default_dict}
+   fi
 fi
 
 found=false
