@@ -271,6 +271,13 @@ function vistype($type) {
         "Peter Toft" => "pto@linuxbog.dk"
       )
     ),
+    "forsker" => array(
+      title => "Friheden til at studere og forske",
+      comment => "En begynderbog for samfundsfagfolk og humanister",
+      auth => array(
+        "Janus Sandsgaard" => "janus@janus.dk"
+      )
+    ),
     "signatur" => array(
       title => "Linux - Friheden til at vælge digital signatur",
       comment => "Digital signatur på Linux",
