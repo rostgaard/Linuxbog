@@ -3,6 +3,14 @@
 
 	$mailto = "linuxbog@sslug.dk";
 
+	if (preg_match("|/([^/]+)/[^/]+/([^/]+)\.html|", $_SERVER["REQUEST_URI"], $match)) {
+		$bognavn = $match[1];
+		$id = $match[2];
+		$output = exec("cd ../../ ; egrep -Hin 'id=\"?$id\"?' $bognavn/*.sgml");
+		list($sgmlfile, $linenumber) = split(":", $output);
+		#echo "<pre>vi $sgmlfile +$linenumber</pre>\n";
+	}
+
 	if ($HTTP_POST_VARS["tekst"]) {
 		$tekst = stripcslashes($HTTP_POST_VARS["tekst"]);
 		$email = $HTTP_POST_VARS["email"];
@@ -10,7 +18,10 @@
 		$subject = "[FTAV] ".$_SERVER["REQUEST_URI"]." $email";
 		$body = "\nForslag til rettelse fra e-mail: $email\n";
 		$body .= "Afsendt fra IP-nummer: ".$_SERVER["REMOTE_ADDR"]."\n";
-		$body .= "Fil: http://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
+		$body .= "HTML-fil:\nhttp://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
+		if ($sgmlfile) {
+			$body .= "SGML-fil:\nvi $sgmlfile +$linenumber\n";
+		}
 		$body .= "\n";
 		$body .= "-------- Teksten --------\n";
 		$body .= "$tekst\n";
