@@ -41,7 +41,7 @@ sgmlfiler = $(filter-out $(badfiles),$(totalsgmlfiler))
 SUBDIRS = applikationer admin program unix web sikkerhed c java dokumentation kontorbruger itplatform friheden
 
 # her er det der skal laves
-all: html  pakhtml palmpilot sgml pspdf
+all: html  pakhtml palmpilot sgml
 
 
 versionfil:
