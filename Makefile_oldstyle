@@ -56,12 +56,7 @@ clean: Makefiles
 	make -C web clean 
 	make -C sikkerhed clean 
 	rm -rf cvs2html
-	rm -f friheden/Makefile
-	rm -f admin/Makefile
-	rm -f program/Makefile
-	rm -f web/Makefile 
-	rm -f sikkerhed/Makefile
-
+	make Makefiles
 
 cvs2html:
 	chmod +x /home/pto/utils/cvs2html
