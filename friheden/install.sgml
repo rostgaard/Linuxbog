@@ -4,7 +4,7 @@
 <indexterm><primary>Installation</primary></indexterm>
 <para>
 I dette kapitel vises, hvordan du installerer Red Hat 7.0 (og
-6.0/6.1), Mandrake 7.1, SuSE 6.4 (og 6.3) og Corel Linux 1.1
+6.0-6.2), Mandrake 7.1, SuSE 6.4 (og 6.3) og Corel Linux 1.1
 (og 1.0).  Først er vist, hvordan Red Hat installeres og
 dernæst Mandrake, SuSE og Corel - Alle er virkelig gode distributioner og
 omtrent lige nemme. Corel Linux har en fordel, som de andre umiddelbart ikke
@@ -15,7 +15,8 @@ url="http://www.corel.com/learning/wbt/linuxos1/">http://www.corel.com/learning/
 
 <!-- Køb af Linux maskiner som er præ-installerede? -->
 
-<para> Der er i det følgende skrevet mest om Red Hat, men det er
+<para> 
+Der er i det følgende skrevet mest om Red Hat, men det er
 faktisk kun, fordi SuSE-brugere også kan have glæde af at læse de
 mange generelle kommentarer, som i øjeblikket er skrevet under Red Hat
 installationen. SuSE og Mandrake har pt. et forspring i at have
@@ -373,10 +374,10 @@ Partitioner på en disk har numre svarende til disken, f.eks. er
 </sect1>
 
 <sect1 id="installredhat">
-<title>Installation af Red Hat Linux 7.0 (Guiness)</title>
+<title>Installation af Red Hat Linux 7.0 (Guinness)</title>
 <para>
 <indexterm><primary>Red Hat</primary></indexterm>
-Version 7.0 (Guiness) er seneste Red Hat version. Der er lagt meget stor
+Version 7.0 (Guinness) er seneste Red Hat version. Der er lagt meget stor
 vægt på brugervenligheden; både i forbindelse med installationen og
 den daglige administration af systemet. Langt det meste af, hvad der
 tidligere krævede stor indsigt i formatet af diverse
@@ -395,11 +396,11 @@ ligger klar til at installere fra cdrom-erne.
 </para>
 
 <para>
-Det skal siges at der er en sjat børnesygdomme i Red Hat 7.0 som nu 
+Det skal siges, at der er en sjat børnesygdomme i Red Hat 7.0 som nu 
 er ved at blive fundet. Skal du bruge en meget stabil server, så bør du
 nok anvende enten en SuSE eller Red Hat 6.2. Red Hat har bevidst
 satset i version 7.0 på at tage flere nye ting ind, også selvom det
-koster nogle problemer. De problemer kan dog helvigvis så rettes ved
+koster nogle problemer. De problemer kan dog heldigvis rettes ved
 at følge med de opdateringspakker, der annonceres løbende på
 <ulink url="http://www.redhat.com/support/errata/">http://www.redhat.com/support/errata/</ulink>.
 </para>
@@ -736,11 +737,17 @@ filtræet. Linux native partitionen vælges til root-niveau. Skriv / ud for
 denne. Det kan nævnes, at du også kan køre med flere partitioner og
 så have separate <filename>/usr</filename> og
 <filename>/home</filename>. Vi vælger dog kun her den simple udgave med en
-Linux partition. DOS partitioner kan f.eks. lægges ind som
-<filename>/dosc</filename> og <filename>/dosd</filename> (eller 
-<filename>/cdrev</filename> og <filename>/ddrev</filename>)
-osv. Swap
-partitionen skal ikke lægges ind i fil-træet.
+Linux partition.
+</para>
+
+<para>
+Windows partitioner kan f.eks. lægges ind som
+<filename>/dosc</filename> og <filename>/dosd</filename> (eller
+<filename>/cdrev</filename> og <filename>/ddrev</filename>) osv. Swap
+partitionen skal ikke lægges ind i fil-træet. Noter dog, at den
+originale Red Hat 7.0 kan have problemer med at acceptere partitioner,
+som ikke er Linux native. Dine Windows partitioner kan du dog godt få
+adgang til - men vent med dette til efter selve installationen.
 </para>
 
 <FIGURE ID="rh70autopart-fig" FLOAT="1">
@@ -1113,12 +1120,42 @@ url="ftp://updates.redhat.com/7.0/">ftp://updates.redhat.com/7.0</ulink>.
 </para>
 
 <para>
+Det første spørgsmål, man kan stille sig, er om du skal opgradere alle
+de pakker, der er nævnt i errata? Svaret er nej. Du skal ikke
+opgradere pakker, du ikke har installeret. Grunden er, at du ikke bør
+installere noget du ikke bruger. Lad os tage et eksempel. Der er fejl
+i mount-rpm pakken. Vi checker om denne er installeret ved at skrive
+<command>rpm -q mount</command>. Med den originale Red Hat 7.0 får du
+svaret "mount-2.10m-5". I dette tilfælde bør du installere 
+<filename>ftp://updates.redhat.com/7.0/i386/mount-2.10m-6.i386.rpm</filename>.
+Var pakken ikke installeret får du svaret "package mount is not
+installed", og du behøver ikke opdatere denne pakke.
+</para>
+
+<para>
 Den vigtigste fejl, er at Red Hat 7.0 ville reboote hver ca. tredie
 uge på grund af en fejl i update-rpm pakken (Red Hat købe-service til
 overvågning af nye pakker). Skal du ikke anvende Red Hats netværks
 service, så er den nemme og korrekte løsning at slette denne pakke ved
-at køre "rpm -e update" når du er logget ind som systemadministratoren
+at køre "rpm -e up2date" når du er logget ind som systemadministratoren
 "root".
+</para>
+
+<para>
+Skal du køre med OpenSSH, så bør du klart opdatere den openssh
+pakken. Den originale fungerer, men ikke optimalt
+(<command>ssh-agent</command>/<command>ssh-add</command> virker ikke).
+</para>
+
+<para>
+Der er også en fejl i glibc, som nok bør opdateres. Noter, at den nye
+RPM-pakke fylder ca. 10 MB. 
+</para>
+
+
+
+<para>
+
 </para>
 
 </sect2>
