@@ -448,12 +448,17 @@ læse <emphasis>og</emphasis> skriverettigheder til drevet.
 </para>
 
 <para>
+<emphasis>Tip:</emphasis> I <xref linkend="autofs"> er vist hvordan man får
+monteret en eksterne USB-nøglering automatisk når dette er påkrævet.
+</para>
+
+<para>
 Det kræver nok at din Linuxkerne kan se nøgleringen. Dette kan du se
 ved at skrive <command>cat /proc/scsi/usb-storage-0/0</command>. Dette
 skulle gerne vise at det er en "IBM USB memory key" (eller hvad der nu
 er det rigtige). Bemærk at det åbenbart kræver SCSI emulering - og det
 skal være en ret ny kerne. Det virker f.eks. ikke direkte i Red Hat
-7.2, mens det virker fint med Red Hat 7.3. 
+7.2, mens det virker fint med Red Hat 7.3.
 </para>
 
 <para>
@@ -785,9 +790,20 @@ monteres i  <filename>/misc/cdrom</filename> hhv.
 </para>
 
 <screen>
-cdrom           -fstype=iso9660,ro      :/dev/cdrom
-floppy          -fstype=auto            :/dev/fd0
+cdrom     -fstype=iso9660,ro               :/dev/cdrom
+floppy    -fstype=auto,umask=0             :/dev/fd0
+usb       -fstype=auto,gid=401,umask=007   :/dev/sda1
 </screen>
+
+<para>
+Bemærk at filsystemet <filename>/misc/floppy</filename> på
+floppy-disken (dvs. <filename>/dev/fd0</filename>) detekteres
+automatisk (pga. auto), og at filsystemet monteres med læse og skrive
+rettigheder for alle (pga. umask=0). Tilsvarende er indsat adgang til
+en USB nøglering, men her har vi vist at gruppen af brugere i gruppe
+401 (dette defineres i filen <filename>/etc/group</filename>) har fuld
+læse og skrive rettigheder (pga. umask=007), mens "others" har ingen adgang.
+</para>
 
 <para>
 Der er mange muligheder her, og er du doven, kan du endda lave en lænke
