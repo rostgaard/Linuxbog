@@ -16,7 +16,7 @@ er så bare lavet en symbolic link til "smart.php".
   index.php - Denne fil
   proglang.inc - Listen med alle programmeringssprog
   show.php - Hvis kildetekst til et prog-sprog eksisterer
-  list.php - List samlet en type eksempler, fx "hello"
+  list.php - List samlet en type eksempler, for eksempel "hello"
   all.php - Hvis alle eksempler for et programmeringssprog eksisterer
 
  Ovenstående filer kan ses i din browser med kommandoen:
