@@ -439,6 +439,106 @@ aner intet om de værktøjer RedHat har til at administrere.... TODO...</para>
 <title>DEB baserede systemer</title>
 <indexterm><primary>DEB</primary><secondary>systemer der bruger</secondary></indexterm>
 
+<para>Det basale værktøj til at installere deb-pakker hedder
+<command>dpkg</command>. Ligesom <command>rpm</command> er
+<command>dpkg</command> komandolinjebaseret. Står man med en deb-fil
+skal man bruge <command>dpkg</command> og der er nogle informationer
+om ens system der er nemmest at finde med <command>dpkg</comand>. Derfor 
+er det godt at kende dette værktøj.</para>
+
+<para>Hvis du har en pakke kaldet <filename>pakke.deb</filename> kan du 
+få vist nogle basale informationer om pakken med kommandoen
+<command>dpkg --info pakke.deb</command>. Det kan se således ud:</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>dpkg --info sarien_0.7.0-3_powerpc.deb</userinput>
+new debian package, version 2.0.
+size 76030 bytes: control archive= 913 bytes.
+17 bytes,     1 lines      conffiles
+616 bytes,    16 lines      control
+558 bytes,     9 lines      md5sums
+Package: sarien
+Version: 0.7.0-3
+Section: games
+Priority: extra
+Architecture: powerpc
+Depends: libc6 (&gt;= 2.3.1-1), libsdl1.2debian (&gt;&gt; 1.2.3)
+Installed-Size: 212
+Maintainer: Peter Makholm &lt;peter@makholm.net&gt;
+Description: An interpreter for AGI resources
+Sarien decodes and plays games written for the Sierra
+On-Line Adventure Game Interpreter (AGI) system, such as Leisure Suit
+Larry in the Land of the Lounge Lizards, Space Quest I and II, and
+King's Quest I to IV. Currently AGI versions 2 and 3 are recognized;
+support for older AGI v1 games is not available.
+.
+You need the files from the original games.
+<prompt>[tyge@hven ~]$ </prompt>
+</screen>
+
+<para>De første par linjer fortæller at det er version 2 af pakke-formatet,
+noget om størelsen af pakken og kontrolfilerne i pakken. Feltet "Package"
+viser pakkens navn. Feltet "Depends" fortæller hvilket andre pakker man skal
+have installeret for at pakken virker, her skal man bruge mindste version 
+2.3.1-1 af libc6-pakken og større end version 1.2.3 af libsdl1.2debian-pakken.
+"Installed-Size" fortæller hvor meget pakken vil fylde når man installerer den,
+dette er angivet i kilobytes. Resten af felterne er nogenlunde selvforklarende.
+</para>
+
+<para>
+Vil man se hvilke filer pakken installere kan man bruge kommandoen 
+<command>dpkg --contents pakke.deb</command>:
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>dpkg --contents sarien_0.7.0-3_powerpc.deb</userinput>
+drwxr-xr-x root/root         0 2003-04-30 03:32:46 ./
+drwxr-xr-x root/root         0 2003-04-30 03:32:43 ./usr/
+drwxr-xr-x root/root         0 2003-04-30 03:32:45 ./usr/games/
+-rwxr-xr-x root/root    133056 2003-04-30 03:32:45 ./usr/games/sarien
+drwxr-xr-x root/root         0 2003-04-30 03:32:44 ./usr/share/
+drwxr-xr-x root/root         0 2003-04-30 03:32:43 ./usr/share/doc/
+drwxr-xr-x root/root         0 2003-04-30 03:32:46 ./usr/share/doc/sarien/
+-rw-r--r-- root/root      2155 2001-11-04 06:21:17 ./usr/share/doc/sarien/AUTHORS
+-rw-r--r-- root/root       185 2001-09-02 04:37:58 ./usr/share/doc/sarien/BUGS
+-rw-r--r-- root/root       638 2001-09-02 00:20:53 ./usr/share/doc/sarien/TODO
+-rw-r--r-- root/root       703 2003-04-30 03:32:03 ./usr/share/doc/sarien/copyright
+-rw-r--r-- root/root      3295 2001-09-02 04:37:58 ./usr/share/doc/sarien/README.agi.gz
+-rw-r--r-- root/root      1180 2003-04-30 03:32:03 ./usr/share/doc/sarien/changelog.Debian.gz
+drwxr-xr-x root/root         0 2003-04-30 03:32:44 ./usr/share/man/
+drwxr-xr-x root/root         0 2003-04-30 03:32:46 ./usr/share/man/man6/
+-rw-r--r-- root/root      3384 2003-04-30 03:32:42 ./usr/share/man/man6/sarien.6.gz
+drwxr-xr-x root/root         0 2003-04-30 03:32:43 ./etc/
+-rw-r--r-- root/root      3684 2003-04-30 03:32:43 ./etc/sarien.conf
+<prompt>[tyge@hven ~]$ </prompt>
+</screen>
+
+<para>
+Installation af pakker foregår med kommandoen <command>dpkg --install
+pakke.deb</command>. Senere kan man så fjerne pakken igen med enten
+<command>dpkg --remove pakke</command> der ikke fjerner pakkens
+konfigurationsfiler, eller <command>dpkg --purge pakke</command> der fjerner
+pakkens konfigurationsfiler. Bemærk at der her bruges pakkenavnet og ikke
+navnet på den fil man installerede pakken fra.
+</para>
+
+<para>Vil man have information om pakker der er installeret kan man bruge
+kommandoen <command>dpkg --status pakke</command> der giver de overordnede
+informationer og <command>dpkg --listfiles pakke</command> der viser hvilke
+filer der ligger i en pakke.</para>
+
+<para>Det kan også være rart at finde ud af hvilekn pakke en fil tilhøre.
+dette gøres med <command>dpkg --search filnavn</command>. Filnavnet kan 
+indeholde joker-tegn og <command>dpkg</command> vil så finde alle pakker
+der matcher.</para>
+
+<para>Ofte vil man dog slet ikke bruge <command>dpkg</command>. Istedet
+vil man bruge <command>apt-get</command> eller et grafisk værktøj baseret
+på APT som selv vil løse afhængigheder og hente pakker fra pakkearkiver.
+</para>
+
+
+
 <!-- ============================================================ -->
 <!-- Debian -->
 <!-- ============================================================ -->
