@@ -1162,32 +1162,47 @@ kan kontrolleres med <command>ls -l /proc/net/ip_conntrack
 
 <para>
 Der mange gode front ends til iptables kommandoen. Hvis man er
-utryg ved anvendelse af kommandolinien bør man først og fremmest
-læse installationsvejledningerne grundigt og indsætte et firewall
-filter af medium styrke. Desuden kan man begynde med en GUI som
-fx. RedHats system-konfigurations tool, <command> setup
-</command> eller <command> firewall-config </command>. Disse
-nemme programmer er front-ends til den bagvedliggende mekanisme,
-og hvis man vil noget særligt eller bare vil prøve kommandoerne
+utryg ved anvendelse af kommandolinien, bør man først og fremmest
+under installationen læse vejledningen grundigt og indsætte et
+firewall filter af medium styrke allerede under installtionen.
+Desuden kan man begynde med en GUI som fx. RedHats
+system-konfigurations tool, <command> setup </command> eller
+<command> /usr/sbin/lokkit </command>. Disse nemme programmer er
+front-ends til den bagvedliggende mekanisme og fungerer bravt. De
+er til stede efter en normal installation. Firestarter kan man
+selv hente i forskellige grydeklare versioner, så den er bestemt
+også nem at komme igang med.
+</para>
+
+<para>
+Hvis man vil noget særligt eller bare vil prøve kommandoerne
 direkte, så står der mere om det i de efterfølgende afsnit, som
-beskriver <command> iptables </command> anvendelse<footnote>
+beskriver <command> iptables </command>
+anvendelse<footnote>
   <para>
   Ved afprøvningen af Firestarter konstatererede jeg, at den
-  laver om på filer i /etc/ uden at aflevere en liste over
-  ændringerne. Firestarter kan ikke save sine resultat filer uden
-  at køre iptables kommandoen. Derfor kan man ikke "se den over
-  skulderen" inden man vælger at køre den. Det betyder ikke
-  noget, hvis man har ekstra maskiner, men i en meget lille
-  computershop er det sådan nogen ting, der bevirker at
-  systemadministratorerne foretrækker kommandolinie interfacet.
+  laver om på filer i /etc/ uden at aflevere en liste over hvilke
+  filer, den har ændret. Firestarter kan ikke save sine resultat
+  filer uden at køre iptables kommandoen. Derfor kan man ikke "se
+  den over skulderen" inden man vælger at acceptere den. Det betyder
+  ikke noget, hvis man har ekstra maskiner, som man så blot kan
+  scratche og sætte op igen, men i en meget lille husholdning er
+  det sådan nogen ting, der bevirker at en
+  systemadministrator vil foretrækker kommandolinie interfacet.
   </para>
   <para>
-  Ældre versioner af firewall-config programmet bruger ipchains
+  Ældre versioner af firewall-config (RedHat 7.2) bruger ipchains
   og forventer, at man har en modulariseret (distributions)kerne.
   Det gør ikke så meget, at den råber FEJL når man kører med
   optimeret non-modul kerne, hvis den i øvrigt bare fungerer, men
   den har heller ikke den funktionalitet, at kan vise, hvad den
   vil gøre <emphasis> uden </emphasis> at gøre det.
+  </para>
+  <para>
+  I de senere afsnit vises, hvordan man skriver et script med
+  sine egne firewall regler, og hvis man har gjort det, så kan
+  man jo tage en komplet kopi af /etc til fx /etc-bkup og på den
+  måde sikre sine ændringer mod overskrivning.
   </para>
   <para>
   RedHats setup er et xterm - menuprogram, og starter
@@ -1225,15 +1240,36 @@ forklaret. Man lades ikke i stikken!
 <graphic fileref="fs01.&magic;"  scale="40"></graphic>
 
 <para>
+Det er meget fine forklaringer, også på det næste skærmbillede,
+hvor man rådes til i første omgang at lukke for alle "offentlige"
+services (disable public access to all services), så intet er
+tilgængeligt udefra. Så kan man åbne for dem senere, hvis man får
+brug for dem.
+</para>
+
+<graphic fileref="fs02.&magic;"  scale="40"></graphic>
+
+<para>
+Der er et par skærmbilleder mere, som på en overskuelig måde
+tilbyder at justere på trafikken af forskellige typer. Denne form
+for justering vil blive meget mere almindelig i fremtiden, fordi
+mange typer service kræver en jævn datastrøm, men som
+udgangspunkt kan man blot acceptere default indstillingerne.
 </para>
 
 <para>
+Et andet fremragende GUI firewall-protection program er lokkit,
+som er bruges ved installation af RedHat og ved kørsel af setup
+programmet.
 </para>
 
-<para>
-</para>
+<graphic fileref="gl06.&magic;"  scale="40"></graphic>
 
 <para>
+Her skal man blot angive fx. maximum sikkerhed og så åbne for den
+eller de services, som skal være tilgængelige udefra. (De skal jo
+så være sikret på anden måde, pas især på CGI scripting i Apache
+hvis den kører som root.)
 </para>
 
 <para>
@@ -1256,10 +1292,10 @@ distributioner.
 </para>
 
 <para>
-iptables indsætter som nævnt regler i kernens pakke-filter
+iptables indsætter som nævnt regler i kernens netfilter
 tabeller, hvilket betyder, at reglerne går tabt ved reboot. Du
 kan prøve at bruge kommandoerne iptables-save og
-iptables-restore (oprindeligt var det scripts).
+iptables-restore.
 </para>
 
 <para>
@@ -1763,10 +1799,14 @@ droppes.
 
 <para>
 Når man specificerer -p tcp (eller --protocol tcp) så loader
-iptables automatisk tcp extension, og vi kan nu kigge ind i
+iptables et extension modul, og vi kan nu kigge ind i
 tcp-headeren, hvis vi vil - og det vil vi, vi undersøger, om
 pakkerne er bestemt for port 80, den velkendte port, som benyttes
-af http serveren. Alle pakker til serveren accepteres.
+af http serveren. Alle pakker til serveren accepteres. Der er
+forskellige protocol extensions, som tillader avancerede ting:
+Læs manual-page hvis du vil vide mere. <!-- TODO: Skal vi have et
+appendix med en dansk version af alle de tekniske
+specifikationer? senere, måske! /-->
 </para>
 
 
@@ -1913,12 +1953,85 @@ benyttes med dynamiske IP-adresser.
 
 <para>
 Man kan godt bestemme, hvilken port-range, som må bruges til
-<emphasis> nat </emphasis> tabellen.
+<emphasis> nat </emphasis> tabellen. Hvorfor skulle man gøre det?
+Det er kun nødvendigt for at sikre i specielle situationer, eller
+for at sikre mere grundigt.
+</para>
 
+<para>
+DNS forespørgsler kan bruges som eksempel. Vi ønsker at tillade
+forespørgseler til en remote DNS server men ellers ikke noget på
+vores server. Det kunne gøres ved at køre en DNS caching server
+(en hjælpeserver, som husker tingene så alle maskinerne på
+vores lille netværk ikke behøver at sende pakker ud over det
+overbelastede ISP link). Vi kører hjælpeserveren på en maskine
+66.77.88.199 og dnscache foretager forespørgselen som udgår med
+et højt portnummer $hoyport. De eksterne DNS servere svarer
+66.77.88.199 på dette høje portnummer, $hoyport. Man kan
+selvfølgelig forbedre sikkerheden ved at køre dnscache på en
+maskine for sig selv, og de andre maskiner må så kun lave UDP til
+denne specifikke IP-adresse. Her kommer kommandoen, som kan gøre
+det:
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -A INPUT -p udp -s 0/0 --source-port 53 -d 66.14.136.144/32 --destination-port 1024:65535 </userinput>
+</screen>
+
+<para>
+Ligesom for tcp protokollen loades der et extension modul, når vi
+specificerer -p udp. De kriterier, som -p udp giver, er dog kun
+portnumre for hhv. source og destination. Det ovenstående
+eksempel specificerer, at alle inputporte over 1023 må bruges. I
+stedet for at åbne for input på dem ville det være en mulighed at
+bruge fast portnumre for hjælpeserverens udgående trafik og så
+kun åbne for de portnumre.
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -A INPUT -p tcp ! --syn --source-port 20 --destination-port 1024:65535 -j ACCEPT </userinput>
+</screen>
+
+<para>
+Her vises en måde at åbne for alle pakker udefra, som ikke
+forsøger at indlede en konversation med en server. Det er en
+anden måde at specificere, at maskiner indenfor firewallen skal
+have lov til at gøre alt, men alligevel beskyttes de såkaldt
+priviligerede porte i intervallet 1 - 1024. Firewallen deler dem
+om i to områder, 1 - 512 og 512-1023. Resten behandles som en
+tredie gruppe. Netfilter mapper ikke ting fra en gruppe til en
+anden. (At mappe = at spejle eller sige a svarer til X, b svarer
+til Y, c svarer til Z og så fremdeles, en af de få ting, en
+computer er god til.)
+</para>
+
+<para>
+En måske mere avanceret anvendelse af port-ranges er at åbne for et
+mindre område ved source NAT-ing; man reserverer et interval til
+et bestemt formål og kan på remote maskinen filtrere alle andre
+afsenderporte fra. Mange netværksprogrammer har en mulighed for
+at brugeren specificerer, hvilke porte, der må bruges.
 </para>
 
 
-<para>TODO</para>
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -t nat -A
+POSTROUTING -j SNAT --to 129.142.141.140:47000-49000
+</userinput>
+</screen>
+
+<para>
+Et eksempel på anvendelse af multiport extension, hvor der åbnes
+for (kendte) serverporte i et hug (mere effektivt, mindre load på
+firewall):
+</para>
+
+<screen>
+<prompt>[root@hven /]#</prompt> <userinput> iptables -A INPUT -p tcp -m mulitport --dport 21,25,80,110,143,443 -j ACCEPT </userinput>
+</screen>
+
+<para>
+</para>
 
 
 </sect2>
@@ -2421,6 +2534,7 @@ MASQUERADING target er specielt til masquerading med en dynamisk
 tildelt ip-adresse, som en dial-up forbindelse har. Den finder 
 selv ud af det, når ip-adressen på ppp0 skifter. 
 </para>
+
 <para>Lav destination NAT til ip 1.2.3.4, 1.2.3.5 eller 1.2.3.6</para>
 <programlisting>
 # iptables -t nat -A PREROUTING -i eth1 -j DNAT --to 1.2.3.4-1.2.3.6
