@@ -49,7 +49,8 @@
  </para>
 
 <programlisting>
-/* Filnade &lt;stdio.h&gt;
+/* Filnavn: hello.c */
+#include &lt;stdio.h&gt;
 int main(void)
 {
   printf("Hello, world!\n");
@@ -110,7 +111,8 @@ AC_OUTPUT(Makefile)
   da kalder <command>autoconf</command> for at danne
   <command>configure</command> ud fra
   <filename>configure.in</filename> vil <command>autoconf</command>
-  erstatte brug af macroer med kodefilename>aclocal.m4</filename>.
+  erstatte brug af macroer med koden fra
+  <filename>aclocal.m4</filename>.
  </para>
 
 <screen>
@@ -226,7 +228,8 @@ beskrivelse af de mest almindelige filer.
 <row> <entry>hello.c</entry>       <entry>*dig*</entry>      <entry>gcc</entry> </row>
 <row> <entry>Makefile.am</entry>   <entry>*dig*</entry>      <entry>automake</entry> </row>
 <row> <entry>configure.in</entry>  <entry>*dig*</entry>      <entry>automake autoconf aclocal</entry> </row>
-<row> <entry>config.h.in</entry>   <entry>autoheader</entry> <entry>automake configure</entw> <entry>aclocal.m4</entry>    <entry>aclocal</entry>    <entry>autoconf</entry> </row>
+<row> <entry>config.h.in</entry>   <entry>autoheader</entry> <entry>automake configure</entry> </row>
+<row> <entry>aclocal.m4</entry>    <entry>aclocal</entry>    <entry>autoconf</entry> </row>
 <row> <entry>Makefile.in</entry>   <entry>automake</entry>   <entry>configure</entry> </row>
 <row> <entry>missing</entry>       <entry>automake</entry>   <entry>make??</entry> </row>
 <row> <entry>install-sh</entry>    <entry>automake</entry>   <entry>"make install"</entry> </row>
@@ -311,7 +314,7 @@ på samme linie med mellemrum i mellem.
 i det underkatalog der er defineret i variablen <command>bindir</command>.
 Slutbrugeren kan så senere under installation bestemme hvor binære
 filer skal installeres. Default vil programmer blive installeret
-i <fiin/</filename>, men for nogle programmer
+i <filename>/usr/local/bin/</filename>, men for nogle programmer
 gælder at disse skal installeres i <filename>/bin/</filename>.
 Vi kan på forhånd selv bestemme hvor <command>bindir</command>, hvilket
 vi kommer tilbage til.
@@ -440,7 +443,9 @@ hello
 Copyright \(co 2001 Friheden til at programmere.
 .SH SEE ALSO
 goodbye(1)
-</programlistingisting>
+</programlisting>
+
+<programlisting>
 ## Filnavn: src/Makefile.am
 bin_PROGRAMS = hello
 hello_SOURCES = hello.c
@@ -515,7 +520,7 @@ AC_OUTPUT(Makefile)
   <para>
    De to filer kan se meget anderledes ud, men dette er noget af det
    simpleste man kan have til et C-program.  Herefter er det blot at
-   køre nomandoer:
+   køre nogle kommandoer:
   </para>
 
 <screen>
@@ -569,21 +574,21 @@ I ovennævnte eksempel er de først tre makroer prædefinerede.
 Til <command>bin_PROGRAMS</command> er allerede defineret
 <command>bindir</command>, hvilket kan ændres af den bruger
 der installere programmet.
-Hvis skal ned i <filename>/bin</filename> vil
+Hvis bin-filerne skal ned i <filename>/bin</filename> vil
 brugeren skrive:
-</para>
 
 <screen>
 <prompt>[daisy@linus daisy]$</prompt> <userinput>./configure --bindir=/bin</userinput>
 </screen>
+</para>
 
 <para>
 Listen over prædefinerede kataloger fås nemmest med:
-</para>
 
 <screen>
 <prompt>[daisy@linus daisy]$</prompt> <userinput>./configure --help | grep DIR</userinput>
 </screen>
+</para>
 
 <para>
 I førnævnte eksempel er opfundet et nyt katalog med navnet <filename>htmldir</filename>.
@@ -643,7 +648,7 @@ og den checkes således:
 <programlisting>
 # Filnavn: configure.in
 ...
-AC_CHECK_F)
+AC_CHECK_FUNCS(printf)
 ...
 </programlisting>
 
@@ -708,7 +713,7 @@ int main(void)
 #ifdef CONFDATO
   printf("./configure er kørt d.: %s\n", CONFDATO );
 #endif
-  d!\n");
+  printf("Hello, world!\n");
   return 0;
 }
 </programlisting>
