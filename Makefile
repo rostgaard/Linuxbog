@@ -10,6 +10,7 @@ start:
 	@for dir in $(SUBDIRS); do \
 		cp -f Makefile.subdir $$dir/Makefile; \
 		cp -f faelles-filer/*.sgml $$dir; \
+		cp linuxbog.spec $$dir; \
 done;
 	echo "Installerer Makefiler og fælles SGML-filer til alle bøger"
 
