@@ -69,6 +69,6 @@ pspdf:
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz $(targetname)-*.palm.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz $(targetname)-*.palm.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz palm/*.prc palm/*.pdb
 
 
