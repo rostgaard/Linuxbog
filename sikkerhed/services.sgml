@@ -105,10 +105,10 @@ selvom den kun bruger den ene.
 <para>
 User Friendly <ulink url="http://www.userfriendly.org/static">http://www.userfriendly.org/static</ulink> ser på IP-pakker...</para>
 
-<FIGURE ID="uf000405-fig" FLOAT="1">
-<TITLE>User Friendly</TITLE>
-<GRAPHIC FILEREF="uf000405.&magic;"  SCALE="40"></GRAPHIC>
-</FIGURE>  
+<figure id="uf000405-fig" float="1">
+<title>User Friendly</title>
+<graphic fileref="uf000405.&magic;"  scale="40"></graphic>
+</figure>  
 
 
 <para>
@@ -117,9 +117,9 @@ User Friendly <ulink url="http://www.userfriendly.org/static">http://www.userfri
 Porte vælges ikke tilfældigt, men mange er standardiserede, så
 maskiner kan koble sig til en given port og dermed vide hvilken
 service, der kan findes. Hvis du læser filen
-<FILENAME>/etc/services</FILENAME> på en vilkårlig UNIX-maskine såsom
+<filename>/etc/services</filename> på en vilkårlig UNIX-maskine såsom
 Linux, kan du se hvilke porte, der bruges til hvad. Udsnit af en
-<FILENAME>/etc/services</FILENAME>:
+<filename>/etc/services</filename>:
 </para>
 
 <programlisting>
@@ -132,7 +132,7 @@ smtp            25/tcp          mail
 <para>
 Først står navnet på servicen, derefter portnummeret og om det er tcp 
 eller udp. Det sidste felt er til et evt. alias for denne service - i
-eksemplet er <FILENAME>mail</FILENAME> et alias for <FILENAME>smtp</FILENAME>.
+eksemplet er <filename>mail</filename> et alias for <filename>smtp</filename>.
 </para>
 
 <para>
@@ -140,7 +140,7 @@ Portnumre under 1024 kaldes priviligerede porte, og man skal være root for
 at kunne lytte på dem. Dette er lavet, så en klient, der kontakter en
 fremmed maskine på en port under 1024, kan regne med at få fat i en standard 
 service og ikke et eller andet tilfældigt bruger-program. Se 
-<COMMAND>man services</COMMAND>.
+<command>man services</command>.
 <indexterm><primary>Priviligerede porte</primary></indexterm>
 
 </para>
@@ -174,9 +174,9 @@ Prøv at køre kommandoen
 
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>ps aux | more</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Denne kommando viser alle de kørende processer på systemet, og du vil
@@ -199,7 +199,7 @@ efter behov.
 
 <para>
 Hvilke services, der skal startes, bestemmes i  kataloget
-<FILENAME>/etc/xinetd.d</FILENAME>, og de filer der ligger der. Eks.:
+<filename>/etc/xinetd.d</filename>, og de filer der ligger der. Eks.:
 </para>
 
 <programlisting>
@@ -234,12 +234,12 @@ i hver fil, for dermed startes de enkelte services <emphasis>ikke</emphasis>.
 </para>
 
 <para>
-For at ændringerne i <FILENAME>/etc/xinetd.d</FILENAME> skal træde i
+For at ændringerne i <filename>/etc/xinetd.d</filename> skal træde i
 kraft, er det nødvendigt at genstarte xinetd processen. Dette kan gøres
 på flere måder.  Nogle distributioner har en struktur med startup
 scripts, der bruges til dette formål. Under Red Hat og Debian ligger
-de under <FILENAME>/etc/rc.d/init.d</FILENAME>
-hhv. <FILENAME>/etc/init.d</FILENAME>. Så kan man bruge startup
+de under <filename>/etc/rc.d/init.d</filename>
+hhv. <filename>/etc/init.d</filename>. Så kan man bruge startup
 scriptet til at genstarte inetd med.
 </para>
 
@@ -247,9 +247,9 @@ scriptet til at genstarte inetd med.
 Red Hat:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@sherwood robin]#</prompt> <userinput>/etc/init.d/xinetd reload </userinput>
-</SCREEN>
+</screen>
 
 <para>
 Der er dog også nogle Linux-distributioner, der ikke benytter denne struktur
@@ -257,9 +257,9 @@ herunder Slackware, så vi har brug for en mere generel løsning. For en
 vilkårlig distribution kan man genstarte xinetd ved at skrive:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[root@sherwood robin]#</prompt> <userinput>killall -1 xinetd</userinput>
-</SCREEN>
+</screen>
 
 <para> 
 Før Red Hat 7 anvendte man i stedet for
@@ -281,17 +281,17 @@ kører udenom inetd som daemons.
 </para>
 
 <para>
-Gennemgå de andre services i <FILENAME>/etc/xinetd.d</FILENAME> på
+Gennemgå de andre services i <filename>/etc/xinetd.d</filename> på
 samme måde som vist ovenfor.  Undersøg, hvad der kører på din maskine,
 og find ud af om det er nødvendigt at de enkelte services kører. Hvis
 ikke, så slå det fra.  En gylden regel er, at du hellere må køre for
 få end for mange services.  Vi kommer senere til en gennemgang af de
-services, der findes i <FILENAME>/etc/xinetd.d</FILENAME>.
+services, der findes i <filename>/etc/xinetd.d</filename>.
 </para>
 
 <para>
 Husk slutteligt, at hvis du ender med at du slet ikke vil køre
-services via <FILENAME>/etc/xinetd.d</FILENAME>, så kan du 
+services via <filename>/etc/xinetd.d</filename>, så kan du 
 lige så godt lukke selve xinetd programmet ned.
 </para>
 
@@ -323,18 +323,18 @@ Tcpd rapporterer til syslogd, hvad der sker, så det bliver skrevet
 i logfiler, og kontrollerer, om den kaldende
 host har adgang til den pågældende service. Hvis alt er i orden,
 starter tcpd servicen, og afslutter sig selv. Simpelt og elegant.
-Tcpd skal sættes ind i <FILENAME>/etc/xinetd.d</FILENAME>-filen i stedet 
+Tcpd skal sættes ind i <filename>/etc/xinetd.d</filename>-filen i stedet 
 for navnet på den service, der skal udføres. 
 Navnet på serviceprogrammet gives som parameter til tcpd. I de viste linjer 
-fra <FILENAME>/etc/xinetd.conf</FILENAME> ovenfor er tcpd allerede sat ind.
+fra <filename>/etc/xinetd.conf</filename> ovenfor er tcpd allerede sat ind.
 -->
 </sect2>
 
 <sect2 id="Adgang-til-din-maskine">
 <title>Adgang til din maskine</title> 
 <para>
-Adgangskontrol sker via filerne <FILENAME>/etc/hosts.allow</FILENAME> og 
-<FILENAME>/etc/hosts.deny</FILENAME>.
+Adgangskontrol sker via filerne <filename>/etc/hosts.allow</filename> og 
+<filename>/etc/hosts.deny</filename>.
 <indexterm><primary>netadgang til maskine</primary></indexterm>
 <indexterm><primary>/etc/hosts.allow</primary></indexterm>
 <indexterm><primary>/etc/hosts.deny</primary></indexterm>
@@ -343,17 +343,17 @@ Adgangskontrol sker via filerne <FILENAME>/etc/hosts.allow</FILENAME> og
 
 <para>
 Når tcpd skal finde ud af, om der er adgang til en service, checker 
-den først <FILENAME>/etc/hosts.allow</FILENAME>. Hvis der her er givet explicit adgang, 
+den først <filename>/etc/hosts.allow</filename>. Hvis der her er givet explicit adgang, 
 godkendes forsøget, og servicen bliver startet. Hvis der ikke står
-noget om den pågældene service i <FILENAME>/etc/hosts.allow</FILENAME>,
-læses nu <FILENAME>/etc/hosts.deny</FILENAME>.
-Hvis <FILENAME>/etc/hosts.deny</FILENAME> ikke indeholder noget, der forbyder 
+noget om den pågældene service i <filename>/etc/hosts.allow</filename>,
+læses nu <filename>/etc/hosts.deny</filename>.
+Hvis <filename>/etc/hosts.deny</filename> ikke indeholder noget, der forbyder 
 den forsøgte adgang, vil forsøget blive godkendt. Det kan altså 
-være en god ide at sætte sin <FILENAME>/etc/hosts.deny</FILENAME> op til at 
+være en god ide at sætte sin <filename>/etc/hosts.deny</filename> op til at 
 slutte med at afvise alt og alle. På den måde er man sikker på, 
 at hvis der er noget, man ikke explicit har givet adgang til, så 
 er der ikke adgang. På den anden side må man så sikre sig, at alle 
-services, der skal kunne anvendes, er sat op i <FILENAME>/etc/hosts.allow</FILENAME>.
+services, der skal kunne anvendes, er sat op i <filename>/etc/hosts.allow</filename>.
 </para>
 
 <para>
@@ -365,13 +365,13 @@ in.telnetd: 192.168.0.0/255.255.255.0
 </programlisting>
 
 <para>
-I <FILENAME>/etc/hosts.allow</FILENAME> ville denne linje tillade alle på lokalnettet 
-192.168.0.* at benytte telnet servicen. Stod linjen i <FILENAME>/etc/hosts.deny</FILENAME>,
+I <filename>/etc/hosts.allow</filename> ville denne linje tillade alle på lokalnettet 
+192.168.0.* at benytte telnet servicen. Stod linjen i <filename>/etc/hosts.deny</filename>,
 ville det betyde, at de ikke kunne.
 </para>
 
 <para>
-Eksempel på <FILENAME>/etc/hosts.allow</FILENAME> fil:
+Eksempel på <filename>/etc/hosts.allow</filename> fil:
 </para>
 
 <programlisting>
@@ -381,13 +381,13 @@ ipop3d: 192.168.0.0/255.255.255.0
 </programlisting>
 
 <para>
-Denne <FILENAME>/etc/hosts.allow</FILENAME> vil tillade hele verden adgang til ftp, og 
+Denne <filename>/etc/hosts.allow</filename> vil tillade hele verden adgang til ftp, og 
 giver host 192.168.0.2 lov til alt. Hosts på netværket 192.168.0.*
 har desuden adgang til pop3.
 </para>
 
 <para>
-Eksempel på <FILENAME>/etc/hosts.deny</FILENAME> fil:
+Eksempel på <filename>/etc/hosts.deny</filename> fil:
 </para>
 
 <programlisting>
@@ -395,13 +395,13 @@ in.telnetd: 0.0.0.0/0.0.0.0
 </programlisting>
 
 <para>
-Denne <FILENAME>/etc/hosts.deny</FILENAME> fil sørger for, at ingen har adgang til 
+Denne <filename>/etc/hosts.deny</filename> fil sørger for, at ingen har adgang til 
 telnet servicen. Dette gælder dog ikke for 192.168.0.2, da den 
-allerede i <FILENAME>/etc/hosts.allow</FILENAME> har fået lov til alt herunder telnet.
+allerede i <filename>/etc/hosts.allow</filename> har fået lov til alt herunder telnet.
 </para>
 
 <para>
-En mere sikker <FILENAME>/etc/hosts.deny</FILENAME> ville være denne:
+En mere sikker <filename>/etc/hosts.deny</filename> ville være denne:
 </para>
 
 <programlisting>
@@ -410,24 +410,24 @@ ALL: 0.0.0.0/0.0.0.0
 
 <para>
 Denne linje nægter alle adgang til alt, medmindre der specifikt er
-givet lov i filen <FILENAME>/etc/hosts.allow</FILENAME>. Bemærk dog,
+givet lov i filen <filename>/etc/hosts.allow</filename>. Bemærk dog,
 at du kan blive overrasket over ting, der ikke virker, hvis du har sat
-den restriktive <FILENAME>/etc/hosts.deny</FILENAME>-fil op.  Vær
+den restriktive <filename>/etc/hosts.deny</filename>-fil op.  Vær
 omhyggelig med at sætte de nødvendige tilladelser op i
-<FILENAME>/etc/hosts.allow</FILENAME>. Hvis du har glemt at give
+<filename>/etc/hosts.allow</filename>. Hvis du har glemt at give
 adgang til noget, opdager du det sikkert, når du skal bruge det, eller
 når nogen brokker sig.  Har du derimod glemt at spærre for noget,
 opdager du det måske først den dag, det bliver brugt til at bryde ind
 på dit system.  Med sikkerhed og paranoia i højsædet er det smart at
-have ovenstående linje i sin <FILENAME>/etc/hosts.deny</FILENAME>. Så
+have ovenstående linje i sin <filename>/etc/hosts.deny</filename>. Så
 bliver forespørgsler afvist, hvis du ikke har sat dem ind i
-<FILENAME>/etc/hosts.allow</FILENAME>. HUSK at en forespørgsel bliver
+<filename>/etc/hosts.allow</filename>. HUSK at en forespørgsel bliver
 godkendt, hvis du ikke har angivet andet.
 </para>
 
 <para>
-Se i øvrigt <COMMAND>man tcpd</COMMAND>, og <COMMAND>man
-hosts.allow</COMMAND> eller <COMMAND>man hosts.deny</COMMAND> (de to
+Se i øvrigt <command>man tcpd</command>, og <command>man
+hosts.allow</command> eller <command>man hosts.deny</command> (de to
 sidste er samme fil).
 </para>
 </sect2>
@@ -481,7 +481,7 @@ sidde og lytte med.
 
 <para>
 På en maskine, der har adgang til internettet, bør telnet slås fra, og
-erstattes med ssh, se <xref linkend="sikker-net-trafik">.  En grund
+erstattes med ssh, se <xref linkend="sikker-net-trafik"/>.  En grund
 til at beholde telnet kan dog være, at der findes telnet-klienter til
 stort set alle systemer. Hvis man har brug for at logge ind fra et
 system, hvortil der ikke findes en ssh-klient, kan det være nødvendigt
@@ -492,7 +492,7 @@ muligheder for at løse dine behov.
 
 <para>
 Hvis telnet skal køre, kan man sikre sig bedre med adgangskontrol
-(<FILENAME>/etc/hosts.allow</FILENAME>), ved at skifte password hver gang og
+(<filename>/etc/hosts.allow</filename>), ved at skifte password hver gang og
 ved ikke at have det samme password på andre maskiner i lokalnettet, 
 så skaden ved indbrud trods alt begrænses.
 </para>
@@ -536,7 +536,7 @@ Dette kan være relevant på f.eks. et lokalnet, hvor brugerne har behov
 for at flytte filer. Faren er her den samme som ved brug af telnet, nemlig at 
 brugernavn og password sendes i klar tekst over nettet. Foregår dette over det
 usikre internettet, må vi bestemt anbefale at man bruger scp
-secure copy fra ssh-pakken (se <xref linkend="sikker-net-trafik">), 
+secure copy fra ssh-pakken (se <xref linkend="sikker-net-trafik"/>), 
 hvis det er muligt. Alternativet er en speciel
 krypteret udgave af ftp, men dette kræver, at klienten kan
 tale samme sprog. Ftp kører normalt på port 20 (data) og 21
@@ -567,20 +567,20 @@ det katalog de skal uploade i og tilsvarende downloade fra, men stort
 set har de ikke brug for mere. De har ikke brug for at kunne bevæge
 sig rundt på hele maskinen, og det bør de ikke i have lov til. Dette
 undgås ved, at man "chroot'er" dem, dvs., at man f.eks. får kataloget
-<FILENAME>/home/ftp</FILENAME> til at se ud som roden af filsystemet
+<filename>/home/ftp</filename> til at se ud som roden af filsystemet
 (dvs. /). Brugeren kan ikke se resten af filsystemet og kun få ordrer
 kan anvendes.  Dermed er serveren ikke nær så udsat, som hvis alle og
 enhver kunne logge "rigtigt" ind. Det er kun lidt, der skal sættes op,
 før et chroot'et environment virker (så bla. "ls" og "cd" virker) -
-nogle filer skal kopieres til <FILENAME>/home/ftp/lib</FILENAME>,
-<FILENAME>/home/ftp/bin</FILENAME> og
-<FILENAME>/home/ftp/etc</FILENAME> filer. Dette er gjort for dig i
+nogle filer skal kopieres til <filename>/home/ftp/lib</filename>,
+<filename>/home/ftp/bin</filename> og
+<filename>/home/ftp/etc</filename> filer. Dette er gjort for dig i
 alle de store Linuxdistributioner.
 <indexterm><primary>chroot af ftp</primary></indexterm>
 </para>
 
 <para>
-Endelig bør man huske, at <FILENAME>/home/ftp</FILENAME> ikke bør
+Endelig bør man huske, at <filename>/home/ftp</filename> ikke bør
 været ejet af den bruger, folk logger ind som, dvs. anonymous eller
 ftp. Så kan de ændre environment, lave .rhosts-filer og andet, som kan
 bringe net-sikkerheden i fare.
@@ -640,7 +640,7 @@ Finger er et program, som viser hvem, der er logget på maskinen lige nu,
 hvornår de sidst var logget ind og hvor længe:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood]$</prompt> <userinput>finger robin</userinput>
 Login: robin                             Name:
 Directory: /home/robin                   Shell: /bin/bash
@@ -654,14 +654,14 @@ On since Sat Jul 10 01:14 (CEST) on pts/2   26 minutes 11 seconds idle
      (messages off)
 No mail.
 No Plan.                    
-</SCREEN>
+</screen>
 
 <para>
 Denne kommando kan køres fra andre maskiner mod din maskine, og kan 
 anvendes af folk udefra til f.eks. at finde frem til en brugerkonto,
 der ikke har været brugt længe. Denne information bør du ikke give 
 videre ud over maskinen selv.
-Derfor bør du i <FILENAME>/etc/xinetd.d/finger</FILENAME> rette
+Derfor bør du i <filename>/etc/xinetd.d/finger</filename> rette
 </para>
 
 <programlisting>
@@ -683,7 +683,7 @@ andre maskiner skal være spærret f.eks. med tcp-wrappers.
 <para>
 <indexterm><primary>POP</primary></indexterm>
 Hvis din maskine ikke skal være mailserver, så indsæt <literal>disable=yes</literal> i filerne med pop-2,
-pop-3 og imap i <FILENAME>/etc/xinetd.d</FILENAME>.
+pop-3 og imap i <filename>/etc/xinetd.d</filename>.
 </para>
 
 <para>
@@ -731,7 +731,7 @@ headerene fra sine mails og lade resten ligge på serveren, etc.
 </para>
 
 <para>
-For at slå POP og IMAP fra i <FILENAME>/etc/inetd</FILENAME> skal
+For at slå POP og IMAP fra i <filename>/etc/inetd</filename> skal
 følgende linjer udkommenteres:
 </para>
 
@@ -759,8 +759,8 @@ bliver til
 <para>
 Anvender du en nyere Linux distribution, kan det være, at du har 
 programmet linuxconf kørende på din maskine på port 98. Du kan 
-i <FILENAME>/etc/inetd.conf</FILENAME> se, om du har linuxconf kørende ved 
-at lede efter en linje, der indeholder ordet <COMMAND>linuxconf</COMMAND>. Den kan
+i <filename>/etc/inetd.conf</filename> se, om du har linuxconf kørende ved 
+at lede efter en linje, der indeholder ordet <command>linuxconf</command>. Den kan
 f.eks. se sådan ud:
 </para>
 
@@ -789,7 +789,7 @@ SSL eller bedre kryptering indbygges i server og klient.
 
 <para>
 Ud over services, som konfigureres via
-<FILENAME>/etc/xinetd.d</FILENAME>, er der en klasse af services,
+<filename>/etc/xinetd.d</filename>, er der en klasse af services,
 som anvender RPC - Remote Procedure call. Vi vil se lidt på RPC og de
 mest kendte RPC-baserede services.
 </para>
@@ -822,7 +822,7 @@ benytte. Prøv at skrive
 </para>
 
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>/usr/sbin/rpcinfo -p localhost</userinput>
    program vers proto   port
     100000    2   tcp    111  rpcbind
@@ -833,7 +833,7 @@ benytte. Prøv at skrive
     100005    2   tcp    635  mountd
     100003    2   udp   2049  nfs
     100003    2   tcp   2049  nfs
-</SCREEN>
+</screen>
 
 <para>
 (Dette er fra et Red Hat system. På Debian står der portmapper i
@@ -863,7 +863,7 @@ download'es fra
 Prøv at køre nmap på din egen maskine:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>nmap localhost</userinput>
 Starting nmap V. 2.2-BETA4 by Fyodor (fyodor@dhp.com, www.insecure.org/nmap/)
 Interesting ports on localhost (127.0.0.1):
@@ -887,22 +887,22 @@ Port    State       Protocol  Service
 6000    open        tcp       X11
 
 Nmap run completed -- 1 IP address (1 host up) scanned in 0 seconds
-</SCREEN>
+</screen>
 
 <para>
 Man kan således udefra se, at sherwood har sunrpc til at lytte på
 port 111 - sunrpc er det samme som portmapperen. Processen - det
 kørende program - hedder portmap, men servicen hedder sunrpc. Bliv
-ikke forvirret, kært barn har mange navne. Kør <COMMAND>ps -aux |grep
-portmap</COMMAND> på dit system, og du kan indefra se, at portmapper daemonen
+ikke forvirret, kært barn har mange navne. Kør <command>ps -aux |grep
+portmap</command> på dit system, og du kan indefra se, at portmapper daemonen
 kører.
 </para>
 
 <para>
 Portmapper daemonen er et program, der hedder portmap (på nogle systemer
 hedder det rpcbind). Den bliver startet op i dine startup scripts
-(Red Hat: <FILENAME>/etc/rc.d/init.d/portmap</FILENAME>, Debian: 
-<FILENAME>/etc/init.d/netbase)</FILENAME>.
+(Red Hat: <filename>/etc/rc.d/init.d/portmap</filename>, Debian: 
+<filename>/etc/init.d/netbase)</filename>.
 </para>
 
 <para>
@@ -936,8 +936,8 @@ automounteren amd m.fl.kører på dit system via RPC.
 
 <para>
 Du er nødt til at tage stilling til, om du har brug for disse
-services, hvis ikke skal de slås fra. Hvis <COMMAND>rpcinfo -p
-localhost</COMMAND> kun viser portmapperen selv, evt fordi du har
+services, hvis ikke skal de slås fra. Hvis <command>rpcinfo -p
+localhost</command> kun viser portmapperen selv, evt fordi du har
 slået de andre services fra, så kan du godt slå portmap fra også.  Men
 bemærk, at den skal slås til igen, hvis du vil anvende en af de
 services, der benytter RPC.
@@ -953,8 +953,8 @@ services, der benytter RPC.
 
 <para>
 NIS (Network Information Service) er en måde, hvorpå man kan nøjes med
-at have sin <FILENAME>/etc/passwd</FILENAME> fil og andre konfigurationsfiler
-(typisk en del filer fra <FILENAME>/etc/</FILENAME>) på én server.  Klienterne
+at have sin <filename>/etc/passwd</filename> fil og andre konfigurationsfiler
+(typisk en del filer fra <filename>/etc/</filename>) på én server.  Klienterne
 får de nødvendige oplysninger af serveren via NIS. NIS er baseret på
 RPC. Med NIS slipper man for at vedligeholde sine konfigurationsfiler 
 på en masse maskiner. Det gør det lettere at holde styr på sine brugere,
@@ -992,16 +992,16 @@ NFS kører normalt på port 2049.
 <para>
 NFS er en RPC baseret service og er afhængig af at portmapperen kører.
 NFS startes af et startupscript (Red Hat:
-<FILENAME>/etc/rc.d/init.d/nfs</FILENAME>, Debian:
-<FILENAME>/etc/init.d/nfs-server</FILENAME>.  Daemonerne hedder
-<COMMAND>rpc.mountd</COMMAND> og <COMMAND>rpc.nfsd</COMMAND>. mountd
+<filename>/etc/rc.d/init.d/nfs</filename>, Debian:
+<filename>/etc/init.d/nfs-server</filename>.  Daemonerne hedder
+<command>rpc.mountd</command> og <command>rpc.nfsd</command>. mountd
 daemonen tager sig af selve mount processen, imens NFS daemonen tager
 sig af at åbne, lukke, læse og skrive filer etc.
 </para>
 
 <para>
 Filsystemer, der skal være tilgængelige via NFS, angives i
-<FILENAME>/etc/exports</FILENAME>, f.eks.
+<filename>/etc/exports</filename>, f.eks.
 </para>
 
 <programlisting>
@@ -1009,17 +1009,17 @@ Filsystemer, der skal være tilgængelige via NFS, angives i
 </programlisting>
 
 <para>
-Denne linje eksporterer kataloget <FILENAME>/home/robin/</FILENAME>
+Denne linje eksporterer kataloget <filename>/home/robin/</filename>
 med adgang for maskinerne 192.168.0.1, 192.168.0.2 og 192.168.0.3. Den
 eneste option, der er sat i ovenstående linje, er "rw" (read
 write). Der findes desuden nogle sikkerhedsrelaterede options til
-<FILENAME>/etc/exports</FILENAME>, men angiver du ingen, er de sat til
+<filename>/etc/exports</filename>, men angiver du ingen, er de sat til
 det sikreste. Du skal således manuelt slå dem til for at få den mere
 usikre version.  F.eks. "secure" option, som betyder at en
 forespørgsel skal komme fra en port mindre end 1024. Den er default
 slået til - vil man slå den fra, må man specificere
-"insecure". Beskrivelse af yderligere options findes i <COMMAND>man
-exports</COMMAND>.
+"insecure". Beskrivelse af yderligere options findes i <command>man
+exports</command>.
 </para>
 
 <para>
@@ -1036,12 +1036,12 @@ driftstabilitet, idet du kun bliver afhængig af de maskiner, du skal bruge.
 <para>
 Hvis du ikke bruger NFS, så slå den fra. I Red Hat, Debian eller SuSE
 gøres det ved at fjerne symlinkene til startup scriptet i de
-forskellige runlevel kataloger <FILENAME>/etc/rc.d/rcN.d</FILENAME> eller
-<FILENAME>/etc/rcN.d</FILENAME>, hvor N er runlevel (0-6). I nogle
+forskellige runlevel kataloger <filename>/etc/rc.d/rcN.d</filename> eller
+<filename>/etc/rcN.d</filename>, hvor N er runlevel (0-6). I nogle
 distributioner er det i stedet nødvendigt at fjerne de linjer, der har
 med NFS opstart at gøre, i et større script, der køres, når maskinen
 startes, og som starter mange andre ting end NFS. Kører du Red hat, så
-kig på programmet <COMMAND>chkconfig</COMMAND>, som er et nemt og
+kig på programmet <command>chkconfig</command>, som er et nemt og
 overskueligt værktøj til at styre, hvad der startes ved de forskellige
 runlevels.
 </para>
@@ -1066,9 +1066,9 @@ Check om du kører Apache eller en anden webserver på port 80
 (kan være andre steder såsom port 8080) ved at skrive
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>telnet MASKINNAVN 80</userinput>
-</SCREEN>
+</screen>
 
 <para>
 og så skriv f.eks. "?" og tryk retur. Ser du noget HTML kode, så 
@@ -1119,8 +1119,8 @@ så mange systemer, er det let nok at finde et system at udnytte, hvis
 man har fundet et sikkerhedshul. Det er dog ofte folk, der kører gamle
 versioner af sendmail, der er udsat. Hvis man hele tiden holder sin
 sendmail opdateret, er risikoen ikke så stor. Hent den nyeste version
-på <ULINK
-URL="http://www.sendmail.org/">http://www.sendmail.org/</ulink>.
+på <ulink
+url="http://www.sendmail.org/">http://www.sendmail.org/</ulink>.
 </para>
 </sect2>
 
@@ -1153,22 +1153,22 @@ sendmail -bd -q1h
 </programlisting>
 
 <para>
-hvor <FILENAME>-q1h</FILENAME> betyder at køen tømmes en gang hver
-time, og <COMMAND>bd</COMMAND> betyder, at den startes i "daemon
+hvor <filename>-q1h</filename> betyder at køen tømmes en gang hver
+time, og <command>bd</command> betyder, at den startes i "daemon
 mode". Sendmail startes normalt fra et startup script. I Red Hat er
-det <FILENAME>/etc/rc.d/init.d/sendmail</FILENAME>. I SuSE skal man i
-<FILENAME>/etc/rc.config</FILENAME> ændre linjen
+det <filename>/etc/rc.d/init.d/sendmail</filename>. I SuSE skal man i
+<filename>/etc/rc.config</filename> ændre linjen
 </para>
 
 <programlisting>
-SENDMAIL_ARGS="-bd -q30m -om"
+SENDMAIL_args="-bd -q30m -om"
 </programlisting>
 
 <para>
 til
 </para>
 <programlisting>
-SENDMAIL_ARGS="-q30m -om"
+SENDMAIL_args="-q30m -om"
 </programlisting>
 
 <para>
@@ -1177,15 +1177,15 @@ man ikke vil køre sendmail i "daemon mode", kan man ændre i startup
 scriptet. Hvis man slet ikke vil køre sendmail, skal man fjerne det
 symlink, der er til sendmail startup scriptet under de forskellige
 runlevels kataloger. I Red Hat er det
-<FILENAME>/etc/rc.d/rcN.d</FILENAME>, hvor N er runlevel nummeret. På
-Debian hedder det <FILENAME>/etc/rcN.d</FILENAME>.  Red Hat eksempel:
+<filename>/etc/rc.d/rcN.d</filename>, hvor N er runlevel nummeret. På
+Debian hedder det <filename>/etc/rcN.d</filename>.  Red Hat eksempel:
 Prøv at skrive
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>ls -l /etc/rc.d/rc3.d |grep sendmail</userinput>
 lrwxrwxrwx   1 root     root           18 Oct  3  1998 S80sendmail -> ../init.d/sendmail
-</SCREEN>
+</screen>
 
 <para>
 Der kan man se at sendmail bliver startet i runlevel 3. Hvis sendmail ikke
@@ -1210,17 +1210,17 @@ url="http://www.tis.com/research/software/fwtk/fwtk_over.html">http://www.tis.co
 <title>Sikring af sendmail</title>
 <para>
 Hvis du kører sendmail som i "dameon mode", kan du sikre den. Du
-kan bl.a enable nogle security options i <FILENAME>/etc/sendmail.cf</FILENAME> - som 
+kan bl.a enable nogle security options i <filename>/etc/sendmail.cf</filename> - som 
 er en ret forvirrende fil ved første blik. Man kan f.eks. sætte linjen 
 </para>
 
 <programlisting>
-O PrivacyOptions=authwarnings,needmailhelo, noexpn, novrfy
+O privacyoptions=authwarnings,needmailhelo, noexpn, novrfy
 </programlisting>
 
 <para>
 ind i sin
-<FILENAME>/etc/sendmail.cf</FILENAME>. <FILENAME>authwarnings</FILENAME>
+<filename>/etc/sendmail.cf</filename>. <filename>authwarnings</filename>
 aktiverer "email authentication warnings", så man får
 "x-authentication-warning"-beskeder i sine brevhoveder, som f.eks.
 </para>
@@ -1229,27 +1229,27 @@ aktiverer "email authentication warnings", så man får
 X-Authentication-Warning: sherif.nottingham.dk: sherif owned process doing -bs.</programlisting>
 
 <para>
-<FILENAME>authwarnings</FILENAME> er pr. default slået
-til. <FILENAME>needmailhelo</FILENAME> gør, at den maskine, der vil
+<filename>authwarnings</filename> er pr. default slået
+til. <filename>needmailhelo</filename> gør, at den maskine, der vil
 sende mail til sendmail, skal identificere sig før den får lov.
-<FILENAME>novrfy</FILENAME> forhindrer <FILENAME>VRFY</FILENAME>
+<filename>novrfy</filename> forhindrer <filename>VRFY</filename>
 kommandoen, som bruges til at bekræfte, om et bestemt brugernavn
-findes på maskinen.  <FILENAME>noexpn</FILENAME> forhindrer
-<FILENAME>EXPN</FILENAME>, som er en kommando, der bruges til at finde
+findes på maskinen.  <filename>noexpn</filename> forhindrer
+<filename>EXPN</filename>, som er en kommando, der bruges til at finde
 ud af hvilken bruger/program på systemet en e-postadresse reelt peger
 på, dvs., hvem et mail alias dækker over, hvem der modtager root mails
 på systemet etc.
 </para>
 
 <para>
-Prøv at skrive <COMMAND>telnet hostname 25</COMMAND>, hvor hostname er
+Prøv at skrive <command>telnet hostname 25</command>, hvor hostname er
 navnet på en maskine, der har sendmail (evt. din egen linux box - du
 behøver ikke 2 forskellige maskiner til dette). Sendmail bruger
 normalt port nummer 25. Så du kan faktisk kommunikere direkte med
 sendmail på maskinen ved at bruge telnet:
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>telnet bohr 25</userinput>
 Trying 192.168.0.1...
 Connected to bohr.herne.dk.
@@ -1259,7 +1259,7 @@ VRFY robin
 250 &lt;robin@sherwood.dk>
 EXPN robin
 250 &lt;robin@sherwood.dk> 
-</SCREEN>
+</screen>
 
 <para>
 Vi fik at vide at maskinen kører sendmail version 8.9.3, at robin fandtes
@@ -1270,7 +1270,7 @@ kunne se, at roots mail også går til marion? Vi prøver samme kommando,
 når VRFY og EXPN er slået fra.
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>telnet bohr 25</userinput>
 Trying 192.168.0.1...
 Connected to bohr.herne.dk.
@@ -1280,13 +1280,13 @@ VRFY robin
 252 Cannot VRFY user; try RCPT to attempt delivery (or try finger)
 EXPN robin
 502 Sorry, we do not allow this operation
-</SCREEN>
+</screen>
 
 <para>
-Der er flere muligheder. Man kan nøjes med at slå <FILENAME>expn</FILENAME> og 
-<FILENAME>vrfy</FILENAME> fra, indtil
+Der er flere muligheder. Man kan nøjes med at slå <filename>expn</filename> og 
+<filename>vrfy</filename> fra, indtil
 den fremmede maskinen har identificeret sig selv. Se 
-<ULINK URL="http://hoth.stsci.edu/man/man1m/sendmail.html">http://hoth.stsci.edu/man/man1m/sendmail.html</ulink>.
+<ulink url="http://hoth.stsci.edu/man/man1m/sendmail.html">http://hoth.stsci.edu/man/man1m/sendmail.html</ulink>.
 </para>
 </sect2>
 
@@ -1294,9 +1294,9 @@ den fremmede maskinen har identificeret sig selv. Se
 <title>Mail relaying</title>
 <para>
 Derudover skal man slå mail relaying fra. Det gøres i accessfilen -
-<FILENAME>/etc/sendmail.cf</FILENAME> indeholder oplysningerne om,
+<filename>/etc/sendmail.cf</filename> indeholder oplysningerne om,
 hvor den ligger.  På Red Hat hedder den
-<FILENAME>/etc/mail/access</FILENAME>.  Der må gerne stå f.eks.
+<filename>/etc/mail/access</filename>.  Der må gerne stå f.eks.
 </para>
 
 <programlisting>
@@ -1321,7 +1321,7 @@ imod mail relaying end at slå det fra i sendmail.
 </para>
 
 <para>
-Læs desuden <COMMAND>man sendmail</COMMAND>. 
+Læs desuden <command>man sendmail</command>. 
 </para>
 
 <para>
@@ -1403,7 +1403,7 @@ tage din identitet.
 </para>
 
 <para>
-Det kan nævnes, at vi i <xref linkend="remote-login">
+Det kan nævnes, at vi i <xref linkend="remote-login"/>
 ser nærmere på, hvordan du kan sende X-programmer fuldt
 krypteret. Denne løsning er klart at foretrække, hvis man ser på
 netværks-sikkerheden.
@@ -1432,9 +1432,9 @@ kører en nameserver (på port 53) uden at vide dette, men du kan
 verificere dette ved at skrive.
 </para>
 
-<SCREEN>
+<screen>
 <prompt>[robin@sherwood robin]$</prompt> <userinput>ps aux | grep named</userinput>
-</SCREEN>
+</screen>
 
 <para>
 Du skal kun køre et nameserverprogram, hvis maskinen reelt skal bruges
@@ -1445,7 +1445,7 @@ som nameserver.
 <sect2 id="X-serveren">
 <title>X-serveren og netværket</title>
 <para>
-Vi så i <xref linkend="rpc-og-portmap"> at NMAP kunne se X-serveren udefra. 
+Vi så i <xref linkend="rpc-og-portmap"/> at NMAP kunne se X-serveren udefra. 
 Dette kan man undgå ved at rette sidste linje i <filename>/etc/X11/xdm/Xservers</filename> til følgende. Igen en opgradering af sikkerheden.
 </para>
 
@@ -1476,13 +1476,13 @@ Dette kan man undgå ved at rette sidste linje i <filename>/etc/X11/xdm/Xservers<
 <indexterm><primary>/etc/xinetd.d/</primary></indexterm>
 
 Selvom vi har været inde på mange services her, har vi ikke været inde
-på alle. Programmer som <COMMAND>nmap</COMMAND> og kommandoer som
-<COMMAND>rpcinfo</COMMAND> og <COMMAND>netstat</COMMAND> kan vise dig
+på alle. Programmer som <command>nmap</command> og kommandoer som
+<command>rpcinfo</command> og <command>netstat</command> kan vise dig
 hvilke porte, der benyttes, hvilke services, der kører, og hvilke
-netværksforbindelser, der er etableret. Brug også <COMMAND>ps
-aux</COMMAND> flittigt og se hvilke processer, der rent faktisk kører
+netværksforbindelser, der er etableret. Brug også <command>ps
+aux</command> flittigt og se hvilke processer, der rent faktisk kører
 på dit system. Sørg for at alle unødvendige services i
-<FILENAME>/etc/xinetd.d</FILENAME> er disablet, og check dine
+<filename>/etc/xinetd.d</filename> er disablet, og check dine
 runlevel kataloger. Læs manualsiderne til de services, du vælger at
 køre. Følg med på sikkerhedslister på internettet, og følg med i
 fejlrapportet for din Linuxdistribution.  Tænk dig om, og hold øje med

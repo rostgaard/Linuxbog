@@ -184,12 +184,12 @@ og skal ikke oprettes.</para>
 </para>
 </listitem>
 
-<listitem><para><command>-X</command> Slet en tom kæde.</PARA>
-<PARA>De indbyggede kæder INPUT, FORWARD og OUTPUT
-kan ikke slettes.</PARA>
-<PARA>-X uden kædenavn sletter alle tomme
+<listitem><para><command>-X</command> Slet en tom kæde.</para>
+<para>De indbyggede kæder INPUT, FORWARD og OUTPUT
+kan ikke slettes.</para>
+<para>-X uden kædenavn sletter alle tomme
 kæder man selv har oprettet.
-</PARA>
+</para>
 
 <para>
 <command>ipchains -X NAVN</command>
@@ -618,9 +618,9 @@ bestemt pakke. Alle log beskeder kommer som standard til at ligge i
 </para>
 
 <programlisting>
-Jun 4 14:29:26 lxhome kernel: Packet log: input DENY eth0 PROTO=6
-111.111.111.111:1033 100.100.100.100:80 L=84 S=0x00 I=3121 F=0x0000
-T=64
+Jun 4 14:29:26 lxhome kernel: Packet log: input DENY eth0 proto=6
+111.111.111.111:1033 100.100.100.100:80 l=84 s=0x00 i=3121 f=0x0000
+t=64
 </programlisting>
 
 <para>
@@ -647,7 +647,7 @@ REDIRECT eller RETURN.</para>
 <para>6.eth0 betyder at logningen blev taget på interfacet eth0.
 </para>
 
-<para>7.PROTO=6 betyder at det er en TCP pakke, af andre muligheder er PROTO=1 (ICMP) og PROTO=17 (UDP). Se også <filename>/etc/protocols</filename>.
+<para>7.proto=6 betyder at det er en TCP pakke, af andre muligheder er proto=1 (ICMP) og proto=17 (UDP). Se også <filename>/etc/protocols</filename>.
 </para>
 
 <para>8.111.111.111.111:1033 er source adressen og source porten.
@@ -656,22 +656,22 @@ REDIRECT eller RETURN.</para>
 <para>9.100.100.100.100:80 er destinations adressen og destinations porten.
 </para>
 
-<para>10.L=84 er længden på pakken.
+<para>10.l=84 er længden på pakken.
 </para>
 
-<para>11.S=0x00 er type of service feltet.
+<para>11.s=0x00 er type of service feltet.
 </para>
 
-<para>12.I=3121 er pakkens datagram ID.
+<para>12.i=3121 er pakkens datagram ID.
 </para>
 
-<para>13.F=0x0000 er pakken fragments ID. En pakke der starter med 0x2
+<para>13.f=0x0000 er pakken fragments ID. En pakke der starter med 0x2
 eller 0x3 betyder flere fragmenter, så denne er kun en af flere pakker
 som skal samles til en. En værdi som starter med 0x4 eller 0x5 betyder
 at bit'en "Do not Fragment" er sat.
 </para>
 
-<para>14.T=64 er pakkens Time To Live felt. 
+<para>14.t=64 er pakkens Time To Live felt. 
 Eksempel på en logning:
 </para>
 
@@ -682,7 +682,7 @@ ipchains -A input -s BAD GUY -l vil logge alt trafik fra BAD GUY til syslog.
 </itemizedlist>
 <para>
 Læs mere om <filename>/var/log/messages</filename> i
-<xref linkend="varlogmessages">.
+<xref linkend="varlogmessages"/>.
 </para>
 </sect2>
 
@@ -701,26 +701,26 @@ Følgende eksempel kan hentes fra
 
 <programlisting>
 #!/bin/sh
-export PATH=/sbin:/usr/bin:/bin
+export path=/sbin:/usr/bin:/bin
 clear
 # Ens eksterne netkort ud mod internettet.
-# Eksempel EXTIF="ppp0", ippp0 eller "eth0"
-EXTIF="ppp0"
+# Eksempel extif="ppp0", ippp0 eller "eth0"
+extif="ppp0"
 
 # Det interne netkort.
-# Eksempel INTIF="eth0"
-INTIF="eth0"
+# Eksempel intif="eth0"
+intif="eth0"
 
 # Hvis man via sit netkort eller ppp adapter får en dynamisk IP-addresse fra
 # sin internetudbyder skal DHCP stå til yes.
-DHCP="yes"
+dhcp="yes"
 
 # Hvis denne sættes til yes vil ALT udp trafik ind til portene 55000 til 65535
 # blive tilladt ind til EXTIF på dørvogteren.
-UDPINOK=""
+udpinok=""
 
 # Ens IP-adresse på ens eksterne netkort eller ppp adapter.
-EXTIP=`ifconfig | grep -A 4 $EXTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`
+extip=`ifconfig | grep -A 4 $EXTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`
 
 if [ "$EXTIP" = '' ]; then
    echo "Kan ikke finde IP-adressen på $EXTIF "
@@ -728,10 +728,10 @@ if [ "$EXTIP" = '' ]; then
 fi
 
 # Alle IP-adresser.
-ANYIP="0.0.0.0/0.0.0.0"
+anyip="0.0.0.0/0.0.0.0"
 
 # IP-adresse på det interne netværk.
-INTLAN=`ifconfig | grep -A 4 $INTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`"/"`ifconfig | grep -A 4 $INTIF | awk '/Mask/ { print $4 } ' | sed -e s/Mask://`
+intlan=`ifconfig | grep -A 4 $INTIF | awk '/inet/ { print $2 } ' | sed -e s/addr://`"/"`ifconfig | grep -A 4 $INTIF | awk '/Mask/ { print $4 } ' | sed -e s/Mask://`
 
 if [ "$INTLAN" = '' ]; then
    echo "Kan ikke finde IP-adressen på $INTLAN ..."
@@ -803,7 +803,7 @@ ipchains -M -S 7200 10 160
 
 # Bruges til noget videokonference.
 #if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_cuseeme.o ]; then
-#   CUSEEME="yes"
+#   cuseeme="yes"
 #  if ! [ "`cat /proc/modules | awk '/ip_masq_cuseeme/ { print $1 }'`" = ip_masq_cuseeme ]; then 
 #   insmod /lib/modules/`uname -r`/ipv4/ip_masq_cuseeme.o
 #  fi
@@ -811,7 +811,7 @@ ipchains -M -S 7200 10 160
 
 # Bruges så aktiv FTP virker.
 if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_ftp.o ]; then
-   FTP="yes"
+   ftp="yes"
   if ! [ "`cat /proc/modules | awk '/ip_masq_ftp/ { print $1 }'`" = ip_masq_ftp ]; then 
    insmod /lib/modules/`uname -r`/ipv4/ip_masq_ftp.o
   fi
@@ -819,7 +819,7 @@ fi
 
 # Bruges til IRC så fil overførelse virker.
 if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_irc.o ]; then
-   IRC="yes"
+   irc="yes"
   if ! [ "`cat /proc/modules | awk '/ip_masq_irc/ { print $1 }'`" = ip_masq_irc ]; then 
    insmod /lib/modules/`uname -r`/ipv4/ip_masq_irc.o
   fi
@@ -827,7 +827,7 @@ fi
 
 # Bruges til Quake over internettet
 if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_quake.o ]; then
-   QUAKE="yes"
+   quake="yes"
   if ! [ "`cat /proc/modules | awk '/ip_masq_quake/ { print $1 }'`" = ip_masq_quake ]; then 
    insmod /lib/modules/`uname -r`/ipv4/ip_masq_quake.o
   fi
@@ -835,7 +835,7 @@ fi
 
 # Bruges så UDP virker med Real Audio
 if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_raudio.o ]; then
-   RAUDIO="yes"
+   raudio="yes"
   if ! [ "`cat /proc/modules | awk '/ip_masq_raudio/ { print $1 }'`" = ip_masq_raudio ]; then 
    insmod /lib/modules/`uname -r`/ipv4/ip_masq_raudio.o
   fi
@@ -843,7 +843,7 @@ fi
 
 # Bruges til live video over internettet
 #if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_vdolive.o ]; then
-#   VDOLIVE="yes"
+#   vdolive="yes"
 #  if ! [ "`cat /proc/modules | awk '/ip_masq_vdolive/ { print $1 }'`" = ip_masq_vdolive ]; then 
 #   insmod /lib/modules/`uname -r`/ipv4/ip_masq_vdolive.o
 #  fi
@@ -851,7 +851,7 @@ fi
 
 # Bruges til ICQ
 if [ -f /lib/modules/`uname -r`/ipv4/ip_masq_icq.o ]; then
-   ICQ="yes"
+   icq="yes"
   if ! [ "`cat /proc/modules | awk '/ip_masq_icq/ { print $1 }'`" = ip_masq_icq ]; then 
    insmod /lib/modules/`uname -r`/ipv4/ip_masq_icq.o
   fi
@@ -1173,9 +1173,9 @@ muligheder man har skriver man
 # description: Dørvogterinitialiseringsprogram til at starte 
 #	       og stoppe dørvogter (fra Linux-bog).
 # Lavet af:    Peter Enoch
-export PATH=/sbin:/bin:/usr/bin
+export path=/sbin:/bin:/usr/bin
 
-FW=`cat /proc/net/ip_fwchains`
+fw=`cat /proc/net/ip_fwchains`
 
 . /etc/rc.d/init.d/functions
 
