@@ -15,29 +15,29 @@ Makefiler:
 	cp Makefile.subdir office/Makefile
 
 filer:  Makefiler
-	make Makefiler
-	make -C friheden
-	make -C applikationer
-	make -C admin
-	make -C program
-	make -C web
-	make -C sikkerhed
-	make -C c
-	make -C docbook
-	make -C office
-	make -C alle 
+	$(MAKE) Makefiler
+	$(MAKE) -C friheden
+	$(MAKE) -C applikationer
+	$(MAKE) -C admin
+	$(MAKE) -C program
+	$(MAKE) -C web
+	$(MAKE) -C sikkerhed
+	$(MAKE) -C c
+	$(MAKE) -C docbook
+	$(MAKE) -C office
+	$(MAKE) -C alle 
 
 statusfiler:  Makefiler
-	make -C friheden statusfiler
-	make -C applikationer  statusfiler
-	make -C admin  statusfiler
-	make -C program  statusfiler
-	make -C web  statusfiler
-	make -C sikkerhed  statusfiler
-	make -C c  statusfiler
-	make -C docbook  statusfiler
-	make -C office  statusfiler
-	make -C alle  statusfiler
+	$(MAKE) -C friheden statusfiler
+	$(MAKE) -C applikationer  statusfiler
+	$(MAKE) -C admin  statusfiler
+	$(MAKE) -C program  statusfiler
+	$(MAKE) -C web  statusfiler
+	$(MAKE) -C sikkerhed  statusfiler
+	$(MAKE) -C c  statusfiler
+	$(MAKE) -C docbook  statusfiler
+	$(MAKE) -C office  statusfiler
+	$(MAKE) -C alle  statusfiler
 
 version:  Makefiler
 	@grep -A2 "<listitem>" friheden/apprevhist.sgml | head -n 2 | tail -n 1 | cut -d' ' -f2 > friheden/version.sgml
@@ -61,27 +61,27 @@ version:  Makefiler
 	@echo "office" `cat office/version.sgml`
 
 eksempelbackup:  statusfiler
-	make -C friheden eksempelbackup
-	make -C applikationer  eksempelbackup
-	make -C admin  eksempelbackup
-	make -C program  eksempelbackup
-	make -C web  eksempelbackup
-	make -C sikkerhed  eksempelbackup
-	make -C c  eksempelbackup
-	make -C docbook  eksempelbackup
-	make -C office  eksempelbackup
+	$(MAKE) -C friheden eksempelbackup
+	$(MAKE) -C applikationer  eksempelbackup
+	$(MAKE) -C admin  eksempelbackup
+	$(MAKE) -C program  eksempelbackup
+	$(MAKE) -C web  eksempelbackup
+	$(MAKE) -C sikkerhed  eksempelbackup
+	$(MAKE) -C c  eksempelbackup
+	$(MAKE) -C docbook  eksempelbackup
+	$(MAKE) -C office  eksempelbackup
 
 clean: Makefiler
-	make -C friheden clean
-	make -C applikationer clean
-	make -C admin clean 
-	make -C program clean
-	make -C web clean 
-	make -C sikkerhed clean 
-	make -C c clean 
-	make -C docbook clean 
-	make -C office clean 
-	make -C alle clean 
+	$(MAKE) -C friheden clean
+	$(MAKE) -C applikationer clean
+	$(MAKE) -C admin clean 
+	$(MAKE) -C program clean
+	$(MAKE) -C web clean 
+	$(MAKE) -C sikkerhed clean 
+	$(MAKE) -C c clean 
+	$(MAKE) -C docbook clean 
+	$(MAKE) -C office clean 
+	$(MAKE) -C alle clean 
 	rm -rf cvs2html
 	rm -rf Friheden_palm.tgz 
 
