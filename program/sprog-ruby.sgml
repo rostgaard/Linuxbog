@@ -7,6 +7,9 @@
   <primary>Ruby</primary>
  </indexterm>
  <indexterm>
+  <primary>objektorienterede sprog</primary><secondary>Ruby</secondary>
+ </indexterm>
+ <indexterm>
   <primary>imperative sprog</primary><secondary>Ruby</secondary>
  </indexterm>
  <indexterm>
@@ -14,6 +17,223 @@
  </indexterm>
 
  <para>
-  ???
+  Ruby tilhører, sammen med Perl og Python, gruppen af modernede fortolkede
+  sprog. Fra begyndelsen er Ruby designet som et objektorienteret sprog
+  og giver derfor en mere elegant oplevelse end Perls objekter, men
+  derudover minder Ruby langt hen af vejen som en pænere version af
+  Perl.
  </para>
+
+ <para>
+  Ruby er hovedsagligt udviklet i Japan og meget af dokumentationen er
+  skrevet på japansk. Denne mangel på engelsk dokumentation har været
+  en hindring for Rubys internationale udbredelse. Dette er der ved at
+  blive rådet bod på, det kan derfor kun anbefales at se nærmere på
+  Ruby.
+ </para>
+
+<sect2 id="hello-ruby">
+ <title>Hej verden!</title>
+
+ <para>
+  Vi begynder med det sædvanlige eksempel. Et lille program der ikke gør
+  andet end at skrive "Hello World!" ud på skærmen. Det giver ikke meget
+  indtryk af selve sproget Ruby, men viser hvordan man briuger det. Gem
+  følgende tekst som <filename>hello.rb</filename>
+ </para>
+
+<programlisting>
+#!/usr/bin/ruby
+
+print "Hello World!\n"
+</programlisting>
+
+ <para>
+  Programmet kan nu køres ved enten at kalde <command>ruby</command>:
+ </para>
+
+<screen>
+<prompt>linus% </prompt><userinput>ruby hello.rb</userinput>
+Hello World!
+<prompt>linux% </prompt>
+</screen>
+
+<para>
+  eller ved at gøre scriptet udførbart og køre det direkte:
+</para>
+
+<screen>
+<prompt>linux% </prompt><userinput>chmod a+x hello.rb</userinput
+<prompt>linux% </prompt>./hello.rb
+Hello World!
+<prompt>linux% </prompt>
+</screen>
+
+</sect2><!-- hello-ruby -->
+
+<sect2 id='mail-ruby'>
+ <title>Et større eksempel</title>
+
+ <para>
+  For at vise et lidt større eksempel som giver en lidt større indsigt i
+  hvordan Ruby ser ud er her et simpelt program til afsendelse af email.
+  Programmet er ret simpelt. Det beder om en afsender, en modtager og et
+  emne. Derefter kan man skrive sin mail.
+ </para>
+
+ <para>
+  I sin fulde længde ser programmet således ud:
+ </para>
+
+<programlisting>
+#!/usr/bin/ruby
+
+require 'net/smtp'
+
+mail = String::new("")
+
+begin
+  print "From: "
+  from = readline
+  mail << "From: " << from
+  from.chomp
+  print "To: "
+  to = readline
+  mail << "To: " << to
+  to.chomp
+  print "Subject: "
+  mail << "Subject: " << readline
+rescue EOFError
+  print "\nAborted\n"
+  exit 1
+end
+
+mail << "\n"
+
+print "Write mail end with . or EOF\n"
+begin
+    line = readline
+    break if (line == ".\n")
+    mail << line
+rescue EOFError
+    break
+end while true
+
+smtp = Net::SMTP::new("localhost")
+smtp.start
+smtp.sendmail(mail, from, to)
+smtp.finish
+</programlisting>
+
+ <para>
+  Den første linje
+
+<programlisting>
+require 'net/smtp'
+</programlisting>
+
+  Fortæller at vi har brug for biblioteket der implementerer SMTP så vi
+  kan sende mail.
+ </para>
+
+ <para>
+  Selvom Ruby er utypet, så skal vi have et objekt for at kunne lave
+  metodekald. Derfor bliver vi nødt til at initialiserer variablen mail
+  med et streng-objekt:
+
+<programlisting>
+mail = String::new("")
+</programlisting>
+
+ </para>
+
+ <para>
+  Det næste vi skal gøre er at spørge brugeren om afsenderen, modtageren
+  og emnet for mailen. Hvis brugeren trykker Ctrl-D (End Of File) skal
+  programmet stoppe:
+ </para>
+
+<programlisting>
+begin
+  print "From: "
+  from = readline
+  mail &lt;&lt; "From: " &lt;&lt; from
+  from.chomp
+  print "To: "
+  to = readline
+  mail &lt;&lt; "To: " &lt;&lt; to
+  to.chomp
+  print "Subject: "
+  mail &lt;&lt; "Subject: " &lt;&lt; readline
+rescue EOFError
+  print "\nAborted\n"
+  exit 1
+end
+
+mail &lt;&lt; "\n"
+</programlisting>
+
+ <para>
+  <command>readline</command> læser en linje fra standard-ind. Hvis
+  brugeren sender en EOF (trykker Ctrl-D) rejses end EOFError-undtagelse,
+  der derfor fanges tilsidst i blokken (fra <command>rescue
+  EOFError</command>).
+ </para>
+
+ <para>
+  &lt;&lt; er en metode på et streng-objekt. Den tilføjer en streng til
+  objektet. <command>chomp</command>-metoden fjerner ny linje-tegnet
+  sidste fra en streng.
+ </para>
+
+ <para>
+  Så skal vi læse selve mailen ind. Dette gøres i en
+  uendelig <command>while</command>-løkke:
+ </para>
+
+<programlisting>
+print "Write mail end with . or EOF\n"
+begin
+  line = readline
+  break if (line == ".\n")
+  mail << line
+rescue EOFError
+  break
+end while true
+</programlisting>
+
+  <para>
+   Hvis brugeren sender en EOF hopper vi ud af løkken i rescue-blokken
+   og hvis brugeren skriver en linje kun indenholdende et punktum hopper
+   vi også ud af løkken.
+  </para>
+
+  <para>
+   Tilbage er bare at sende mailen:
+  </para>
+
+<programlisting>
+smtp = Net::SMTP::new("localhost")
+smtp.start
+smtp.sendmail(mail, from, to)
+smtp.finish
+</programlisting>
+
+ <para>
+  Vi laver et smtp-objekt og sender mailen med
+  <command>sendmail</command>-metoden
+ </para>
+
+</sect2><!-- mail-ruby -->
+
+<sect2 id='oneliner-ruby'>
+ <title>One-liners i Ruby</title>
+
+ <para>
+  <command>ruby</command> understøtter en række argumenter der gør det
+  lettere at skrive one-liners, altså små programmer der kan skrives på
+  en linje. Disse argumenter kendes også fra perl
+ </para>
+
+</sect2>
 </sect1>
