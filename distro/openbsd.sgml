@@ -1,0 +1,559 @@
+<chapter id="distro-openbsd">
+<title>OpenBSD</title>
+<para>
+Jeg har altid haft en svaghed for operativ systemer der ikke gør alting for mig.Min første Linux var en Slackware 2.0, hvor næsten alt skulle sættes op i med håndkraft. Det var hårdt arbejde og i starten anede jeg dybest set ikke hvad jeg lavede. Internet var noget skolen havde så om aftenen var det bare at prøve sig frem, og så prøve at rette op på det igen, hvis det var forkert. Jeg lærte afsindig meget om hvordan Unix og Linux fungerer, og havde det ikke været for disse forsøg på at få Slackware til at opføre sig ordentligt ville jeg næppe have den viden jeg har idag.
+</para>
+<para>
+Mange Linuxdistributioner er idag så automatiserede at man ikke behøver at vide ret meget om dem for at få dem til at fungere, og med mellemrum savner jeg at begrave mig i en eller anden detalje som bare skal fungere for at resten også fungerer.
+</para>
+<para>
+Jeg har længe gerne villet afprøve OpenBSD, fordi den har ry for at være en meget sikker Unix. Og det viste sig at den er så tilpas manuel i opsætningen at jeg rigtig godt kan lide den.
+</para>
+
+<figure id="openbsd-logo" float="1">
+<title>OpenBSD Logo</title>
+<graphic fileref="puffy34.&magic;" scale="60"></graphic>
+</figure>
+
+<para>
+OpenBSD distribueres fra <ulink url="http://www.openbsd.org/">http://www.openbsd.org/</ulink>. OpenBSD kan bringes til at køre på mange forskellig platforme, bland andre i386, Alpha, HPPA (PA-RISC), Sparc, Sparc64 og Vax. ISO-images af CD'ere kan ikke downloades, men CD'ere kan købes rundt om på nettet. Installationen kan foretages direkte over Nettet eller fra lokalnettet. 
+</para>
+
+
+<sect1 id="distro-openbsd-maalgruppe">
+<title>Hvem er målgruppen for OpenBSD</title>
+<para>
+OpenBSD er for dem der vil vide hvad der fåregår på maskinen. Her kører ingen daemoner der ikke eksplicit er blevet startet af administratoren.
+<!-- br / -->
+
+</para>
+</sect1>
+
+<sect1 id="distro-OpenBSD-installation">
+<title>Installation</title>
+<para>
+Testmaskinen er en gammel bærbar der ikke kan boote fra CD, så netværksinstallation var mest nærliggende.
+</para>
+<para>
+Efterhånden har jeg installeret en del Linux'er, og lidt FreeBSD så jeg fandt hurtigt ud af at OpenBSD har tre floppy'er til installation. <!-- br / -->
+Jeg valgte floppyC34.fs, da den så ud til at have drivere til PCMCIA-kort og andet hardware i bærbare. Jeg hentede et floppy-image, og skrev det på en diskette med ntrw.exe (husets eneste maskine med permanent floppydrev kører windows)</para>
+<para>Efter tryk på power-knappen dukkede bootloaderen frem, og efter få sekunder gik den i gang med at loade kernen.</para>
+<para>
+Installationen kører i ren textmode. For det meste er det bare informationer og spørgsmål der ruller op over skærmen.
+Jeg havde faktisk ventet at installationen var mere indviklet. 
+Jeg partitionerede forkert en enkelt gang, og måtte derfor afbryde installationen, men ellers er det ganske simpelt.
+</para>
+
+<para>
+Selve installationen foregår som sagt ganske gnidningsløst:
+I med disketten, tryk på powerknappen.
+Man bliver spurgt om terminal-type. Jag valgte vt220 som den selv foreslog.
+Jeg ændrede keyboard-layout og sprog til dansk.
+Da jeg ikke har noget på denne maskine der skulle bevares, valgte jeg at lade OpenBSD tage sig af hele disken.
+</para>
+
+
+<para>
+Netværkskonfiguration er helt straight forward. Jeg vlagte DHCP og maskinen fik straks en ip-adresse fra min server.
+</para>
+
+<para>
+Jeg valgte at installere via en ftp-site. Installationen har en liste over kendte mirrors som man kan vælge. Eller man kan indtaste en specifik ftp-server. Jeg valgte ftp.openbsd.org da jeg konstaterede at ikke alle mirrors har version 3.4 endnu.
+</para>
+<para>
+Ved pakkevalget valgte jeg alt minus bsd.rd som er en ramdisk til brug ved opgradering.
+</para>
+<para>
+Efter et par timers download svarede jeg ja til at ville køre X.
+Jeg skrev Europe og derefter Copenhagen ved Timezone-prompten.
+
+Herefter laver installationen devices og så er den basale installation færdig.
+Jeg skrev halt på kommandolinien, fjernede disketten og bootede til min fine nye OpenBSD.
+</para>
+
+<sect2 id="distro-OpenBSD-partitioner">
+<title>Lidt om disklayout</title>
+<para>
+OpenBSD label editor er det mest indviklede under installationen.
+Når man er vant til Linux, der jo som udgangspunkt bruger DOS-partitioner på disken, bør man lige sætte sig ind i hvordan BSD'erne ser på disken:
+Disken ses som et hele, der kan deles i slices (benævn med bogstaverne a-h) eller partitioner om man vil. Slice c er speciel, idet den består af hele disken og ikke må bruges direkte. De andre slices laves som en delmængde af slice c. 
+
+Label editoren minder lidt om Liunx's fdisk. Kammandoer i form af enkelte bogstaver giver adgang til at ændre diskens layout. p viser det nuværende layout, a tilføjer en slice, d sletter en slice. ? bringer en beskrivelse af de enkelte kommandoer frem.
+w skriver den valgte label til disken og q afslutter label editoren.
+</para>
+<para>
+Konventionerne foreskriver at slice a mountes som / og slice b er swap. c må som sagt ikke bruges. Resten af partitionerne kan man bruge som man vil.
+</para>
+<para>
+Slice c bruges til at tage backup af hele disken. Ganske fikst egentlig, da man så slipper for at tage højde for mountpoints osv.
+</para>
+<para>
+Jeg endte med at partitionere således:
+
+<screen>
+<prompt>
+#        size   offset    fstype   [fsize bsize   cpg]
+  a:   102400       63    4.2BSD     1024  8192    12   # (Cyl.    0*- 12*)
+  b:   262144   283711      swap                        # (Cyl.   35*- 67*)
+  c:  4233537       63    unused        0     0         # (Cyl.    0*- 524)
+  d:   181248   102463    4.2BSD     2048 16384    22   # (Cyl.   12*- 35*)
+  e:   400000   545855    4.2BSD     2048 16384    49   # (Cyl.   67*- 117*)
+  f:  3287682   945855    4.2BSD     2048 16384   328   # (Cyl.  117*- 524*)
+</prompt>
+</screen>
+
+Med mountpoints og størrelser på de enkelte slices ser det sådan ud:
+<screen>
+<prompt>
+a /     100 M
+b swap  260 M
+c hele disken
+d /tmp  90 M
+e /var  200 M
+f /usr  1.6 G
+</prompt>
+</screen>
+
+
+Når man afslutter labeleditoren bliver spurgt om mountpoints og derefter bygges der filsystemer.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="distro-OpenBSD-postinstall">
+<title>Efter den grundlæggende installation</title>
+<para>
+Efter første boot endte jeg i en login-promt. Jeg loggede ind som root og blev spurgt hvilken terminal jeg bruger, og fik iøvrigt at vide at det ikke er godt at logge ind som root:
+<screen>
+<prompt>
+Terminal type? [vt220] 
+Don't login as root, use su                                             
+Read the afterboot(8) man page for administration advice.
+miles# 
+</prompt>
+</screen>
+Det kan betale sig at læse manualsiden <command>afterboot</command>. Der står mange nyttige oplysninger om systemet.
+</para>
+<para>
+Jeg startede med at se mig lidt omkring:
+<screen>
+<prompt>
+miles# df -h
+Filesystem    Size   Used  Avail Capacity  Mounted on
+/dev/wd0a    47.9M  23.8M  21.7M    52%    /
+/dev/wd0d    85.8M   6.0K  81.5M     0%    /tmp
+/dev/wd0f     1.5G   292M   1.2G    19%    /usr
+/dev/wd0e     190M   6.6M   174M     4%    /var
+miles# pwd
+/root
+miles# echo $SHELL
+/bin/csh
+miles# date
+Thu May 16 00:16:27 CEST 2002
+miles# 
+</prompt>
+</screen>
+Hmm..  c-shell og helt skæv dato. Men lige over 300 M for en hel UNIX-distribution er ikke dårligt.
+</para>
+<para>
+Hvilke porte lytter den mon på?
+<screen>
+<prompt>
+miles# netstat -an
+Active Internet connections (including servers)
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)
+tcp        0      0  192.168.132.226.22     192.168.132.14.1835    ESTABLISHED
+tcp        0      0  127.0.0.1.587          *.*                    LISTEN
+tcp        0      0  127.0.0.1.25           *.*                    LISTEN
+tcp        0      0  *.22                   *.*                    LISTEN
+tcp        0      0  *.37                   *.*                    LISTEN
+tcp        0      0  *.13                   *.*                    LISTEN
+tcp        0      0  *.113                  *.*                    LISTEN
+Active Internet connections (including servers)
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)
+udp        0      0  127.0.0.1.512          *.*                   
+udp        0      0  *.514                  *.*                   
+udp        0      0  *.68                   *.*                   
+udp        0      0  *.*                    *.*                   
+Active Internet connections (including servers)
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)
+tcp6       0      0  ::1.587                *.*                    LISTEN
+tcp6       0      0  ::1.25                 *.*                    LISTEN
+tcp6       0      0  *.22                   *.*                    LISTEN
+tcp6       0      0  *.37                   *.*                    LISTEN
+tcp6       0      0  *.13                   *.*                    LISTEN
+tcp6       0      0  *.113                  *.*                    LISTEN
+Active Internet connections (including servers)
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)
+udp6       0      0  ::1.512                *.*                   
+Active UNIX domain sockets
+Address    Type   Recv-Q Send-Q      Inode       Conn       Refs    Nextref Addr
+0xd086825c stream      0      0 0xd68b9858        0x0        0x0        0x0 tabs/.sock
+0xd0868194 dgram       0      0        0x0 0xd0815140        0x0 0xd0863b00
+0xd0848e10 dgram       0      0        0x0 0xd0815140        0x0        0x0
+0xd08484b0 stream      0      0        0x0 0xd07d1180        0x0        0x0
+0xd08483e8 stream      0      0        0x0 0xd08157c0        0x0        0x0
+0xd0848258 dgram       0      0 0xd68a7844        0x0        0x0        0x0 /var/empty/dev/log
+0xd0848190 dgram       0      0 0xd68a7784        0x0 0xd0863100        0x0 /dev/log
+# 
+</prompt>
+</screen>
+Ikke afskrækkende: ssh, time, daytime og ident samt syslog og en bootp-client. Og så er IPv6 konfigureret som default.
+</para>
+<para>
+Først og fremmest: Jeg føler mig skidt hjemme i en c-shell. Bash er lige mig.
+<screen><prompt>
+miles# bash
+bash: Command not found.
+miles#
+</prompt></screen>
+Nå, ikke...
+<screen><prompt>
+miles# ksh -o emacs
+# 
+</prompt></screen>
+David Korn har ikke levet forgæves. Det er nok det tætteste jeg kommer på en Bash-shell i første omgang. Første prioritet må være at få maskinen til at vide hvilken tidsalder den lever i. Altså skal ntp lokaliseres
+<screen><prompt>
+# cd /
+# find . -name ntpd -print
+# find . -name ntp\* -print
+</prompt></screen>
+Javel ja....   Første prioritet er nu at finde ud af hvordan man installerer extra programmer på OpenBSD. Datoen må sættes manuelt i første omgang:
+<screen><prompt>
+# date 200311081829
+Sat Nov  8 18:29:00 CET 2003
+#
+</prompt></screen>
+Det virkede da i det mindste. For en god ordens skyld må jeg hellere lige oprette et brugbart login til mig selv først.
+<screen><prompt>
+# useradd                                    
+usage: useradd -D [-b basedir] [-e expiry] [-f changetime] [-g group]
+                [-k skeletondir] [-r low..high] [-s shell] [-L class]
+usage: useradd [-mov] [-G group[,group,...]] [-b basedir] [-c comment]
+                [-d homedir] [-e expiry] [-f changetime] [-g group]
+                [-k skeletondir] [-p password] [-r lowuid..highuid]
+                [-s shell] [-u uid] [-L class] user
+#
+</prompt></screen>
+Det ligner da noget jeg har set før.
+<screen><prompt>
+# useradd -g users -c "OpenBSD TestUser" -m  -s /bin/ksh otu
+# grep ^otu /etc/passwd
+otu:*:1000:10:OpenBSD TestUser:/home/otu:/bin/csh
+# ls /home/otu/
+.cshrc   .login   .mailrc  .profile .rhosts
+# passwd otu
+Changing local password for otu.
+New password:
+Please enter a longer password.
+New password:
+Please enter a longer password.
+New password:
+Retype new password:
+# 
+</prompt></screen>
+Selv root får ikke lov at lave for kort password
+</para>
+<para>
+Login med normal bruger, derefter su:
+<screen><prompt>
+kvi@snake ~ -> ssh otu@miles
+The authenticity of host 'miles (192.168.132.16)' can't be established.
+RSA key fingerprint is 6d:e3:f8:5b:c2:47:ec:94:82:fd:69:be:16:40:95:31.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'miles,192.168.132.16' (RSA) to the list of known hosts.
+otu@miles's password: 
+OpenBSD 3.4 (GENERIC) #18: Wed Sep 17 03:34:47 MDT 2003
+
+Welcome to OpenBSD: The proactively secure Unix-like operating system.
+
+Please use the sendbug(1) utility to report bugs in the system.
+Before reporting a bug, please try to reproduce it with the latest
+version of the code.  With bug reports, please try to ensure that
+enough information to reproduce the problem is enclosed, and if a
+known fix for it exists, include that as well.
+
+$ su
+Password:
+you are not in group wheel
+Sorry
+$ 
+</prompt></screen>
+Nå, heller ikke..... 
+</para>
+<para>
+Brugere skal være medlem af gruppen wheel for at få lov at lave su
+<screen><prompt>
+# grep ^wheel /etc/group
+wheel:*:0:root,otu
+# 
+</prompt></screen>
+Nu er det bedre:
+<screen><prompt>
+$ id
+uid=1000(otu) gid=10(users) groups=10(users), 0(wheel)
+$ su
+Password:
+miles# ksh -o emacs
+# 
+</prompt></screen>
+Efter et kig i <command>man afterboot</command> fandt jeg ud af at ekstra software kan installeres på samme måde som på FreeBSD: ved hjælp af ports og packages. Jeg havde hurtigt brug for en ntp-daemon så jeg valgte de prækompilerede packages. Fra <ulink url="ftp://ftp.openbsd.org/pub/OpenBSD/3.4/packages/i386">ftp://ftp.openbsd.org/pub/OpenBSD/3.4/packages/i386</ulink> hentede jeg <prompt>ntp-4.1.74.tgz</prompt>.
+<screen><prompt>
+$ su
+Password:
+miles# ksh -o emacs
+# pkg_add
+pkg_add: missing package name(s)
+usage: pkg_add [-vInfRMS] [-t template] [-p prefix] pkg-name ...
+# pkg_add ntp-4.1.74.tgz
+
++---------------
+| Several example configuration files can be found in 
+| /usr/local/share/examples/ntp.
+|
+| 1) create/update the file /etc/ntp.conf
+| 2) restart your system
+|
+| The system restart is necessary as tickadj is run from
+| /etc/rc.securelevel before the system securelevel is
+| changed.
++---------------
+
+# 
+</prompt></screen>
+Hmmm.... en UNIX-maskien der skal genstartes bare fordi man installerer et nyt program? På den anden side, det ser ud til at der er en god grund.
+Jeg lavede <command>/etc/ntp.conf</command>:
+<screen><prompt>
+$ cat /etc/ntp.conf
+server 130.226.1.2
+server  127.127.1.0     # local clock
+$ 
+</prompt></screen>
+og genstartede maskinen.
+</para>
+
+<para>
+Efter dette gik det op for mig at Korn-shell'en i emacs-mode er til at leve med på OpenBSD. Så jeg fortsatte med at installere andre programmer. 
+</para>
+</sect1>
+
+<sect1 id="distro-OpenBSD-ports">
+<title>Flere programmer - ports systemet</title>
+<para>
+Ports er en anden måde at installere programmer på. Fremfor at hente færdigkompilerede binære pakker, henter man kildekode med tilhørende patches der som regel får en give pakke til kompilere smertefrit på OpenBSD.
+</para>
+<para>
+For at dette kan lade sig gøre skal man have det jeg vil betegne som ports-definitioner liggende på sin egen-maskine. Det er ganske enkelt en beskrivelse for hver enkelt program i ports, om hvor kildekoden kan findes, hvilke pathches der skal til, hvordan programmet skal kompileres og lignende. Yderlige er der indbyggede afhængigheder, således at ports-systemet selv sørger for at downloade og kompilere eventuelle pakker der kræves for at kompilere et givet program.
+</para>
+<para>
+For at kunne bruge ports skal man havedefinitionerne på plads først. Jeg synes det er nemmet at bruge CVSup til dette formål. Fra <ulink url="ftp://ftp.openbsd.org/pub/OpenBSD/3.4/packages/i386">ftp://ftp.openbsd.org/pub/OpenBSD/3.4/packages/i386</ulink> hentede jeg <prompt>cvsup-16.1g-no_x11.tgz</prompt> og installerede. Ved samme lejlighed konstaterede jeg lige at der rent faktisk findes en compiler på maskinen:
+<screen><prompt>
+# pkg_add cvsup-16.1g-no_x11.tgz                                               
+# gcc -v
+Reading specs from /usr/lib/gcc-lib/i386-unknown-openbsd3.4/2.95.3/specs
+gcc version 2.95.3 20010125 (prerelease, propolice)
+# 
+</prompt></screen>
+Jeg lavede en fil med definitioner til hvor CVSup skal hente sine oplysninger:
+<screen><prompt>
+# Defaults that apply to all the collections
+*default release=cvs
+*default delete use-rel-suffix
+*default umask=002
+*default host=cvsup.uk.openbsd.org
+*default base=/usr/cvs
+*default prefix=/usr/cvs
+
+# If your network link is a T1 or faster, comment out the following line.
+*default compress
+
+OpenBSD-ports tag=.
+
+# 
+</prompt></screen>
+og lod så root hente ports-definitionerne:
+<screen><prompt>
+Parsing supfile "CVSup/CVSup.ports"
+Connecting to cvsup.uk.openbsd.org
+Connected to cvsup.uk.openbsd.org
+Server software version: SNAP_16_1h
+Negotiating file attribute support
+Exchanging collection information
+Establishing multiplexed-mode data connection
+Running
+Updating collection OpenBSD-ports/cvs
+ Checkout ports/INDEX
+ Checkout ports/Makefile
+ Checkout ports/README
+ Checkout ports/archivers/Makefile
+ Checkout ports/archivers/arc/Makefile
+ Checkout ports/archivers/arc/distinfo
+ Checkout ports/archivers/arc/patches/patch-Makefile
+ Checkout ports/archivers/arc/patches/patch-arc_c
+ Checkout ports/archivers/arc/patches/patch-arc_h
+ Checkout ports/archivers/arc/patches/patch-arcadd_c
+ Checkout ports/archivers/arc/patches/patch-arccvt_c
+ Checkout ports/archivers/arc/patches/patch-arcdata_c
+ Checkout ports/archivers/arc/patches/patch-arcdos_c
+ Checkout ports/archivers/arc/patches/patch-arcext_c
+ Checkout ports/archivers/arc/patches/patch-arcio_c
+ Checkout ports/archivers/arc/patches/patch-arclzw_c
+ Checkout ports/archivers/arc/patches/patch-arcrun_c
+ Checkout ports/archivers/arc/patches/patch-arcunp_c
+ Checkout ports/archivers/arc/patches/patch-marc_c
+ Checkout ports/archivers/arc/pkg/DESCR
+ Checkout ports/archivers/arc/pkg/PLIST
+ ...... 
+ ......
+ ...... 
+ ......
+ Checkout ports/x11/xwrits/pkg/PLIST
+ Checkout ports/x11/xzoom/Makefile
+ Checkout ports/x11/xzoom/distinfo
+ Checkout ports/x11/xzoom/patches/patch-aa
+ Checkout ports/x11/xzoom/pkg/DESCR
+ Checkout ports/x11/xzoom/pkg/PLIST
+#
+</prompt></screen>
+Det tog lidt over en time.
+</para>
+<para>
+For bare at afprøve ports installerede jeg bzip2. Jeg fandt den i <prompt>/usr/cvs/ports/archivers/bzip2</prompt> ud fra en betragtning om at jeg nok skulle få brug for den senere. Jeg vil gerne installere bzip2 og fjerne kildekoden igen:
+<screen><prompt>
+# make install clean
+"/usr/share/mk/bsd.port.mk", line 3: Could not find /usr/ports/infrastructure/mk/bsd.port.mk
+Fatal errors encountered -- cannot continue
+# 
+</prompt></screen>
+BANG! Så let skulle det ikke være. Men egentlig er det jo nok min egen skyld. FreeBSD's ports-træ ligger under <prompt>/usr/ports</prompt> og jeg har lagt mit under <prompt>/usr/cvs/ports</prompt>. Efter 10 sekunders Googling fik jeg lavet en fil der kan definere hvor ports-træet ligger:
+<screen><prompt>
+# cat /etc/mk.conf                                                             
+PORTSDIR=/usr/cvs/ports
+# 
+</prompt></screen>
+og så gik det bedre:
+<screen><prompt>
+# make install clean
+===>  Checking files for bzip2-1.0.2
+>> bzip2-1.0.2.tar.gz doesn't seem to exist on this system.
+>> Attempting to fetch /usr/cvs/ports/distfiles/bzip2-1.0.2.tar.gz from ftp://mirrors.rcn.net/mirrors/sources.redhat.com/bzip2/v102/.
+
+100% |**************************************************|   649 KB    00:16    
+>> Checksum OK for bzip2-1.0.2.tar.gz. (sha1)
+===>  Extracting for bzip2-1.0.2
+===>  Patching for bzip2-1.0.2
+===>  Configuring for bzip2-1.0.2
+===>  Building for bzip2-1.0.2
+
+If compilation produces errors, or a large number of warnings, 
+please read README.COMPILATION.PROBLEMS -- you might be able to
+adjust the flags in this Makefile to improve matters.
+
+cc -O2   -Wall -Winline -fomit-frame-pointer -fno-strength-reduce -c blocksort.c
+cc -O2   -Wall -Winline -fomit-frame-pointer -fno-strength-reduce -c huffman.c
+cc -O2   -Wall -Winline -fomit-frame-pointer -fno-strength-reduce -c crctable.c
+cc -O2   -Wall -Winline -fomit-frame-pointer -fno-strength-reduce -c randtable.c......
+......
+......
+......
+......
+......
+===>  Building package for bzip2-1.0.2
+Creating package /usr/cvs/ports/packages/i386/all/bzip2-1.0.2.tgz
+Creating gzip'd tar ball in '/usr/cvs/ports/packages/i386/all/bzip2-1.0.2.tgz'
+Running "tar -c -f /usr/cvs/ports/packages/i386/all/bzip2-1.0.2.tgz -z +CONTENTS +COMMENT +DESC -C /usr/cvs/ports/archivers/bzip2/w-bzip2-1.0.2/fake-i386//usr/local -I /tmp/tpkg.AEKWD17865 "
+Link to /usr/cvs/ports/packages/i386/ftp/bzip2-1.0.2.tgz
+Link to /usr/cvs/ports/packages/i386/cdrom/bzip2-1.0.2.tgz
+===>  Installing bzip2-1.0.2 from /usr/cvs/ports/packages/i386/all/bzip2-1.0.2.tgz
+===>  Cleaning for bzip2-1.0.2
+# 
+</prompt></screen>
+Det gik jo egentlig meget nemt. 
+<screen><prompt>
+# which bzip2
+/usr/local/bin/bzip2
+# 
+</prompt></screen>
+Fint. Det virker! Vi prøver lige Emacs også:
+<screen><prompt>
+# pwd
+/usr/cvs/ports/editors/emacs
+# make install clean
+===>  Checking files for emacs-20.7
+>> emacs-20.7.tar.gz doesn't seem to exist on this system.
+>> Attempting to fetch /usr/cvs/ports/distfiles/emacs-20.7.tar.gz from ftp://ftp.gnu.org/gnu/emacs/.
+ 79% |***************************************           | 11698 KB    00:31 ETA
+[snip en times tid]
+===>  Building package for emacs-leim-20.7
+Creating package /usr/cvs/ports/packages/i386/all/emacs-leim-20.7.tgz
+Creating gzip'd tar ball in '/usr/cvs/ports/packages/i386/all/emacs-leim-20.7.tgz'
+Running "tar -c -f /usr/cvs/ports/packages/i386/all/emacs-leim-20.7.tgz -z +CONTENTS +COMMENT +DESC -C /usr/cvs/ports/editors/emacs/w-emacs-20.7/fake-i386//usr/local -I /tmp/tpkg.HrdZid6926 "
+Link to /usr/cvs/ports/packages/i386/ftp/emacs-leim-20.7.tgz
+Link to /usr/cvs/ports/packages/i386/cdrom/emacs-leim-20.7.tgz
+===>  Installing emacs-20.7 from /usr/cvs/ports/packages/i386/all/emacs-20.7.tgz
+===>  Cleaning for emacs-20.7
+#
+</prompt></screen>
+
+</para>
+</sect1>
+
+
+<sect1 id="distro-OpenBSD-brug">
+<title>OpenBSD i dagligdagen</title>
+<para>
+Webservere er nemme mål på Nettet. Jeg valgte at se lidt på om den Apache der følger med OpenBSD er noget værd. Det drjer sig om Apache version 1.3.28
+</para>
+<para>
+I <prompt>/etc/rc.conf</prompt> sættes variable der blandt andet bestemmer hvlke programmer der skal startes ved boot. Jeg fjernede <prompt>NO</prompt> fra variablen httpd-flags for at starte Apache ved boot.
+<screen><prompt>
+# use -u to disable chroot, see httpd(8)
+httpd_flags=""          # for normal use: "" (or "-DSSL" after reading ssl(8))
+</prompt></screen>
+Læg lige mærke til kommentaren! Apache kører chroot'et som default. Cool!.
+</para>
+<para>
+Jeg bootede og skulle lige tjekke:
+<screen><prompt>
+# ps auxww|grep httpd
+www       5933  0.0  2.5  1024  1608 ??  Ss     3:10PM    0:06.19 httpd: parent [chroot /var/www] (httpd)
+www       9278  0.0  0.9  1024   552 ??  I      3:10PM    0:00.05 httpd: child (httpd)
+www      13617  0.0  0.9  1024   552 ??  I      3:10PM    0:00.03 httpd: child (httpd)
+www      26427  0.0  0.9  1024   552 ??  I      3:10PM    0:00.03 httpd: child (httpd)
+www       7054  0.0  0.9  1024   552 ??  I      3:10PM    0:00.04 httpd: child (httpd)
+www      23679  0.0  0.9  1024   552 ??  I      3:10PM    0:00.01 httpd: child (httpd)
+root      9775  0.0  0.0   400     4 p1  R+     7:23AM    0:00.00 grep httpd (ksh)
+#
+</prompt></screen>
+Den er god nok. Da Apache kører med <prompt>/var/www</prompt> som root-katalog ligger konfigurationsfilerne under <prompt>/var/www/conf</prompt>:
+<screen><prompt>
+# pwd
+/var/www/conf
+# ls
+httpd.conf      httpd.conf-dist magic           mime.types
+#
+</prompt></screen>
+
+</para>
+</sect1>
+
+<sect1 id="distro-OpenBSD-feature">
+<title>Killer Feature</title>
+<para>
+Sikkerheden er i højsædet. Kan man finde rundt på en UNIX-box vil OpenBSD være et naturligt valg som den næste server der skal på Nettet. Sammenlignet med fx Solaris er der masser af tid at spare ved at vælge OpenBSD. Her er der tænkt på sikkerhed fra starten; man skal ikke starte med at lukke et hav af huller.
+</para>
+<para>
+I forhold til de Linux-distributioner jeg kender er der også mere fokus på sikkerhed. OpenBSD hører hjemme i Canada og kan derfor inkludere og integrere krypterings-software direkte i operativsystemet. Der er tilknyttet et specielt security-audit-team til OpenBSD - de laver ikke andet end at lede efetr sikkerhedsproblemer. På websiderne reklameres der med at man ofte på sikkerhedslisten Bugtraq hører at "det blev da fikset i OpenBSD for seks måneder siden".
+</para>
+<para>
+Der er mange ting jeg ikke har nået at se på. I hvert fald <prompt>bind</prompt> skulle også kører chroot'et. Pakkefilteret <prompt>PF</prompt> skulle være ret fantastisk. Mail-content-scanneren <prompt>smtp-vilter</prompt> skulle ligeledes være rigtig god.
+</para>
+</sect1>
+
+<sect1 id="distro-OpenBSD-vurdering">
+<title>Samlet vurdering</title>
+<para>
+OpenBSD er ikke for begynderen. Den kræver en del forhånds-UNIX-viden. Men har man denne viden, er OpenBSD ikke sværere at komme igang med end andre UNIX-systemer. Og det lader til at der er tænkt grundigt over den sikkerhedsmæssige del. OpenBSD får i hvertfald min anbefaling.
+</para>
+</sect1>
+</chapter>
