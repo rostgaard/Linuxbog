@@ -2191,13 +2191,13 @@ regne ud, at de har mange servere kørende!
 <para>
 Source NAT er det almindeligste, og er det, som vi hidtil har set
 på <!--TODO reference/--> i forbindelse med i192.168-numre
-klienter bag en firewall. Man kan sige, at vi afbilder source
-adressen plus portnummer som en global (offentlig) IP adresse med
-et andet portnummer.  Derved kan mange lokale maskiner deles om
-et enkelt IP nummer. Teoretisk set kan man løbe tør for portnumre
-på NAT maskinen, og det er der skam også taget højde for, idet
-maskinen simpelthen dropper alle pakker som ikke kan mappes til
-dens range af IP-numre+portnumre.
+klienter bag en firewall. Man kan sige, at vi spejler, (mapper,
+afbilder) source adressen plus portnummer som en global
+(offentlig) IP adresse med et andet portnummer.  Derved kan mange
+lokale maskiner deles om et enkelt IP nummer. Teoretisk set kan
+man løbe tør for portnumre på NAT maskinen, og det er der skam
+også taget højde for, idet maskinen simpelthen dropper alle
+pakker som ikke kan mappes til dens range af IP-numre+portnumre.
 </para>
 </sect3>
 
@@ -2207,9 +2207,9 @@ dens range af IP-numre+portnumre.
 <indexterm><primary>Destination NAT</primary></indexterm>
 
 <para>
-Man kan også afbilde destinationsadressen - Destination NAT - så
-folks forespørgsler f.eks. bliver omdirigeret hen til den lokale
-webserver eller til en server ud af en server pool. 
+Man kan også mappe (afbilde) destinationsadressen - Destination
+NAT - så folks forespørgsler f.eks. bliver omdirigeret hen til
+den lokale webserver eller til en server ud af en server pool. 
 </para>
 
 <para>
@@ -2224,6 +2224,15 @@ men er også en form for destination NAT. Resultatet er transparent proxying.
 <programlisting>
 # iptables -t nat -A PREROUTING -i eth1 -j DNAT --to 1.2.3.4-1.2.3.6
 </programlisting>
+
+<para>
+Fordelingen til serverne nr. 4 - 6 sker efter tur. Det kaldes
+ofte round-robin princippet. Derved kan man få fordelt
+belastningen til flere servere. Det egner sig ikke til CGI eller
+.php løsninger, hvor man skal fastholde en klient, hertil kræves
+en router, som kan holde styr på connections og samtidig lave
+round robin.
+</para>
 
 <para>Lav destinations NAT fra port 80 til den lokale port 3128, hvor squid kører</para>
 <programlisting>
