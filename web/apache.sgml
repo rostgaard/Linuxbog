@@ -494,9 +494,45 @@ spurgt om kodeord igen, samt se teksten "Beskyttet gruppe".
 </PARA>
 
 <PARA>
-Læs mere om adgangskontrol her:
-<ULINK URL="http://sunsite.dk/apache/docs/mod/core.html#require">http://sunsite.dk/apache/docs/mod/core.html#require</ULINK>
+I det sidste eksempel på en <FILENAME>.htaccess</FILENAME> fil, er det kun
+brugeren 'john' der kan udføre en <COMMAND>POST</COMMAND> kommando,
+hvor alle andre brugere
+kun kan udføre en <COMMAND>GET</COMMAND>.
+Dette kan bruges i et sub-dir hvor det kun er 'john' der må bruge en html-side
+med en submit-knap der udfører en <COMMAND>POST</COMMAND>.
 </PARA>
+
+<SCREEN>
+AuthType Basic
+AuthName "Beskyttet, kun john må skrive"
+AuthUserFile /home/chlor/htuser
+AuthGroupFile /home/chlor/htgroup
+
+&lt;LIMIT GET&gt;
+Require valid-user
+&lt;/LIMIT&gt;
+
+&lt;LIMIT GET POST&gt;
+Require user john
+&lt;/LIMIT&gt;
+</SCREEN>
+
+<PARA>
+Læs mere om adgangskontrol her:
+</PARA>
+
+<ITEMIZEDLIST MARK="BULLET">
+<LISTITEM><PARA>
+AuthUserFile <ULINK URL="http://sunsite.dk/apache/docs/mod/mod_auth.html#authuserfile">http://sunsite.dk/apache/docs/mod/mod_auth.html#authuserfile</ULINK>
+</PARA></LISTITEM>
+<LISTITEM><PARA>
+Require <ULINK URL="http://sunsite.dk/apache/docs/mod/core.html#require">http://sunsite.dk/apache/docs/mod/core.html#require</ULINK>
+</PARA></LISTITEM>
+<LISTITEM><PARA>
+Limit <ULINK URL="http://sunsite.dk/apache/docs/mod/core.html#limit">http://sunsite.dk/apache/docs/mod/core.html#limit</ULINK>
+</PARA></LISTITEM>
+</ITEMIZEDLIST>
+
 
 </SECT3>
 
