@@ -7,7 +7,7 @@ dato=$(shell cat dato.sgml)
 all:	statusfiler html pspdf palmpilot sgml
 
 sgml:
-	tar cvzf $(targetname)-$(version).sgml.tgz *.sgml Makefile
+	tar cvzf $(targetname)-$(version).sgml.tgz *.sgml Makefile collateindex.pl
 
 palmpilot:
 	rm -f palm/*.prc palm/*.pdb
@@ -25,10 +25,10 @@ htmlfiler:	statusfiler
 	rm -rf tempdir stikord.sgml magic.sgml $(targetname)-*.html.tgz bog
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir tempdir
-	perl /usr/local/bin/collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	perl ./collateindex.pl -s Symboler  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
 	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#html -V html-index bog.sgml)
-	perl /usr/local/bin/collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
+	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	rm -rf tempdir
 	db2html bog.sgml
 	cp linuxbog.css bog
@@ -44,6 +44,7 @@ reparerhtml:
 pakhtml:
 	mv bog $(targetshortname)
 	tar cvzf $(targetname)-$(version).html.tgz $(targetshortname)
+	zip $(targetname)-$(version)_html.zip $(targetshortname)
 	tar cvzf $(targetname)-$(version).html-ub.tgz $(targetshortname)/*.html $(targetshortname)/*.css
 	mv $(targetshortname) bog 
 	mv images $(targetshortname)_images
@@ -59,10 +60,10 @@ pspdf:	statusfiler
 	rm -rf bogps bogpdf stikord.sgml tempdir magic.sgml
 	mkdir tempdir
 	echo '<!ENTITY magic "eps">' > magic.sgml
-	perl /usr/local/bin/collateindex.pl  -t Stikordsregister -g -i stikord -N -o stikord.sgml
+	perl ./collateindex.pl  -t Stikordsregister -g -i stikord -N -o stikord.sgml
 	cp *.sgml tempdir
 	(cd tempdir; jade -t sgml -ihtml -d /usr/lib/sgml/stylesheets/cygnus-both.dsl\#print -V html-index -V nochunks bog.sgml > ged.html)
-	perl /usr/local/bin/collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
+	perl ./collateindex.pl -s Symboler -t Stikordsregister  -g -i stikord  -o stikord.sgml tempdir/HTML.index
 	mkdir bogps
 	find images/*.png | sed 's/.png//' | sed 's=images/==' | xargs -i% convert -antialias images/%.png eps2:bogps/%.eps
 	echo '<!ENTITY magic "eps">' > magic.sgml
@@ -73,21 +74,20 @@ pspdf:	statusfiler
 	@echo "Done PS (pspdf)"
 	@echo ""
 	gzip -9 $(targetname)-$(version).ps
-	@echo "Target is" $(targetname).pdf.gz
+	@echo "Target er" $(targetname).pdf
 	echo '<!ENTITY magic "png">' > magic.sgml
 	mkdir bogpdf
 	cp *.sgml bogpdf
+	rm -f $(targetname)-*.pdf
 	cp images/*.png bogpdf
 	(cd bogpdf; db2pdf bog.sgml)
 	mv bogpdf/bog.pdf $(targetname)-$(version).pdf
 	pdfinfo $(targetname)-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
-	rm -f $(targetname)-*.pdf.gz
-	gzip -9 $(targetname)-$(version).pdf
 	@echo "Done PDF (pspdf)"
 	@echo ""
 
 
 clean:
-	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf.gz $(targetname)*.ps.gz $(targetname)-*.palm.tgz $(targetname)-*.png.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz palm/*.prc palm/*.pdb sideantal.txt
+	rm -rf dato.sgml magic.sgml DBTOHTML_OUTPUT_DIR* bog.junk bog stikord.sgml tempdir bogps bogpdf $(targetname)-*.html.tgz $(targetname)*.pdf $(targetname)*.ps.gz $(targetname)-*.palm.tgz $(targetname)-*.png.tgz $(targetname)-*.sgml.tgz $(targetname)-*.html-ub.tgz palm/*.prc palm/*.pdb sideantal.txt
 
 
