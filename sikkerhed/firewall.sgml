@@ -189,7 +189,7 @@ sit niveau:
 </itemizedlist>
 <para>
 De to første typer, vil vi nu se nærmere på.
-Den tredie type firewall vil vi ikke beskrive nærmere her, men kun omtale kort.
+Den tredie type firewall omtales kun kort.
 </para>
 
 
@@ -199,28 +199,48 @@ Den tredie type firewall vil vi ikke beskrive nærmere her, men kun omtale kort.
 <para>
 Data sendes igennem et netværk i form af datapakker. På internettet bruges
 IP-pakker. En IP-pakke består af en header med information om, hvor den 
-skal hen, hvor den kommer fra, hvad den er for en slags samt nogle data. 
+skal hen, hvor den kommer fra, hvad den er for en slags samt eventuelt nogle data. 
 Ved pakkefiltrering kigger man på informationen i headeren og bestemmer, 
 hvad der skal ske med pakken: Om den skal afvises eller slippes igennem.
 </para>
 
 <para>
-Ikke alle IP-pakker skal slippes igennem en firewall. F.eks. bør man 
-blokere :
+Ideen er så, at en firewall stopper alle de pakker, som man ikke
+har "inviteret". Kører man fx. en web-server, slipper man
+web-pakker igennem. En privat maskine med internetadgang
+kan godt stoppe alle udefra kommende forespørgseler samtidigt
+med, at alle de netværks-sessions, der startes af brugeren får
+lov til at køre som normalt, d.v.s. at
+<emphasis>svar-pakker</emphasis> fra det externe net får lov at
+komme igennem.
+</para>
+<para>
+Man bør blokere:
 </para>
 
 <itemizedlist mark="bullet">
-  <listitem><para>Pakker fra services, der ikke skal bruges. Hvis en server f.eks. ikke
-      tilbyder ftp, og der er en bruger, der prøver at oprette en 
-       ftp-forbindelse, ved man med det samme, at disse pakker kan afvises.</para></listitem>
-  <listitem><para>Pakker med mistænkelige bits sat som IP source routing (kan bruges til
-        spoofing). </para></listitem>
-  <listitem><para>Pakker, der er til en lokal host, som ikke burde modtage 
+  <listitem><para>
+      Pakker fra services, der ikke skal bruges. Hvis en server f.eks. ikke
+      tilbyder ftp er det klogt at afvise alle forsøg på at
+      etablere en ftp-forbindelse med det samme.
+  </para></listitem>
+  <listitem><para>
+      Pakker med mistænkelige bits sat som IP source routing (kan bruges til
+      spoofing, hvilket betyder at udgive pakkerne for at komme fra
+      et andet sted, end de egentlig kommer fra).
+  </para></listitem>
+  <listitem><para>
+      Pakker, der er til en lokal host, som ikke burde modtage 
       pakker udefra. Det vil sige pakker, som er direkte addreseret til en
       maskine, som ikke har lov til at snakke med fremmede maskiner på
-      internettet.</para></listitem>
+      internettet.
+  </para></listitem>
 </itemizedlist>
 
+ <indexterm>
+  <primary>netværkssikkerhed</primary>
+  <secondary>spoofing</secondary>
+ </indexterm>
 
 <para>
 For mere information om IP, TCP og netværk generelt se 
@@ -230,48 +250,97 @@ til systemadministration" på <ulink url="http://&linuxbogurl;/">&linuxbogurl;</u
 </para>
 
 <para>
-Pakkefiltrering kan sættes op med en router. En router er en enhed, der 
-forbinder to eller flere netværk. Dvs at den styrer pakker til og fra et 
-eller flere bestemte net. En Linux-PC kan sættes op til at fungere 
-som router med pakkefiltrering, men det kan også være en separat, færdig 
-boks. Man kan købe færdige routere, der giver mulighed for pakkefiltrering, 
-ligesom de automatisk stopper de pakker, der er til adresser, som er 
-reserveret til lokale netværk.
+Pakkefiltrering kan sættes op på en maskine, som pakkerne skal
+igennem for at komme videre. Det er typisk en maskine med to
+netkort. En sådan maskine eller enhed kaldes en router, det
+udtales på engelsk rauter, man danskere har for vane at sige
+ruter, (hvilket er ok). En router forbinder to eller flere
+netværk med hinanden. Det kan være lokalnetværk, eller det kan
+være større netværk - pakkerne skal igennem routeren for at kunne
+komme videre.
 </para>
 
 <para>
-Det er muligt at åbne for en række porte i firewall'en, således at det
-på disse porte er tilladt at oprette forbindelser (se også <xref
-linkend="services"/>). Dette kan bruges til at tillade bestemte
-protokoller, som vi ved benytter netop disse porte. Dette giver dog
-problemer med en service som http, da den benytter porte vi ikke
-kender nummeret på på forhånd. Det kan derfor være nødvendigt at
-tillade forbindelser på alle porte, indefra. Udefra bør man som
-udgangspunkt ikke tillade forbindelser med mindre man kører en server
-- det kan dog være nødvendigt, hvis ens brugere skal kunne benytte
-ftp. Man kan vælge at håndtere dette problem på connection niveau i
-stedet for på pakke niveau.
+Ordet inter-net betyder netop, at man forbinder flere lokale
+netværk og har en måde at gøre det på, denne måde kaldes Internet
+Protokollen.
+</para>
+
+<para>
+En router for et lokalnetværk har som regel flere opgaver end at
+sende pakker videre og stoppe uvedkommende pakker. Den skal
+omsætte de interne IP adresser til den rigtige IP adresse, som
+man har fået af sin Internet Udbyder, Internet Service Provider, ISP.
+Man bør bruge adresserne 192.168.1.1-255 som lokale adresser,
+denne nummerserie er reserveret. Det er en del af de såkaldt
+"private adresser", som ikke bliver sendt rundt på det offentlige
+net. De er reserverede for at gøre det lettere at etablere et
+lokalnet uden at skulle søge og betale for "rigtige IP-adresser".
+</para>
+
+<para>
+Det er så routerens opgave at foretage en omskrivning af pakkerne
+og sende dem videre som om de kom fra routerens eksterne,
+offentligt synlige IP-adresse. Lige så vigtigt er det, at den kan
+identificere svar-pakkerne, og sende dem til den rigtige maskine.
+Dertil bruges portnumrene som en forlængelse af IP adressen.
+Denne funktion kaldes <emphasis>N</emphasis>etwork
+<emphasis>A</emphasis>ddress <emphasis>T</emphasis>ranslation
+eller NAT. En router, som kan det, kaldes somme tider en NATting
+router. (se nedenfor<!-- TODO xref linkend="si-NATting" /-->)
+</para>
+
+<para>
+Som sagt kan Linux fungere som router m.v. men en router kan også
+være en dedikeret, flad boks, som egentlig er et diskløst system,
+der kan fjernstyres fra en anden computer. Der fås billige
+routere til mindre virksomheder og private net, og der fås også
+store routere med mange stik, som kan håndtere meget store
+trafikmængder. Der er Linux inde i mange af den slags dedikerede
+routere.
+</para>
+
+<para>
+En Linux/GNU maskine kan sættes op til at fungere som både
+NATting router og pakkefilter - og yderligere til at måle
+trafikmængder, fordele trafikken ligeligt mellem forskellige
+brugere og/eller protokoller, fordele belastningen over flere
+parallelle opkoblinger og meget, meget mere.
+</para>
+
+<para>
+En af de vigtigste ting for en firewall til et privat netværk er,
+at man kan tillade brugerne indenfor at have FTP, web, ssh,
+mail og sågar telnet og så videre udadtil, selv om man lukker for
+alle, der udefra forsøger at komme ind på systemet. Hvis man
+forestiller sig et lokalnet, hvor alle maskinerne på denne måde
+var sikret mod uvedkommende, så kan man forstå, hvorfor
+Linux/GNU/BSD anses for at være sikre systemer.
+</para>
+
+<para>
+Normalt lukker man først for alle former for trafik, og så åbner
+man firewallen for bestemte typer trafik med kommandoer, som vi
+skal se på straks.  Dette kan bruges til at tillade bestemte
+protokoller, som vi ved benytter netop disse porte. 
+</para>
+
+<para>
+At åbne for alle forbindelser, som startes indefra, kræver, at
+firewallen holder styr på, hvilke forbindelser, der er oprettet;
+for at gøre det, skal firewallen have inkluderet et modul, der
+kaldes "connection tracking".
 </para>
 </sect2>
+
+<!--ææ;;/-->
 
 <sect2 id="kontrol-af-forbindelser">
 <title>Kontrol med oprettelse af forbindelser</title>
 <para>
-Man kan også bruge en firewall til at styre hvilke forbindelser, der må 
-oprettes imellem de to adskilte netværk, samt logge, hvad der sker på 
-disse forbindelser.
-</para>
-
-<para>
-Vil en bruger indefra i kontakt med en server udenfor (f.eks.
-surfe på internettet), skal der oprettes en forbindelse fra brugerens
-computer til en server på den anden side af firewall'en. Omvendt kan
-det også være, at nogen udefra vil i kontakt med en computer inden for
-firewall'en. Normalt ønsker vi at tillade, at en bruger indefra
-surfer på internettet, men vi ønsker ikke at folk udefra kan oprette
-forbindelse til en maskine inden for firewall'en.  Det kan også være, at
-vi gerne vil tillade folk udefra en adgang til dele af vores net, f.eks.
-web-serveren. 
+En firewall kan altså styre hvilke forbindelser, der må oprettes
+imellem de to adskilte netværk. Den kan også logge, hvad der sker
+på disse forbindelser.
 </para>
 
 <sect3 id="proxy">
@@ -279,7 +348,7 @@ web-serveren.
 <indexterm><primary>Proxy</primary></indexterm>
 
 <para>
-En måde at håndtere forbindelserne på, er at sætte en proxy-server
+Én måde at håndtere forbindelserne på, er at sætte en proxy-server
 op. Proxy betyder stedfortræder. En proxy er en slags relæ, der
 forwarder connection requests fra det lokale netværk til det eksterne,
 uden at de kommer i direkte kontakt med hinanden. Den lokale maskine
