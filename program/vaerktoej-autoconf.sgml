@@ -61,7 +61,8 @@ int main(void)
 
  <para>
   For at komme i gang med selve <command>autoconf</command> mangler vi
-  <filename>configure.in</filename> og
+  <filename>configure.ac</filename> (tidligere
+  <filename>configure.in</filename>) og
   <filename>Makefile.am</filename>.  <filename>Makefile.am</filename>
   er en fil til programmet <command>automake</command>, og den vil så
   oprette <filename>Makefile.in</filename>.
@@ -77,13 +78,13 @@ hello_SOURCES = hello.c
 </programlisting>
 
  <para>
-  Næste fil er <filename>configure.in</filename> hvilket er en fil
+  Næste fil er <filename>configure.ac</filename> hvilket er en fil
   der kan gå hen og blive ret stor.  I sin minimale udgave ser den
   således ud:
  </para>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 AC_INIT(hello.c)
 AM_INIT_AUTOMAKE( demo-hello, 1.0 )
 AC_PROG_CC
@@ -94,24 +95,24 @@ AC_OUTPUT(Makefile)
  <para>
   Med filerne <filename>hello.c</filename>,
   <filename>Makefile.am</filename> og
-  <filename>configure.in</filename> kan vi gå i gang med at oprette
+  <filename>configure.ac</filename> kan vi gå i gang med at oprette
   de filer vi senere skal have distribueret til brugeren.
  </para>
 
  <para>
   <filename>aclocal.m4</filename> er en samling af alle de
-  shell-macroer som bruges i <filename>configure.in</filename>.  Filen
+  shell-macroer som bruges i <filename>configure.ac</filename>.  Filen
   <filename>aclocal.m4</filename> dannes af programmet
   <command>aclocal</command> ved at <command>aclocal</command>
-  skanner <filename>configure.in</filename> for hvilke macroer der
+  skanner <filename>configure.ac</filename> for hvilke macroer der
   bliver brugt.  Macroerne finder den i .m4-filer som dem i
   /usr/share/aclocal/ (Den kigger i nuværende bibliotek og
   /usr/share/aclocal/ automatisk, man kan angive yderligere
   biblioteker).  <command>aclocal</command> skal køres hvis der
-  anvendes nye makroer i <filename>configure.in</filename>.  Når man
+  anvendes nye makroer i <filename>configure.ac</filename>.  Når man
   da kalder <command>autoconf</command> for at danne
   <command>configure</command> ud fra
-  <filename>configure.in</filename>, vil <command>autoconf</command>
+  <filename>configure.ac</filename>, vil <command>autoconf</command>
   erstatte brug af macroer med koden fra
   <filename>aclocal.m4</filename>.
  </para>
@@ -146,17 +147,17 @@ AC_OUTPUT(Makefile)
   Ved oversættelse ses at der er brugt tilvalget "<literal>-g</literal>" til
   <command>gcc</command>, det
   betyder at der kommer fejlsøgningsdata med i programmet.  Det kan
-  slås fra ved at sætte CFLAGS i <filename>configure.in</filename>
+  slås fra ved at sætte CFLAGS i <filename>configure.ac</filename>
   til for eksempel "<literal>-O2</literal>".  Dertil kommer at der er to
   oversætterdirektiver, PACKAGE og VERSION, med på
   kommandolinjen. Der kan komme flere direktiver, så det vil være
   smart hvis disse blev lagt i en fil for sig, så kommandolinjen ikke
   bliver for lang. Dette kan gøres ved at tilføje
-  AM_CONFIG_HEADER(config.h) i <filename>configure.in</filename>.
+  AM_CONFIG_HEADER(config.h) i <filename>configure.ac</filename>.
  </para>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 AC_INIT(hello.c)
 AM_INIT_AUTOMAKE( demo-hello, 1.0 )
 <emphasis>AM_CONFIG_HEADER(config.h)
@@ -230,7 +231,7 @@ beskrivelse af de mest almindelige filer.
    <tbody>
 <row> <entry>hello.c</entry>       <entry>*dig*</entry>      <entry>gcc</entry> </row>
 <row> <entry>Makefile.am</entry>   <entry>*dig*</entry>      <entry>automake</entry> </row>
-<row> <entry>configure.in</entry>  <entry>*dig*</entry>      <entry>automake autoconf aclocal</entry> </row>
+<row> <entry>configure.ac</entry>  <entry>*dig*</entry>      <entry>automake autoconf aclocal</entry> </row>
 <row> <entry>config.h.in</entry>   <entry>autoheader</entry> <entry>automake configure</entry> </row>
 <row> <entry>aclocal.m4</entry>    <entry>aclocal</entry>    <entry>autoconf</entry> </row>
 <row> <entry>Makefile.in</entry>   <entry>automake</entry>   <entry>configure</entry> </row>
@@ -261,7 +262,7 @@ i et autoconf system.
 
 <para>
 Du har nu fået oprettet de to mest basale filer
-<filename>Makefile.am</filename> og <filename>configure.in</filename>
+<filename>Makefile.am</filename> og <filename>configure.ac</filename>
 som fint kan danne basis for et projekt.
 Lad os lige stoppe op og kikke på hvad der er oprettet af filer og hvorfor.
 <filename>Makefile.am</filename> er den mest overordnede fil
@@ -336,10 +337,10 @@ og der kommer selvfølgelig en fejl hvis den ikke er.
 </para>
 
 <para>
-<filename>configure.in</filename> er filen der fortæller hvordan
+<filename>configure.ac</filename> er filen der fortæller hvordan
 en opsætning skal foregå. Her kikkes der ikke på kildetekster
 etc., men alene på hvordan opsætningen skal forløbe for slutbrugeren.
-Til et projekt er der kun én <filename>configure.in</filename>,
+Til et projekt er der kun én <filename>configure.ac</filename>,
 og denne er placeret i roden af projektet.
 </para>
 
@@ -385,7 +386,7 @@ Se også autoconf-filerne fra distribution fileutils.
   <para>
    Til større projekter er det en fordel at lægge afgrænsede dele
    af projektet i underkataloger.  Som tidligere nævnt består et
-   autoconf-system af en <filename>configure.in</filename> og
+   autoconf-system af en <filename>configure.ac</filename> og
    evt. flere <filename>Makefile.am</filename>.  I roden af projektet
    lægges en <filename>Makefile.am</filename> der fortæller hvilke
    underkataloger der skal med, og i hvert katalog en
@@ -397,7 +398,7 @@ Se også autoconf-filerne fra distribution fileutils.
 
 <programlisting>
 ./Makefile.am
-./configure.in
+./configure.ac
 man/Makefile.am
 man/hello.1
 src/Makefile.am
@@ -418,7 +419,7 @@ SUBDIRS = man src
 </programlisting>
 
 <para>
-Filnavn: ./configure.in
+Filnavn: ./configure.ac
 </para>
 
 <programlisting>
@@ -501,7 +502,7 @@ int main(void)
    <filename>Makefile.am</filename>-filer, <command>SUBDIRS</command>
    angiver i hvilke underkataloger der ligger flere
    <filename>Makefile.am</filename>'s.  Specielt for
-   <filename>./configure.in</filename> skal det bemærkes at alle
+   <filename>./configure.ac</filename> skal det bemærkes at alle
    <filename>Makefile</filename>r skal angives i
    <command>AC_OUTPUT()</command>.
   </para>
@@ -530,7 +531,7 @@ ceks2_SOURCES = ceks2.c cfkt.c
 </programlisting>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 AC_INIT(ceks2.c)
 AM_INIT_AUTOMAKE( demo-ceks , 1.0 )
 AC_PROG_CC
@@ -614,13 +615,13 @@ Listen over prædefinerede kataloger fås nemmest med:
 <para>
 I førnævnte eksempel er opfundet et nyt katalog med navnet <filename>htmldir</filename>.
 Skal brugeren selv have lov til at bestemme hvilket katalog det er, skal der lidt
-mere til, og vi skal over og rette i <filename>configure.in</filename>.
+mere til, og vi skal over og rette i <filename>configure.ac</filename>.
 Der skal ske det at der kommer et nyt tilvalg som bliver vist af
 <command>./configure --help</command>, og en variabel der kan sættes.
 </para>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 ...
 htmldir=/var/www/html/hello
 AC_MSG_CHECKING(htmldir)
@@ -650,7 +651,7 @@ Prøv herefter følgende kommandoer:
 
 <para>
 Eksemplet med <filename>htmldir</filename> er inspireret af automake-manualen
-og <filename>configure.in</filename> fra Samba.
+og <filename>configure.ac</filename> fra Samba.
 </para>
 
 </sect2> <!-- autoconf-andre-filer -->
@@ -659,7 +660,7 @@ og <filename>configure.in</filename> fra Samba.
 <title>Tjek at en funktion er til stede</title>
 
 <para>
-En god ting at have med i sin <filename>configure.in</filename>
+En god ting at have med i sin <filename>configure.ac</filename>
 er at tjekke om de funktioner man bruger i C-programmerne er til stede
 i det pågældende system hvor <command>./configure</command> køres.
 I <filename>hello.c</filename> bruges kun <command>printf()</command>
@@ -667,7 +668,7 @@ og den tjekkes således:
 </para>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 ...
 AC_CHECK_FUNCS(printf)
 ...
@@ -677,7 +678,7 @@ AC_CHECK_FUNCS(printf)
    Kør <command>autoconf</command> og <command>./configure</command>
    for at se resultatet.
    Flere funktioner kan skrives som parameter med mellemrum imellem.
-   Eksemplet er fundet i Sambas <filename>configure.in</filename>.
+   Eksemplet er fundet i Sambas <filename>configure.ac</filename>.
   </para>
  </sect2> <!-- autoconf-chkfunc -->
 
@@ -685,7 +686,7 @@ AC_CHECK_FUNCS(printf)
   <title>Variable i config.h</title>
 
   <para>
-   En spændende ting man kan lave med <filename>configure.in</filename>,
+   En spændende ting man kan lave med <filename>configure.ac</filename>,
    er at tilføje variable til <filename>config.h</filename> med dynamisk
    input på det tidspunkt <command>./configure</command> køres.  For
    ikke at kommandolinjen skal blive for lang, er det bedst at have
@@ -697,7 +698,7 @@ AC_CHECK_FUNCS(printf)
   </para>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 ...
 CONFDATO=`date "+%Y-%m-%d %H:%M:%S"`
 AC_DEFINE_UNQUOTED(CONFDATO,"$CONFDATO",[Dato for kørsel af ./configure])
@@ -748,7 +749,7 @@ int main(void)
    for at få
    oplysninger om det system programmet blev oversat på, eller et tilvalg
    som brugeren der kører <command>./configure</command>, selv kan definere.
-   Eksemplet er fundet i PHP's <filename>configure.in</filename>.
+   Eksemplet er fundet i PHP's <filename>configure.ac</filename>.
   </para>
  </sect2> <!-- autoconf-def -->
 
@@ -763,7 +764,7 @@ AC_PROG_CXX eller AC_PROG_F77. Se følgende eksempel:
 </para>
 
 <programlisting>
-# Filnavn: configure.in
+# Filnavn: configure.ac
 AC_INIT(hello.c++)
 AM_INIT_AUTOMAKE( demo-hello, 1.0 )
 AC_PROG_CXX
