@@ -1158,34 +1158,32 @@ opsætning med squid.
 </para>
 
 
-<!-- dax 2003-10-23 Hertil. Har slettet resten og starter forfra HUSK /-->
+<!-- dax 2005-09-24: Har flyttet non-gui nedad og ændret niveau
+                     for at få GUI med i indholdsfortegnelsen. /-->
 
 
-<sect2 id="sikkerhed-netfilter">
-<title>Iptables og netfilter i kerne 2.4 og 2.6</title>
-<indexterm><primary>Iptables</primary></indexterm>
-<indexterm><primary>Netfilter</primary></indexterm>
+<sect2 id="sikkerhed-gui">
+<title>GUI: Anvendelse af grafisk-interface ved installation af firewall
+</title>
 
 <para>
-I Linux er pakkefiltrering i en avanceret version indbygget i
-kernen; kernedelen kaldes netfilter, og programmet <command>
-iptables </command> kommunikerer vores ønsker om hvad kernen skal
-foretage sig fra user-space til kerne-space.
+Findes der ikke noget nemmere? hører man ofte en Linux begynder
+spørge, med rette, for det er i grunden meget få oplysninger der
+skal til at lave en meget fornuftig firewall, som kan bruges af
+de fleste. Derfor har distributioner som Red Hat, Fedora, SuSE og
+Mandrake alle et spørgsmål om man ønsker at maskinen skal være
+åben eller om der skal lukkes for services. Benytter man en anden
+distribution (og dem er der jo mange af) kan det hænde, at man
+selv skal konfigurere firewall.
 </para>
 
 <para>
-For at kunne bruge kernens netfilter og <command> iptables
-</command> kommandoen, skal kernen være bygget med netfilter, og,
-hvis man planlægger at sikre en maskine, må det stærkt anbefales
-at man også inkluderer connection tracking. Det koster lidt
-belastning, men giver mange fordele.  De fleste standard kerner
-fra distributioner med kerne 2.4.18 og frem har den slags. Det
-kan kontrolleres med <command>ls -l /proc/net/ip_conntrack
-</command>
+Det kan også ske, at man selv vil raffinere opsætningen af
+firewall. Nogen vil derfor gå på jagt efter et værktøj til
+opsætning og selv installere dette. Her er et par eksempler:
+<command> Firestarter </command> og <command> Lokkit</command>.
 </para>
 
-<sect3 id="sikkerhed-gui">
-<title>GUI: Findes der ikke noget nemmere?</title>
 <figure>
 <title>Firestarter giver ikke ligefrem indtryk af at være en
 sikker firewall, tværtimod står den vildt udseende pingvin med en
@@ -1195,16 +1193,15 @@ tændstik her. Men det *er* linux-humor og ikke en trussel!
 </figure>
 
 <para>
-Der mange gode front ends til iptables kommandoen. Hvis man er
-utryg ved anvendelse af kommandolinien, bør man først og fremmest
-under installationen læse vejledningen grundigt og indsætte et
-firewall filter af medium styrke allerede under installtionen.
-Desuden kan man begynde med en GUI som for eksempel Red Hats
+Der mange andre gode front ends til iptables kommandoen.
+Allerede under installationen kan man på mange distributioner
+indsætte et firewall filter af medium styrke.
+Derefter kan man begynde med en GUI som for eksempel Red Hats
 systemopsætningsværktøj, <command>setup</command> eller
 <command>/usr/sbin/lokkit</command>. Disse nemme programmer er
 front-ends til den bagvedliggende mekanisme og fungerer bravt. De
 er til stede efter en normal installation. Firestarter kan man
-selv hente i forskellige grydeklare versioner, så den er bestemt
+selv hente i forskellige grydeklare versioner, så den er
 også nem at komme igang med.
 </para>
 
@@ -1377,15 +1374,56 @@ iptables-restore.
 </para>
 
 <para>
-Alternativt sætter man alle iptables kommandoerne ind i et
-start/stop script, som køres af rc kommandoen ved opstart. Man
-skal i så fald huske at få den til at foretage sig noget
-fornuftigt, hvis en af iptables kommandoerne fejler; normalt vil
-det være at starte <command> /sbin/sulogin </command>
+Hvis man har en opsætning, som man gerne vil gemme, så kan det
+lade sig gøre uanset om det er en "håndlavet opsætning" eller om
+den kommer fra et af de nævnte GUI-tools. Man bruger simpelthen
+iptables-save.
+</para>
+<para>
+Resultat-filen gemmer man, fx. i /etc/init.d eller /etc/rc.d
+og så sætter man en overordnet kommando ind i et 
+start/stop script, som køres af rc kommandoen ved opstart. 
+Det er måske lidt for vanskeligt for en GUI bruger, men 
+med lidt hjælp udefra skal det nok kunne lade sig gøre.
 </para>
 
+<para>
+Man skal i så fald huske at få scriptet til at foretage sig noget
+fornuftigt, hvis en af iptables kommandoerne fejler; normalt vil
+det fornuftigste være at starte <command> /sbin/sulogin </command>
+for så kan system-administrator se, at der er noget galt, og
+systemet går ikke videre (på nettet) uden at denne fejl er løst.
+For mere avancerede anvendelser, hvor ubemandet opstart er en
+nødvendighed, må man finde en anden måde at systemet kommer
+videre på, det kunne fx. være at tilbyde login til en
+overvågningsmaskine på lokalnettet.
+</para>
+</sect2>
 
-</sect3>
+
+<sect2 id="sikkerhed-netfilter">
+<title>Iptables og netfilter i kerne 2.4 og 2.6</title>
+<indexterm><primary>Iptables</primary></indexterm>
+<indexterm><primary>Netfilter</primary></indexterm>
+
+<para>
+I Linux er pakkefiltrering i en avanceret version indbygget i
+kernen; kernedelen kaldes netfilter, og programmet <command>
+iptables </command> kommunikerer vores ønsker om hvad kernen skal
+foretage sig fra user-space til kerne-space.
+</para>
+
+<para>
+For at kunne bruge kernens netfilter og <command> iptables
+</command> kommandoen, skal kernen være bygget med netfilter, og,
+hvis man planlægger at sikre en maskine, må det stærkt anbefales
+at man også inkluderer connection tracking. Det koster lidt
+belastning, men giver mange fordele.  De fleste standard kerner
+fra distributioner med kerne 2.4.18 og frem har den slags. Det
+kan kontrolleres med <command>ls -l /proc/net/ip_conntrack
+</command>
+</para>
+
 <sect3 id="sikkerhed-traverse">
 <title>Hvordan pakker rejser igennem filtrene</title>
 
