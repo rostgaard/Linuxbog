@@ -115,22 +115,25 @@ bruge <command>e2fsck</command>:
    installation. Bare rolig &ndash; det er ikke en installation vi starter
    på. Når redningsproceduren beder om at montere rod-filsystemet
    under <filename>/mnt/sysimage</filename> skal der bare svares "no"
-   (nej), og derefter får man en kommandofortolker.
+   (nej) hvis man ikke tør mounte harddisken, og "yes" hvis man
+   kører rescue-CD'en for at redde data på harddisken eller fx.
+   vil editere en system-konfigurationsfil, inden man genstarter
+   systemet. Man svarer et eller andet, og derefter får man en
+   kommandofortolker (et kommando-linie prompt. Ingen grafiske
+   user-interface ting her).
   </para>
 
   <para>
-   Hvis du i stedet har et "bootable business card" fra Linuxcare (det
-   er en cd-rom i visitkortstørrelse &ndash; se 
-   <ulink url="http://lbt.linuxcare.com/download.epl">http://lbt.linuxcare.com/download.epl</ulink>, skal du igen starte maskinen
-   fra den. Når systemet er startet får du besked om hvad visitkortets
-   brugernavn og adgangskode er (på mit er det henholdsvis "root" og
-   "linuxcare") og bliver bedt om at logge ind. Et lille
-   irritationsmoment ved Linuxcares cd-rom er at det går ud fra at der
-   sidder et amerikansk tastatur på maskinen, så tasterne ikke
-   nødvendigvis giver det tegn der er trykt på dem.
-   <!-- Hvornår får vi tastaturer, der sender ISO-10646-koden for de
-        tegn der er vist på deres taster, i stedet for meningsløse
-        koder? -->
+   Hvis du har en rednings-CD eller et "bootable business card" fra fx.
+   <ulink url="http://lnx-bbc.org/"> lnx-bbc.org (Linux -
+   Bootable Business Card projektet) </ulink> som er en CD-ROM i
+   visitkortstørrelse, kan du også boote fra fra den. Når
+   systemet er startet, får du besked om, hvad systemets
+   brugernavn (login-name eller bare login) og password
+   (adgangskode) er. På rescue CD fra <ulink
+   url="http://www.sysresccd.org/"> http://www.sysresccd.org/
+   </ulink> er der faktisk slet ikke nogen adgangskode, man er
+   logget på med det samme.
   </para>
  </sect2>
 
@@ -138,26 +141,62 @@ bruge <command>e2fsck</command>:
   <title>Hvilke filsystemer skal tjekkes?</title>
 
   <para>
-   Linuxcare-cd-rom'en vil give dig en liste med de tilgængelige filsystemer
-   når du er logget ind. Den kan for eksempel se sådan ud:
+   En rednings-CD (rescue CD) kan give dig en liste over
+   partitioner og filsystemer på den harddisk, som er direkte
+   koblet på systemet:
+  </para>
+
 <screen>
-...
-/dev/cloop on /mnt/cdrom type ext3 (ro)
-/dev/hda2 on /mnt/0 type ext2 (ro)
-/dev/hda3 on /mnt/1 type ext2 (ro)
-...
+   <userinput>
+   fdisk -l /dev/hda
+   </userinput>
+   # hvis det er en IDE eller FAST IDE disk, eller hvis det er SCSI:
+   <userinput>
+   fdisk -l /dev/sda
+   </userinput>
 </screen>
-   Du vil typisk være interesseret i de filsystemer, der er monterede
+   
+  <para>
+   Den kommando vil give dig en liste med de tilgængelige filsystemer.
+   Den kan for eksempel se sådan ud:
+  </para>
+
+<screen>
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1   *         1        12     96358+   b  Win95 FAT32
+/dev/hda2            13        63    409657+  83  NTFS
+/dev/hda3            64       127    514080   8e  Linux LVM
+/dev/hda4           128      3722  28876837+   5  Extended
+/dev/hda5           179      1198   8193118+  83  Linux
+/dev/hda6          3239      3279    329301   82  Linux swap
+</screen>
+
+  <para>
+   Nu kan du så mounte disse partitioner og arbejde på dem.
+  </para>
+
+  <para>
+   Hvis du er interesseret i at se filerne på et Linux filsystem,
+   så kan du mounte det som ext2, også selv om det er ext3.
+   Forskellen er, at hvis du kører fsck (File System Consistency
+   checK) så er det hurtigere, hvis man har ext3 og en gyldig
+   "journal-file", som ofte ligger udenfor partitionen og oftest
+   heldigvis ikke er beskadiget.
+  </para>
+
+  <para>
+   Hvis du kører en rescue-CD, som automatisk mounter dine
+   disk-partitioner for dig (som Knoppix kan gøre) så vil du
+   typisk være interesseret i de filsystemer, der er monterede
    som <filename>/mnt/</filename>-et-eller-andet-tal, og som er af
    typen "ext2". Vi kan foreksempel være interesserede i filsystemet
    på partitionen <filename>/dev/hda2</filename>.
   </para>
 
   <para>
-   Hvis du ikke automatisk får en liste med hvad der er af filsystemer
-   i maskinen, kan du bruge kommandoen <command>mount</command> til at
-   få oplysninger om hvilke filsystemer der er monterede:
-</para>
+   Du kan bruge kommandoen <command>mount</command> til at
+   få oplysninger om hvilke filsystemer der er monterede (eng.: mounted):
+  </para>
 
 <screen>
 <prompt>[root@lnx-bbc ~]# </prompt><userinput>mount</userinput>
