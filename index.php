@@ -458,13 +458,7 @@ Det samlede sideantal for alle bøger er <b><?php echo $totalsideantal ?></b> sid
 ?>
 
 <hr>
-<p>
-Benyt vores "Et-klik-service" for at downloade og læse bøgerne,
-eller køb en indbundet udgave hos følgende forretninger:
-<ul>
-<!-- <li><a href="http://www.pn-tryk.dk/html/linux.html">PN-tryk</a></li> -->
-<li><a href="http://linuxpusher.dk/docs/linuxboeger.php">SC-Birkerød i samarbejde med www.linuxpusher.dk</a></li>
-</ul>
+
 <p>
 Bøgerne er udgivet under 
 <a href="licens.html">Åben dokumentlicens</a>
