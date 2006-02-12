@@ -16,7 +16,7 @@ MRTG og RRDtool.
 <para>
 Den kontrollerende overvågning handler om at sikre at tingene kører og
 kunne reagere hvis de holder op med at køre. Typiske værktøjer er Big
-Brother og Nagios (tidligere NetSaint). 
+Brother og Nagios. 
 </para>
 
 <!-- Afsnit der bør skrives 
@@ -237,13 +237,20 @@ findes i <filename>/etc/inetd.conf</filename>. <!-- Hvordan skal det -->
 <indexterm><primary>Netværksovervågning</primary><secondary>Nagios</secondary></indexterm>
 
 <para>
-Nagios er et overvågningsværktøj der er en videreudvikling
-af det tidligere NetSaint.
+Nagios er et overvågningsværktøj der kontrollere om alle
+services på alle maskiner køre.
 En typisk brug er at sætte Nagios op til at overvåge
-et antal maskiner der er forbundet i netværk.
+et antal maskiner der er forbundet i netværk, 
+og administratorene af disse maskiner bliver så
+alarmeret når der er noget galt med de services
+de har ansvaret for.
 Det er ganske få ting der skal sættes op for at
 få det hele til at virke, men følger man den
-vedlagte dokumentation er det ikke sikkert man kommer helt i mål.
+vedlagte dokumentation i Nagios, er det ikke sikkert man
+kommer helt i mål.
+Men med de eksempler der følger med dette kapitel du
+læser på nu samt beskrivelsen, så skulle du gerne have
+en simpel kørende installation igang på ca. 30 minutter.
 </para>
 
 <para>
@@ -270,12 +277,14 @@ der ligner nedenstående.
 
 <figure id="nagios-demo" float="1">
 <title>Et skærmdump af Nagios ved almindelig drift hvor alt er OK</title>
-<graphic fileref="nagios.&magic;"></graphic>
+<graphic fileref="nagios-ok.&magic;"></graphic>
 </figure>
 
 <para>
 Følgende programpakker skal downloades for at
-kunne komme igang:
+kunne komme igang.
+De kan downloades fra
+<ulink url="http://www.nagios.org/download/">http://www.nagios.org/download/</ulink>
 </para>
 
 <itemizedlist mark="bullet">
@@ -302,7 +311,8 @@ standardpakken.
 <listitem><para>
 NRPE: nrpe-*.tar.gz anvendes for at kontrollere
 ting der foregår lokalt på en maskine. Vil man
-holde øje med fx diskplads, skal man bruge NRPE-pakken.
+holde øje med fx diskplads, skal man bruge NRPE-pakken
+på klient-maskinen.
 </para></listitem>
 
 </itemizedlist>
@@ -341,6 +351,12 @@ af <command>make</command> og <command>make fullinstall</command>.
 <prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>su -c "make fullinstall"</userinput>
 </screen>
 
+<para>
+Med de mest basale programmer installeret, mangler der
+nu et færdigt opsat eksempel du kan bruge som udgangspunkt.
+Det er beskrevet i næste afsnit.
+</para>
+
 </sect2>
 
 <sect2 id="nagios-konfiguration">
@@ -348,11 +364,16 @@ af <command>make</command> og <command>make fullinstall</command>.
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary></indexterm>
 
 <para>
-Nu mangler der et færdigt opsat eksempel. Der følger
-en smule med nagios-pakken, men det er ikke helt nok til
+Nu mangler der et færdigt opsat eksempel.
+Der følger en smule med nagios-pakken,
+men det er ikke helt nok til
 at komme i luften med.
-Hent den færdige pakke fra
-<ulink url="http://cvs.linuxbog.dk/admin/eksempel/nagios-democonfig.tar.gz">http://cvs.linuxbog.dk/admin/eksempel/nagios-democonfig.tar.gz</ulink>
+For at kunne bruge eksemplet der følger
+med Nagios, skal der rettes så mange ting
+at det mindst vil tage dig 6 timer at komme 
+frem til mål.
+Hent defor den færdige pakke fra
+<ulink url="http://cvs.linuxbog.dk/admin/eksempel/etc-nagios.tar.gz">http://cvs.linuxbog.dk/admin/eksempel/etc-nagios.tar.gz</ulink>
 og stil dig i roden af din disk og pak den ud.
 Filerne vil lægge sig i <command>/etc/nagios</command>.
 </para>
@@ -375,6 +396,16 @@ Gør som nedenstående eksempel:
 New password:
 Re-type new password:
 Updating password for user nagios
+</screen>
+
+<para>
+Når password til nagios-brugeren er sat kan Nagios-dæmonen startes,
+og den nye konfiguration til Apache webserveren kan loades.
+</para>
+
+<screen>
+<prompt>[root@hven ~]# </prompt><userinput>/etc/init.d/nagios start</userinput>
+<prompt>[root@hven ~]# </prompt><userinput>/etc/init.d/apache reload</userinput>
 </screen>
 
 <itemizedlist mark="bullet">
@@ -447,12 +478,101 @@ De resterende konfigurationsfiler er til mere
 avanceret opsætning og er ikke beskrevet her.
 </para>
 
+<para>
+En ting der er fælles for den måde konfigurationsfilerne
+er opbygget på i Nagios, er at man definere først en
+standardindstilling, som man så efterfølgende bruger
+som basis for de andre definitioner.
+Har man kun et ganske lille system, der kun overvåges
+af ganske få systemadministratore, så vil man nok kun
+definere en gruppe der får tilsendt mail når noget
+går galt.
+Her vil man så i filen
+<filename>/etc/nagios/services.cfg</filename>
+øverst definere en template/objektklasse der indeholder
+navnet på den grubbe der skal have en mail tilsendt.
+Det er "contact_groups" der får tilsendt mail.
+Det kunne se ud som nedenstående:
+</para>
+
+<programlisting>
+define service{
+	name		generic-service	# navn på definitionen
+	register	0		# angiver at det kun er en default
+	contact_groups	admins		# eksempel på noget der nedarves
+	... flere definitioner følger
+	}
+</programlisting>
+
+<para>
+Der vil typisk være flere definitioner
+end vist herover. 
+Det er blot beskrevet minimalt her, for
+at forklare princippet.
+Det man nu kan gøre med 
+"generic-service" definitionen er at
+bruge den i alle de services man skal
+have defineret.
+</para>
+
+<programlisting>
+define service{
+	use			generic-service	# nedarv fra definition
+	host_name		foo.eksempel.dk	# navn på host
+	service_description	HTTP		# navn på service
+	check_command		check_http	# kommando der tjekker service
+	}
+</programlisting>
+
+<para>
+Ved et bruge ovenstående princip, kan man
+så i mange tilfælde definere en service med
+kun fire konfigurationslinjer.
+Får man brug for enkelte undtagelser, kan man
+så blot skrive det ind ved den service.
+Som eksempel kunne man forestille sig at 
+webadministratorerne også skulle havee at
+vide hvis der er noget galt med HTTP.
+Ved så at indskrive contact_groups igen,
+overskrives den forgående definition.
+I Nagios skrives lister adskilt med
+komma.
+</para>
+
+<programlisting>
+define service{
+	use			generic-service	# nedarv fra definition
+	host_name		foo.eksempel.dk	# navn på host
+	service_description	HTTP		# navn på service
+	check_command		check_http	# kommando der tjekker service
+	contact_groups		admins,webmaster
+	}
+</programlisting>
+
+<sect3 id="nagios-konfiguration-services">
+<title>services.cfg</title>
+<indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>services.cfg</tertiary></indexterm>
+<para>
+Tekst
+</para>
+<programlisting>
+define service{
+	use			generic-service
+	host_name		foo.eksempel.dk
+	service_description	HTTP
+	check_command		check_http
+	}
+</programlisting>
+</sect3>
+
 <sect3 id="nagios-konfiguration-hosts">
 <title>hosts.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>hosts.cfg</tertiary></indexterm>
 <para>
 Test
 </para>
+<programlisting>
+</programlisting>
 </sect3>
 
 <sect3 id="nagios-konfiguration-hostgroups">
