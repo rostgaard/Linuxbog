@@ -1,3 +1,4 @@
+<!-- $Id$ -->
 <chapter id="netovervaagning">
 <title>Netværksovervågning</title>
 
@@ -30,6 +31,7 @@ Brother og Nagios.
 <sect1 id="big-sister">
 <title>Big Sister</title>
 <indexterm><primary>Big Sister</primary></indexterm>
+<indexterm><primary>Overvågning</primary><secondary>Big Sister</secondary></indexterm>
 <indexterm><primary>Netværksovervågning</primary><secondary>Big Sister</secondary></indexterm>
 
 <para>
@@ -234,6 +236,7 @@ findes i <filename>/etc/inetd.conf</filename>. <!-- Hvordan skal det -->
 <sect1 id="nagios">
 <title>Nagios</title>
 <indexterm><primary>Nagios</primary></indexterm>
+<indexterm><primary>Overvågning</primary><secondary>Nagios</secondary></indexterm>
 <indexterm><primary>Netværksovervågning</primary><secondary>Nagios</secondary></indexterm>
 
 <para>
@@ -248,8 +251,12 @@ Det er ganske få ting der skal sættes op for at
 få det hele til at virke, men følger man den
 vedlagte dokumentation i Nagios, er det ikke sikkert man
 kommer helt i mål.
+Som det fremgår af Nagios-manualen:
+"Relax - its going to take some time."
+- så syntes forfatteren at det skal være meget
+besværligt at få begyndt med et Nagios-system.
 Men med de eksempler der følger med dette kapitel du
-læser på nu samt beskrivelsen, så skulle du gerne have
+læser på nu, samt beskrivelsen her, så skulle du gerne have
 en simpel kørende installation igang på ca. 30 minutter.
 </para>
 
@@ -331,7 +338,7 @@ værre rodebunke at hitte rundt i, når
 man er vandt til Linux. 
 Herunder er vist en måde som filerne kan lægges
 ud på. Vigtigst er det at du kan finde 
-konfigurationsfilerne i <command>/etc/nagios</command>,
+konfigurationsfilerne i <filename>/etc/nagios</filename>,
 men de andre subdir er nu også rare at vide hvor ligger.
 Kør først en <command>configure</command>, efterfulgt
 af <command>make</command> og <command>make fullinstall</command>.
@@ -408,14 +415,32 @@ og den nye konfiguration til Apache webserveren kan loades.
 <prompt>[root@hven ~]# </prompt><userinput>/etc/init.d/apache reload</userinput>
 </screen>
 
-<itemizedlist mark="bullet">
+<para>
+Nu kan du klikke dig ind på
+<ulink url="http://localhost/nagios/">http://localhost/nagios/</ulink>
+og se status for den maskine som Nagios er installeret på.
+Måske er der nogle service-check der lige står til "Pending",
+men så vent lige et par minutter, så kommer status også for disse.
+Som udgangspunkt viser eksemplerne der hører til 
+"Friheden til at vælge" status for
+<filename>localhost</filename>
+og
+<filename>cvs.sslug.dk</filename>
+.
+For at rette det, skal der rettes i 
+konfigurationsfilerne der ligger i 
+<filename>/etc/nagios/*.cfg</filename>
+.
+</para>
+
+<orderedlist>
 <listitem><para>
-<command>hosts.cfg</command>
+<filename>hosts.cfg</filename>
 indeholder en liste over alle de maskiner der
 skal overvåges.
 Her i eksemplet er det kun 
-<command>localhost</command> og 
-<command>cvs.sslug.dk</command>
+<filename>localhost</filename> og 
+<filename>cvs.sslug.dk</filename>
 der er sat op.
 Det er så meningen at du skal gå
 ind og lave en søg-og-erstat af de to 
@@ -423,7 +448,7 @@ hostnavne, og sætte dine egne navne ind.
 </para></listitem>
 
 <listitem><para>
-<command>hostgroups.cfg</command>
+<filename>hostgroups.cfg</filename>
 er listen på alle de grupper af maskiner
 du har. De fleste har nok så få maskiner
 at de kun har én gruppe, men det er
@@ -431,7 +456,7 @@ nemt at lave en gruppe mere.
 </para></listitem>
 
 <listitem><para>
-<command>services.cfg</command>
+<filename>services.cfg</filename>
 indeholder alle de services der skal overvåges
 på alle maskiner.
 De services der overvåges i eksemplet
@@ -440,20 +465,20 @@ er startet.
 </para></listitem>
 
 <listitem><para>
-<command>servicegroups.cfg</command>
+<filename>servicegroups.cfg</filename>
 er ikke så vigtig at have med til at starte med.
 Den giver fx et godt overblik af alle webservere,
 men på alle maskiner.
 </para></listitem>
 
 <listitem><para>
-<command>contacts.cfg</command>
+<filename>contacts.cfg</filename>
 er listen over de personer der skal have
 tilsendt en mail, når der er noget galt.
 </para></listitem>
 
 <listitem><para>
-<command>contactgroups.cfg</command>
+<filename>contactgroups.cfg</filename>
 indeholder listen af de grupper der
 skal have sendt en mail, når der er noget galt.
 Når en service fejler, så er det gruppen der
@@ -462,7 +487,7 @@ Det gør det nemmere at administrerer mange brugere samtidigt.
 </para></listitem>
 
 <listitem><para>
-<command>nagios.cfg</command>
+<filename>nagios.cfg</filename>
 er hoved konfigurationsfilen.
 Det er typisk en man kun vil rette i under
 installation, eller hvis skal tilføje meget
@@ -471,7 +496,7 @@ Som udgangspunkt skal du nok ikke rette
 i denne.
 </para></listitem>
 
-</itemizedlist>
+</orderedlist>
 
 <para>
 De resterende konfigurationsfiler er til mere
@@ -545,7 +570,7 @@ define service{
 	host_name		foo.eksempel.dk	# navn på host
 	service_description	HTTP		# navn på service
 	check_command		check_http	# kommando der tjekker service
-	contact_groups		admins,webmaster
+	contact_groups		admins,webmasters
 	}
 </programlisting>
 
@@ -581,9 +606,25 @@ Test
 <para>
 Test
 </para>
-</sect3>
+</sect3> <!-- nagios-konfiguration-hostgroups -->
 
-</sect2>
+</sect2> <!-- nagios-konfiguration -->
+
+<sect2 id="nagios-manual">
+<title>Manualen</title>
+<indexterm><primary>Nagios</primary><secondary>Manualen</secondary></indexterm>
+
+<para>
+Det er ikke mange steder i denne bog "Friheden til at vælge"
+hvor der er en beskrivelse af hvordan læser den 
+engelsksprogede manual.
+Hvad angår Nagios, så er det påkrævet da den ikke
+er helt nem at finde rundt.
+Der er desværre heller ikke noget stiksordsregister,
+hvilket kunne have hjulpet en del.
+</para>
+
+</sect2> <!-- nagios-manual -->
 </sect1> <!-- nagios -->
 
 </chapter>
