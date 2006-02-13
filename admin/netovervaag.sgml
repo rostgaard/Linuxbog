@@ -433,6 +433,20 @@ konfigurationsfilerne der ligger i
 .
 </para>
 
+<para>
+Som udgangspunkt er konfigurationen fordelt
+på flere filer ved at der er refereret til
+dem fra <filename>nagios.cfg</filename> .
+Nogle gange vil man finde det irreterende
+at skulle åbne flere filer for at lave en
+ændring, men så er muligheden at man kan samle
+det hele i en fil.
+Det der handler om host og service har man
+ofte fat i, så det kan være en fordel at have
+dem i samme fil.
+Den måde som filerne kommer som standard er følgende:
+</para>
+
 <orderedlist>
 
 <listitem><para>
@@ -601,12 +615,24 @@ og man kan gå igang med at rette dem.
 <title>services.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>services.cfg</tertiary></indexterm>
 <para>
-Tekst
+Alle services der skal holdes øje med findes i 
+<filename>services.cfg</filename> .
+Med services forstås fx en HTTP web-service.
+Her er det at der bliver testet om det kan
+lade sig at hente en hjemmeside, og samtidigt
+bliv er det noteret hvor lang tid det tog.
+I nedenstående anvendes direktivet
+<command>use generic-service</command>,
+hvilket så gør at alle de sædvanlige 
+direktiver er nedarvet fra denne.
+Derved kan man nøjes med kun at angive fire
+linjer parametre for hver service der skal 
+holdes øje med.
 </para>
 <programlisting>
 define service{
 	use			generic-service
-	host_name		foo.eksempel.dk
+	host_name		localhost
 	service_description	HTTP
 	check_command		check_http
 	}
@@ -617,12 +643,50 @@ define service{
 <title>hosts.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>hosts.cfg</tertiary></indexterm>
 <para>
-Test
+De maskiner der skal overvåges er angivet i 
+<filename>hosts.cfg</filename>.
+Som med services anvendes også her en
+standardkonfiguration benævnt
+<command>use generic-host</command>
+så alle fælles direktiver kan angives et sted.
+Det kan virke overflødigt at IP-adressen
+skal med, men som angivet i Nagios-manualen
+kan man komme ud for at DNS-serveren er nede,
+og så mister man overvågning af alle sine
+maskiner på én gang.
 </para>
 <programlisting>
-define {
+define host{
+	use		generic-host
+	host_name	localhost
+	alias		Local Host
+	address		127.0.0.1
 	}
 </programlisting>
+<para>
+Til hver host kan der tilføjes ekstra information
+som ikke er påkrævet, men praktisk at have.
+Har fx en hel hjemmeside der beskriver hver enkelt
+maskine, kan sætte et link op til denne så man
+hurtigt kan klikke sig frem til informationen
+direkte fra Nagios overvågningssiden.
+Informationen kunne være som følger:
+</para>
+<programlisting>
+define hostextinfo{
+	host_name       localhost
+	notes           Den lokale vaert som Nagios er installeret paa
+	notes_url       http://localhost/info.html
+	icon_image      localhost.png # placeres i "/var/www/nagios/htdocs/share/images/logos"
+	icon_image_alt  Lokal vaert
+	}
+</programlisting>
+<para>
+Som tidligere nævnt er der noget rod omkring hvor
+de forskellige filer skal ligge, og disse "icon_image"
+skal ligge i et subdir der hedder noget med
+"share/images/logos", og det må du så lede efter.
+</para>
 </sect3><!-- nagios-konfiguration-hosts -->
 
 <sect3 id="nagios-konfiguration-hostgroups">
