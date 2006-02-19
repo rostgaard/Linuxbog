@@ -290,19 +290,19 @@ der ligner nedenstående.
 <para>
 Følgende programpakker skal downloades for at
 kunne komme igang.
-De kan downloades fra
-<ulink url="http://www.nagios.org/download/">http://www.nagios.org/download/</ulink>
 </para>
 
 <itemizedlist mark="bullet">
 
 <listitem><para>
+<ulink url="http://www.nagios.org/download/">http://www.nagios.org/download/</ulink>
 Nagios: nagios-2*.tar.gz er selve programmet der
 skal køre på serveren og det program der indhenter
 informationer fra de andre maskiner.
 </para></listitem>
 
 <listitem><para>
+<ulink url="http://sourceforge.net/project/showfiles.php?group_id=29880">nagiosplug.sourceforge.net</ulink>
 Nagios plugins: nagios-plugins-1*.tar.gz er en
 samling af små programstumper der checker de
 enkelte services. Eksempelvis findes programmet
@@ -316,6 +316,7 @@ standardpakken.
 </para></listitem>
 
 <listitem><para>
+<ulink url="http://www.nagios.org/download/">http://www.nagios.org/download/</ulink>
 NRPE: nrpe-*.tar.gz anvendes for at kontrollere
 ting der foregår lokalt på en maskine. Vil man
 holde øje med fx diskplads, skal man bruge NRPE-pakken
@@ -360,7 +361,12 @@ af <command>make</command> og <command>make fullinstall</command>.
 
 <para>
 nagios-plugins
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+er en særskilt programpakke der skal downloades.
+Den indeholder alle de check-programmer Nagios-dæmonen skal bruge, og uden
+nagios-plugins virker Nagios slet ikke.
+Hent programpakken
+(<xref linkend="nagios-links"/>)
+og installer pakken som angivet herunder:
 </para>
 
 <screen>
@@ -393,9 +399,11 @@ med Nagios, skal der rettes så mange ting
 at det mindst vil tage dig 6 timer at komme 
 frem til mål.
 Hent defor den færdige pakke fra
-<ulink url="http://cvs.linuxbog.dk/admin/eksempel/etc-nagios.tar.gz">http://cvs.linuxbog.dk/admin/eksempel/etc-nagios.tar.gz</ulink>
+<ulink url="/admin/eksempler/etc-nagios.tar.gz">http://cvs.linuxbog.dk/admin/eksempler/etc-nagios.tar.gz</ulink>
 og stil dig i roden af din disk og pak den ud.
 Filerne vil lægge sig i <command>/etc/nagios</command>.
+Filerne kan også hentes enkeltvis og browses på
+<ulink url="/admin/eksempler/etc/nagios/">http://www.linuxbog.dk/admin/eksempler/etc/nagios/</ulink>
 </para>
 
 <para>
@@ -508,6 +516,7 @@ Den måde som filerne kommer som standard er følgende:
 <orderedlist>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-services"/>
 <filename>services.cfg</filename>
 indeholder alle de services der skal overvåges
 på alle maskiner.
@@ -517,6 +526,7 @@ er startet.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-hosts"/>
 <filename>hosts.cfg</filename>
 indeholder en liste over alle de maskiner der
 skal overvåges.
@@ -530,6 +540,7 @@ hostnavne, og sætte dine egne navne ind.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-hostgroups"/>
 <filename>hostgroups.cfg</filename>
 er listen på alle de grupper af maskiner
 du har. De fleste har nok så få maskiner
@@ -538,12 +549,14 @@ nemt at lave en gruppe mere.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-contacts"/>
 <filename>contacts.cfg</filename>
 er listen over de personer der skal have
 tilsendt en mail, når der er noget galt.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-contactgroups"/>
 <filename>contactgroups.cfg</filename>
 indeholder listen af de grupper der
 skal have sendt en mail, når der er noget galt.
@@ -553,6 +566,7 @@ Det gør det nemmere at administrerer mange brugere samtidigt.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-servicegroups"/>
 <filename>servicegroups.cfg</filename>
 er ikke så vigtig at have med til at starte med.
 Den giver fx et godt overblik af alle webservere,
@@ -560,12 +574,14 @@ men på alle maskiner.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-checkcommands"/>
 <filename>checkcommands.cfg</filename>
 indeholder listen over alle de kommandoer
 man kan bruge til at checke med i Nagios.
 </para></listitem>
 
 <listitem><para>
+<xref linkend="nagios-konfiguration-nagios"/>
 <filename>nagios.cfg</filename>
 er hoved konfigurationsfilen.
 Det er typisk en man kun vil rette i under
@@ -796,10 +812,18 @@ define hostgroup{
 <title>contacts.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>contacts</tertiary></indexterm>
 <para>
-Test
+De brugere der skal have en meddelelse når der er noget galt med en maskine,
+skrives i listen 
+<filename>contacts.cfg</filename>.
+I eksemplet der følger med beskrivelsen her, bruges en contact-template
+og så er det kun ganske få linjer man typisk skal skrive om hver person.
 </para>
 <programlisting>
-define {
+define contact{
+	use		generic-contact ; Den definerede contact-template
+	contact_name	nagios
+	alias		Nagios Bruger
+	email		nagios@localhost
 	}
 </programlisting>
 </sect3> <!-- nagios-konfiguration-contacts -->
@@ -808,10 +832,22 @@ define {
 <title>contactgroups.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>contactgroups</tertiary></indexterm>
 <para>
-Test
+Der vil ofte være flere personer der skal sendt en e-mail når noget går
+galt. Derfor definere man et antal personer i en gruppe, og ved de enkelte
+services angives hvilken kontaktgruppe der skal have besked når der er 
+noget galt.
+Man kunne fx foresille sig at man i 
+<filename>services.cfg</filename>
+havde en overvågning af web-servere (check_http) og her ville sende en
+mail til gruppen "webmasters" hvis der skete noget der.
+I det vedlagte eksempel er dog blot defineret en enkelt gruppe der modtager
+alle fejl, hvilket typisk vil være det de fleste har brug for.
 </para>
 <programlisting>
-define {
+define contactgroup{
+	contactgroup_name	admins
+	alias			Administrators
+	members			root, nagios
 	}
 </programlisting>
 </sect3> <!-- nagios-konfiguration-contactgroups -->
@@ -820,10 +856,28 @@ define {
 <title>servicegroups.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>servicegroups</tertiary></indexterm>
 <para>
-Test
+Servicegrupper bruges til at overvåge en bestemt service, men på tværs af
+hvilke maskiner de køre på.
+I det viste eksempel er det webservices der bliver holdt øje med, og det
+gør så at man kan få en pæn liste op på skærmen der ikke viser andet end
+webservere.
+Bemærk her at listen af "members" skrives både med hostnavn og
+servicebeskrivelse: members &lt;host_name&gt;,&lt;service_description&gt; .
+Alle &lt;host_name&gt; og &lt;service_description&gt; kan findes i filen
+<filename>services.cfg</filename> ,
+og man kan fx lave en hurtig liste til skærmen med kommandoen:
+</para>
+<screen>
+<prompt>[tyge@hven nagios]$ </prompt><userinput>egrep "(host_name|service_description)" services.cfg</userinput>
+</screen>
+<para>
+Herunder et eksempel:
 </para>
 <programlisting>
-define {
+define servicegroup{
+	servicegroup_name	HTTP
+	alias			HyperText Transport Protocol
+	members			localhost,HTTP, cvs.sslug.dk,HTTP
 	}
 </programlisting>
 </sect3> <!-- nagios-konfiguration-servicegroups -->
