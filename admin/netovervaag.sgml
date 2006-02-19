@@ -886,24 +886,71 @@ define servicegroup{
 <title>checkcommands.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>checkcommands</tertiary></indexterm>
 <para>
-Test
+<filename>checkcommands.cfg</filename>
+indeholder definitionen på alle de check-kommandoer man kan kalde i
+<filename>services.cfg</filename> .
+Nogle af kommandoerne skal have parametre med såsom hostname, og andre
+skal ikke have nogen parametre.
+En nem måde at lære hvordan de enkelte check-programmer virker og hvordan
+de giver output, er at kalde dem fra kommandolinjen.
+Hvis du fx 48% diskplads tilbage på din rod-partition, så prøv at lave en
+warning på 50%.
+Nagios-plugins (hjælpe-programmerne) ligger i 
+<filename>/usr/local/nagios/libexec</filename>,
+så prøv denne:
+</para>
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cd /usr/local/nagios/libexec</userinput>
+<prompt>[tyge@hven libexec]$ </prompt><userinput>./check_disk -w 50% -c 25% -p /
+DISK WARNING - free space: / 134354 MB (48%);| /=147041MB;140697;211046;0;281395
+</userinput>
+</screen>
+<para>
+I stedet for at bruge mount-pointet '/' kan man også bruge selve devicen såsom
+'/dev/hda1', hvis det giver mere mening.
+De anvendte mount-point kan læses i 
+<filename>/etc/mtab</filename>
+.
+Som det ses herunder hedder kommandoen 
+<command>check_local_disk</command>.
 </para>
 <programlisting>
-define {
+define command{
+	command_name    check_local_disk
+	command_line    $USER1$/check_disk -w $ARG1$ -c $ARG2$ -p $ARG3$
 	}
 </programlisting>
+<para>
+Når man har fundet ud af hvilke parametre man til henholdsvis
+warning og critical, kan man oprette en definition i
+<filename>services.cfg</filename>:
+</para>
+<programlisting>
+define  service{
+	use			generic-service
+	host_name		localhost
+	service_description	Disk / mount
+	check_command		check_local_disk!50%!25%!/
+	}
+</programlisting>
+<para>
+For alle check-programmerne gælder at man kalder dem med kommandoen
+<command>-h</command> for at få den fulde hjælp.
+Her får man så al den hjælp der findes, da reglerne for skrivning af
+plugins foreskriver at det skal være sådan.
+</para>
 </sect3> <!-- nagios-konfiguration-checkcommands -->
 
 <sect3 id="nagios-konfiguration-nagios">
 <title>nagios.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>nagios</tertiary></indexterm>
 <para>
-Test
+Der er mange ting der kan ændres i hovedkonfiguratiosfilen
+<filename>nagios.cfg</filename>,
+men det vil oftest ikke være nødvendigt.
+Der kan være en enkelt path der skal ændres, men ellers er standardparametrene
+sat fornuftigt, og det er kun de andre filer man skal koncentrere sig om.
 </para>
-<programlisting>
-define {
-	}
-</programlisting>
 </sect3> <!-- nagios-konfiguration-nagios -->
 
 </sect2> <!-- nagios-konfiguration -->
@@ -975,7 +1022,7 @@ indeholder alt muligt andet omkring Nagios. Der er forskellige programmer
 der gør det nemmere at sætte Nagios op, pakker med ikoner, og andre
 tillægsting til Nagios.
 Der findes flere pakker der handler om at gøre opsætning af Nagios nemmere,
-så det kan være interessant at kigge på den på et tidligt tisdpunkt.
+så det kan være interessant at kigge på den på et tidligt tidspunkt.
 </para></listitem>
 </itemizedlist>
 
