@@ -425,6 +425,36 @@ og den nye konfiguration til Apache webserveren kan loades.
 
 <screen>
 <prompt>[root@hven ~]# </prompt><userinput>/etc/init.d/nagios start</userinput>
+</screen>
+
+<para>
+Nu er Nagios dæmonen startet og indsamling af data er begyndt.
+Næste trin er så at kunne se de indsamlede data.
+Det forventes at du har Apache-webserveren installeret, og har nogenlunde
+styr på at administrerer den.
+Det nemmeste er hvis du vil tilgå Nagios via
+<ulink url="http://localhost/nagios/">http://localhost/nagios</ulink>
+for så kan du nøjes med at inkludere
+<filename>sample-config/httpd.conf</filename>
+der ligger i filstrukturen under de nagios-pakke.
+Bruger du Gentoo er det nemmest blot at kopiere filen ned i filnavnet
+<filename>/etc/apache2/modules.d/99_nagios.conf</filename>
+(eller brug et andet nummer der er lavere end 99).
+Ved andre Linux-distributioner er det nok nemmest at kopiere 
+<filename>sample-config/httpd.conf</filename>
+til
+<filename>/etc/nagios/</filename>
+og så gå ind i din 
+<filename>httpd.conf</filename>
+der hører til Apache og i bunden skrive
+<filename>Include /etc/nagios/httpd.conf</filename>
+.
+Når den config-fil der hører til Nagios er blevet inkluderet, er det blot at
+få den loadet ind i Apache.
+Det gøre evt. med følgende kommando:
+</para>
+
+<screen>
 <prompt>[root@hven ~]# </prompt><userinput>/etc/init.d/apache reload</userinput>
 </screen>
 
@@ -665,6 +695,19 @@ define service{
 	check_command		check_http
 	}
 </programlisting>
+<para>
+Har man en bestemt service man altid gerne vil bruger på alle de hosts man
+har defineret i hosts.cfg, så kan man fordel bruge en '*' som host_name.
+Eksempelvis kunne det være at alle skulle have en ping:
+</para>
+<programlisting>
+define service{
+	use			generic-service
+	host_name		* ; Alle hosts får en ping
+	service_description	PING
+	check_command		check_ping!100.0,20%!500.0,60%
+	}
+</programlisting>
 </sect3><!-- nagios-konfiguration-services -->
 
 <sect3 id="nagios-konfiguration-hosts">
@@ -715,16 +758,36 @@ de forskellige filer skal ligge, og disse "icon_image"
 skal ligge i et subdir der hedder noget med
 "share/images/logos", og det må du så lede efter.
 </para>
+<para>
+Her i eksemplet er brugt hostnavnet 'localhost', men det bør man ikke bruge
+i praksis, da det er forvirende hvis rent faktisk sidder ved en anden maskine.
+</para>
 </sect3><!-- nagios-konfiguration-hosts -->
 
 <sect3 id="nagios-konfiguration-hostgroups">
 <title>hostgroups.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>hostgroups</tertiary></indexterm>
 <para>
-Test
+På Nagios web-status-siden er der i venstre side en menu, hvor man kan vælge
+at se status på forskellig måde.
+En måde er at se de forskellige maskiner sammen som en gruppe, og så have
+flere grupper med et antal maskiner i.
+Er man flere personer om at overvåge maskiner, og hver har et ansvarsområde
+for et antal maskiner, kan man med fordel dele dem op i flere hostgrupper.
+Det fx være en gruppe med Linux-maskiner, og en med UNIX-maskiner.
+Gruppen kan også være den fysiske lokation såsom København og Ruds Vedby.
+</para>
+<para>
+Man kan godt have den samme maskine nævnt i flere grupper samtidigt, 
+men når der så er en fejl på den maskine vil der være to røde felter på
+skærmen, og på afstand vil det se ud som om der er to fejl.
+Så nævn kun hver maskine én gang i hostgroup-filen.
 </para>
 <programlisting>
-define {
+define hostgroup{
+	hostgroup_name	gruppenavn ; Vælg et kort unikt navn
+	alias		Langt navn for gruppen
+	members		localhost, cvs.sslug.dk ; Kommasepareret liste
 	}
 </programlisting>
 </sect3> <!-- nagios-konfiguration-hostgroups -->
@@ -807,7 +870,7 @@ hvilket kunne have hjulpet en del.
 
 <para>
 Links ændre sig hele tiden for den sidst gældende manual,
-men her så alligevel link til
+men her er så alligevel et link til
 <ulink url="http://nagios.sourceforge.net/docs/2_0/">Nagios version 2.0 manual</ulink>
 .
 Et emne, hvor det kunne være rart hvis det var nemt at finde, 
@@ -842,12 +905,23 @@ De to følgende kommandoer skulle klare de værste problemer.
 <itemizedlist mark="bullet">
 <listitem><para>
 <ulink url="http://www.nagios.org/">nagios.org</ulink>
+er hjemmesiden for Nagios. 
+Her downloades hovedprogrammet til indsamling af data og programmet
+til præsentation på web.
 </para></listitem>
 <listitem><para>
 <ulink url="http://nagiosplug.sourceforge.net/">nagiosplug.sourceforge.net</ulink>
+er hjemmesiden for check-programmerne for Nagios.
+Uden check-programmerne kan Nagios intet, så man skal downloade en
+pakke nagios-plugins.*.tra.gz her fra.
 </para></listitem>
 <listitem><para>
 <ulink url="http://www.nagiosexchange.org/">nagiosexchange.org</ulink>
+indeholder alt muligt andet omkring Nagios. Der er forskellige programmer
+der gør det nemmere at sætte Nagios op, pakker med ikoner, og andre
+tillægsting til Nagios.
+Der findes flere pakker der handler om at gøre opsætning af Nagios nemmere,
+så det kan være interessant at kigge på den på et tidligt tisdpunkt.
 </para></listitem>
 </itemizedlist>
 
