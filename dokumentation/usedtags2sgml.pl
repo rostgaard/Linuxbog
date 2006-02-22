@@ -1,11 +1,12 @@
 #! /usr/bin/perl
 # af Hans Schou
-# http://www.docbook.org/tdg/en/html/xref.html
-# http://www.oreilly.com/catalog/docbook/chapter/book/xref.html
+# $Id$
 #
-#
-print "<TABLE id=\"anvendtetags\">
-<title>Anvendte tags</title>
+# Anvendes sammen med usedtags.pl til at lave en tabel
+# hvor der også er links til docbook.org og oreilly.com .
+
+print "<table id=\"anvendte-elementer-tabel\">
+<title>Anvendte elementer i denne bog</title>
 <tgroup cols=4 align=\"char\">
 <thead><row>
 <entry>Antal</entry>
