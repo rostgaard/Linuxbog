@@ -22,7 +22,13 @@ while (<>) {
 		$name = $2;
 		print "<row>";
 		printf("<entry>%4d</entry>", $count);
-		print "<entry>$name</entry>";
+		$found = `egrep -i 'sect3 *id=\"docbook-$name\"' docbook.sgml`;
+		#print "\n**** $found\n"; exit;
+		if ($found) {
+			print "<entry>$name</entry>";
+		} else {
+			print "<entry><link linkend=\"docbook-$name\">$name</link></entry>";
+		}
 		print "<entry><ulink url=\"http://www.docbook.org/tdg/en/html/$name.html\">docbook.org</ulink></entry>";
 		print "<entry><ulink url=\"http://www.oreilly.com/catalog/docbook/chapter/book/$name.html\">O'reilly</ulink></entry> ";
 		print "</row>\n";
@@ -30,3 +36,4 @@ while (<>) {
 }
 
 print "</tbody></tgroup></table>\n";
+
