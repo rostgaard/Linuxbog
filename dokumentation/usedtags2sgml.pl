@@ -21,12 +21,11 @@ while (<>) {
 		$count = $1;
 		$name = $2;
 		print "<row>";
-		printf("<entry>%4d</entry>", $count);
+		printf("<entry align=\"right\">%4d</entry>", $count);
 		$found = `egrep -i 'sect[1-3] *id=\"docbook-$name\"' docbook.sgml`;
 		if ((length $found) eq 0) {
 			print "<entry>$name</entry>";
 		} else {
-			print "\n<!-- '$found' -->\n";
 			print "<entry><link linkend=\"docbook-$name\">$name</link></entry>";
 		}
 		print "<entry><ulink url=\"http://www.docbook.org/tdg/en/html/$name.html\">docbook.org $name</ulink></entry>";
