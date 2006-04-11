@@ -1,7 +1,6 @@
 <?php
-# af Hans Schou 2003
-
 	$mailto = "linuxbog@sslug.dk";
+	$mailto = "chlor@schou.dk"; # den skal lige fjernes når alt er OK
 
 	if (preg_match("|/([^/]+)/[^/]+/([^/]+)\.html|", $_SERVER["REQUEST_URI"], $match)) {
 		$bognavn = $match[1];
@@ -11,7 +10,8 @@
 		#echo "<pre>vi $sgmlfile +$linenumber</pre>\n";
 	}
 
-	if ($HTTP_POST_VARS["tekst"]) {
+if ($HTTP_POST_VARS["tekst"]) {
+	if ($_SERVER["HTTP_REFERER"]) {
 		$tekst = stripcslashes($HTTP_POST_VARS["tekst"]);
 		$email = $HTTP_POST_VARS["email"];
 		$reply = ($email ? $email : $mailto);
@@ -19,6 +19,7 @@
 		$body = "\nForslag til rettelse fra e-mail: $email\n";
 		$body .= "Afsendt fra IP-nummer: ".$_SERVER["REMOTE_ADDR"]."\n";
 		$body .= "HTML-fil:\nhttp://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
+		$body .= "HTTP_REFERER: ".$_SERVER[HTTP_REFERER]."\n";
 		if ($sgmlfile) {
 			$body .= "SGML-fil:\nvi $sgmlfile +$linenumber\n";
 		}
@@ -39,7 +40,10 @@
 		echo "Følgende mail er sendt til $mailto:\n<pre>Subject: $subject\n";
 		echo htmlentities($body)."</pre>\n";
 		echo "</blockquote>\n";
+	} else {
+		echo "<p>Beklager, men posting er slået fra når der ikke er nogen \$_SERVER[HTTP_REFERER]</p>";
 	}
+}
 ?>
 <!--
 Her starter "/submit.inc" af Hans Schou.
@@ -53,8 +57,8 @@ Dernæst skal din fil have tilføjet .php til slut i filnavnet.
 <hr>
 <h2>Rettelser</h2>
 <p>Har du en rettelse til denne side, så skriv den i boksen herunder.
-Din besked bliver sendt til redaktionen af <i>Friheden Til At Vælge</i>.
-</p>
+Din besked bliver sendt til redaktionen af <i>Friheden Til At Vælge</i>.</p>
+<p>Dit IP-nummer er <?php echo $_SERVER["REMOTE_ADDR"] ?>.</p>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post">
 <p>
 Eventuelt din e-mail adresse:
@@ -69,5 +73,4 @@ Din kommentar eller rettelse:
 </textarea>
 <input type="submit" name="submit" value="Submit">
 </form>
-<p>Dit IP-nummer er <?php echo $_SERVER["REMOTE_ADDR"] ?>.</p>
 <!-- Her slutter "submit.inc" -->
