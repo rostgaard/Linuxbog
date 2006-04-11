@@ -1,6 +1,5 @@
 <?php
 	$mailto = "linuxbog@sslug.dk";
-	$mailto = "chlor@schou.dk"; # den skal lige fjernes når alt er OK
 
 	if (preg_match("|/([^/]+)/[^/]+/([^/]+)\.html|", $_SERVER["REQUEST_URI"], $match)) {
 		$bognavn = $match[1];
@@ -18,8 +17,8 @@ if ($HTTP_POST_VARS["tekst"]) {
 		$subject = "[FTAV] ".$_SERVER["REQUEST_URI"]." $email";
 		$body = "\nForslag til rettelse fra e-mail: $email\n";
 		$body .= "Afsendt fra IP-nummer: ".$_SERVER["REMOTE_ADDR"]."\n";
-		$body .= "HTML-fil:\nhttp://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
 		$body .= "HTTP_REFERER: ".$_SERVER[HTTP_REFERER]."\n";
+		$body .= "HTML-fil:\nhttp://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
 		if ($sgmlfile) {
 			$body .= "SGML-fil:\nvi $sgmlfile +$linenumber\n";
 		}
