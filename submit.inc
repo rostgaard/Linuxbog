@@ -1,7 +1,6 @@
 <?php
 
 $mailto = "linuxbog@sslug.dk";
-$mailto = "chlor@schou.dk";
 
 $allowfromcountry = array("DK","SE");
 
@@ -11,8 +10,8 @@ if ($HTTP_POST_VARS["tekst"]) {
 	$gi = geoip_open($base."/GeoIP.dat",GEOIP_STANDARD);
 	$country = geoip_country_code_by_addr($gi, $_SERVER["REMOTE_ADDR"]);
 	geoip_close($gi);
-	echo "<h1>Country: $country</h1>\n";
 	if (!in_array($country,$allowfromcountry)) {
+		echo "<h1>FEJL</h1>\n";
 		echo "<p>Beklager, men det er ikke muligt at sende ændringer når du sidder i $country. Vi får alt for meget skidtpost, så vi er blevet nødt til at indlægge denne spærring.</p>";
 		echo "<p>Din tekst kan sendes til <a href=\"mailto:$mailto\">$mailto</a>:</p><pre>".$HTTP_POST_VARS["tekst"]."</pre>\n";
 	} else {
@@ -46,7 +45,7 @@ if ($HTTP_POST_VARS["tekst"]) {
 			."X-Mailer: PHP/".phpversion()
 		);
 
-		echo "<hr><blockquote>\n";
+		echo "<hr><blockquote id=\"rettet\">\n";
 		echo "Følgende mail er sendt til $mailto:\n<pre>Subject: $subject\n";
 		echo htmlentities($body)."</pre>\n";
 		echo "</blockquote>\n";
@@ -67,7 +66,7 @@ Dernæst skal din fil have tilføjet .php til slut i filnavnet.
 <p>Har du en rettelse til denne side, så skriv den i boksen herunder.
 Din besked bliver sendt til redaktionen af <i>Friheden Til At Vælge</i>.</p>
 <p>Dit IP-nummer er <?php echo $_SERVER["REMOTE_ADDR"] ?>.</p>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post">
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>#rettet" method="post">
 <p>
 Eventuelt din e-mail adresse:
 <input type="text" name="email" value="<?php echo $HTTP_POST_VARS["email"] ?>">
