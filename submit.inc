@@ -1,23 +1,34 @@
 <?php
-	$mailto = "linuxbog@sslug.dk";
 
-	if (preg_match("|/([^/]+)/[^/]+/([^/]+)\.html|", $_SERVER["REQUEST_URI"], $match)) {
-		$bognavn = $match[1];
-		$id = $match[2];
-		$output = exec("cd ../../ ; egrep -Hin 'id=\"?$id\"?' $bognavn/*.sgml");
-		list($sgmlfile, $linenumber) = split(":", $output);
-		#echo "<pre>vi $sgmlfile +$linenumber</pre>\n";
-	}
+$mailto = "linuxbog@sslug.dk";
+$mailto = "chlor@schou.dk";
+
+$allowfromcountry = array("DK","SE");
 
 if ($HTTP_POST_VARS["tekst"]) {
-	if ($_SERVER["HTTP_REFERER"]) {
+	$base = "../../misc/geoip";
+	include($base."/geoip.inc");
+	$gi = geoip_open($base."/GeoIP.dat",GEOIP_STANDARD);
+	$country = geoip_country_code_by_addr($gi, $_SERVER["REMOTE_ADDR"]);
+	geoip_close($gi);
+	echo "<h1>Country: $country</h1>\n";
+	if (!in_array($country,$allowfromcountry)) {
+		echo "<p>Beklager, men det er ikke muligt at sende ændringer når du sidder i $country. Vi får alt for meget skidtpost, så vi er blevet nødt til at indlægge denne spærring.</p>";
+		echo "<p>Din tekst kan sendes til <a href=\"mailto:$mailto\">$mailto</a>:</p><pre>".$HTTP_POST_VARS["tekst"]."</pre>\n";
+	} else {
+		if (preg_match("|/([^/]+)/[^/]+/([^/]+)\.html|", $_SERVER["REQUEST_URI"], $match)) {
+			$bognavn = $match[1];
+			$id = $match[2];
+			$output = exec("cd ../../ ; egrep -Hin 'id=\"?$id\"?' $bognavn/*.sgml");
+			list($sgmlfile, $linenumber) = split(":", $output);
+		}
 		$tekst = stripcslashes($HTTP_POST_VARS["tekst"]);
 		$email = $HTTP_POST_VARS["email"];
 		$reply = ($email ? $email : $mailto);
 		$subject = "[FTAV] ".$_SERVER["REQUEST_URI"]." $email";
 		$body = "\nForslag til rettelse fra e-mail: $email\n";
 		$body .= "Afsendt fra IP-nummer: ".$_SERVER["REMOTE_ADDR"]."\n";
-		$body .= "HTTP_REFERER: ".$_SERVER[HTTP_REFERER]."\n";
+		$body .= "Land: $country\n";
 		$body .= "HTML-fil:\nhttp://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
 		if ($sgmlfile) {
 			$body .= "SGML-fil:\nvi $sgmlfile +$linenumber\n";
@@ -39,8 +50,6 @@ if ($HTTP_POST_VARS["tekst"]) {
 		echo "Følgende mail er sendt til $mailto:\n<pre>Subject: $subject\n";
 		echo htmlentities($body)."</pre>\n";
 		echo "</blockquote>\n";
-	} else {
-		echo "<p>Beklager, men posting er slået fra når der ikke er nogen \$_SERVER[HTTP_REFERER]</p>";
 	}
 }
 ?>
