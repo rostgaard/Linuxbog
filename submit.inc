@@ -2,7 +2,7 @@
 
 $mailto = "linuxbog@sslug.dk";
 
-$allowfromcountry = array("DK","SE");
+$allowfromcountry = array("DE","DK","SE");
 
 if ($HTTP_POST_VARS["tekst"]) {
 	$base = "../../misc/geoip";
@@ -24,7 +24,7 @@ if ($HTTP_POST_VARS["tekst"]) {
 		$tekst = stripcslashes($HTTP_POST_VARS["tekst"]);
 		$email = $HTTP_POST_VARS["email"];
 		$reply = ($email ? $email : $mailto);
-		$subject = "[FTAV] ".$_SERVER["REQUEST_URI"]." $email";
+		$subject = "[FTAV] $country ".$_SERVER["REQUEST_URI"]." $email";
 		$body = "\nForslag til rettelse fra e-mail: $email\n";
 		$body .= "Afsendt fra IP-nummer: ".$_SERVER["REMOTE_ADDR"]."\n";
 		$body .= "Land: $country\n";
