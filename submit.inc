@@ -27,6 +27,7 @@ if ($HTTP_POST_VARS["tekst"]) {
 		$subject = "[FTAV] $country ".$_SERVER["REQUEST_URI"]." $email";
 		$body = "\nForslag til rettelse fra e-mail: $email\n";
 		$body .= "Afsendt fra IP-nummer: ".$_SERVER["REMOTE_ADDR"]."\n";
+		$body .= "Reverse look-up: ".gethostbyaddr($_SERVER["REMOTE_ADDR"])."\n";
 		$body .= "Land: $country\n";
 		$body .= "HTML-fil:\nhttp://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]."\n";
 		if ($sgmlfile) {
