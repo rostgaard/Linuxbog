@@ -347,6 +347,8 @@ af <command>make</command> og <command>make fullinstall</command>.
 </para>
 
 <screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>[ -z "`grep ^nagios: /etc/group`" ] &amp;&amp; groupadd nagios</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>[ -z "`grep ^nagios: /etc/passwd`" ] && useradd -c "Nagios" -g nagios -d /var/www/nagios/html -s /bin/bash nagios</userinput>
 <prompt>[tyge@hven ~]$ </prompt><userinput>cd nagios-2.0</userinput>
 <prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>./configure \
         --sysconfdir=/etc/nagios \
@@ -357,9 +359,7 @@ af <command>make</command> og <command>make fullinstall</command>.
         --with-htmurl=/nagios \
         --with-cgiurl=/nagios/cgi-bin</userinput>
 <prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>make all</userinput>
-<prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>[ -z "`grep nagios: /etc/group`" ] &amp;&amp; groupadd nagios</userinput>
 <prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>mkdir -p /var/www/nagios/html</userinput>
-<prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>[ -z "`grep ^nagios: /etc/passwd`" ] && useradd -c "Nagios" -g nagios -d /var/www/nagios/html nagios</userinput>
 <prompt>[tyge@hven nagios-2.0]$ </prompt><userinput>su -c "make fullinstall"</userinput>
 </screen>
 
@@ -448,7 +448,7 @@ Det nemmeste er hvis du vil tilgå Nagios via
 <ulink url="http://localhost/nagios/">http://localhost/nagios</ulink>
 for så kan du nøjes med at inkludere
 <filename>sample-config/httpd.conf</filename>
-der ligger i filstrukturen under de nagios-pakke.
+der ligger i filstrukturen under source nagios-pakken.
 Bruger du Gentoo er det nemmest blot at kopiere filen ned i filnavnet
 <filename>/etc/apache2/modules.d/99_nagios.conf</filename>
 (eller brug et andet nummer der er lavere end 99).
@@ -474,6 +474,7 @@ Det gøre evt. med følgende kommando:
 Nu kan du klikke dig ind på
 <ulink url="http://localhost/nagios/">http://localhost/nagios/</ulink>
 og se status for den maskine som Nagios er installeret på.
+Klik på service detail.
 Måske er der nogle service-check der lige står til "Pending",
 men så vent lige et par minutter, så kommer status også for disse.
 Som udgangspunkt viser eksemplerne der hører til 
