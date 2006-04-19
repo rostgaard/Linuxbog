@@ -2,7 +2,7 @@
 
 $mailto = "linuxbog@sslug.dk";
 
-$allowfromcountry = array("DE","DK","SE");
+$allowfromcountry = array("DE","DK","IE","SE");
 
 if ($HTTP_POST_VARS["tekst"]) {
 	$base = "../../misc/geoip";
