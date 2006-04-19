@@ -11,6 +11,7 @@
 
 ?>
 <title>Friheden til at vælge</title>
+
 <style type="text/css">
 /* From PhpWiki: <a href> looks like buttons */
 a.button {
@@ -490,7 +491,6 @@ Se også vores konkurrenters bøger ;-)
 </p>
 
 <ul>
-<li>"Linux i skolen" på <a href="http://www.gnuskole.dk">www.gnuskole.dk</a></li>
 <li>"Debianguiden" på <a href="http://www.debianguiden.dk/">www.debianguiden.dk/</a></li>
 <li><a href="http://www.skibhist.dk/download/download.html">Håndbog i OpenOffice.org</a></li>
 </ul>
