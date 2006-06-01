@@ -42,9 +42,14 @@ a.button {
       .....
       ... [topmenu] ...
    */
+   /*
+   Når 'register_globals' er slået fra så gå ind i VI og:
+   :%s/\$t\>/$_GET["t"]/g
    if (!ini_get('register_globals')) {
    	echo "<h1>'register_globals' er slået fra i /etc/php.ini</h1><hr>\n";
+   	phpinfo(32);
    }
+   */
    $htmltitle_en="Liberty of writing books";
    $htmltitle_da="Friheden til at skrive bøger";
    $htmltitle_sv="Friheden til at skrive böcker";
@@ -67,7 +72,7 @@ a.button {
 
    list($width,$height) = getimagesize("front.png");
 
-if (!$b && !$t && !$matrix) { ?>
+if (!$_GET["b"] && !$_GET["t"] && !$_GET["matrix"]) { ?>
 <img src="front.png" alt="Friheden til at skrive bøger"
  align=right width="<? echo $width ?>" height="<? echo $height ?>">
 <?php } ?>
@@ -304,19 +309,19 @@ if (!file_exists("titleabstract.php")) {
   $bgcolor = array("#FFFFFF","#E8E8E8");
 
   // Vis en bog med alle dens typer
-  if (strlen($b) && is_array($books[$b])) {
-    visbog($b);
+  if (strlen($_GET["b"]) && is_array($books[$_GET["b"]]) ) {
+    visbog($_GET["b"]);
     echo "<p>\n";
   }
 
   // Vis en type med alle dens bøger
-  if (strlen($t) && is_array($packs[$t])) {
-    vistype($t);
+  if (strlen($_GET["t"]) && is_array($packs[$_GET["t"]])) {
+    vistype($_GET["t"]);
     echo "<p>\n";
   }
 
   // Vis alle bøger
-  if ($all == "b") {
+  if ($_GET["all"] == "b") {
     echo "<h2>Bøger</h2>\n";
     // Liste over alle bøger. Alle bøger har hver sin tabel med forskellig filtyper
     reset($books);
@@ -326,7 +331,7 @@ if (!file_exists("titleabstract.php")) {
   }
 
   // Vis alle filtyper
-  if ($all == "t") {
+  if ($_GET["all"] == "t") {
     echo "<h2>Filtyper</h2>\n";
     // Liste over filtype. Hver filtype har sin egen tabel med alle bogtitler.
     reset($packs);
@@ -335,7 +340,7 @@ if (!file_exists("titleabstract.php")) {
     }
   }
 
-if ($matrix) { ?>
+if ($_GET["matrix"]) { ?>
 <hr>
 <a name="matrix"></a>
 <h2>Samlet bogoversigt</h2>
