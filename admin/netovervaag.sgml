@@ -713,6 +713,49 @@ Herfter får man listet alle de fejl der måtte være
 og man kan gå igang med at rette dem.
 </para>
 
+<para>
+Er der en check-kommando der driller, kan man altid prøve dem
+af fra kommandolinjen.
+En af de check-kommandoer der kan give underlige svar,
+er fx <command>check_http_string</command>.
+Den bruges til at undersøge om en hjemmeside indeholder en bestemt tekst.
+Det kunne være en tekst far en database, eller andet der indikere at 
+mange af de services der skal fungere på en hjemmeside, er til stede.
+For at vide hvad programmet rigtigt hedder,
+må det findes i <filename>/etc/nagios/checkcommands.cfg</filename>
+og finde <command>check_http_string</command>.
+Her kan man se at programmet blot er <command>check_http</command>
+med en ekstra option.
+Definitionen ser således ud:
+</para>
+
+<programlisting>
+# 'check_http_string' command definition
+define command{
+    command_name    check_http_string
+    command_line    $USER1$/check_http -H $ARG1$ -w $ARG2$ -c $ARG3$ -s "$ARG4$"
+    }
+</programlisting>
+
+<para>
+Hjælp til brug af check-kommandoerne fås alle ved option '-h'.
+'-s' bruges til at undersøge om en bestemt tekst forekommer.
+Nogle hjemmesider checker for hvilket sprog brugeren foretrækker,
+og her vil check-kommandoen spørge som default sprog, hvilket
+typisk er engelsk.
+Hvis man checker hjemmesiden med en browser, står der måske
+"Velkommen", men med <command>check_http</command> vil der stå "Welcome".
+På skærmen kunne det se således ud:
+</para>
+
+<screen>
+<prompt>[tyge@hven ~]$ </prompt><userinput>cd /usr/libexec/nagios</userinput>
+<prompt>[tyge@hven /usr/libexec/nagios]$ </prompt><userinput>./check_http -H www.eksempel.dk -w 5 -c 10 -s "Velkommen"</userinput>
+HTTP CRITICAL: string not found|time=  0.020
+<prompt>[tyge@hven /usr/libexec/nagios]$ </prompt><userinput>./check_http -H www.eksempel.dk -w 5 -c 10 -s "Welcome"</userinput>
+HTTP ok: HTTP/1.1 200 OK -   0.020 second response time |time=  0.020
+</screen>
+
 <sect3 id="nagios-konfiguration-services">
 <title>services.cfg</title>
 <indexterm><primary>Nagios</primary><secondary>Konfiguration</secondary><tertiary>services.cfg</tertiary></indexterm>
