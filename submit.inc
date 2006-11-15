@@ -4,8 +4,12 @@ $mailto = "linuxbog@sslug.dk";
 
 $allowfromcountry = array("DE","DK","IE","SE");
 
+function findGeoIPdat($list) {
+	return $list[0];
+}
+
 if ($HTTP_POST_VARS["tekst"]) {
-	$base = "../../misc/geoip";
+	$base = findGeoIPdat( array("../../misc/geoip", "/usr/share/GeoIP") );
 	include($base."/geoip.inc");
 	$gi = geoip_open($base."/GeoIP.dat",GEOIP_STANDARD);
 	$country = geoip_country_code_by_addr($gi, $_SERVER["REMOTE_ADDR"]);
