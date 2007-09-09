@@ -107,9 +107,6 @@ er der en hal masse ting man gerne vil have svar på hurtigt.
 	Ændre hvor pakker downloades fra
 	</para></listitem>
 	<listitem><para>
-	Sådan styres afhængigheder
-	</para></listitem>
-	<listitem><para>
 	Alternative programmer for pakkeadministration
 	</para></listitem>
 </itemizedlist>
@@ -117,7 +114,8 @@ er der en hal masse ting man gerne vil have svar på hurtigt.
 <sect1 id="pakkesystem-gentoo">
 <title>Gentoo</title>
 <indexterm><primary>Pakkesystemer</primary><secondary>Gentoo</secondary></indexterm>
-<indexterm><primary>Gentoo</primary><secondary>crash-kursus</secondary></indexterm>
+<indexterm><primary>Gentoo</primary><secondary>Crash-kursus</secondary></indexterm>
+<indexterm><primary>Crash-kursus</primary><secondary>Gentoo</secondary></indexterm>
 <para>
 Gentoo har kun værktøjer til at blive styret fra kommandolinjen.
 </para>
@@ -130,9 +128,11 @@ Gentoo har kun værktøjer til at blive styret fra kommandolinjen.
 	</para></listitem>
 </itemizedlist>
 
-<sect2 id="pakkesystem-gentoo-inst">
+<sect2 id="pakkesystem-gentoo-harinst">
 <title>Installerede pakker</title>
 <indexterm><primary>Gentoo</primary><secondary>Installerede pakker</secondary></indexterm>
+<indexterm><primary>Installerede pakker</primary><secondary>Gentoo</secondary></indexterm>
+<indexterm><primary>Pakker</primary><secondary>Gentoo</secondary><tertiary>Installerede</tertiary></indexterm>
 <para>
 Vis liste af installerede pakker.
 </para>
@@ -143,16 +143,19 @@ x11-drm-20060608
 xauth-1.0.2
 ...
 </screen>
-</sect2>
+</sect2><!-- pakkesystem-gentoo-harinst -->
 
 <sect2 id="pakkesystem-gentoo-kaninst">
 <title>Tilgængelige pakker</title>
 <indexterm><primary>Gentoo</primary><secondary>Tilgængelige pakker</secondary></indexterm>
+<indexterm><primary>Tilgængelige pakker</primary><secondary>Gentoo</secondary></indexterm>
+<indexterm><primary>Pakker</primary><secondary>Gentoo</secondary><tertiary>Tilgængelige</tertiary></indexterm>
 <para>
 Vis liste af tilgængelige pakker der kan installeres.
+Kommandoen er <command>emerge -s &lt;streng&gt;</command>.
 </para>
 <screen>
-<prompt>[tyge@hven ~]$ </prompt><userinput>emerge -s a</userinput>
+<prompt>[tyge@hven ~]$ </prompt><userinput>emerge -s anti</userinput>
 *  app-text/antiword
       Latest version available: 0.37
       Latest version installed: [ Not Installed ]
@@ -162,7 +165,103 @@ Vis liste af tilgængelige pakker der kan installeres.
       License:       GPL-2
 ...
 </screen>
-</sect2>
+</sect2><!-- pakkesystem-gentoo-kaninst -->
+
+<sect2 id="pakkesystem-gentoo-inst">
+<title>Installér en pakke</title>
+<indexterm><primary>Gentoo</primary><secondary>Installér en pakke</secondary></indexterm>
+<indexterm><primary>Installér en pakke</primary><secondary>Gentoo</secondary></indexterm>
+<indexterm><primary>Pakker</primary><secondary>Gentoo</secondary><tertiary>Installér</tertiary></indexterm>
+<para>
+Download, kompilér og installér en pakke.
+Kommandoen er <command>emerge &lt;streng&gt;</command>.
+</para>
+<screen>
+<prompt>[root@hven ~]# </prompt><userinput>emerge antiword</userinput>
+Calculating dependencies... done!
+&gt;&gt;&gt; Verifying ebuild Manifests...
+&gt;&gt;&gt; Emerging (1 of 1) app-text/antiword-0.37 to /
+...
+&gt;&gt;&gt; No outdated packages were found on your system.
+* GNU info directory index is up-to-date.
+<prompt>[root@hven ~]# </prompt>
+</screen>
+<para>
+For nogle pakker kan det være en fordel først at se om der bliver
+mange yderligere pakker. 
+Optionen er <command>--ask</command> (-a) og kan med fordel kombineres med
+<command>--verbose</command> (-v).
+Det gøres med 
+<command>emerge -av &lt;streng&gt;</command>
+</para>
+<para>
+Inden man installere en pakke,
+kan der være optioner man ønsker at ændre.
+De står nævnt under <command>USE</command>-variablen
+i <filename>/etc/make.conf</filename>,
+men styres nemmest ved brug af programmet <command>ufed</command>.
+</para>
+</sect2><!-- pakkesystem-gentoo-inst -->
+
+<sect2 id="pakkesystem-gentoo-opdat">
+<title>Opdatér alle installerede pakker</title>
+<indexterm><primary>Gentoo</primary><secondary>Opdatér alle installerede pakker</secondary></indexterm>
+<indexterm><primary>Opdatér alle installerede pakker</primary><secondary>Gentoo</secondary></indexterm>
+<indexterm><primary>Pakker</primary><secondary>Gentoo</secondary><tertiary>Opdatér alle</tertiary></indexterm>
+<para>
+Download, kompilér og opdatér alle installerede pakker.
+Kommandoen er <command>emerge --sync</command> for at opdatere listen af pakker
+og <command>emerge world</command> for at udføre opdateringen. 
+</para>
+<screen>
+<prompt>[root@hven ~]# </prompt><userinput>emerge --sync</userinput>
+<prompt>[root@hven ~]# </prompt><userinput>emerge world</userinput>
+</screen>
+</sect2><!-- pakkesystem-gentoo-opdat -->
+
+<sect2 id="pakkesystem-gentoo-fjern">
+<title>Fjern installeret pakke</title>
+<indexterm><primary>Gentoo</primary><secondary>Fjern installeret pakke</secondary></indexterm>
+<indexterm><primary>Fjern installeret pakke</primary><secondary>Gentoo</secondary></indexterm>
+<indexterm><primary>Pakker</primary><secondary>Gentoo</secondary><tertiary>Fjern</tertiary></indexterm>
+<para>
+Kommandoen er <command>emerge --unmerge &lt;streng&gt;</command>.
+</para>
+<screen>
+<prompt>[root@hven ~]# </prompt><userinput>emerge --unmerge antiword</userinput>
+ app-text/antiword
+    selected: 0.37
+    protected: none
+    omitted: none
+&gt;&gt;&gt; 'Selected' packages are slated for removal.
+&gt;&gt;&gt; 'Protected' and 'omitted' packages will not be removed.
+&gt;&gt;&gt; Waiting 5 seconds before starting...
+&gt;&gt;&gt; (Control-C to abort)...
+&gt;&gt;&gt; Unmerging in: 5 4 3 2 1
+&gt;&gt;&gt; Unmerging app-text/antiword-0.37...
+...
+</screen>
+<para>
+Den alternative kommando er <command>epm -e antiword</command>.
+</para>
+</sect2><!-- pakkesystem-gentoo-fjern -->
+
+<sect2 id="pakkesystem-gentoo-down">
+<title>Ændre download-kilde</title>
+<indexterm><primary>Gentoo</primary><secondary>Ændre download-kilde</secondary></indexterm>
+<indexterm><primary>Ændre download-kilde</primary><secondary>Gentoo</secondary></indexterm>
+<indexterm><primary>Pakker</primary><secondary>Gentoo</secondary><tertiary>Ændre download-kilde</tertiary></indexterm>
+<para>
+Kilden for download findes i filen
+<filename>/etc/make.conf</filename>.
+Listen over steder man kan hente pakker fra,
+kan findes med kommandoen <command>???</command>.
+</para>
+<programlisting>
+# Filnavn: /etc/make.conf
+GENTOO_MIRRORS="http://mirror.uni-c.dk/pub/gentoo/"
+</programlisting>
+</sect2><!-- pakkesystem-gentoo-down -->
 
 </sect1><!-- pakkesystem-gentoo -->
-</chapter>
+</chapter><!-- pakkesystem -->
