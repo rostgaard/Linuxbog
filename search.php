@@ -26,11 +26,15 @@
 
    list($width,$height) = @getimagesize("front.png");
 
+   if (isset($_GET["q"]))
+	$q = $_GET["q"];
    if (isset($q))
-     $q = stripslashes($q);
+	$q = stripslashes($q);
 
-if (!$ml)
-  $ml = $HTTP_HOST=="cvs.sslug.dk" ? "sg" : "ht";
+   if (isset($_GET["ml"]))
+	$ml = $_GET["ml"];
+   if (!$ml)
+	$ml = $_SERVER["HTTP_HOST"]=="cvs.linuxbog.dk" ? "sg" : "ht";
 
 ?>
 
