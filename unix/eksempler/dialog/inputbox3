@@ -1,0 +1,36 @@
+#! /bin/sh
+# Filnavn: inputbox3
+NAVN=""
+dialog --backtitle "Stor applikation" \
+	--ok-label "Sæt navn" \
+	--cancel-label "Afbryd" \
+	--help-button \
+	--help-label "Hjælp" \
+	--begin 5 10 \
+	--inputbox "Dit navn" 8 40 "Tyge Brahe" 2>/tmp/svar
+case $? in
+	0)
+		# dialog is exited by pressing the Yes or OK button.
+		read NAVN </tmp/svar && rm -f /tmp/svar
+		echo "Dit navn er: ${NAVN}"
+		;;
+	1)
+		# No or Cancel button is pressed.
+		echo "Cancel"
+		;;
+	2)
+		# Help button is pressed.
+		echo "Help"
+		;;
+	3)
+		# Extra button is pressed.
+		echo "Extra button"
+		;;
+	-1)
+		# errors occur inside dialog
+		echo "Esc"
+		;;
+	*)
+		echo "Fejl. Ukendt retur-kode."
+		;;
+esac
