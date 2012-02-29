@@ -1,0 +1,398 @@
+# Makefile for underkataloger.
+# $Id$
+# Peter Toft <pto@sslug.dk> 
+# Mads Bondo Dydensborg <madsdyd@challenge.dk>
+
+
+################################################################################
+# Inkluder Makefile.local hvis den findes + don't whine if it doesn't
+################################################################################
+-include Makefile.local
+
+
+################################################################################
+# Diverse variable sættes
+################################################################################
+
+# Lokalt katalog (fuld sti)
+locdirname:=$(shell pwd)
+
+# Kort navn
+targetshortname:=$(notdir $(locdirname))
+
+# Med linuxbog- foran
+targetname:=linuxbog-$(notdir $(locdirname))
+
+# Base navnet for pakker, mv
+basenavn:=$(targetname)-$(version)
+
+# dato
+dato:=$(shell date +%d/%m-%Y> dato.sgml; cat dato.sgml)
+
+# Her er en liste af sgml-filer der ændres automatisk
+# badsgmlfiles=dato.sgml version.sgml magic.sgml stikord.sgml bogoversigt.sgml ophavsret.sgml
+badsgmlfiles=dato.sgml magic.sgml bogoversigt.sgml ophavsret.sgml
+
+# Her er  en liste af alle sgml
+# allesgmlfiles:=$(wildcard *.{sgml,xml})
+allesgmlfiles:=$(wildcard *.sgml) $(wildcard *.xml)
+
+# Her er en liste af sgml-filer der skal checkes
+sgmlfiler:=$(filter-out $(badsgmlfiles),$(allesgmlfiles)) 
+
+# Og her sætter vi up til at inkludere auto. Bemærk =, ikke :=
+# dax: det er version.sgml som ødelægger dependencies. Kan ikke
+# bare sættes ind her, da den laves automatisk et eller andet
+# sted. Måske bare som kopi, hvad ved jeg.
+# dep_sgml_filer=$(auto_sgml_filer) $(sgmlfiler) version.sgml stikord.sgml
+dep_sgml_filer=$(auto_sgml_filer) $(sgmlfiler) stikord.sgml
+
+# Her er  en liste af alle eksempler
+alleeksfiles:=$(wildcard eksempler/*)
+
+# Her er en liste af sgml-filer der skal checkes
+eksfiler:=$(filter-out eksempler/CVS,$(alleeksfiles))
+
+
+################################################################################
+# De egentlige targets
+################################################################################
+
+################################################################################
+.PHONY : test
+test:
+	@echo "auto_sgml_filer = " $(auto_sgml_filer)
+	@echo "sgmlfiler       = " $(sgmlfiler)
+	@echo "dep_sgml_filer  = " $(dep_sgml_filer)
+
+################################################################################
+# her er det der skal laves
+all: start html pakhtml palmpilot pdf eksempelbackup online stop
+
+
+################################################################################
+.PHONY : start
+start:	
+	@echo "-------------------------------------------"
+	@echo "Starter oversættelser af $(targetshortname)"
+	@echo "-------------------------------------------"
+	@echo Version er $(version)
+	@echo Dato sat til $(dato)
+#	@echo '<!ENTITY linuxbogurl "cvs.linuxbog.dk">' > linuxbogurl.sgml
+
+
+
+################################################################################
+.PHONY : stop
+stop:
+	@echo "-------------------------------------------"
+	@echo "Slut på $(targetshortname) $(version)      "
+	@echo "-------------------------------------------"
+	@echo 
+
+
+################################################################################
+.PHONY : version 
+version:
+	@echo $(targetshortname) $(version)
+
+
+################################################################################
+# Stikordsfilen "stikord.sgml"
+################################################################################
+
+# dax: Circular dependencies, version var med i dep_sgml_filer.
+# Det må man ikke. Den står forrest her fordi den skal være ældre
+# end stikord.sgml. Man må også fjerne stikord.sgml fra default
+# listen og indføje den, hvor den skal bruges
+# OBS!!! Der er ikke andre rettelser i Makefile.subdir end denne
+# (foreløbig, altså!)
+
+stikord.sgml:	$(filter-out version.sgml stikord.sgml ,$(dep_sgml_filer))
+	if test ! -e magic.sgml ; then \
+		echo '<!ENTITY magic "png">' > magic.sgml ; \
+	fi
+	make version.sgml
+	echo "<?xml version='1.0' encoding='ISO-8859-1' ?>" > stikord.sgml && \
+	collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N >> stikord.sgml && \
+	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o StikordBuildDir bog.sgml && \
+	echo "<?xml version='1.0' encoding='ISO-8859-1' ?>" > stikord.sgml && \
+	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord >> stikord.sgml StikordBuildDir/HTML.index
+
+stikord.sgml.clean:	
+	rm -f stikord.sgml
+	rm -Rf StikordBuildDir/
+
+
+################################################################################
+# Versionsfilen "version.sgml"
+################################################################################
+
+# NB: Hvis måden at trække versioner ud af apprevhist.sgml ændres, skal det
+# også ændres i toplevel Makefile.in....
+
+version:=$(shell grep -A2 "<listitem>" apprevhist.sgml | head -n 2 | grep Version | sed 's/.*Version//' | cut -d' ' -f2)
+version.sgml:	apprevhist.sgml
+	grep -A2 "<listitem>" apprevhist.sgml | head -n 2 |\
+	grep Version | sed 's/.*Version//' | cut -d' ' -f2 > version.sgml
+
+version.sgml.clean:	
+	rm -f version.sgml
+
+
+################################################################################
+# Byg Palm Pilot udgaven
+################################################################################
+# Laver en .tar.gz fil, kræver html target
+.PHONY : palmpilot
+if BUILD_PALM
+palmpilot_navn:=$(targetname)-palm-$(version).tar.gz
+palmpilot:	$(palmpilot_navn)
+$(palmpilot_navn):	html
+	@echo ".........................................."
+	@echo "Target $(targetshortname):palmpilot"
+	@echo ".........................................."
+	rm -f $(palmpilot_navn)
+	rm -Rf PalmBuildDir/
+	mkdir -p PalmBuildDir
+	cp palm/* PalmBuildDir || true
+	cp palm-faelles/* PalmBuildDir || true
+	(cd PalmBuildDir && plucker-build -V 0  -P . -f $(targetname) `pwd`/home.html)
+#	zip $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*txt
+	tar czf $(palmpilot_navn) PalmBuildDir/*.prc PalmBuildDir/*.pdb PalmBuildDir/*.txt
+else !BUILD_PALM
+palmpilot:	
+	@echo "Overspringer palmpilot"
+endif !BUILD_PALM
+
+palmpilot.clean:	
+	rm -Rf $(targetname)-palm-*.tar.gz PalmBuildDir/
+
+
+################################################################################
+# Pak HTML-filer ned
+################################################################################
+.PHONY : pakhtml
+if BUILD_PAKHTML
+pakhtml: $(targetshortname)/$(targetname)-html-$(version).tar.gz
+
+$(targetshortname)/$(targetname)-html-$(version).tar.gz: html
+	@echo ".........................................."
+	@echo "Target $(targetshortname):pakhtml"
+	@echo ".........................................."
+# 	Roder lidt rundt med en spec fil (todo)
+	@echo %define buildname $(targetshortname) > $(targetshortname)/$(targetname).spec
+	@echo Name: linuxbog-$(targetshortname) >> $(targetshortname)/$(targetname).spec
+	@echo Summary: `grep -A2 "<title>" indhold.sgml | head -n 1 | cut -d '>' -f 2 | cut -d '<' -f 1` >> $(targetshortname)/$(targetname).spec
+	@echo Version: `cat version.sgml` >> $(targetshortname)/$(targetname).spec
+	@echo Release: 1mdk >>  $(targetshortname)/$(targetname).spec
+	cat linuxbog.spec >> $(targetshortname)/$(targetname).spec
+	(cd ..;tar hczf $(targetshortname)/$(targetname)-html-$(version).tar.gz $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler  )
+#	(cd ..;zip $(targetshortname)/$(targetname)-html-$(version).zip -r $(targetshortname)/$(targetshortname) $(targetshortname)/eksempler)
+	(cd ..;tar hczf $(targetshortname)/$(targetname)-htmlub-$(version).tar.gz $(targetshortname)/$(targetshortname)/*.html $(targetshortname)/$(targetshortname)/*.css $(targetshortname)/eksempler   )
+# 	Tilsvarende for billeder.
+	mv images $(targetshortname)_images
+	(cd ..;tar hczf  $(targetshortname)/$(targetname)-png-$(version).tar.gz $(targetshortname)/$(targetshortname)_images/ )
+	mv $(targetshortname)_images images 
+	@@echo "Done HTML pakning (pakhtml)"
+	@echo ""
+	@echo ""
+else !BUILD_PAKHTML
+pakhtml:
+	@echo "Overspringer pakhtml"
+endif !BUILD_PAKHTML
+
+pakhtml.clean:	
+	rm -f $(targetname)-html-*.tar.gz $(targetname)-htmlub-*.tar.gz $(targetname)-png-*.tar.gz # $(targetname)-html-*.zip
+
+
+################################################################################
+# MAKEONLINE
+################################################################################
+.PHONY : online
+online: html
+	rm -rf bog/
+	cp -R $(targetshortname) bog/
+if ADD_SUBMITBOX
+	(cd bog && ../addsubmitbox)
+else !ADD_SUBMITBOX
+	@echo "Du skal vælge --enable_submitbox når du kører configure"
+	@echo "for at få tilføjet submit boks"
+endif !ADD_SUBMITBOX
+
+
+################################################################################
+# Byg HTML-filerne
+################################################################################
+.PHONY : html
+if BUILD_HTML
+html: html.stamp
+html.stamp: $(dep_sgml_filer) eksempler-sgml-HTML
+	@echo ".........................................."
+	@echo "Target $(targetshortname):html"
+	@echo ".........................................."
+	rm -rf $(targetname)-*.html.tar.gz bog/ $(targetshortname)/
+	make version.sgml
+	sleep 2; ls -lo version.sgml ; test -f version.sgml || { echo "Fatal, cannot make version.sgml"; exit 105 ; } ;
+	@echo '<!ENTITY magic "png">' > magic.sgml
+	db2html -V %stylesheet%=linuxbog.css -V  %use-id-as-filename% -V  %chapter-autolabel% -V %section-autolabel% bog.sgml
+	mv bog/ $(targetshortname)
+	cp linuxbog.css $(targetshortname)	
+	cp $(targetshortname)/$(targetshortname)-apprevhist.html $(targetshortname)/apprevhist.html
+if USE_SOFTLINKS
+	(cd $(targetshortname) && ln -sf ../images/*.png .)
+else !USE_SOFTLINKS
+	cp images/*.png $(targetshortname)
+endif !USE_SOFTLINKS
+if HAVE_PERL_IMAGE_SIZE
+	(cd $(targetshortname);perl ../misc/insertimagesize)
+else !HAVE_PERL_IMAGE_SIZE
+	@echo "Du bør installere Perl-modulet Image:Size"
+endif !HAVE_PERL_IMAGE_SIZE
+if HAVE_TIDY
+	(cd $(targetshortname);tidy -latin1 -f err.txt -imu *html;rm -f err.txt)
+else !HAVE_TIDY
+	@echo "Du bør installere tidy"
+endif !HAVE_TIDY
+	@if [ -e toplevel-kald ]; then \
+		echo -n "$(targetshortname)/$(targetshortname)/stikord.html " >> ../stikordsfiler; \
+	fi
+	touch html.stamp
+	@echo "Done HTML (html)"
+	@echo ""
+else !BUILD_HTML
+html:	
+	@echo "Overspringer html"
+endif !BUILD_HTML
+
+html.clean:	
+	rm -Rf $(targetshortname)/ bog/ html.stamp
+
+
+################################################################################
+# Byg PDF filen
+################################################################################
+.PHONY : pdf
+if BUILD_PDF
+pdf: $(targetname)-pdf-$(version).pdf.gz
+$(targetname)-pdf-$(version).pdf.gz: $(dep_sgml_filer) eksempler-sgml-PDF
+	@echo ".........................................."
+	@echo "Target $(targetshortname):pdf"
+	@echo ".........................................."
+	@echo '<!ENTITY magic "png">' > magic.sgml
+	make version.sgml
+	echo "For some reason we must pause here." ; sleep 2 ; ls -l version.sgml; test -f version.sgml || exit 109
+	@echo Opsætter PdfBuildDir
+#	@rm -rf PdfBuildDir stikord.sgml
+	@rm -rf PdfBuildDir
+	@mkdir PdfBuildDir
+	@cd PdfBuildDir && ln -sf ../*sgml ../*xml ../images/*png .
+#	@echo Bygger stikord.sgml
+#	@cd PdfBuildDir && collateindex.pl  -s Symboler -t Stikordsregister -g -i stikord -N -o stikord.sgml && \
+#	jw -V %use-id-as-filename% -V html-index -f docbook -b html -o bog bog.sgml && \
+#	collateindex.pl -s Symboler -t Stikordsregister -g -i stikord  -o stikord.sgml bog/HTML.index
+##	jw -V html-index -V nochunks -f docbook -b html -o bog bog.sgml && \
+	@echo Bygger PDF fil
+# Ideen er at hvis db2pdf fejler med en fejlkode 9, så køres db2pdf igen - for
+# vi ved ikke hvad fejlkode 9 betyder, men tilsyneladende vil det virke "alligevel".
+# TODO: Dette skal testes på tyge!
+	@cd PdfBuildDir && \
+	db2pdf -V %use-id-as-filename% bog.sgml ; \
+	if test $$? -eq 9 ; then \
+		echo Kører db2pdf igen ; \
+		db2pdf -V %use-id-as-filename% bog.sgml ; \
+		if test $$? -eq 9 ; then \
+			echo Kører db2pdf igen ; \
+			db2pdf -V %use-id-as-filename% bog.sgml ; \
+			if test $$? -eq 9 ; then \
+				true ; \
+			fi \
+		fi \
+	fi
+#	(cd PdfBuildDir && echo "Running db2pdf" && db2pdf bog.sgml; true)
+#	(cd PdfBuildDir && echo "Running db2pdf 1/2" && db2pdf bog.sgml; true)
+#	(cd PdfBuildDir && echo "Running db2pdf 2/2" && db2pdf bog.sgml; true)
+	mv PdfBuildDir/bog.pdf $(targetname)-pdf-$(version).pdf
+	pdfinfo $(targetname)-pdf-$(version).pdf | grep Pages: | cut -d':' -f2 > sideantal.txt
+	gzip -c9 $(targetname)-pdf-$(version).pdf > $(targetname)-pdf-$(version).pdf.gz
+#	rm -rf PdfBuildDir
+	@echo "Done PDF (pdf)"
+	@echo ""
+endif BUILD_PDF
+
+pdf.clean:	
+	rm -Rf PdfBuildDir sideantal.txt $(targetname)-*.pdf $(targetname)-*.pdf.gz
+
+
+################################################################################
+# Backup af eksempel-filer
+################################################################################
+
+# TODO : Spørge Peter Toft hvad meningen er med det her....
+eksempelbackup:  $(targetname)-eksempler-$(version).tar.gz
+$(targetname)-eksempler-$(version).tar.gz : $(eksfiler)
+	if test "x$(eksfiler)" != "x" ; then \
+		rm -f $(targetname)-eksempler-$(version).tar.gz && \
+		touch $(targetname)-eksempler-$(version).tar && \
+		date +%d/%m-%Y > eksempler/BACKUPDATO && \
+		(cd .. && tar cvf $(targetshortname)/$(targetname)-eksempler-$(version).tar $(targetshortname)/eksempler/BACKUPDATO) && \
+		rm -f eksempler/BACKUPDATO && \
+		find eksempler -type f | grep -v "/CVS/" | xargs -l1 -i= -r tar rvf $(targetname)-eksempler-$(version).tar = && \
+		gzip -9 $(targetname)-eksempler-$(version).tar; \
+	else \
+		echo "Bogen" $(targetname) "har ikke nogen eksempler"; \
+	fi
+
+eksempelbackup.clean:	
+	rm -f $(targetname)-eksempler-*.tar.gz 
+
+
+################################################################################
+# CLEAN targets
+################################################################################
+
+# Vi har tre forskellige slags clean targets.
+# clean: targets fjernes, og lokalt autogenererede bliver fjernet.
+# distclean: clean til distribution, dvs. filer kopieret af toplevel configure
+# må ikke fjernes, men autoconf filer bliver.
+# reallyclean: Alt fjernes, helt ned til cvs nærmest
+
+# TODO: magic.sgml
+
+
+################################################################################
+# Target og diverse filer fjernes. Autogenererede filer beholdes
+.PHONY : clean
+clean:	stikord.sgml.clean version.sgml.clean palmpilot.clean pakhtml.clean html.clean pdf.clean eksempelbackup.clean
+	@echo clean $(targetshortname)
+	rm -rf bog.junk/ dato.sgml *~ .#*[0-9] bog/ $(targetshortname)/ $(targetname)-dist-*.tar.gz
+
+
+################################################################################
+#
+# distclean-local - hook til automake.
+# Cleaner så det passer til en dist
+# TODO: Fixme
+distclean-local:	clean
+	rm -rf magic.sgml autom4te.cache $(auto_sgml_filer) config.log config.status 
+
+################################################################################
+# Alt fjernes, stort set ned til cvs
+.PHONY : reallyclean
+reallyclean:	clean distclean
+	rm -Rf dato.sgml bogoversigt.sgml ophavsret.sgml linuxbog.css linuxbog.spec linuxbogurl.sgml misc aclocal.m4 bootstrap configure configure.ac install-sh Makefile.am Makefile.in missing mkinstalldirs palm-faelles/
+
+#-----------------------------------------------------------------------------
+#--  Bygger SGML/XML-udgaver af alle filer i eksempler:
+
+.PHONY : eksempler-sgml-HTML
+eksempler-sgml-HTML: eksempler/*
+	mkdir -p eksempler-sgml
+	for fil in eksempler/*; do perl ../bin/tekst_til_sgml.pl < $${fil} > eksempler-sgml/`basename $${fil}`; done
+
+.PHONY : eksempler-sgml-PDF
+eksempler-sgml-PDF: eksempler/*
+	mkdir -p PdfBuildDir/eksempler-sgml
+	for fil in eksempler/*; do perl ../bin/tekst_til_sgml.pl < $${fil} > PdfBuildDir/eksempler-sgml/`basename $${fil}`; done
+
+#-----------------------------------------------------------------------------

@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Displaymanagers</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Linux - Friheden til at vælge grafisk brugergrænseflade"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="KWM og KDE"
+HREF="kwm.html"><LINK
+REL="NEXT"
+TITLE="Revisionshistorie for bogen"
+HREF="wm-apprevhist.html"></HEAD
+><BODY
+CLASS="chapter"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux - Friheden til at vælge grafisk brugergrænseflade: Version 1.2.20050118
+ - 25/02-2012&#13;</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="kwm.html"
+ACCESSKEY="P"
+>forrige</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="wm-apprevhist.html"
+ACCESSKEY="N"
+>næste</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="chapter"
+><H1
+><A
+NAME="wm-displaymanagers"
+></A
+>Kapitel 6. Displaymanagers</H1
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="xdm"
+>6.1. XDM</A
+></H1
+><A
+NAME="AEN3016"
+></A
+><A
+NAME="AEN3018"
+></A
+><P
+>&#13;  XDM er den oprindelige displaymanager og er dermed den mindste fællesnævner
+  for hvad en displaymanager skal kunne. XDM følger med som en del af XFree86
+  og har ingen afhængigheder ud over standardbiblioteker. XDM implementerer
+  ikke overflødige ting, det er en displaymanager og ikke andet.
+ </P
+><P
+>&#13;  Den mest synlige opsætningsmulighed er at XDM kan sætte et logo ind i
+  login-boksen og XDM giver ikke brugeren andre smarte valgmuligheder end at
+  skrive sit brugernavn og kodeord.
+
+ <DIV
+CLASS="figure"
+><A
+NAME="xdm-fig"
+></A
+><P
+><B
+>Figur 6-1. XDM login-billed</B
+></P
+><P
+><IMG
+SRC="xdm.png"></P
+></DIV
+>
+
+  Selv ikke den lyseblå baggrundsfarve tager xdm sig af. Den bliver lavet fra
+  et shell-script xdm kalder under opstarten.
+ </P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="xdm-opsætning"
+>6.1.1. Opsætning af XDM</A
+></H2
+><P
+>&#13;   Opsætningen af XDM foregår i en række tekstfiler, der normalt vil være
+   placeret i <TT
+CLASS="filename"
+>/etc/X11/xdm</TT
+>. Den primære
+   opsætningsfil er <TT
+CLASS="filename"
+>xdm-config</TT
+>. I den er der
+   henvisninger til hvad de andre opsætningsfiler hedder samt hvordan
+   XDM opfører sig som displaymanager
+  </P
+><P
+>&#13;   Ud over henvisninger til de andre filer er det vigtigste i denne fil 
+   at man kan slå muligheden for at skulle lege displaymanager for andre
+   maskiner ved at sætte XDM til at lytte på port 0.
+
+<PRE
+CLASS="programlisting"
+>&#13;! SECURITY: do not listen for XDMCP or Chooser requests
+! Comment out this line if you want to manage X terminals with xdm
+DisplayManager.requestPort:     0
+</PRE
+>
+  </P
+><P
+>&#13;   Udseendet af ens loginbilled kan styres fra <TT
+CLASS="filename"
+>Xresources</TT
+>
+   Her kan man sætte op hvad den skal skrive, hvilke skriftsnit der skal bruges
+   og man kan sætte et logo på.
+
+<PRE
+CLASS="programlisting"
+>&#13;xlogin*greeting: Velkommen til hven.sslug.dk
+xlogin*namePrompt: \040\040\040\040\040\040\040Login:
+
+xlogin*fail: Login incorrect
+
+xlogin*logoFileName: /etc/X11/xdm/pixmaps/sslug.xpm
+xlogin*greetFont: -adobe-helvetica-bold-o-normal--14-140-75-75-p-82-iso8859-1
+xlogin*font: -adobe-helvetica-medium-r-normal--12-120-75-75-p-67-iso8859-1
+xlogin*promptFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
+xlogin*failFont: -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1
+</PRE
+>
+  </P
+><P
+>&#13;   Så findes der en række shell-scripts som XDM kører på forskellige
+   tidspunkter
+
+   <P
+></P
+><UL
+><LI
+><P
+>&#13;      <TT
+CLASS="filename"
+>Xsetup</TT
+>: Udføres når XDM laver en login-skærm
+     </P
+></LI
+><LI
+><P
+>&#13;      <TT
+CLASS="filename"
+>Xstartup</TT
+>: Udføres, som root, når en bruger har
+      logget ind
+     </P
+></LI
+><LI
+><P
+>&#13;      <TT
+CLASS="filename"
+>Xsession</TT
+>: Udføres, som brugeren der har logget
+      ind, efter <TT
+CLASS="filename"
+>Xstartup</TT
+>
+     </P
+></LI
+><LI
+><P
+>&#13;      <TT
+CLASS="filename"
+>Xreset</TT
+>: Udføres, som root, når en brugers session
+      afsluttes
+     </P
+></LI
+></UL
+>
+  </P
+><P
+>&#13;   Normalt kører man en <B
+CLASS="command"
+>xconsole</B
+> fra <TT
+CLASS="filename"
+>Xsetup</TT
+>
+   og man kan også skifte farve fra X11-grå med programmet <B
+CLASS="command"
+>xsetroot</B
+>
+  </P
+><P
+>&#13;   <TT
+CLASS="filename"
+>Xstartup</TT
+> og <TT
+CLASS="filename"
+>Xreset</TT
+> kan bruges
+   til at sørge for at man kan se at brugeren er logget ind. Dette kan gøres
+   med programmet <B
+CLASS="command"
+>sessreg</B
+> der vedligeholder utmp- og
+   wtmp-filer.
+  </P
+><P
+>&#13;   <TT
+CLASS="filename"
+>Xsession</TT
+> kan sætte noget standardopsætning op. Den 
+   bør altid slutte med at udføre brugerens egen <TT
+CLASS="filename"
+>$HOME/.xsession</TT
+>
+   som kan starte en windowmanager op.
+  </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="xdm-konklusion"
+>6.1.2. Er XDM stadigvæk brugbar?</A
+></H2
+><P
+>&#13;   Det første man skal overveje er hvor tit man egentlig arbejder på selve
+   login-skærmen? Det er ikke ret ofte. Derfor gør det ikke særlig meget
+   at den ikke har så mange fancy features.
+  </P
+><P
+>&#13;   Så skal man overveje hvad man mangler? Man kan måske mangle en pæn knap
+   der siger 'luk maskinen ned' hvis det er en arbejdsmaskine. De shell-scripts
+   XDM bruger giver dog en fleksibilitet der gør sådan en knap let at lave.
+  </P
+><P
+>&#13;   Jeg vil derfor absolut mene at XDM stadig er brugbar som displaymanager.
+  </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="kwm.html"
+ACCESSKEY="P"
+>forrige</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>hjem</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="wm-apprevhist.html"
+ACCESSKEY="N"
+>næste</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>KWM og KDE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Revisionshistorie for bogen</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
